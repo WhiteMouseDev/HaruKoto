@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { generateText } from 'ai';
 import { getAIProvider } from '@harukoto/ai';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import {
   calculateLevel,
   updateStreak,
@@ -24,6 +25,14 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
+    }
+
+    const rl = rateLimit(`chat:${user.id}`, RATE_LIMITS.AI);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)) } }
+      );
     }
 
     const body = await request.json();

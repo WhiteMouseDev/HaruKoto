@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { openaiClient } from '@harukoto/ai';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
 
@@ -30,6 +31,14 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
+    }
+
+    const rl = rateLimit(`stt:${user.id}`, RATE_LIMITS.AI);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)) } }
+      );
     }
 
     const formData = await request.formData();
