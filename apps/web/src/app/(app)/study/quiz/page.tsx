@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { showGameEvents } from '@/lib/show-events';
 import { Logo } from '@/components/brand/logo';
 
 interface QuizOption {
@@ -48,6 +49,7 @@ function QuizContent() {
   const jlptLevel = searchParams.get('level') || 'N5';
   const count = parseInt(searchParams.get('count') || '10');
   const mode = searchParams.get('mode');
+  const resumeSessionId = searchParams.get('resume');
   const isReview = mode === 'review';
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -61,28 +63,51 @@ function QuizContent() {
   const timerRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Start quiz
+  // Start or resume quiz
   useEffect(() => {
-    async function startQuiz() {
+    async function initQuiz() {
       try {
-        const res = await fetch('/api/v1/quiz/start', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quizType, jlptLevel, count, mode: mode || undefined }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setSessionId(data.sessionId);
-          setQuestions(data.questions);
+        if (resumeSessionId) {
+          // Resume mode
+          const res = await fetch('/api/v1/quiz/resume', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: resumeSessionId }),
+          });
+          const data = await res.json();
+          if (res.ok && data.questions) {
+            setSessionId(data.sessionId);
+            setQuestions(data.questions);
+            const answeredCount = data.answeredQuestionIds.length;
+            setCurrentIndex(answeredCount);
+            // Restore results: correctCount trues, rest false
+            const restoredResults = Array.from(
+              { length: answeredCount },
+              (_, i) => i < data.correctCount
+            );
+            setResults(restoredResults);
+          }
+        } else {
+          // Normal start
+          const res = await fetch('/api/v1/quiz/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quizType, jlptLevel, count, mode: mode || undefined }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setSessionId(data.sessionId);
+            setQuestions(data.questions);
+          }
         }
       } catch (err) {
-        console.error('Failed to start quiz:', err);
+        console.error('Failed to init quiz:', err);
       } finally {
         setLoading(false);
       }
     }
-    startQuiz();
-  }, [quizType, jlptLevel, count, mode]);
+    initQuiz();
+  }, [quizType, jlptLevel, count, mode, resumeSessionId]);
 
   // Timer
   useEffect(() => {
@@ -96,6 +121,18 @@ function QuizContent() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [currentIndex, loading, answerState]);
+
+  // Warn before leaving during quiz
+  useEffect(() => {
+    if (loading || questions.length === 0) return;
+
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [loading, questions.length]);
 
   const handleAnswer = useCallback(
     async (optionId: string) => {
@@ -135,6 +172,7 @@ function QuizContent() {
         body: JSON.stringify({ sessionId }),
       });
       const data = await res.json();
+      showGameEvents(data.events);
       router.replace(
         `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}`
       );
@@ -181,7 +219,13 @@ function QuizContent() {
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
-        <button onClick={() => router.back()}>
+        <button
+          onClick={() => {
+            if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+              router.push('/study');
+            }
+          }}
+        >
           <ArrowLeft className="size-5" />
         </button>
         <span className="flex-1 text-center text-sm font-medium">

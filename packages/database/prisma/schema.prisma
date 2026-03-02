@@ -102,6 +102,8 @@ model User {
   dailyProgress     DailyProgress[]
   vocabProgress     UserVocabProgress[]
   grammarProgress   UserGrammarProgress[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -160,6 +162,7 @@ model QuizSession {
   jlptLevel     JlptLevel @map("jlpt_level")
   totalQuestions Int      @default(0) @map("total_questions")
   correctCount  Int       @default(0) @map("correct_count")
+  questionsData Json?     @map("questions_data")
   startedAt     DateTime  @default(now()) @map("started_at")
   completedAt   DateTime? @map("completed_at")
 
@@ -337,6 +340,40 @@ model UserGrammarProgress {
   @@index([userId, nextReviewAt])
   @@index([userId, mastered])
   @@map("user_grammar_progress")
+}
+
+// ==========================================
+// Notifications & Push
+// ==========================================
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   // level_up, streak, achievement
+  title     String
+  body      String
+  emoji     String?
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@map("push_subscriptions")
 }
 
 // ==========================================

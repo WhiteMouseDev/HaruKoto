@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Eye, EyeOff, LogOut } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import { showGameEvents } from '@/lib/show-events';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChatMessage } from '@/components/features/chat/chat-message';
@@ -52,6 +53,10 @@ type StartResponse = {
 type EndResponse = {
   success: boolean;
   feedbackSummary: Record<string, unknown> | null;
+  events?: {
+    type: 'level_up' | 'streak' | 'achievement';
+    data: Record<string, unknown>;
+  }[];
 };
 
 type ScenarioInfo = {
@@ -183,6 +188,8 @@ export default function ChatConversationPage({
         method: 'POST',
         body: JSON.stringify({ conversationId }),
       });
+
+      showGameEvents(data.events);
 
       // Store feedback and vocabulary for the feedback page
       sessionStorage.setItem(

@@ -22,6 +22,51 @@ export async function POST(request: Request) {
       );
     }
 
+    // Auto-complete any incomplete sessions
+    const incompleteSessions = await prisma.quizSession.findMany({
+      where: { userId: user.id, completedAt: null },
+      include: { answers: true },
+    });
+
+    for (const oldSession of incompleteSessions) {
+      const correctCount = oldSession.answers.filter(a => a.isCorrect).length;
+      await prisma.quizSession.update({
+        where: { id: oldSession.id },
+        data: {
+          completedAt: new Date(),
+          correctCount,
+        },
+      });
+
+      // Award partial XP
+      if (correctCount > 0) {
+        const partialXp = correctCount * 10;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        await prisma.dailyProgress.upsert({
+          where: { userId_date: { userId: user.id, date: today } },
+          update: {
+            xpEarned: { increment: partialXp },
+            correctAnswers: { increment: correctCount },
+            totalAnswers: { increment: oldSession.answers.length },
+          },
+          create: {
+            userId: user.id,
+            date: today,
+            xpEarned: partialXp,
+            correctAnswers: correctCount,
+            totalAnswers: oldSession.answers.length,
+          },
+        });
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { experiencePoints: { increment: partialXp } },
+        });
+      }
+    }
+
     // Fetch words that need review first, then new words
     type Question = {
       questionId: string;
@@ -277,6 +322,7 @@ export async function POST(request: Request) {
         quizType,
         jlptLevel,
         totalQuestions: questions.length,
+        questionsData: JSON.parse(JSON.stringify(questions)),
       },
     });
 

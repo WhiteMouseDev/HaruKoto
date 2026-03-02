@@ -48,15 +48,28 @@ export async function proxy(request: NextRequest) {
 
   // Logged-in user on protected route: check onboarding completion
   if (user && isProtectedPath) {
-    const dbUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { onboardingCompleted: true },
-    });
+    const onboardingCookie = request.cookies.get('onboarding_completed');
 
-    if (!dbUser || !dbUser.onboardingCompleted) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/onboarding';
-      return NextResponse.redirect(url);
+    if (onboardingCookie?.value === 'true') {
+      // Cookie confirms onboarding done, skip DB query
+    } else {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { onboardingCompleted: true },
+      });
+
+      if (!dbUser || !dbUser.onboardingCompleted) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/onboarding';
+        return NextResponse.redirect(url);
+      }
+
+      supabaseResponse.cookies.set('onboarding_completed', 'true', {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+      });
     }
   }
 

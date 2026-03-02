@@ -7,6 +7,7 @@ import { ChevronRight, BookOpen, Target, Moon, Sun, Bell } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 import {
   Sheet,
   SheetContent,
@@ -32,7 +33,7 @@ export function SettingsMenu({
   onUpdate,
 }: SettingsMenuProps) {
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(true);
+  const { state: pushState, isLoading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
   const [levelSheetOpen, setLevelSheetOpen] = useState(false);
   const [goalSheetOpen, setGoalSheetOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -133,11 +134,30 @@ export function SettingsMenu({
             <div className="flex items-center justify-between px-4 py-3.5">
               <div className="flex items-center gap-3">
                 <Bell className="text-hk-red size-5" />
-                <span className="text-sm font-medium">알림 설정</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">알림 설정</span>
+                  {pushState === 'denied' && (
+                    <span className="text-muted-foreground text-[11px]">
+                      브라우저 설정에서 허용해주세요
+                    </span>
+                  )}
+                  {pushState === 'unsupported' && (
+                    <span className="text-muted-foreground text-[11px]">
+                      이 브라우저에서 지원하지 않습니다
+                    </span>
+                  )}
+                </div>
               </div>
               <Switch
-                checked={notifications}
-                onCheckedChange={setNotifications}
+                checked={pushState === 'granted'}
+                onCheckedChange={async (checked) => {
+                  if (checked) {
+                    await subscribe();
+                  } else {
+                    await unsubscribe();
+                  }
+                }}
+                disabled={pushState === 'unsupported' || pushState === 'denied' || pushLoading}
               />
             </div>
           </CardContent>

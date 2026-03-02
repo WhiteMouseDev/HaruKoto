@@ -1,48 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, RefreshCw } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { RefreshCw } from 'lucide-react';
+import { useDashboard, useProfile } from '@/hooks/use-dashboard';
+import { NotificationCenter } from '@/components/features/notifications/notification-center';
 import { Button } from '@/components/ui/button';
 import { StreakBadge } from '@/components/features/dashboard/streak-badge';
 import { DailyProgressCard } from '@/components/features/dashboard/daily-progress-card';
 import { WeeklyChart } from '@/components/features/dashboard/weekly-chart';
 import { QuickStartCard } from '@/components/features/dashboard/quick-start-card';
 import { LevelProgress } from '@/components/features/dashboard/level-progress';
-
-type DashboardData = {
-  today: {
-    wordsStudied: number;
-    quizzesCompleted: number;
-    correctAnswers: number;
-    totalAnswers: number;
-    xpEarned: number;
-    goalProgress: number;
-  };
-  streak: { current: number; longest: number };
-  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
-  levelProgress: {
-    vocabulary: { total: number; mastered: number; inProgress: number };
-    grammar: { total: number; mastered: number; inProgress: number };
-  };
-};
-
-type ProfileData = {
-  profile: {
-    nickname: string;
-    jlptLevel: string;
-    dailyGoal: number;
-    experiencePoints: number;
-    level: number;
-    streakCount: number;
-  };
-  summary: {
-    totalWordsStudied: number;
-    totalQuizzesCompleted: number;
-    totalXpEarned: number;
-  };
-};
 
 const container = {
   hidden: { opacity: 0 },
@@ -58,36 +25,11 @@ const item = {
 };
 
 export default function HomePage() {
-  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  async function fetchData() {
-    setLoading(true);
-    setError(null);
-    try {
-      const [dashboardRes, profileRes] = await Promise.all([
-        apiFetch<DashboardData>('/api/v1/stats/dashboard'),
-        apiFetch<ProfileData>('/api/v1/user/profile'),
-      ]);
-      setDashboard(dashboardRes);
-      setProfile(profileRes);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '데이터를 불러올 수 없습니다.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: dashboard, isLoading, error, refetch } = useDashboard();
+  const { data: profile } = useProfile();
 
   // Loading skeleton
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex flex-col gap-6 p-4">
         <div className="flex items-center justify-between pt-2">
@@ -108,8 +50,8 @@ export default function HomePage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-8">
-        <p className="text-muted-foreground text-center">{error}</p>
-        <Button variant="outline" onClick={fetchData} className="gap-2">
+        <p className="text-muted-foreground text-center">{error?.message}</p>
+        <Button variant="outline" onClick={() => refetch()} className="gap-2">
           <RefreshCw className="size-4" />
           다시 시도
         </Button>
@@ -137,9 +79,7 @@ export default function HomePage() {
           <p className="text-muted-foreground text-sm">おはよう!</p>
           <h1 className="text-2xl font-bold">안녕, {nickname || '학습자'}!</h1>
         </div>
-        <button className="bg-accent flex items-center justify-center rounded-full p-2">
-          <Bell className="text-muted-foreground size-5" />
-        </button>
+        <NotificationCenter />
       </motion.div>
 
       {/* Streak Badge */}
