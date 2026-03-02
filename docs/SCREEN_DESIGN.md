@@ -16,52 +16,52 @@
 ```css
 /* globals.css - 라이트 테마 (기본: 봄 테마) */
 :root {
-  --color-primary:       #FFB7C5;  /* Cherry Pink - 메인 액션 */
-  --color-primary-hover: #FF8FA3;  /* Deep Pink - 호버/활성 */
-  --color-primary-light: #FFE4EC;  /* Light Pink - 배경 강조 */
+  --color-primary: #ffb7c5; /* Cherry Pink - 메인 액션 */
+  --color-primary-hover: #ff8fa3; /* Deep Pink - 호버/활성 */
+  --color-primary-light: #ffe4ec; /* Light Pink - 배경 강조 */
 
-  --color-secondary:     #87CEEB;  /* Sky Blue - 보조 액션 */
-  --color-accent-green:  #98D8C8;  /* Mint Green - 성공/정답 */
-  --color-accent-red:    #FF6B6B;  /* Coral - 경고/오답 */
-  --color-accent-yellow: #FFD93D;  /* Warm Yellow - 보상/포인트 */
+  --color-secondary: #87ceeb; /* Sky Blue - 보조 액션 */
+  --color-accent-green: #98d8c8; /* Mint Green - 성공/정답 */
+  --color-accent-red: #ff6b6b; /* Coral - 경고/오답 */
+  --color-accent-yellow: #ffd93d; /* Warm Yellow - 보상/포인트 */
 
-  --color-bg:            #FFF8F0;  /* Cream White - 메인 배경 */
-  --color-bg-card:       #FFFFFF;  /* Pure White - 카드 배경 */
-  --color-bg-secondary:  #FFF0F5;  /* Soft Pink - 보조 배경 */
+  --color-bg: #fff8f0; /* Cream White - 메인 배경 */
+  --color-bg-card: #ffffff; /* Pure White - 카드 배경 */
+  --color-bg-secondary: #fff0f5; /* Soft Pink - 보조 배경 */
 
-  --color-text:          #2D2D2D;  /* 본문 */
-  --color-text-secondary:#6B7280;  /* 보조 텍스트 */
-  --color-text-muted:    #D1D5DB;  /* 비활성/플레이스홀더 */
+  --color-text: #2d2d2d; /* 본문 */
+  --color-text-secondary: #6b7280; /* 보조 텍스트 */
+  --color-text-muted: #d1d5db; /* 비활성/플레이스홀더 */
 
-  --color-success:       #10B981;
-  --color-error:         #EF4444;
-  --color-warning:       #F59E0B;
-  --color-info:          #3B82F6;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
 }
 
 /* 다크 테마 */
 .dark {
-  --color-primary:       #FF8FA3;
-  --color-primary-hover: #FFB7C5;
-  --color-primary-light: #3D1F2A;
+  --color-primary: #ff8fa3;
+  --color-primary-hover: #ffb7c5;
+  --color-primary-light: #3d1f2a;
 
-  --color-secondary:     #5BA3C9;
-  --color-accent-green:  #6BC4AD;
-  --color-accent-red:    #E05252;
-  --color-accent-yellow: #E5C235;
+  --color-secondary: #5ba3c9;
+  --color-accent-green: #6bc4ad;
+  --color-accent-red: #e05252;
+  --color-accent-yellow: #e5c235;
 
-  --color-bg:            #1A1A2E;  /* 다크 네이비 */
-  --color-bg-card:       #242442;  /* 카드 배경 */
-  --color-bg-secondary:  #2A2A4A;  /* 보조 배경 */
+  --color-bg: #1a1a2e; /* 다크 네이비 */
+  --color-bg-card: #242442; /* 카드 배경 */
+  --color-bg-secondary: #2a2a4a; /* 보조 배경 */
 
-  --color-text:          #F0F0F0;
-  --color-text-secondary:#9CA3AF;
-  --color-text-muted:    #4B5563;
+  --color-text: #f0f0f0;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #4b5563;
 
-  --color-success:       #34D399;
-  --color-error:         #F87171;
-  --color-warning:       #FBBF24;
-  --color-info:          #60A5FA;
+  --color-success: #34d399;
+  --color-error: #f87171;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
 }
 ```
 
@@ -144,13 +144,13 @@ Font: 12px Semi
 [아이콘 스타일: 라인 아이콘, 활성 시 필드 + Cherry Pink]
 ```
 
-| 탭 | 아이콘 | 기능 | 접근 |
-|---|---|---|---|
-| **홈** | 🏠 | 대시보드, 오늘의 학습, 스트릭 | 무료 |
-| **학습통계** | 📊 | 기간별/학습별 통계, 히트맵 | 무료 |
-| **학습** | 📚 | JLPT 퀴즈 (단어/문법/한자) | 무료 |
-| **회화** | 💬 | AI 상황극, 자유대화 | **프리미엄** |
-| **MY** | 👤 | 프로필, 설정, 구독관리 | 무료 |
+| 탭           | 아이콘 | 기능                          | 접근         |
+| ------------ | ------ | ----------------------------- | ------------ |
+| **홈**       | 🏠     | 대시보드, 오늘의 학습, 스트릭 | 무료         |
+| **학습통계** | 📊     | 기간별/학습별 통계, 히트맵    | 무료         |
+| **학습**     | 📚     | JLPT 퀴즈 (단어/문법/한자)    | 무료         |
+| **회화**     | 💬     | AI 상황극, 자유대화           | **프리미엄** |
+| **MY**       | 👤     | 프로필, 설정, 구독관리        | 무료         |
 
 ---
 
@@ -189,6 +189,7 @@ Font: 12px Semi
 ```
 
 **구성 요소:**
+
 - 마스코트 + 로고 애니메이션 (Framer Motion)
 - 소셜 로그인 버튼 3개 (Google, Kakao, Apple)
 - 이메일 로그인 링크
@@ -322,6 +323,7 @@ Font: 12px Semi
 ```
 
 **구성 요소:**
+
 1. **헤더**: 마스코트 인사 + 닉네임 + 알림 벨
 2. **연속 학습 카드**: 스트릭 일수 + 요일별 체크 (발해보카 참고)
 3. **오늘의 학습 카드**: 마스코트 + 진행률 + CTA 버튼
@@ -621,6 +623,7 @@ Font: 12px Semi
 ```
 
 **채팅 UI 특징:**
+
 - AI 메시지: 왼쪽 정렬, 일본어 + 한국어 번역 (토글)
 - 내 메시지: 오른쪽 정렬, 입력한 일본어 + 자동 번역
 - 힌트 버튼: 다음에 쓸 수 있는 표현 제안
@@ -834,6 +837,7 @@ Font: 12px Semi
 ## 4. 인터랙션 & 애니메이션 (Framer Motion)
 
 ### 4.1 페이지 전환
+
 ```
 - 탭 전환: 좌우 슬라이드 (200ms)
 - 페이지 진입: 아래→위 페이드인 (300ms)
@@ -841,6 +845,7 @@ Font: 12px Semi
 ```
 
 ### 4.2 퀴즈 인터랙션
+
 ```
 - 선택지 탭: scale(0.95) → scale(1) 바운스 (150ms)
 - 정답: 초록색 하이라이트 + 체크 아이콘 + confetti
@@ -850,6 +855,7 @@ Font: 12px Semi
 ```
 
 ### 4.3 게이미피케이션
+
 ```
 - XP 획득: 숫자 카운트업 애니메이션
 - 레벨업: 풀스크린 축하 애니메이션 + 마스코트
@@ -858,6 +864,7 @@ Font: 12px Semi
 ```
 
 ### 4.4 AI 회화
+
 ```
 - AI 메시지: 타이핑 인디케이터 (점 3개 애니메이션)
 - 메시지 등장: 아래→위 페이드인 (stagger)
@@ -876,6 +883,7 @@ Desktop:         1024px~    ← 보조 (학습 통계 등에서 유용)
 ```
 
 ### 모바일 최적화
+
 - 터치 타겟 최소 44px
 - 하단 탭 네비게이션 고정
 - Safe Area 대응 (iPhone 노치)
@@ -887,6 +895,7 @@ Desktop:         1024px~    ← 보조 (학습 통계 등에서 유용)
 ## 6. MVP 화면 우선순위
 
 ### P0 (반드시 구현)
+
 1. 랜딩 페이지 + 로그인/회원가입
 2. 온보딩 (레벨/목표 설정)
 3. 홈 대시보드
@@ -899,11 +908,13 @@ Desktop:         1024px~    ← 보조 (학습 통계 등에서 유용)
 10. 구독/프리미엄 페이지
 
 ### P1 (가능하면 구현)
+
 11. 학습 통계 (기본)
 12. 오답 노트
 13. 단어장
 
 ### P2 (추후 구현)
+
 14. 학습 통계 (히트맵, 상세 차트)
 15. 업적/뱃지 화면
 16. 한자 학습 화면
@@ -913,12 +924,12 @@ Desktop:         1024px~    ← 보조 (학습 통계 등에서 유용)
 
 ## 7. 발해보카 대비 하루코토 차별점
 
-| 요소 | 발해보카 | 하루코토 |
-|------|---------|---------|
-| **테마** | 다크 (어두운 보라/검정) | 라이트 (벚꽃/크림) |
-| **마스코트** | 햄스터 | 벚꽃 여우 |
-| **핵심 기능** | 어휘 학습 위주 | JLPT + AI 회화 |
-| **AI** | AI 질문 답변 (보조) | AI 회화 (핵심 기능) |
-| **경쟁** | 리그 시스템 | MVP 미포함 (추후) |
-| **통계** | 기간별/학습별/어휘력 | 기간별/학습별/JLPT 진도 |
-| **수익 모델** | 전체 기능 구독 | 무료(퀴즈) + 프리미엄(AI) |
+| 요소          | 발해보카                | 하루코토                  |
+| ------------- | ----------------------- | ------------------------- |
+| **테마**      | 다크 (어두운 보라/검정) | 라이트 (벚꽃/크림)        |
+| **마스코트**  | 햄스터                  | 벚꽃 여우                 |
+| **핵심 기능** | 어휘 학습 위주          | JLPT + AI 회화            |
+| **AI**        | AI 질문 답변 (보조)     | AI 회화 (핵심 기능)       |
+| **경쟁**      | 리그 시스템             | MVP 미포함 (추후)         |
+| **통계**      | 기간별/학습별/어휘력    | 기간별/학습별/JLPT 진도   |
+| **수익 모델** | 전체 기능 구독          | 무료(퀴즈) + 프리미엄(AI) |

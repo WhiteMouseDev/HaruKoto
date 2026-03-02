@@ -1,16 +1,16 @@
-"use client"
+'use client';
 
-import { motion } from "framer-motion"
-import { Calendar, BookOpen, Zap, Flame } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { motion } from 'framer-motion';
+import { Calendar, BookOpen, Zap, Flame } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 type StatsOverviewProps = {
-  totalStudyDays: number
-  totalWordsStudied: number
-  experiencePoints: number
-  level: number
-  longestStreak: number
-}
+  totalStudyDays: number;
+  totalWordsStudied: number;
+  experiencePoints: number;
+  level: number;
+  longestStreak: number;
+};
 
 const container = {
   hidden: { opacity: 0 },
@@ -18,12 +18,12 @@ const container = {
     opacity: 1,
     transition: { staggerChildren: 0.05 },
   },
-}
+};
 
 const item = {
   hidden: { y: 10, opacity: 0 },
   show: { y: 0, opacity: 1 },
-}
+};
 
 export function StatsOverview({
   totalStudyDays,
@@ -35,30 +35,30 @@ export function StatsOverview({
   const stats = [
     {
       icon: Calendar,
-      label: "총 학습일",
+      label: '총 학습일',
       value: `${totalStudyDays}일`,
-      color: "text-hk-blue",
+      color: 'text-hk-blue',
     },
     {
       icon: BookOpen,
-      label: "학습 단어",
+      label: '학습 단어',
       value: `${totalWordsStudied}개`,
-      color: "text-primary",
+      color: 'text-primary',
     },
     {
       icon: Zap,
-      label: "총 XP",
+      label: '총 XP',
       value: `${experiencePoints}`,
       sub: `Lv.${level}`,
-      color: "text-hk-yellow",
+      color: 'text-hk-yellow',
     },
     {
       icon: Flame,
-      label: "최장 연속",
+      label: '최장 연속',
       value: `${longestStreak}일`,
-      color: "text-hk-red",
+      color: 'text-hk-red',
     },
-  ]
+  ];
 
   return (
     <Card>
@@ -73,15 +73,15 @@ export function StatsOverview({
             <motion.div
               key={stat.label}
               variants={item}
-              className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3"
+              className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3"
             >
               <stat.icon className={`size-5 ${stat.color}`} />
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {stat.label}
               </span>
               <span className="text-lg font-bold">{stat.value}</span>
               {stat.sub && (
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-muted-foreground text-[10px]">
                   {stat.sub}
                 </span>
               )}
@@ -90,5 +90,5 @@ export function StatsOverview({
         </motion.div>
       </CardContent>
     </Card>
-  )
+  );
 }

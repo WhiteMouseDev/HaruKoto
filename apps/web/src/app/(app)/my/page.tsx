@@ -1,104 +1,101 @@
-"use client"
+'use client';
 
-import { useEffect, useState, useCallback } from "react"
-import { motion } from "framer-motion"
-import { LogOut } from "lucide-react"
-import { ProfileHeader } from "@/components/features/my/profile-header"
-import { StatsOverview } from "@/components/features/my/stats-overview"
-import { SettingsMenu } from "@/components/features/my/settings-menu"
-import { Button } from "@/components/ui/button"
-import { apiFetch } from "@/lib/api"
-import { createClient } from "@/lib/supabase/client"
+import { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { LogOut } from 'lucide-react';
+import { ProfileHeader } from '@/components/features/my/profile-header';
+import { StatsOverview } from '@/components/features/my/stats-overview';
+import { SettingsMenu } from '@/components/features/my/settings-menu';
+import { Button } from '@/components/ui/button';
+import { apiFetch } from '@/lib/api';
+import { createClient } from '@/lib/supabase/client';
 
-type JlptLevel = "N5" | "N4" | "N3" | "N2" | "N1"
+type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
 type ProfileData = {
-  id: string
-  nickname: string
-  avatarUrl: string | null
-  jlptLevel: JlptLevel
-  dailyGoal: number
-  experiencePoints: number
-  level: number
-  streakCount: number
-  longestStreak: number
-  createdAt: string
-}
+  id: string;
+  nickname: string;
+  avatarUrl: string | null;
+  jlptLevel: JlptLevel;
+  dailyGoal: number;
+  experiencePoints: number;
+  level: number;
+  streakCount: number;
+  longestStreak: number;
+  createdAt: string;
+};
 
 type SummaryData = {
-  totalWordsStudied: number
-  totalQuizzesCompleted: number
-  totalXpEarned: number
-}
+  totalWordsStudied: number;
+  totalQuizzesCompleted: number;
+  totalXpEarned: number;
+};
 
 type ProfileApiResponse = {
-  profile: ProfileData
-  summary: SummaryData
-}
+  profile: ProfileData;
+  summary: SummaryData;
+};
 
 export default function MyPage() {
-  const [data, setData] = useState<ProfileApiResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [loggingOut, setLoggingOut] = useState(false)
+  const [data, setData] = useState<ProfileApiResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     try {
       const response = await apiFetch<ProfileApiResponse>(
-        "/api/v1/user/profile"
-      )
-      setData(response)
+        '/api/v1/user/profile'
+      );
+      setData(response);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchProfile()
-  }, [fetchProfile])
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleUpdate = useCallback(
     async (field: string, value: unknown) => {
-      await apiFetch("/api/v1/user/profile", {
-        method: "PATCH",
+      await apiFetch('/api/v1/user/profile', {
+        method: 'PATCH',
         body: JSON.stringify({ [field]: value }),
-      })
-      await fetchProfile()
+      });
+      await fetchProfile();
     },
     [fetchProfile]
-  )
+  );
 
   const handleLogout = async () => {
-    setLoggingOut(true)
+    setLoggingOut(true);
     try {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      window.location.href = "/login"
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      window.location.href = '/login';
     } catch {
-      setLoggingOut(false)
+      setLoggingOut(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex flex-col gap-4 p-4">
         <h1 className="pt-2 text-2xl font-bold">MY</h1>
         <div className="flex items-center gap-4">
-          <div className="size-16 animate-pulse rounded-full bg-muted" />
+          <div className="bg-muted size-16 animate-pulse rounded-full" />
           <div className="flex flex-col gap-2">
-            <div className="h-5 w-24 animate-pulse rounded bg-muted" />
-            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+            <div className="bg-muted h-5 w-24 animate-pulse rounded" />
+            <div className="bg-muted h-4 w-32 animate-pulse rounded" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-24 animate-pulse rounded-xl bg-muted"
-            />
+            <div key={i} className="bg-muted h-24 animate-pulse rounded-xl" />
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!data) {
@@ -109,10 +106,10 @@ export default function MyPage() {
           프로필을 불러올 수 없습니다. 다시 시도해주세요.
         </p>
       </div>
-    )
+    );
   }
 
-  const { profile, summary } = data
+  const { profile, summary } = data;
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -147,15 +144,15 @@ export default function MyPage() {
       >
         <Button
           variant="ghost"
-          className="w-full text-destructive hover:text-destructive"
+          className="text-destructive hover:text-destructive w-full"
           onClick={handleLogout}
           disabled={loggingOut}
         >
           <LogOut className="size-4" />
-          {loggingOut ? "로그아웃 중..." : "로그아웃"}
+          {loggingOut ? '로그아웃 중...' : '로그아웃'}
         </Button>
-        <span className="text-xs text-muted-foreground">v0.1.0</span>
+        <span className="text-muted-foreground text-xs">v0.1.0</span>
       </motion.div>
     </div>
-  )
+  );
 }

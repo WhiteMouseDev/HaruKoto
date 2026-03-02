@@ -1,50 +1,50 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useOnboardingStore } from "@/stores/onboarding"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useOnboardingStore } from '@/stores/onboarding';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 
 const LEVELS = [
   {
-    value: "N5" as const,
-    emoji: "🌱",
-    label: "완전 초보",
-    desc: "히라가나도 아직 몰라요",
+    value: 'N5' as const,
+    emoji: '🌱',
+    label: '완전 초보',
+    desc: '히라가나도 아직 몰라요',
   },
   {
-    value: "N4" as const,
-    emoji: "🌿",
-    label: "기초 (N5~N4)",
-    desc: "기본 인사/숫자 정도 알아요",
+    value: 'N4' as const,
+    emoji: '🌿',
+    label: '기초 (N5~N4)',
+    desc: '기본 인사/숫자 정도 알아요',
   },
   {
-    value: "N3" as const,
-    emoji: "🌳",
-    label: "중급 (N3)",
-    desc: "간단한 회화가 가능해요",
+    value: 'N3' as const,
+    emoji: '🌳',
+    label: '중급 (N3)',
+    desc: '간단한 회화가 가능해요',
   },
   {
-    value: "N2" as const,
-    emoji: "🌲",
-    label: "고급 (N2~N1)",
-    desc: "복잡한 문장도 이해해요",
+    value: 'N2' as const,
+    emoji: '🌲',
+    label: '고급 (N2~N1)',
+    desc: '복잡한 문장도 이해해요',
   },
-]
+];
 
 const GOALS = [
-  { value: "JLPT_N5" as const, emoji: "🎯", label: "JLPT N5 합격" },
-  { value: "JLPT_N4" as const, emoji: "🎯", label: "JLPT N4 합격" },
-  { value: "JLPT_N3" as const, emoji: "🎯", label: "JLPT N3 합격" },
-  { value: "TRAVEL" as const, emoji: "✈️", label: "여행 일본어" },
-  { value: "BUSINESS" as const, emoji: "💼", label: "비즈니스 일본어" },
-  { value: "HOBBY" as const, emoji: "🎌", label: "취미/문화" },
-]
+  { value: 'JLPT_N5' as const, emoji: '🎯', label: 'JLPT N5 합격' },
+  { value: 'JLPT_N4' as const, emoji: '🎯', label: 'JLPT N4 합격' },
+  { value: 'JLPT_N3' as const, emoji: '🎯', label: 'JLPT N3 합격' },
+  { value: 'TRAVEL' as const, emoji: '✈️', label: '여행 일본어' },
+  { value: 'BUSINESS' as const, emoji: '💼', label: '비즈니스 일본어' },
+  { value: 'HOBBY' as const, emoji: '🎌', label: '취미/문화' },
+];
 
 export default function OnboardingPage() {
-  const router = useRouter()
+  const router = useRouter();
   const {
     step,
     nickname,
@@ -54,45 +54,45 @@ export default function OnboardingPage() {
     setNickname,
     setJlptLevel,
     setGoal,
-  } = useOnboardingStore()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  } = useOnboardingStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   async function handleComplete() {
-    if (!nickname || !jlptLevel || !goal) return
-    setLoading(true)
-    setError("")
+    if (!nickname || !jlptLevel || !goal) return;
+    setLoading(true);
+    setError('');
 
     try {
-      const res = await fetch("/api/v1/auth/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/v1/auth/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nickname, jlptLevel, goal }),
-      })
+      });
 
       if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || "오류가 발생했습니다")
+        const data = await res.json();
+        throw new Error(data.error || '오류가 발생했습니다');
       }
 
-      router.push("/home")
-      router.refresh()
+      router.push('/home');
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "오류가 발생했습니다")
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b from-background to-secondary px-6">
+    <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Progress */}
       <div className="mb-8 flex items-center gap-2">
         {[1, 2, 3].map((s) => (
           <div
             key={s}
             className={`h-1.5 w-12 rounded-full transition-colors ${
-              s <= step ? "bg-primary" : "bg-border"
+              s <= step ? 'bg-primary' : 'bg-border'
             }`}
           />
         ))}
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
             <div className="text-center">
               <div className="mb-2 text-4xl">🦊</div>
               <h2 className="text-xl font-bold">반가워요!</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 어떻게 불러드릴까요?
               </p>
             </div>
@@ -134,9 +134,7 @@ export default function OnboardingPage() {
           <CardContent className="flex flex-col gap-4 p-6">
             <div className="text-center">
               <div className="mb-2 text-4xl">🦊</div>
-              <h2 className="text-xl font-bold">
-                일본어, 얼마나 알고 계세요?
-              </h2>
+              <h2 className="text-xl font-bold">일본어, 얼마나 알고 계세요?</h2>
             </div>
             <div className="flex flex-col gap-2.5">
               {LEVELS.map((level) => (
@@ -144,15 +142,15 @@ export default function OnboardingPage() {
                   key={level.value}
                   className={`flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-all ${
                     jlptLevel === level.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50"
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
                   }`}
                   onClick={() => setJlptLevel(level.value)}
                 >
                   <span className="text-2xl">{level.emoji}</span>
                   <div>
                     <p className="font-semibold">{level.label}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {level.desc}
                     </p>
                   </div>
@@ -193,8 +191,8 @@ export default function OnboardingPage() {
                   key={g.value}
                   className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-4 transition-all ${
                     goal === g.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50"
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
                   }`}
                   onClick={() => setGoal(g.value)}
                 >
@@ -205,7 +203,7 @@ export default function OnboardingPage() {
             </div>
 
             {error && (
-              <p className="text-center text-sm text-destructive">{error}</p>
+              <p className="text-destructive text-center text-sm">{error}</p>
             )}
 
             <div className="flex gap-2">
@@ -221,12 +219,12 @@ export default function OnboardingPage() {
                 disabled={!goal || loading}
                 onClick={handleComplete}
               >
-                {loading ? "설정 중..." : "시작하기 🌸"}
+                {loading ? '설정 중...' : '시작하기 🌸'}
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
     </div>
-  )
+  );
 }

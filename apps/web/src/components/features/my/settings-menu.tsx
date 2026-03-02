@@ -1,68 +1,61 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useTheme } from "next-themes"
-import { motion } from "framer-motion"
-import {
-  ChevronRight,
-  BookOpen,
-  Target,
-  Moon,
-  Sun,
-  Bell,
-} from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
+import { useState } from 'react';
+import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
+import { ChevronRight, BookOpen, Target, Moon, Sun, Bell } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetDescription,
-} from "@/components/ui/sheet"
+} from '@/components/ui/sheet';
 
-type JlptLevel = "N5" | "N4" | "N3" | "N2" | "N1"
+type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
 type SettingsMenuProps = {
-  jlptLevel: string
-  dailyGoal: number
-  onUpdate: (field: string, value: unknown) => Promise<void>
-}
+  jlptLevel: string;
+  dailyGoal: number;
+  onUpdate: (field: string, value: unknown) => Promise<void>;
+};
 
-const JLPT_LEVELS: JlptLevel[] = ["N5", "N4", "N3", "N2", "N1"]
-const DAILY_GOALS = [5, 10, 15, 20]
+const JLPT_LEVELS: JlptLevel[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
+const DAILY_GOALS = [5, 10, 15, 20];
 
 export function SettingsMenu({
   jlptLevel,
   dailyGoal,
   onUpdate,
 }: SettingsMenuProps) {
-  const { theme, setTheme } = useTheme()
-  const [notifications, setNotifications] = useState(true)
-  const [levelSheetOpen, setLevelSheetOpen] = useState(false)
-  const [goalSheetOpen, setGoalSheetOpen] = useState(false)
-  const [updating, setUpdating] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [notifications, setNotifications] = useState(true);
+  const [levelSheetOpen, setLevelSheetOpen] = useState(false);
+  const [goalSheetOpen, setGoalSheetOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const handleLevelChange = async (level: JlptLevel) => {
-    setUpdating(true)
+    setUpdating(true);
     try {
-      await onUpdate("jlptLevel", level)
-      setLevelSheetOpen(false)
+      await onUpdate('jlptLevel', level);
+      setLevelSheetOpen(false);
     } finally {
-      setUpdating(false)
+      setUpdating(false);
     }
-  }
+  };
 
   const handleGoalChange = async (goal: number) => {
-    setUpdating(true)
+    setUpdating(true);
     try {
-      await onUpdate("dailyGoal", goal)
-      setGoalSheetOpen(false)
+      await onUpdate('dailyGoal', goal);
+      setGoalSheetOpen(false);
     } finally {
-      setUpdating(false)
+      setUpdating(false);
     }
-  }
+  };
 
   return (
     <>
@@ -75,19 +68,19 @@ export function SettingsMenu({
           <CardContent className="flex flex-col p-0">
             {/* JLPT Level */}
             <button
-              className="flex items-center justify-between px-4 py-3.5 text-left transition-colors hover:bg-accent"
+              className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
               onClick={() => setLevelSheetOpen(true)}
               disabled={updating}
             >
               <div className="flex items-center gap-3">
-                <BookOpen className="size-5 text-primary" />
+                <BookOpen className="text-primary size-5" />
                 <span className="text-sm font-medium">JLPT 레벨</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   {jlptLevel}
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground" />
+                <ChevronRight className="text-muted-foreground size-4" />
               </div>
             </button>
 
@@ -95,19 +88,19 @@ export function SettingsMenu({
 
             {/* Daily Goal */}
             <button
-              className="flex items-center justify-between px-4 py-3.5 text-left transition-colors hover:bg-accent"
+              className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
               onClick={() => setGoalSheetOpen(true)}
               disabled={updating}
             >
               <div className="flex items-center gap-3">
-                <Target className="size-5 text-hk-blue" />
+                <Target className="text-hk-blue size-5" />
                 <span className="text-sm font-medium">일일 목표</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   {dailyGoal}문제
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground" />
+                <ChevronRight className="text-muted-foreground size-4" />
               </div>
             </button>
 
@@ -115,22 +108,22 @@ export function SettingsMenu({
 
             {/* Theme Toggle */}
             <button
-              className="flex items-center justify-between px-4 py-3.5 text-left transition-colors hover:bg-accent"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               <div className="flex items-center gap-3">
-                {theme === "dark" ? (
-                  <Moon className="size-5 text-hk-yellow" />
+                {theme === 'dark' ? (
+                  <Moon className="text-hk-yellow size-5" />
                 ) : (
-                  <Sun className="size-5 text-hk-yellow" />
+                  <Sun className="text-hk-yellow size-5" />
                 )}
                 <span className="text-sm font-medium">테마</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-muted-foreground">
-                  {theme === "dark" ? "다크" : "라이트"}
+                <span className="text-muted-foreground text-sm">
+                  {theme === 'dark' ? '다크' : '라이트'}
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground" />
+                <ChevronRight className="text-muted-foreground size-4" />
               </div>
             </button>
 
@@ -139,7 +132,7 @@ export function SettingsMenu({
             {/* Notifications */}
             <div className="flex items-center justify-between px-4 py-3.5">
               <div className="flex items-center gap-3">
-                <Bell className="size-5 text-hk-red" />
+                <Bell className="text-hk-red size-5" />
                 <span className="text-sm font-medium">알림 설정</span>
               </div>
               <Switch
@@ -164,14 +157,14 @@ export function SettingsMenu({
                 key={level}
                 className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
                   level === jlptLevel
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border hover:bg-accent"
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:bg-accent'
                 }`}
                 disabled={updating}
                 onClick={() => handleLevelChange(level)}
               >
                 {level}
-                {level === jlptLevel && " (현재)"}
+                {level === jlptLevel && ' (현재)'}
               </button>
             ))}
           </div>
@@ -183,9 +176,7 @@ export function SettingsMenu({
         <SheetContent side="bottom" className="rounded-t-2xl">
           <SheetHeader>
             <SheetTitle>일일 목표 변경</SheetTitle>
-            <SheetDescription>
-              하루에 풀 문제 수를 선택하세요.
-            </SheetDescription>
+            <SheetDescription>하루에 풀 문제 수를 선택하세요.</SheetDescription>
           </SheetHeader>
           <div className="flex flex-col gap-2 px-4 pb-6">
             {DAILY_GOALS.map((goal) => (
@@ -193,19 +184,19 @@ export function SettingsMenu({
                 key={goal}
                 className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
                   goal === dailyGoal
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border hover:bg-accent"
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:bg-accent'
                 }`}
                 disabled={updating}
                 onClick={() => handleGoalChange(goal)}
               >
                 {goal}문제
-                {goal === dailyGoal && " (현재)"}
+                {goal === dailyGoal && ' (현재)'}
               </button>
             ))}
           </div>
         </SheetContent>
       </Sheet>
     </>
-  )
+  );
 }

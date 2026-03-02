@@ -10,13 +10,13 @@
 > Supabase Auth를 직접 사용하므로 커스텀 API 최소화.
 > 아래는 Supabase Auth Client SDK로 처리하고, 서버 사이드 검증은 middleware(proxy.ts)에서 수행.
 
-| 기능 | 방식 | 비고 |
-|------|------|------|
-| 소셜 로그인 | `supabase.auth.signInWithOAuth()` | Google, Kakao, Apple |
-| 이메일 회원가입 | `supabase.auth.signUp()` | 이메일 인증 포함 |
-| 이메일 로그인 | `supabase.auth.signInWithPassword()` | |
-| 로그아웃 | `supabase.auth.signOut()` | |
-| 세션 확인 | `supabase.auth.getSession()` | |
+| 기능            | 방식                                 | 비고                 |
+| --------------- | ------------------------------------ | -------------------- |
+| 소셜 로그인     | `supabase.auth.signInWithOAuth()`    | Google, Kakao, Apple |
+| 이메일 회원가입 | `supabase.auth.signUp()`             | 이메일 인증 포함     |
+| 이메일 로그인   | `supabase.auth.signInWithPassword()` |                      |
+| 로그아웃        | `supabase.auth.signOut()`            |                      |
+| 세션 확인       | `supabase.auth.getSession()`         |                      |
 
 ### 커스텀 인증 관련 API
 
@@ -621,11 +621,13 @@ POST /api/v1/subscription/cancel
 ## 10. 공통 사항
 
 ### 10.1 인증 방식
+
 - Supabase Auth JWT 토큰 (Authorization: Bearer 헤더)
 - `proxy.ts`에서 토큰 검증 및 사용자 정보 주입
 - 프리미엄 API는 추가로 구독 상태 검증
 
 ### 10.2 에러 응답 형식
+
 ```json
 {
   "error": {
@@ -637,22 +639,25 @@ POST /api/v1/subscription/cancel
 ```
 
 ### 10.3 에러 코드
-| 코드 | HTTP | 설명 |
-|------|------|------|
-| `UNAUTHORIZED` | 401 | 로그인 필요 |
-| `FORBIDDEN` | 403 | 권한 없음 (프리미엄 필요 등) |
-| `NOT_FOUND` | 404 | 리소스 없음 |
-| `VALIDATION_ERROR` | 400 | 입력 검증 실패 |
-| `RATE_LIMITED` | 429 | API 호출 제한 초과 |
-| `INTERNAL_ERROR` | 500 | 서버 에러 |
+
+| 코드               | HTTP | 설명                         |
+| ------------------ | ---- | ---------------------------- |
+| `UNAUTHORIZED`     | 401  | 로그인 필요                  |
+| `FORBIDDEN`        | 403  | 권한 없음 (프리미엄 필요 등) |
+| `NOT_FOUND`        | 404  | 리소스 없음                  |
+| `VALIDATION_ERROR` | 400  | 입력 검증 실패               |
+| `RATE_LIMITED`     | 429  | API 호출 제한 초과           |
+| `INTERNAL_ERROR`   | 500  | 서버 에러                    |
 
 ### 10.4 Rate Limiting
+
 | 사용자 유형 | 일반 API | AI 회화 API |
-|------------|---------|------------|
-| 무료 | 100회/분 | 차단 |
-| 프리미엄 | 200회/분 | 30회/일 |
+| ----------- | -------- | ----------- |
+| 무료        | 100회/분 | 차단        |
+| 프리미엄    | 200회/분 | 30회/일     |
 
 ### 10.5 페이지네이션
+
 ```json
 {
   "pagination": {

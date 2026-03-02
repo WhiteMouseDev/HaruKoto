@@ -1,25 +1,25 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { prisma } from "@harukoto/database"
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@harukoto/database';
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    const { sessionId } = body
+    const body = await request.json();
+    const { sessionId } = body;
 
     if (!sessionId) {
       return NextResponse.json(
-        { error: "sessionId is required" },
+        { error: 'sessionId is required' },
         { status: 400 }
-      )
+      );
     }
 
     // Complete session
@@ -29,11 +29,11 @@ export async function POST(request: Request) {
       include: {
         answers: true,
       },
-    })
+    });
 
     // Update daily progress
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     await prisma.dailyProgress.upsert({
       where: {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         wordsStudied: session.totalQuestions,
         xpEarned: session.correctCount * 10,
       },
-    })
+    });
 
     // Update user XP
     await prisma.user.update({
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
         experiencePoints: { increment: session.correctCount * 10 },
         lastStudyDate: new Date(),
       },
-    })
+    });
 
     return NextResponse.json({
       sessionId: session.id,
@@ -74,12 +74,12 @@ export async function POST(request: Request) {
         (session.correctCount / session.totalQuestions) * 100
       ),
       xpEarned: session.correctCount * 10,
-    })
+    });
   } catch (err) {
-    console.error("Quiz complete error:", err)
+    console.error('Quiz complete error:', err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

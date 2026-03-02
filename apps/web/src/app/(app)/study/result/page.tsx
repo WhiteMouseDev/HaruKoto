@@ -1,36 +1,36 @@
-"use client"
+'use client';
 
-import { Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Trophy, Zap, Target, RotateCcw, Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Trophy, Zap, Target, RotateCcw, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function QuizResultPage() {
   return (
     <Suspense>
       <ResultContent />
     </Suspense>
-  )
+  );
 }
 
 function ResultContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const correct = parseInt(searchParams.get("correct") || "0")
-  const total = parseInt(searchParams.get("total") || "0")
-  const xp = parseInt(searchParams.get("xp") || "0")
-  const accuracy = parseInt(searchParams.get("accuracy") || "0")
+  const correct = parseInt(searchParams.get('correct') || '0');
+  const total = parseInt(searchParams.get('total') || '0');
+  const xp = parseInt(searchParams.get('xp') || '0');
+  const accuracy = parseInt(searchParams.get('accuracy') || '0');
 
-  const emoji = accuracy >= 80 ? "🎉" : accuracy >= 50 ? "👍" : "💪"
+  const emoji = accuracy >= 80 ? '🎉' : accuracy >= 50 ? '👍' : '💪';
   const message =
     accuracy >= 80
-      ? "훌륭해요!"
+      ? '훌륭해요!'
       : accuracy >= 50
-        ? "잘 하셨어요!"
-        : "다음엔 더 잘할 수 있어요!"
+        ? '잘 하셨어요!'
+        : '다음엔 더 잘할 수 있어요!';
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
@@ -39,7 +39,7 @@ function ResultContent() {
         className="flex flex-col items-center gap-2"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, type: "spring" }}
+        transition={{ duration: 0.5, type: 'spring' }}
       >
         <span className="text-6xl">{emoji}</span>
         <h1 className="text-2xl font-bold">{message}</h1>
@@ -56,7 +56,10 @@ function ResultContent() {
           <CardContent className="flex flex-col items-center gap-5 p-6">
             {/* Accuracy Circle */}
             <div className="relative flex size-28 items-center justify-center">
-              <svg className="absolute size-full -rotate-90" viewBox="0 0 100 100">
+              <svg
+                className="absolute size-full -rotate-90"
+                viewBox="0 0 100 100"
+              >
                 <circle
                   cx="50"
                   cy="50"
@@ -78,40 +81,35 @@ function ResultContent() {
                   strokeDasharray={`${2 * Math.PI * 42}`}
                   initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
                   animate={{
-                    strokeDashoffset:
-                      2 * Math.PI * 42 * (1 - accuracy / 100),
+                    strokeDashoffset: 2 * Math.PI * 42 * (1 - accuracy / 100),
                   }}
-                  transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                  transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
                 />
               </svg>
               <div className="flex flex-col items-center">
                 <span className="text-2xl font-bold">{accuracy}%</span>
-                <span className="text-xs text-muted-foreground">정답률</span>
+                <span className="text-muted-foreground text-xs">정답률</span>
               </div>
             </div>
 
             {/* Stats */}
             <div className="grid w-full grid-cols-3 gap-3">
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-                <Target className="size-4 text-primary" />
+              <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+                <Target className="text-primary size-4" />
                 <span className="text-lg font-bold">
                   {correct}/{total}
                 </span>
-                <span className="text-[10px] text-muted-foreground">
-                  정답
-                </span>
+                <span className="text-muted-foreground text-[10px]">정답</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-                <Zap className="size-4 text-hk-yellow" />
+              <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+                <Zap className="text-hk-yellow size-4" />
                 <span className="text-lg font-bold">+{xp}</span>
-                <span className="text-[10px] text-muted-foreground">XP</span>
+                <span className="text-muted-foreground text-[10px]">XP</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-                <Trophy className="size-4 text-hk-blue" />
+              <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+                <Trophy className="text-hk-blue size-4" />
                 <span className="text-lg font-bold">{total - correct}</span>
-                <span className="text-[10px] text-muted-foreground">
-                  오답
-                </span>
+                <span className="text-muted-foreground text-[10px]">오답</span>
               </div>
             </div>
           </CardContent>
@@ -129,7 +127,7 @@ function ResultContent() {
           <Button
             variant="outline"
             className="h-12 rounded-xl text-base"
-            onClick={() => router.replace("/study")}
+            onClick={() => router.replace('/study')}
           >
             <RotateCcw className="mr-2 size-4" />
             오답 복습하기
@@ -137,20 +135,19 @@ function ResultContent() {
         )}
         <Button
           className="h-12 rounded-xl text-base"
-          onClick={() => router.replace("/study")}
+          onClick={() => router.replace('/study')}
         >
-          <RotateCcw className="mr-2 size-4" />
-          한 번 더 도전
+          <RotateCcw className="mr-2 size-4" />한 번 더 도전
         </Button>
         <Button
           variant="ghost"
           className="h-12 rounded-xl text-base"
-          onClick={() => router.replace("/home")}
+          onClick={() => router.replace('/home')}
         >
           <Home className="mr-2 size-4" />
           홈으로 돌아가기
         </Button>
       </motion.div>
     </div>
-  )
+  );
 }

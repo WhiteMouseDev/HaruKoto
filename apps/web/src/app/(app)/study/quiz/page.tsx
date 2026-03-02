@@ -1,27 +1,27 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useCallback, useRef, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, Lightbulb } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface QuizOption {
-  id: string
-  text: string
+  id: string;
+  text: string;
 }
 
 interface QuizQuestion {
-  questionId: string
-  questionText: string
-  questionSubText: string | null
-  hint: string | null
-  options: QuizOption[]
-  correctOptionId: string
+  questionId: string;
+  questionText: string;
+  questionSubText: string | null;
+  hint: string | null;
+  options: QuizOption[];
+  correctOptionId: string;
 }
 
-type AnswerState = "idle" | "correct" | "incorrect"
+type AnswerState = 'idle' | 'correct' | 'incorrect';
 
 export default function QuizPage() {
   return (
@@ -37,79 +37,79 @@ export default function QuizPage() {
     >
       <QuizContent />
     </Suspense>
-  )
+  );
 }
 
 function QuizContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const quizType = searchParams.get("type") || "VOCABULARY"
-  const jlptLevel = searchParams.get("level") || "N5"
-  const count = parseInt(searchParams.get("count") || "10")
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const quizType = searchParams.get('type') || 'VOCABULARY';
+  const jlptLevel = searchParams.get('level') || 'N5';
+  const count = parseInt(searchParams.get('count') || '10');
 
-  const [sessionId, setSessionId] = useState<string | null>(null)
-  const [questions, setQuestions] = useState<QuizQuestion[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const [answerState, setAnswerState] = useState<AnswerState>("idle")
-  const [showHint, setShowHint] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [results, setResults] = useState<boolean[]>([])
-  const timerRef = useRef<number>(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [answerState, setAnswerState] = useState<AnswerState>('idle');
+  const [showHint, setShowHint] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState<boolean[]>([]);
+  const timerRef = useRef<number>(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Start quiz
   useEffect(() => {
     async function startQuiz() {
       try {
-        const res = await fetch("/api/v1/quiz/start", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch('/api/v1/quiz/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ quizType, jlptLevel, count }),
-        })
-        const data = await res.json()
+        });
+        const data = await res.json();
         if (res.ok) {
-          setSessionId(data.sessionId)
-          setQuestions(data.questions)
+          setSessionId(data.sessionId);
+          setQuestions(data.questions);
         }
       } catch (err) {
-        console.error("Failed to start quiz:", err)
+        console.error('Failed to start quiz:', err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    startQuiz()
-  }, [quizType, jlptLevel, count])
+    startQuiz();
+  }, [quizType, jlptLevel, count]);
 
   // Timer
   useEffect(() => {
-    if (!loading && answerState === "idle") {
-      timerRef.current = 0
+    if (!loading && answerState === 'idle') {
+      timerRef.current = 0;
       intervalRef.current = setInterval(() => {
-        timerRef.current += 1
-      }, 1000)
+        timerRef.current += 1;
+      }, 1000);
     }
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [currentIndex, loading, answerState])
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [currentIndex, loading, answerState]);
 
   const handleAnswer = useCallback(
     async (optionId: string) => {
-      if (answerState !== "idle" || !sessionId) return
+      if (answerState !== 'idle' || !sessionId) return;
 
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      setSelectedOption(optionId)
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      setSelectedOption(optionId);
 
-      const question = questions[currentIndex]
-      const isCorrect = optionId === question.correctOptionId
-      setAnswerState(isCorrect ? "correct" : "incorrect")
-      setResults((prev) => [...prev, isCorrect])
+      const question = questions[currentIndex];
+      const isCorrect = optionId === question.correctOptionId;
+      setAnswerState(isCorrect ? 'correct' : 'incorrect');
+      setResults((prev) => [...prev, isCorrect]);
 
       // Submit answer
-      await fetch("/api/v1/quiz/answer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch('/api/v1/quiz/answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,
           questionId: question.questionId,
@@ -118,30 +118,30 @@ function QuizContent() {
           timeSpentSeconds: timerRef.current,
           questionType: quizType,
         }),
-      })
+      });
     },
     [answerState, sessionId, questions, currentIndex, quizType]
-  )
+  );
 
   async function handleNext() {
     if (currentIndex + 1 >= questions.length) {
       // Complete quiz
-      const res = await fetch("/api/v1/quiz/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/v1/quiz/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       router.replace(
         `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}`
-      )
-      return
+      );
+      return;
     }
 
-    setCurrentIndex((prev) => prev + 1)
-    setSelectedOption(null)
-    setAnswerState("idle")
-    setShowHint(false)
+    setCurrentIndex((prev) => prev + 1);
+    setSelectedOption(null);
+    setAnswerState('idle');
+    setShowHint(false);
   }
 
   if (loading) {
@@ -152,22 +152,24 @@ function QuizContent() {
           <p className="text-muted-foreground">퀴즈를 준비하고 있어요...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (questions.length === 0) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
-        <p className="text-muted-foreground">퀴즈 데이터를 불러올 수 없습니다.</p>
+        <p className="text-muted-foreground">
+          퀴즈 데이터를 불러올 수 없습니다.
+        </p>
         <Button variant="outline" onClick={() => router.back()}>
           돌아가기
         </Button>
       </div>
-    )
+    );
   }
 
-  const question = questions[currentIndex]
-  const progress = ((currentIndex + 1) / questions.length) * 100
+  const question = questions[currentIndex];
+  const progress = ((currentIndex + 1) / questions.length) * 100;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -177,17 +179,17 @@ function QuizContent() {
           <ArrowLeft className="size-5" />
         </button>
         <span className="flex-1 text-center text-sm font-medium">
-          {jlptLevel} {quizType === "VOCABULARY" ? "단어" : "문법"} 퀴즈
+          {jlptLevel} {quizType === 'VOCABULARY' ? '단어' : '문법'} 퀴즈
         </span>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-muted-foreground text-sm">
           {currentIndex + 1}/{questions.length}
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="mx-4 h-1.5 overflow-hidden rounded-full bg-secondary">
+      <div className="bg-secondary mx-4 h-1.5 overflow-hidden rounded-full">
         <motion.div
-          className="h-full rounded-full bg-primary"
+          className="bg-primary h-full rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}
@@ -204,14 +206,16 @@ function QuizContent() {
             exit={{ opacity: 0, y: -20 }}
             className="flex flex-col items-center gap-2"
           >
-            <p className="font-jp text-4xl font-bold">{question.questionText}</p>
+            <p className="font-jp text-4xl font-bold">
+              {question.questionText}
+            </p>
             {question.questionSubText && (
-              <p className="font-jp text-lg text-muted-foreground">
+              <p className="font-jp text-muted-foreground text-lg">
                 {question.questionSubText}
               </p>
             )}
-            <p className="mt-2 text-sm text-muted-foreground">
-              이 {quizType === "VOCABULARY" ? "단어" : "문법"}의 뜻은?
+            <p className="text-muted-foreground mt-2 text-sm">
+              이 {quizType === 'VOCABULARY' ? '단어' : '문법'}의 뜻은?
             </p>
           </motion.div>
         </AnimatePresence>
@@ -220,47 +224,47 @@ function QuizContent() {
       {/* Options */}
       <div className="flex flex-col gap-2.5 px-4 pb-4">
         {question.options.map((option, i) => {
-          const isSelected = selectedOption === option.id
-          const isCorrectOption = option.id === question.correctOptionId
-          let optionStyle = "border-border"
+          const isSelected = selectedOption === option.id;
+          const isCorrectOption = option.id === question.correctOptionId;
+          let optionStyle = 'border-border';
 
-          if (answerState !== "idle") {
+          if (answerState !== 'idle') {
             if (isCorrectOption) {
-              optionStyle = "border-hk-success bg-hk-success/10"
+              optionStyle = 'border-hk-success bg-hk-success/10';
             } else if (isSelected && !isCorrectOption) {
-              optionStyle = "border-hk-error bg-hk-error/10"
+              optionStyle = 'border-hk-error bg-hk-error/10';
             } else {
-              optionStyle = "border-border opacity-40"
+              optionStyle = 'border-border opacity-40';
             }
           } else if (isSelected) {
-            optionStyle = "border-primary bg-primary/5"
+            optionStyle = 'border-primary bg-primary/5';
           }
 
           return (
             <motion.button
               key={option.id}
               className={cn(
-                "flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all",
+                'flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all',
                 optionStyle
               )}
               onClick={() => handleAnswer(option.id)}
-              disabled={answerState !== "idle"}
-              whileTap={answerState === "idle" ? { scale: 0.98 } : undefined}
+              disabled={answerState !== 'idle'}
+              whileTap={answerState === 'idle' ? { scale: 0.98 } : undefined}
             >
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold">
+              <span className="bg-secondary flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold">
                 {i + 1}
               </span>
               <span className="text-sm font-medium">{option.text}</span>
             </motion.button>
-          )
+          );
         })}
       </div>
 
       {/* Hint */}
-      {answerState === "idle" && question.hint && (
+      {answerState === 'idle' && question.hint && (
         <div className="px-4 pb-4">
           <button
-            className="mx-auto flex items-center gap-1.5 text-sm text-muted-foreground"
+            className="text-muted-foreground mx-auto flex items-center gap-1.5 text-sm"
             onClick={() => setShowHint(!showHint)}
           >
             <Lightbulb className="size-4" />
@@ -270,9 +274,9 @@ function QuizContent() {
             {showHint && (
               <motion.p
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
+                animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-2 text-center font-jp text-sm text-muted-foreground"
+                className="font-jp text-muted-foreground mt-2 text-center text-sm"
               >
                 {question.hint}
               </motion.p>
@@ -283,32 +287,32 @@ function QuizContent() {
 
       {/* Answer Feedback */}
       <AnimatePresence>
-        {answerState !== "idle" && (
+        {answerState !== 'idle' && (
           <motion.div
-            initial={{ y: "100%" }}
+            initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              "rounded-t-2xl border-t p-5",
-              answerState === "correct"
-                ? "bg-hk-success/5 border-hk-success/30"
-                : "bg-hk-error/5 border-hk-error/30"
+              'rounded-t-2xl border-t p-5',
+              answerState === 'correct'
+                ? 'bg-hk-success/5 border-hk-success/30'
+                : 'bg-hk-error/5 border-hk-error/30'
             )}
           >
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">
-                  {answerState === "correct" ? "✅" : "❌"}
+                  {answerState === 'correct' ? '✅' : '❌'}
                 </span>
                 <span className="text-lg font-bold">
-                  {answerState === "correct" ? "정답이에요!" : "아쉬워요!"}
+                  {answerState === 'correct' ? '정답이에요!' : '아쉬워요!'}
                 </span>
               </div>
 
-              {answerState === "incorrect" && (
-                <p className="text-sm text-muted-foreground">
-                  정답:{" "}
+              {answerState === 'incorrect' && (
+                <p className="text-muted-foreground text-sm">
+                  정답:{' '}
                   {
                     question.options.find(
                       (o) => o.id === question.correctOptionId
@@ -318,7 +322,7 @@ function QuizContent() {
               )}
 
               {question.hint && (
-                <p className="font-jp text-sm text-muted-foreground">
+                <p className="font-jp text-muted-foreground text-sm">
                   {question.hint}
                 </p>
               )}
@@ -328,13 +332,13 @@ function QuizContent() {
                 onClick={handleNext}
               >
                 {currentIndex + 1 >= questions.length
-                  ? "결과 보기"
-                  : "다음 문제 →"}
+                  ? '결과 보기'
+                  : '다음 문제 →'}
               </Button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -1,33 +1,33 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { prisma } from "@harukoto/database"
-import { calculateSM2 } from "@/lib/spaced-repetition"
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@harukoto/database';
+import { calculateSM2 } from '@/lib/spaced-repetition';
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
+    const body = await request.json();
     const {
       sessionId,
       questionId,
       selectedOptionId,
       isCorrect,
       timeSpentSeconds = 0,
-      questionType = "VOCABULARY",
-    } = body
+      questionType = 'VOCABULARY',
+    } = body;
 
     if (!sessionId || !questionId || !selectedOptionId) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: 'Missing required fields' },
         { status: 400 }
-      )
+      );
     }
 
     // Save answer
@@ -40,18 +40,18 @@ export async function POST(request: Request) {
         isCorrect,
         timeSpentSeconds,
       },
-    })
+    });
 
     // Update correct count on session
     if (isCorrect) {
       await prisma.quizSession.update({
         where: { id: sessionId },
         data: { correctCount: { increment: 1 } },
-      })
+      });
     }
 
     // Update spaced repetition progress
-    if (questionType === "VOCABULARY") {
+    if (questionType === 'VOCABULARY') {
       const existing = await prisma.userVocabProgress.findUnique({
         where: {
           userId_vocabularyId: {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
             vocabularyId: questionId,
           },
         },
-      })
+      });
 
       const sm2Result = calculateSM2({
         easeFactor: existing?.easeFactor ?? 2.5,
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         streak: existing?.streak ?? 0,
         isCorrect,
         timeSpentSeconds,
-      })
+      });
 
       await prisma.userVocabProgress.upsert({
         where: {
@@ -97,8 +97,8 @@ export async function POST(request: Request) {
           nextReviewAt: sm2Result.nextReviewAt,
           lastReviewedAt: new Date(),
         },
-      })
-    } else if (questionType === "GRAMMAR") {
+      });
+    } else if (questionType === 'GRAMMAR') {
       const existing = await prisma.userGrammarProgress.findUnique({
         where: {
           userId_grammarId: {
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
             grammarId: questionId,
           },
         },
-      })
+      });
 
       const sm2Result = calculateSM2({
         easeFactor: existing?.easeFactor ?? 2.5,
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         streak: existing?.streak ?? 0,
         isCorrect,
         timeSpentSeconds,
-      })
+      });
 
       await prisma.userGrammarProgress.upsert({
         where: {
@@ -144,15 +144,15 @@ export async function POST(request: Request) {
           nextReviewAt: sm2Result.nextReviewAt,
           lastReviewedAt: new Date(),
         },
-      })
+      });
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Quiz answer error:", err)
+    console.error('Quiz answer error:', err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

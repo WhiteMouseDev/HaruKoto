@@ -1,31 +1,31 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { prisma } from "@harukoto/database"
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@harukoto/database';
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    const { quizType, jlptLevel, count = 10 } = body
+    const body = await request.json();
+    const { quizType, jlptLevel, count = 10 } = body;
 
     if (!quizType || !jlptLevel) {
       return NextResponse.json(
-        { error: "quizType and jlptLevel are required" },
+        { error: 'quizType and jlptLevel are required' },
         { status: 400 }
-      )
+      );
     }
 
     // Fetch words that need review first, then new words
-    let questions: any[] = []
+    let questions: any[] = [];
 
-    if (quizType === "VOCABULARY") {
+    if (quizType === 'VOCABULARY') {
       // 1. Get words due for review (spaced repetition)
       const reviewWords = await prisma.vocabulary.findMany({
         where: {
@@ -39,51 +39,51 @@ export async function POST(request: Request) {
           },
         },
         take: Math.ceil(count * 0.6),
-        orderBy: { userProgress: { _count: "asc" } },
-      })
+        orderBy: { userProgress: { _count: 'asc' } },
+      });
 
       // 2. Get new words (not yet studied)
-      const remaining = count - reviewWords.length
+      const remaining = count - reviewWords.length;
       const newWords = await prisma.vocabulary.findMany({
         where: {
           jlptLevel,
           userProgress: { none: { userId: user.id } },
         },
         take: remaining,
-        orderBy: { order: "asc" },
-      })
+        orderBy: { order: 'asc' },
+      });
 
       // 3. If still not enough, get random words
-      const allSelected = [...reviewWords, ...newWords]
+      const allSelected = [...reviewWords, ...newWords];
       if (allSelected.length < count) {
-        const existingIds = allSelected.map((w) => w.id)
+        const existingIds = allSelected.map((w) => w.id);
         const extraWords = await prisma.vocabulary.findMany({
           where: {
             jlptLevel,
             id: { notIn: existingIds },
           },
           take: count - allSelected.length,
-        })
-        allSelected.push(...extraWords)
+        });
+        allSelected.push(...extraWords);
       }
 
       // Generate 4-choice questions
       const allVocab = await prisma.vocabulary.findMany({
         where: { jlptLevel },
         select: { id: true, meaningKo: true },
-      })
+      });
 
       questions = allSelected.map((word) => {
         // Pick 3 wrong answers from same level
         const wrongOptions = allVocab
           .filter((v) => v.id !== word.id)
           .sort(() => Math.random() - 0.5)
-          .slice(0, 3)
+          .slice(0, 3);
 
         const options = [
           { id: word.id, text: word.meaningKo },
           ...wrongOptions.map((w) => ({ id: w.id, text: w.meaningKo })),
-        ].sort(() => Math.random() - 0.5)
+        ].sort(() => Math.random() - 0.5);
 
         return {
           questionId: word.id,
@@ -92,30 +92,30 @@ export async function POST(request: Request) {
           hint: word.exampleSentence,
           options,
           correctOptionId: word.id,
-        }
-      })
-    } else if (quizType === "GRAMMAR") {
+        };
+      });
+    } else if (quizType === 'GRAMMAR') {
       const grammars = await prisma.grammar.findMany({
         where: { jlptLevel },
         take: count,
-        orderBy: { order: "asc" },
-      })
+        orderBy: { order: 'asc' },
+      });
 
       const allGrammar = await prisma.grammar.findMany({
         where: { jlptLevel },
         select: { id: true, meaningKo: true },
-      })
+      });
 
       questions = grammars.map((grammar) => {
         const wrongOptions = allGrammar
           .filter((g) => g.id !== grammar.id)
           .sort(() => Math.random() - 0.5)
-          .slice(0, 3)
+          .slice(0, 3);
 
         const options = [
           { id: grammar.id, text: grammar.meaningKo },
           ...wrongOptions.map((g) => ({ id: g.id, text: g.meaningKo })),
-        ].sort(() => Math.random() - 0.5)
+        ].sort(() => Math.random() - 0.5);
 
         return {
           questionId: grammar.id,
@@ -124,8 +124,8 @@ export async function POST(request: Request) {
           hint: grammar.explanation,
           options,
           correctOptionId: grammar.id,
-        }
-      })
+        };
+      });
     }
 
     // Create quiz session
@@ -136,18 +136,18 @@ export async function POST(request: Request) {
         jlptLevel,
         totalQuestions: questions.length,
       },
-    })
+    });
 
     return NextResponse.json({
       sessionId: session.id,
       questions,
       totalQuestions: questions.length,
-    })
+    });
   } catch (err) {
-    console.error("Quiz start error:", err)
+    console.error('Quiz start error:', err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

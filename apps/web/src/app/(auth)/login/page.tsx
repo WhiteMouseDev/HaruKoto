@@ -1,28 +1,28 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   async function handleEmailAuth(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       if (isSignUp) {
@@ -32,39 +32,39 @@ export default function LoginPage() {
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
-        })
-        if (error) throw error
-        setError("확인 이메일을 발송했습니다. 이메일을 확인해주세요.")
+        });
+        if (error) throw error;
+        setError('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
-        })
-        if (error) throw error
-        router.push("/home")
-        router.refresh()
+        });
+        if (error) throw error;
+        router.push('/home');
+        router.refresh();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "오류가 발생했습니다")
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  async function handleSocialLogin(provider: "google" | "kakao" | "apple") {
+  async function handleSocialLogin(provider: 'google' | 'kakao' | 'apple') {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
-    })
+    });
     if (error) {
-      setError(error.message)
+      setError(error.message);
     }
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b from-background to-secondary px-6">
+    <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-2">
         <div className="text-5xl">🌸</div>
@@ -79,7 +79,7 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="h-12 w-full rounded-xl text-sm"
-              onClick={() => handleSocialLogin("google")}
+              onClick={() => handleSocialLogin('google')}
             >
               <svg className="mr-2 size-5" viewBox="0 0 24 24">
                 <path
@@ -104,7 +104,7 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="h-12 w-full rounded-xl bg-[#FEE500] text-sm text-[#191919] hover:bg-[#FDD835] hover:text-[#191919]"
-              onClick={() => handleSocialLogin("kakao")}
+              onClick={() => handleSocialLogin('kakao')}
             >
               <svg className="mr-2 size-5" viewBox="0 0 24 24" fill="#191919">
                 <path d="M12 3C6.48 3 2 6.48 2 10.5c0 2.63 1.74 4.94 4.35 6.24-.13.48-.84 3.07-.87 3.27 0 0-.02.08.04.11.06.03.13.01.13.01.17-.02 3.15-2.08 3.64-2.43.88.13 1.79.2 2.71.2 5.52 0 10-3.48 10-7.5S17.52 3 12 3z" />
@@ -114,7 +114,7 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="h-12 w-full rounded-xl bg-black text-sm text-white hover:bg-gray-800 hover:text-white"
-              onClick={() => handleSocialLogin("apple")}
+              onClick={() => handleSocialLogin('apple')}
             >
               <svg
                 className="mr-2 size-5"
@@ -133,7 +133,7 @@ export default function LoginPage() {
               <div className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-2 text-muted-foreground">또는</span>
+              <span className="bg-card text-muted-foreground px-2">또는</span>
             </div>
           </div>
 
@@ -166,7 +166,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-center text-sm text-destructive">{error}</p>
+              <p className="text-destructive text-center text-sm">{error}</p>
             )}
 
             <Button
@@ -174,26 +174,22 @@ export default function LoginPage() {
               className="h-12 rounded-xl text-base"
               disabled={loading}
             >
-              {loading
-                ? "처리 중..."
-                : isSignUp
-                  ? "회원가입"
-                  : "로그인"}
+              {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
             </Button>
           </form>
 
           {/* Toggle */}
-          <p className="text-center text-sm text-muted-foreground">
-            {isSignUp ? "이미 계정이 있나요?" : "계정이 없나요?"}{" "}
+          <p className="text-muted-foreground text-center text-sm">
+            {isSignUp ? '이미 계정이 있나요?' : '계정이 없나요?'}{' '}
             <button
               type="button"
-              className="font-medium text-primary underline-offset-4 hover:underline"
+              className="text-primary font-medium underline-offset-4 hover:underline"
               onClick={() => {
-                setIsSignUp(!isSignUp)
-                setError("")
+                setIsSignUp(!isSignUp);
+                setError('');
               }}
             >
-              {isSignUp ? "로그인" : "회원가입"}
+              {isSignUp ? '로그인' : '회원가입'}
             </button>
           </p>
         </CardContent>
@@ -201,10 +197,10 @@ export default function LoginPage() {
 
       <Link
         href="/"
-        className="mt-6 text-sm text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground mt-6 text-sm"
       >
         ← 처음으로
       </Link>
     </div>
-  )
+  );
 }

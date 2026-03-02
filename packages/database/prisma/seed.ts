@@ -63,7 +63,11 @@ async function main() {
       category: ScenarioCategory.TRAVEL,
       difficulty: Difficulty.BEGINNER,
       estimatedMinutes: 5,
-      keyExpressions: ['チェックインお願いします', '予約した〜です', '鍵をお願いします'],
+      keyExpressions: [
+        'チェックインお願いします',
+        '予約した〜です',
+        '鍵をお願いします',
+      ],
       situation: '일본 호텔 프론트에서 체크인합니다.',
       yourRole: '여행객 (호텔 손님)',
       aiRole: '호텔 프론트 직원',
@@ -82,7 +86,11 @@ async function main() {
       category: ScenarioCategory.DAILY,
       difficulty: Difficulty.BEGINNER,
       estimatedMinutes: 3,
-      keyExpressions: ['袋はいりますか', 'お弁当温めますか', 'ポイントカードはお持ちですか'],
+      keyExpressions: [
+        '袋はいりますか',
+        'お弁当温めますか',
+        'ポイントカードはお持ちですか',
+      ],
       situation: '일본 편의점에서 물건을 고르고 계산합니다.',
       yourRole: '손님',
       aiRole: '편의점 점원',
@@ -120,7 +128,11 @@ async function main() {
       category: ScenarioCategory.TRAVEL,
       difficulty: Difficulty.BEGINNER,
       estimatedMinutes: 5,
-      keyExpressions: ['メニューをお願いします', 'これをください', 'お会計お願いします'],
+      keyExpressions: [
+        'メニューをお願いします',
+        'これをください',
+        'お会計お願いします',
+      ],
       situation: '일본 레스토랑에 방문하여 주문하고 식사합니다.',
       yourRole: '손님',
       aiRole: '레스토랑 직원',
@@ -158,7 +170,9 @@ async function main() {
     await prisma.conversationScenario.createMany({ data: scenarios });
     console.log(`✅ ${scenarios.length} conversation scenarios seeded`);
   } else {
-    console.log(`⏭️ Conversation scenarios already exist (${existingScenarios}), skipping`);
+    console.log(
+      `⏭️ Conversation scenarios already exist (${existingScenarios}), skipping`
+    );
   }
 
   console.log('🌸 Seeding complete!');

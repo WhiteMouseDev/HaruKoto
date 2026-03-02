@@ -1,16 +1,16 @@
-"use client"
+'use client';
 
-import { Target, BookOpen, Trophy } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Target, BookOpen, Trophy } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 type DailyProgressCardProps = {
-  dailyGoal: number
-  wordsStudied: number
-  correctAnswers: number
-  totalAnswers: number
-  goalProgress: number
-}
+  dailyGoal: number;
+  wordsStudied: number;
+  correctAnswers: number;
+  totalAnswers: number;
+  goalProgress: number;
+};
 
 export function DailyProgressCard({
   dailyGoal,
@@ -20,8 +20,8 @@ export function DailyProgressCard({
   goalProgress,
 }: DailyProgressCardProps) {
   const accuracyPercent =
-    totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0
-  const progressPercent = Math.round(goalProgress * 100)
+    totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
+  const progressPercent = Math.round(goalProgress * 100);
 
   return (
     <Card>
@@ -37,34 +37,34 @@ export function DailyProgressCard({
             </span>
           </div>
           <Progress value={progressPercent} />
-          <span className="text-xs text-muted-foreground text-right">
+          <span className="text-muted-foreground text-right text-xs">
             {progressPercent}%
           </span>
         </div>
 
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-            <Target className="size-5 text-primary" />
-            <span className="text-xs text-muted-foreground">목표</span>
+          <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+            <Target className="text-primary size-5" />
+            <span className="text-muted-foreground text-xs">목표</span>
             <span className="text-lg font-bold">
               {wordsStudied}/{dailyGoal}
             </span>
           </div>
-          <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-            <BookOpen className="size-5 text-hk-blue" />
-            <span className="text-xs text-muted-foreground">단어</span>
+          <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+            <BookOpen className="text-hk-blue size-5" />
+            <span className="text-muted-foreground text-xs">단어</span>
             <span className="text-lg font-bold">{wordsStudied}개</span>
           </div>
-          <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-            <Trophy className="size-5 text-hk-yellow" />
-            <span className="text-xs text-muted-foreground">정답률</span>
+          <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
+            <Trophy className="text-hk-yellow size-5" />
+            <span className="text-muted-foreground text-xs">정답률</span>
             <span className="text-lg font-bold">
-              {totalAnswers > 0 ? `${accuracyPercent}%` : "--%"}
+              {totalAnswers > 0 ? `${accuracyPercent}%` : '--%'}
             </span>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

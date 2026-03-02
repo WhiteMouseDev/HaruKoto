@@ -14,18 +14,18 @@
  */
 
 interface SM2Input {
-  easeFactor: number
-  interval: number
-  streak: number
-  isCorrect: boolean
-  timeSpentSeconds: number
+  easeFactor: number;
+  interval: number;
+  streak: number;
+  isCorrect: boolean;
+  timeSpentSeconds: number;
 }
 
 interface SM2Result {
-  easeFactor: number
-  interval: number
-  streak: number
-  nextReviewAt: Date
+  easeFactor: number;
+  interval: number;
+  streak: number;
+  nextReviewAt: Date;
 }
 
 export function calculateSM2({
@@ -36,48 +36,50 @@ export function calculateSM2({
   timeSpentSeconds,
 }: SM2Input): SM2Result {
   // Determine quality based on correctness and time spent
-  let quality: number
+  let quality: number;
   if (isCorrect) {
-    if (timeSpentSeconds <= 3) quality = 5 // instant
-    else if (timeSpentSeconds <= 8) quality = 4 // quick
-    else quality = 3 // slow but correct
+    if (timeSpentSeconds <= 3)
+      quality = 5; // instant
+    else if (timeSpentSeconds <= 8)
+      quality = 4; // quick
+    else quality = 3; // slow but correct
   } else {
-    quality = 1 // incorrect
+    quality = 1; // incorrect
   }
 
-  let newEaseFactor = easeFactor
-  let newInterval: number
-  let newStreak: number
+  let newEaseFactor = easeFactor;
+  let newInterval: number;
+  let newStreak: number;
 
   if (quality >= 3) {
     // Correct answer
-    newStreak = streak + 1
+    newStreak = streak + 1;
     if (newStreak === 1) {
-      newInterval = 1
+      newInterval = 1;
     } else if (newStreak === 2) {
-      newInterval = 3
+      newInterval = 3;
     } else {
-      newInterval = Math.round(interval * easeFactor)
+      newInterval = Math.round(interval * easeFactor);
     }
     newEaseFactor =
-      easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+      easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
   } else {
     // Incorrect answer - reset
-    newStreak = 0
-    newInterval = 0 // review again soon (within minutes/hours)
-    newEaseFactor = Math.max(1.3, easeFactor - 0.2)
+    newStreak = 0;
+    newInterval = 0; // review again soon (within minutes/hours)
+    newEaseFactor = Math.max(1.3, easeFactor - 0.2);
   }
 
   // Ensure ease factor doesn't go below 1.3
-  newEaseFactor = Math.max(1.3, newEaseFactor)
+  newEaseFactor = Math.max(1.3, newEaseFactor);
 
   // Calculate next review date
-  const nextReviewAt = new Date()
+  const nextReviewAt = new Date();
   if (newInterval === 0) {
     // Wrong answer: review in 10 minutes
-    nextReviewAt.setMinutes(nextReviewAt.getMinutes() + 10)
+    nextReviewAt.setMinutes(nextReviewAt.getMinutes() + 10);
   } else {
-    nextReviewAt.setDate(nextReviewAt.getDate() + newInterval)
+    nextReviewAt.setDate(nextReviewAt.getDate() + newInterval);
   }
 
   return {
@@ -85,5 +87,5 @@ export function calculateSM2({
     interval: newInterval,
     streak: newStreak,
     nextReviewAt,
-  }
+  };
 }

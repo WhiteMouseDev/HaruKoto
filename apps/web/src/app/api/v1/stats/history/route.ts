@@ -1,48 +1,48 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { prisma } from "@harukoto/database"
-import { z } from "zod"
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@harukoto/database';
+import { z } from 'zod';
 
 const historyQuerySchema = z.object({
   year: z.coerce.number().int().min(2020).max(2100),
   month: z.coerce.number().int().min(1).max(12),
-})
+});
 
 export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = new URL(request.url);
     const parseResult = historyQuerySchema.safeParse({
-      year: searchParams.get("year"),
-      month: searchParams.get("month"),
-    })
+      year: searchParams.get('year'),
+      month: searchParams.get('month'),
+    });
 
     if (!parseResult.success) {
       return NextResponse.json(
-        { error: "Invalid query parameters: year and month are required" },
+        { error: 'Invalid query parameters: year and month are required' },
         { status: 400 }
-      )
+      );
     }
 
-    const { year, month } = parseResult.data
+    const { year, month } = parseResult.data;
 
     // Calculate start and end of the month (UTC)
-    const startDate = new Date(Date.UTC(year, month - 1, 1))
-    const endDate = new Date(Date.UTC(year, month, 0)) // last day of month
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0)); // last day of month
 
     const records = await prisma.dailyProgress.findMany({
       where: {
         userId: user.id,
         date: { gte: startDate, lte: endDate },
       },
-      orderBy: { date: "asc" },
+      orderBy: { date: 'asc' },
       select: {
         date: true,
         wordsStudied: true,
@@ -53,21 +53,21 @@ export async function GET(request: Request) {
         studyTimeSeconds: true,
         xpEarned: true,
       },
-    })
+    });
 
     return NextResponse.json({
       year,
       month,
       records: records.map((r) => ({
         ...r,
-        date: r.date.toISOString().split("T")[0],
+        date: r.date.toISOString().split('T')[0],
       })),
-    })
+    });
   } catch (err) {
-    console.error("Stats history error:", err)
+    console.error('Stats history error:', err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

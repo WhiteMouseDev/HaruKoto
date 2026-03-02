@@ -1,12 +1,15 @@
 # 하루코토 (HaruKoto / ハルコト) - 일본어 학습 앱
 
 ## 프로젝트 개요
+
 한국인을 위한 재미있는 일본어 학습 앱. JLPT 시험 대비 + AI 실전 회화 연습.
+
 - **하루**: 한국어 "하루"(1일) + 일본어 "春"(봄)
 - **코토**: 일본어 "言"(말/단어)
 - 상세 기획: `docs/PRD.md`
 
 ## 기술 스택
+
 - **Monorepo**: Turborepo + pnpm workspace
 - **Framework**: Next.js 16.1 (App Router, Turbopack)
 - **Language**: TypeScript (strict mode)
@@ -24,6 +27,7 @@
 - **테스트**: Vitest + Testing Library + Playwright (E2E)
 
 ## 프로젝트 구조 (Turborepo Monorepo)
+
 ```
 harukoto/
 ├── apps/
@@ -42,27 +46,32 @@ harukoto/
 ## 팀 역할 (Claude Session Team)
 
 ### PM (프로젝트 매니저/감독)
+
 - 기획 의도 대로 개발되는지 감독
 - PRD 대비 진행 상황 체크
 - 기능 우선순위 관리
 - 사용: `/pm-review` 커맨드
 
 ### Frontend Developer (프론트엔드 개발)
+
 - UI 컴포넌트, 페이지, 인터랙션 구현
 - 반응형 디자인, 접근성
 - 사용: `/develop` 커맨드
 
 ### Backend Developer (백엔드 개발)
+
 - API Routes, DB 스키마, AI 통합
 - 인증, 결제, 보안
 - 사용: `/develop` 커맨드와 함께 백엔드 컨텍스트
 
 ### QA (테스트 엔지니어)
+
 - 단위 테스트, 통합 테스트, E2E 테스트
 - 기능 검증, 엣지 케이스 확인
 - 사용: `/qa-test` 커맨드
 
 ### Code Reviewer (코드 리뷰어)
+
 - 코드 품질, 패턴 일관성, 보안 검토
 - PR 리뷰 시뮬레이션
 - 사용: `/code-review` 커맨드
@@ -70,11 +79,13 @@ harukoto/
 ## 개발 워크플로우
 
 ### 1. 기능 개발 사이클
+
 ```
 PM 검토 → 개발 → 코드 리뷰 → QA 테스트 → PM 최종 확인
 ```
 
 ### 2. Git 브랜치 전략
+
 - `main`: 프로덕션 배포 브랜치
 - `develop`: 개발 통합 브랜치
 - `feature/*`: 기능 개발 브랜치
@@ -82,6 +93,7 @@ PM 검토 → 개발 → 코드 리뷰 → QA 테스트 → PM 최종 확인
 - `hotfix/*`: 긴급 수정 브랜치
 
 ### 3. 커밋 컨벤션 (Conventional Commits)
+
 ```
 feat: 새로운 기능 추가
 fix: 버그 수정
@@ -95,6 +107,7 @@ chore: 빌드, 설정 변경
 ## 코딩 컨벤션
 
 ### TypeScript
+
 - strict 모드 필수
 - `any` 타입 사용 금지 (불가피한 경우 주석으로 이유 명시)
 - interface보다 type alias 선호 (확장 필요 시 interface)
@@ -104,12 +117,14 @@ chore: 빌드, 설정 변경
 - 상수: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
 
 ### React/Next.js
+
 - Server Components 기본, 필요 시에만 `"use client"`
 - `proxy.ts` 사용 (middleware.ts 아님 - Next.js 16 변경사항)
 - `params`, `cookies()`, `headers()` 등 async 사용 필수
 - 컴포넌트 파일: 하나의 파일에 하나의 exported 컴포넌트
 
 ### 디렉토리 구조 (apps/web)
+
 ```
 src/
 ├── app/                  # Next.js App Router 페이지
@@ -128,6 +143,7 @@ src/
 ```
 
 ### 테스트
+
 - 모든 유틸 함수: 단위 테스트 필수
 - 주요 컴포넌트: 통합 테스트
 - 핵심 사용자 플로우: E2E 테스트
@@ -135,6 +151,7 @@ src/
 - 테스트 네이밍: `describe('기능명')` → `it('should 동작')` 패턴
 
 ### 보안
+
 - 환경 변수: `.env.local` (절대 커밋하지 않음)
 - API 키: 서버 사이드에서만 접근
 - 사용자 입력: Zod로 반드시 검증
@@ -142,6 +159,7 @@ src/
 - XSS: React 기본 이스케이프 + DOMPurify (HTML 렌더링 시)
 
 ### 성능
+
 - 이미지: Next.js Image 컴포넌트 사용
 - 번들 크기: dynamic import 활용
 - 데이터: TanStack Query 캐싱 전략 활용

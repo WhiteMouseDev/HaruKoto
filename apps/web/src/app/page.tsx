@@ -1,17 +1,17 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b from-background to-secondary px-6">
+    <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Logo & Mascot */}
       <div className="flex flex-col items-center gap-4">
         <div className="text-6xl">🌸</div>
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight">하루코토</h1>
-          <p className="mt-1 font-jp text-lg text-muted-foreground">ハルコト</p>
+          <p className="font-jp text-muted-foreground mt-1 text-lg">ハルコト</p>
         </div>
-        <p className="mt-2 text-center text-muted-foreground">
+        <p className="text-muted-foreground mt-2 text-center">
           매일 한 단어, 봄처럼 피어나는
           <br />
           나의 일본어
@@ -33,5 +33,5 @@ export default function LandingPage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

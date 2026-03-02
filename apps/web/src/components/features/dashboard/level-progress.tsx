@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import { motion } from "framer-motion"
+import { motion } from 'framer-motion';
 
 type LevelProgressProps = {
-  currentLevel: string
-}
+  currentLevel: string;
+};
 
-const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const
+const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 
 export function LevelProgress({ currentLevel }: LevelProgressProps) {
   const currentIndex = JLPT_LEVELS.indexOf(
     currentLevel as (typeof JLPT_LEVELS)[number]
-  )
+  );
 
   return (
     <div>
       <h2 className="mb-3 font-semibold">JLPT 레벨</h2>
       <div className="grid grid-cols-5 gap-2">
         {JLPT_LEVELS.map((level, i) => {
-          const isCurrent = i === currentIndex
-          const isPast = i < currentIndex
+          const isCurrent = i === currentIndex;
+          const isPast = i < currentIndex;
 
           return (
             <motion.div
@@ -29,20 +29,20 @@ export function LevelProgress({ currentLevel }: LevelProgressProps) {
               transition={{ delay: i * 0.05 }}
               className={`flex flex-col items-center gap-1 rounded-xl border p-3 ${
                 isCurrent
-                  ? "border-primary bg-primary/10"
+                  ? 'border-primary bg-primary/10'
                   : isPast
-                    ? "border-primary/40 bg-primary/5"
-                    : "border-border opacity-50"
+                    ? 'border-primary/40 bg-primary/5'
+                    : 'border-border opacity-50'
               }`}
             >
               <span className="text-sm font-bold">{level}</span>
-              <span className="text-[10px] text-muted-foreground">
-                {isCurrent ? "학습중" : isPast ? "완료" : "잠금"}
+              <span className="text-muted-foreground text-[10px]">
+                {isCurrent ? '학습중' : isPast ? '완료' : '잠금'}
               </span>
             </motion.div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
