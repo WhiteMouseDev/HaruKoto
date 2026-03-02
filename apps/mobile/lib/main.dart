@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const kAppUrl = 'https://harukoto.co.kr';
+const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
 
 void main() {
