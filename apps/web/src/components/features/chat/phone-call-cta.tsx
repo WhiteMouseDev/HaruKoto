@@ -1,8 +1,14 @@
 'use client';
 
+import ReactDOM from 'react-dom';
 import { Phone, FlaskConical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
+
+// Preload call page avatar so it's cached before navigation
+if (typeof window !== 'undefined') {
+  ReactDOM.preload('/images/haru-avatar.png', { as: 'image' });
+}
 
 type PhoneCallCtaProps = {
   onClick: () => void;
