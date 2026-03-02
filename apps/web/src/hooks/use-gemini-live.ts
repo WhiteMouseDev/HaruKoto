@@ -14,7 +14,7 @@ type ConnectionState =
 
 type GeminiLiveOptions = {
   onAudioChunk: (base64: string) => void;
-  onTextDelta: (text: string) => void;
+  onTranscript: (entry: TranscriptEntry) => void;
   onTurnComplete: () => void;
   onInterrupted: () => void;
   onError: (error: string) => void;
@@ -40,7 +40,8 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
 
   const sessionRef = useRef<Session | null>(null);
   const transcriptRef = useRef<TranscriptEntry[]>([]);
-  const currentAiTextRef = useRef('');
+  const currentAiTranscriptRef = useRef('');
+  const currentUserTranscriptRef = useRef('');
   const optionsRef = useRef(options);
 
   optionsRef.current = options;
@@ -74,6 +75,8 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
           },
         },
         systemInstruction: SYSTEM_INSTRUCTION,
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
       },
       callbacks: {
         onopen: () => {},
@@ -82,9 +85,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
             const sc = msg.serverContent;
             if (!sc) return;
 
-            // Process model turn parts
-            // Native audio model emits thinking/reasoning as text — ignore it.
-            // Only process inlineData (audio chunks).
+            // Process model turn parts (audio only — text parts are thinking)
             if (sc.modelTurn?.parts) {
               for (const part of sc.modelTurn.parts) {
                 if ('inlineData' in part && part.inlineData) {
@@ -93,21 +94,46 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
               }
             }
 
+            // Output transcription (AI speech → text)
+            if (sc.outputTranscription?.text) {
+              currentAiTranscriptRef.current += sc.outputTranscription.text;
+            }
+
+            // Input transcription (User speech → text)
+            if (sc.inputTranscription?.text) {
+              currentUserTranscriptRef.current += sc.inputTranscription.text;
+              // Flush user transcript as a complete entry
+              const userText = currentUserTranscriptRef.current.trim();
+              if (userText) {
+                const entry: TranscriptEntry = { role: 'user', text: userText };
+                transcriptRef.current.push(entry);
+                optionsRef.current.onTranscript(entry);
+                currentUserTranscriptRef.current = '';
+              }
+            }
+
             // Turn complete
             if (sc.turnComplete) {
-              if (currentAiTextRef.current.trim()) {
-                transcriptRef.current.push({
-                  role: 'assistant',
-                  text: currentAiTextRef.current.trim(),
-                });
+              const aiText = currentAiTranscriptRef.current.trim();
+              if (aiText) {
+                const entry: TranscriptEntry = { role: 'assistant', text: aiText };
+                transcriptRef.current.push(entry);
+                optionsRef.current.onTranscript(entry);
               }
-              currentAiTextRef.current = '';
+              currentAiTranscriptRef.current = '';
               optionsRef.current.onTurnComplete();
             }
 
             // Interrupted (barge-in)
             if (sc.interrupted) {
-              currentAiTextRef.current = '';
+              // Save partial AI transcript if any
+              const aiText = currentAiTranscriptRef.current.trim();
+              if (aiText) {
+                const entry: TranscriptEntry = { role: 'assistant', text: aiText };
+                transcriptRef.current.push(entry);
+                optionsRef.current.onTranscript(entry);
+              }
+              currentAiTranscriptRef.current = '';
               optionsRef.current.onInterrupted();
             }
           } catch {

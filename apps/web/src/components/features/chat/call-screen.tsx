@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, PhoneOff, MicOff, Mic } from 'lucide-react';
+import { Phone, PhoneOff, MicOff, Mic, FileText, FileX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CallWaveform } from '@/components/features/chat/call-waveform';
 import type { VoiceCallReturn } from '@/hooks/use-voice-call';
@@ -36,13 +36,14 @@ export function CallScreen({ call }: CallScreenProps) {
     state,
     subState,
     callDuration,
-    currentAiText,
     userAnalyserNode,
     aiAnalyserNode,
     isMuted,
+    analysisEnabled,
     startCall,
     endCall,
     toggleMute,
+    toggleAnalysis,
   } = call;
 
   const statusKey = getStatusKey(state, subState);
@@ -68,7 +69,7 @@ export function CallScreen({ call }: CallScreenProps) {
       <div className="flex h-full flex-col items-center justify-center gap-8">
         <CallWaveform analyserNode={null} mode="idle" />
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white">하루</h2>
+          <h2 className="text-xl font-bold text-white">ハルさん (하루)</h2>
           <p className="mt-1 text-sm text-white/60">AI 전화 통화</p>
         </div>
         {call.error && (
@@ -91,7 +92,7 @@ export function CallScreen({ call }: CallScreenProps) {
   }
 
   return (
-    <div className="flex h-full flex-col items-center px-6 pt-safe-top">
+    <div className="pt-safe-top flex h-full flex-col items-center px-6">
       {/* Status text */}
       <motion.div
         className="mt-16"
@@ -123,22 +124,6 @@ export function CallScreen({ call }: CallScreenProps) {
 
         {/* Name */}
         <h2 className="mt-8 text-2xl font-bold text-white">하루</h2>
-
-        {/* Current AI message */}
-        <AnimatePresence mode="wait">
-          {currentAiText && (
-            <motion.p
-              key={currentAiText.slice(0, 20)}
-              className="font-jp mt-4 max-w-[280px] text-center text-sm leading-relaxed text-white/50"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {currentAiText}
-            </motion.p>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Controls */}
@@ -156,7 +141,11 @@ export function CallScreen({ call }: CallScreenProps) {
             onClick={toggleMute}
             disabled={state === 'connecting' || state === 'ending'}
           >
-            {isMuted ? <MicOff className="size-6" /> : <Mic className="size-6" />}
+            {isMuted ? (
+              <MicOff className="size-6" />
+            ) : (
+              <Mic className="size-6" />
+            )}
           </Button>
         </motion.div>
 
@@ -172,9 +161,32 @@ export function CallScreen({ call }: CallScreenProps) {
           </Button>
         </motion.div>
 
-        {/* Spacer for symmetry (replacing manual stop button) */}
-        <div className="size-14" />
+        {/* Analysis toggle */}
+        <motion.div whileTap={{ scale: 0.9 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`size-14 rounded-full ${
+              analysisEnabled
+                ? 'bg-emerald-500/20 text-emerald-400'
+                : 'bg-white/10 text-white/40 hover:text-white/60'
+            }`}
+            onClick={toggleAnalysis}
+            disabled={state === 'connecting' || state === 'ending'}
+          >
+            {analysisEnabled ? (
+              <FileText className="size-6" />
+            ) : (
+              <FileX className="size-6" />
+            )}
+          </Button>
+        </motion.div>
       </div>
+
+      {/* Analysis hint */}
+      <p className="mb-safe-bottom pb-2 text-xs text-white/30">
+        {analysisEnabled ? '통화 분석 ON' : '통화 분석 OFF'}
+      </p>
     </div>
   );
 }

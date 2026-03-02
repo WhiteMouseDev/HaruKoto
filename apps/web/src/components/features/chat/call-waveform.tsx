@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 type CallWaveformProps = {
@@ -86,10 +87,13 @@ export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
 
       {/* Avatar */}
       <div className="relative z-10 size-32 overflow-hidden rounded-full shadow-lg shadow-emerald-500/25">
-        <img
+        <Image
           src="/images/haru-avatar.png"
           alt="하루"
+          width={128}
+          height={128}
           className="size-full object-cover"
+          priority
         />
       </div>
     </div>

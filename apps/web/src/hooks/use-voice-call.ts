@@ -6,26 +6,24 @@ import { toast } from 'sonner';
 import { usePcmRecorder } from '@/hooks/use-pcm-recorder';
 import { usePcmPlayer } from '@/hooks/use-pcm-player';
 import { useGeminiLive } from '@/hooks/use-gemini-live';
-import { apiFetch } from '@/lib/api';
-import { showGameEvents } from '@/lib/show-events';
 import type {
   LiveCallState,
   LiveCallSubState,
-  LiveFeedbackResponse,
 } from '@/types/gemini-live';
 
 export type VoiceCallReturn = {
   state: LiveCallState;
   subState: LiveCallSubState;
   callDuration: number;
-  currentAiText: string;
   userAnalyserNode: AnalyserNode | null;
   aiAnalyserNode: AnalyserNode | null;
   error: string | null;
   isMuted: boolean;
+  analysisEnabled: boolean;
   startCall: () => Promise<void>;
   endCall: () => void;
   toggleMute: () => void;
+  toggleAnalysis: () => void;
 };
 
 export function useVoiceCall(): VoiceCallReturn {
@@ -33,16 +31,18 @@ export function useVoiceCall(): VoiceCallReturn {
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
   const [callDuration, setCallDuration] = useState(0);
-  const [currentAiText, setCurrentAiText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [analysisEnabled, setAnalysisEnabled] = useState(true);
 
   const stateRef = useRef<LiveCallState>('idle');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const callStartRef = useRef(0);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const analysisEnabledRef = useRef(true);
 
   stateRef.current = state;
+  analysisEnabledRef.current = analysisEnabled;
 
   // --- Ringtone ---
   const playRingtone = useCallback(() => {
@@ -74,17 +74,15 @@ export function useVoiceCall(): VoiceCallReturn {
       },
       [player]
     ),
-    onTextDelta: useCallback((text: string) => {
-      setCurrentAiText((prev) => prev + text);
+    onTranscript: useCallback(() => {
+      // Transcript entries are collected inside useGeminiLive
     }, []),
     onTurnComplete: useCallback(() => {
       setSubState('idle');
-      setCurrentAiText('');
     }, []),
     onInterrupted: useCallback(() => {
       player.interrupt();
       setSubState('user_speaking');
-      setCurrentAiText('');
     }, [player]),
     onError: useCallback((msg: string) => {
       toast.error(msg);
@@ -163,7 +161,7 @@ export function useVoiceCall(): VoiceCallReturn {
   }, [gemini, player, recorder, startTimer, playRingtone, stopRingtone]);
 
   // --- End call ---
-  const endCall = useCallback(async () => {
+  const endCall = useCallback(() => {
     if (stateRef.current === 'idle' || stateRef.current === 'ending' || stateRef.current === 'ended') return;
 
     setState('ending');
@@ -175,44 +173,26 @@ export function useVoiceCall(): VoiceCallReturn {
     recorder.stop();
     player.stop();
 
-    // Get transcript from Gemini session
+    // Get transcript and duration before disconnecting
     const transcript = gemini.getTranscript();
-    gemini.disconnect();
-
     const durationSeconds = callStartRef.current
       ? Math.floor((Date.now() - callStartRef.current) / 1000)
       : 0;
 
-    if (transcript.length === 0) {
-      setState('ended');
-      stateRef.current = 'ended';
-      return;
-    }
+    gemini.disconnect();
 
-    try {
-      const data = await apiFetch<LiveFeedbackResponse>(
-        '/api/v1/chat/live-feedback',
-        {
-          method: 'POST',
-          body: JSON.stringify({ transcript, durationSeconds }),
-        }
+    if (analysisEnabledRef.current && transcript.length > 0) {
+      // Store data for the analyzing page, navigate immediately
+      sessionStorage.setItem(
+        'call_analysis_data',
+        JSON.stringify({ transcript, durationSeconds })
       );
-
-      if (data.feedbackSummary) {
-        sessionStorage.setItem(
-          `feedback_${data.conversationId}`,
-          JSON.stringify(data.feedbackSummary)
-        );
-      }
-      showGameEvents(data.events);
-
+      router.push('/chat/call/analyzing');
+    } else {
+      // No analysis — just go back
       setState('ended');
       stateRef.current = 'ended';
-      router.push(`/chat/${data.conversationId}/feedback`);
-    } catch {
-      toast.error('피드백 생성에 실패했습니다.');
-      setState('ended');
-      stateRef.current = 'ended';
+      router.push('/chat');
     }
   }, [gemini, player, recorder, router, stopTimer, stopRingtone]);
 
@@ -224,6 +204,11 @@ export function useVoiceCall(): VoiceCallReturn {
       return next;
     });
   }, [recorder]);
+
+  // --- Toggle analysis ---
+  const toggleAnalysis = useCallback(() => {
+    setAnalysisEnabled((prev) => !prev);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -241,13 +226,14 @@ export function useVoiceCall(): VoiceCallReturn {
     state,
     subState,
     callDuration,
-    currentAiText,
     userAnalyserNode: recorder.analyserNode,
     aiAnalyserNode: player.analyserNode,
     error,
     isMuted,
+    analysisEnabled,
     startCall,
     endCall,
     toggleMute,
+    toggleAnalysis,
   };
 }
