@@ -19,6 +19,7 @@ type GeminiLiveOptions = {
   onTurnComplete: () => void;
   onInterrupted: () => void;
   onError: (error: string) => void;
+  onDisconnected?: () => void;
 };
 
 type GeminiLiveReturn = {
@@ -40,6 +41,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
 
   const sessionRef = useRef<Session | null>(null);
+  const aliveRef = useRef(false);
   const transcriptRef = useRef<TranscriptEntry[]>([]);
   const currentAiTranscriptRef = useRef('');
   const currentUserTranscriptRef = useRef('');
@@ -149,13 +151,20 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
           );
         },
         onclose: () => {
+          const wasAlive = aliveRef.current;
           sessionRef.current = null;
+          aliveRef.current = false;
           setConnectionState('disconnected');
+          // Notify parent if connection dropped unexpectedly (not user-initiated disconnect)
+          if (wasAlive) {
+            optionsRef.current.onDisconnected?.();
+          }
         },
       },
     });
 
     sessionRef.current = session;
+    aliveRef.current = true;
     setConnectionState('ready');
 
     // Send initial prompt to trigger AI greeting
@@ -170,17 +179,23 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
 
   const sendAudio = useCallback((base64: string) => {
     const session = sessionRef.current;
-    if (!session) return;
+    if (!session || !aliveRef.current) return;
 
-    session.sendRealtimeInput({
-      media: {
-        mimeType: 'audio/pcm;rate=16000',
-        data: base64,
-      },
-    });
+    try {
+      session.sendRealtimeInput({
+        media: {
+          mimeType: 'audio/pcm;rate=16000',
+          data: base64,
+        },
+      });
+    } catch {
+      // WebSocket already closing/closed — stop sending
+      aliveRef.current = false;
+    }
   }, []);
 
   const disconnect = useCallback(() => {
+    aliveRef.current = false;
     if (sessionRef.current) {
       try {
         sessionRef.current.close();

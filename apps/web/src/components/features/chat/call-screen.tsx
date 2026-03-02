@@ -37,6 +37,7 @@ export function CallScreen({ call }: CallScreenProps) {
     subState,
     callDuration,
     currentAiText,
+    subtitles,
     userAnalyserNode,
     aiAnalyserNode,
     isMuted,
@@ -126,21 +127,46 @@ export function CallScreen({ call }: CallScreenProps) {
         {/* Name */}
         <h2 className="mt-8 text-2xl font-bold text-white">하루</h2>
 
-        {/* Current AI transcription */}
-        <AnimatePresence mode="wait">
-          {currentAiText && (
-            <motion.p
-              key={currentAiText.slice(0, 20)}
-              className="font-jp mt-4 max-w-[280px] text-center text-sm leading-relaxed text-white/50"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {currentAiText}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* Subtitles — recent transcript + current streaming text */}
+        <div className="mt-4 flex max-w-[300px] flex-col items-center gap-1.5">
+          <AnimatePresence>
+            {subtitles.map((sub, i) => {
+              const age = (Date.now() - sub.timestamp) / 1000;
+              // Older entries fade out progressively
+              const opacity = Math.max(0.25, 1 - age / 6);
+              return (
+                <motion.p
+                  key={sub.id}
+                  className={`font-jp text-center text-sm leading-relaxed ${
+                    sub.role === 'user' ? 'text-emerald-300/70' : 'text-white/60'
+                  }`}
+                  style={{ opacity: i === subtitles.length - 1 ? undefined : opacity }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: i === subtitles.length - 1 ? 0.7 : opacity }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {sub.text}
+                </motion.p>
+              );
+            })}
+          </AnimatePresence>
+          {/* Current streaming AI text */}
+          <AnimatePresence>
+            {currentAiText && (
+              <motion.p
+                key="streaming"
+                className="font-jp text-center text-sm leading-relaxed text-white/80"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {currentAiText}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Controls */}

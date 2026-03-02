@@ -9,13 +9,22 @@ import { useGeminiLive } from '@/hooks/use-gemini-live';
 import type {
   LiveCallState,
   LiveCallSubState,
+  TranscriptEntry,
 } from '@/types/gemini-live';
+
+export type SubtitleEntry = {
+  id: number;
+  role: 'user' | 'assistant';
+  text: string;
+  timestamp: number;
+};
 
 export type VoiceCallReturn = {
   state: LiveCallState;
   subState: LiveCallSubState;
   callDuration: number;
   currentAiText: string;
+  subtitles: SubtitleEntry[];
   userAnalyserNode: AnalyserNode | null;
   aiAnalyserNode: AnalyserNode | null;
   error: string | null;
@@ -33,6 +42,7 @@ export function useVoiceCall(): VoiceCallReturn {
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
   const [callDuration, setCallDuration] = useState(0);
   const [currentAiText, setCurrentAiText] = useState('');
+  const [subtitles, setSubtitles] = useState<SubtitleEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [analysisEnabled, setAnalysisEnabled] = useState(true);
@@ -42,6 +52,8 @@ export function useVoiceCall(): VoiceCallReturn {
   const callStartRef = useRef(0);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
   const analysisEnabledRef = useRef(true);
+  const subtitleIdRef = useRef(0);
+  const endCallRef = useRef<() => void>(() => {});
 
   stateRef.current = state;
   analysisEnabledRef.current = analysisEnabled;
@@ -79,8 +91,21 @@ export function useVoiceCall(): VoiceCallReturn {
     onAiTextDelta: useCallback((text: string) => {
       setCurrentAiText((prev) => prev + text);
     }, []),
-    onTranscript: useCallback(() => {
-      // Transcript entries are collected inside useGeminiLive
+    onTranscript: useCallback((entry: TranscriptEntry) => {
+      // Push completed transcript as a subtitle
+      setSubtitles((prev) => {
+        const next = [
+          ...prev,
+          {
+            id: ++subtitleIdRef.current,
+            role: entry.role as 'user' | 'assistant',
+            text: entry.text,
+            timestamp: Date.now(),
+          },
+        ];
+        // Keep only last 3
+        return next.slice(-3);
+      });
     }, []),
     onTurnComplete: useCallback(() => {
       setSubState('idle');
@@ -94,6 +119,13 @@ export function useVoiceCall(): VoiceCallReturn {
     onError: useCallback((msg: string) => {
       toast.error(msg);
       setError(msg);
+    }, []),
+    onDisconnected: useCallback(() => {
+      // Gemini closed the connection unexpectedly (e.g. silence timeout)
+      if (stateRef.current === 'connected') {
+        toast.info('연결이 종료되었습니다.');
+        endCallRef.current();
+      }
     }, []),
   });
 
@@ -203,6 +235,8 @@ export function useVoiceCall(): VoiceCallReturn {
     }
   }, [gemini, player, recorder, router, stopTimer, stopRingtone]);
 
+  endCallRef.current = endCall;
+
   // --- Toggle mute ---
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => {
@@ -216,6 +250,16 @@ export function useVoiceCall(): VoiceCallReturn {
   const toggleAnalysis = useCallback(() => {
     setAnalysisEnabled((prev) => !prev);
   }, []);
+
+  // Auto-remove old subtitles after 6 seconds
+  useEffect(() => {
+    if (subtitles.length === 0) return;
+    const interval = setInterval(() => {
+      const cutoff = Date.now() - 6000;
+      setSubtitles((prev) => prev.filter((s) => s.timestamp > cutoff));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [subtitles.length]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -234,6 +278,7 @@ export function useVoiceCall(): VoiceCallReturn {
     subState,
     callDuration,
     currentAiText,
+    subtitles,
     userAnalyserNode: recorder.analyserNode,
     aiAnalyserNode: player.analyserNode,
     error,
