@@ -11,7 +11,12 @@ import {
   Flower2,
   ChevronRight,
   ArrowDown,
+  Download,
+  Smartphone,
+  Globe,
 } from 'lucide-react';
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 /* ─────────────────────────────────────────
    Cherry Blossom Petal CSS Animation
@@ -175,15 +180,15 @@ function Header() {
             학습방법
           </button>
           <button
-            onClick={() => scrollTo('cta')}
+            onClick={() => scrollTo('download')}
             className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
           >
-            시작하기
+            다운로드
           </button>
         </nav>
 
         <a
-          href="#"
+          href={APP_URL}
           className="bg-primary hover:bg-hk-primary-hover rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:shadow-md"
         >
           시작하기
@@ -235,7 +240,7 @@ function Hero() {
 
             <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap gap-4">
               <a
-                href="#"
+                href={APP_URL}
                 className="bg-primary hover:bg-hk-primary-hover inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
               >
                 무료로 시작하기
@@ -526,7 +531,91 @@ function Stats() {
 }
 
 /* ─────────────────────────────────────────
-   6. Final CTA Section
+   6. Beta Download Section
+   ───────────────────────────────────────── */
+const APK_DOWNLOAD_URL =
+  'https://github.com/WhiteMouseDev/HaruKoto/releases/download/v1.0.0-beta/app-release.apk';
+
+function BetaDownload() {
+  return (
+    <AnimatedSection id="download" className="bg-secondary/30 py-24">
+      <div className="mx-auto max-w-4xl px-6">
+        <motion.div variants={fadeInUp} className="text-center">
+          <span className="bg-primary/10 text-primary inline-block rounded-full px-4 py-1.5 text-sm font-semibold">
+            Beta
+          </span>
+          <h2 className="text-foreground mt-4 text-3xl font-bold sm:text-4xl">
+            앱 다운로드
+          </h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+            지금 바로 하루코토를 체험해보세요
+          </p>
+        </motion.div>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          {/* Android APK */}
+          <motion.a
+            href={APK_DOWNLOAD_URL}
+            variants={fadeInUp}
+            whileHover={{ scale: 1.02, y: -4 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="bg-card border-border/50 flex flex-col items-center gap-4 rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-lg"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-green-100 text-green-600">
+              <Download className="h-7 w-7" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-foreground text-lg font-bold">
+                Android 다운로드
+              </h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                APK 직접 설치 (v1.0.0-beta)
+              </p>
+            </div>
+            <span className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold">
+              APK 다운로드
+            </span>
+          </motion.a>
+
+          {/* Web App */}
+          <motion.a
+            href={APP_URL}
+            variants={fadeInUp}
+            whileHover={{ scale: 1.02, y: -4 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="bg-card border-border/50 flex flex-col items-center gap-4 rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-lg"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+              <Globe className="h-7 w-7" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-foreground text-lg font-bold">
+                웹으로 시작하기
+              </h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                iOS / PC 모두 지원
+              </p>
+            </div>
+            <span className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold">
+              웹앱 열기
+            </span>
+          </motion.a>
+        </div>
+
+        <motion.p
+          variants={fadeInUp}
+          className="text-muted-foreground mt-6 text-center text-xs"
+        >
+          * Android APK 설치 시 &quot;출처를 알 수 없는 앱&quot; 허용이
+          필요합니다
+        </motion.p>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+/* ─────────────────────────────────────────
+   7. Final CTA Section
    ───────────────────────────────────────── */
 function FinalCTA() {
   return (
@@ -550,7 +639,7 @@ function FinalCTA() {
         </motion.p>
         <motion.div variants={fadeInUp} className="mt-10">
           <a
-            href="#"
+            href={APP_URL}
             className="inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 text-base font-bold text-[#FFB7C5] shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
           >
             무료로 시작하기
@@ -615,6 +704,7 @@ export default function LandingPage() {
         <Features />
         <HowItWorks />
         <Stats />
+        <BetaDownload />
         <FinalCTA />
       </main>
       <Footer />
