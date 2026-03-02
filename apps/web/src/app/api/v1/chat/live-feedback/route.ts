@@ -78,8 +78,16 @@ export async function POST(request: Request) {
   "naturalness": 1~100の自然さ,
   "strengths": ["잘한 점1", "잘한 점2"],
   "improvements": ["개선할 점1", "개선할 점2"],
-  "recommendedExpressions": ["추천 표현1", "추천 표현2"]
-}`,
+  "recommendedExpressions": ["추천 표현1", "추천 표현2"],
+  "corrections": [
+    {
+      "original": "ユーザーが言った元の日本語（文法・語彙・助詞の間違いがある発話のみ）",
+      "corrected": "正しい日本語表現",
+      "explanation": "한국어로 왜 틀렸는지 간결하게 설명"
+    }
+  ]
+}
+corrections配列には、文法・語彙・助詞の誤りがあるユーザー発話のみを含めてください。誤りがない場合は空配列にしてください。`,
           messages: [
             ...conversationHistory,
             {
@@ -101,6 +109,7 @@ export async function POST(request: Request) {
           strengths: [],
           improvements: ['대화가 너무 짧아 평가하기 어렵습니다.'],
           recommendedExpressions: [],
+          corrections: [],
         };
       }
     }

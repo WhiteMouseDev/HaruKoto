@@ -7,6 +7,18 @@ import { ArrowLeft, RotateCcw, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackScores } from '@/components/features/chat/feedback-scores';
 import { FeedbackDetails } from '@/components/features/chat/feedback-details';
+import { FeedbackTranscript } from '@/components/features/chat/feedback-transcript';
+
+type GrammarCorrection = {
+  original: string;
+  corrected: string;
+  explanation: string;
+};
+
+type TranscriptMessage = {
+  role: 'user' | 'assistant';
+  text: string;
+};
 
 type FeedbackSummary = {
   overallScore: number;
@@ -17,6 +29,7 @@ type FeedbackSummary = {
   strengths: string[];
   improvements: string[];
   recommendedExpressions: string[];
+  corrections?: GrammarCorrection[];
 };
 
 type Vocabulary = {
@@ -36,6 +49,7 @@ type ScenarioInfo = {
 
 type StoredFeedback = {
   feedbackSummary: FeedbackSummary | null;
+  transcript?: TranscriptMessage[];
   vocabulary: Vocabulary[];
   scenario: ScenarioInfo | null;
 };
@@ -81,8 +95,16 @@ export default function FeedbackPage({
         if (!res.ok) return;
         const data = await res.json();
         if (data.feedbackSummary) {
+          const transcript: TranscriptMessage[] =
+            data.messages?.map(
+              (m: { role: string; messageJa?: string; content?: string }) => ({
+                role: m.role === 'ai' ? 'assistant' : m.role,
+                text: m.messageJa ?? m.content ?? '',
+              })
+            ) ?? [];
           setFeedback({
             feedbackSummary: data.feedbackSummary,
+            transcript,
             vocabulary: [],
             scenario: data.scenario,
           });
@@ -120,7 +142,7 @@ export default function FeedbackPage({
     );
   }
 
-  const { feedbackSummary, vocabulary, scenario } = feedback;
+  const { feedbackSummary, transcript, vocabulary, scenario } = feedback;
 
   return (
     <motion.div
@@ -151,6 +173,16 @@ export default function FeedbackPage({
           naturalness={feedbackSummary.naturalness}
         />
       </motion.div>
+
+      {/* Transcript */}
+      {transcript && transcript.length > 0 && (
+        <motion.div variants={item}>
+          <FeedbackTranscript
+            transcript={transcript}
+            corrections={feedbackSummary.corrections ?? []}
+          />
+        </motion.div>
+      )}
 
       {/* Details */}
       <motion.div variants={item}>

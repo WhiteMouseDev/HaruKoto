@@ -44,7 +44,12 @@ export default function AnalyzingPage() {
         if (data.feedbackSummary) {
           sessionStorage.setItem(
             `feedback_${data.conversationId}`,
-            JSON.stringify(data.feedbackSummary)
+            JSON.stringify({
+              feedbackSummary: data.feedbackSummary,
+              transcript,
+              vocabulary: [],
+              scenario: null,
+            })
           );
         }
         showGameEvents(data.events);
