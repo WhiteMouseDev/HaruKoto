@@ -1,0 +1,19 @@
+{
+  "name": "@harukoto/ai",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.0",
+    "@ai-sdk/openai": "^1.3.0",
+    "ai": "^4.3.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

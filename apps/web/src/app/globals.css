@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* shadcn color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar (for Sheet/Drawer components) */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* HaruKoto custom colors */
+  --color-hk-primary-hover: var(--hk-primary-hover);
+  --color-hk-primary-light: var(--hk-primary-light);
+  --color-hk-blue: var(--hk-blue);
+  --color-hk-green: var(--hk-green);
+  --color-hk-red: var(--hk-red);
+  --color-hk-yellow: var(--hk-yellow);
+  --color-hk-success: var(--hk-success);
+  --color-hk-error: var(--hk-error);
+  --color-hk-warning: var(--hk-warning);
+  --color-hk-info: var(--hk-info);
+
+  /* Font families */
+  --font-sans: var(--font-noto-sans-kr), "Noto Sans KR", system-ui, sans-serif;
+  --font-jp: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+
+  /* Border radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+/* ========================================
+   HaruKoto Light Theme (Spring / 봄 테마)
+   ======================================== */
+:root {
+  --radius: 0.75rem;
+
+  /* Core colors */
+  --background: #FFF8F0;
+  --foreground: #2D2D2D;
+  --card: #FFFFFF;
+  --card-foreground: #2D2D2D;
+  --popover: #FFFFFF;
+  --popover-foreground: #2D2D2D;
+
+  /* Primary: Cherry Pink */
+  --primary: #FFB7C5;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary: Soft Pink */
+  --secondary: #FFF0F5;
+  --secondary-foreground: #2D2D2D;
+
+  /* Muted */
+  --muted: #F5F0EB;
+  --muted-foreground: #6B7280;
+
+  /* Accent: Light Pink */
+  --accent: #FFE4EC;
+  --accent-foreground: #2D2D2D;
+
+  /* Destructive */
+  --destructive: #EF4444;
+
+  /* Borders & Input */
+  --border: #F0E6DE;
+  --input: #F0E6DE;
+  --ring: #FFB7C5;
+
+  /* Chart colors (gamification/stats) */
+  --chart-1: #FFB7C5;
+  --chart-2: #87CEEB;
+  --chart-3: #98D8C8;
+  --chart-4: #FFD93D;
+  --chart-5: #FF6B6B;
+
+  /* Sidebar */
+  --sidebar: #FFF8F0;
+  --sidebar-foreground: #2D2D2D;
+  --sidebar-primary: #FFB7C5;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFE4EC;
+  --sidebar-accent-foreground: #2D2D2D;
+  --sidebar-border: #F0E6DE;
+  --sidebar-ring: #FFB7C5;
+
+  /* HaruKoto custom */
+  --hk-primary-hover: #FF8FA3;
+  --hk-primary-light: #FFE4EC;
+  --hk-blue: #87CEEB;
+  --hk-green: #98D8C8;
+  --hk-red: #FF6B6B;
+  --hk-yellow: #FFD93D;
+  --hk-success: #10B981;
+  --hk-error: #EF4444;
+  --hk-warning: #F59E0B;
+  --hk-info: #3B82F6;
+}
+
+/* ========================================
+   HaruKoto Dark Theme (다크 모드)
+   ======================================== */
+.dark {
+  --background: #1A1A2E;
+  --foreground: #F0F0F0;
+  --card: #242442;
+  --card-foreground: #F0F0F0;
+  --popover: #242442;
+  --popover-foreground: #F0F0F0;
+
+  --primary: #FF8FA3;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #2A2A4A;
+  --secondary-foreground: #F0F0F0;
+
+  --muted: #2A2A4A;
+  --muted-foreground: #9CA3AF;
+
+  --accent: #3D1F2A;
+  --accent-foreground: #F0F0F0;
+
+  --destructive: #F87171;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #FF8FA3;
+
+  --chart-1: #FF8FA3;
+  --chart-2: #5BA3C9;
+  --chart-3: #6BC4AD;
+  --chart-4: #E5C235;
+  --chart-5: #E05252;
+
+  --sidebar: #1A1A2E;
+  --sidebar-foreground: #F0F0F0;
+  --sidebar-primary: #FF8FA3;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3D1F2A;
+  --sidebar-accent-foreground: #F0F0F0;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #FF8FA3;
+
+  --hk-primary-hover: #FFB7C5;
+  --hk-primary-light: #3D1F2A;
+  --hk-blue: #5BA3C9;
+  --hk-green: #6BC4AD;
+  --hk-red: #E05252;
+  --hk-yellow: #E5C235;
+  --hk-success: #34D399;
+  --hk-error: #F87171;
+  --hk-warning: #FBBF24;
+  --hk-info: #60A5FA;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .font-jp {
+    font-family: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+  }
+}

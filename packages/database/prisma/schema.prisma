@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==========================================
+// Enums
+// ==========================================
+
+enum JlptLevel {
+  N5
+  N4
+  N3
+  N2
+  N1
+}
+
+enum PartOfSpeech {
+  NOUN
+  VERB
+  I_ADJECTIVE
+  NA_ADJECTIVE
+  ADVERB
+  PARTICLE
+  CONJUNCTION
+  COUNTER
+  EXPRESSION
+  PREFIX
+  SUFFIX
+}
+
+enum QuizType {
+  VOCABULARY
+  GRAMMAR
+  KANJI
+  LISTENING
+}
+
+enum ScenarioCategory {
+  TRAVEL
+  DAILY
+  BUSINESS
+  FREE
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum UserGoal {
+  JLPT_N5
+  JLPT_N4
+  JLPT_N3
+  JLPT_N2
+  JLPT_N1
+  TRAVEL
+  BUSINESS
+  HOBBY
+}
+
+enum WordbookSource {
+  QUIZ
+  CONVERSATION
+  MANUAL
+}
+
+// ==========================================
+// User & Auth
+// ==========================================
+
+model User {
+  id                   String    @id @default(uuid()) @db.Uuid
+  email                String    @unique
+  nickname             String?
+  avatarUrl            String?   @map("avatar_url")
+  jlptLevel            JlptLevel @default(N5) @map("jlpt_level")
+  goal                 UserGoal? @map("goal")
+  dailyGoal            Int       @default(10) @map("daily_goal")
+  experiencePoints     Int       @default(0) @map("experience_points")
+  level                Int       @default(1)
+  streakCount          Int       @default(0) @map("streak_count")
+  longestStreak        Int       @default(0) @map("longest_streak")
+  lastStudyDate        DateTime? @map("last_study_date")
+  isPremium            Boolean   @default(false) @map("is_premium")
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+  onboardingCompleted  Boolean   @default(false) @map("onboarding_completed")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  quizSessions      QuizSession[]
+  conversations     Conversation[]
+  achievements      UserAchievement[]
+  dailyMissions     DailyMission[]
+  wordbook          WordbookEntry[]
+  dailyProgress     DailyProgress[]
+  vocabProgress     UserVocabProgress[]
+  grammarProgress   UserGrammarProgress[]
+
+  @@map("users")
+}
+
+// ==========================================
+// Content: Vocabulary & Grammar
+// ==========================================
+
+model Vocabulary {
+  id                 String      @id @default(uuid()) @db.Uuid
+  jlptLevel          JlptLevel   @map("jlpt_level")
+  word               String
+  reading            String
+  meaningKo          String      @map("meaning_ko")
+  exampleSentence    String?     @map("example_sentence")
+  exampleReading     String?     @map("example_reading")
+  exampleTranslation String?     @map("example_translation")
+  partOfSpeech       PartOfSpeech @map("part_of_speech")
+  tags               String[]    @default([])
+  audioUrl           String?     @map("audio_url")
+  order              Int         @default(0)
+  createdAt          DateTime    @default(now()) @map("created_at")
+
+  userProgress UserVocabProgress[]
+
+  @@index([jlptLevel])
+  @@index([partOfSpeech])
+  @@map("vocabularies")
+}
+
+model Grammar {
+  id               String    @id @default(uuid()) @db.Uuid
+  jlptLevel        JlptLevel @map("jlpt_level")
+  pattern          String
+  meaningKo        String    @map("meaning_ko")
+  explanation      String
+  exampleSentences Json      @default("[]") @map("example_sentences")
+  relatedGrammarIds String[] @default([]) @map("related_grammar_ids") @db.Uuid
+  order            Int       @default(0)
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  userProgress UserGrammarProgress[]
+
+  @@index([jlptLevel])
+  @@map("grammars")
+}
+
+// ==========================================
+// Quiz System
+// ==========================================
+
+model QuizSession {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  quizType      QuizType  @map("quiz_type")
+  jlptLevel     JlptLevel @map("jlpt_level")
+  totalQuestions Int      @default(0) @map("total_questions")
+  correctCount  Int       @default(0) @map("correct_count")
+  startedAt     DateTime  @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@index([userId])
+  @@index([userId, jlptLevel])
+  @@map("quiz_sessions")
+}
+
+model QuizAnswer {
+  id               String   @id @default(uuid()) @db.Uuid
+  sessionId        String   @map("session_id") @db.Uuid
+  questionId       String   @map("question_id") @db.Uuid
+  questionType     QuizType @map("question_type")
+  selectedOptionId String   @map("selected_option_id")
+  isCorrect        Boolean  @map("is_correct")
+  timeSpentSeconds Int      @default(0) @map("time_spent_seconds")
+  answeredAt       DateTime @default(now()) @map("answered_at")
+
+  session QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@map("quiz_answers")
+}
+
+// ==========================================
+// AI Conversation
+// ==========================================
+
+model ConversationScenario {
+  id              String           @id @default(uuid()) @db.Uuid
+  title           String
+  titleJa         String           @map("title_ja")
+  description     String
+  category        ScenarioCategory
+  difficulty      Difficulty
+  estimatedMinutes Int             @map("estimated_minutes")
+  keyExpressions  String[]         @default([]) @map("key_expressions")
+  situation       String
+  yourRole        String           @map("your_role")
+  aiRole          String           @map("ai_role")
+  systemPrompt    String?          @map("system_prompt")
+  isActive        Boolean          @default(true) @map("is_active")
+  order           Int              @default(0)
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  conversations Conversation[]
+
+  @@index([category])
+  @@index([difficulty])
+  @@map("conversation_scenarios")
+}
+
+model Conversation {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  scenarioId      String?   @map("scenario_id") @db.Uuid
+  messages        Json      @default("[]")
+  feedbackSummary Json?     @map("feedback_summary")
+  messageCount    Int       @default(0) @map("message_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  endedAt         DateTime? @map("ended_at")
+
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenario ConversationScenario? @relation(fields: [scenarioId], references: [id])
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("conversations")
+}
+
+// ==========================================
+// Gamification
+// ==========================================
+
+model UserAchievement {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  achievementType String   @map("achievement_type")
+  achievedAt      DateTime @default(now()) @map("achieved_at")
+  metadata        Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementType])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+model DailyMission {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  date          DateTime @db.Date
+  missionType   String   @map("mission_type")
+  targetCount   Int      @map("target_count")
+  currentCount  Int      @default(0) @map("current_count")
+  isCompleted   Boolean  @default(false) @map("is_completed")
+  rewardClaimed Boolean  @default(false) @map("reward_claimed")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, missionType])
+  @@index([userId, date])
+  @@map("daily_missions")
+}
+
+model DailyProgress {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  date            DateTime @db.Date
+  wordsStudied    Int      @default(0) @map("words_studied")
+  quizzesCompleted Int     @default(0) @map("quizzes_completed")
+  correctAnswers  Int      @default(0) @map("correct_answers")
+  totalAnswers    Int      @default(0) @map("total_answers")
+  conversationCount Int    @default(0) @map("conversation_count")
+  studyTimeSeconds Int     @default(0) @map("study_time_seconds")
+  xpEarned        Int      @default(0) @map("xp_earned")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_progress")
+}
+
+// ==========================================
+// Spaced Repetition (간격 반복 학습)
+// ==========================================
+
+model UserVocabProgress {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  vocabularyId   String    @map("vocabulary_id") @db.Uuid
+  correctCount   Int       @default(0) @map("correct_count")
+  incorrectCount Int       @default(0) @map("incorrect_count")
+  streak         Int       @default(0)
+  easeFactor     Float     @default(2.5) @map("ease_factor")
+  interval       Int       @default(0)
+  nextReviewAt   DateTime? @map("next_review_at")
+  lastReviewedAt DateTime? @map("last_reviewed_at")
+  mastered       Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vocabularyId])
+  @@index([userId, nextReviewAt])
+  @@index([userId, mastered])
+  @@map("user_vocab_progress")
+}
+
+model UserGrammarProgress {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  grammarId      String    @map("grammar_id") @db.Uuid
+  correctCount   Int       @default(0) @map("correct_count")
+  incorrectCount Int       @default(0) @map("incorrect_count")
+  streak         Int       @default(0)
+  easeFactor     Float     @default(2.5) @map("ease_factor")
+  interval       Int       @default(0)
+  nextReviewAt   DateTime? @map("next_review_at")
+  lastReviewedAt DateTime? @map("last_reviewed_at")
+  mastered       Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grammar Grammar @relation(fields: [grammarId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, grammarId])
+  @@index([userId, nextReviewAt])
+  @@index([userId, mastered])
+  @@map("user_grammar_progress")
+}
+
+// ==========================================
+// Wordbook (User's Personal Collection)
+// ==========================================
+
+model WordbookEntry {
+  id        String         @id @default(uuid()) @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  word      String
+  reading   String
+  meaningKo String         @map("meaning_ko")
+  source    WordbookSource @default(MANUAL)
+  note      String?
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, word])
+  @@index([userId])
+  @@map("wordbook_entries")
+}
