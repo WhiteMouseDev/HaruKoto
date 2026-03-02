@@ -6,21 +6,17 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 function BrandLogo({ size = 'md' }: { size?: 'sm' | 'md' }) {
-  const imgSize = size === 'sm' ? 32 : 40;
-  const textClass = size === 'sm' ? 'text-lg' : 'text-xl';
+  const height = size === 'sm' ? 32 : 40;
+  const width = Math.round(height * 3.18);
   return (
-    <div className="flex items-center gap-2.5">
-      <Image
-        src="/images/logo.svg"
-        alt="하루코토"
-        width={imgSize}
-        height={imgSize}
-        className="shrink-0"
-      />
-      <span className={cn('text-foreground font-bold tracking-tight', textClass)}>
-        하루코토
-      </span>
-    </div>
+    <Image
+      src="/images/logo-horizontal.svg"
+      alt="하루코토"
+      width={width}
+      height={height}
+      className="shrink-0"
+      priority
+    />
   );
 }
 import {
