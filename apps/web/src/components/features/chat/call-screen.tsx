@@ -36,6 +36,7 @@ export function CallScreen({ call }: CallScreenProps) {
     state,
     subState,
     callDuration,
+    currentAiText,
     userAnalyserNode,
     aiAnalyserNode,
     isMuted,
@@ -124,6 +125,22 @@ export function CallScreen({ call }: CallScreenProps) {
 
         {/* Name */}
         <h2 className="mt-8 text-2xl font-bold text-white">하루</h2>
+
+        {/* Current AI transcription */}
+        <AnimatePresence mode="wait">
+          {currentAiText && (
+            <motion.p
+              key={currentAiText.slice(0, 20)}
+              className="font-jp mt-4 max-w-[280px] text-center text-sm leading-relaxed text-white/50"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {currentAiText}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Controls */}

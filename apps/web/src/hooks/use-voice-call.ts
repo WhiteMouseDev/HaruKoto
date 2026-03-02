@@ -15,6 +15,7 @@ export type VoiceCallReturn = {
   state: LiveCallState;
   subState: LiveCallSubState;
   callDuration: number;
+  currentAiText: string;
   userAnalyserNode: AnalyserNode | null;
   aiAnalyserNode: AnalyserNode | null;
   error: string | null;
@@ -31,6 +32,7 @@ export function useVoiceCall(): VoiceCallReturn {
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
   const [callDuration, setCallDuration] = useState(0);
+  const [currentAiText, setCurrentAiText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [analysisEnabled, setAnalysisEnabled] = useState(true);
@@ -74,15 +76,20 @@ export function useVoiceCall(): VoiceCallReturn {
       },
       [player]
     ),
+    onAiTextDelta: useCallback((text: string) => {
+      setCurrentAiText((prev) => prev + text);
+    }, []),
     onTranscript: useCallback(() => {
       // Transcript entries are collected inside useGeminiLive
     }, []),
     onTurnComplete: useCallback(() => {
       setSubState('idle');
+      setCurrentAiText('');
     }, []),
     onInterrupted: useCallback(() => {
       player.interrupt();
       setSubState('user_speaking');
+      setCurrentAiText('');
     }, [player]),
     onError: useCallback((msg: string) => {
       toast.error(msg);
@@ -226,6 +233,7 @@ export function useVoiceCall(): VoiceCallReturn {
     state,
     subState,
     callDuration,
+    currentAiText,
     userAnalyserNode: recorder.analyserNode,
     aiAnalyserNode: player.analyserNode,
     error,

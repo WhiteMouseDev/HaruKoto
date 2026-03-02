@@ -14,6 +14,7 @@ type ConnectionState =
 
 type GeminiLiveOptions = {
   onAudioChunk: (base64: string) => void;
+  onAiTextDelta: (text: string) => void;
   onTranscript: (entry: TranscriptEntry) => void;
   onTurnComplete: () => void;
   onInterrupted: () => void;
@@ -97,6 +98,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
             // Output transcription (AI speech → text)
             if (sc.outputTranscription?.text) {
               currentAiTranscriptRef.current += sc.outputTranscription.text;
+              optionsRef.current.onAiTextDelta(sc.outputTranscription.text);
             }
 
             // Input transcription (User speech → text)
