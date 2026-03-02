@@ -1,9 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Crown, ArrowLeft, Play, RefreshCw } from 'lucide-react';
+import {
+  FlaskConical,
+  ArrowLeft,
+  Play,
+  RefreshCw,
+  Plane,
+  Store,
+  Briefcase,
+  MessageSquare,
+  FolderOpen,
+} from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -50,11 +60,17 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
-const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
-  TRAVEL: { emoji: '✈️', label: '여행 시나리오' },
-  DAILY: { emoji: '🏪', label: '일상 시나리오' },
-  BUSINESS: { emoji: '💼', label: '비즈니스 시나리오' },
-  FREE: { emoji: '🗣️', label: '자유주제 시나리오' },
+const CATEGORY_META: Record<string, { icon: ReactNode; label: string }> = {
+  TRAVEL: { icon: <Plane className="size-5" />, label: '여행 시나리오' },
+  DAILY: { icon: <Store className="size-5" />, label: '일상 시나리오' },
+  BUSINESS: {
+    icon: <Briefcase className="size-5" />,
+    label: '비즈니스 시나리오',
+  },
+  FREE: {
+    icon: <MessageSquare className="size-5" />,
+    label: '자유주제 시나리오',
+  },
 };
 
 export default function ChatPage() {
@@ -169,8 +185,9 @@ export default function ChatPage() {
           >
             <ArrowLeft className="size-5" />
           </Button>
-          <h1 className="text-xl font-bold">
-            {meta?.emoji} {meta?.label}
+          <h1 className="flex items-center gap-2 text-xl font-bold">
+            {meta?.icon}
+            <span>{meta?.label}</span>
           </h1>
         </motion.div>
 
@@ -236,9 +253,9 @@ export default function ChatPage() {
       {/* Header */}
       <motion.div variants={item} className="flex items-center gap-2 pt-2">
         <h1 className="text-2xl font-bold">AI 회화</h1>
-        <span className="bg-hk-yellow/20 text-hk-yellow inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
-          <Crown className="size-3" />
-          Premium
+        <span className="bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
+          <FlaskConical className="size-3" />
+          Beta
         </span>
       </motion.div>
 
@@ -267,7 +284,10 @@ export default function ChatPage() {
 
       {/* Category Grid */}
       <motion.div variants={item}>
-        <h2 className="mb-3 font-semibold">🗂️ 상황별 시나리오</h2>
+        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+          <FolderOpen className="size-4" />
+          상황별 시나리오
+        </h2>
         <CategoryGrid onSelect={setSelectedCategory} />
       </motion.div>
 

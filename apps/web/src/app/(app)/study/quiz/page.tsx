@@ -3,7 +3,14 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Lightbulb } from 'lucide-react';
+import {
+  ArrowLeft,
+  CircleCheck,
+  CircleX,
+  Frown,
+  Lightbulb,
+  PartyPopper,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { showGameEvents } from '@/lib/show-events';
@@ -174,7 +181,7 @@ function QuizContent() {
       const data = await res.json();
       showGameEvents(data.events);
       router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}`
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}`
       );
       return;
     }
@@ -199,7 +206,13 @@ function QuizContent() {
   if (questions.length === 0) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
-        <span className="text-5xl">{isReview ? '🎉' : '😢'}</span>
+        <span className="text-primary">
+          {isReview ? (
+            <PartyPopper className="size-12" />
+          ) : (
+            <Frown className="size-12" />
+          )}
+        </span>
         <p className="text-muted-foreground text-center">
           {isReview
             ? '복습할 문제가 없어요!'
@@ -354,8 +367,12 @@ function QuizContent() {
           >
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl">
-                  {answerState === 'correct' ? '✅' : '❌'}
+                <span>
+                  {answerState === 'correct' ? (
+                    <CircleCheck className="text-hk-success size-6" />
+                  ) : (
+                    <CircleX className="text-hk-error size-6" />
+                  )}
                 </span>
                 <span className="text-lg font-bold">
                   {answerState === 'correct' ? '정답이에요!' : '아쉬워요!'}

@@ -9,6 +9,7 @@ import {
   checkAndGrantAchievements,
   type GameEvent,
 } from '@/lib/gamification';
+import { REWARDS } from '@/lib/constants';
 
 interface StoredMessage {
   role: 'system' | 'user' | 'assistant';
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
     // Update daily progress
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const xpEarned = 20; // 회화 완료 보상 XP
+    const xpEarned = REWARDS.CONVERSATION_COMPLETE_XP;
 
     await prisma.dailyProgress.upsert({
       where: {

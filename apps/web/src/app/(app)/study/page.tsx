@@ -9,7 +9,8 @@ import {
   FileX,
   BookMarked,
   Notebook,
-  Heart,
+  PenLine,
+  Flower2,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,12 +29,19 @@ type IncompleteSession = {
   startedAt: string;
 };
 
+type StudyStats = {
+  totalCount: number;
+  studiedCount: number;
+  progress: number;
+};
+
 export default function StudyPage() {
   const router = useRouter();
   const [selectedLevel, setSelectedLevel] = useState<string>('N5');
   const [selectedTab, setSelectedTab] = useState('VOCABULARY');
   const [incompleteSession, setIncompleteSession] =
     useState<IncompleteSession | null>(null);
+  const [stats, setStats] = useState<StudyStats | null>(null);
 
   useEffect(() => {
     async function checkIncomplete() {
@@ -50,6 +58,21 @@ export default function StudyPage() {
     checkIncomplete();
   }, []);
 
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch(
+          `/api/v1/quiz/stats?level=${selectedLevel}&type=${selectedTab}`
+        );
+        const data = await res.json();
+        setStats(data);
+      } catch {
+        // Silently ignore
+      }
+    }
+    fetchStats();
+  }, [selectedLevel, selectedTab]);
+
   function startQuiz() {
     router.push(
       `/study/quiz?type=${selectedTab}&level=${selectedLevel}&count=10`
@@ -63,7 +86,7 @@ export default function StudyPage() {
         <Card className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30">
           <CardContent className="flex flex-col gap-3 p-4">
             <div className="flex items-center gap-2">
-              <span className="text-lg">📝</span>
+              <PenLine className="size-5 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-semibold">
                   진행 중인 퀴즈가 있어요
@@ -163,9 +186,9 @@ export default function StudyPage() {
                 학습
               </h3>
               <p className="text-muted-foreground text-sm">
-                {selectedTab === 'VOCABULARY'
-                  ? '200개 단어 · 4지선다'
-                  : '30개 문법 · 4지선다'}
+                {stats
+                  ? `${stats.totalCount}개 ${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · 4지선다`
+                  : `${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · 4지선다`}
               </p>
             </div>
             <Badge variant="secondary">10문제</Badge>
@@ -174,15 +197,19 @@ export default function StudyPage() {
           <div className="flex flex-col gap-1.5">
             <div className="text-muted-foreground flex justify-between text-xs">
               <span>학습 진행률</span>
-              <span>0%</span>
+              <span>{stats ? `${stats.progress}%` : '0%'}</span>
             </div>
             <div className="bg-secondary h-2 overflow-hidden rounded-full">
-              <div className="bg-primary h-full w-0 rounded-full transition-all" />
+              <div
+                className="bg-primary h-full rounded-full transition-all"
+                style={{ width: `${stats?.progress ?? 0}%` }}
+              />
             </div>
           </div>
 
           <Button className="h-12 rounded-xl text-base" onClick={startQuiz}>
-            학습 시작하기 🌸
+            학습 시작하기
+            <Flower2 className="ml-1.5 size-4" />
           </Button>
         </CardContent>
       </Card>
@@ -191,24 +218,42 @@ export default function StudyPage() {
       <div className="flex flex-col gap-2">
         <h2 className="font-semibold">내 학습 데이터</h2>
         {[
-          { icon: Heart, label: '좋아하는 단어', href: '#' },
           {
             icon: FileX,
             label: '오답 노트',
             href: '/study/quiz?type=VOCABULARY&level=N5&count=10&mode=review',
+            disabled: false,
           },
-          { icon: Notebook, label: '내가 학습한 단어', href: '#' },
-          { icon: BookMarked, label: '내 단어장', href: '/study/wordbook' },
+          {
+            icon: Notebook,
+            label: '내가 학습한 단어',
+            href: '',
+            disabled: true,
+          },
+          {
+            icon: BookMarked,
+            label: '내 단어장',
+            href: '/study/wordbook',
+            disabled: false,
+          },
         ].map((item) => (
           <Card
             key={item.label}
-            className="cursor-pointer"
-            onClick={() => item.href !== '#' && router.push(item.href)}
+            className={
+              item.disabled ? 'cursor-default opacity-50' : 'cursor-pointer'
+            }
+            onClick={() => !item.disabled && router.push(item.href)}
           >
             <CardContent className="flex items-center gap-3 px-4 py-3">
               <item.icon className="text-muted-foreground size-4" />
               <span className="flex-1 text-sm">{item.label}</span>
-              <ChevronRight className="text-muted-foreground size-4" />
+              {item.disabled ? (
+                <Badge variant="outline" className="text-[10px]">
+                  준비 중
+                </Badge>
+              ) : (
+                <ChevronRight className="text-muted-foreground size-4" />
+              )}
             </CardContent>
           </Card>
         ))}

@@ -3,7 +3,16 @@
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Target, RotateCcw, Home } from 'lucide-react';
+import {
+  Trophy,
+  Zap,
+  Target,
+  RotateCcw,
+  Home,
+  PartyPopper,
+  ThumbsUp,
+  Dumbbell,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -25,8 +34,11 @@ function ResultContent() {
   const accuracy = parseInt(searchParams.get('accuracy') || '0');
   const quizType = searchParams.get('type') || 'VOCABULARY';
   const jlptLevel = searchParams.get('level') || 'N5';
+  const currentXp = parseInt(searchParams.get('currentXp') || '0');
+  const xpForNext = parseInt(searchParams.get('xpForNext') || '100');
 
-  const emoji = accuracy >= 80 ? '🎉' : accuracy >= 50 ? '👍' : '💪';
+  const ResultIcon =
+    accuracy >= 80 ? PartyPopper : accuracy >= 50 ? ThumbsUp : Dumbbell;
   const message =
     accuracy >= 80
       ? '훌륭해요!'
@@ -43,7 +55,7 @@ function ResultContent() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, type: 'spring' }}
       >
-        <span className="text-6xl">{emoji}</span>
+        <ResultIcon className="text-primary size-14" />
         <h1 className="text-2xl font-bold">{message}</h1>
       </motion.div>
 
@@ -107,6 +119,19 @@ function ResultContent() {
                 <Zap className="text-hk-yellow size-4" />
                 <span className="text-lg font-bold">+{xp}</span>
                 <span className="text-muted-foreground text-[10px]">XP</span>
+                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                  <motion.div
+                    className="bg-hk-yellow h-full rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.min(Math.round((currentXp / xpForNext) * 100), 100)}%`,
+                    }}
+                    transition={{ duration: 0.8, delay: 0.7, ease: 'easeOut' }}
+                  />
+                </div>
+                <span className="text-muted-foreground text-[9px]">
+                  다음 레벨까지 {xpForNext - currentXp} XP
+                </span>
               </div>
               <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
                 <Trophy className="text-hk-blue size-4" />

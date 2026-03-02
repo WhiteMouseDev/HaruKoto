@@ -108,40 +108,44 @@ export type AchievementType =
   | 'xp_5000'
   | 'xp_10000';
 
+export type AchievementCategory = 'level' | 'streak' | 'xp' | 'quiz' | 'words' | 'conversation' | 'special';
+
 export type AchievementDef = {
   type: AchievementType;
   title: string;
   description: string;
   emoji: string;
+  category: AchievementCategory;
+  threshold?: number;
 };
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   // 퀴즈
-  { type: 'first_quiz', title: '첫 퀴즈 완료!', description: '첫 번째 퀴즈를 완료했어요', emoji: '🎯' },
-  { type: 'quiz_10', title: '퀴즈 10회 달성', description: '퀴즈를 10번 완료했어요', emoji: '📝' },
-  { type: 'quiz_50', title: '퀴즈 50회 달성', description: '퀴즈를 50번 완료했어요', emoji: '📚' },
-  { type: 'quiz_100', title: '퀴즈 마스터', description: '퀴즈를 100번 완료했어요', emoji: '🏆' },
-  { type: 'perfect_quiz', title: '퍼펙트!', description: '퀴즈에서 전부 맞았어요', emoji: '💯' },
+  { type: 'first_quiz', title: '첫 퀴즈 완료!', description: '첫 번째 퀴즈를 완료했어요', emoji: 'target', category: 'quiz', threshold: 1 },
+  { type: 'quiz_10', title: '퀴즈 10회 달성', description: '퀴즈를 10번 완료했어요', emoji: 'file-text', category: 'quiz', threshold: 10 },
+  { type: 'quiz_50', title: '퀴즈 50회 달성', description: '퀴즈를 50번 완료했어요', emoji: 'library', category: 'quiz', threshold: 50 },
+  { type: 'quiz_100', title: '퀴즈 마스터', description: '퀴즈를 100번 완료했어요', emoji: 'trophy', category: 'quiz', threshold: 100 },
+  { type: 'perfect_quiz', title: '퍼펙트!', description: '퀴즈에서 전부 맞았어요', emoji: 'check-check', category: 'special' },
   // 회화
-  { type: 'first_conversation', title: '첫 회화 완료!', description: '첫 번째 AI 회화를 완료했어요', emoji: '💬' },
-  { type: 'conversation_10', title: '회화 10회 달성', description: 'AI 회화를 10번 완료했어요', emoji: '🗣️' },
-  { type: 'conversation_50', title: '대화의 달인', description: 'AI 회화를 50번 완료했어요', emoji: '🎙️' },
+  { type: 'first_conversation', title: '첫 회화 완료!', description: '첫 번째 AI 회화를 완료했어요', emoji: 'message-circle', category: 'conversation', threshold: 1 },
+  { type: 'conversation_10', title: '회화 10회 달성', description: 'AI 회화를 10번 완료했어요', emoji: 'messages-square', category: 'conversation', threshold: 10 },
+  { type: 'conversation_50', title: '대화의 달인', description: 'AI 회화를 50번 완료했어요', emoji: 'mic', category: 'conversation', threshold: 50 },
   // 스트릭
-  { type: 'streak_3', title: '3일 연속 학습', description: '3일 연속으로 학습했어요', emoji: '🔥' },
-  { type: 'streak_7', title: '일주일 연속 학습', description: '7일 연속으로 학습했어요', emoji: '⚡' },
-  { type: 'streak_30', title: '한 달 연속 학습', description: '30일 연속으로 학습했어요', emoji: '🌟' },
-  { type: 'streak_100', title: '100일 연속 학습', description: '100일 연속으로 학습했어요', emoji: '👑' },
+  { type: 'streak_3', title: '3일 연속 학습', description: '3일 연속으로 학습했어요', emoji: 'flame', category: 'streak', threshold: 3 },
+  { type: 'streak_7', title: '일주일 연속 학습', description: '7일 연속으로 학습했어요', emoji: 'zap', category: 'streak', threshold: 7 },
+  { type: 'streak_30', title: '한 달 연속 학습', description: '30일 연속으로 학습했어요', emoji: 'sparkles', category: 'streak', threshold: 30 },
+  { type: 'streak_100', title: '100일 연속 학습', description: '100일 연속으로 학습했어요', emoji: 'crown', category: 'streak', threshold: 100 },
   // 단어 학습
-  { type: 'words_50', title: '단어 50개 학습', description: '총 50개의 단어를 학습했어요', emoji: '📖' },
-  { type: 'words_100', title: '단어 100개 학습', description: '총 100개의 단어를 학습했어요', emoji: '📕' },
+  { type: 'words_50', title: '단어 50개 학습', description: '총 50개의 단어를 학습했어요', emoji: 'book-open', category: 'words', threshold: 50 },
+  { type: 'words_100', title: '단어 100개 학습', description: '총 100개의 단어를 학습했어요', emoji: 'book-marked', category: 'words', threshold: 100 },
   // 레벨
-  { type: 'level_5', title: '레벨 5 달성', description: '레벨 5에 도달했어요', emoji: '⭐' },
-  { type: 'level_10', title: '레벨 10 달성', description: '레벨 10에 도달했어요', emoji: '🌙' },
-  { type: 'level_20', title: '레벨 20 달성', description: '레벨 20에 도달했어요', emoji: '🌸' },
+  { type: 'level_5', title: '레벨 5 달성', description: '레벨 5에 도달했어요', emoji: 'star', category: 'level', threshold: 5 },
+  { type: 'level_10', title: '레벨 10 달성', description: '레벨 10에 도달했어요', emoji: 'moon', category: 'level', threshold: 10 },
+  { type: 'level_20', title: '레벨 20 달성', description: '레벨 20에 도달했어요', emoji: 'flower-2', category: 'level', threshold: 20 },
   // XP
-  { type: 'xp_1000', title: 'XP 1,000 달성', description: '총 1,000 XP를 모았어요', emoji: '💎' },
-  { type: 'xp_5000', title: 'XP 5,000 달성', description: '총 5,000 XP를 모았어요', emoji: '🏅' },
-  { type: 'xp_10000', title: 'XP 10,000 달성', description: '총 10,000 XP를 모았어요', emoji: '🎖️' },
+  { type: 'xp_1000', title: 'XP 1,000 달성', description: '총 1,000 XP를 모았어요', emoji: 'gem', category: 'xp', threshold: 1000 },
+  { type: 'xp_5000', title: 'XP 5,000 달성', description: '총 5,000 XP를 모았어요', emoji: 'medal', category: 'xp', threshold: 5000 },
+  { type: 'xp_10000', title: 'XP 10,000 달성', description: '총 10,000 XP를 모았어요', emoji: 'award', category: 'xp', threshold: 10000 },
 ];
 
 export function getAchievement(type: AchievementType): AchievementDef | undefined {
@@ -190,46 +194,32 @@ export async function checkAndGrantAchievements(
       type: 'level_up',
       title: '레벨 업!',
       body: `레벨 ${context.newLevel}에 도달했어요!`,
-      emoji: '🎉',
+      emoji: 'party-popper',
     });
   }
 
-  // 레벨 업적
-  if (context.newLevel >= 5) toGrant.push('level_5');
-  if (context.newLevel >= 10) toGrant.push('level_10');
-  if (context.newLevel >= 20) toGrant.push('level_20');
+  // 카테고리별 컨텍스트 값 매핑
+  const contextMap: Record<string, number | undefined> = {
+    level: context.newLevel,
+    streak: context.streakCount,
+    xp: context.totalXp,
+    quiz: context.quizCount,
+    words: context.totalWordsStudied,
+    conversation: context.conversationCount,
+  };
 
-  // 스트릭 업적
-  if (context.streakCount >= 3) toGrant.push('streak_3');
-  if (context.streakCount >= 7) toGrant.push('streak_7');
-  if (context.streakCount >= 30) toGrant.push('streak_30');
-  if (context.streakCount >= 100) toGrant.push('streak_100');
+  for (const achievement of ACHIEVEMENTS) {
+    if (achievement.category === 'special') {
+      if (achievement.type === 'perfect_quiz' && context.isPerfectQuiz) {
+        toGrant.push(achievement.type);
+      }
+      continue;
+    }
 
-  // XP 업적
-  if (context.totalXp >= 1000) toGrant.push('xp_1000');
-  if (context.totalXp >= 5000) toGrant.push('xp_5000');
-  if (context.totalXp >= 10000) toGrant.push('xp_10000');
-
-  // 퀴즈 업적
-  if (context.quizCount !== undefined) {
-    if (context.quizCount >= 1) toGrant.push('first_quiz');
-    if (context.quizCount >= 10) toGrant.push('quiz_10');
-    if (context.quizCount >= 50) toGrant.push('quiz_50');
-    if (context.quizCount >= 100) toGrant.push('quiz_100');
-  }
-  if (context.isPerfectQuiz) toGrant.push('perfect_quiz');
-
-  // 단어 학습 업적
-  if (context.totalWordsStudied !== undefined) {
-    if (context.totalWordsStudied >= 50) toGrant.push('words_50');
-    if (context.totalWordsStudied >= 100) toGrant.push('words_100');
-  }
-
-  // 회화 업적
-  if (context.conversationCount !== undefined) {
-    if (context.conversationCount >= 1) toGrant.push('first_conversation');
-    if (context.conversationCount >= 10) toGrant.push('conversation_10');
-    if (context.conversationCount >= 50) toGrant.push('conversation_50');
+    const value = contextMap[achievement.category];
+    if (value !== undefined && achievement.threshold !== undefined && value >= achievement.threshold) {
+      toGrant.push(achievement.type);
+    }
   }
 
   // 새 업적만 필터링하여 부여

@@ -8,7 +8,7 @@ import {
   BookOpen,
   MessageCircle,
   User,
-  Crown,
+  FlaskConical,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,14 +16,14 @@ type Tab = {
   href: string;
   label: string;
   icon: typeof Home;
-  premium?: boolean;
+  beta?: boolean;
 };
 
 const tabs: Tab[] = [
   { href: '/home', label: '홈', icon: Home },
   { href: '/stats', label: '학습통계', icon: BarChart3 },
   { href: '/study', label: '학습', icon: BookOpen },
-  { href: '/chat', label: '회화', icon: MessageCircle, premium: true },
+  { href: '/chat', label: '회화', icon: MessageCircle, beta: true },
   { href: '/my', label: 'MY', icon: User },
 ];
 
@@ -56,8 +56,8 @@ export function BottomNav() {
                   )}
                   strokeWidth={isActive ? 2.5 : 2}
                 />
-                {tab.premium && (
-                  <Crown className="fill-hk-yellow text-hk-yellow absolute -top-1.5 -right-2 size-2.5" />
+                {tab.beta && (
+                  <FlaskConical className="text-primary absolute -top-1.5 -right-2 size-2.5" />
                 )}
               </div>
               <span>{tab.label}</span>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, Check } from 'lucide-react';
+import { Bell, BellOff, Check } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import { GameIcon } from '@/components/ui/game-icon';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -27,10 +28,10 @@ type NotificationsResponse = {
   unreadCount: number;
 };
 
-const TYPE_EMOJI: Record<string, string> = {
-  level_up: '🎉',
-  streak: '🔥',
-  achievement: '🏆',
+const TYPE_ICON: Record<string, string> = {
+  level_up: 'party-popper',
+  streak: 'flame',
+  achievement: 'trophy',
 };
 
 function formatRelativeTime(dateStr: string): string {
@@ -136,7 +137,7 @@ export function NotificationCenter() {
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-16">
-              <span className="text-4xl">🔔</span>
+              <BellOff className="text-muted-foreground size-10" />
               <p className="text-muted-foreground text-sm">
                 새로운 알림이 없어요
               </p>
@@ -150,11 +151,14 @@ export function NotificationCenter() {
                     notification.isRead ? 'opacity-60' : ''
                   }`}
                 >
-                  <span className="mt-0.5 text-lg">
-                    {notification.emoji ||
-                      TYPE_EMOJI[notification.type] ||
-                      '📢'}
-                  </span>
+                  <GameIcon
+                    name={
+                      notification.emoji ||
+                      TYPE_ICON[notification.type] ||
+                      'megaphone'
+                    }
+                    className="mt-0.5 size-5 shrink-0"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{notification.title}</p>
                     <p className="text-muted-foreground truncate text-xs">

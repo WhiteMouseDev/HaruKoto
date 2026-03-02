@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, RefreshCw, BookMarked } from 'lucide-react';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
+import { PAGINATION } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { WordbookEntryCard } from '@/components/features/wordbook/wordbook-entry-card';
 import { AddWordDialog } from '@/components/features/wordbook/add-word-dialog';
@@ -49,7 +51,7 @@ export default function WordbookPage() {
     try {
       const params = new URLSearchParams({
         page: String(page),
-        limit: '20',
+        limit: String(PAGINATION.DEFAULT_PAGE_SIZE),
         sort,
       });
       if (search) params.set('search', search);
@@ -96,11 +98,39 @@ export default function WordbookPage() {
   }
 
   async function handleDelete(id: string) {
+    const deletedEntry = entries.find((e) => e.id === id);
+    if (!deletedEntry) return;
+
+    // Optimistic removal
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+
     try {
       await apiFetch(`/api/v1/wordbook/${id}`, { method: 'DELETE' });
-      setEntries((prev) => prev.filter((e) => e.id !== id));
-    } catch (err) {
-      console.error('Failed to delete word:', err);
+      toast('삭제되었습니다', {
+        action: {
+          label: '되돌리기',
+          onClick: async () => {
+            try {
+              await apiFetch('/api/v1/wordbook', {
+                method: 'POST',
+                body: JSON.stringify({
+                  word: deletedEntry.word,
+                  reading: deletedEntry.reading,
+                  meaningKo: deletedEntry.meaningKo,
+                  note: deletedEntry.note,
+                }),
+              });
+              fetchEntries();
+            } catch {
+              toast.error('되돌리기에 실패했습니다');
+            }
+          },
+        },
+      });
+    } catch {
+      // Restore on failure
+      setEntries((prev) => [...prev, deletedEntry]);
+      toast.error('삭제에 실패했습니다');
     }
   }
 

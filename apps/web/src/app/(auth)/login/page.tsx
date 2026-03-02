@@ -17,6 +17,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
 
   const supabase = createClient();
 
@@ -52,7 +56,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleSocialLogin(provider: 'google' | 'kakao' | 'apple') {
+  async function handleSocialLogin(provider: 'google' | 'kakao') {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -62,6 +66,88 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     }
+  }
+
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setResetLoading(true);
+    setResetMessage('');
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      });
+      if (error) throw error;
+      setResetMessage('비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.');
+    } catch (err) {
+      setResetMessage(
+        err instanceof Error ? err.message : '오류가 발생했습니다'
+      );
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  if (showResetPassword) {
+    return (
+      <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
+        <div className="mb-8 flex flex-col items-center gap-2">
+          <Logo variant="full" size="lg" />
+        </div>
+
+        <Card className="w-full max-w-sm">
+          <CardContent className="flex flex-col gap-4 p-6">
+            <div className="text-center">
+              <h2 className="text-lg font-bold">비밀번호 재설정</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                가입한 이메일을 입력하면 재설정 링크를 보내드립니다.
+              </p>
+            </div>
+
+            <form onSubmit={handleResetPassword} className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="reset-email">이메일</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="hello@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  className="h-12 rounded-xl"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              {resetMessage && (
+                <p className="text-center text-sm text-muted-foreground">
+                  {resetMessage}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                className="h-12 rounded-xl text-base"
+                disabled={resetLoading}
+              >
+                {resetLoading ? '발송 중...' : '재설정 링크 보내기'}
+              </Button>
+            </form>
+
+            <button
+              type="button"
+              className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+              onClick={() => {
+                setShowResetPassword(false);
+                setResetMessage('');
+              }}
+            >
+              ← 로그인으로 돌아가기
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -110,6 +196,7 @@ export default function LoginPage() {
               </svg>
               Kakao로 계속하기
             </Button>
+            {/* TODO: Apple Developer Program 가입 후 활성화 ($99/yr)
             <Button
               variant="outline"
               className="h-12 w-full rounded-xl bg-black text-sm text-white hover:bg-gray-800 hover:text-white"
@@ -124,6 +211,7 @@ export default function LoginPage() {
               </svg>
               Apple로 계속하기
             </Button>
+            */}
           </div>
 
           {/* Divider */}
@@ -176,6 +264,20 @@ export default function LoginPage() {
               {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
             </Button>
           </form>
+
+          {/* Forgot Password */}
+          {!isSignUp && (
+            <button
+              type="button"
+              className="text-muted-foreground text-center text-sm underline-offset-4 hover:underline"
+              onClick={() => {
+                setShowResetPassword(true);
+                setResetEmail(email);
+              }}
+            >
+              비밀번호를 잊으셨나요?
+            </button>
+          )}
 
           {/* Toggle */}
           <p className="text-muted-foreground text-center text-sm">

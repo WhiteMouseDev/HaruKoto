@@ -38,25 +38,30 @@ export async function GET() {
     }
 
     // Summary stats
-    const [totalWordsStudied, totalQuizzes, totalXp] = await Promise.all([
-      prisma.dailyProgress.aggregate({
-        where: { userId: user.id },
-        _sum: { wordsStudied: true },
-      }),
-      prisma.quizSession.count({
-        where: { userId: user.id, completedAt: { not: null } },
-      }),
-      prisma.dailyProgress.aggregate({
-        where: { userId: user.id },
-        _sum: { xpEarned: true },
-      }),
-    ]);
+    const [totalWordsStudied, totalQuizzes, totalXp, studyDays] =
+      await Promise.all([
+        prisma.dailyProgress.aggregate({
+          where: { userId: user.id },
+          _sum: { wordsStudied: true },
+        }),
+        prisma.quizSession.count({
+          where: { userId: user.id, completedAt: { not: null } },
+        }),
+        prisma.dailyProgress.aggregate({
+          where: { userId: user.id },
+          _sum: { xpEarned: true },
+        }),
+        prisma.dailyProgress.count({
+          where: { userId: user.id },
+        }),
+      ]);
 
     return NextResponse.json({
       profile: dbUser,
       summary: {
         totalWordsStudied: totalWordsStudied._sum.wordsStudied ?? 0,
         totalQuizzesCompleted: totalQuizzes,
+        totalStudyDays: studyDays,
         totalXpEarned: totalXp._sum.xpEarned ?? 0,
       },
     });

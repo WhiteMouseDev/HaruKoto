@@ -1,3 +1,5 @@
+import { SRS_CONFIG } from '@/lib/constants';
+
 /**
  * SM-2 Spaced Repetition Algorithm
  * Based on SuperMemo SM-2 algorithm for optimal review scheduling
@@ -38,9 +40,9 @@ export function calculateSM2({
   // Determine quality based on correctness and time spent
   let quality: number;
   if (isCorrect) {
-    if (timeSpentSeconds <= 3)
+    if (timeSpentSeconds <= SRS_CONFIG.SPEED_THRESHOLDS.INSTANT)
       quality = 5; // instant
-    else if (timeSpentSeconds <= 8)
+    else if (timeSpentSeconds <= SRS_CONFIG.SPEED_THRESHOLDS.QUICK)
       quality = 4; // quick
     else quality = 3; // slow but correct
   } else {
@@ -55,9 +57,9 @@ export function calculateSM2({
     // Correct answer
     newStreak = streak + 1;
     if (newStreak === 1) {
-      newInterval = 1;
+      newInterval = SRS_CONFIG.INITIAL_INTERVALS[0];
     } else if (newStreak === 2) {
-      newInterval = 3;
+      newInterval = SRS_CONFIG.INITIAL_INTERVALS[1];
     } else {
       newInterval = Math.round(interval * easeFactor);
     }
@@ -67,17 +69,17 @@ export function calculateSM2({
     // Incorrect answer - reset
     newStreak = 0;
     newInterval = 0; // review again soon (within minutes/hours)
-    newEaseFactor = Math.max(1.3, easeFactor - 0.2);
+    newEaseFactor = Math.max(SRS_CONFIG.MIN_EASE_FACTOR, easeFactor - SRS_CONFIG.INCORRECT_PENALTY);
   }
 
-  // Ensure ease factor doesn't go below 1.3
-  newEaseFactor = Math.max(1.3, newEaseFactor);
+  // Ensure ease factor doesn't go below minimum
+  newEaseFactor = Math.max(SRS_CONFIG.MIN_EASE_FACTOR, newEaseFactor);
 
   // Calculate next review date
   const nextReviewAt = new Date();
   if (newInterval === 0) {
-    // Wrong answer: review in 10 minutes
-    nextReviewAt.setMinutes(nextReviewAt.getMinutes() + 10);
+    // Wrong answer: review after delay
+    nextReviewAt.setMinutes(nextReviewAt.getMinutes() + SRS_CONFIG.REVIEW_DELAY_MINUTES);
   } else {
     nextReviewAt.setDate(nextReviewAt.getDate() + newInterval);
   }

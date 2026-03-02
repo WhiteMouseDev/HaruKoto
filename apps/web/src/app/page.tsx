@@ -23,7 +23,7 @@ export default function LandingPage() {
       {/* Auth Buttons */}
       <div className="mt-12 flex w-full max-w-xs flex-col gap-3">
         <Button size="lg" className="h-12 w-full rounded-xl text-base" asChild>
-          <Link href="/home">시작하기</Link>
+          <Link href="/login">시작하기</Link>
         </Button>
         <Button
           variant="outline"
@@ -31,7 +31,7 @@ export default function LandingPage() {
           className="h-12 w-full rounded-xl text-base"
           asChild
         >
-          <Link href="/home">이미 계정이 있나요? 로그인</Link>
+          <Link href="/login">이미 계정이 있나요? 로그인</Link>
         </Button>
       </div>
     </div>

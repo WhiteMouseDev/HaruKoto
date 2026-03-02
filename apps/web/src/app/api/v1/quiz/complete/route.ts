@@ -7,6 +7,7 @@ import {
   checkAndGrantAchievements,
   type GameEvent,
 } from '@/lib/gamification';
+import { REWARDS } from '@/lib/constants';
 
 export async function POST(request: Request) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const xpEarned = session.correctCount * 10;
+    const xpEarned = session.correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
 
     // 스트릭 계산을 위해 XP 업데이트 전 유저 정보 조회
     const currentUser = await prisma.user.findUniqueOrThrow({
@@ -132,6 +133,8 @@ export async function POST(request: Request) {
       });
     }
 
+    const levelInfo = calculateLevel(totalXp);
+
     return NextResponse.json({
       sessionId: session.id,
       totalQuestions: session.totalQuestions,
@@ -140,6 +143,9 @@ export async function POST(request: Request) {
         (session.correctCount / session.totalQuestions) * 100
       ),
       xpEarned,
+      currentXp: levelInfo.currentXp,
+      xpForNext: levelInfo.xpForNext,
+      level: levelInfo.level,
       events,
     });
   } catch (err) {

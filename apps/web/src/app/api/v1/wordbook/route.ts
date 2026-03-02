@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { WordbookSource } from '@harukoto/database';
+import { PAGINATION } from '@/lib/constants';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const page = Math.max(1, Number(searchParams.get('page') || '1'));
-    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') || '20')));
+    const limit = Math.min(PAGINATION.MAX_PAGE_SIZE, Math.max(1, Number(searchParams.get('limit') || String(PAGINATION.DEFAULT_PAGE_SIZE))));
     const sort = searchParams.get('sort') || 'recent';
     const search = searchParams.get('search') || '';
     const source = searchParams.get('source') as WordbookSource | null;

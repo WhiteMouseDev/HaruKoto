@@ -1,7 +1,8 @@
 'use client';
 
+import { type ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+import { Star, MessageSquare, Target, Library, Leaf } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
@@ -13,15 +14,30 @@ type FeedbackScoresProps = {
   naturalness: number;
 };
 
-const SCORE_ITEMS = [
-  { key: 'fluency' as const, label: '유창성', emoji: '🗣️' },
-  { key: 'accuracy' as const, label: '정확성', emoji: '🎯' },
-  { key: 'vocabularyDiversity' as const, label: '어휘 다양성', emoji: '📚' },
-  { key: 'naturalness' as const, label: '자연스러움', emoji: '🌿' },
+const SCORE_ITEMS: {
+  key: 'fluency' | 'accuracy' | 'vocabularyDiversity' | 'naturalness';
+  label: string;
+  icon: ReactNode;
+}[] = [
+  { key: 'fluency', label: '유창성', icon: <MessageSquare className="size-4" /> },
+  { key: 'accuracy', label: '정확성', icon: <Target className="size-4" /> },
+  {
+    key: 'vocabularyDiversity',
+    label: '어휘 다양성',
+    icon: <Library className="size-4" />,
+  },
+  { key: 'naturalness', label: '자연스러움', icon: <Leaf className="size-4" /> },
 ];
 
 function getStarRating(score100: number): number {
   return Math.round((score100 / 100) * 5 * 10) / 10;
+}
+
+function getScoreLabel(score: number): string {
+  if (score >= 80) return '훌륭해요';
+  if (score >= 60) return '좋아요';
+  if (score >= 40) return '조금 더 연습해봐요';
+  return '기초부터 다져봐요';
 }
 
 export function FeedbackScores({
@@ -77,7 +93,7 @@ export function FeedbackScores({
 
         {/* Detail Scores */}
         <div className="space-y-3">
-          {SCORE_ITEMS.map(({ key, label, emoji }, index) => (
+          {SCORE_ITEMS.map(({ key, label, icon }, index) => (
             <motion.div
               key={key}
               className="space-y-1"
@@ -86,10 +102,15 @@ export function FeedbackScores({
               transition={{ delay: index * 0.1 }}
             >
               <div className="flex items-center justify-between text-sm">
-                <span>
-                  {emoji} {label}
+                <span className="flex items-center gap-1.5">
+                  {icon} {label}
                 </span>
-                <span className="font-semibold">{scores[key]}%</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground text-xs">
+                    {getScoreLabel(scores[key])}
+                  </span>
+                  <span className="font-semibold">{scores[key]}%</span>
+                </span>
               </div>
               <Progress value={scores[key]} className="h-2.5" />
             </motion.div>

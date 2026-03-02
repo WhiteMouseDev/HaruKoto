@@ -13,24 +13,28 @@ const LEVELS = [
     emoji: '🌱',
     label: '완전 초보',
     desc: '히라가나도 아직 몰라요',
+    disabled: false,
   },
   {
     value: 'N4' as const,
     emoji: '🌿',
     label: '기초 (N5~N4)',
     desc: '기본 인사/숫자 정도 알아요',
+    disabled: true,
   },
   {
     value: 'N3' as const,
     emoji: '🌳',
     label: '중급 (N3)',
     desc: '간단한 회화가 가능해요',
+    disabled: true,
   },
   {
     value: 'N2' as const,
     emoji: '🌲',
     label: '고급 (N2~N1)',
     desc: '복잡한 문장도 이해해요',
+    disabled: true,
   },
 ];
 
@@ -140,20 +144,30 @@ export default function OnboardingPage() {
               {LEVELS.map((level) => (
                 <button
                   key={level.value}
+                  disabled={level.disabled}
                   className={`flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-all ${
-                    jlptLevel === level.value
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-primary/50'
+                    level.disabled
+                      ? 'border-border cursor-not-allowed opacity-50'
+                      : jlptLevel === level.value
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/50'
                   }`}
-                  onClick={() => setJlptLevel(level.value)}
+                  onClick={() => {
+                    if (!level.disabled) setJlptLevel(level.value);
+                  }}
                 >
                   <span className="text-2xl">{level.emoji}</span>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-semibold">{level.label}</p>
                     <p className="text-muted-foreground text-sm">
                       {level.desc}
                     </p>
                   </div>
+                  {level.disabled && (
+                    <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
+                      준비 중
+                    </span>
+                  )}
                 </button>
               ))}
             </div>

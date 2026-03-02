@@ -28,6 +28,7 @@ type ProfileData = {
 type SummaryData = {
   totalWordsStudied: number;
   totalQuizzesCompleted: number;
+  totalStudyDays: number;
   totalXpEarned: number;
 };
 
@@ -123,7 +124,7 @@ export default function MyPage() {
       />
 
       <StatsOverview
-        totalStudyDays={summary.totalQuizzesCompleted}
+        totalStudyDays={summary.totalStudyDays}
         totalWordsStudied={summary.totalWordsStudied}
         experiencePoints={profile.experiencePoints}
         level={profile.level}

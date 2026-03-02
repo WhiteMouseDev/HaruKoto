@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { calculateSM2 } from '@/lib/spaced-repetition';
+import { SRS_CONFIG } from '@/lib/constants';
 
 export async function POST(request: Request) {
   try {
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
           interval: sm2Result.interval,
           nextReviewAt: sm2Result.nextReviewAt,
           lastReviewedAt: new Date(),
-          mastered: sm2Result.interval >= 21,
+          mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
         },
         create: {
           userId: user.id,
@@ -131,7 +132,7 @@ export async function POST(request: Request) {
           interval: sm2Result.interval,
           nextReviewAt: sm2Result.nextReviewAt,
           lastReviewedAt: new Date(),
-          mastered: sm2Result.interval >= 21,
+          mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
         },
         create: {
           userId: user.id,

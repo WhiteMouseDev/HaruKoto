@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Eye, EyeOff, LogOut } from 'lucide-react';
+import { ArrowLeft, ClipboardList, Eye, EyeOff, LogOut } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { showGameEvents } from '@/lib/show-events';
 import { Button } from '@/components/ui/button';
@@ -273,7 +273,10 @@ export default function ChatConversationPage({
             >
               <Card className="border-primary/20 bg-primary/5 py-3">
                 <CardContent className="px-4 py-0">
-                  <p className="text-xs font-medium text-primary">📋 상황 설명</p>
+                  <p className="flex items-center gap-1 text-xs font-medium text-primary">
+                    <ClipboardList className="size-3.5" />
+                    상황 설명
+                  </p>
                   <p className="mt-1 text-sm">{scenario.situation}</p>
                   <p className="text-muted-foreground mt-1 text-xs">
                     나의 역할: {scenario.yourRole} · AI 역할: {scenario.aiRole}

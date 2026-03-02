@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { REWARDS, QUIZ_CONFIG } from '@/lib/constants';
 
 export async function POST(request: Request) {
   try {
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { quizType, jlptLevel, count = 10, mode = 'normal' } = body;
+    const { quizType, jlptLevel, count = QUIZ_CONFIG.DEFAULT_COUNT, mode = 'normal' } = body;
 
     if (!quizType || !jlptLevel) {
       return NextResponse.json(
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
 
       // Award partial XP
       if (correctCount > 0) {
-        const partialXp = correctCount * 10;
+        const partialXp = correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -130,7 +131,7 @@ export async function POST(request: Request) {
           const wrongOptions = allVocab
             .filter((v) => v.id !== word.id)
             .sort(() => Math.random() - 0.5)
-            .slice(0, 3);
+            .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
           const options = [
             { id: word.id, text: word.meaningKo },
@@ -195,7 +196,7 @@ export async function POST(request: Request) {
           const wrongOptions = allGrammar
             .filter((g) => g.id !== grammar.id)
             .sort(() => Math.random() - 0.5)
-            .slice(0, 3);
+            .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
           const options = [
             { id: grammar.id, text: grammar.meaningKo },
@@ -225,7 +226,7 @@ export async function POST(request: Request) {
             },
           },
         },
-        take: Math.ceil(count * 0.6),
+        take: Math.ceil(count * QUIZ_CONFIG.REVIEW_RATIO),
         orderBy: { userProgress: { _count: 'asc' } },
       });
 
@@ -265,7 +266,7 @@ export async function POST(request: Request) {
         const wrongOptions = allVocab
           .filter((v) => v.id !== word.id)
           .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
+          .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
         const options = [
           { id: word.id, text: word.meaningKo },
@@ -297,7 +298,7 @@ export async function POST(request: Request) {
         const wrongOptions = allGrammar
           .filter((g) => g.id !== grammar.id)
           .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
+          .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
         const options = [
           { id: grammar.id, text: grammar.meaningKo },
