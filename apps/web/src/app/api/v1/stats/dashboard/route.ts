@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     // Fetch user, today's progress, and weekly stats in parallel
     const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress] =
@@ -107,7 +107,7 @@ export async function GET() {
 
 async function getWeeklyStats(userId: string, today: Date) {
   const weekAgo = new Date(today);
-  weekAgo.setUTCDate(weekAgo.getUTCDate() - 6);
+  weekAgo.setDate(weekAgo.getDate() - 6);
 
   const records = await prisma.dailyProgress.findMany({
     where: {
@@ -122,17 +122,24 @@ async function getWeeklyStats(userId: string, today: Date) {
     },
   });
 
-  // Build a map of existing records for quick lookup
+  // Build a map using local date string for consistent timezone handling
+  const toLocalDateStr = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
   const recordMap = new Map(
-    records.map((r) => [r.date.toISOString().split('T')[0], r])
+    records.map((r) => [toLocalDateStr(r.date), r])
   );
 
   // Fill in all 7 days (even if no data)
   const result: { date: string; wordsStudied: number; xpEarned: number }[] = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(weekAgo);
-    d.setUTCDate(d.getUTCDate() + i);
-    const dateStr = d.toISOString().split('T')[0];
+    d.setDate(d.getDate() + i);
+    const dateStr = toLocalDateStr(d);
     const record = recordMap.get(dateStr);
     result.push({
       date: dateStr,

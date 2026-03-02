@@ -1,11 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "AI_PROVIDER",
+    "OPENAI_API_KEY",
+    "GOOGLE_GENERATIVE_AI_API_KEY"
+  ],
   "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "node_modules/.prisma/**"]
     },
     "dev": {
       "cache": false,

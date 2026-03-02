@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { prisma } from '@harukoto/database';
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -43,6 +44,20 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
+  }
+
+  // Logged-in user on protected route: check onboarding completion
+  if (user && isProtectedPath) {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { onboardingCompleted: true },
+    });
+
+    if (!dbUser || !dbUser.onboardingCompleted) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/onboarding';
+      return NextResponse.redirect(url);
+    }
   }
 
   // Redirect logged-in users away from auth pages

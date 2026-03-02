@@ -117,7 +117,7 @@ export async function POST(request: Request) {
 
     // Update daily progress
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     await prisma.dailyProgress.upsert({
       where: {

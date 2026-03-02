@@ -116,11 +116,19 @@ export default function StudyPage() {
         <h2 className="font-semibold">내 학습 데이터</h2>
         {[
           { icon: Heart, label: '좋아하는 단어', href: '#' },
-          { icon: FileX, label: '오답 노트', href: '#' },
+          {
+            icon: FileX,
+            label: '오답 노트',
+            href: '/study/quiz?type=VOCABULARY&level=N5&count=10&mode=review',
+          },
           { icon: Notebook, label: '내가 학습한 단어', href: '#' },
-          { icon: BookMarked, label: '내 단어장', href: '#' },
+          { icon: BookMarked, label: '내 단어장', href: '/study/wordbook' },
         ].map((item) => (
-          <Card key={item.label}>
+          <Card
+            key={item.label}
+            className="cursor-pointer"
+            onClick={() => item.href !== '#' && router.push(item.href)}
+          >
             <CardContent className="flex items-center gap-3 px-4 py-3">
               <item.icon className="text-muted-foreground size-4" />
               <span className="flex-1 text-sm">{item.label}</span>

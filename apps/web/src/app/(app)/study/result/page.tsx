@@ -23,6 +23,8 @@ function ResultContent() {
   const total = parseInt(searchParams.get('total') || '0');
   const xp = parseInt(searchParams.get('xp') || '0');
   const accuracy = parseInt(searchParams.get('accuracy') || '0');
+  const quizType = searchParams.get('type') || 'VOCABULARY';
+  const jlptLevel = searchParams.get('level') || 'N5';
 
   const emoji = accuracy >= 80 ? '🎉' : accuracy >= 50 ? '👍' : '💪';
   const message =
@@ -127,7 +129,11 @@ function ResultContent() {
           <Button
             variant="outline"
             className="h-12 rounded-xl text-base"
-            onClick={() => router.replace('/study')}
+            onClick={() =>
+              router.replace(
+                `/study/quiz?type=${quizType}&level=${jlptLevel}&count=10&mode=review`
+              )
+            }
           >
             <RotateCcw className="mr-2 size-4" />
             오답 복습하기
@@ -135,7 +141,11 @@ function ResultContent() {
         )}
         <Button
           className="h-12 rounded-xl text-base"
-          onClick={() => router.replace('/study')}
+          onClick={() =>
+            router.replace(
+              `/study/quiz?type=${quizType}&level=${jlptLevel}&count=10`
+            )
+          }
         >
           <RotateCcw className="mr-2 size-4" />한 번 더 도전
         </Button>

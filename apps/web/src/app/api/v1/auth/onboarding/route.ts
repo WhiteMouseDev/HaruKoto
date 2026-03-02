@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@harukoto/database';
 
 export async function POST(request: Request) {
   try {
@@ -22,8 +23,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Save to database via Prisma when Supabase DB is connected
-    // For now, update user metadata in Supabase Auth
     const { error } = await supabase.auth.updateUser({
       data: {
         nickname,
@@ -36,6 +35,24 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    await prisma.user.upsert({
+      where: { id: user.id },
+      create: {
+        id: user.id,
+        email: user.email!,
+        nickname,
+        jlptLevel,
+        goal,
+        onboardingCompleted: true,
+      },
+      update: {
+        nickname,
+        jlptLevel,
+        goal,
+        onboardingCompleted: true,
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch {

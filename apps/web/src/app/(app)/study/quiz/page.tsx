@@ -47,6 +47,8 @@ function QuizContent() {
   const quizType = searchParams.get('type') || 'VOCABULARY';
   const jlptLevel = searchParams.get('level') || 'N5';
   const count = parseInt(searchParams.get('count') || '10');
+  const mode = searchParams.get('mode');
+  const isReview = mode === 'review';
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -66,7 +68,7 @@ function QuizContent() {
         const res = await fetch('/api/v1/quiz/start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quizType, jlptLevel, count }),
+          body: JSON.stringify({ quizType, jlptLevel, count, mode: mode || undefined }),
         });
         const data = await res.json();
         if (res.ok) {
@@ -80,7 +82,7 @@ function QuizContent() {
       }
     }
     startQuiz();
-  }, [quizType, jlptLevel, count]);
+  }, [quizType, jlptLevel, count, mode]);
 
   // Timer
   useEffect(() => {
@@ -134,7 +136,7 @@ function QuizContent() {
       });
       const data = await res.json();
       router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}`
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}`
       );
       return;
     }
@@ -159,11 +161,14 @@ function QuizContent() {
   if (questions.length === 0) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
-        <p className="text-muted-foreground">
-          퀴즈 데이터를 불러올 수 없습니다.
+        <span className="text-5xl">{isReview ? '🎉' : '😢'}</span>
+        <p className="text-muted-foreground text-center">
+          {isReview
+            ? '복습할 문제가 없어요!'
+            : '퀴즈 데이터를 불러올 수 없습니다.'}
         </p>
-        <Button variant="outline" onClick={() => router.back()}>
-          돌아가기
+        <Button variant="outline" onClick={() => router.push('/study')}>
+          학습으로 돌아가기
         </Button>
       </div>
     );
@@ -180,7 +185,9 @@ function QuizContent() {
           <ArrowLeft className="size-5" />
         </button>
         <span className="flex-1 text-center text-sm font-medium">
-          {jlptLevel} {quizType === 'VOCABULARY' ? '단어' : '문법'} 퀴즈
+          {isReview
+            ? '오답 복습'
+            : `${jlptLevel} ${quizType === 'VOCABULARY' ? '단어' : '문법'} 퀴즈`}
         </span>
         <span className="text-muted-foreground text-sm">
           {currentIndex + 1}/{questions.length}
