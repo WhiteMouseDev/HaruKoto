@@ -2,8 +2,27 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Logo } from '@/components/brand/logo';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
+
+function BrandLogo({ size = 'md' }: { size?: 'sm' | 'md' }) {
+  const imgSize = size === 'sm' ? 32 : 40;
+  const textClass = size === 'sm' ? 'text-lg' : 'text-xl';
+  return (
+    <div className="flex items-center gap-2.5">
+      <Image
+        src="/images/logo.svg"
+        alt="하루코토"
+        width={imgSize}
+        height={imgSize}
+        className="shrink-0"
+      />
+      <span className={cn('text-foreground font-bold tracking-tight', textClass)}>
+        하루코토
+      </span>
+    </div>
+  );
+}
 import {
   BookOpen,
   Bot,
@@ -164,7 +183,7 @@ function Header() {
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Logo variant="full" size="sm" />
+        <BrandLogo size="sm" />
 
         <nav className="hidden items-center gap-8 md:flex">
           <button
@@ -339,35 +358,31 @@ function Hero() {
 const features = [
   {
     icon: BookOpen,
-    emoji: '📚',
     title: 'JLPT 완벽 대비',
     description:
       'N5부터 N1까지, 체계적인 단어와 문법 학습. 실전 모의고사로 시험 대비를 완벽하게.',
-    color: 'bg-hk-blue/15 text-hk-blue',
+    color: 'bg-hk-blue/10 text-hk-blue',
   },
   {
     icon: Bot,
-    emoji: '🤖',
     title: 'AI 실전 회화',
     description:
       'AI와 자연스러운 일본어 대화 연습. 실시간 피드백으로 회화 실력 향상.',
-    color: 'bg-hk-green/15 text-hk-green',
+    color: 'bg-hk-green/10 text-hk-green',
   },
   {
     icon: Gamepad2,
-    emoji: '🎮',
     title: '게이미피케이션',
     description:
       'XP, 레벨업, 연속 학습 보상으로 매일 학습이 즐거워져요.',
-    color: 'bg-hk-yellow/15 text-hk-yellow',
+    color: 'bg-hk-yellow/10 text-hk-yellow',
   },
   {
     icon: Flower2,
-    emoji: '🌸',
     title: '매일 한 단어',
     description:
       '하루에 한 단어씩, 부담 없이 꾸준히. 봄처럼 자연스럽게 실력이 피어납니다.',
-    color: 'bg-primary/15 text-primary',
+    color: 'bg-primary/10 text-primary',
   },
 ];
 
@@ -399,11 +414,11 @@ function Features() {
               <div className="flex items-start gap-4">
                 <div
                   className={cn(
-                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl',
+                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
                     feature.color
                   )}
                 >
-                  {feature.emoji}
+                  <feature.icon className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="text-foreground text-lg font-bold">
@@ -659,7 +674,7 @@ function Footer() {
     <footer className="border-border/50 border-t py-12">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
-          <Logo variant="full" size="sm" />
+          <BrandLogo size="sm" />
 
           <nav className="flex flex-wrap justify-center gap-6">
             <a
