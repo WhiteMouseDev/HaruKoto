@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import { AudioPlayer } from '@/components/features/chat/audio-player';
 
 type Feedback = {
   type: string;
@@ -17,6 +18,7 @@ type ChatMessageProps = {
   messageKo?: string;
   feedback?: Feedback[];
   showTranslation: boolean;
+  voiceEnabled?: boolean;
 };
 
 export function ChatMessage({
@@ -25,6 +27,7 @@ export function ChatMessage({
   messageKo,
   feedback,
   showTranslation,
+  voiceEnabled = false,
 }: ChatMessageProps) {
   const [showFeedback, setShowFeedback] = useState(false);
   const isAI = role === 'ai';
@@ -56,6 +59,7 @@ export function ChatMessage({
               {messageKo}
             </p>
           )}
+          {isAI && voiceEnabled && <AudioPlayer text={messageJa} />}
         </div>
 
         {/* Inline feedback for user messages */}

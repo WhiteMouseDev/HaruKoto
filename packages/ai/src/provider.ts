@@ -1,5 +1,8 @@
 import { openai } from '@ai-sdk/openai';
 import { google } from '@ai-sdk/google';
+import OpenAI from 'openai';
+
+export const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 type ProviderType = 'openai' | 'google';
 

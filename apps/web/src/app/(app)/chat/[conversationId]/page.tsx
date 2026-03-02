@@ -296,6 +296,7 @@ export default function ChatConversationPage({
                 messageKo={msg.messageKo}
                 feedback={msg.feedback}
                 showTranslation={showTranslation}
+                voiceEnabled
               />
             ))}
           </AnimatePresence>
@@ -342,6 +343,7 @@ export default function ChatConversationPage({
         onHint={handleHint}
         hint={showHint ? currentHint : null}
         disabled={isTyping || ending}
+        voiceEnabled
       />
     </div>
   );

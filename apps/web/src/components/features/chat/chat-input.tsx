@@ -1,25 +1,34 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Lightbulb } from 'lucide-react';
+import { Send, Lightbulb, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { VoiceInput } from '@/components/features/chat/voice-input';
 
 type ChatInputProps = {
   onSend: (message: string) => void;
   onHint: () => void;
   hint: string | null;
   disabled: boolean;
+  voiceEnabled?: boolean;
 };
 
-export function ChatInput({ onSend, onHint, hint, disabled }: ChatInputProps) {
+export function ChatInput({
+  onSend,
+  onHint,
+  hint,
+  disabled,
+  voiceEnabled = false,
+}: ChatInputProps) {
   const [message, setMessage] = useState('');
+  const [voiceMode, setVoiceMode] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (!disabled && inputRef.current) {
+    if (!disabled && !voiceMode && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [disabled]);
+  }, [disabled, voiceMode]);
 
   function handleSend() {
     const trimmed = message.trim();
@@ -33,6 +42,22 @@ export function ChatInput({ onSend, onHint, hint, disabled }: ChatInputProps) {
       e.preventDefault();
       handleSend();
     }
+  }
+
+  function handleVoiceSend(text: string) {
+    onSend(text);
+    setVoiceMode(false);
+  }
+
+  // Voice input mode
+  if (voiceMode && voiceEnabled) {
+    return (
+      <VoiceInput
+        onSend={handleVoiceSend}
+        disabled={disabled}
+        onCancel={() => setVoiceMode(false)}
+      />
+    );
   }
 
   return (
@@ -68,6 +93,18 @@ export function ChatInput({ onSend, onHint, hint, disabled }: ChatInputProps) {
           rows={1}
           className="font-jp border-input bg-secondary/50 max-h-24 min-h-[40px] flex-1 resize-none rounded-xl border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
         />
+
+        {voiceEnabled && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setVoiceMode(true)}
+            disabled={disabled}
+            className="text-muted-foreground shrink-0"
+          >
+            <Mic className="size-5" />
+          </Button>
+        )}
 
         <Button
           size="icon"
