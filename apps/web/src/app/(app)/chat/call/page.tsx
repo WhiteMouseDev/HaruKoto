@@ -2,10 +2,12 @@
 
 import { useEffect } from 'react';
 import { useVoiceCall } from '@/hooks/use-voice-call';
+import { useProfile } from '@/hooks/use-dashboard';
 import { CallScreen } from '@/components/features/chat/call-screen';
 
 export default function CallPage() {
-  const call = useVoiceCall();
+  const { data: profileData } = useProfile();
+  const call = useVoiceCall(profileData?.profile.nickname);
 
   // Warn before leaving during active call
   useEffect(() => {

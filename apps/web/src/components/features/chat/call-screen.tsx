@@ -137,9 +137,7 @@ export function CallScreen({ call }: CallScreenProps) {
               return (
                 <motion.p
                   key={sub.id}
-                  className={`font-jp text-center text-sm leading-relaxed ${
-                    sub.role === 'user' ? 'text-emerald-300/70' : 'text-white/60'
-                  }`}
+                  className="font-jp text-center text-sm leading-relaxed text-white/60"
                   style={{ opacity: i === subtitles.length - 1 ? undefined : opacity }}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: i === subtitles.length - 1 ? 0.7 : opacity }}

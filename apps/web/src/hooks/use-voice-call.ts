@@ -36,7 +36,7 @@ export type VoiceCallReturn = {
   toggleAnalysis: () => void;
 };
 
-export function useVoiceCall(): VoiceCallReturn {
+export function useVoiceCall(nickname?: string): VoiceCallReturn {
   const router = useRouter();
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
@@ -80,6 +80,7 @@ export function useVoiceCall(): VoiceCallReturn {
 
   // --- Gemini Live WebSocket ---
   const gemini = useGeminiLive({
+    nickname,
     onAudioChunk: useCallback(
       (base64: string) => {
         if (stateRef.current !== 'connected') return;
@@ -92,13 +93,14 @@ export function useVoiceCall(): VoiceCallReturn {
       setCurrentAiText((prev) => prev + text);
     }, []),
     onTranscript: useCallback((entry: TranscriptEntry) => {
-      // Push completed transcript as a subtitle
+      // Only show AI subtitles (user speech doesn't need display)
+      if (entry.role !== 'assistant') return;
       setSubtitles((prev) => {
         const next = [
           ...prev,
           {
             id: ++subtitleIdRef.current,
-            role: entry.role as 'user' | 'assistant',
+            role: 'assistant' as const,
             text: entry.text,
             timestamp: Date.now(),
           },

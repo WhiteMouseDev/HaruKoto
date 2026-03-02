@@ -13,6 +13,7 @@ type ConnectionState =
   | 'error';
 
 type GeminiLiveOptions = {
+  nickname?: string;
   onAudioChunk: (base64: string) => void;
   onAiTextDelta: (text: string) => void;
   onTranscript: (entry: TranscriptEntry) => void;
@@ -167,11 +168,15 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
     aliveRef.current = true;
     setConnectionState('ready');
 
-    // Send initial prompt to trigger AI greeting
+    // Send initial prompt to trigger AI greeting (include nickname if available)
+    const name = optionsRef.current.nickname;
+    const greeting = name
+      ? `相手の名前は「${name}」です。名前を呼んで会話を始めてください。`
+      : '会話を始めてください。';
     session.sendClientContent({
       turns: [{
         role: 'user',
-        parts: [{ text: '会話を始めてください。' }],
+        parts: [{ text: greeting }],
       }],
       turnComplete: true,
     });
