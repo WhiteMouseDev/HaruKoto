@@ -1,18 +1,291 @@
-import { Crown } from 'lucide-react';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Crown, ArrowLeft, Play, RefreshCw } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CategoryGrid } from '@/components/features/chat/category-grid';
+import { ScenarioCard } from '@/components/features/chat/scenario-card';
+
+type Scenario = {
+  id: string;
+  title: string;
+  titleJa: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  estimatedMinutes: number;
+  keyExpressions: string[];
+  situation: string;
+  yourRole: string;
+  aiRole: string;
+};
+
+type ScenariosResponse = {
+  scenarios: Scenario[];
+};
+
+type StartResponse = {
+  conversationId: string;
+  firstMessage: {
+    messageJa: string;
+    messageKo: string;
+    hint: string;
+  };
+};
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
+
+const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
+  TRAVEL: { emoji: '✈️', label: '여행 시나리오' },
+  DAILY: { emoji: '🏪', label: '일상 시나리오' },
+  BUSINESS: { emoji: '💼', label: '비즈니스 시나리오' },
+  FREE: { emoji: '🗣️', label: '자유주제 시나리오' },
+};
 
 export default function ChatPage() {
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+    let cancelled = false;
+
+    async function fetchScenarios() {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await apiFetch<ScenariosResponse>(
+          `/api/v1/chat/scenarios?category=${selectedCategory}`
+        );
+        if (!cancelled) setScenarios(data.scenarios);
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : '시나리오를 불러올 수 없습니다.'
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchScenarios();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory, retryCount]);
+
+  async function handleStartConversation(scenario: Scenario) {
+    setStarting(true);
+    try {
+      const data = await apiFetch<StartResponse>('/api/v1/chat/start', {
+        method: 'POST',
+        body: JSON.stringify({ scenarioId: scenario.id }),
+      });
+
+      // Store first message + scenario info for the conversation page
+      sessionStorage.setItem(
+        `chat_${data.conversationId}`,
+        JSON.stringify({
+          firstMessage: data.firstMessage,
+          scenario: {
+            title: scenario.title,
+            titleJa: scenario.titleJa,
+            difficulty: scenario.difficulty,
+            situation: scenario.situation,
+            yourRole: scenario.yourRole,
+            aiRole: scenario.aiRole,
+          },
+        })
+      );
+
+      router.push(`/chat/${data.conversationId}`);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : '대화를 시작할 수 없습니다.'
+      );
+      setStarting(false);
+    }
+  }
+
+  async function handleFreeChat() {
+    setStarting(true);
+    try {
+      const data = await apiFetch<ScenariosResponse>(
+        '/api/v1/chat/scenarios?category=FREE'
+      );
+      if (data.scenarios.length > 0) {
+        await handleStartConversation(data.scenarios[0]);
+      } else {
+        setError('자유 대화 시나리오가 없습니다.');
+        setStarting(false);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : '대화를 시작할 수 없습니다.'
+      );
+      setStarting(false);
+    }
+  }
+
+  // Scenario list view
+  if (selectedCategory) {
+    const meta = CATEGORY_META[selectedCategory];
+    return (
+      <motion.div
+        className="flex flex-col gap-4 p-4"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={item} className="flex items-center gap-3 pt-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedCategory(null);
+              setScenarios([]);
+            }}
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+          <h1 className="text-xl font-bold">
+            {meta?.emoji} {meta?.label}
+          </h1>
+        </motion.div>
+
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="bg-secondary h-20 animate-pulse rounded-xl"
+              />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center gap-3 py-8">
+            <p className="text-muted-foreground text-sm">{error}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRetryCount((c) => c + 1)}
+            >
+              <RefreshCw className="mr-1.5 size-3.5" />
+              다시 시도
+            </Button>
+          </div>
+        ) : scenarios.length === 0 ? (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground text-sm">
+              아직 시나리오가 없습니다.
+            </p>
+          </div>
+        ) : (
+          <motion.div variants={item} className="space-y-2">
+            {scenarios.map((scenario) => (
+              <ScenarioCard
+                key={scenario.id}
+                scenario={scenario}
+                onSelect={() => handleStartConversation(scenario)}
+              />
+            ))}
+          </motion.div>
+        )}
+
+        {starting && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="bg-card flex items-center gap-3 rounded-2xl px-6 py-4 shadow-lg">
+              <div className="border-primary size-5 animate-spin rounded-full border-2 border-t-transparent" />
+              <span className="text-sm font-medium">대화 시작 중...</span>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    );
+  }
+
+  // Main category selection view
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center gap-2 pt-2">
+    <motion.div
+      className="flex flex-col gap-5 p-4"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {/* Header */}
+      <motion.div variants={item} className="flex items-center gap-2 pt-2">
         <h1 className="text-2xl font-bold">AI 회화</h1>
         <span className="bg-hk-yellow/20 text-hk-yellow inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
           <Crown className="size-3" />
           Premium
         </span>
-      </div>
-      <p className="text-muted-foreground">
-        AI와 함께하는 일본어 상황극 회화 연습이 곧 추가됩니다.
-      </p>
-    </div>
+      </motion.div>
+
+      {/* Free Chat CTA */}
+      <motion.div variants={item}>
+        <motion.div whileTap={{ scale: 0.98 }}>
+          <Card
+            className="border-primary/30 from-primary/10 to-accent cursor-pointer bg-gradient-to-r py-4"
+            onClick={handleFreeChat}
+          >
+            <CardContent className="flex items-center gap-4 p-4">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-2xl">
+                🦊
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold">하루와 자유롭게 대화</h3>
+                <p className="text-muted-foreground text-sm">
+                  어떤 주제든 일본어로!
+                </p>
+              </div>
+              <Play className="text-primary size-5" />
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      {/* Category Grid */}
+      <motion.div variants={item}>
+        <h2 className="mb-3 font-semibold">🗂️ 상황별 시나리오</h2>
+        <CategoryGrid onSelect={setSelectedCategory} />
+      </motion.div>
+
+      {/* Starting overlay */}
+      {starting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-card flex items-center gap-3 rounded-2xl px-6 py-4 shadow-lg">
+            <div className="border-primary size-5 animate-spin rounded-full border-2 border-t-transparent" />
+            <span className="text-sm font-medium">대화 시작 중...</span>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-hk-error/10 text-hk-error rounded-lg px-4 py-3 text-center text-sm">
+          {error}
+        </div>
+      )}
+    </motion.div>
   );
 }
