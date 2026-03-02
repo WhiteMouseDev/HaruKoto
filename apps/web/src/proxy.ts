@@ -73,6 +73,25 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Redirect onboarded users away from /onboarding
+  if (user && request.nextUrl.pathname === '/onboarding') {
+    const onboardingCookie = request.cookies.get('onboarding_completed');
+    if (onboardingCookie?.value === 'true') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/home';
+      return NextResponse.redirect(url);
+    }
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { onboardingCompleted: true },
+    });
+    if (dbUser?.onboardingCompleted) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/home';
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Redirect logged-in users away from auth pages
   const authPaths = ['/login', '/'];
   const isAuthPath = authPaths.includes(request.nextUrl.pathname);

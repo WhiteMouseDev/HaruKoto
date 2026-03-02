@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-hk-primary-hover: var(--hk-primary-hover);
+  --color-hk-primary-light: var(--hk-primary-light);
+  --color-hk-blue: var(--hk-blue);
+  --color-hk-green: var(--hk-green);
+  --color-hk-red: var(--hk-red);
+  --color-hk-yellow: var(--hk-yellow);
+
+  --font-sans: var(--font-noto-sans-kr), "Noto Sans KR", system-ui, sans-serif;
+  --font-jp: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+/* ========================================
+   HaruKoto Light Theme (Spring / 봄 테마)
+   ======================================== */
+:root {
+  --radius: 0.75rem;
+
+  --background: #FFF8F0;
+  --foreground: #2D2D2D;
+  --card: #FFFFFF;
+  --card-foreground: #2D2D2D;
+
+  --primary: #FFB7C5;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #FFF0F5;
+  --secondary-foreground: #2D2D2D;
+
+  --muted: #F5F0EB;
+  --muted-foreground: #6B7280;
+
+  --accent: #FFE4EC;
+  --accent-foreground: #2D2D2D;
+
+  --destructive: #EF4444;
+
+  --border: #F0E6DE;
+  --input: #F0E6DE;
+  --ring: #FFB7C5;
+
+  --hk-primary-hover: #FF8FA3;
+  --hk-primary-light: #FFE4EC;
+  --hk-blue: #87CEEB;
+  --hk-green: #98D8C8;
+  --hk-red: #FF6B6B;
+  --hk-yellow: #FFD93D;
+}
+
+/* ========================================
+   HaruKoto Dark Theme (다크 모드)
+   ======================================== */
+.dark {
+  --background: #1A1A2E;
+  --foreground: #F0F0F0;
+  --card: #242442;
+  --card-foreground: #F0F0F0;
+
+  --primary: #FF8FA3;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #2A2A4A;
+  --secondary-foreground: #F0F0F0;
+
+  --muted: #2A2A4A;
+  --muted-foreground: #9CA3AF;
+
+  --accent: #3D1F2A;
+  --accent-foreground: #F0F0F0;
+
+  --destructive: #F87171;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #FF8FA3;
+
+  --hk-primary-hover: #FFB7C5;
+  --hk-primary-light: #3D1F2A;
+  --hk-blue: #5BA3C9;
+  --hk-green: #6BC4AD;
+  --hk-red: #E05252;
+  --hk-yellow: #E5C235;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-jp {
+    font-family: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+  }
+}

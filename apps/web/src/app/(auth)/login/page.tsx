@@ -31,7 +31,7 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -39,13 +39,27 @@ export default function LoginPage() {
           },
         });
         if (error) throw error;
-        setError('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
+        // Supabase returns a user with identities=[] if the email already exists (OAuth or email)
+        if (data.user && data.user.identities?.length === 0) {
+          setError(
+            '이미 가입된 이메일입니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.'
+          );
+        } else {
+          setError('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message === 'Invalid login credentials') {
+            throw new Error(
+              '이메일 또는 비밀번호가 올바르지 않습니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.'
+            );
+          }
+          throw error;
+        }
         router.push('/home');
         router.refresh();
       }
