@@ -1,81 +1,183 @@
-import { Flame, Target, BookOpen, Trophy } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Bell, RefreshCw } from "lucide-react"
+import { apiFetch } from "@/lib/api"
+import { Button } from "@/components/ui/button"
+import { StreakBadge } from "@/components/features/dashboard/streak-badge"
+import { DailyProgressCard } from "@/components/features/dashboard/daily-progress-card"
+import { WeeklyChart } from "@/components/features/dashboard/weekly-chart"
+import { QuickStartCard } from "@/components/features/dashboard/quick-start-card"
+import { LevelProgress } from "@/components/features/dashboard/level-progress"
+
+type DashboardData = {
+  today: {
+    wordsStudied: number
+    quizzesCompleted: number
+    correctAnswers: number
+    totalAnswers: number
+    xpEarned: number
+    goalProgress: number
+  }
+  streak: { current: number; longest: number }
+  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[]
+  levelProgress: {
+    vocabulary: { total: number; mastered: number; inProgress: number }
+    grammar: { total: number; mastered: number; inProgress: number }
+  }
+}
+
+type ProfileData = {
+  profile: {
+    nickname: string
+    jlptLevel: string
+    dailyGoal: number
+    experiencePoints: number
+    level: number
+    streakCount: number
+  }
+  summary: {
+    totalWordsStudied: number
+    totalQuizzesCompleted: number
+    totalXpEarned: number
+  }
+}
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+}
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+}
 
 export default function HomePage() {
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null)
+  const [profile, setProfile] = useState<ProfileData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  async function fetchData() {
+    setLoading(true)
+    setError(null)
+    try {
+      const [dashboardRes, profileRes] = await Promise.all([
+        apiFetch<DashboardData>("/api/v1/stats/dashboard"),
+        apiFetch<ProfileData>("/api/v1/user/profile"),
+      ])
+      setDashboard(dashboardRes)
+      setProfile(profileRes)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "데이터를 불러올 수 없습니다.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 p-4">
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-16 animate-pulse rounded bg-secondary" />
+            <div className="h-7 w-36 animate-pulse rounded bg-secondary" />
+          </div>
+          <div className="h-8 w-16 animate-pulse rounded-full bg-secondary" />
+        </div>
+        {[1, 2, 3, 4].map((n) => (
+          <div
+            key={n}
+            className="h-32 animate-pulse rounded-xl bg-secondary"
+          />
+        ))}
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8">
+        <p className="text-center text-muted-foreground">{error}</p>
+        <Button variant="outline" onClick={fetchData} className="gap-2">
+          <RefreshCw className="size-4" />
+          다시 시도
+        </Button>
+      </div>
+    )
+  }
+
+  if (!dashboard || !profile) return null
+
+  const { nickname, jlptLevel, dailyGoal } = profile.profile
+
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <motion.div
+      className="flex flex-col gap-6 p-4"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between pt-2">
+      <motion.div
+        variants={item}
+        className="flex items-center justify-between pt-2"
+      >
         <div>
           <p className="text-sm text-muted-foreground">おはよう!</p>
-          <h1 className="text-2xl font-bold">안녕하세요 👋</h1>
+          <h1 className="text-2xl font-bold">
+            안녕, {nickname || "학습자"}!
+          </h1>
         </div>
-        <div className="flex items-center gap-1 rounded-full bg-accent px-3 py-1.5">
-          <Flame className="size-4 text-hk-red" />
-          <span className="text-sm font-semibold">0일</span>
-        </div>
-      </div>
+        <button className="flex items-center justify-center rounded-full bg-accent p-2">
+          <Bell className="size-5 text-muted-foreground" />
+        </button>
+      </motion.div>
 
-      {/* Today's Progress */}
-      <Card>
-        <CardContent className="flex flex-col gap-3 p-4">
-          <h2 className="font-semibold">오늘의 학습</h2>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-              <Target className="size-5 text-primary" />
-              <span className="text-xs text-muted-foreground">목표</span>
-              <span className="text-lg font-bold">0/10</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-              <BookOpen className="size-5 text-hk-blue" />
-              <span className="text-xs text-muted-foreground">단어</span>
-              <span className="text-lg font-bold">0개</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-xl bg-secondary p-3">
-              <Trophy className="size-5 text-hk-yellow" />
-              <span className="text-xs text-muted-foreground">정답률</span>
-              <span className="text-lg font-bold">--%</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Streak Badge */}
+      <motion.div variants={item}>
+        <StreakBadge
+          currentStreak={dashboard.streak.current}
+          weeklyStats={dashboard.weeklyStats}
+        />
+      </motion.div>
 
-      {/* Quick Start */}
-      <Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-accent">
-        <CardContent className="flex items-center gap-4 p-4">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-2xl">
-            🌸
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold">학습 시작하기</h3>
-            <p className="text-sm text-muted-foreground">
-              JLPT N5 단어부터 시작해보세요!
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Daily Progress */}
+      <motion.div variants={item}>
+        <DailyProgressCard
+          dailyGoal={dailyGoal}
+          wordsStudied={dashboard.today.wordsStudied}
+          correctAnswers={dashboard.today.correctAnswers}
+          totalAnswers={dashboard.today.totalAnswers}
+          goalProgress={dashboard.today.goalProgress}
+        />
+      </motion.div>
+
+      {/* Quick Start CTA */}
+      <motion.div variants={item}>
+        <QuickStartCard jlptLevel={jlptLevel || "N5"} />
+      </motion.div>
+
+      {/* Weekly Chart */}
+      <motion.div variants={item}>
+        <WeeklyChart weeklyStats={dashboard.weeklyStats} />
+      </motion.div>
 
       {/* Level Progress */}
-      <div>
-        <h2 className="mb-3 font-semibold">JLPT 레벨</h2>
-        <div className="grid grid-cols-5 gap-2">
-          {(["N5", "N4", "N3", "N2", "N1"] as const).map((level, i) => (
-            <div
-              key={level}
-              className={`flex flex-col items-center gap-1 rounded-xl border p-3 ${
-                i === 0
-                  ? "border-primary bg-primary/10"
-                  : "border-border opacity-50"
-              }`}
-            >
-              <span className="text-sm font-bold">{level}</span>
-              <span className="text-[10px] text-muted-foreground">
-                {i === 0 ? "학습중" : "잠금"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      <motion.div variants={item}>
+        <LevelProgress currentLevel={jlptLevel || "N5"} />
+      </motion.div>
+    </motion.div>
   )
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#FFB7C5"/>
+  <!-- Cherry blossom petals -->
+  <g transform="translate(96, 60)">
+    <ellipse cx="0" cy="-18" rx="10" ry="18" fill="rgba(255,255,255,0.6)" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-18" rx="10" ry="18" fill="rgba(255,255,255,0.6)" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-18" rx="10" ry="18" fill="rgba(255,255,255,0.6)" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-18" rx="10" ry="18" fill="rgba(255,255,255,0.6)" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-18" rx="10" ry="18" fill="rgba(255,255,255,0.6)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="6" fill="rgba(255,255,255,0.9)"/>
+  </g>
+  <!-- ハル text -->
+  <text x="96" y="140" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="48" fill="white">ハル</text>
+</svg>
