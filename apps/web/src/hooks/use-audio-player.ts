@@ -89,7 +89,10 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
         setIsPlaying(false);
       };
 
-      audio.play();
+      audio.play().catch(() => {
+        setIsLoading(false);
+        setIsPlaying(false);
+      });
     },
     [cleanupAudio, trackTime],
   );
@@ -104,8 +107,10 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
   const playBlob = useCallback(
     (blob: Blob) => {
       const url = URL.createObjectURL(blob);
-      objectUrlRef.current = url;
       playSource(url);
+      // Set AFTER playSource — playSource calls cleanupAudio() which
+      // revokes objectUrlRef, so we must set it after cleanup runs.
+      objectUrlRef.current = url;
     },
     [playSource],
   );

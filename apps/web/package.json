@@ -12,6 +12,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@google/genai": "^1.0.0",
     "@harukoto/ai": "workspace:*",
     "@harukoto/database": "workspace:*",
     "@hookform/resolvers": "^5.2.2",

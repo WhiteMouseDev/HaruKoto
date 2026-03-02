@@ -13,12 +13,14 @@ import {
   Briefcase,
   MessageSquare,
   FolderOpen,
+  Phone,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CategoryGrid } from '@/components/features/chat/category-grid';
 import { ScenarioCard } from '@/components/features/chat/scenario-card';
+import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
 
 type Scenario = {
   id: string;
@@ -289,6 +291,15 @@ export default function ChatPage() {
           상황별 시나리오
         </h2>
         <CategoryGrid onSelect={setSelectedCategory} />
+      </motion.div>
+
+      {/* Voice Call CTA */}
+      <motion.div variants={item}>
+        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+          <Phone className="size-4" />
+          음성 통화
+        </h2>
+        <PhoneCallCta onClick={() => router.push('/chat/call')} />
       </motion.div>
 
       {/* Starting overlay */}

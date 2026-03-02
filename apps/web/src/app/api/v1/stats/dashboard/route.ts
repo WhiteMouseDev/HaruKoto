@@ -106,13 +106,18 @@ export async function GET() {
 }
 
 async function getWeeklyStats(userId: string, today: Date) {
-  const weekAgo = new Date(today);
-  weekAgo.setDate(weekAgo.getDate() - 6);
+  // Start from Monday of the current week
+  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // shift so Mon=0
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
 
   const records = await prisma.dailyProgress.findMany({
     where: {
       userId,
-      date: { gte: weekAgo, lte: today },
+      date: { gte: monday, lte: sunday },
     },
     orderBy: { date: 'asc' },
     select: {
@@ -134,11 +139,11 @@ async function getWeeklyStats(userId: string, today: Date) {
     records.map((r) => [toLocalDateStr(r.date), r])
   );
 
-  // Fill in all 7 days (even if no data)
+  // Fill in Mon–Sun (7 days)
   const result: { date: string; wordsStudied: number; xpEarned: number }[] = [];
   for (let i = 0; i < 7; i++) {
-    const d = new Date(weekAgo);
-    d.setDate(d.getDate() + i);
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     const dateStr = toLocalDateStr(d);
     const record = recordMap.get(dateStr);
     result.push({

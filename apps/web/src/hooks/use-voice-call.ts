@@ -1,0 +1,253 @@
+'use client';
+
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { usePcmRecorder } from '@/hooks/use-pcm-recorder';
+import { usePcmPlayer } from '@/hooks/use-pcm-player';
+import { useGeminiLive } from '@/hooks/use-gemini-live';
+import { apiFetch } from '@/lib/api';
+import { showGameEvents } from '@/lib/show-events';
+import type {
+  LiveCallState,
+  LiveCallSubState,
+  LiveFeedbackResponse,
+} from '@/types/gemini-live';
+
+export type VoiceCallReturn = {
+  state: LiveCallState;
+  subState: LiveCallSubState;
+  callDuration: number;
+  currentAiText: string;
+  userAnalyserNode: AnalyserNode | null;
+  aiAnalyserNode: AnalyserNode | null;
+  error: string | null;
+  isMuted: boolean;
+  startCall: () => Promise<void>;
+  endCall: () => void;
+  toggleMute: () => void;
+};
+
+export function useVoiceCall(): VoiceCallReturn {
+  const router = useRouter();
+  const [state, setState] = useState<LiveCallState>('idle');
+  const [subState, setSubState] = useState<LiveCallSubState>('idle');
+  const [callDuration, setCallDuration] = useState(0);
+  const [currentAiText, setCurrentAiText] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const stateRef = useRef<LiveCallState>('idle');
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const callStartRef = useRef(0);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+
+  stateRef.current = state;
+
+  // --- Ringtone ---
+  const playRingtone = useCallback(() => {
+    const audio = new Audio('/sounds/ringtone.wav');
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+    ringtoneRef.current = audio;
+  }, []);
+
+  const stopRingtone = useCallback(() => {
+    if (ringtoneRef.current) {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+      ringtoneRef.current = null;
+    }
+  }, []);
+
+  // --- PCM Player (AI audio output) ---
+  const player = usePcmPlayer();
+
+  // --- Gemini Live WebSocket ---
+  const gemini = useGeminiLive({
+    onAudioChunk: useCallback(
+      (base64: string) => {
+        if (stateRef.current !== 'connected') return;
+        setSubState('ai_speaking');
+        player.enqueue(base64);
+      },
+      [player]
+    ),
+    onTextDelta: useCallback((text: string) => {
+      setCurrentAiText((prev) => prev + text);
+    }, []),
+    onTurnComplete: useCallback(() => {
+      setSubState('idle');
+      setCurrentAiText('');
+    }, []),
+    onInterrupted: useCallback(() => {
+      player.interrupt();
+      setSubState('user_speaking');
+      setCurrentAiText('');
+    }, [player]),
+    onError: useCallback((msg: string) => {
+      toast.error(msg);
+      setError(msg);
+    }, []),
+  });
+
+  // --- PCM Recorder (User mic input) ---
+  const recorder = usePcmRecorder({
+    onPcmChunk: useCallback(
+      (base64: string) => {
+        gemini.sendAudio(base64);
+      },
+      [gemini]
+    ),
+  });
+
+  // Track subState from player
+  useEffect(() => {
+    if (!player.isPlaying && subState === 'ai_speaking') {
+      setSubState('idle');
+    }
+  }, [player.isPlaying, subState]);
+
+  // --- Call duration timer ---
+  const startTimer = useCallback(() => {
+    setCallDuration(0);
+    callStartRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      setCallDuration(Math.floor((Date.now() - callStartRef.current) / 1000));
+    }, 1000);
+  }, []);
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  // --- Start call ---
+  const startCall = useCallback(async () => {
+    if (stateRef.current !== 'idle') return;
+    setState('connecting');
+    stateRef.current = 'connecting';
+    setError(null);
+
+    // Init AudioContext during user gesture to avoid autoplay block
+    player.init();
+
+    // Play ringtone while connecting
+    playRingtone();
+
+    try {
+      // Connect to Gemini Live — waits for setupComplete
+      await gemini.connect();
+
+      // Stop ringtone once connected
+      stopRingtone();
+
+      // Start recording mic
+      await recorder.start();
+
+      setState('connected');
+      stateRef.current = 'connected';
+      setSubState('idle');
+      startTimer();
+    } catch (err) {
+      stopRingtone();
+      setError(err instanceof Error ? err.message : '통화를 시작할 수 없습니다.');
+      setState('idle');
+      stateRef.current = 'idle';
+      recorder.stop();
+      gemini.disconnect();
+    }
+  }, [gemini, player, recorder, startTimer, playRingtone, stopRingtone]);
+
+  // --- End call ---
+  const endCall = useCallback(async () => {
+    if (stateRef.current === 'idle' || stateRef.current === 'ending' || stateRef.current === 'ended') return;
+
+    setState('ending');
+    stateRef.current = 'ending';
+    stopTimer();
+    stopRingtone();
+
+    // Stop all audio
+    recorder.stop();
+    player.stop();
+
+    // Get transcript from Gemini session
+    const transcript = gemini.getTranscript();
+    gemini.disconnect();
+
+    const durationSeconds = callStartRef.current
+      ? Math.floor((Date.now() - callStartRef.current) / 1000)
+      : 0;
+
+    if (transcript.length === 0) {
+      setState('ended');
+      stateRef.current = 'ended';
+      return;
+    }
+
+    try {
+      const data = await apiFetch<LiveFeedbackResponse>(
+        '/api/v1/chat/live-feedback',
+        {
+          method: 'POST',
+          body: JSON.stringify({ transcript, durationSeconds }),
+        }
+      );
+
+      if (data.feedbackSummary) {
+        sessionStorage.setItem(
+          `feedback_${data.conversationId}`,
+          JSON.stringify(data.feedbackSummary)
+        );
+      }
+      showGameEvents(data.events);
+
+      setState('ended');
+      stateRef.current = 'ended';
+      router.push(`/chat/${data.conversationId}/feedback`);
+    } catch {
+      toast.error('피드백 생성에 실패했습니다.');
+      setState('ended');
+      stateRef.current = 'ended';
+    }
+  }, [gemini, player, recorder, router, stopTimer, stopRingtone]);
+
+  // --- Toggle mute ---
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      recorder.setMuted(next);
+      return next;
+    });
+  }, [recorder]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      ringtoneRef.current?.pause();
+      recorder.stop();
+      player.stop();
+      gemini.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return {
+    state,
+    subState,
+    callDuration,
+    currentAiText,
+    userAnalyserNode: recorder.analyserNode,
+    aiAnalyserNode: player.analyserNode,
+    error,
+    isMuted,
+    startCall,
+    endCall,
+    toggleMute,
+  };
+}

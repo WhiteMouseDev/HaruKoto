@@ -45,9 +45,12 @@ export async function POST(request: Request) {
       speed: speed ?? 0.9,
     });
 
-    return new Response(speech.body, {
+    const buffer = Buffer.from(await speech.arrayBuffer());
+
+    return new Response(buffer, {
       headers: {
         'Content-Type': 'audio/mpeg',
+        'Content-Length': String(buffer.byteLength),
       },
     });
   } catch (err) {

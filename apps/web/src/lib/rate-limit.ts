@@ -88,4 +88,6 @@ export const RATE_LIMITS = {
   API: { limit: 60, windowMs: 60_000 },
   /** 인증 관련 — 분당 10회 */
   AUTH: { limit: 10, windowMs: 60_000 },
+  /** Live API 토큰 발급 — 분당 5회 */
+  LIVE_TOKEN: { limit: 5, windowMs: 60_000 },
 } as const;
