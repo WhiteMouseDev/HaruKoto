@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -103,11 +103,8 @@ export async function POST(request: Request) {
     };
     try {
       // Try to extract JSON from the response (handle markdown code blocks)
-      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || [
-        null,
-        text,
-      ];
-      firstMessage = JSON.parse(jsonMatch[1]!.trim());
+      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      firstMessage = JSON.parse((jsonMatch?.[1]?.trim() || text.trim()));
     } catch {
       // Fallback if AI doesn't return proper JSON
       firstMessage = {

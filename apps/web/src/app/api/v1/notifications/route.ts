@@ -10,7 +10,7 @@ export async function GET() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const [notifications, unreadCount] = await Promise.all([
@@ -42,7 +42,7 @@ export async function PATCH() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     await prisma.notification.updateMany({

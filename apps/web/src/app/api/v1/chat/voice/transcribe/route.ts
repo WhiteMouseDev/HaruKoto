@@ -4,6 +4,24 @@ import { openaiClient } from '@harukoto/ai';
 
 const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
 
+const ALLOWED_AUDIO_TYPES = new Set([
+  'audio/webm',
+  'audio/mp3',
+  'audio/mpeg',
+  'audio/mp4',
+  'audio/mpga',
+  'audio/wav',
+  'audio/x-wav',
+  'audio/ogg',
+  'audio/flac',
+  'audio/x-m4a',
+  'video/webm',
+]);
+
+const ALLOWED_EXTENSIONS = new Set([
+  'webm', 'mp3', 'mp4', 'mpeg', 'mpga', 'wav', 'ogg', 'flac', 'm4a',
+]);
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -27,6 +45,16 @@ export async function POST(request: Request) {
     if (audioFile.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { error: '파일 크기는 4.5MB 이하여야 합니다' },
+        { status: 400 }
+      );
+    }
+
+    // Validate audio format
+    const extension = audioFile.name.split('.').pop()?.toLowerCase() ?? '';
+    const isValidType = ALLOWED_AUDIO_TYPES.has(audioFile.type) || ALLOWED_EXTENSIONS.has(extension);
+    if (!isValidType) {
+      return NextResponse.json(
+        { error: '지원하지 않는 오디오 형식입니다. webm, mp3, wav, ogg, flac, m4a 형식을 사용해주세요.' },
         { status: 400 }
       );
     }

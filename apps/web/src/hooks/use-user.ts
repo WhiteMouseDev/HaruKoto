@@ -26,7 +26,8 @@ export function useUser() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- supabase client is a singleton
+  }, []);
 
   return { user, loading };
 }

@@ -69,7 +69,26 @@ export default function FeedbackPage({
         setFeedback(JSON.parse(stored));
         sessionStorage.removeItem(`feedback_${conversationId}`);
       } catch {
-        // Invalid data
+        fetchFeedbackFromServer();
+      }
+    } else {
+      fetchFeedbackFromServer();
+    }
+
+    async function fetchFeedbackFromServer() {
+      try {
+        const res = await fetch(`/api/v1/chat/${conversationId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.feedbackSummary) {
+          setFeedback({
+            feedbackSummary: data.feedbackSummary,
+            vocabulary: [],
+            scenario: data.scenario,
+          });
+        }
+      } catch {
+        // Failed to load — stay on "no data" state
       }
     }
   }, [conversationId]);

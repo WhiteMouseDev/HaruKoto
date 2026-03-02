@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -92,11 +92,8 @@ export async function POST(request: Request) {
     // Parse AI response
     let parsed: AIResponse;
     try {
-      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || [
-        null,
-        text,
-      ];
-      parsed = JSON.parse(jsonMatch[1]!.trim());
+      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      parsed = JSON.parse((jsonMatch?.[1]?.trim() || text.trim()));
     } catch {
       parsed = {
         messageJa: text,

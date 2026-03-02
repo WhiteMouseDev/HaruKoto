@@ -118,11 +118,27 @@ export default function ChatConversationPage({
         setInitialized(true);
         sessionStorage.removeItem(`chat_${conversationId}`);
       } catch {
-        setInitialized(true);
+        fetchConversationFromServer();
       }
     } else {
-      // No stored data - show minimal UI
-      setInitialized(true);
+      // No stored data (e.g. page refresh) — fetch from server
+      fetchConversationFromServer();
+    }
+
+    async function fetchConversationFromServer() {
+      try {
+        const data = await apiFetch<{
+          messages: Message[];
+          scenario: ScenarioInfo | null;
+          endedAt: string | null;
+        }>(`/api/v1/chat/${conversationId}`);
+        if (data.scenario) setScenario(data.scenario);
+        if (data.messages.length > 0) setMessages(data.messages);
+      } catch {
+        // Conversation not found or unauthorized — stay on minimal UI
+      } finally {
+        setInitialized(true);
+      }
     }
   }, [conversationId]);
 

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -91,11 +91,8 @@ export async function POST(request: Request) {
           ],
         });
 
-        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || [
-          null,
-          text,
-        ];
-        feedbackSummary = JSON.parse(jsonMatch[1]!.trim());
+        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        feedbackSummary = JSON.parse((jsonMatch?.[1]?.trim() || text.trim()));
       } catch {
         feedbackSummary = {
           overallScore: 0,
@@ -122,57 +119,58 @@ export async function POST(request: Request) {
       },
     });
 
-    // 스트릭 계산을 위해 업데이트 전 유저 정보 조회
-    const currentUser = await prisma.user.findUniqueOrThrow({
-      where: { id: user.id },
-    });
-
-    // Update daily progress
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
     const xpEarned = REWARDS.CONVERSATION_COMPLETE_XP;
 
-    await prisma.dailyProgress.upsert({
-      where: {
-        userId_date: {
+    // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
+    const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(async (tx) => {
+      const currentUser = await tx.user.findUniqueOrThrow({
+        where: { id: user.id },
+      });
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      await tx.dailyProgress.upsert({
+        where: {
+          userId_date: {
+            userId: user.id,
+            date: today,
+          },
+        },
+        update: {
+          conversationCount: { increment: 1 },
+          xpEarned: { increment: xpEarned },
+        },
+        create: {
           userId: user.id,
           date: today,
+          conversationCount: 1,
+          xpEarned,
         },
-      },
-      update: {
-        conversationCount: { increment: 1 },
-        xpEarned: { increment: xpEarned },
-      },
-      create: {
-        userId: user.id,
-        date: today,
-        conversationCount: 1,
-        xpEarned,
-      },
-    });
+      });
 
-    // 게임화 로직
-    const totalXp = currentUser.experiencePoints + xpEarned;
-    const { level: newLevel } = calculateLevel(totalXp);
-    const oldLevel = currentUser.level;
+      const txTotalXp = currentUser.experiencePoints + xpEarned;
+      const { level: txNewLevel } = calculateLevel(txTotalXp);
+      const txOldLevel = currentUser.level;
 
-    // 스트릭 업데이트 (업데이트 전 lastStudyDate 기준)
-    const streak = updateStreak(
-      currentUser.lastStudyDate,
-      currentUser.streakCount,
-      currentUser.longestStreak
-    );
+      const txStreak = updateStreak(
+        currentUser.lastStudyDate,
+        currentUser.streakCount,
+        currentUser.longestStreak
+      );
 
-    // 유저 정보 일괄 업데이트
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        experiencePoints: totalXp,
-        level: newLevel,
-        streakCount: streak.streakCount,
-        longestStreak: streak.longestStreak,
-        lastStudyDate: new Date(),
-      },
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          experiencePoints: txTotalXp,
+          level: txNewLevel,
+          streakCount: txStreak.streakCount,
+          longestStreak: txStreak.longestStreak,
+          lastStudyDate: new Date(),
+        },
+      });
+
+      return { totalXp: txTotalXp, newLevel: txNewLevel, oldLevel: txOldLevel, streak: txStreak };
     });
 
     // 회화 수 조회 및 업적 확인

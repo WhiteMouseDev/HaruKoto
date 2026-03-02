@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -19,7 +19,6 @@ export async function POST(request: Request) {
       sessionId,
       questionId,
       selectedOptionId,
-      isCorrect,
       timeSpentSeconds = 0,
       questionType = 'VOCABULARY',
     } = body;
@@ -30,6 +29,28 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Verify session ownership
+    const session = await prisma.quizSession.findUnique({
+      where: { id: sessionId },
+    });
+    if (!session) {
+      return NextResponse.json(
+        { error: '세션을 찾을 수 없습니다' },
+        { status: 404 }
+      );
+    }
+    if (session.userId !== user.id) {
+      return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
+    }
+
+    // Server-side correctness verification using questionsData
+    type QuestionData = { questionId: string; correctOptionId: string };
+    const questionsData = session.questionsData as unknown as QuestionData[] | null;
+    const questionData = questionsData?.find((q) => q.questionId === questionId);
+    const isCorrect = questionData
+      ? selectedOptionId === questionData.correctOptionId
+      : false;
 
     // Save answer
     await prisma.quizAnswer.create({

@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { openaiClient } from '@harukoto/ai';
+import { z } from 'zod';
+
+const ttsInputSchema = z.object({
+  text: z.string().min(1, '텍스트가 필요합니다').max(4096, '텍스트는 4096자 이하여야 합니다'),
+  speed: z.number().min(0.25).max(4.0).optional(),
+});
 
 export async function POST(request: Request) {
   try {
@@ -13,20 +19,21 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { text, speed } = body as { text?: string; speed?: number };
-
-    if (!text || text.trim().length === 0) {
+    const parsed = ttsInputSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: '텍스트가 필요합니다' },
+        { error: parsed.error.issues[0]?.message ?? '입력값이 올바르지 않습니다' },
         { status: 400 }
       );
     }
+
+    const { text, speed } = parsed.data;
 
     const speech = await openaiClient.audio.speech.create({
       model: 'tts-1',
       voice: 'nova',
       input: text,
-      speed: speed || 0.9,
+      speed: speed ?? 0.9,
     });
 
     return new Response(speech.body, {

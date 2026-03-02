@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { REWARDS, QUIZ_CONFIG } from '@/lib/constants';
+import { shuffleArray } from '@/lib/shuffle';
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +11,7 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -128,15 +129,14 @@ export async function POST(request: Request) {
         });
 
         questions = reviewItems.map((word) => {
-          const wrongOptions = allVocab
-            .filter((v) => v.id !== word.id)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
+          const wrongOptions = shuffleArray(
+            allVocab.filter((v) => v.id !== word.id)
+          ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
-          const options = [
+          const options = shuffleArray([
             { id: word.id, text: word.meaningKo },
             ...wrongOptions.map((w) => ({ id: w.id, text: w.meaningKo })),
-          ].sort(() => Math.random() - 0.5);
+          ]);
 
           return {
             questionId: word.id,
@@ -193,15 +193,14 @@ export async function POST(request: Request) {
         });
 
         questions = reviewItems.map((grammar) => {
-          const wrongOptions = allGrammar
-            .filter((g) => g.id !== grammar.id)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
+          const wrongOptions = shuffleArray(
+            allGrammar.filter((g) => g.id !== grammar.id)
+          ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
-          const options = [
+          const options = shuffleArray([
             { id: grammar.id, text: grammar.meaningKo },
             ...wrongOptions.map((g) => ({ id: g.id, text: g.meaningKo })),
-          ].sort(() => Math.random() - 0.5);
+          ]);
 
           return {
             questionId: grammar.id,
@@ -263,15 +262,14 @@ export async function POST(request: Request) {
 
       questions = allSelected.map((word) => {
         // Pick 3 wrong answers from same level
-        const wrongOptions = allVocab
-          .filter((v) => v.id !== word.id)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
+        const wrongOptions = shuffleArray(
+          allVocab.filter((v) => v.id !== word.id)
+        ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
-        const options = [
+        const options = shuffleArray([
           { id: word.id, text: word.meaningKo },
           ...wrongOptions.map((w) => ({ id: w.id, text: w.meaningKo })),
-        ].sort(() => Math.random() - 0.5);
+        ]);
 
         return {
           questionId: word.id,
@@ -295,15 +293,14 @@ export async function POST(request: Request) {
       });
 
       questions = grammars.map((grammar) => {
-        const wrongOptions = allGrammar
-          .filter((g) => g.id !== grammar.id)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
+        const wrongOptions = shuffleArray(
+          allGrammar.filter((g) => g.id !== grammar.id)
+        ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
-        const options = [
+        const options = shuffleArray([
           { id: grammar.id, text: grammar.meaningKo },
           ...wrongOptions.map((g) => ({ id: g.id, text: g.meaningKo })),
-        ].sort(() => Math.random() - 0.5);
+        ]);
 
         return {
           questionId: grammar.id,
