@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/brand/logo';
 
 interface QuizOption {
   id: string;
@@ -29,7 +30,7 @@ export default function QuizPage() {
       fallback={
         <div className="flex min-h-dvh items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="text-4xl">🌸</div>
+            <Logo size="sm" className="animate-pulse" />
             <p className="text-muted-foreground">퀴즈를 준비하고 있어요...</p>
           </div>
         </div>
@@ -148,7 +149,7 @@ function QuizContent() {
     return (
       <div className="flex min-h-dvh items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="text-4xl">🌸</div>
+          <Logo size="sm" className="animate-pulse" />
           <p className="text-muted-foreground">퀴즈를 준비하고 있어요...</p>
         </div>
       </div>

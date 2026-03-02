@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/brand/logo';
 
 export default function LandingPage() {
   return (
     <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Logo & Mascot */}
       <div className="flex flex-col items-center gap-4">
-        <div className="text-6xl">🌸</div>
+        <Logo variant="full" size="xl" />
         <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight">하루코토</h1>
-          <p className="font-jp text-muted-foreground mt-1 text-lg">ハルコト</p>
+          <p className="font-jp text-muted-foreground mt-1 text-lg">
+            매일 한 단어의 일본어
+          </p>
         </div>
         <p className="text-muted-foreground mt-2 text-center">
           매일 한 단어, 봄처럼 피어나는

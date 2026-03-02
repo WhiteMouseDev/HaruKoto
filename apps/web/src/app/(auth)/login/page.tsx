@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Logo } from '@/components/brand/logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -67,9 +68,7 @@ export default function LoginPage() {
     <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-2">
-        <div className="text-5xl">🌸</div>
-        <h1 className="text-3xl font-bold">하루코토</h1>
-        <p className="font-jp text-muted-foreground">ハルコト</p>
+        <Logo variant="full" size="lg" />
       </div>
 
       <Card className="w-full max-w-sm">
