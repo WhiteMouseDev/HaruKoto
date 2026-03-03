@@ -674,19 +674,19 @@ function Footer() {
 
           <nav className="flex flex-wrap justify-center gap-6">
             <a
-              href="#"
+              href="/terms"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               이용약관
             </a>
             <a
-              href="#"
+              href="/privacy"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               개인정보처리방침
             </a>
             <a
-              href="#"
+              href="mailto:whitemousedev@whitemouse.dev"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               문의하기
@@ -694,8 +694,13 @@ function Footer() {
           </nav>
         </div>
 
-        <div className="text-muted-foreground mt-8 text-center text-sm">
-          &copy; 2025 하루코토. All rights reserved.
+        <div className="text-muted-foreground mt-8 space-y-1 text-center text-xs">
+          <p>
+            화이트마우스데브 (WhiteMouseDev) | 대표: 김건우 |
+            사업자등록번호: 634-26-01985
+          </p>
+          <p>서울특별시 송파구 양재대로 1218</p>
+          <p className="mt-2">&copy; 2025 하루코토. All rights reserved.</p>
         </div>
       </div>
     </footer>
