@@ -92,11 +92,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Redirect logged-in users away from auth pages
-  const authPaths = ['/login', '/'];
-  const isAuthPath = authPaths.includes(request.nextUrl.pathname);
+  // Root path — always redirect (landing is a separate app)
+  if (request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = user ? '/home' : '/login';
+    return NextResponse.redirect(url);
+  }
 
-  if (user && isAuthPath) {
+  // Redirect logged-in users away from login page
+  if (user && request.nextUrl.pathname === '/login') {
     const url = request.nextUrl.clone();
     url.pathname = '/home';
     return NextResponse.redirect(url);
