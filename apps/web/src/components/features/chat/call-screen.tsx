@@ -71,8 +71,8 @@ export function CallScreen({ call }: CallScreenProps) {
       <div className="flex h-full flex-col items-center justify-center gap-8">
         <CallWaveform analyserNode={null} mode="idle" />
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white">ハルさん (하루)</h2>
-          <p className="mt-1 text-sm text-white/60">AI 전화 통화</p>
+          <h2 className="text-xl font-bold text-white">ハル</h2>
+          <p className="mt-1 text-sm text-white/60">하루</p>
         </div>
         {call.error && (
           <p className="rounded-lg bg-red-500/20 px-4 py-2 text-center text-sm text-red-300">
@@ -131,16 +131,15 @@ export function CallScreen({ call }: CallScreenProps) {
         <div className="mt-4 flex max-w-[300px] flex-col items-center gap-1.5">
           <AnimatePresence>
             {subtitles.map((sub, i) => {
-              const age = (Date.now() - sub.timestamp) / 1000;
-              // Older entries fade out progressively
-              const opacity = Math.max(0.25, 1 - age / 6);
+              // Older entries fade out progressively based on position
+              const posFromEnd = subtitles.length - 1 - i;
+              const opacity = posFromEnd === 0 ? 0.7 : Math.max(0.25, 0.7 - posFromEnd * 0.2);
               return (
                 <motion.p
                   key={sub.id}
                   className="font-jp text-center text-sm leading-relaxed text-white/60"
-                  style={{ opacity: i === subtitles.length - 1 ? undefined : opacity }}
                   initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: i === subtitles.length - 1 ? 0.7 : opacity }}
+                  animate={{ opacity }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.3 }}
                 >

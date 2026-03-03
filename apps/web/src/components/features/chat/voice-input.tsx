@@ -84,7 +84,6 @@ export function VoiceInput({ onSend, disabled, onCancel }: VoiceInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
-    isRecording,
     duration,
     audioBlob,
     analyserNode,

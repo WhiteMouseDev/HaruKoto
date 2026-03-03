@@ -31,7 +31,6 @@ export function WordbookEntryCard({
   reading,
   meaningKo,
   source,
-  createdAt,
   onDelete,
 }: WordbookEntryCardProps) {
   const [confirming, setConfirming] = useState(false);

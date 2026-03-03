@@ -74,27 +74,33 @@ export default function FeedbackPage({
 }) {
   const { conversationId } = use(params);
   const router = useRouter();
-  const [feedback, setFeedback] = useState<StoredFeedback | null>(null);
-
-  useEffect(() => {
+  const [feedback, setFeedback] = useState<StoredFeedback | null>(() => {
+    if (typeof window === 'undefined') return null;
     const stored = sessionStorage.getItem(`feedback_${conversationId}`);
     if (stored) {
       try {
-        setFeedback(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
         sessionStorage.removeItem(`feedback_${conversationId}`);
+        return parsed;
       } catch {
-        fetchFeedbackFromServer();
+        return null;
       }
-    } else {
-      fetchFeedbackFromServer();
     }
+    return null;
+  });
+
+  useEffect(() => {
+    // Skip server fetch if sessionStorage had data (already set via initializer)
+    if (feedback) return;
+
+    let cancelled = false;
 
     async function fetchFeedbackFromServer() {
       try {
         const res = await fetch(`/api/v1/chat/${conversationId}`);
-        if (!res.ok) return;
+        if (!res.ok || cancelled) return;
         const data = await res.json();
-        if (data.feedbackSummary) {
+        if (data.feedbackSummary && !cancelled) {
           const transcript: TranscriptMessage[] =
             data.messages?.map(
               (m: { role: string; messageJa?: string; content?: string }) => ({
@@ -113,6 +119,10 @@ export default function FeedbackPage({
         // Failed to load — stay on "no data" state
       }
     }
+
+    fetchFeedbackFromServer();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
   // Loading / no data state

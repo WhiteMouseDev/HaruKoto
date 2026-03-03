@@ -48,15 +48,6 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
     return cleanupAudio;
   }, [cleanupAudio]);
 
-  const trackTime = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    setCurrentTime(audio.currentTime);
-    if (!audio.paused) {
-      animFrameRef.current = requestAnimationFrame(trackTime);
-    }
-  }, []);
-
   const playSource = useCallback(
     (src: string) => {
       cleanupAudio();
@@ -64,6 +55,14 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
 
       const audio = new Audio(src);
       audioRef.current = audio;
+
+      function trackTime() {
+        if (!audioRef.current) return;
+        setCurrentTime(audioRef.current.currentTime);
+        if (!audioRef.current.paused) {
+          animFrameRef.current = requestAnimationFrame(trackTime);
+        }
+      }
 
       audio.onloadedmetadata = () => {
         setDuration(audio.duration);
@@ -94,7 +93,7 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
         setIsPlaying(false);
       });
     },
-    [cleanupAudio, trackTime],
+    [cleanupAudio],
   );
 
   const play = useCallback(

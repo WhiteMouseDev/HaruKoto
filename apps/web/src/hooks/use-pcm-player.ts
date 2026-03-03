@@ -125,8 +125,9 @@ export function usePcmPlayer(): PcmPlayerReturn {
 
   // Cleanup on unmount
   useEffect(() => {
+    const sources = activeSourcesRef.current;
     return () => {
-      for (const source of activeSourcesRef.current) {
+      for (const source of sources) {
         try {
           source.stop();
         } catch {

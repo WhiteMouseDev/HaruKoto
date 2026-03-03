@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { transcript, durationSeconds } = body as {
+    const { transcript } = body as {
       transcript: { role: 'user' | 'assistant'; text: string }[];
       durationSeconds: number;
     };

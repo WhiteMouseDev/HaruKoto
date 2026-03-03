@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, RefreshCw, BookMarked } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';

@@ -27,7 +27,9 @@ export function usePcmRecorder({ onPcmChunk }: PcmRecorderOptions): PcmRecorderR
   const onPcmChunkRef = useRef(onPcmChunk);
   const mutedRef = useRef(false);
 
-  onPcmChunkRef.current = onPcmChunk;
+  useEffect(() => {
+    onPcmChunkRef.current = onPcmChunk;
+  });
 
   const start = useCallback(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({

@@ -12,13 +12,6 @@ type AudioPlayerProps = {
   className?: string;
 };
 
-type SpeedOption = { label: string; value: number };
-
-const SPEEDS: SpeedOption[] = [
-  { label: '일반', value: 0.9 },
-  { label: '느리게', value: 0.7 },
-];
-
 export function AudioPlayer({ text, className }: AudioPlayerProps) {
   const { isPlaying, isLoading, playBlob, pause, stop, setSpeed } = useAudioPlayer();
   const [slow, setSlow] = useState(false);

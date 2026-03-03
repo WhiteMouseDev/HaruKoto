@@ -19,11 +19,15 @@ export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
 
   useEffect(() => {
     if (mode !== 'listening' || !analyserNode) {
-      setAmplitude(0);
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
         animFrameRef.current = null;
       }
+      // Reset amplitude on next frame to avoid synchronous setState
+      animFrameRef.current = requestAnimationFrame(() => {
+        setAmplitude(0);
+        animFrameRef.current = null;
+      });
       return;
     }
 

@@ -66,7 +66,7 @@ function QuizContent() {
   const [answerState, setAnswerState] = useState<AnswerState>('idle');
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<boolean[]>([]);
+  const [, setResults] = useState<boolean[]>([]);
   const timerRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

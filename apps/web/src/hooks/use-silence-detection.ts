@@ -24,7 +24,9 @@ export function useSilenceDetection({
   const animFrameRef = useRef<number | null>(null);
   const callbackRef = useRef(onSilenceDetected);
 
-  callbackRef.current = onSilenceDetected;
+  useEffect(() => {
+    callbackRef.current = onSilenceDetected;
+  });
 
   useEffect(() => {
     if (!enabled || !analyserNode) {

@@ -48,7 +48,9 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
   const currentUserTranscriptRef = useRef('');
   const optionsRef = useRef(options);
 
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   const connect = useCallback(async () => {
     if (sessionRef.current) return;
