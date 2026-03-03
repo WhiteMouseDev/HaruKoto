@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
-import { generateText } from 'ai';
+import { generateObject } from 'ai';
+import { z } from 'zod';
 import { getAIProvider } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import {
@@ -11,6 +12,48 @@ import {
   type GameEvent,
 } from '@/lib/gamification';
 import { REWARDS } from '@/lib/constants';
+
+const feedbackSchema = z.object({
+  overallScore: z.number().min(0).max(100).describe('총합 점수 (0~100)'),
+  fluency: z.number().min(0).max(100).describe('유창성 점수'),
+  accuracy: z.number().min(0).max(100).describe('정확성 점수'),
+  vocabularyDiversity: z.number().min(0).max(100).describe('어휘 다양성 점수'),
+  naturalness: z.number().min(0).max(100).describe('자연스러움 점수'),
+  strengths: z
+    .array(z.string())
+    .describe('잘한 점 목록 (한국어, 2~3개)'),
+  improvements: z
+    .array(z.string())
+    .describe('개선할 점 목록 (한국어, 2~3개)'),
+  recommendedExpressions: z
+    .array(
+      z.object({
+        ja: z.string().describe('추천 일본어 표현'),
+        ko: z.string().describe('한국어 뜻/설명'),
+      })
+    )
+    .describe('추천 표현 목록 (일본어 + 한국어)'),
+  corrections: z
+    .array(
+      z.object({
+        original: z.string().describe('유저가 말한 원본 일본어'),
+        corrected: z.string().describe('올바른 일본어 표현'),
+        explanation: z.string().describe('한국어로 왜 틀렸는지 설명'),
+      })
+    )
+    .describe('문법/어휘/조사 오류 교정 목록. 오류 없으면 빈 배열'),
+  translatedTranscript: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        ja: z.string().describe('원본 일본어 텍스트'),
+        ko: z.string().describe('한국어 번역'),
+      })
+    )
+    .describe('전체 대화 내역의 한국어 번역'),
+});
+
+export type FeedbackResult = z.infer<typeof feedbackSchema>;
 
 export async function POST(request: Request) {
   try {
@@ -57,7 +100,7 @@ export async function POST(request: Request) {
     }));
 
     // Generate feedback summary from AI
-    let feedbackSummary: Record<string, unknown> | null = null;
+    let feedbackSummary: FeedbackResult | null = null;
 
     const conversationHistory = transcript.map((entry) => ({
       role: entry.role as 'user' | 'assistant',
@@ -66,39 +109,28 @@ export async function POST(request: Request) {
 
     if (conversationHistory.length > 1) {
       try {
-        const { text } = await generateText({
+        const { object } = await generateObject({
           model: getAIProvider(),
-          system: `あなたは日本語学習アプリの会話評価AIです。
-ユーザーの会話を分析し、以下のJSON形式で評価を返してください:
-{
-  "overallScore": 1~100の総合点数,
-  "fluency": 1~100の流暢さ,
-  "accuracy": 1~100の正確さ,
-  "vocabularyDiversity": 1~100の語彙多様性,
-  "naturalness": 1~100の自然さ,
-  "strengths": ["잘한 점1", "잘한 점2"],
-  "improvements": ["개선할 점1", "개선할 점2"],
-  "recommendedExpressions": ["추천 표현1", "추천 표현2"],
-  "corrections": [
-    {
-      "original": "ユーザーが言った元の日本語（文法・語彙・助詞の間違いがある発話のみ）",
-      "corrected": "正しい日本語表現",
-      "explanation": "한국어로 왜 틀렸는지 간결하게 설명"
-    }
-  ]
-}
-corrections配列には、文法・語彙・助詞の誤りがあるユーザー発話のみを含めてください。誤りがない場合は空配列にしてください。`,
+          schema: feedbackSchema,
+          system: `あなたは韓国人向け日本語学習アプリ「ハルコト」の会話評価AIです。
+ユーザー（韓国人の日本語学習者）とAIチューターの会話を分析してください。
+
+評価ルール:
+- strengths, improvementsは韓国語で記述
+- recommendedExpressionsは日本語表現(ja)と韓国語の意味(ko)の両方を提供
+- correctionsはユーザー発話の文法・語彙・助詞の誤りのみ。誤りがない場合は空配列
+- translatedTranscriptは全発話を日本語原文(ja)と韓国語翻訳(ko)の対で提供
+- 翻訳は自然な韓国語で、直訳ではなく意訳を優先`,
           messages: [
             ...conversationHistory,
             {
               role: 'user',
-              content: '위 대화를 분석하여 평가를 JSON으로 반환해주세요.',
+              content: '위 대화를 분석하여 평가해주세요.',
             },
           ],
         });
 
-        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-        feedbackSummary = JSON.parse(jsonMatch?.[1]?.trim() || text.trim());
+        feedbackSummary = object;
       } catch {
         feedbackSummary = {
           overallScore: 0,
@@ -110,6 +142,7 @@ corrections配列には、文法・語彙・助詞の誤りがあるユーザー
           improvements: ['대화가 너무 짧아 평가하기 어렵습니다.'],
           recommendedExpressions: [],
           corrections: [],
+          translatedTranscript: [],
         };
       }
     }

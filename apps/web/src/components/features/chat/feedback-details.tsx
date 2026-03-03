@@ -10,10 +10,15 @@ type Vocabulary = {
   meaningKo: string;
 };
 
+type RecommendedExpression = {
+  ja: string;
+  ko: string;
+};
+
 type FeedbackDetailsProps = {
   strengths: string[];
   improvements: string[];
-  recommendedExpressions: string[];
+  recommendedExpressions: (RecommendedExpression | string)[];
   vocabulary: Vocabulary[];
 };
 
@@ -97,11 +102,24 @@ export function FeedbackDetails({
               추천 표현
             </h3>
             <ul className="space-y-1.5">
-              {recommendedExpressions.map((expr, i) => (
-                <li key={i} className="font-jp bg-secondary/50 rounded-lg px-3 py-2 text-sm">
-                  {expr}
-                </li>
-              ))}
+              {recommendedExpressions.map((expr, i) => {
+                const isObj = typeof expr === 'object' && expr !== null;
+                return (
+                  <li
+                    key={i}
+                    className="bg-secondary/50 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <span className="font-jp font-medium">
+                      {isObj ? expr.ja : expr}
+                    </span>
+                    {isObj && (
+                      <span className="text-muted-foreground ml-2 text-xs">
+                        {expr.ko}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </CardContent>
         </Card>

@@ -15,6 +15,17 @@ type GrammarCorrection = {
   explanation: string;
 };
 
+type RecommendedExpression = {
+  ja: string;
+  ko: string;
+};
+
+type TranslatedMessage = {
+  role: 'user' | 'assistant';
+  ja: string;
+  ko: string;
+};
+
 type TranscriptMessage = {
   role: 'user' | 'assistant';
   text: string;
@@ -28,8 +39,9 @@ type FeedbackSummary = {
   naturalness: number;
   strengths: string[];
   improvements: string[];
-  recommendedExpressions: string[];
+  recommendedExpressions: RecommendedExpression[] | string[];
   corrections?: GrammarCorrection[];
+  translatedTranscript?: TranslatedMessage[];
 };
 
 type Vocabulary = {
@@ -152,7 +164,7 @@ export default function FeedbackPage({
     );
   }
 
-  const { feedbackSummary, transcript, vocabulary, scenario } = feedback;
+  const { feedbackSummary, vocabulary, scenario } = feedback;
 
   return (
     <motion.div
@@ -185,14 +197,15 @@ export default function FeedbackPage({
       </motion.div>
 
       {/* Transcript */}
-      {transcript && transcript.length > 0 && (
-        <motion.div variants={item}>
-          <FeedbackTranscript
-            transcript={transcript}
-            corrections={feedbackSummary.corrections ?? []}
-          />
-        </motion.div>
-      )}
+      {feedbackSummary.translatedTranscript &&
+        feedbackSummary.translatedTranscript.length > 0 && (
+          <motion.div variants={item}>
+            <FeedbackTranscript
+              translatedTranscript={feedbackSummary.translatedTranscript}
+              corrections={feedbackSummary.corrections ?? []}
+            />
+          </motion.div>
+        )}
 
       {/* Details */}
       <motion.div variants={item}>
