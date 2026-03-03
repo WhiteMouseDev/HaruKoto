@@ -88,7 +88,15 @@ export async function proxy(request: NextRequest) {
     if (dbUser?.onboardingCompleted) {
       const url = request.nextUrl.clone();
       url.pathname = '/home';
-      return NextResponse.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
+      // Set cookie so future checks skip DB query
+      redirectResponse.cookies.set('onboarding_completed', 'true', {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60,
+      });
+      return redirectResponse;
     }
   }
 

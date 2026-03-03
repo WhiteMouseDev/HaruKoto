@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -27,6 +28,7 @@ export default function LoginPage() {
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setInfo('');
     setLoading(true);
 
     try {
@@ -45,7 +47,7 @@ export default function LoginPage() {
             '이미 가입된 이메일입니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.'
           );
         } else {
-          setError('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
+          setInfo('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -53,9 +55,17 @@ export default function LoginPage() {
           password,
         });
         if (error) {
-          if (error.message === 'Invalid login credentials') {
+          if (
+            error.message.includes('Invalid login credentials') ||
+            error.message.includes('invalid_credentials')
+          ) {
             throw new Error(
-              '이메일 또는 비밀번호가 올바르지 않습니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.'
+              '이메일 또는 비밀번호가 올바르지 않습니다. 소셜 로그인(Google/Kakao)으로 가입하셨다면 해당 방법으로 로그인해주세요.'
+            );
+          }
+          if (error.message.includes('Email not confirmed')) {
+            throw new Error(
+              '이메일 인증이 완료되지 않았습니다. 가입 시 발송된 이메일을 확인해주세요.'
             );
           }
           throw error;
@@ -270,6 +280,10 @@ export default function LoginPage() {
               <p className="text-destructive text-center text-sm">{error}</p>
             )}
 
+            {info && (
+              <p className="text-primary text-center text-sm font-medium">{info}</p>
+            )}
+
             <Button
               type="submit"
               className="h-12 rounded-xl text-base"
@@ -302,6 +316,7 @@ export default function LoginPage() {
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setError('');
+                setInfo('');
               }}
             >
               {isSignUp ? '로그인' : '회원가입'}
