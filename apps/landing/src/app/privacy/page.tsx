@@ -4,6 +4,22 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: '개인정보처리방침 | 하루코토',
   description: '하루코토 개인정보처리방침',
+  alternates: {
+    canonical: '/privacy',
+  },
+  openGraph: {
+    title: '개인정보처리방침 | 하루코토',
+    description: '하루코토 개인정보처리방침',
+    url: '/privacy',
+    images: [
+      {
+        url: '/images/og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: '하루코토 개인정보처리방침',
+      },
+    ],
+  },
 };
 
 export default function PrivacyPage() {

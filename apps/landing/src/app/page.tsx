@@ -1,361 +1,39 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
-
-function BrandLogo({ size = 'md' }: { size?: 'sm' | 'md' }) {
-  const height = size === 'sm' ? 32 : 40;
-  const width = Math.round(height * 3.18);
-  return (
-    <Image
-      src="/images/logo-horizontal.svg"
-      alt="하루코토"
-      width={width}
-      height={height}
-      className="shrink-0"
-      priority
-    />
-  );
-}
 import {
   BookOpen,
   Bot,
   Gamepad2,
   Flower2,
-  ChevronRight,
-  ArrowDown,
   Download,
-  Smartphone,
   Globe,
+  ChevronRight,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  Header,
+  Hero,
+  AnimatedSection,
+  MotionDiv,
+  MotionCard,
+  BrandLogo,
+} from '@/components/landing/client-sections';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-/* ─────────────────────────────────────────
-   Cherry Blossom Petal CSS Animation
-   ───────────────────────────────────────── */
-function CherryBlossomStyles() {
-  return (
-    <style>{`
-      @keyframes petal-fall {
-        0% {
-          transform: translateY(-10vh) translateX(0) rotate(0deg);
-          opacity: 1;
-        }
-        25% {
-          transform: translateY(20vh) translateX(30px) rotate(90deg);
-          opacity: 0.9;
-        }
-        50% {
-          transform: translateY(45vh) translateX(-20px) rotate(180deg);
-          opacity: 0.7;
-        }
-        75% {
-          transform: translateY(70vh) translateX(25px) rotate(270deg);
-          opacity: 0.4;
-        }
-        100% {
-          transform: translateY(100vh) translateX(-10px) rotate(360deg);
-          opacity: 0;
-        }
-      }
-
-      @keyframes petal-sway {
-        0%, 100% { transform: translateX(0); }
-        50% { transform: translateX(15px); }
-      }
-
-      .petal {
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: radial-gradient(ellipse at center, #FFB7C5 0%, #FFD6E0 60%, transparent 70%);
-        border-radius: 50% 0 50% 0;
-        animation: petal-fall linear infinite;
-        pointer-events: none;
-      }
-    `}</style>
-  );
-}
-
-function FloatingPetals() {
-  const petals = [
-    { left: '10%', delay: '0s', duration: '8s', size: 14 },
-    { left: '25%', delay: '2s', duration: '10s', size: 10 },
-    { left: '40%', delay: '4s', duration: '9s', size: 16 },
-    { left: '55%', delay: '1s', duration: '11s', size: 12 },
-    { left: '70%', delay: '3s', duration: '8.5s', size: 10 },
-    { left: '85%', delay: '5s', duration: '9.5s', size: 14 },
-    { left: '15%', delay: '6s', duration: '10.5s', size: 11 },
-  ];
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {petals.map((p, i) => (
-        <div
-          key={i}
-          className="petal"
-          style={{
-            left: p.left,
-            top: '-20px',
-            width: p.size,
-            height: p.size,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            opacity: 0.7,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+const APK_DOWNLOAD_URL =
+  'https://github.com/WhiteMouseDev/HaruKoto/releases/download/v1.0.0-beta/app-release.apk';
 
 /* ─────────────────────────────────────────
-   Shared Animation Variants
-   ───────────────────────────────────────── */
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.15 },
-  },
-};
-
-function AnimatedSection({
-  children,
-  className,
-  id,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  id?: string;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-
-  return (
-    <motion.section
-      ref={ref}
-      id={id}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      variants={staggerContainer}
-      className={className}
-    >
-      {children}
-    </motion.section>
-  );
-}
-
-/* ─────────────────────────────────────────
-   1. Navigation Header
-   ───────────────────────────────────────── */
-function Header() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <header
-      className={cn(
-        'fixed top-0 right-0 left-0 z-50 transition-all duration-300',
-        scrolled
-          ? 'border-border/50 bg-background/80 border-b backdrop-blur-lg'
-          : 'bg-transparent'
-      )}
-    >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <BrandLogo size="sm" />
-
-        <nav className="hidden items-center gap-8 md:flex">
-          <button
-            onClick={() => scrollTo('features')}
-            className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-          >
-            기능
-          </button>
-          <button
-            onClick={() => scrollTo('how-it-works')}
-            className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-          >
-            학습방법
-          </button>
-          <button
-            onClick={() => scrollTo('download')}
-            className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-          >
-            다운로드
-          </button>
-        </nav>
-
-        <a
-          href={APP_URL}
-          className="bg-primary hover:bg-hk-primary-hover rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:shadow-md"
-        >
-          시작하기
-        </a>
-      </div>
-    </header>
-  );
-}
-
-/* ─────────────────────────────────────────
-   2. Hero Section
-   ───────────────────────────────────────── */
-function Hero() {
-  return (
-    <section className="relative flex min-h-screen items-center overflow-hidden pt-20">
-      <FloatingPetals />
-
-      {/* Background decorative circles */}
-      <div className="bg-primary/10 absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full blur-3xl" />
-      <div className="bg-accent/30 absolute -bottom-20 -left-20 h-[400px] w-[400px] rounded-full blur-3xl" />
-
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          {/* Left: Text */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
-            <motion.h1
-              variants={fadeInUp}
-              className="text-foreground text-5xl leading-tight font-bold tracking-tight sm:text-6xl lg:text-7xl"
-            >
-              매일 한 단어,
-              <br />
-              <span className="text-primary">봄처럼 피어나는</span>
-              <br />
-              나의 일본어
-            </motion.h1>
-
-            <motion.p
-              variants={fadeInUp}
-              className="text-muted-foreground mt-6 max-w-lg text-lg leading-relaxed"
-            >
-              JLPT 시험 대비부터 AI 실전 회화까지,
-              <br className="hidden sm:block" />
-              한국인을 위한 재미있는 일본어 학습 앱
-            </motion.p>
-
-            <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap gap-4">
-              <a
-                href={APP_URL}
-                className="bg-primary hover:bg-hk-primary-hover inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
-              >
-                무료로 시작하기
-                <ChevronRight className="h-4 w-4" />
-              </a>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById('features')
-                    ?.scrollIntoView({ behavior: 'smooth' })
-                }
-                className="border-border text-foreground hover:bg-secondary inline-flex items-center gap-2 rounded-full border px-8 py-4 text-base font-semibold transition-all"
-              >
-                기능 둘러보기
-                <ArrowDown className="h-4 w-4" />
-              </button>
-            </motion.div>
-          </motion.div>
-
-          {/* Right: Phone Mockup */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-            className="flex justify-center lg:justify-end"
-          >
-            <div className="relative">
-              {/* Phone frame */}
-              <div className="border-border/50 bg-card relative h-[580px] w-[280px] overflow-hidden rounded-[2.5rem] border-4 shadow-2xl">
-                {/* Status bar */}
-                <div className="bg-card flex items-center justify-center px-6 pt-3 pb-2">
-                  <div className="bg-foreground h-5 w-20 rounded-full opacity-20" />
-                </div>
-
-                {/* App content preview */}
-                <div className="space-y-4 p-4">
-                  {/* Greeting */}
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-xs">おはよう!</div>
-                    <div className="text-foreground text-sm font-semibold">
-                      오늘의 학습을 시작해볼까요?
-                    </div>
-                  </div>
-
-                  {/* Stats cards */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-primary/10 rounded-xl p-3">
-                      <div className="text-primary text-lg font-bold">7일</div>
-                      <div className="text-muted-foreground text-[10px]">연속 학습</div>
-                    </div>
-                    <div className="bg-accent rounded-xl p-3">
-                      <div className="text-foreground text-lg font-bold">Lv.12</div>
-                      <div className="text-muted-foreground text-[10px]">현재 레벨</div>
-                    </div>
-                  </div>
-
-                  {/* Today's word card */}
-                  <div className="bg-secondary rounded-2xl p-4">
-                    <div className="text-muted-foreground mb-2 text-[10px] font-medium">
-                      오늘의 단어
-                    </div>
-                    <div className="font-jp text-foreground text-2xl font-bold">桜</div>
-                    <div className="text-muted-foreground mt-0.5 text-xs">さくら</div>
-                    <div className="text-foreground mt-1 text-sm">벚꽃</div>
-                  </div>
-
-                  {/* Quick actions */}
-                  <div className="space-y-2">
-                    <div className="bg-primary flex items-center justify-between rounded-xl px-4 py-3 text-white">
-                      <span className="text-xs font-semibold">JLPT N3 퀴즈</span>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="border-border flex items-center justify-between rounded-xl border px-4 py-3">
-                      <span className="text-foreground text-xs font-semibold">
-                        AI 회화 연습
-                      </span>
-                      <ChevronRight className="text-muted-foreground h-3.5 w-3.5" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Glow effect behind phone */}
-              <div className="bg-primary/20 absolute -inset-4 -z-10 rounded-[3rem] blur-2xl" />
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─────────────────────────────────────────
-   3. Features Section — Bento Grid
+   Features Section — Bento Grid
    ───────────────────────────────────────── */
 function Features() {
   return (
-    <AnimatedSection id="features" className="relative py-28">
+    <AnimatedSection
+      id="features"
+      className="relative py-28"
+      aria-label="주요 기능"
+    >
       <div className="mx-auto max-w-7xl px-6">
-        <motion.div variants={fadeInUp} className="max-w-xl">
+        <MotionDiv className="max-w-xl">
           <p className="text-primary text-sm font-semibold tracking-wide uppercase">
             Features
           </p>
@@ -365,15 +43,12 @@ function Features() {
           <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
             효과적이고 재미있는 학습을 위한 모든 것을 담았어요
           </p>
-        </motion.div>
+        </MotionDiv>
 
         {/* Bento Grid — asymmetric layout */}
         <div className="mt-14 grid gap-4 sm:grid-cols-5 sm:grid-rows-2">
           {/* JLPT — large card, spans 3 cols */}
-          <motion.div
-            variants={fadeInUp}
-            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10"
-          >
+          <MotionDiv className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10">
             <div className="relative z-10">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-blue/10 text-hk-blue">
                 <BookOpen className="h-5 w-5" />
@@ -397,16 +72,16 @@ function Features() {
                 ))}
               </div>
             </div>
-            <div className="text-primary/[0.04] pointer-events-none absolute -right-6 -bottom-4 text-[180px] font-black select-none">
+            <div
+              className="text-primary/[0.04] pointer-events-none absolute -right-6 -bottom-4 text-[180px] font-black select-none"
+              aria-hidden="true"
+            >
               漢
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* AI 회화 — spans 2 cols */}
-          <motion.div
-            variants={fadeInUp}
-            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2"
-          >
+          <MotionDiv className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2">
             <div className="relative z-10">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-green/10 text-hk-green">
                 <Bot className="h-5 w-5" />
@@ -432,13 +107,10 @@ function Features() {
                 </span>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* 게이미피케이션 — spans 2 cols */}
-          <motion.div
-            variants={fadeInUp}
-            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2"
-          >
+          <MotionDiv className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2">
             <div className="relative z-10">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-yellow/10 text-hk-yellow">
                 <Gamepad2 className="h-5 w-5" />
@@ -461,13 +133,10 @@ function Features() {
                 <div className="bg-primary h-full w-[82%] rounded-full" />
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* 매일 한 단어 — large card, spans 3 cols */}
-          <motion.div
-            variants={fadeInUp}
-            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10"
-          >
+          <MotionDiv className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10">
             <div className="relative z-10 flex flex-col justify-between sm:flex-row sm:items-center sm:gap-10">
               <div>
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -489,7 +158,7 @@ function Features() {
                 <p className="text-foreground mt-1.5 text-sm font-medium">꽃구경</p>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
     </AnimatedSection>
@@ -497,7 +166,7 @@ function Features() {
 }
 
 /* ─────────────────────────────────────────
-   4. How It Works Section
+   How It Works Section
    ───────────────────────────────────────── */
 const steps = [
   {
@@ -522,29 +191,35 @@ const steps = [
 
 function HowItWorks() {
   return (
-    <AnimatedSection id="how-it-works" className="py-28">
+    <AnimatedSection
+      id="how-it-works"
+      className="py-28"
+      aria-label="학습 방법"
+    >
       <div className="mx-auto max-w-7xl px-6">
-        <motion.div variants={fadeInUp} className="text-center">
+        <MotionDiv className="text-center">
           <p className="text-primary text-sm font-semibold tracking-wide uppercase">
             How it works
           </p>
           <h2 className="text-foreground mt-3 text-3xl font-bold sm:text-4xl lg:text-5xl">
             3단계로 시작하는 일본어
           </h2>
-        </motion.div>
+        </MotionDiv>
 
         <div className="mt-16 space-y-4 sm:space-y-5">
           {steps.map((step) => (
-            <motion.div
+            <MotionDiv
               key={step.number}
-              variants={fadeInUp}
               className={cn(
                 'relative overflow-hidden rounded-2xl bg-gradient-to-r p-8 sm:rounded-3xl sm:p-10',
                 step.accent
               )}
             >
               <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-10">
-                <span className="text-foreground/10 text-6xl font-black sm:text-8xl">
+                <span
+                  className="text-foreground/10 text-6xl font-black sm:text-8xl"
+                  aria-hidden="true"
+                >
                   {step.number}
                 </span>
                 <div>
@@ -556,7 +231,7 @@ function HowItWorks() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>
@@ -565,7 +240,7 @@ function HowItWorks() {
 }
 
 /* ─────────────────────────────────────────
-   5. Stats — full-width minimal band
+   Stats — full-width minimal band
    ───────────────────────────────────────── */
 function Stats() {
   const stats = [
@@ -575,22 +250,21 @@ function Stats() {
   ];
 
   return (
-    <AnimatedSection className="border-border/50 border-y py-16">
+    <AnimatedSection
+      className="border-border/50 border-y py-16"
+      aria-label="주요 수치"
+    >
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid grid-cols-3 divide-x divide-border">
           {stats.map((stat) => (
-            <motion.div
-              key={stat.label}
-              variants={fadeInUp}
-              className="px-4 text-center sm:px-8"
-            >
+            <MotionDiv key={stat.label} className="px-4 text-center sm:px-8">
               <div className="text-foreground text-2xl font-bold tracking-tight sm:text-4xl">
                 {stat.value}
               </div>
               <div className="text-muted-foreground mt-1.5 text-xs font-medium sm:text-sm">
                 {stat.label}
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>
@@ -599,16 +273,17 @@ function Stats() {
 }
 
 /* ─────────────────────────────────────────
-   6. Beta Download Section
+   Beta Download Section
    ───────────────────────────────────────── */
-const APK_DOWNLOAD_URL =
-  'https://github.com/WhiteMouseDev/HaruKoto/releases/download/v1.0.0-beta/app-release.apk';
-
 function BetaDownload() {
   return (
-    <AnimatedSection id="download" className="bg-secondary/30 py-24">
+    <AnimatedSection
+      id="download"
+      className="bg-secondary/30 py-24"
+      aria-label="앱 다운로드"
+    >
       <div className="mx-auto max-w-4xl px-6">
-        <motion.div variants={fadeInUp} className="text-center">
+        <MotionDiv className="text-center">
           <span className="bg-primary/10 text-primary inline-block rounded-full px-4 py-1.5 text-sm font-semibold">
             Beta
           </span>
@@ -618,15 +293,12 @@ function BetaDownload() {
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
             지금 바로 하루코토를 체험해보세요
           </p>
-        </motion.div>
+        </MotionDiv>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {/* Android APK */}
-          <motion.a
+          <MotionCard
             href={APK_DOWNLOAD_URL}
-            variants={fadeInUp}
-            whileHover={{ scale: 1.02, y: -4 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="bg-card border-border/50 flex flex-col items-center gap-4 rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-lg"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-green-100 text-green-600">
@@ -643,14 +315,11 @@ function BetaDownload() {
             <span className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold">
               APK 다운로드
             </span>
-          </motion.a>
+          </MotionCard>
 
           {/* Web App */}
-          <motion.a
+          <MotionCard
             href={APP_URL}
-            variants={fadeInUp}
-            whileHover={{ scale: 1.02, y: -4 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="bg-card border-border/50 flex flex-col items-center gap-4 rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-lg"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
@@ -667,57 +336,69 @@ function BetaDownload() {
             <span className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold">
               웹앱 열기
             </span>
-          </motion.a>
+          </MotionCard>
         </div>
 
-        <motion.p
-          variants={fadeInUp}
-          className="text-muted-foreground mt-6 text-center text-xs"
-        >
-          * Android APK 설치 시 &quot;출처를 알 수 없는 앱&quot; 허용이
-          필요합니다
-        </motion.p>
+        <MotionDiv className="mt-6 text-center">
+          <p className="text-muted-foreground text-xs">
+            * Android APK 설치 시 &quot;출처를 알 수 없는 앱&quot; 허용이
+            필요합니다
+          </p>
+        </MotionDiv>
       </div>
     </AnimatedSection>
   );
 }
 
 /* ─────────────────────────────────────────
-   7. Final CTA Section
+   Final CTA Section
    ───────────────────────────────────────── */
 function FinalCTA() {
   return (
-    <AnimatedSection id="cta" className="relative overflow-hidden py-28 sm:py-36">
+    <AnimatedSection
+      id="cta"
+      className="relative overflow-hidden py-28 sm:py-36"
+      aria-label="시작하기"
+    >
       {/* Layered gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FFB7C5] via-[#FFD0DB] to-[#FFE4EC]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.4),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,143,163,0.3),transparent_50%)]" />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-[#FFB7C5] via-[#FFD0DB] to-[#FFE4EC]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.4),transparent_50%)]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,143,163,0.3),transparent_50%)]"
+        aria-hidden="true"
+      />
 
       {/* Decorative kanji */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[280px] font-black text-white/[0.08] select-none sm:text-[400px]">
+      <div
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[280px] font-black text-white/[0.08] select-none sm:text-[400px]"
+        aria-hidden="true"
+      >
         春
       </div>
 
       <div className="relative mx-auto max-w-2xl px-6 text-center">
-        <motion.p
-          variants={fadeInUp}
-          className="font-jp text-sm font-medium text-white/60"
-        >
-          毎日一言、春のように
-        </motion.p>
-        <motion.h2
-          variants={fadeInUp}
-          className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
-        >
-          지금 바로 시작하세요
-        </motion.h2>
-        <motion.p
-          variants={fadeInUp}
-          className="mt-4 text-base text-white/70 sm:text-lg"
-        >
-          매일 10분, 당신의 일본어가 달라집니다
-        </motion.p>
-        <motion.div variants={fadeInUp} className="mt-10">
+        <MotionDiv>
+          <p className="font-jp text-sm font-medium text-white/60">
+            毎日一言、春のように
+          </p>
+        </MotionDiv>
+        <MotionDiv>
+          <h2 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+            지금 바로 시작하세요
+          </h2>
+        </MotionDiv>
+        <MotionDiv>
+          <p className="mt-4 text-base text-white/70 sm:text-lg">
+            매일 10분, 당신의 일본어가 달라집니다
+          </p>
+        </MotionDiv>
+        <MotionDiv className="mt-10">
           <a
             href={APP_URL}
             className="inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 text-base font-bold text-[#FF8FA3] shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
@@ -725,14 +406,14 @@ function FinalCTA() {
             무료로 시작하기
             <ChevronRight className="h-5 w-5" />
           </a>
-        </motion.div>
+        </MotionDiv>
       </div>
     </AnimatedSection>
   );
 }
 
 /* ─────────────────────────────────────────
-   7. Footer
+   Footer
    ───────────────────────────────────────── */
 function Footer() {
   return (
@@ -741,7 +422,7 @@ function Footer() {
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <BrandLogo size="sm" />
 
-          <nav className="flex flex-wrap justify-center gap-6">
+          <nav className="flex flex-wrap justify-center gap-6" aria-label="푸터 네비게이션">
             <a
               href="/terms"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
@@ -782,7 +463,6 @@ function Footer() {
 export default function LandingPage() {
   return (
     <>
-      <CherryBlossomStyles />
       <Header />
       <main>
         <Hero />

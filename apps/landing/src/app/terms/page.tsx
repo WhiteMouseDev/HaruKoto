@@ -4,6 +4,22 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: '이용약관 | 하루코토',
   description: '하루코토 서비스 이용약관',
+  alternates: {
+    canonical: '/terms',
+  },
+  openGraph: {
+    title: '이용약관 | 하루코토',
+    description: '하루코토 서비스 이용약관',
+    url: '/terms',
+    images: [
+      {
+        url: '/images/og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: '하루코토 이용약관',
+      },
+    ],
+  },
 };
 
 export default function TermsPage() {

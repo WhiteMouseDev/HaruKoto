@@ -169,7 +169,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
+    _initWebView();
+  }
+
+  void _initWebView() {
+    _controller = WebViewController(
+      onPermissionRequest: (request) {
+        // WebView 내 마이크 등 미디어 권한 요청 허용
+        request.grant();
+      },
+    )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -180,11 +189,17 @@ class _WebViewScreenState extends State<WebViewScreen> {
             setState(() => _isLoading = false);
           },
           onNavigationRequest: (request) {
-            if (!request.url.startsWith(kAppUrl) &&
-                !request.url.contains('harukoto')) {
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
+            final url = request.url;
+            // 앱 URL 허용
+            if (url.startsWith(kAppUrl)) return NavigationDecision.navigate;
+            // Supabase OAuth 허용
+            if (url.contains('supabase.co')) return NavigationDecision.navigate;
+            // 카카오 OAuth 허용
+            if (url.contains('kakao.com')) return NavigationDecision.navigate;
+            // 구글 OAuth 허용
+            if (url.contains('accounts.google.com')) return NavigationDecision.navigate;
+            // 그 외 차단
+            return NavigationDecision.prevent;
           },
         ),
       )
