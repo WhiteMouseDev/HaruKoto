@@ -12,46 +12,72 @@ function loadJson<T>(relativePath: string): T {
 async function main() {
   console.log('🌸 Seeding HaruKoto database...');
 
-  // 1. Seed N5 Vocabulary
-  const vocabData = loadJson<any[]>('data/vocabulary/n5-words.json');
-  const existingVocab = await prisma.vocabulary.count();
-  if (existingVocab === 0) {
-    await prisma.vocabulary.createMany({
-      data: vocabData.map((v) => ({
-        word: v.word,
-        reading: v.reading,
-        meaningKo: v.meaningKo,
-        partOfSpeech: v.partOfSpeech,
-        jlptLevel: v.jlptLevel,
-        exampleSentence: v.exampleSentence,
-        exampleReading: v.exampleReading,
-        exampleTranslation: v.exampleTranslation,
-        tags: v.tags,
-        order: v.order,
-      })),
+  // 1. Seed Vocabulary (N5 + N4)
+  const vocabFiles = [
+    { file: 'data/vocabulary/n5-words.json', level: 'N5' },
+    { file: 'data/vocabulary/n4-words.json', level: 'N4' },
+  ];
+
+  for (const { file, level } of vocabFiles) {
+    const existingCount = await prisma.vocabulary.count({
+      where: { jlptLevel: level as any },
     });
-    console.log(`✅ ${vocabData.length} N5 vocabulary words seeded`);
-  } else {
-    console.log(`⏭️ Vocabulary already exists (${existingVocab}), skipping`);
+    if (existingCount === 0) {
+      try {
+        const vocabData = loadJson<any[]>(file);
+        await prisma.vocabulary.createMany({
+          data: vocabData.map((v) => ({
+            word: v.word,
+            reading: v.reading,
+            meaningKo: v.meaningKo,
+            partOfSpeech: v.partOfSpeech,
+            jlptLevel: v.jlptLevel,
+            exampleSentence: v.exampleSentence,
+            exampleReading: v.exampleReading,
+            exampleTranslation: v.exampleTranslation,
+            tags: v.tags,
+            order: v.order,
+          })),
+        });
+        console.log(`✅ ${vocabData.length} ${level} vocabulary words seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${level} vocabulary file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${level} vocabulary already exists (${existingCount}), skipping`);
+    }
   }
 
-  // 2. Seed N5 Grammar
-  const grammarData = loadJson<any[]>('data/grammar/n5-grammar.json');
-  const existingGrammar = await prisma.grammar.count();
-  if (existingGrammar === 0) {
-    await prisma.grammar.createMany({
-      data: grammarData.map((g) => ({
-        pattern: g.pattern,
-        meaningKo: g.meaningKo,
-        explanation: g.explanation,
-        jlptLevel: g.jlptLevel,
-        exampleSentences: g.exampleSentences,
-        order: g.order,
-      })),
+  // 2. Seed Grammar (N5 + N4)
+  const grammarFiles = [
+    { file: 'data/grammar/n5-grammar.json', level: 'N5' },
+    { file: 'data/grammar/n4-grammar.json', level: 'N4' },
+  ];
+
+  for (const { file, level } of grammarFiles) {
+    const existingCount = await prisma.grammar.count({
+      where: { jlptLevel: level as any },
     });
-    console.log(`✅ ${grammarData.length} N5 grammar patterns seeded`);
-  } else {
-    console.log(`⏭️ Grammar already exists (${existingGrammar}), skipping`);
+    if (existingCount === 0) {
+      try {
+        const grammarData = loadJson<any[]>(file);
+        await prisma.grammar.createMany({
+          data: grammarData.map((g) => ({
+            pattern: g.pattern,
+            meaningKo: g.meaningKo,
+            explanation: g.explanation,
+            jlptLevel: g.jlptLevel,
+            exampleSentences: g.exampleSentences,
+            order: g.order,
+          })),
+        });
+        console.log(`✅ ${grammarData.length} ${level} grammar patterns seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${level} grammar file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${level} grammar already exists (${existingCount}), skipping`);
+    }
   }
 
   // 3. Seed Conversation Scenarios
