@@ -14,6 +14,7 @@ import {
   MessageSquare,
   FolderOpen,
   Phone,
+  Clock,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CategoryGrid } from '@/components/features/chat/category-grid';
 import { ScenarioCard } from '@/components/features/chat/scenario-card';
 import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
+import { ConversationHistory } from '@/components/features/chat/conversation-history';
 
 type Scenario = {
   id: string;
@@ -300,6 +302,15 @@ export default function ChatPage() {
           음성 통화
         </h2>
         <PhoneCallCta onClick={() => router.push('/chat/call')} />
+      </motion.div>
+
+      {/* Conversation History */}
+      <motion.div variants={item}>
+        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+          <Clock className="size-4" />
+          지난 회화 기록
+        </h2>
+        <ConversationHistory />
       </motion.div>
 
       {/* Starting overlay */}
