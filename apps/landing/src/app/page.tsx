@@ -349,79 +349,210 @@ function Hero() {
 }
 
 /* ─────────────────────────────────────────
-   3. Features Section
+   3. Features Section — Bento Grid
    ───────────────────────────────────────── */
-const features = [
-  {
-    icon: BookOpen,
-    title: 'JLPT 완벽 대비',
-    description:
-      'N5부터 N1까지, 체계적인 단어와 문법 학습. 실전 모의고사로 시험 대비를 완벽하게.',
-    color: 'bg-hk-blue/10 text-hk-blue',
-  },
-  {
-    icon: Bot,
-    title: 'AI 실전 회화',
-    description:
-      'AI와 자연스러운 일본어 대화 연습. 실시간 피드백으로 회화 실력 향상.',
-    color: 'bg-hk-green/10 text-hk-green',
-  },
-  {
-    icon: Gamepad2,
-    title: '게이미피케이션',
-    description:
-      'XP, 레벨업, 연속 학습 보상으로 매일 학습이 즐거워져요.',
-    color: 'bg-hk-yellow/10 text-hk-yellow',
-  },
-  {
-    icon: Flower2,
-    title: '매일 한 단어',
-    description:
-      '하루에 한 단어씩, 부담 없이 꾸준히. 봄처럼 자연스럽게 실력이 피어납니다.',
-    color: 'bg-primary/10 text-primary',
-  },
-];
-
 function Features() {
   return (
-    <AnimatedSection
-      id="features"
-      className="relative py-24"
-    >
+    <AnimatedSection id="features" className="relative py-28">
       <div className="mx-auto max-w-7xl px-6">
-        <motion.div variants={fadeInUp} className="text-center">
-          <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
-            왜 <span className="text-primary">하루코토</span>인가요?
+        <motion.div variants={fadeInUp} className="max-w-xl">
+          <p className="text-primary text-sm font-semibold tracking-wide uppercase">
+            Features
+          </p>
+          <h2 className="text-foreground mt-3 text-3xl font-bold sm:text-4xl lg:text-5xl">
+            왜 하루코토인가요?
           </h2>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
             효과적이고 재미있는 학습을 위한 모든 것을 담았어요
           </p>
         </motion.div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2">
-          {features.map((feature) => (
-            <motion.div
-              key={feature.title}
-              variants={fadeInUp}
-              whileHover={{ scale: 1.02, y: -4 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="bg-card border-border/50 group rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-lg"
-            >
-              <div className="flex items-start gap-4">
-                <div
-                  className={cn(
-                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
-                    feature.color
-                  )}
-                >
-                  <feature.icon className="h-6 w-6" />
+        {/* Bento Grid — asymmetric layout */}
+        <div className="mt-14 grid gap-4 sm:grid-cols-5 sm:grid-rows-2">
+          {/* JLPT — large card, spans 3 cols */}
+          <motion.div
+            variants={fadeInUp}
+            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10"
+          >
+            <div className="relative z-10">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-blue/10 text-hk-blue">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <h3 className="text-foreground mt-5 text-xl font-bold">
+                JLPT 완벽 대비
+              </h3>
+              <p className="text-muted-foreground mt-2 max-w-sm leading-relaxed">
+                N5부터 N1까지, 체계적인 단어와 문법 학습.
+                실전 모의고사로 시험 대비를 완벽하게.
+              </p>
+              {/* Decorative JLPT level pills */}
+              <div className="mt-6 flex flex-wrap gap-2">
+                {['N5', 'N4', 'N3', 'N2', 'N1'].map((level) => (
+                  <span
+                    key={level}
+                    className="border-border bg-background rounded-full border px-3 py-1 text-xs font-medium"
+                  >
+                    {level}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="text-primary/[0.04] pointer-events-none absolute -right-6 -bottom-4 text-[180px] font-black select-none">
+              漢
+            </div>
+          </motion.div>
+
+          {/* AI 회화 — spans 2 cols */}
+          <motion.div
+            variants={fadeInUp}
+            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2"
+          >
+            <div className="relative z-10">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-green/10 text-hk-green">
+                <Bot className="h-5 w-5" />
+              </div>
+              <h3 className="text-foreground mt-5 text-xl font-bold">
+                AI 실전 회화
+              </h3>
+              <p className="text-muted-foreground mt-2 leading-relaxed">
+                AI와 자연스러운 일본어 대화 연습.
+                실시간 피드백으로 회화 실력 향상.
+              </p>
+            </div>
+            {/* Decorative chat bubbles */}
+            <div className="mt-6 space-y-2">
+              <div className="bg-secondary w-fit rounded-2xl rounded-bl-sm px-4 py-2">
+                <span className="font-jp text-foreground text-xs">
+                  今日の天気はどうですか？
+                </span>
+              </div>
+              <div className="bg-primary/10 ml-auto w-fit rounded-2xl rounded-br-sm px-4 py-2">
+                <span className="text-foreground text-xs">
+                  오늘 날씨가 어떤가요?
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 게이미피케이션 — spans 2 cols */}
+          <motion.div
+            variants={fadeInUp}
+            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-2"
+          >
+            <div className="relative z-10">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-hk-yellow/10 text-hk-yellow">
+                <Gamepad2 className="h-5 w-5" />
+              </div>
+              <h3 className="text-foreground mt-5 text-xl font-bold">
+                게이미피케이션
+              </h3>
+              <p className="text-muted-foreground mt-2 leading-relaxed">
+                XP, 레벨업, 연속 학습 보상으로
+                매일 학습이 즐거워져요.
+              </p>
+            </div>
+            {/* Decorative progress bar */}
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-foreground font-semibold">Lv. 12</span>
+                <span className="text-muted-foreground">2,450 / 3,000 XP</span>
+              </div>
+              <div className="bg-muted h-2.5 overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-[82%] rounded-full" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 매일 한 단어 — large card, spans 3 cols */}
+          <motion.div
+            variants={fadeInUp}
+            className="bg-card border-border/50 group relative overflow-hidden rounded-3xl border p-8 sm:col-span-3 sm:p-10"
+          >
+            <div className="relative z-10 flex flex-col justify-between sm:flex-row sm:items-center sm:gap-10">
+              <div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Flower2 className="h-5 w-5" />
                 </div>
+                <h3 className="text-foreground mt-5 text-xl font-bold">
+                  매일 한 단어
+                </h3>
+                <p className="text-muted-foreground mt-2 max-w-sm leading-relaxed">
+                  하루에 한 단어씩, 부담 없이 꾸준히.
+                  봄처럼 자연스럽게 실력이 피어납니다.
+                </p>
+              </div>
+              {/* Decorative word card */}
+              <div className="bg-secondary/60 mt-6 flex-shrink-0 rounded-2xl p-6 text-center sm:mt-0">
+                <p className="text-muted-foreground text-xs font-medium">오늘의 단어</p>
+                <p className="font-jp text-foreground mt-2 text-4xl font-bold">花見</p>
+                <p className="text-muted-foreground font-jp mt-1 text-sm">はなみ</p>
+                <p className="text-foreground mt-1.5 text-sm font-medium">꽃구경</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+/* ─────────────────────────────────────────
+   4. How It Works Section
+   ───────────────────────────────────────── */
+const steps = [
+  {
+    number: '01',
+    title: '레벨 선택',
+    description: '나의 일본어 수준에 맞는 JLPT 레벨을 선택하세요. 처음이어도 괜찮아요.',
+    accent: 'from-hk-blue/20 to-hk-blue/5',
+  },
+  {
+    number: '02',
+    title: '매일 학습',
+    description: '하루 10분, 단어와 문법을 퀴즈로 재미있게. 게임처럼 즐기다 보면 어느새.',
+    accent: 'from-hk-green/20 to-hk-green/5',
+  },
+  {
+    number: '03',
+    title: '실전 회화',
+    description: 'AI와 자연스러운 대화로 배운 것을 바로 써먹어요. 틀려도 괜찮아요.',
+    accent: 'from-primary/20 to-primary/5',
+  },
+];
+
+function HowItWorks() {
+  return (
+    <AnimatedSection id="how-it-works" className="py-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <motion.div variants={fadeInUp} className="text-center">
+          <p className="text-primary text-sm font-semibold tracking-wide uppercase">
+            How it works
+          </p>
+          <h2 className="text-foreground mt-3 text-3xl font-bold sm:text-4xl lg:text-5xl">
+            3단계로 시작하는 일본어
+          </h2>
+        </motion.div>
+
+        <div className="mt-16 space-y-4 sm:space-y-5">
+          {steps.map((step) => (
+            <motion.div
+              key={step.number}
+              variants={fadeInUp}
+              className={cn(
+                'relative overflow-hidden rounded-2xl bg-gradient-to-r p-8 sm:rounded-3xl sm:p-10',
+                step.accent
+              )}
+            >
+              <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-10">
+                <span className="text-foreground/10 text-6xl font-black sm:text-8xl">
+                  {step.number}
+                </span>
                 <div>
-                  <h3 className="text-foreground text-lg font-bold">
-                    {feature.title}
+                  <h3 className="text-foreground text-xl font-bold sm:text-2xl">
+                    {step.title}
                   </h3>
-                  <p className="text-muted-foreground mt-2 leading-relaxed">
-                    {feature.description}
+                  <p className="text-muted-foreground mt-2 max-w-lg leading-relaxed">
+                    {step.description}
                   </p>
                 </div>
               </div>
@@ -434,107 +565,33 @@ function Features() {
 }
 
 /* ─────────────────────────────────────────
-   4. How It Works Section
+   5. Stats — full-width minimal band
    ───────────────────────────────────────── */
-const steps = [
-  {
-    number: '1',
-    title: '레벨 선택',
-    description: '나의 일본어 수준에 맞는 JLPT 레벨을 선택하세요',
-  },
-  {
-    number: '2',
-    title: '매일 학습',
-    description: '하루 10분, 단어와 문법을 퀴즈로 재미있게 학습',
-  },
-  {
-    number: '3',
-    title: '실전 회화',
-    description: 'AI와 자연스러운 대화로 실력을 확인하세요',
-  },
-];
+function Stats() {
+  const stats = [
+    { value: '10,000+', label: '수록 단어' },
+    { value: 'N5 → N1', label: '전 레벨 지원' },
+    { value: '∞', label: 'AI 회화 무제한' },
+  ];
 
-function HowItWorks() {
   return (
-    <AnimatedSection
-      id="how-it-works"
-      className="bg-secondary/30 py-24"
-    >
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div variants={fadeInUp} className="text-center">
-          <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
-            <span className="text-primary">3단계</span>로 시작하는 일본어
-          </h2>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-            복잡한 준비 없이, 바로 시작할 수 있어요
-          </p>
-        </motion.div>
-
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {steps.map((step, i) => (
+    <AnimatedSection className="border-border/50 border-y py-16">
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="grid grid-cols-3 divide-x divide-border">
+          {stats.map((stat) => (
             <motion.div
-              key={step.number}
+              key={stat.label}
               variants={fadeInUp}
-              className="relative text-center"
+              className="px-4 text-center sm:px-8"
             >
-              {/* Connecting line (desktop only) */}
-              {i < steps.length - 1 && (
-                <div className="border-primary/30 absolute top-8 left-[calc(50%+2rem)] hidden h-0 w-[calc(100%-4rem)] border-t-2 border-dashed md:block" />
-              )}
-
-              <div className="bg-primary mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold text-white shadow-lg">
-                {step.number}
+              <div className="text-foreground text-2xl font-bold tracking-tight sm:text-4xl">
+                {stat.value}
               </div>
-              <h3 className="text-foreground mt-6 text-xl font-bold">
-                {step.title}
-              </h3>
-              <p className="text-muted-foreground mx-auto mt-3 max-w-xs leading-relaxed">
-                {step.description}
-              </p>
+              <div className="text-muted-foreground mt-1.5 text-xs font-medium sm:text-sm">
+                {stat.label}
+              </div>
             </motion.div>
           ))}
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-/* ─────────────────────────────────────────
-   5. Stats / Social Proof Section
-   ───────────────────────────────────────── */
-function AnimatedCounter({ value, label }: { value: string; label: string }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={fadeInUp}
-      className="text-center"
-    >
-      <motion.div
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={isInView ? { scale: 1, opacity: 1 } : {}}
-        transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
-        className="text-primary text-4xl font-bold sm:text-5xl"
-      >
-        {value}
-      </motion.div>
-      <div className="text-muted-foreground mt-2 text-base font-medium">
-        {label}
-      </div>
-    </motion.div>
-  );
-}
-
-function Stats() {
-  return (
-    <AnimatedSection className="py-24">
-      <div className="mx-auto max-w-4xl px-6">
-        <div className="bg-card border-border/50 grid grid-cols-1 gap-10 rounded-3xl border p-10 shadow-sm sm:grid-cols-3 sm:gap-6">
-          <AnimatedCounter value="10,000+" label="단어 수록" />
-          <AnimatedCounter value="JLPT N5~N1" label="전 레벨 지원" />
-          <AnimatedCounter value="AI 회화" label="무제한 연습" />
         </div>
       </div>
     </AnimatedSection>
@@ -630,28 +687,40 @@ function BetaDownload() {
    ───────────────────────────────────────── */
 function FinalCTA() {
   return (
-    <AnimatedSection id="cta" className="relative overflow-hidden py-24">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FFB7C5] via-[#FFD6E0] to-[#FFE4EC]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.3),transparent_60%)]" />
+    <AnimatedSection id="cta" className="relative overflow-hidden py-28 sm:py-36">
+      {/* Layered gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FFB7C5] via-[#FFD0DB] to-[#FFE4EC]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.4),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,143,163,0.3),transparent_50%)]" />
 
-      <div className="relative mx-auto max-w-3xl px-6 text-center">
+      {/* Decorative kanji */}
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[280px] font-black text-white/[0.08] select-none sm:text-[400px]">
+        春
+      </div>
+
+      <div className="relative mx-auto max-w-2xl px-6 text-center">
+        <motion.p
+          variants={fadeInUp}
+          className="font-jp text-sm font-medium text-white/60"
+        >
+          毎日一言、春のように
+        </motion.p>
         <motion.h2
           variants={fadeInUp}
-          className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+          className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
         >
           지금 바로 시작하세요
         </motion.h2>
         <motion.p
           variants={fadeInUp}
-          className="mt-4 text-lg text-white/80"
+          className="mt-4 text-base text-white/70 sm:text-lg"
         >
           매일 10분, 당신의 일본어가 달라집니다
         </motion.p>
         <motion.div variants={fadeInUp} className="mt-10">
           <a
             href={APP_URL}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 text-base font-bold text-[#FFB7C5] shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 text-base font-bold text-[#FF8FA3] shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
           >
             무료로 시작하기
             <ChevronRight className="h-5 w-5" />
