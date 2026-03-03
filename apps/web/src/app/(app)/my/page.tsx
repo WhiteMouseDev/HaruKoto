@@ -1,71 +1,52 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
 import { ProfileHeader } from '@/components/features/my/profile-header';
 import { StatsOverview } from '@/components/features/my/stats-overview';
 import { SettingsMenu } from '@/components/features/my/settings-menu';
 import { Button } from '@/components/ui/button';
-import { apiFetch } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
+import { useProfile } from '@/hooks/use-dashboard';
+import { useUpdateProfile } from '@/hooks/use-update-profile';
 
 type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
-type ProfileData = {
-  id: string;
-  nickname: string;
-  avatarUrl: string | null;
-  jlptLevel: JlptLevel;
-  dailyGoal: number;
-  experiencePoints: number;
-  level: number;
-  streakCount: number;
-  longestStreak: number;
-  createdAt: string;
-};
-
-type SummaryData = {
-  totalWordsStudied: number;
-  totalQuizzesCompleted: number;
-  totalStudyDays: number;
-  totalXpEarned: number;
-};
-
-type ProfileApiResponse = {
-  profile: ProfileData;
-  summary: SummaryData;
+type MyProfileData = {
+  profile: {
+    id: string;
+    nickname: string;
+    avatarUrl: string | null;
+    jlptLevel: JlptLevel;
+    dailyGoal: number;
+    experiencePoints: number;
+    level: number;
+    streakCount: number;
+    longestStreak: number;
+    createdAt: string;
+  };
+  summary: {
+    totalWordsStudied: number;
+    totalQuizzesCompleted: number;
+    totalStudyDays: number;
+    totalXpEarned: number;
+  };
 };
 
 export default function MyPage() {
-  const [data, setData] = useState<ProfileApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading } = useProfile() as {
+    data: MyProfileData | undefined;
+    isLoading: boolean;
+  };
+  const updateProfile = useUpdateProfile();
   const [loggingOut, setLoggingOut] = useState(false);
-
-  const fetchProfile = useCallback(async () => {
-    try {
-      const response = await apiFetch<ProfileApiResponse>(
-        '/api/v1/user/profile'
-      );
-      setData(response);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
 
   const handleUpdate = useCallback(
     async (field: string, value: unknown) => {
-      await apiFetch('/api/v1/user/profile', {
-        method: 'PATCH',
-        body: JSON.stringify({ [field]: value }),
-      });
-      await fetchProfile();
+      await updateProfile.mutateAsync({ [field]: value });
     },
-    [fetchProfile]
+    [updateProfile]
   );
 
   const handleLogout = async () => {

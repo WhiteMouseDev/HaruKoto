@@ -1,64 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PeriodTab } from '@/components/features/stats/period-tab';
 import { StudyTab } from '@/components/features/stats/study-tab';
 import { JlptTab } from '@/components/features/stats/jlpt-tab';
-
-type DashboardData = {
-  today: {
-    wordsStudied: number;
-    quizzesCompleted: number;
-    correctAnswers: number;
-    totalAnswers: number;
-    xpEarned: number;
-    goalProgress: number;
-  };
-  streak: { current: number; longest: number };
-  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
-  levelProgress: {
-    vocabulary: { total: number; mastered: number; inProgress: number };
-    grammar: { total: number; mastered: number; inProgress: number };
-  };
-};
-
-type HistoryRecord = {
-  date: string;
-  wordsStudied: number;
-  quizzesCompleted: number;
-  correctAnswers: number;
-  totalAnswers: number;
-  conversationCount: number;
-  studyTimeSeconds: number;
-  xpEarned: number;
-};
-
-type HistoryData = {
-  year: number;
-  month: number;
-  records: HistoryRecord[];
-};
-
-type ProfileData = {
-  profile: {
-    nickname: string;
-    jlptLevel: string;
-    dailyGoal: number;
-    experiencePoints: number;
-    level: number;
-    streakCount: number;
-  };
-  summary: {
-    totalWordsStudied: number;
-    totalQuizzesCompleted: number;
-    totalXpEarned: number;
-  };
-};
+import { useDashboard, useProfile } from '@/hooks/use-dashboard';
+import { useStatsHistory } from '@/hooks/use-stats-history';
 
 const container = {
   hidden: { opacity: 0 },
@@ -73,66 +24,29 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
-async function fetchAllHistory(year: number): Promise<HistoryRecord[]> {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-
-  const maxMonth = year === currentYear ? currentMonth : 12;
-
-  const promises = Array.from({ length: maxMonth }, (_, i) =>
-    apiFetch<HistoryData>(
-      `/api/v1/stats/history?year=${year}&month=${i + 1}`
-    ).catch(() => ({ year, month: i + 1, records: [] as HistoryRecord[] }))
-  );
-
-  const results = await Promise.all(promises);
-  return results.flatMap((r) => r.records);
-}
-
 export default function StatsPage() {
-  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [heatmapYear, setHeatmapYear] = useState(new Date().getFullYear());
 
-  async function fetchData() {
-    setLoading(true);
-    setError(null);
-    try {
-      const [dashboardRes, profileRes, history] = await Promise.all([
-        apiFetch<DashboardData>('/api/v1/stats/dashboard'),
-        apiFetch<ProfileData>('/api/v1/user/profile'),
-        fetchAllHistory(heatmapYear),
-      ]);
-      setDashboard(dashboardRes);
-      setProfile(profileRes);
-      setHistoryRecords(history);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '데이터를 불러올 수 없습니다.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+  const {
+    data: dashboard,
+    isLoading: dashboardLoading,
+    error: dashboardError,
+    refetch: refetchDashboard,
+  } = useDashboard();
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: profileData, isLoading: profileLoading } = useProfile();
 
-  // Re-fetch history when heatmap year changes
-  useEffect(() => {
-    if (!loading) {
-      fetchAllHistory(heatmapYear)
-        .then(setHistoryRecords)
-        .catch(() => setHistoryRecords([]));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [heatmapYear]);
+  const {
+    data: historyRecords = [],
+    isLoading: historyLoading,
+  } = useStatsHistory(heatmapYear);
+
+  const loading = dashboardLoading || profileLoading || historyLoading;
+  const error = dashboardError
+    ? dashboardError instanceof Error
+      ? dashboardError.message
+      : '데이터를 불러올 수 없습니다.'
+    : null;
 
   // Loading skeleton
   if (loading) {
@@ -157,7 +71,7 @@ export default function StatsPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-8">
         <p className="text-muted-foreground text-center">{error}</p>
-        <Button variant="outline" onClick={fetchData} className="gap-2">
+        <Button variant="outline" onClick={() => refetchDashboard()} className="gap-2">
           <RefreshCw className="size-4" />
           다시 시도
         </Button>
@@ -165,9 +79,9 @@ export default function StatsPage() {
     );
   }
 
-  if (!dashboard || !profile) return null;
+  if (!dashboard || !profileData) return null;
 
-  const jlptLevel = profile.profile.jlptLevel || 'N5';
+  const jlptLevel = profileData.profile.jlptLevel || 'N5';
 
   return (
     <motion.div

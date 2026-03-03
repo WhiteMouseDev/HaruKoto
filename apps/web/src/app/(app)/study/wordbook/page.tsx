@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, RefreshCw, BookMarked } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
-import { PAGINATION } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { WordbookEntryCard } from '@/components/features/wordbook/wordbook-entry-card';
 import { AddWordDialog } from '@/components/features/wordbook/add-word-dialog';
@@ -15,70 +14,33 @@ import {
   type SortOrder,
   type SourceFilter,
 } from '@/components/features/wordbook/wordbook-search';
-
-type WordbookEntry = {
-  id: string;
-  word: string;
-  reading: string;
-  meaningKo: string;
-  source: 'QUIZ' | 'CONVERSATION' | 'MANUAL';
-  note?: string;
-  createdAt: string;
-};
-
-type WordbookResponse = {
-  entries: WordbookEntry[];
-  total: number;
-  page: number;
-  totalPages: number;
-};
+import { useWordbook, useAddWord, useDeleteWord } from '@/hooks/use-wordbook';
 
 export default function WordbookPage() {
   const router = useRouter();
-  const [entries, setEntries] = useState<WordbookEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOrder>('recent');
   const [filter, setFilter] = useState<SourceFilter>('ALL');
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const fetchEntries = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(PAGINATION.DEFAULT_PAGE_SIZE),
-        sort,
-      });
-      if (search) params.set('search', search);
-      if (filter !== 'ALL') params.set('source', filter);
+  const {
+    data: wordbookData,
+    isLoading: loading,
+    error: wordbookError,
+    refetch,
+  } = useWordbook({ page, sort, search, filter });
 
-      const data = await apiFetch<WordbookResponse>(
-        `/api/v1/wordbook?${params.toString()}`
-      );
-      setEntries(data.entries);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '단어장을 불러올 수 없습니다.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [page, sort, search, filter]);
+  const entries = wordbookData?.entries ?? [];
+  const totalPages = wordbookData?.totalPages ?? 1;
+  const error = wordbookError
+    ? wordbookError instanceof Error
+      ? wordbookError.message
+      : '단어장을 불러올 수 없습니다.'
+    : null;
 
-  useEffect(() => {
-    fetchEntries();
-  }, [fetchEntries]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [search, sort, filter]);
+  const addWord = useAddWord();
+  const deleteWord = useDeleteWord();
 
   async function handleAdd(data: {
     word: string;
@@ -87,11 +49,7 @@ export default function WordbookPage() {
     note?: string;
   }) {
     try {
-      await apiFetch('/api/v1/wordbook', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-      fetchEntries();
+      await addWord.mutateAsync(data);
     } catch (err) {
       console.error('Failed to add word:', err);
     }
@@ -101,11 +59,8 @@ export default function WordbookPage() {
     const deletedEntry = entries.find((e) => e.id === id);
     if (!deletedEntry) return;
 
-    // Optimistic removal
-    setEntries((prev) => prev.filter((e) => e.id !== id));
-
     try {
-      await apiFetch(`/api/v1/wordbook/${id}`, { method: 'DELETE' });
+      await deleteWord.mutateAsync(id);
       toast('삭제되었습니다', {
         action: {
           label: '되돌리기',
@@ -120,7 +75,7 @@ export default function WordbookPage() {
                   note: deletedEntry.note,
                 }),
               });
-              fetchEntries();
+              refetch();
             } catch {
               toast.error('되돌리기에 실패했습니다');
             }
@@ -128,14 +83,23 @@ export default function WordbookPage() {
         },
       });
     } catch {
-      // Restore on failure
-      setEntries((prev) => [...prev, deletedEntry]);
       toast.error('삭제에 실패했습니다');
     }
   }
 
   const handleSearchChange = useCallback((query: string) => {
     setSearch(query);
+    setPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((newSort: SortOrder) => {
+    setSort(newSort);
+    setPage(1);
+  }, []);
+
+  const handleFilterChange = useCallback((newFilter: SourceFilter) => {
+    setFilter(newFilter);
+    setPage(1);
   }, []);
 
   return (
@@ -159,8 +123,8 @@ export default function WordbookPage() {
       {/* Search & Filter */}
       <WordbookSearch
         onSearchChange={handleSearchChange}
-        onSortChange={setSort}
-        onFilterChange={setFilter}
+        onSortChange={handleSortChange}
+        onFilterChange={handleFilterChange}
         sort={sort}
         filter={filter}
       />
@@ -178,7 +142,7 @@ export default function WordbookPage() {
       ) : error ? (
         <div className="flex flex-col items-center justify-center gap-4 py-12">
           <p className="text-muted-foreground text-center">{error}</p>
-          <Button variant="outline" onClick={fetchEntries} className="gap-2">
+          <Button variant="outline" onClick={() => refetch()} className="gap-2">
             <RefreshCw className="size-4" />
             다시 시도
           </Button>

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Bell, BellOff, Check } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
 import { GameIcon } from '@/components/ui/game-icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,21 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-
-type Notification = {
-  id: string;
-  type: string;
-  title: string;
-  body: string;
-  emoji: string | null;
-  isRead: boolean;
-  createdAt: string;
-};
-
-type NotificationsResponse = {
-  notifications: Notification[];
-  unreadCount: number;
-};
+import {
+  useNotifications,
+  useMarkNotificationsRead,
+} from '@/hooks/use-notifications';
 
 const TYPE_ICON: Record<string, string> = {
   level_up: 'party-popper',
@@ -56,46 +44,11 @@ function formatRelativeTime(dateStr: string): string {
 
 export function NotificationCenter() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const { data, isLoading: loading } = useNotifications();
+  const markRead = useMarkNotificationsRead();
 
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await apiFetch<NotificationsResponse>(
-        '/api/v1/notifications'
-      );
-      setNotifications(data.notifications);
-      setUnreadCount(data.unreadCount);
-    } catch {
-      // silently fail - badge just won't show
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Fetch unread count on mount
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  // Refetch when sheet opens
-  useEffect(() => {
-    if (open) {
-      fetchNotifications();
-    }
-  }, [open, fetchNotifications]);
-
-  async function handleMarkAllRead() {
-    try {
-      await apiFetch('/api/v1/notifications', { method: 'PATCH' });
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-    } catch {
-      // silently fail
-    }
-  }
+  const notifications = data?.notifications ?? [];
+  const unreadCount = data?.unreadCount ?? 0;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -117,7 +70,7 @@ export function NotificationCenter() {
               variant="ghost"
               size="sm"
               className="text-muted-foreground gap-1.5 text-xs"
-              onClick={handleMarkAllRead}
+              onClick={() => markRead.mutate()}
             >
               <Check className="size-3.5" />
               모두 읽음

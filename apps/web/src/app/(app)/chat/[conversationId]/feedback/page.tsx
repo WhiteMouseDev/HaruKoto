@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowLeft, RotateCcw, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackScores } from '@/components/features/chat/feedback-scores';
 import { FeedbackDetails } from '@/components/features/chat/feedback-details';
 import { FeedbackTranscript } from '@/components/features/chat/feedback-transcript';
+import { queryKeys } from '@/lib/query-keys';
 
 type GrammarCorrection = {
   original: string;
@@ -86,6 +88,19 @@ export default function FeedbackPage({
 }) {
   const { conversationId } = use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const hasInvalidated = useRef(false);
+
+  useEffect(() => {
+    if (hasInvalidated.current) return;
+    hasInvalidated.current = true;
+
+    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
+    queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
+    queryClient.invalidateQueries({ queryKey: queryKeys.chatHistory });
+    queryClient.invalidateQueries({ queryKey: queryKeys.profile });
+  }, [queryClient]);
+
   const [feedback, setFeedback] = useState<StoredFeedback | null>(() => {
     if (typeof window === 'undefined') return null;
     const stored = sessionStorage.getItem(`feedback_${conversationId}`);

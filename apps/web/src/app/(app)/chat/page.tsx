@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -23,24 +23,7 @@ import { CategoryGrid } from '@/components/features/chat/category-grid';
 import { ScenarioCard } from '@/components/features/chat/scenario-card';
 import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
 import { ConversationHistory } from '@/components/features/chat/conversation-history';
-
-type Scenario = {
-  id: string;
-  title: string;
-  titleJa: string;
-  description: string;
-  category: string;
-  difficulty: string;
-  estimatedMinutes: number;
-  keyExpressions: string[];
-  situation: string;
-  yourRole: string;
-  aiRole: string;
-};
-
-type ScenariosResponse = {
-  scenarios: Scenario[];
-};
+import { useScenarios, type Scenario, type ScenariosResponse } from '@/hooks/use-scenarios';
 
 type StartResponse = {
   conversationId: string;
@@ -80,40 +63,23 @@ const CATEGORY_META: Record<string, { icon: ReactNode; label: string }> = {
 export default function ChatPage() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [loading, setLoading] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
 
-  useEffect(() => {
-    if (!selectedCategory) return;
-    let cancelled = false;
+  const {
+    data: scenariosData,
+    isLoading: loading,
+    error: scenariosError,
+    refetch: refetchScenarios,
+  } = useScenarios(selectedCategory);
 
-    async function fetchScenarios() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await apiFetch<ScenariosResponse>(
-          `/api/v1/chat/scenarios?category=${selectedCategory}`
-        );
-        if (!cancelled) setScenarios(data.scenarios);
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : '시나리오를 불러올 수 없습니다.'
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    fetchScenarios();
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedCategory, retryCount]);
+  const scenarios = scenariosData?.scenarios ?? [];
+  const scenarioError =
+    scenariosError instanceof Error
+      ? scenariosError.message
+      : scenariosError
+        ? '시나리오를 불러올 수 없습니다.'
+        : null;
 
   async function handleStartConversation(scenario: Scenario) {
     setStarting(true);
@@ -182,10 +148,7 @@ export default function ChatPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              setSelectedCategory(null);
-              setScenarios([]);
-            }}
+            onClick={() => setSelectedCategory(null)}
           >
             <ArrowLeft className="size-5" />
           </Button>
@@ -204,13 +167,13 @@ export default function ChatPage() {
               />
             ))}
           </div>
-        ) : error ? (
+        ) : scenarioError ? (
           <div className="flex flex-col items-center gap-3 py-8">
-            <p className="text-muted-foreground text-sm">{error}</p>
+            <p className="text-muted-foreground text-sm">{scenarioError}</p>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setRetryCount((c) => c + 1)}
+              onClick={() => refetchScenarios()}
             >
               <RefreshCw className="mr-1.5 size-3.5" />
               다시 시도

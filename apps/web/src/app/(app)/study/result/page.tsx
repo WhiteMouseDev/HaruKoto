@@ -1,7 +1,8 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   Trophy,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { queryKeys } from '@/lib/query-keys';
 
 export default function QuizResultPage() {
   return (
@@ -27,6 +29,19 @@ export default function QuizResultPage() {
 function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const hasInvalidated = useRef(false);
+
+  useEffect(() => {
+    if (hasInvalidated.current) return;
+    hasInvalidated.current = true;
+
+    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
+    queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
+    queryClient.invalidateQueries({ queryKey: queryKeys.profile });
+    queryClient.invalidateQueries({ queryKey: queryKeys.quizStats });
+    queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
+  }, [queryClient]);
 
   const correct = parseInt(searchParams.get('correct') || '0');
   const total = parseInt(searchParams.get('total') || '0');
