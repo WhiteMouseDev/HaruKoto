@@ -3,10 +3,12 @@
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { useDashboard, useProfile } from '@/hooks/use-dashboard';
+import { useDailyMissions, useClaimMissionReward } from '@/hooks/use-daily-missions';
 import { NotificationCenter } from '@/components/features/notifications/notification-center';
 import { Button } from '@/components/ui/button';
 import { StreakBadge } from '@/components/features/dashboard/streak-badge';
 import { DailyProgressCard } from '@/components/features/dashboard/daily-progress-card';
+import { DailyMissionsCard } from '@/components/features/dashboard/daily-missions-card';
 import { WeeklyChart } from '@/components/features/dashboard/weekly-chart';
 import { QuickStartCard } from '@/components/features/dashboard/quick-start-card';
 import { LevelProgress } from '@/components/features/dashboard/level-progress';
@@ -27,6 +29,8 @@ const item = {
 export default function HomePage() {
   const { data: dashboard, isLoading, error, refetch } = useDashboard();
   const { data: profile } = useProfile();
+  const { data: missionsData } = useDailyMissions();
+  const claimReward = useClaimMissionReward();
 
   // Loading skeleton
   if (isLoading) {
@@ -100,6 +104,19 @@ export default function HomePage() {
           goalProgress={dashboard.today.goalProgress}
         />
       </motion.div>
+
+      {/* Daily Missions */}
+      {missionsData && (
+        <motion.div variants={item}>
+          <DailyMissionsCard
+            missions={missionsData.missions}
+            completedCount={missionsData.completedCount}
+            totalCount={missionsData.totalCount}
+            onClaim={(id) => claimReward.mutate(id)}
+            claiming={claimReward.isPending}
+          />
+        </motion.div>
+      )}
 
       {/* Quick Start CTA */}
       <motion.div variants={item}>

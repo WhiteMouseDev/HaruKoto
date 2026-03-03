@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
 import { ProfileHeader } from '@/components/features/my/profile-header';
 import { StatsOverview } from '@/components/features/my/stats-overview';
+import { AchievementsSection } from '@/components/features/my/achievements-section';
 import { SettingsMenu } from '@/components/features/my/settings-menu';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -32,6 +33,10 @@ type MyProfileData = {
     totalStudyDays: number;
     totalXpEarned: number;
   };
+  achievements: {
+    achievementType: string;
+    achievedAt: string;
+  }[];
 };
 
 export default function MyPage() {
@@ -91,7 +96,14 @@ export default function MyPage() {
     );
   }
 
-  const { profile, summary } = data;
+  const { profile, summary, achievements } = data;
+
+  const handleNicknameUpdate = useCallback(
+    async (nickname: string) => {
+      await updateProfile.mutateAsync({ nickname });
+    },
+    [updateProfile]
+  );
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -102,6 +114,7 @@ export default function MyPage() {
         avatarUrl={profile.avatarUrl}
         jlptLevel={profile.jlptLevel}
         createdAt={profile.createdAt}
+        onNicknameUpdate={handleNicknameUpdate}
       />
 
       <StatsOverview
@@ -111,6 +124,8 @@ export default function MyPage() {
         level={profile.level}
         longestStreak={profile.longestStreak}
       />
+
+      <AchievementsSection achievements={achievements} />
 
       <SettingsMenu
         jlptLevel={profile.jlptLevel}

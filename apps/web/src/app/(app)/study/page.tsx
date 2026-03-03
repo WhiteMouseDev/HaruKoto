@@ -142,9 +142,11 @@ export default function StudyPage() {
               selectedLevel === level
                 ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border text-muted-foreground'
-            } ${level !== 'N5' ? 'opacity-40' : ''}`}
-            onClick={() => level === 'N5' && setSelectedLevel(level)}
-            disabled={level !== 'N5'}
+            } ${level !== 'N5' && level !== 'N4' ? 'opacity-40' : ''}`}
+            onClick={() =>
+              (level === 'N5' || level === 'N4') && setSelectedLevel(level)
+            }
+            disabled={level !== 'N5' && level !== 'N4'}
           >
             {level}
           </button>
@@ -227,8 +229,8 @@ export default function StudyPage() {
           {
             icon: Notebook,
             label: '내가 학습한 단어',
-            href: '',
-            disabled: true,
+            href: '/study/learned-words',
+            disabled: false,
           },
           {
             icon: BookMarked,

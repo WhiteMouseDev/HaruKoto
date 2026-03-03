@@ -37,8 +37,8 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Summary stats
-    const [totalWordsStudied, totalQuizzes, totalXp, studyDays] =
+    // Summary stats + achievements
+    const [totalWordsStudied, totalQuizzes, totalXp, studyDays, userAchievements] =
       await Promise.all([
         prisma.dailyProgress.aggregate({
           where: { userId: user.id },
@@ -54,6 +54,10 @@ export async function GET() {
         prisma.dailyProgress.count({
           where: { userId: user.id },
         }),
+        prisma.userAchievement.findMany({
+          where: { userId: user.id },
+          select: { achievementType: true, achievedAt: true },
+        }),
       ]);
 
     return NextResponse.json(
@@ -65,6 +69,10 @@ export async function GET() {
           totalStudyDays: studyDays,
           totalXpEarned: totalXp._sum.xpEarned ?? 0,
         },
+        achievements: userAchievements.map((a) => ({
+          achievementType: a.achievementType,
+          achievedAt: a.achievedAt.toISOString(),
+        })),
       },
       {
         headers: {
