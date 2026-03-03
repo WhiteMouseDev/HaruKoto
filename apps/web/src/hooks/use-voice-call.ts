@@ -29,6 +29,7 @@ export type VoiceCallReturn = {
   aiAnalyserNode: AnalyserNode | null;
   error: string | null;
   isMuted: boolean;
+  isReconnecting: boolean;
   analysisEnabled: boolean;
   startCall: () => Promise<void>;
   endCall: () => void;
@@ -275,6 +276,10 @@ export function useVoiceCall(nickname?: string): VoiceCallReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Reconnecting = call is logically active but WebSocket is re-establishing
+  const isReconnecting =
+    state === 'connected' && gemini.connectionState === 'connecting';
+
   return {
     state,
     subState,
@@ -285,6 +290,7 @@ export function useVoiceCall(nickname?: string): VoiceCallReturn {
     aiAnalyserNode: player.analyserNode,
     error,
     isMuted,
+    isReconnecting,
     analysisEnabled,
     startCall,
     endCall,

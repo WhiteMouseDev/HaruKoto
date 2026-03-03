@@ -12,6 +12,8 @@ type CallWaveformProps = {
 const RING_COUNT = 4;
 const BASE_SCALE = [1.3, 1.55, 1.8, 2.05];
 const BASE_OPACITY = [0.25, 0.18, 0.12, 0.06];
+const AVATAR_BLUR_DATA_URL =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAC4jAAAuIwF4pT92AAAA00lEQVR4nAHIADf/AGxXNTIpFaWObbyri8DBvuvq5OHX1ODRzQCGc0xLQSWYj3JTUkZYST6kk4H16eDZzsMAhWxMS0AmUEgtPTAlwZ6IiGxWwrOlu6ySAF5XO4eAeFxQQ2BJM+G0mqSIcaWdiHJsYgBMXS93cGNbV1IxIQ2tgVtkTjrKuahPUksAl31Ws6qeqqSadmRVpolyeWFR1buqnZ2YAFJCK8G5rebbzuPg4NPU4c69seTd0Ly5rwA2Kh2fnZTo3dDb29zT197Rxrvc182ttKx3+WmgRGQ/rAAAAABJRU5ErkJggg==';
 
 export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
   const [amplitude, setAmplitude] = useState(0);
@@ -97,6 +99,8 @@ export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
           width={128}
           height={128}
           className="size-full object-cover"
+          placeholder="blur"
+          blurDataURL={AVATAR_BLUR_DATA_URL}
           priority
         />
       </div>

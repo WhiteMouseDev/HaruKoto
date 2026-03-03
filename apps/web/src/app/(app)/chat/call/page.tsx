@@ -22,7 +22,7 @@ export default function CallPage() {
   }, [call.state]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-b from-slate-900 to-black">
+    <div className="fixed inset-0 z-50 bg-linear-to-b from-slate-900 to-black">
       <CallScreen call={call} />
     </div>
   );

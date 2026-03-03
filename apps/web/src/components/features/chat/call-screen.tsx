@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, PhoneOff, MicOff, Mic, FileText, FileX } from 'lucide-react';
+import { Phone, PhoneOff, MicOff, Mic, FileText, FileX, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CallWaveform } from '@/components/features/chat/call-waveform';
 import type { VoiceCallReturn } from '@/hooks/use-voice-call';
@@ -41,6 +41,7 @@ export function CallScreen({ call }: CallScreenProps) {
     userAnalyserNode,
     aiAnalyserNode,
     isMuted,
+    isReconnecting,
     analysisEnabled,
     startCall,
     endCall,
@@ -95,6 +96,24 @@ export function CallScreen({ call }: CallScreenProps) {
 
   return (
     <div className="pt-safe-top flex h-full flex-col items-center px-6">
+      {/* Network reconnecting banner */}
+      <AnimatePresence>
+        {isReconnecting && (
+          <motion.div
+            className="absolute left-0 right-0 top-0 z-10 flex items-center justify-center gap-2 bg-amber-500/90 px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-sm"
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.3 }}
+          >
+            <WifiOff className="size-4 text-white" />
+            <span className="text-sm font-medium text-white">
+              네트워크 연결이 불안정합니다. 재연결 중...
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Status text */}
       <motion.div
         className="mt-16"
