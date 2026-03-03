@@ -1,4 +1,4 @@
-package com.harukoto.harukoto_mobile
+package com.harukoto.app
 
 import io.flutter.embedding.android.FlutterActivity
 
