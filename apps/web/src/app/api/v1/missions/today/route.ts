@@ -53,7 +53,7 @@ function selectDailyMissions(userId: string, date: Date): MissionDef[] {
   let h = Math.abs(hash);
 
   // 카테고리 셔플 후 3개 선택
-  const shuffled = categories.sort((a, b) => {
+  const shuffled = categories.sort(() => {
     const ha = ((h = (h * 1103515245 + 12345) | 0), Math.abs(h));
     const hb = ((h = (h * 1103515245 + 12345) | 0), Math.abs(h));
     return (ha % 100) - (hb % 100);

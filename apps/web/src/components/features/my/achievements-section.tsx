@@ -8,7 +8,6 @@ import { GameIcon } from '@/components/ui/game-icon';
 import {
   ACHIEVEMENTS,
   type AchievementCategory,
-  type AchievementType,
 } from '@/lib/gamification';
 
 type UserAchievement = {

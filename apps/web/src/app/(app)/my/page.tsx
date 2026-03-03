@@ -47,6 +47,13 @@ export default function MyPage() {
   const updateProfile = useUpdateProfile();
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const handleNicknameUpdate = useCallback(
+    async (nickname: string) => {
+      await updateProfile.mutateAsync({ nickname });
+    },
+    [updateProfile]
+  );
+
   const handleUpdate = useCallback(
     async (field: string, value: unknown) => {
       await updateProfile.mutateAsync({ [field]: value });
@@ -97,13 +104,6 @@ export default function MyPage() {
   }
 
   const { profile, summary, achievements } = data;
-
-  const handleNicknameUpdate = useCallback(
-    async (nickname: string) => {
-      await updateProfile.mutateAsync({ nickname });
-    },
-    [updateProfile]
-  );
 
   return (
     <div className="flex flex-col gap-6 p-4">

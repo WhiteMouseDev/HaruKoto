@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
+  BookmarkPlus,
+  Check,
   CircleCheck,
   CircleX,
   Frown,
@@ -67,6 +69,8 @@ function QuizContent() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
   const [, setResults] = useState<boolean[]>([]);
+  const [wordSaved, setWordSaved] = useState(false);
+  const [wordSaving, setWordSaving] = useState(false);
   const timerRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -181,7 +185,7 @@ function QuizContent() {
       const data = await res.json();
       showGameEvents(data.events);
       router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}`
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
       );
       return;
     }
@@ -190,6 +194,34 @@ function QuizContent() {
     setSelectedOption(null);
     setAnswerState('idle');
     setShowHint(false);
+    setWordSaved(false);
+    setWordSaving(false);
+  }
+
+  async function handleSaveToWordbook() {
+    if (wordSaving || wordSaved) return;
+    const q = questions[currentIndex];
+    const correctOption = q.options.find((o) => o.id === q.correctOptionId);
+    if (!correctOption) return;
+
+    setWordSaving(true);
+    try {
+      const res = await fetch('/api/v1/wordbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          word: q.questionText,
+          reading: q.questionSubText || q.questionText,
+          meaningKo: correctOption.text,
+          source: 'QUIZ',
+        }),
+      });
+      if (res.ok) setWordSaved(true);
+    } catch {
+      // Silently ignore
+    } finally {
+      setWordSaving(false);
+    }
   }
 
   if (loading) {
@@ -380,14 +412,40 @@ function QuizContent() {
               </div>
 
               {answerState === 'incorrect' && (
-                <p className="text-muted-foreground text-sm">
-                  정답:{' '}
-                  {
-                    question.options.find(
-                      (o) => o.id === question.correctOptionId
-                    )?.text
-                  }
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-muted-foreground text-sm">
+                    정답:{' '}
+                    {
+                      question.options.find(
+                        (o) => o.id === question.correctOptionId
+                      )?.text
+                    }
+                  </p>
+                  {quizType === 'VOCABULARY' && (
+                    <button
+                      className={cn(
+                        'flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                        wordSaved
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-secondary text-muted-foreground'
+                      )}
+                      onClick={handleSaveToWordbook}
+                      disabled={wordSaving || wordSaved}
+                    >
+                      {wordSaved ? (
+                        <>
+                          <Check className="size-3" />
+                          저장됨
+                        </>
+                      ) : (
+                        <>
+                          <BookmarkPlus className="size-3" />
+                          단어장에 추가
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               )}
 
               {question.hint && (

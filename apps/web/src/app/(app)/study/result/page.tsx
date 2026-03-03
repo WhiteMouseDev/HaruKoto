@@ -1,9 +1,9 @@
 'use client';
 
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy,
   Zap,
@@ -13,10 +13,22 @@ import {
   PartyPopper,
   ThumbsUp,
   Dumbbell,
+  BookmarkPlus,
+  Check,
+  ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { queryKeys } from '@/lib/query-keys';
+
+type WrongAnswer = {
+  questionId: string;
+  word: string;
+  reading: string | null;
+  meaningKo: string;
+  exampleSentence: string | null;
+  exampleTranslation: string | null;
+};
 
 export default function QuizResultPage() {
   return (
@@ -31,6 +43,11 @@ function ResultContent() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const hasInvalidated = useRef(false);
+
+  const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
+  const [showWrongList, setShowWrongList] = useState(false);
+  const [savedWords, setSavedWords] = useState<Set<string>>(new Set());
+  const [bulkSaving, setBulkSaving] = useState(false);
 
   useEffect(() => {
     if (hasInvalidated.current) return;
@@ -51,6 +68,57 @@ function ResultContent() {
   const jlptLevel = searchParams.get('level') || 'N5';
   const currentXp = parseInt(searchParams.get('currentXp') || '0');
   const xpForNext = parseInt(searchParams.get('xpForNext') || '100');
+  const sessionId = searchParams.get('sessionId');
+
+  // Fetch wrong answers
+  useEffect(() => {
+    if (!sessionId || total - correct === 0) return;
+    async function fetchWrongAnswers() {
+      try {
+        const res = await fetch(
+          `/api/v1/quiz/wrong-answers?sessionId=${sessionId}`
+        );
+        const data = await res.json();
+        if (data.wrongAnswers) setWrongAnswers(data.wrongAnswers);
+      } catch {
+        // Silently ignore
+      }
+    }
+    fetchWrongAnswers();
+  }, [sessionId, total, correct]);
+
+  async function saveToWordbook(item: WrongAnswer) {
+    if (savedWords.has(item.questionId)) return;
+    try {
+      const res = await fetch('/api/v1/wordbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          word: item.word,
+          reading: item.reading || item.word,
+          meaningKo: item.meaningKo,
+          source: 'QUIZ',
+        }),
+      });
+      if (res.ok) {
+        setSavedWords((prev) => new Set(prev).add(item.questionId));
+      }
+    } catch {
+      // Silently ignore
+    }
+  }
+
+  async function saveAllToWordbook() {
+    if (bulkSaving) return;
+    setBulkSaving(true);
+    const unsaved = wrongAnswers.filter((w) => !savedWords.has(w.questionId));
+    await Promise.allSettled(unsaved.map((item) => saveToWordbook(item)));
+    setBulkSaving(false);
+  }
+
+  const allSaved =
+    wrongAnswers.length > 0 &&
+    wrongAnswers.every((w) => savedWords.has(w.questionId));
 
   const ResultIcon =
     accuracy >= 80 ? PartyPopper : accuracy >= 50 ? ThumbsUp : Dumbbell;
@@ -157,6 +225,116 @@ function ResultContent() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Wrong Answers Section */}
+      {wrongAnswers.length > 0 && (
+        <motion.div
+          className="w-full max-w-sm"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.35 }}
+        >
+          <Card>
+            <CardContent className="flex flex-col gap-3 p-4">
+              <button
+                className="flex items-center justify-between"
+                onClick={() => setShowWrongList((v) => !v)}
+              >
+                <div className="flex items-center gap-2">
+                  <Trophy className="text-hk-error size-4" />
+                  <span className="text-sm font-semibold">
+                    틀린 {quizType === 'VOCABULARY' ? '단어' : '문법'}{' '}
+                    {wrongAnswers.length}개
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`text-muted-foreground size-4 transition-transform ${
+                    showWrongList ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {showWrongList && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex flex-col gap-2">
+                      {wrongAnswers.map((item) => (
+                        <div
+                          key={item.questionId}
+                          className="bg-secondary flex items-center gap-3 rounded-lg px-3 py-2.5"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-jp truncate font-bold">
+                                {item.word}
+                              </span>
+                              {item.reading && (
+                                <span className="font-jp text-muted-foreground shrink-0 text-xs">
+                                  {item.reading}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-muted-foreground truncate text-xs">
+                              {item.meaningKo}
+                            </p>
+                          </div>
+                          {quizType === 'VOCABULARY' && (
+                            <button
+                              className={`shrink-0 rounded-md p-1.5 transition-colors ${
+                                savedWords.has(item.questionId)
+                                  ? 'text-primary bg-primary/10'
+                                  : 'text-muted-foreground hover:bg-secondary-foreground/10'
+                              }`}
+                              onClick={() => saveToWordbook(item)}
+                              disabled={savedWords.has(item.questionId)}
+                            >
+                              {savedWords.has(item.questionId) ? (
+                                <Check className="size-4" />
+                              ) : (
+                                <BookmarkPlus className="size-4" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      {quizType === 'VOCABULARY' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-1 rounded-lg"
+                          onClick={saveAllToWordbook}
+                          disabled={bulkSaving || allSaved}
+                        >
+                          {allSaved ? (
+                            <>
+                              <Check className="mr-1.5 size-3.5" />
+                              모두 저장됨
+                            </>
+                          ) : (
+                            <>
+                              <BookmarkPlus className="mr-1.5 size-3.5" />
+                              {bulkSaving
+                                ? '저장 중...'
+                                : '모두 단어장에 저장'}
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Actions */}
       <motion.div

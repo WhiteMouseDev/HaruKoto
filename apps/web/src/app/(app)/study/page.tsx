@@ -223,7 +223,7 @@ export default function StudyPage() {
           {
             icon: FileX,
             label: '오답 노트',
-            href: '/study/quiz?type=VOCABULARY&level=N5&count=10&mode=review',
+            href: '/study/wrong-answers',
             disabled: false,
           },
           {
