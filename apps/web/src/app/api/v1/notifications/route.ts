@@ -24,7 +24,14 @@ export async function GET() {
       }),
     ]);
 
-    return NextResponse.json({ notifications, unreadCount });
+    return NextResponse.json(
+      { notifications, unreadCount },
+      {
+        headers: {
+          'Cache-Control': 'private, no-cache',
+        },
+      }
+    );
   } catch (err) {
     console.error('Notifications GET error:', err);
     return NextResponse.json(

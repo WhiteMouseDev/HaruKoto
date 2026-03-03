@@ -66,6 +66,10 @@ export async function GET() {
 
     const wordsStudied = todayProgress?.wordsStudied ?? 0;
 
+    const headers = {
+      'Cache-Control': 'private, no-cache',
+    };
+
     return NextResponse.json({
       today: {
         wordsStudied,
@@ -95,7 +99,7 @@ export async function GET() {
           inProgress: grammarInProgress,
         },
       },
-    });
+    }, { headers });
   } catch (err) {
     console.error('Dashboard stats error:', err);
     return NextResponse.json(

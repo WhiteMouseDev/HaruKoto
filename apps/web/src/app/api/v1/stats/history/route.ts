@@ -55,14 +55,26 @@ export async function GET(request: Request) {
       },
     });
 
-    return NextResponse.json({
-      year,
-      month,
-      records: records.map((r) => ({
-        ...r,
-        date: r.date.toISOString().split('T')[0],
-      })),
-    });
+    const now = new Date();
+    const isCurrentMonth =
+      year === now.getFullYear() && month === now.getMonth() + 1;
+    const cacheMaxAge = isCurrentMonth ? 60 : 86400;
+
+    return NextResponse.json(
+      {
+        year,
+        month,
+        records: records.map((r) => ({
+          ...r,
+          date: r.date.toISOString().split('T')[0],
+        })),
+      },
+      {
+        headers: {
+          'Cache-Control': `private, max-age=${cacheMaxAge}`,
+        },
+      }
+    );
   } catch (err) {
     console.error('Stats history error:', err);
     return NextResponse.json(

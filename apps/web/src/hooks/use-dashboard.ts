@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
+import { queryKeys } from '@/lib/query-keys';
 
 export type DashboardData = {
   today: {
@@ -36,14 +37,16 @@ export type ProfileData = {
 
 export function useDashboard() {
   return useQuery<DashboardData>({
-    queryKey: ['dashboard'],
+    queryKey: queryKeys.dashboard,
     queryFn: () => apiFetch<DashboardData>('/api/v1/stats/dashboard'),
+    staleTime: 2 * 60 * 1000,
   });
 }
 
 export function useProfile() {
   return useQuery<ProfileData>({
-    queryKey: ['profile'],
+    queryKey: queryKeys.profile,
     queryFn: () => apiFetch<ProfileData>('/api/v1/user/profile'),
+    staleTime: 5 * 60 * 1000,
   });
 }

@@ -56,15 +56,22 @@ export async function GET() {
         }),
       ]);
 
-    return NextResponse.json({
-      profile: dbUser,
-      summary: {
-        totalWordsStudied: totalWordsStudied._sum.wordsStudied ?? 0,
-        totalQuizzesCompleted: totalQuizzes,
-        totalStudyDays: studyDays,
-        totalXpEarned: totalXp._sum.xpEarned ?? 0,
+    return NextResponse.json(
+      {
+        profile: dbUser,
+        summary: {
+          totalWordsStudied: totalWordsStudied._sum.wordsStudied ?? 0,
+          totalQuizzesCompleted: totalQuizzes,
+          totalStudyDays: studyDays,
+          totalXpEarned: totalXp._sum.xpEarned ?? 0,
+        },
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'private, no-cache',
+        },
+      }
+    );
   } catch (err) {
     console.error('User profile GET error:', err);
     return NextResponse.json(

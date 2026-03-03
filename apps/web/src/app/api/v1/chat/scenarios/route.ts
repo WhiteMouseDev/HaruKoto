@@ -67,7 +67,14 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ scenarios });
+    return NextResponse.json(
+      { scenarios },
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=300',
+        },
+      }
+    );
   } catch (err) {
     console.error('Chat scenarios error:', err);
     return NextResponse.json(
