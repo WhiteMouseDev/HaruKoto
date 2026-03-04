@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
+const kLightBg = Color(0xFFFFF8F0);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -167,9 +168,8 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
-  // 기본값: 라이트 테마 배경색
-  Color _topColor = const Color(0xFFFFF8F0);
-  Color _bottomColor = const Color(0xFFFFF8F0);
+  Color _topColor = kLightBg;
+  Color _bottomColor = kLightBg;
 
   @override
   void initState() {
@@ -239,6 +239,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         request.grant();
       },
     )
+      ..setBackgroundColor(kLightBg)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel('HarukotoBridge',
           onMessageReceived: _onBridgeMessage)
