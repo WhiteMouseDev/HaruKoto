@@ -13,6 +13,7 @@ import {
   Bell,
   Phone,
   Clock,
+  RotateCcw,
   // Gauge,
   Subtitles,
   FileText,
@@ -523,29 +524,45 @@ export function SettingsMenu({
             <div className="flex flex-col gap-3 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Clock className="size-5 text-violet-500" />
+                  <Clock className={`size-5 ${localSilence < 700 ? 'text-amber-500' : 'text-violet-500'}`} />
                   <span className="text-sm font-medium">침묵 대기 시간</span>
                 </div>
-                <span className="text-sm font-medium tabular-nums">
-                  {silenceSeconds}초
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium tabular-nums ${localSilence < 700 ? 'text-amber-500' : ''}`}>
+                    {silenceSeconds}초
+                  </span>
+                  {localSilence !== (DEFAULT_SILENCE_BY_LEVEL[jlptLevel] ?? 2000) && (
+                    <button
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => handleSilenceChange(DEFAULT_SILENCE_BY_LEVEL[jlptLevel] ?? 2000)}
+                      aria-label="기본값으로 초기화"
+                    >
+                      <RotateCcw className="size-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
               <Slider
                 value={[localSilence]}
                 onValueChange={([v]) => handleSilenceChange(v)}
-                min={700}
+                min={0}
                 max={5000}
                 step={100}
                 className="w-full"
               />
               <div className="text-muted-foreground flex justify-between text-[10px]">
-                <span>짧게 (0.7초)</span>
+                <span>즉시 (0초)</span>
                 <span>
                   기본 (
                   {(DEFAULT_SILENCE_BY_LEVEL[jlptLevel] / 1000).toFixed(1)}초)
                 </span>
                 <span>길게 (5초)</span>
               </div>
+              {localSilence < 700 && (
+                <p className="text-amber-500 text-[11px]">
+                  ⚠ 0.7초 미만은 말 중간에 끊길 수 있습니다
+                </p>
+              )}
             </div>
 
             {/* AI Response Speed — 현재 미사용. 기능 연결 후 복원.
