@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { useDashboard, useProfile } from '@/hooks/use-dashboard';
@@ -7,6 +8,7 @@ import { useDailyMissions, useClaimMissionReward } from '@/hooks/use-daily-missi
 import { useKanaProgress } from '@/hooks/use-kana';
 import { KanaCtaCard } from '@/components/features/dashboard/kana-cta-card';
 import { NotificationCenter } from '@/components/features/notifications/notification-center';
+import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
 import { Button } from '@/components/ui/button';
 import { StreakBadge } from '@/components/features/dashboard/streak-badge';
 import { DailyProgressCard } from '@/components/features/dashboard/daily-progress-card';
@@ -29,6 +31,7 @@ const item = {
 };
 
 export default function HomePage() {
+  const router = useRouter();
   const { data: dashboard, isLoading, error, refetch } = useDashboard();
   const { data: profile } = useProfile();
   const { data: missionsData } = useDailyMissions();
@@ -87,6 +90,11 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold">안녕, {nickname || '학습자'}!</h1>
         </div>
         <NotificationCenter />
+      </motion.div>
+
+      {/* Voice Call CTA - 핵심 차별화 기능 */}
+      <motion.div variants={item}>
+        <PhoneCallCta onClick={() => router.push('/chat/call')} />
       </motion.div>
 
       {/* Kana CTA - for N5 users who haven't completed kana */}

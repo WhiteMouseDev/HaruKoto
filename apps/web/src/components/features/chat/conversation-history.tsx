@@ -40,7 +40,11 @@ function ScoreBadge({ score }: { score: number | null }) {
   );
 }
 
-export function ConversationHistory() {
+type ConversationHistoryProps = {
+  filter?: 'voice' | 'text';
+};
+
+export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
   const router = useRouter();
   const {
     data,
@@ -50,7 +54,16 @@ export function ConversationHistory() {
     isFetchingNextPage: loadingMore,
   } = useChatHistory();
 
-  const items = data?.pages.flatMap((page) => page.history) ?? [];
+  const allItems = data?.pages.flatMap((page) => page.history) ?? [];
+
+  // Filter by conversation type if specified
+  const items = filter
+    ? allItems.filter((item) => {
+        // Voice: no scenario (direct call) or FREE category
+        const isVoice = !item.scenario || item.scenario.category === 'FREE';
+        return filter === 'voice' ? isVoice : !isVoice;
+      })
+    : allItems;
 
   if (loading) {
     return (

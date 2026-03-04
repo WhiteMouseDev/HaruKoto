@@ -15,6 +15,7 @@ import {
   FolderOpen,
   Phone,
   Clock,
+  MessageCircle,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import { ScenarioCard } from '@/components/features/chat/scenario-card';
 import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
 import { ConversationHistory } from '@/components/features/chat/conversation-history';
 import { useScenarios, type Scenario, type ScenariosResponse } from '@/hooks/use-scenarios';
+import { cn } from '@/lib/utils';
 
 type StartResponse = {
   conversationId: string;
@@ -33,6 +35,8 @@ type StartResponse = {
     hint: string;
   };
 };
+
+type SubTab = 'voice' | 'text';
 
 const container = {
   hidden: { opacity: 0 },
@@ -62,6 +66,7 @@ const CATEGORY_META: Record<string, { icon: ReactNode; label: string }> = {
 
 export default function ChatPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<SubTab>('voice');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +94,6 @@ export default function ChatPage() {
         body: JSON.stringify({ scenarioId: scenario.id }),
       });
 
-      // Store first message + scenario info for the conversation page
       sessionStorage.setItem(
         `chat_${data.conversationId}`,
         JSON.stringify({
@@ -134,7 +138,7 @@ export default function ChatPage() {
     }
   }
 
-  // Scenario list view
+  // Scenario list view (for text chat)
   if (selectedCategory) {
     const meta = CATEGORY_META[selectedCategory];
     return (
@@ -210,7 +214,6 @@ export default function ChatPage() {
     );
   }
 
-  // Main category selection view
   return (
     <motion.div
       className="flex flex-col gap-5 p-4"
@@ -227,55 +230,110 @@ export default function ChatPage() {
         </span>
       </motion.div>
 
-      {/* Free Chat CTA */}
-      <motion.div variants={item}>
-        <motion.div whileTap={{ scale: 0.98 }}>
-          <Card
-            className="border-primary/30 from-primary/10 to-accent cursor-pointer bg-gradient-to-r py-4"
-            onClick={handleFreeChat}
-          >
-            <CardContent className="flex items-center gap-4 p-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-2xl">
-                🦊
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">하루와 자유롭게 대화</h3>
-                <p className="text-muted-foreground text-sm">
-                  어떤 주제든 일본어로!
-                </p>
-              </div>
-              <Play className="text-primary size-5" />
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-
-      {/* Category Grid */}
-      <motion.div variants={item}>
-        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
-          <FolderOpen className="size-4" />
-          상황별 시나리오
-        </h2>
-        <CategoryGrid onSelect={setSelectedCategory} />
-      </motion.div>
-
-      {/* Voice Call CTA */}
-      <motion.div variants={item}>
-        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+      {/* Sub Tabs */}
+      <motion.div variants={item} className="flex gap-1 rounded-xl bg-secondary p-1">
+        <button
+          onClick={() => setActiveTab('voice')}
+          className={cn(
+            'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            activeTab === 'voice'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
           <Phone className="size-4" />
-          음성 통화
-        </h2>
-        <PhoneCallCta onClick={() => router.push('/chat/call')} />
+          음성통화
+        </button>
+        <button
+          onClick={() => setActiveTab('text')}
+          className={cn(
+            'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            activeTab === 'text'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <MessageCircle className="size-4" />
+          텍스트 회화
+        </button>
       </motion.div>
 
-      {/* Conversation History */}
-      <motion.div variants={item}>
-        <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
-          <Clock className="size-4" />
-          지난 회화 기록
-        </h2>
-        <ConversationHistory />
-      </motion.div>
+      {/* Voice Tab Content */}
+      {activeTab === 'voice' && (
+        <>
+          {/* Direct Call CTA */}
+          <motion.div variants={item}>
+            <PhoneCallCta onClick={() => router.push('/chat/call')} />
+          </motion.div>
+
+          {/* Scenario-based Calls */}
+          <motion.div variants={item}>
+            <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+              <FolderOpen className="size-4" />
+              시나리오 통화
+            </h2>
+            <CategoryGrid
+              onSelect={(cat) => setSelectedCategory(cat)}
+              variant="call"
+            />
+          </motion.div>
+
+          {/* Call History */}
+          <motion.div variants={item}>
+            <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+              <Clock className="size-4" />
+              최근 통화 기록
+            </h2>
+            <ConversationHistory filter="voice" />
+          </motion.div>
+        </>
+      )}
+
+      {/* Text Tab Content */}
+      {activeTab === 'text' && (
+        <>
+          {/* Free Chat CTA */}
+          <motion.div variants={item}>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Card
+                className="border-primary/30 from-primary/10 to-accent cursor-pointer bg-gradient-to-r py-4"
+                onClick={handleFreeChat}
+              >
+                <CardContent className="flex items-center gap-4 p-4">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-2xl">
+                    🦊
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">하루와 자유롭게 대화</h3>
+                    <p className="text-muted-foreground text-sm">
+                      어떤 주제든 일본어로!
+                    </p>
+                  </div>
+                  <Play className="text-primary size-5" />
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+
+          {/* Category Grid */}
+          <motion.div variants={item}>
+            <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+              <FolderOpen className="size-4" />
+              상황별 시나리오
+            </h2>
+            <CategoryGrid onSelect={setSelectedCategory} />
+          </motion.div>
+
+          {/* Text Conversation History */}
+          <motion.div variants={item}>
+            <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
+              <Clock className="size-4" />
+              지난 회화 기록
+            </h2>
+            <ConversationHistory filter="text" />
+          </motion.div>
+        </>
+      )}
 
       {/* Starting overlay */}
       {starting && (

@@ -41,6 +41,7 @@ const CATEGORIES: Category[] = [
 
 type CategoryGridProps = {
   onSelect: (categoryId: string) => void;
+  variant?: 'default' | 'call';
 };
 
 const container = {
@@ -56,7 +57,11 @@ const item = {
   show: { opacity: 1, scale: 1, transition: { duration: 0.25 } },
 };
 
-export function CategoryGrid({ onSelect }: CategoryGridProps) {
+export function CategoryGrid({ onSelect, variant = 'default' }: CategoryGridProps) {
+  // For call variant, exclude FREE category (direct call handles free conversation)
+  const categories = variant === 'call'
+    ? CATEGORIES.filter((c) => c.id !== 'FREE')
+    : CATEGORIES;
   return (
     <motion.div
       className="grid grid-cols-2 gap-3"
@@ -64,7 +69,7 @@ export function CategoryGrid({ onSelect }: CategoryGridProps) {
       initial="hidden"
       animate="show"
     >
-      {CATEGORIES.map((cat) => (
+      {categories.map((cat) => (
         <motion.div key={cat.id} variants={item}>
           <motion.div whileTap={{ scale: 0.97 }}>
             <Card
