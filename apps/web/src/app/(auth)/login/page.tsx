@@ -115,8 +115,8 @@ export default function LoginPage() {
   if (showResetPassword) {
     return (
       <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <Logo variant="full" size="lg" />
+        <div className="mb-8 flex flex-col items-center">
+          <Logo variant="vertical" size={180} />
         </div>
 
         <Card className="w-full max-w-sm">
@@ -176,10 +176,15 @@ export default function LoginPage() {
 
   return (
     <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
-      {/* Logo */}
-      <div className="mb-8 flex flex-col items-center gap-2">
-        <Logo variant="full" size="lg" />
+      {/* Logo — 세로형: 사쿠라 심볼 + 하루코토 + ハルコト */}
+      <div className="mb-4 flex flex-col items-center">
+        <Logo variant="vertical" size={180} />
       </div>
+
+      {/* Tagline */}
+      <p className="text-muted-foreground mb-8 text-center text-sm">
+        매일 한 단어, 봄처럼 피어나는 나의 일본어
+      </p>
 
       <Card className="w-full max-w-sm">
         <CardContent className="flex flex-col gap-4 p-6">
