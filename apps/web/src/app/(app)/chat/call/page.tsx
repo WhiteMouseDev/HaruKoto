@@ -7,7 +7,7 @@ import { getDefaultCallSettings } from '@/components/features/my/call-settings';
 import { useProfile } from '@/hooks/use-dashboard';
 import { useCharacter } from '@/hooks/use-characters';
 import { CallScreen } from '@/components/features/chat/call-screen';
-import { setDarkTheme, setLightTheme } from '@/lib/flutter-bridge';
+import { setCallTheme, setLightTheme, setDarkTheme } from '@/lib/flutter-bridge';
 import { apiFetch } from '@/lib/api';
 import type { Scenario } from '@/hooks/use-scenarios';
 
@@ -69,10 +69,15 @@ function CallPageInner() {
     character: character ?? undefined,
   });
 
-  // Flutter WebView 배경색 동기화
+  // Flutter WebView SafeArea 배경색 동기화
   useEffect(() => {
-    setDarkTheme();
-    return () => setLightTheme();
+    setCallTheme();
+    return () => {
+      // 통화 종료 시 현재 테마에 맞는 색으로 복원
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) setDarkTheme();
+      else setLightTheme();
+    };
   }, []);
 
   // Warn before leaving during active call

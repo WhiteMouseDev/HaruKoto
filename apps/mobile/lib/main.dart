@@ -166,7 +166,9 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
-  Color _scaffoldBgColor = Colors.white;
+  // 기본값: 라이트 테마 배경색
+  Color _topColor = const Color(0xFFFFF8F0);
+  Color _bottomColor = const Color(0xFFFFF8F0);
 
   @override
   void initState() {
@@ -174,15 +176,22 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _initWebView();
   }
 
+  Color _parseHex(String hex) {
+    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+  }
+
   void _onBridgeMessage(JavaScriptMessage message) {
     try {
       final data = jsonDecode(message.message) as Map<String, dynamic>;
       if (data['type'] == 'setTheme') {
-        final hexColor = data['bg'] as String;
-        final color = Color(int.parse(hexColor.replaceFirst('#', '0xFF')));
+        final top = _parseHex(data['topColor'] as String);
+        final bottom = _parseHex(data['bottomColor'] as String);
         final isLight = (data['statusBar'] ?? 'dark') == 'light';
 
-        setState(() => _scaffoldBgColor = color);
+        setState(() {
+          _topColor = top;
+          _bottomColor = bottom;
+        });
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness:
@@ -238,17 +247,31 @@ class _WebViewScreenState extends State<WebViewScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: _scaffoldBgColor,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              WebViewWidget(controller: _controller),
-              if (_isLoading)
-                const Center(
-                  child: CircularProgressIndicator(color: kBrandPink),
-                ),
-            ],
-          ),
+        body: Column(
+          children: [
+            // 상단 SafeArea 영역 (status bar)
+            Container(
+              color: _topColor,
+              height: MediaQuery.of(context).padding.top,
+            ),
+            // WebView
+            Expanded(
+              child: Stack(
+                children: [
+                  WebViewWidget(controller: _controller),
+                  if (_isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(color: kBrandPink),
+                    ),
+                ],
+              ),
+            ),
+            // 하단 SafeArea 영역 (home indicator)
+            Container(
+              color: _bottomColor,
+              height: MediaQuery.of(context).padding.bottom,
+            ),
+          ],
         ),
       ),
     );
