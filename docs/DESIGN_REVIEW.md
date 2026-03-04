@@ -10,6 +10,15 @@
 ### ~~1. Primary 버튼 색상 접근성~~ ✅
 - `primary-foreground`를 `#FFFFFF` → `#5C1A2A`(다크 로즈)로 변경
 - 라이트 7.7:1, 다크 5.5:1 — WCAG AA 통과
+- 변경 파일: `apps/web/src/app/globals.css` (4곳: `:root`, `.dark`, sidebar light, sidebar dark)
+- **롤백 시:** `primary-foreground`와 `sidebar-primary-foreground`를 `#FFFFFF`로 복원
+
+| 위치 | 변수 | 이전 | 현재 |
+|------|------|------|------|
+| `:root` | `--primary-foreground` | `#FFFFFF` | `#5C1A2A` |
+| `.dark` | `--primary-foreground` | `#FFFFFF` | `#5C1A2A` |
+| `:root` | `--sidebar-primary-foreground` | `#FFFFFF` | `#5C1A2A` |
+| `.dark` | `--sidebar-primary-foreground` | `#FFFFFF` | `#5C1A2A` |
 
 ### ~~2. `userScalable: false` 제거~~ ✅
 - `apps/web/src/app/layout.tsx` viewport에서 삭제
