@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { PWARegister } from '@/components/pwa-register';
+import { GoogleAnalytics } from '@/components/providers/google-analytics';
 import { Toaster } from 'sonner';
 
 const notoSansKR = Noto_Sans_KR({
@@ -77,6 +78,7 @@ export default function RootLayout({
         >
           <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
+        <GoogleAnalytics />
         <PWARegister />
         <Toaster
           position="top-center"

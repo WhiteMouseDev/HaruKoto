@@ -39,22 +39,16 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Summary stats + achievements
-    const [totalWordsStudied, totalQuizzes, totalXp, studyDays, userAchievements] =
+    // Summary stats + achievements (3 DailyProgress queries merged into 1)
+    const [dailyStats, totalQuizzes, userAchievements] =
       await Promise.all([
         prisma.dailyProgress.aggregate({
           where: { userId: user.id },
-          _sum: { wordsStudied: true },
+          _sum: { wordsStudied: true, xpEarned: true },
+          _count: true,
         }),
         prisma.quizSession.count({
           where: { userId: user.id, completedAt: { not: null } },
-        }),
-        prisma.dailyProgress.aggregate({
-          where: { userId: user.id },
-          _sum: { xpEarned: true },
-        }),
-        prisma.dailyProgress.count({
-          where: { userId: user.id },
         }),
         prisma.userAchievement.findMany({
           where: { userId: user.id },
@@ -74,10 +68,10 @@ export async function GET() {
           },
         },
         summary: {
-          totalWordsStudied: totalWordsStudied._sum.wordsStudied ?? 0,
+          totalWordsStudied: dailyStats._sum.wordsStudied ?? 0,
           totalQuizzesCompleted: totalQuizzes,
-          totalStudyDays: studyDays,
-          totalXpEarned: totalXp._sum.xpEarned ?? 0,
+          totalStudyDays: dailyStats._count,
+          totalXpEarned: dailyStats._sum.xpEarned ?? 0,
         },
         achievements: userAchievements.map((a) => ({
           achievementType: a.achievementType,
