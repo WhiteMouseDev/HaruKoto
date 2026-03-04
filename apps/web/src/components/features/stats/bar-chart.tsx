@@ -37,7 +37,7 @@ function formatMinutes(seconds: number): string {
 }
 
 function getWeekBars(records: BarChartRecord[]): BarData[] {
-  const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
+  const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
   const today = new Date();
   const bars: BarData[] = [];
 
@@ -47,7 +47,7 @@ function getWeekBars(records: BarChartRecord[]): BarData[] {
     const dateStr = d.toISOString().split('T')[0];
     const record = records.find((r) => r.date === dateStr);
     bars.push({
-      label: DAY_LABELS[d.getDay()],
+      label: DAY_LABELS[(d.getDay() + 6) % 7],
       value: record?.studyTimeSeconds ?? 0,
       dateRange: dateStr,
     });
