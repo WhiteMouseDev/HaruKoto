@@ -170,36 +170,40 @@ export type GameEvent = {
 // 캐릭터 해금 체크
 // ==========================================
 
-const JLPT_LEVEL_ORDER = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
 /**
- * JLPT 레벨 변경 시 새로 해금된 캐릭터 체크
+ * 유저 레벨 기반 캐릭터 해금 체크
+ * unlockCondition은 숫자 문자열 (예: "3", "5", "8")
  */
 export async function checkCharacterUnlocks(
-  oldLevel: string,
-  newLevel: string
+  userId: string,
+  userLevel: number
 ): Promise<GameEvent[]> {
-  const oldIdx = JLPT_LEVEL_ORDER.indexOf(oldLevel);
-  const newIdx = JLPT_LEVEL_ORDER.indexOf(newLevel);
-
-  if (newIdx <= oldIdx) return [];
-
-  const unlockedLevels = JLPT_LEVEL_ORDER.slice(oldIdx + 1, newIdx + 1);
-
-  const characters = await prisma.aiCharacter.findMany({
-    where: {
-      unlockCondition: { in: unlockedLevels },
-      isActive: true,
-    },
-    select: { name: true, nameJa: true, avatarEmoji: true },
+  const allCharacters = await prisma.aiCharacter.findMany({
+    where: { unlockCondition: { not: null }, isActive: true },
   });
+  const existing = await prisma.userCharacterUnlock.findMany({
+    where: { userId },
+    select: { characterId: true },
+  });
+  const unlockedSet = new Set(existing.map((e) => e.characterId));
+  const events: GameEvent[] = [];
 
-  return characters.map((char) => ({
-    type: 'achievement' as const,
-    title: '새 캐릭터 해금!',
-    body: `${char.name}(${char.nameJa})와 대화할 수 있게 되었어요!`,
-    emoji: char.avatarEmoji,
-  }));
+  for (const char of allCharacters) {
+    if (unlockedSet.has(char.id)) continue;
+    const requiredLevel = parseInt(char.unlockCondition!, 10);
+    if (isNaN(requiredLevel) || userLevel < requiredLevel) continue;
+
+    await prisma.userCharacterUnlock.create({
+      data: { userId, characterId: char.id },
+    });
+    events.push({
+      type: 'achievement',
+      title: '새 캐릭터 해금!',
+      body: `${char.name}(${char.nameJa})와 대화할 수 있게 되었어요!`,
+      emoji: char.avatarEmoji,
+    });
+  }
+  return events;
 }
 
 /**
@@ -300,6 +304,10 @@ export async function checkAndGrantAchievements(
       emoji: def.emoji,
     });
   }
+
+  // 캐릭터 해금 체크
+  const characterEvents = await checkCharacterUnlocks(userId, context.newLevel);
+  events.push(...characterEvents);
 
   return events;
 }

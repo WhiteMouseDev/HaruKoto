@@ -27,7 +27,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
-import { Button } from '@/components/ui/button';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
 import {
   Sheet,
@@ -36,6 +35,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import { useRouter } from 'next/navigation';
 import { openExternalUrl } from '@/lib/flutter-bridge';
 import type { CallSettingsData } from './call-settings';
 
@@ -89,6 +89,7 @@ export function SettingsMenu({
   onDeleteAccount,
   deleting,
 }: SettingsMenuProps) {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const {
     state: pushState,
@@ -320,7 +321,7 @@ export function SettingsMenu({
               {/* Terms */}
               <button
                 className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
-                onClick={() => openExternalUrl('https://www.harukoto.co.kr/terms')}
+                onClick={() => router.push('/terms')}
               >
                 <div className="flex items-center gap-3">
                   <ScrollText className="text-muted-foreground size-5" />
@@ -334,7 +335,7 @@ export function SettingsMenu({
               {/* Privacy */}
               <button
                 className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
-                onClick={() => openExternalUrl('https://www.harukoto.co.kr/privacy')}
+                onClick={() => router.push('/privacy')}
               >
                 <div className="flex items-center gap-3">
                   <Shield className="text-muted-foreground size-5" />

@@ -114,6 +114,7 @@ model User {
   kanaProgress        UserKanaProgress[]
   kanaStages          UserKanaStage[]
   favoriteCharacters  UserFavoriteCharacter[]
+  characterUnlocks    UserCharacterUnlock[]
 
   @@map("users")
 }
@@ -449,6 +450,7 @@ model AiCharacter {
 
   conversations   Conversation[]
   favoritedBy     UserFavoriteCharacter[]
+  unlockedBy      UserCharacterUnlock[]
 
   @@map("ai_characters")
 }
@@ -554,4 +556,22 @@ model UserFavoriteCharacter {
   @@unique([userId, characterId])
   @@index([userId])
   @@map("user_favorite_characters")
+}
+
+// ==========================================
+// User Character Unlocks
+// ==========================================
+
+model UserCharacterUnlock {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  characterId String   @map("character_id") @db.Uuid
+  unlockedAt  DateTime @default(now()) @map("unlocked_at")
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character AiCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([userId])
+  @@map("user_character_unlocks")
 }

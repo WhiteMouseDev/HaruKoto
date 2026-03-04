@@ -16,13 +16,11 @@ import {
 } from '@/hooks/use-characters';
 import { cn } from '@/lib/utils';
 
-const LEVEL_ORDER = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
-function isUnlocked(condition: string | null, userLevel: string): boolean {
+function isUnlocked(condition: string | null, userLevel: number): boolean {
   if (!condition) return true;
-  const userIdx = LEVEL_ORDER.indexOf(userLevel);
-  const requiredIdx = LEVEL_ORDER.indexOf(condition);
-  return userIdx >= requiredIdx;
+  const requiredLevel = parseInt(condition, 10);
+  if (isNaN(requiredLevel)) return true;
+  return userLevel >= requiredLevel;
 }
 
 const container = {
@@ -42,7 +40,7 @@ export default function ContactsPage() {
   const { data: stats } = useCharacterStats();
   const { data: favorites } = useCharacterFavorites();
   const { mutate: toggleFavorite } = useToggleFavorite();
-  const userLevel = profileData?.profile.jlptLevel ?? 'N5';
+  const userLevel = profileData?.profile.level ?? 1;
 
   const sortedCharacters = useMemo(() => {
     if (!characters) return [];
@@ -142,7 +140,7 @@ export default function ContactsPage() {
                     <p className="text-muted-foreground mt-0.5 text-xs">
                       {unlocked
                         ? `${char.speechStyle} · ${char.targetLevel}${callCount > 0 ? ` · ${callCount}회 통화` : ''}`
-                        : `${char.unlockCondition} 도달 시 해금`}
+                        : `레벨 ${char.unlockCondition} 이상 필요`}
                     </p>
                   </div>
 
@@ -183,7 +181,7 @@ export default function ContactsPage() {
         variants={item}
         className="text-muted-foreground text-center text-xs"
       >
-        JLPT 레벨이 올라가면 새로운 캐릭터가 해금됩니다
+        레벨이 올라가면 새로운 캐릭터가 해금됩니다
       </motion.p>
     </motion.div>
   );

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { z } from 'zod';
+import { calculateLevel, checkAndGrantAchievements } from '@/lib/gamification';
 
 const claimSchema = z.object({
   missionId: z.string().uuid(),
@@ -59,7 +60,17 @@ export async function POST(request: Request) {
 
     const xpReward = XP_REWARDS[mission.missionType] ?? 10;
 
-    // 보상 수령 + XP 지급을 트랜잭션으로
+    // 현재 유저 정보 조회
+    const currentUser = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { experiencePoints: true, level: true, streakCount: true },
+    });
+
+    const newTotalXp = currentUser.experiencePoints + xpReward;
+    const { level: newLevel } = calculateLevel(newTotalXp);
+    const oldLevel = currentUser.level;
+
+    // 보상 수령 + XP/레벨 지급을 트랜잭션으로
     const updatedUser = await prisma.$transaction(async (tx) => {
       await tx.dailyMission.update({
         where: { id: mission.id },
@@ -68,15 +79,27 @@ export async function POST(request: Request) {
 
       return tx.user.update({
         where: { id: user.id },
-        data: { experiencePoints: { increment: xpReward } },
-        select: { experiencePoints: true },
+        data: {
+          experiencePoints: newTotalXp,
+          level: newLevel,
+        },
+        select: { experiencePoints: true, level: true },
       });
+    });
+
+    // 업적 + 캐릭터 해금 체크
+    const events = await checkAndGrantAchievements(user.id, {
+      totalXp: newTotalXp,
+      newLevel,
+      oldLevel,
+      streakCount: currentUser.streakCount,
     });
 
     return NextResponse.json({
       success: true,
       xpReward,
       totalXp: updatedUser.experiencePoints,
+      events,
     });
   } catch (err) {
     console.error('Mission claim error:', err);
