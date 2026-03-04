@@ -94,7 +94,7 @@ export async function GET() {
 }
 
 const callSettingsSchema = z.object({
-  silenceDurationMs: z.number().int().min(1000).max(5000).optional(),
+  silenceDurationMs: z.number().int().min(700).max(5000).optional(),
   aiResponseSpeed: z.number().min(0.8).max(1.2).optional(),
   subtitleEnabled: z.boolean().optional(),
   autoAnalysis: z.boolean().optional(),

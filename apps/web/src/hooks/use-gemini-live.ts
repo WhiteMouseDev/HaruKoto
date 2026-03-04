@@ -104,7 +104,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
           realtimeInputConfig: {
             automaticActivityDetection: {
               startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
-              endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
+              endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_HIGH,
               prefixPaddingMs: 300,
               silenceDurationMs: optionsRef.current.silenceDurationMs ?? 1200,
             },

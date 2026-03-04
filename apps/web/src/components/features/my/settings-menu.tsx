@@ -267,13 +267,13 @@ export function SettingsMenu({
               <Slider
                 value={[localSilence]}
                 onValueChange={([v]) => handleSilenceChange(v)}
-                min={1000}
+                min={700}
                 max={5000}
                 step={100}
                 className="w-full"
               />
               <div className="text-muted-foreground flex justify-between text-[10px]">
-                <span>짧게 (1초)</span>
+                <span>짧게 (0.7초)</span>
                 <span>
                   기본 ({(DEFAULT_SILENCE_BY_LEVEL[jlptLevel] / 1000).toFixed(1)}
                   초)
