@@ -1,0 +1,57 @@
+[
+  { "kanaType": "HIRAGANA", "character": "あ", "romaji": "a", "pronunciation": "아", "row": "a", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "あめ", "exampleReading": "아메", "exampleMeaning": "비", "order": 1 },
+  { "kanaType": "HIRAGANA", "character": "い", "romaji": "i", "pronunciation": "이", "row": "a", "column": "i", "strokeCount": 2, "category": "basic", "exampleWord": "いぬ", "exampleReading": "이누", "exampleMeaning": "개", "order": 2 },
+  { "kanaType": "HIRAGANA", "character": "う", "romaji": "u", "pronunciation": "우", "row": "a", "column": "u", "strokeCount": 2, "category": "basic", "exampleWord": "うみ", "exampleReading": "우미", "exampleMeaning": "바다", "order": 3 },
+  { "kanaType": "HIRAGANA", "character": "え", "romaji": "e", "pronunciation": "에", "row": "a", "column": "e", "strokeCount": 2, "category": "basic", "exampleWord": "えき", "exampleReading": "에키", "exampleMeaning": "역", "order": 4 },
+  { "kanaType": "HIRAGANA", "character": "お", "romaji": "o", "pronunciation": "오", "row": "a", "column": "o", "strokeCount": 3, "category": "basic", "exampleWord": "おかね", "exampleReading": "오카네", "exampleMeaning": "돈", "order": 5 },
+
+  { "kanaType": "HIRAGANA", "character": "か", "romaji": "ka", "pronunciation": "카", "row": "ka", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "かさ", "exampleReading": "카사", "exampleMeaning": "우산", "order": 6 },
+  { "kanaType": "HIRAGANA", "character": "き", "romaji": "ki", "pronunciation": "키", "row": "ka", "column": "i", "strokeCount": 4, "category": "basic", "exampleWord": "きもの", "exampleReading": "키모노", "exampleMeaning": "기모노", "order": 7 },
+  { "kanaType": "HIRAGANA", "character": "く", "romaji": "ku", "pronunciation": "쿠", "row": "ka", "column": "u", "strokeCount": 1, "category": "basic", "exampleWord": "くるま", "exampleReading": "쿠루마", "exampleMeaning": "자동차", "order": 8 },
+  { "kanaType": "HIRAGANA", "character": "け", "romaji": "ke", "pronunciation": "케", "row": "ka", "column": "e", "strokeCount": 3, "category": "basic", "exampleWord": "けしゴム", "exampleReading": "케시고무", "exampleMeaning": "지우개", "order": 9 },
+  { "kanaType": "HIRAGANA", "character": "こ", "romaji": "ko", "pronunciation": "코", "row": "ka", "column": "o", "strokeCount": 2, "category": "basic", "exampleWord": "こども", "exampleReading": "코도모", "exampleMeaning": "아이", "order": 10 },
+
+  { "kanaType": "HIRAGANA", "character": "さ", "romaji": "sa", "pronunciation": "사", "row": "sa", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "さくら", "exampleReading": "사쿠라", "exampleMeaning": "벚꽃", "order": 11 },
+  { "kanaType": "HIRAGANA", "character": "し", "romaji": "shi", "pronunciation": "시", "row": "sa", "column": "i", "strokeCount": 1, "category": "basic", "exampleWord": "しお", "exampleReading": "시오", "exampleMeaning": "소금", "order": 12 },
+  { "kanaType": "HIRAGANA", "character": "す", "romaji": "su", "pronunciation": "스", "row": "sa", "column": "u", "strokeCount": 2, "category": "basic", "exampleWord": "すし", "exampleReading": "스시", "exampleMeaning": "초밥", "order": 13 },
+  { "kanaType": "HIRAGANA", "character": "せ", "romaji": "se", "pronunciation": "세", "row": "sa", "column": "e", "strokeCount": 3, "category": "basic", "exampleWord": "せんせい", "exampleReading": "센세이", "exampleMeaning": "선생님", "order": 14 },
+  { "kanaType": "HIRAGANA", "character": "そ", "romaji": "so", "pronunciation": "소", "row": "sa", "column": "o", "strokeCount": 1, "category": "basic", "exampleWord": "そら", "exampleReading": "소라", "exampleMeaning": "하늘", "order": 15 },
+
+  { "kanaType": "HIRAGANA", "character": "た", "romaji": "ta", "pronunciation": "타", "row": "ta", "column": "a", "strokeCount": 4, "category": "basic", "exampleWord": "たまご", "exampleReading": "타마고", "exampleMeaning": "계란", "order": 16 },
+  { "kanaType": "HIRAGANA", "character": "ち", "romaji": "chi", "pronunciation": "치", "row": "ta", "column": "i", "strokeCount": 2, "category": "basic", "exampleWord": "ちず", "exampleReading": "치즈", "exampleMeaning": "지도", "order": 17 },
+  { "kanaType": "HIRAGANA", "character": "つ", "romaji": "tsu", "pronunciation": "츠", "row": "ta", "column": "u", "strokeCount": 1, "category": "basic", "exampleWord": "つき", "exampleReading": "츠키", "exampleMeaning": "달", "order": 18 },
+  { "kanaType": "HIRAGANA", "character": "て", "romaji": "te", "pronunciation": "테", "row": "ta", "column": "e", "strokeCount": 1, "category": "basic", "exampleWord": "てがみ", "exampleReading": "테가미", "exampleMeaning": "편지", "order": 19 },
+  { "kanaType": "HIRAGANA", "character": "と", "romaji": "to", "pronunciation": "토", "row": "ta", "column": "o", "strokeCount": 2, "category": "basic", "exampleWord": "とり", "exampleReading": "토리", "exampleMeaning": "새", "order": 20 },
+
+  { "kanaType": "HIRAGANA", "character": "な", "romaji": "na", "pronunciation": "나", "row": "na", "column": "a", "strokeCount": 4, "category": "basic", "exampleWord": "なつ", "exampleReading": "나츠", "exampleMeaning": "여름", "order": 21 },
+  { "kanaType": "HIRAGANA", "character": "に", "romaji": "ni", "pronunciation": "니", "row": "na", "column": "i", "strokeCount": 3, "category": "basic", "exampleWord": "にほん", "exampleReading": "니혼", "exampleMeaning": "일본", "order": 22 },
+  { "kanaType": "HIRAGANA", "character": "ぬ", "romaji": "nu", "pronunciation": "누", "row": "na", "column": "u", "strokeCount": 2, "category": "basic", "exampleWord": "いぬ", "exampleReading": "이누", "exampleMeaning": "개", "order": 23 },
+  { "kanaType": "HIRAGANA", "character": "ね", "romaji": "ne", "pronunciation": "네", "row": "na", "column": "e", "strokeCount": 2, "category": "basic", "exampleWord": "ねこ", "exampleReading": "네코", "exampleMeaning": "고양이", "order": 24 },
+  { "kanaType": "HIRAGANA", "character": "の", "romaji": "no", "pronunciation": "노", "row": "na", "column": "o", "strokeCount": 1, "category": "basic", "exampleWord": "のみもの", "exampleReading": "노미모노", "exampleMeaning": "음료", "order": 25 },
+
+  { "kanaType": "HIRAGANA", "character": "は", "romaji": "ha", "pronunciation": "하", "row": "ha", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "はな", "exampleReading": "하나", "exampleMeaning": "꽃", "order": 26 },
+  { "kanaType": "HIRAGANA", "character": "ひ", "romaji": "hi", "pronunciation": "히", "row": "ha", "column": "i", "strokeCount": 1, "category": "basic", "exampleWord": "ひと", "exampleReading": "히토", "exampleMeaning": "사람", "order": 27 },
+  { "kanaType": "HIRAGANA", "character": "ふ", "romaji": "fu", "pronunciation": "후", "row": "ha", "column": "u", "strokeCount": 4, "category": "basic", "exampleWord": "ふゆ", "exampleReading": "후유", "exampleMeaning": "겨울", "order": 28 },
+  { "kanaType": "HIRAGANA", "character": "へ", "romaji": "he", "pronunciation": "헤", "row": "ha", "column": "e", "strokeCount": 1, "category": "basic", "exampleWord": "へや", "exampleReading": "헤야", "exampleMeaning": "방", "order": 29 },
+  { "kanaType": "HIRAGANA", "character": "ほ", "romaji": "ho", "pronunciation": "호", "row": "ha", "column": "o", "strokeCount": 4, "category": "basic", "exampleWord": "ほん", "exampleReading": "혼", "exampleMeaning": "책", "order": 30 },
+
+  { "kanaType": "HIRAGANA", "character": "ま", "romaji": "ma", "pronunciation": "마", "row": "ma", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "まち", "exampleReading": "마치", "exampleMeaning": "마을", "order": 31 },
+  { "kanaType": "HIRAGANA", "character": "み", "romaji": "mi", "pronunciation": "미", "row": "ma", "column": "i", "strokeCount": 2, "category": "basic", "exampleWord": "みず", "exampleReading": "미즈", "exampleMeaning": "물", "order": 32 },
+  { "kanaType": "HIRAGANA", "character": "む", "romaji": "mu", "pronunciation": "무", "row": "ma", "column": "u", "strokeCount": 3, "category": "basic", "exampleWord": "むし", "exampleReading": "무시", "exampleMeaning": "벌레", "order": 33 },
+  { "kanaType": "HIRAGANA", "character": "め", "romaji": "me", "pronunciation": "메", "row": "ma", "column": "e", "strokeCount": 2, "category": "basic", "exampleWord": "め", "exampleReading": "메", "exampleMeaning": "눈", "order": 34 },
+  { "kanaType": "HIRAGANA", "character": "も", "romaji": "mo", "pronunciation": "모", "row": "ma", "column": "o", "strokeCount": 3, "category": "basic", "exampleWord": "もり", "exampleReading": "모리", "exampleMeaning": "숲", "order": 35 },
+
+  { "kanaType": "HIRAGANA", "character": "や", "romaji": "ya", "pronunciation": "야", "row": "ya", "column": "a", "strokeCount": 3, "category": "basic", "exampleWord": "やま", "exampleReading": "야마", "exampleMeaning": "산", "order": 36 },
+  { "kanaType": "HIRAGANA", "character": "ゆ", "romaji": "yu", "pronunciation": "유", "row": "ya", "column": "u", "strokeCount": 2, "category": "basic", "exampleWord": "ゆき", "exampleReading": "유키", "exampleMeaning": "눈(雪)", "order": 37 },
+  { "kanaType": "HIRAGANA", "character": "よ", "romaji": "yo", "pronunciation": "요", "row": "ya", "column": "o", "strokeCount": 2, "category": "basic", "exampleWord": "よる", "exampleReading": "요루", "exampleMeaning": "밤", "order": 38 },
+
+  { "kanaType": "HIRAGANA", "character": "ら", "romaji": "ra", "pronunciation": "라", "row": "ra", "column": "a", "strokeCount": 2, "category": "basic", "exampleWord": "らいねん", "exampleReading": "라이넨", "exampleMeaning": "내년", "order": 39 },
+  { "kanaType": "HIRAGANA", "character": "り", "romaji": "ri", "pronunciation": "리", "row": "ra", "column": "i", "strokeCount": 2, "category": "basic", "exampleWord": "りんご", "exampleReading": "린고", "exampleMeaning": "사과", "order": 40 },
+  { "kanaType": "HIRAGANA", "character": "る", "romaji": "ru", "pronunciation": "루", "row": "ra", "column": "u", "strokeCount": 1, "category": "basic", "exampleWord": "さる", "exampleReading": "사루", "exampleMeaning": "원숭이", "order": 41 },
+  { "kanaType": "HIRAGANA", "character": "れ", "romaji": "re", "pronunciation": "레", "row": "ra", "column": "e", "strokeCount": 2, "category": "basic", "exampleWord": "れきし", "exampleReading": "레키시", "exampleMeaning": "역사", "order": 42 },
+  { "kanaType": "HIRAGANA", "character": "ろ", "romaji": "ro", "pronunciation": "로", "row": "ra", "column": "o", "strokeCount": 1, "category": "basic", "exampleWord": "ろく", "exampleReading": "로쿠", "exampleMeaning": "6", "order": 43 },
+
+  { "kanaType": "HIRAGANA", "character": "わ", "romaji": "wa", "pronunciation": "와", "row": "wa", "column": "a", "strokeCount": 2, "category": "basic", "exampleWord": "わたし", "exampleReading": "와타시", "exampleMeaning": "나", "order": 44 },
+  { "kanaType": "HIRAGANA", "character": "を", "romaji": "wo", "pronunciation": "오", "row": "wa", "column": "o", "strokeCount": 3, "category": "basic", "exampleWord": "みずをのむ", "exampleReading": "미즈오노무", "exampleMeaning": "물을 마시다", "order": 45 },
+  { "kanaType": "HIRAGANA", "character": "ん", "romaji": "n", "pronunciation": "ん", "row": "n", "column": "a", "strokeCount": 1, "category": "basic", "exampleWord": "にほん", "exampleReading": "니혼", "exampleMeaning": "일본", "order": 46 }
+]

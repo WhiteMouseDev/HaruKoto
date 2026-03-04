@@ -1,0 +1,31 @@
+[
+  { "kanaType": "KATAKANA", "character": "ガ", "romaji": "ga", "pronunciation": "가", "row": "ga", "column": "a", "strokeCount": 4, "category": "dakuten", "exampleWord": "ガス", "exampleReading": "가스", "exampleMeaning": "가스", "order": 47 },
+  { "kanaType": "KATAKANA", "character": "ギ", "romaji": "gi", "pronunciation": "기", "row": "ga", "column": "i", "strokeCount": 5, "category": "dakuten", "exampleWord": "ギター", "exampleReading": "기타", "exampleMeaning": "기타", "order": 48 },
+  { "kanaType": "KATAKANA", "character": "グ", "romaji": "gu", "pronunciation": "구", "row": "ga", "column": "u", "strokeCount": 4, "category": "dakuten", "exampleWord": "グラス", "exampleReading": "구라스", "exampleMeaning": "유리잔", "order": 49 },
+  { "kanaType": "KATAKANA", "character": "ゲ", "romaji": "ge", "pronunciation": "게", "row": "ga", "column": "e", "strokeCount": 5, "category": "dakuten", "exampleWord": "ゲーム", "exampleReading": "게무", "exampleMeaning": "게임", "order": 50 },
+  { "kanaType": "KATAKANA", "character": "ゴ", "romaji": "go", "pronunciation": "고", "row": "ga", "column": "o", "strokeCount": 4, "category": "dakuten", "exampleWord": "ゴルフ", "exampleReading": "고루후", "exampleMeaning": "골프", "order": 51 },
+
+  { "kanaType": "KATAKANA", "character": "ザ", "romaji": "za", "pronunciation": "자", "row": "za", "column": "a", "strokeCount": 5, "category": "dakuten", "exampleWord": "ザック", "exampleReading": "잣쿠", "exampleMeaning": "배낭", "order": 52 },
+  { "kanaType": "KATAKANA", "character": "ジ", "romaji": "ji", "pronunciation": "지", "row": "za", "column": "i", "strokeCount": 5, "category": "dakuten", "exampleWord": "ジュース", "exampleReading": "주스", "exampleMeaning": "주스", "order": 53 },
+  { "kanaType": "KATAKANA", "character": "ズ", "romaji": "zu", "pronunciation": "즈", "row": "za", "column": "u", "strokeCount": 4, "category": "dakuten", "exampleWord": "チーズ", "exampleReading": "치즈", "exampleMeaning": "치즈", "order": 54 },
+  { "kanaType": "KATAKANA", "character": "ゼ", "romaji": "ze", "pronunciation": "제", "row": "za", "column": "e", "strokeCount": 4, "category": "dakuten", "exampleWord": "ゼリー", "exampleReading": "제리", "exampleMeaning": "젤리", "order": 55 },
+  { "kanaType": "KATAKANA", "character": "ゾ", "romaji": "zo", "pronunciation": "조", "row": "za", "column": "o", "strokeCount": 4, "category": "dakuten", "exampleWord": "ゾーン", "exampleReading": "존", "exampleMeaning": "구역", "order": 56 },
+
+  { "kanaType": "KATAKANA", "character": "ダ", "romaji": "da", "pronunciation": "다", "row": "da", "column": "a", "strokeCount": 5, "category": "dakuten", "exampleWord": "ダンス", "exampleReading": "단스", "exampleMeaning": "댄스", "order": 57 },
+  { "kanaType": "KATAKANA", "character": "ヂ", "romaji": "di", "pronunciation": "지", "row": "da", "column": "i", "strokeCount": 5, "category": "dakuten", "exampleWord": "ヂーゼル", "exampleReading": "지제루", "exampleMeaning": "디젤", "order": 58 },
+  { "kanaType": "KATAKANA", "character": "ヅ", "romaji": "du", "pronunciation": "즈", "row": "da", "column": "u", "strokeCount": 5, "category": "dakuten", "exampleWord": "ミカヅキ", "exampleReading": "미카즈키", "exampleMeaning": "초승달", "order": 59 },
+  { "kanaType": "KATAKANA", "character": "デ", "romaji": "de", "pronunciation": "데", "row": "da", "column": "e", "strokeCount": 5, "category": "dakuten", "exampleWord": "デザート", "exampleReading": "데자토", "exampleMeaning": "디저트", "order": 60 },
+  { "kanaType": "KATAKANA", "character": "ド", "romaji": "do", "pronunciation": "도", "row": "da", "column": "o", "strokeCount": 4, "category": "dakuten", "exampleWord": "ドア", "exampleReading": "도아", "exampleMeaning": "문", "order": 61 },
+
+  { "kanaType": "KATAKANA", "character": "バ", "romaji": "ba", "pronunciation": "바", "row": "ba", "column": "a", "strokeCount": 4, "category": "dakuten", "exampleWord": "バス", "exampleReading": "바스", "exampleMeaning": "버스", "order": 62 },
+  { "kanaType": "KATAKANA", "character": "ビ", "romaji": "bi", "pronunciation": "비", "row": "ba", "column": "i", "strokeCount": 4, "category": "dakuten", "exampleWord": "ビール", "exampleReading": "비루", "exampleMeaning": "맥주", "order": 63 },
+  { "kanaType": "KATAKANA", "character": "ブ", "romaji": "bu", "pronunciation": "부", "row": "ba", "column": "u", "strokeCount": 3, "category": "dakuten", "exampleWord": "ブログ", "exampleReading": "부로구", "exampleMeaning": "블로그", "order": 64 },
+  { "kanaType": "KATAKANA", "character": "ベ", "romaji": "be", "pronunciation": "베", "row": "ba", "column": "e", "strokeCount": 3, "category": "dakuten", "exampleWord": "ベッド", "exampleReading": "벳도", "exampleMeaning": "침대", "order": 65 },
+  { "kanaType": "KATAKANA", "character": "ボ", "romaji": "bo", "pronunciation": "보", "row": "ba", "column": "o", "strokeCount": 6, "category": "dakuten", "exampleWord": "ボール", "exampleReading": "보루", "exampleMeaning": "공", "order": 66 },
+
+  { "kanaType": "KATAKANA", "character": "パ", "romaji": "pa", "pronunciation": "파", "row": "pa", "column": "a", "strokeCount": 4, "category": "handakuten", "exampleWord": "パン", "exampleReading": "팡", "exampleMeaning": "빵", "order": 67 },
+  { "kanaType": "KATAKANA", "character": "ピ", "romaji": "pi", "pronunciation": "피", "row": "pa", "column": "i", "strokeCount": 4, "category": "handakuten", "exampleWord": "ピアノ", "exampleReading": "피아노", "exampleMeaning": "피아노", "order": 68 },
+  { "kanaType": "KATAKANA", "character": "プ", "romaji": "pu", "pronunciation": "푸", "row": "pa", "column": "u", "strokeCount": 3, "category": "handakuten", "exampleWord": "プール", "exampleReading": "푸루", "exampleMeaning": "수영장", "order": 69 },
+  { "kanaType": "KATAKANA", "character": "ペ", "romaji": "pe", "pronunciation": "페", "row": "pa", "column": "e", "strokeCount": 3, "category": "handakuten", "exampleWord": "ペン", "exampleReading": "펜", "exampleMeaning": "펜", "order": 70 },
+  { "kanaType": "KATAKANA", "character": "ポ", "romaji": "po", "pronunciation": "포", "row": "pa", "column": "o", "strokeCount": 6, "category": "handakuten", "exampleWord": "ポスト", "exampleReading": "포스토", "exampleMeaning": "우체통", "order": 71 }
+]

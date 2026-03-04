@@ -106,9 +106,12 @@ export type AchievementType =
   | 'words_100'
   | 'xp_1000'
   | 'xp_5000'
-  | 'xp_10000';
+  | 'xp_10000'
+  | 'kana_first_char'
+  | 'kana_hiragana_complete'
+  | 'kana_katakana_complete';
 
-export type AchievementCategory = 'level' | 'streak' | 'xp' | 'quiz' | 'words' | 'conversation' | 'special';
+export type AchievementCategory = 'level' | 'streak' | 'xp' | 'quiz' | 'words' | 'conversation' | 'special' | 'kana';
 
 export type AchievementDef = {
   type: AchievementType;
@@ -146,6 +149,10 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { type: 'xp_1000', title: 'XP 1,000 달성', description: '총 1,000 XP를 모았어요', emoji: 'gem', category: 'xp', threshold: 1000 },
   { type: 'xp_5000', title: 'XP 5,000 달성', description: '총 5,000 XP를 모았어요', emoji: 'medal', category: 'xp', threshold: 5000 },
   { type: 'xp_10000', title: 'XP 10,000 달성', description: '총 10,000 XP를 모았어요', emoji: 'award', category: 'xp', threshold: 10000 },
+  // 가나
+  { type: 'kana_first_char', title: '첫 글자!', description: '첫 번째 가나를 배웠어요', emoji: 'sprout', category: 'kana' },
+  { type: 'kana_hiragana_complete', title: 'ひらがな達人', description: '히라가나를 전부 마스터했어요', emoji: 'trophy', category: 'kana' },
+  { type: 'kana_katakana_complete', title: 'カタカナ達人', description: '가타카나를 전부 마스터했어요', emoji: 'trophy', category: 'kana' },
 ];
 
 export function getAchievement(type: AchievementType): AchievementDef | undefined {
@@ -174,6 +181,9 @@ export async function checkAndGrantAchievements(
     conversationCount?: number;
     isPerfectQuiz?: boolean;
     totalWordsStudied?: number;
+    kanaFirstChar?: boolean;
+    kanaHiraganaComplete?: boolean;
+    kanaKatakanaComplete?: boolean;
   }
 ): Promise<GameEvent[]> {
   const events: GameEvent[] = [];
@@ -211,6 +221,17 @@ export async function checkAndGrantAchievements(
   for (const achievement of ACHIEVEMENTS) {
     if (achievement.category === 'special') {
       if (achievement.type === 'perfect_quiz' && context.isPerfectQuiz) {
+        toGrant.push(achievement.type);
+      }
+      continue;
+    }
+
+    if (achievement.category === 'kana') {
+      if (achievement.type === 'kana_first_char' && context.kanaFirstChar) {
+        toGrant.push(achievement.type);
+      } else if (achievement.type === 'kana_hiragana_complete' && context.kanaHiraganaComplete) {
+        toGrant.push(achievement.type);
+      } else if (achievement.type === 'kana_katakana_complete' && context.kanaKatakanaComplete) {
         toGrant.push(achievement.type);
       }
       continue;

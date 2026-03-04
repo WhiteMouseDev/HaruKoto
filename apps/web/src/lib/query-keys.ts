@@ -13,4 +13,7 @@ export const queryKeys = {
   quizStats: ['quiz-stats'] as const,
   quizIncomplete: ['quiz-incomplete'] as const,
   conversation: (id: string) => ['conversation', id] as const,
+  kanaCharacters: (type: string, category?: string) => ['kana-characters', type, category ?? 'all'] as const,
+  kanaStages: (type: string) => ['kana-stages', type] as const,
+  kanaProgress: ['kana-progress'] as const,
 };

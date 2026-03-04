@@ -79,7 +79,12 @@ export default function OnboardingPage() {
         throw new Error(data.error || '오류가 발생했습니다');
       }
 
-      router.push('/home');
+      // N5 beginners should start with kana learning
+      if (jlptLevel === 'N5') {
+        router.push('/study/kana');
+      } else {
+        router.push('/home');
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : '오류가 발생했습니다');

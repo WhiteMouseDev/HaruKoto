@@ -1,0 +1,14 @@
+[
+  { "kanaType": "HIRAGANA", "stageNumber": 1, "title": "あ행", "description": "あ い う え お", "characters": ["あ", "い", "う", "え", "お"], "order": 1 },
+  { "kanaType": "HIRAGANA", "stageNumber": 2, "title": "か행", "description": "か き く け こ", "characters": ["か", "き", "く", "け", "こ"], "order": 2 },
+  { "kanaType": "HIRAGANA", "stageNumber": 3, "title": "さ행", "description": "さ し す せ そ", "characters": ["さ", "し", "す", "せ", "そ"], "order": 3 },
+  { "kanaType": "HIRAGANA", "stageNumber": 4, "title": "た행", "description": "た ち つ て と", "characters": ["た", "ち", "つ", "て", "と"], "order": 4 },
+  { "kanaType": "HIRAGANA", "stageNumber": 5, "title": "な행", "description": "な に ぬ ね の", "characters": ["な", "に", "ぬ", "ね", "の"], "order": 5 },
+  { "kanaType": "HIRAGANA", "stageNumber": 6, "title": "は행", "description": "は ひ ふ へ ほ", "characters": ["は", "ひ", "ふ", "へ", "ほ"], "order": 6 },
+  { "kanaType": "HIRAGANA", "stageNumber": 7, "title": "ま행", "description": "ま み む め も", "characters": ["ま", "み", "む", "め", "も"], "order": 7 },
+  { "kanaType": "HIRAGANA", "stageNumber": 8, "title": "や행 + ら행", "description": "や ゆ よ ら り る れ ろ", "characters": ["や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ"], "order": 8 },
+  { "kanaType": "HIRAGANA", "stageNumber": 9, "title": "わ행 + ん", "description": "わ を ん", "characters": ["わ", "を", "ん"], "order": 9 },
+  { "kanaType": "HIRAGANA", "stageNumber": 10, "title": "탁음·반탁음", "description": "が ざ だ ば ぱ 행", "characters": ["が","ぎ","ぐ","げ","ご","ざ","じ","ず","ぜ","ぞ","だ","ぢ","づ","で","ど","ば","び","ぶ","べ","ぼ","ぱ","ぴ","ぷ","ぺ","ぽ"], "order": 10 },
+  { "kanaType": "HIRAGANA", "stageNumber": 11, "title": "요음 기본", "description": "きゃ しゃ ちゃ にゃ ひゃ みゃ りゃ", "characters": ["きゃ","きゅ","きょ","しゃ","しゅ","しょ","ちゃ","ちゅ","ちょ","にゃ","にゅ","にょ","ひゃ","ひゅ","ひょ","みゃ","みゅ","みょ","りゃ","りゅ","りょ"], "order": 11 },
+  { "kanaType": "HIRAGANA", "stageNumber": 12, "title": "요음 탁음·반탁음", "description": "ぎゃ じゃ びゃ ぴゃ", "characters": ["ぎゃ","ぎゅ","ぎょ","じゃ","じゅ","じょ","びゃ","びゅ","びょ","ぴゃ","ぴゅ","ぴょ"], "order": 12 }
+]

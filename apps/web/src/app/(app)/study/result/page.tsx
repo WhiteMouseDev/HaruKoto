@@ -66,13 +66,14 @@ function ResultContent() {
   const accuracy = parseInt(searchParams.get('accuracy') || '0');
   const quizType = searchParams.get('type') || 'VOCABULARY';
   const jlptLevel = searchParams.get('level') || 'N5';
+  const isKana = quizType === 'KANA';
   const currentXp = parseInt(searchParams.get('currentXp') || '0');
   const xpForNext = parseInt(searchParams.get('xpForNext') || '100');
   const sessionId = searchParams.get('sessionId');
 
-  // Fetch wrong answers
+  // Fetch wrong answers (skip for kana quizzes)
   useEffect(() => {
-    if (!sessionId || total - correct === 0) return;
+    if (!sessionId || total - correct === 0 || isKana) return;
     async function fetchWrongAnswers() {
       try {
         const res = await fetch(
@@ -85,7 +86,7 @@ function ResultContent() {
       }
     }
     fetchWrongAnswers();
-  }, [sessionId, total, correct]);
+  }, [sessionId, total, correct, isKana]);
 
   async function saveToWordbook(item: WrongAnswer) {
     if (savedWords.has(item.questionId)) return;
@@ -243,7 +244,7 @@ function ResultContent() {
                 <div className="flex items-center gap-2">
                   <Trophy className="text-hk-error size-4" />
                   <span className="text-sm font-semibold">
-                    틀린 {quizType === 'VOCABULARY' ? '단어' : '문법'}{' '}
+                    틀린 {isKana ? '문자' : quizType === 'VOCABULARY' ? '단어' : '문법'}{' '}
                     {wrongAnswers.length}개
                   </span>
                 </div>
@@ -343,7 +344,7 @@ function ResultContent() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        {total - correct > 0 && (
+        {total - correct > 0 && !isKana && (
           <Button
             variant="outline"
             className="h-12 rounded-xl text-base"
@@ -360,12 +361,15 @@ function ResultContent() {
         <Button
           className="h-12 rounded-xl text-base"
           onClick={() =>
-            router.replace(
-              `/study/quiz?type=${quizType}&level=${jlptLevel}&count=10`
-            )
+            isKana
+              ? router.replace('/study/kana')
+              : router.replace(
+                  `/study/quiz?type=${quizType}&level=${jlptLevel}&count=10`
+                )
           }
         >
-          <RotateCcw className="mr-2 size-4" />한 번 더 도전
+          <RotateCcw className="mr-2 size-4" />
+          {isKana ? '가나 학습으로 돌아가기' : '한 번 더 도전'}
         </Button>
         <Button
           variant="ghost"

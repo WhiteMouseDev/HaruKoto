@@ -17,6 +17,10 @@ export type DashboardData = {
     vocabulary: { total: number; mastered: number; inProgress: number };
     grammar: { total: number; mastered: number; inProgress: number };
   };
+  kanaProgress?: {
+    hiragana: { learned: number; total: number; pct: number };
+    katakana: { learned: number; total: number; pct: number };
+  };
 };
 
 export type ProfileData = {

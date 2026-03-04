@@ -1,0 +1,45 @@
+[
+  { "kanaType": "KATAKANA", "character": "キャ", "romaji": "kya", "pronunciation": "캬", "row": "kya", "column": "a", "strokeCount": 6, "category": "youon", "exampleWord": "キャンプ", "exampleReading": "캰푸", "exampleMeaning": "캠프", "order": 72 },
+  { "kanaType": "KATAKANA", "character": "キュ", "romaji": "kyu", "pronunciation": "큐", "row": "kya", "column": "u", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 73 },
+  { "kanaType": "KATAKANA", "character": "キョ", "romaji": "kyo", "pronunciation": "쿄", "row": "kya", "column": "o", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 74 },
+
+  { "kanaType": "KATAKANA", "character": "シャ", "romaji": "sha", "pronunciation": "샤", "row": "sha", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": "シャワー", "exampleReading": "샤와", "exampleMeaning": "샤워", "order": 75 },
+  { "kanaType": "KATAKANA", "character": "シュ", "romaji": "shu", "pronunciation": "슈", "row": "sha", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 76 },
+  { "kanaType": "KATAKANA", "character": "ショ", "romaji": "sho", "pronunciation": "쇼", "row": "sha", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 77 },
+
+  { "kanaType": "KATAKANA", "character": "チャ", "romaji": "cha", "pronunciation": "차", "row": "cha", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 78 },
+  { "kanaType": "KATAKANA", "character": "チュ", "romaji": "chu", "pronunciation": "추", "row": "cha", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 79 },
+  { "kanaType": "KATAKANA", "character": "チョ", "romaji": "cho", "pronunciation": "초", "row": "cha", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": "チョコ", "exampleReading": "초코", "exampleMeaning": "초콜릿", "order": 80 },
+
+  { "kanaType": "KATAKANA", "character": "ニャ", "romaji": "nya", "pronunciation": "냐", "row": "nya", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 81 },
+  { "kanaType": "KATAKANA", "character": "ニュ", "romaji": "nyu", "pronunciation": "뉴", "row": "nya", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": "ニュース", "exampleReading": "뉴스", "exampleMeaning": "뉴스", "order": 82 },
+  { "kanaType": "KATAKANA", "character": "ニョ", "romaji": "nyo", "pronunciation": "뇨", "row": "nya", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 83 },
+
+  { "kanaType": "KATAKANA", "character": "ヒャ", "romaji": "hya", "pronunciation": "햐", "row": "hya", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 84 },
+  { "kanaType": "KATAKANA", "character": "ヒュ", "romaji": "hyu", "pronunciation": "휴", "row": "hya", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 85 },
+  { "kanaType": "KATAKANA", "character": "ヒョ", "romaji": "hyo", "pronunciation": "효", "row": "hya", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 86 },
+
+  { "kanaType": "KATAKANA", "character": "ミャ", "romaji": "mya", "pronunciation": "먀", "row": "mya", "column": "a", "strokeCount": 6, "category": "youon", "exampleWord": "ミャンマー", "exampleReading": "먄마", "exampleMeaning": "미얀마", "order": 87 },
+  { "kanaType": "KATAKANA", "character": "ミュ", "romaji": "myu", "pronunciation": "뮤", "row": "mya", "column": "u", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 88 },
+  { "kanaType": "KATAKANA", "character": "ミョ", "romaji": "myo", "pronunciation": "묘", "row": "mya", "column": "o", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 89 },
+
+  { "kanaType": "KATAKANA", "character": "リャ", "romaji": "rya", "pronunciation": "랴", "row": "rya", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 90 },
+  { "kanaType": "KATAKANA", "character": "リュ", "romaji": "ryu", "pronunciation": "류", "row": "rya", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": "リュック", "exampleReading": "류쿠", "exampleMeaning": "배낭", "order": 91 },
+  { "kanaType": "KATAKANA", "character": "リョ", "romaji": "ryo", "pronunciation": "료", "row": "rya", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 92 },
+
+  { "kanaType": "KATAKANA", "character": "ギャ", "romaji": "gya", "pronunciation": "갸", "row": "gya", "column": "a", "strokeCount": 8, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 93 },
+  { "kanaType": "KATAKANA", "character": "ギュ", "romaji": "gyu", "pronunciation": "규", "row": "gya", "column": "u", "strokeCount": 7, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 94 },
+  { "kanaType": "KATAKANA", "character": "ギョ", "romaji": "gyo", "pronunciation": "교", "row": "gya", "column": "o", "strokeCount": 7, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 95 },
+
+  { "kanaType": "KATAKANA", "character": "ジャ", "romaji": "ja", "pronunciation": "자", "row": "ja", "column": "a", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": "ジャケット", "exampleReading": "자켓토", "exampleMeaning": "재킷", "order": 96 },
+  { "kanaType": "KATAKANA", "character": "ジュ", "romaji": "ju", "pronunciation": "주", "row": "ja", "column": "u", "strokeCount": 4, "category": "youon_dakuten", "exampleWord": "ジュース", "exampleReading": "주스", "exampleMeaning": "주스", "order": 97 },
+  { "kanaType": "KATAKANA", "character": "ジョ", "romaji": "jo", "pronunciation": "조", "row": "ja", "column": "o", "strokeCount": 4, "category": "youon_dakuten", "exampleWord": "ジョギング", "exampleReading": "조깅구", "exampleMeaning": "조깅", "order": 98 },
+
+  { "kanaType": "KATAKANA", "character": "ビャ", "romaji": "bya", "pronunciation": "뱌", "row": "bya", "column": "a", "strokeCount": 6, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 99 },
+  { "kanaType": "KATAKANA", "character": "ビュ", "romaji": "byu", "pronunciation": "뷰", "row": "bya", "column": "u", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 100 },
+  { "kanaType": "KATAKANA", "character": "ビョ", "romaji": "byo", "pronunciation": "뵤", "row": "bya", "column": "o", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 101 },
+
+  { "kanaType": "KATAKANA", "character": "ピャ", "romaji": "pya", "pronunciation": "퍄", "row": "pya", "column": "a", "strokeCount": 5, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 102 },
+  { "kanaType": "KATAKANA", "character": "ピュ", "romaji": "pyu", "pronunciation": "퓨", "row": "pya", "column": "u", "strokeCount": 4, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 103 },
+  { "kanaType": "KATAKANA", "character": "ピョ", "romaji": "pyo", "pronunciation": "표", "row": "pya", "column": "o", "strokeCount": 4, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 104 }
+]

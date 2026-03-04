@@ -16,7 +16,7 @@ export async function GET() {
     today.setHours(0, 0, 0, 0);
 
     // Fetch user, today's progress, and weekly stats in parallel
-    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress] =
+    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, kanaTotalHiragana, kanaTotalKatakana] =
       await Promise.all([
         prisma.user.findUnique({
           where: { id: user.id },
@@ -39,6 +39,18 @@ export async function GET() {
           by: ['mastered'],
           where: { userId: user.id },
           _count: true,
+        }),
+        prisma.userKanaProgress.count({
+          where: { userId: user.id, kana: { kanaType: 'HIRAGANA', category: 'basic' } },
+        }),
+        prisma.userKanaProgress.count({
+          where: { userId: user.id, kana: { kanaType: 'KATAKANA', category: 'basic' } },
+        }),
+        prisma.kanaCharacter.count({
+          where: { kanaType: 'HIRAGANA', category: 'basic' },
+        }),
+        prisma.kanaCharacter.count({
+          where: { kanaType: 'KATAKANA', category: 'basic' },
         }),
       ]);
 
@@ -70,7 +82,21 @@ export async function GET() {
       'Cache-Control': 'private, no-cache',
     };
 
+    const kanaProgress = {
+      hiragana: {
+        learned: kanaLearnedHiragana,
+        total: kanaTotalHiragana,
+        pct: kanaTotalHiragana > 0 ? Math.round((kanaLearnedHiragana / kanaTotalHiragana) * 100) : 0,
+      },
+      katakana: {
+        learned: kanaLearnedKatakana,
+        total: kanaTotalKatakana,
+        pct: kanaTotalKatakana > 0 ? Math.round((kanaLearnedKatakana / kanaTotalKatakana) * 100) : 0,
+      },
+    };
+
     return NextResponse.json({
+      kanaProgress,
       today: {
         wordsStudied,
         quizzesCompleted: todayProgress?.quizzesCompleted ?? 0,

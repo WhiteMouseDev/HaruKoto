@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { useDashboard, useProfile } from '@/hooks/use-dashboard';
 import { useDailyMissions, useClaimMissionReward } from '@/hooks/use-daily-missions';
+import { useKanaProgress } from '@/hooks/use-kana';
+import { KanaCtaCard } from '@/components/features/dashboard/kana-cta-card';
 import { NotificationCenter } from '@/components/features/notifications/notification-center';
 import { Button } from '@/components/ui/button';
 import { StreakBadge } from '@/components/features/dashboard/streak-badge';
@@ -31,6 +33,7 @@ export default function HomePage() {
   const { data: profile } = useProfile();
   const { data: missionsData } = useDailyMissions();
   const claimReward = useClaimMissionReward();
+  const { data: kanaProgress } = useKanaProgress();
 
   // Loading skeleton
   if (isLoading) {
@@ -85,6 +88,15 @@ export default function HomePage() {
         </div>
         <NotificationCenter />
       </motion.div>
+
+      {/* Kana CTA - for N5 users who haven't completed kana */}
+      {jlptLevel === 'N5' &&
+        kanaProgress &&
+        (kanaProgress.hiragana.pct < 100 || kanaProgress.katakana.pct < 100) && (
+          <motion.div variants={item}>
+            <KanaCtaCard />
+          </motion.div>
+        )}
 
       {/* Streak Badge */}
       <motion.div variants={item}>

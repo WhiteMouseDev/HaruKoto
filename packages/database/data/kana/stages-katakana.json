@@ -1,0 +1,14 @@
+[
+  { "kanaType": "KATAKANA", "stageNumber": 1, "title": "ア행", "description": "ア イ ウ エ オ", "characters": ["ア", "イ", "ウ", "エ", "オ"], "order": 1 },
+  { "kanaType": "KATAKANA", "stageNumber": 2, "title": "カ행", "description": "カ キ ク ケ コ", "characters": ["カ", "キ", "ク", "ケ", "コ"], "order": 2 },
+  { "kanaType": "KATAKANA", "stageNumber": 3, "title": "サ행", "description": "サ シ ス セ ソ", "characters": ["サ", "シ", "ス", "セ", "ソ"], "order": 3 },
+  { "kanaType": "KATAKANA", "stageNumber": 4, "title": "タ행", "description": "タ チ ツ テ ト", "characters": ["タ", "チ", "ツ", "テ", "ト"], "order": 4 },
+  { "kanaType": "KATAKANA", "stageNumber": 5, "title": "ナ행", "description": "ナ ニ ヌ ネ ノ", "characters": ["ナ", "ニ", "ヌ", "ネ", "ノ"], "order": 5 },
+  { "kanaType": "KATAKANA", "stageNumber": 6, "title": "ハ행", "description": "ハ ヒ フ ヘ ホ", "characters": ["ハ", "ヒ", "フ", "ヘ", "ホ"], "order": 6 },
+  { "kanaType": "KATAKANA", "stageNumber": 7, "title": "マ행", "description": "マ ミ ム メ モ", "characters": ["マ", "ミ", "ム", "メ", "モ"], "order": 7 },
+  { "kanaType": "KATAKANA", "stageNumber": 8, "title": "ヤ행 + ラ행", "description": "ヤ ユ ヨ ラ リ ル レ ロ", "characters": ["ヤ", "ユ", "ヨ", "ラ", "リ", "ル", "レ", "ロ"], "order": 8 },
+  { "kanaType": "KATAKANA", "stageNumber": 9, "title": "ワ행 + ン", "description": "ワ ヲ ン", "characters": ["ワ", "ヲ", "ン"], "order": 9 },
+  { "kanaType": "KATAKANA", "stageNumber": 10, "title": "탁음·반탁음", "description": "ガ ザ ダ バ パ 행", "characters": ["ガ","ギ","グ","ゲ","ゴ","ザ","ジ","ズ","ゼ","ゾ","ダ","ヂ","ヅ","デ","ド","バ","ビ","ブ","ベ","ボ","パ","ピ","プ","ペ","ポ"], "order": 10 },
+  { "kanaType": "KATAKANA", "stageNumber": 11, "title": "요음 기본", "description": "キャ シャ チャ ニャ ヒャ ミャ リャ", "characters": ["キャ","キュ","キョ","シャ","シュ","ショ","チャ","チュ","チョ","ニャ","ニュ","ニョ","ヒャ","ヒュ","ヒョ","ミャ","ミュ","ミョ","リャ","リュ","リョ"], "order": 11 },
+  { "kanaType": "KATAKANA", "stageNumber": 12, "title": "요음 탁음·반탁음", "description": "ギャ ジャ ビャ ピャ", "characters": ["ギャ","ギュ","ギョ","ジャ","ジュ","ジョ","ビャ","ビュ","ビョ","ピャ","ピュ","ピョ"], "order": 12 }
+]

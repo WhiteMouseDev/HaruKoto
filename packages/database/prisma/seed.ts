@@ -201,6 +201,181 @@ async function main() {
     );
   }
 
+  // 4. Seed Kana Characters (Hiragana + Katakana)
+  const kanaFiles = [
+    { file: 'data/kana/hiragana.json', type: 'HIRAGANA' },
+    { file: 'data/kana/katakana.json', type: 'KATAKANA' },
+  ];
+
+  for (const { file, type } of kanaFiles) {
+    const existingCount = await prisma.kanaCharacter.count({
+      where: { kanaType: type as any },
+    });
+    if (existingCount === 0) {
+      try {
+        const kanaData = loadJson<any[]>(file);
+        await prisma.kanaCharacter.createMany({
+          data: kanaData.map((k) => ({
+            kanaType: k.kanaType,
+            character: k.character,
+            romaji: k.romaji,
+            pronunciation: k.pronunciation,
+            row: k.row,
+            column: k.column,
+            strokeCount: k.strokeCount,
+            category: k.category,
+            exampleWord: k.exampleWord,
+            exampleReading: k.exampleReading,
+            exampleMeaning: k.exampleMeaning,
+            order: k.order,
+          })),
+        });
+        console.log(`✅ ${kanaData.length} ${type} characters seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${type} kana file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${type} kana already exists (${existingCount}), skipping`);
+    }
+  }
+
+  // 4b. Seed Kana Dakuten + Handakuten Characters
+  const dakutenFiles = [
+    { file: 'data/kana/hiragana-dakuten.json', type: 'HIRAGANA' },
+    { file: 'data/kana/katakana-dakuten.json', type: 'KATAKANA' },
+  ];
+
+  for (const { file, type } of dakutenFiles) {
+    const existingDakuten = await prisma.kanaCharacter.count({
+      where: { kanaType: type as any, category: 'dakuten' },
+    });
+    const existingHandakuten = await prisma.kanaCharacter.count({
+      where: { kanaType: type as any, category: 'handakuten' },
+    });
+    if (existingDakuten === 0 && existingHandakuten === 0) {
+      try {
+        const kanaData = loadJson<any[]>(file);
+        await prisma.kanaCharacter.createMany({
+          data: kanaData.map((k) => ({
+            kanaType: k.kanaType,
+            character: k.character,
+            romaji: k.romaji,
+            pronunciation: k.pronunciation,
+            row: k.row,
+            column: k.column,
+            strokeCount: k.strokeCount,
+            category: k.category,
+            exampleWord: k.exampleWord,
+            exampleReading: k.exampleReading,
+            exampleMeaning: k.exampleMeaning,
+            order: k.order,
+          })),
+        });
+        console.log(`✅ ${kanaData.length} ${type} dakuten/handakuten characters seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${type} dakuten file not found, skipping`);
+      }
+    } else {
+      console.log(
+        `⏭️ ${type} dakuten/handakuten already exists (${existingDakuten + existingHandakuten}), skipping`
+      );
+    }
+  }
+
+  // 4c. Seed Kana Youon (Compound Kana) Characters
+  const youonFiles = [
+    { file: 'data/kana/hiragana-youon.json', type: 'HIRAGANA' },
+    { file: 'data/kana/katakana-youon.json', type: 'KATAKANA' },
+  ];
+
+  for (const { file, type } of youonFiles) {
+    const existingYouon = await prisma.kanaCharacter.count({
+      where: { kanaType: type as any, category: { startsWith: 'youon' } },
+    });
+    if (existingYouon === 0) {
+      try {
+        const kanaData = loadJson<any[]>(file);
+        await prisma.kanaCharacter.createMany({
+          data: kanaData.map((k) => ({
+            kanaType: k.kanaType,
+            character: k.character,
+            romaji: k.romaji,
+            pronunciation: k.pronunciation,
+            row: k.row,
+            column: k.column,
+            strokeCount: k.strokeCount,
+            category: k.category,
+            exampleWord: k.exampleWord,
+            exampleReading: k.exampleReading,
+            exampleMeaning: k.exampleMeaning,
+            order: k.order,
+          })),
+        });
+        console.log(`✅ ${kanaData.length} ${type} youon characters seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${type} youon file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${type} youon already exists (${existingYouon}), skipping`);
+    }
+  }
+
+  // 5. Seed Kana Learning Stages
+  const stageFiles = [
+    { file: 'data/kana/stages-hiragana.json', type: 'HIRAGANA' },
+    { file: 'data/kana/stages-katakana.json', type: 'KATAKANA' },
+  ];
+
+  for (const { file, type } of stageFiles) {
+    const existingCount = await prisma.kanaLearningStage.count({
+      where: { kanaType: type as any },
+    });
+    if (existingCount === 0) {
+      try {
+        const stageData = loadJson<any[]>(file);
+        await prisma.kanaLearningStage.createMany({
+          data: stageData.map((s) => ({
+            kanaType: s.kanaType,
+            stageNumber: s.stageNumber,
+            title: s.title,
+            description: s.description,
+            characters: s.characters,
+            order: s.order,
+          })),
+        });
+        console.log(`✅ ${stageData.length} ${type} stages seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${type} stages file not found, skipping`);
+      }
+    } else {
+      // Check if new stages need to be added (e.g. youon stages 11-12)
+      try {
+        const stageData = loadJson<any[]>(file);
+        for (const s of stageData) {
+          const exists = await prisma.kanaLearningStage.findUnique({
+            where: { kanaType_stageNumber: { kanaType: s.kanaType, stageNumber: s.stageNumber } },
+          });
+          if (!exists) {
+            await prisma.kanaLearningStage.create({
+              data: {
+                kanaType: s.kanaType,
+                stageNumber: s.stageNumber,
+                title: s.title,
+                description: s.description,
+                characters: s.characters,
+                order: s.order,
+              },
+            });
+            console.log(`✅ ${type} Stage ${s.stageNumber} (${s.title}) seeded`);
+          }
+        }
+      } catch (e) {
+        // Ignore
+      }
+      console.log(`⏭️ ${type} stages already exist (${existingCount}), checked for new stages`);
+    }
+  }
+
   console.log('🌸 Seeding complete!');
 }
 

@@ -1,0 +1,31 @@
+[
+  { "kanaType": "HIRAGANA", "character": "が", "romaji": "ga", "pronunciation": "가", "row": "ga", "column": "a", "strokeCount": 4, "category": "dakuten", "exampleWord": "がっこう", "exampleReading": "갓코우", "exampleMeaning": "학교", "order": 47 },
+  { "kanaType": "HIRAGANA", "character": "ぎ", "romaji": "gi", "pronunciation": "기", "row": "ga", "column": "i", "strokeCount": 5, "category": "dakuten", "exampleWord": "ぎんこう", "exampleReading": "긴코우", "exampleMeaning": "은행", "order": 48 },
+  { "kanaType": "HIRAGANA", "character": "ぐ", "romaji": "gu", "pronunciation": "구", "row": "ga", "column": "u", "strokeCount": 3, "category": "dakuten", "exampleWord": "ぐんて", "exampleReading": "군테", "exampleMeaning": "장갑", "order": 49 },
+  { "kanaType": "HIRAGANA", "character": "げ", "romaji": "ge", "pronunciation": "게", "row": "ga", "column": "e", "strokeCount": 5, "category": "dakuten", "exampleWord": "げんき", "exampleReading": "겐키", "exampleMeaning": "건강", "order": 50 },
+  { "kanaType": "HIRAGANA", "character": "ご", "romaji": "go", "pronunciation": "고", "row": "ga", "column": "o", "strokeCount": 4, "category": "dakuten", "exampleWord": "ごはん", "exampleReading": "고한", "exampleMeaning": "밥", "order": 51 },
+
+  { "kanaType": "HIRAGANA", "character": "ざ", "romaji": "za", "pronunciation": "자", "row": "za", "column": "a", "strokeCount": 5, "category": "dakuten", "exampleWord": "ざっし", "exampleReading": "잣시", "exampleMeaning": "잡지", "order": 52 },
+  { "kanaType": "HIRAGANA", "character": "じ", "romaji": "ji", "pronunciation": "지", "row": "za", "column": "i", "strokeCount": 3, "category": "dakuten", "exampleWord": "じかん", "exampleReading": "지칸", "exampleMeaning": "시간", "order": 53 },
+  { "kanaType": "HIRAGANA", "character": "ず", "romaji": "zu", "pronunciation": "즈", "row": "za", "column": "u", "strokeCount": 4, "category": "dakuten", "exampleWord": "みず", "exampleReading": "미즈", "exampleMeaning": "물", "order": 54 },
+  { "kanaType": "HIRAGANA", "character": "ぜ", "romaji": "ze", "pronunciation": "제", "row": "za", "column": "e", "strokeCount": 5, "category": "dakuten", "exampleWord": "ぜんぶ", "exampleReading": "젠부", "exampleMeaning": "전부", "order": 55 },
+  { "kanaType": "HIRAGANA", "character": "ぞ", "romaji": "zo", "pronunciation": "조", "row": "za", "column": "o", "strokeCount": 3, "category": "dakuten", "exampleWord": "ぞう", "exampleReading": "조우", "exampleMeaning": "코끼리", "order": 56 },
+
+  { "kanaType": "HIRAGANA", "character": "だ", "romaji": "da", "pronunciation": "다", "row": "da", "column": "a", "strokeCount": 6, "category": "dakuten", "exampleWord": "だいがく", "exampleReading": "다이가쿠", "exampleMeaning": "대학교", "order": 57 },
+  { "kanaType": "HIRAGANA", "character": "ぢ", "romaji": "di", "pronunciation": "지", "row": "da", "column": "i", "strokeCount": 4, "category": "dakuten", "exampleWord": "はなぢ", "exampleReading": "하나지", "exampleMeaning": "코피", "order": 58 },
+  { "kanaType": "HIRAGANA", "character": "づ", "romaji": "du", "pronunciation": "즈", "row": "da", "column": "u", "strokeCount": 3, "category": "dakuten", "exampleWord": "つづく", "exampleReading": "츠즈쿠", "exampleMeaning": "계속되다", "order": 59 },
+  { "kanaType": "HIRAGANA", "character": "で", "romaji": "de", "pronunciation": "데", "row": "da", "column": "e", "strokeCount": 3, "category": "dakuten", "exampleWord": "でんわ", "exampleReading": "덴와", "exampleMeaning": "전화", "order": 60 },
+  { "kanaType": "HIRAGANA", "character": "ど", "romaji": "do", "pronunciation": "도", "row": "da", "column": "o", "strokeCount": 4, "category": "dakuten", "exampleWord": "どうぶつ", "exampleReading": "도우부츠", "exampleMeaning": "동물", "order": 61 },
+
+  { "kanaType": "HIRAGANA", "character": "ば", "romaji": "ba", "pronunciation": "바", "row": "ba", "column": "a", "strokeCount": 5, "category": "dakuten", "exampleWord": "ばんごはん", "exampleReading": "반고한", "exampleMeaning": "저녁밥", "order": 62 },
+  { "kanaType": "HIRAGANA", "character": "び", "romaji": "bi", "pronunciation": "비", "row": "ba", "column": "i", "strokeCount": 3, "category": "dakuten", "exampleWord": "びょういん", "exampleReading": "뵤우인", "exampleMeaning": "병원", "order": 63 },
+  { "kanaType": "HIRAGANA", "character": "ぶ", "romaji": "bu", "pronunciation": "부", "row": "ba", "column": "u", "strokeCount": 6, "category": "dakuten", "exampleWord": "ぶんか", "exampleReading": "분카", "exampleMeaning": "문화", "order": 64 },
+  { "kanaType": "HIRAGANA", "character": "べ", "romaji": "be", "pronunciation": "베", "row": "ba", "column": "e", "strokeCount": 3, "category": "dakuten", "exampleWord": "べんきょう", "exampleReading": "벤쿄우", "exampleMeaning": "공부", "order": 65 },
+  { "kanaType": "HIRAGANA", "character": "ぼ", "romaji": "bo", "pronunciation": "보", "row": "ba", "column": "o", "strokeCount": 6, "category": "dakuten", "exampleWord": "ぼうし", "exampleReading": "보우시", "exampleMeaning": "모자", "order": 66 },
+
+  { "kanaType": "HIRAGANA", "character": "ぱ", "romaji": "pa", "pronunciation": "파", "row": "pa", "column": "a", "strokeCount": 5, "category": "handakuten", "exampleWord": "ぱん", "exampleReading": "팡", "exampleMeaning": "빵", "order": 67 },
+  { "kanaType": "HIRAGANA", "character": "ぴ", "romaji": "pi", "pronunciation": "피", "row": "pa", "column": "i", "strokeCount": 3, "category": "handakuten", "exampleWord": "ぴあの", "exampleReading": "피아노", "exampleMeaning": "피아노", "order": 68 },
+  { "kanaType": "HIRAGANA", "character": "ぷ", "romaji": "pu", "pronunciation": "푸", "row": "pa", "column": "u", "strokeCount": 6, "category": "handakuten", "exampleWord": "ぷーる", "exampleReading": "푸루", "exampleMeaning": "수영장", "order": 69 },
+  { "kanaType": "HIRAGANA", "character": "ぺ", "romaji": "pe", "pronunciation": "페", "row": "pa", "column": "e", "strokeCount": 3, "category": "handakuten", "exampleWord": "ぺん", "exampleReading": "펜", "exampleMeaning": "펜", "order": 70 },
+  { "kanaType": "HIRAGANA", "character": "ぽ", "romaji": "po", "pronunciation": "포", "row": "pa", "column": "o", "strokeCount": 6, "category": "handakuten", "exampleWord": "たんぽぽ", "exampleReading": "탄포포", "exampleMeaning": "민들레", "order": 71 }
+]

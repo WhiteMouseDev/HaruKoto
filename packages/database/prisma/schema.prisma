@@ -39,6 +39,12 @@ enum QuizType {
   GRAMMAR
   KANJI
   LISTENING
+  KANA
+}
+
+enum KanaType {
+  HIRAGANA
+  KATAKANA
 }
 
 enum ScenarioCategory {
@@ -104,6 +110,8 @@ model User {
   grammarProgress   UserGrammarProgress[]
   notifications     Notification[]
   pushSubscriptions PushSubscription[]
+  kanaProgress      UserKanaProgress[]
+  kanaStages        UserKanaStage[]
 
   @@map("users")
 }
@@ -282,6 +290,7 @@ model DailyProgress {
   conversationCount Int    @default(0) @map("conversation_count")
   studyTimeSeconds Int     @default(0) @map("study_time_seconds")
   xpEarned        Int      @default(0) @map("xp_earned")
+  kanaLearned     Int      @default(0) @map("kana_learned")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -395,4 +404,89 @@ model WordbookEntry {
   @@unique([userId, word])
   @@index([userId])
   @@map("wordbook_entries")
+}
+
+// ==========================================
+// Kana Learning System
+// ==========================================
+
+model KanaCharacter {
+  id             String   @id @default(uuid()) @db.Uuid
+  kanaType       KanaType @map("kana_type")
+  character      String
+  romaji         String
+  pronunciation  String
+  row            String
+  column         String
+  strokeCount    Int      @map("stroke_count")
+  strokeOrder    Json?    @map("stroke_order")
+  audioUrl       String?  @map("audio_url")
+  exampleWord    String?  @map("example_word")
+  exampleReading String?  @map("example_reading")
+  exampleMeaning String?  @map("example_meaning")
+  category       String   @default("basic")
+  order          Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  userProgress UserKanaProgress[]
+
+  @@unique([kanaType, character])
+  @@index([kanaType, row])
+  @@index([kanaType, category])
+  @@map("kana_characters")
+}
+
+model UserKanaProgress {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  kanaId         String    @map("kana_id") @db.Uuid
+  correctCount   Int       @default(0) @map("correct_count")
+  incorrectCount Int       @default(0) @map("incorrect_count")
+  streak         Int       @default(0)
+  mastered       Boolean   @default(false)
+  lastReviewedAt DateTime? @map("last_reviewed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kana KanaCharacter @relation(fields: [kanaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kanaId])
+  @@index([userId, mastered])
+  @@map("user_kana_progress")
+}
+
+model KanaLearningStage {
+  id          String   @id @default(uuid()) @db.Uuid
+  kanaType    KanaType @map("kana_type")
+  stageNumber Int      @map("stage_number")
+  title       String
+  description String
+  characters  String[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userStages UserKanaStage[]
+
+  @@unique([kanaType, stageNumber])
+  @@map("kana_learning_stages")
+}
+
+model UserKanaStage {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  stageId     String    @map("stage_id") @db.Uuid
+  isUnlocked  Boolean   @default(false) @map("is_unlocked")
+  isCompleted Boolean   @default(false) @map("is_completed")
+  quizScore   Int?      @map("quiz_score")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage KanaLearningStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, stageId])
+  @@index([userId])
+  @@map("user_kana_stages")
 }

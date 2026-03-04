@@ -1,0 +1,45 @@
+[
+  { "kanaType": "HIRAGANA", "character": "きゃ", "romaji": "kya", "pronunciation": "캬", "row": "kya", "column": "a", "strokeCount": 7, "category": "youon", "exampleWord": "きゃく", "exampleReading": "캬쿠", "exampleMeaning": "손님", "order": 72 },
+  { "kanaType": "HIRAGANA", "character": "きゅ", "romaji": "kyu", "pronunciation": "큐", "row": "kya", "column": "u", "strokeCount": 6, "category": "youon", "exampleWord": "きゅう", "exampleReading": "큐우", "exampleMeaning": "아홉", "order": 73 },
+  { "kanaType": "HIRAGANA", "character": "きょ", "romaji": "kyo", "pronunciation": "쿄", "row": "kya", "column": "o", "strokeCount": 6, "category": "youon", "exampleWord": "きょう", "exampleReading": "쿄우", "exampleMeaning": "오늘", "order": 74 },
+
+  { "kanaType": "HIRAGANA", "character": "しゃ", "romaji": "sha", "pronunciation": "샤", "row": "sha", "column": "a", "strokeCount": 4, "category": "youon", "exampleWord": "しゃしん", "exampleReading": "샤신", "exampleMeaning": "사진", "order": 75 },
+  { "kanaType": "HIRAGANA", "character": "しゅ", "romaji": "shu", "pronunciation": "슈", "row": "sha", "column": "u", "strokeCount": 3, "category": "youon", "exampleWord": "しゅくだい", "exampleReading": "슈쿠다이", "exampleMeaning": "숙제", "order": 76 },
+  { "kanaType": "HIRAGANA", "character": "しょ", "romaji": "sho", "pronunciation": "쇼", "row": "sha", "column": "o", "strokeCount": 3, "category": "youon", "exampleWord": "しょくどう", "exampleReading": "쇼쿠도우", "exampleMeaning": "식당", "order": 77 },
+
+  { "kanaType": "HIRAGANA", "character": "ちゃ", "romaji": "cha", "pronunciation": "차", "row": "cha", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": "おちゃ", "exampleReading": "오차", "exampleMeaning": "차", "order": 78 },
+  { "kanaType": "HIRAGANA", "character": "ちゅ", "romaji": "chu", "pronunciation": "추", "row": "cha", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": "ちゅうごく", "exampleReading": "추우고쿠", "exampleMeaning": "중국", "order": 79 },
+  { "kanaType": "HIRAGANA", "character": "ちょ", "romaji": "cho", "pronunciation": "초", "row": "cha", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": "ちょっと", "exampleReading": "촛토", "exampleMeaning": "조금", "order": 80 },
+
+  { "kanaType": "HIRAGANA", "character": "にゃ", "romaji": "nya", "pronunciation": "냐", "row": "nya", "column": "a", "strokeCount": 7, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 81 },
+  { "kanaType": "HIRAGANA", "character": "にゅ", "romaji": "nyu", "pronunciation": "뉴", "row": "nya", "column": "u", "strokeCount": 6, "category": "youon", "exampleWord": "にゅういん", "exampleReading": "뉴우인", "exampleMeaning": "입원", "order": 82 },
+  { "kanaType": "HIRAGANA", "character": "にょ", "romaji": "nyo", "pronunciation": "뇨", "row": "nya", "column": "o", "strokeCount": 6, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 83 },
+
+  { "kanaType": "HIRAGANA", "character": "ひゃ", "romaji": "hya", "pronunciation": "햐", "row": "hya", "column": "a", "strokeCount": 4, "category": "youon", "exampleWord": "ひゃく", "exampleReading": "햐쿠", "exampleMeaning": "백", "order": 84 },
+  { "kanaType": "HIRAGANA", "character": "ひゅ", "romaji": "hyu", "pronunciation": "휴", "row": "hya", "column": "u", "strokeCount": 3, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 85 },
+  { "kanaType": "HIRAGANA", "character": "ひょ", "romaji": "hyo", "pronunciation": "효", "row": "hya", "column": "o", "strokeCount": 3, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 86 },
+
+  { "kanaType": "HIRAGANA", "character": "みゃ", "romaji": "mya", "pronunciation": "먀", "row": "mya", "column": "a", "strokeCount": 6, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 87 },
+  { "kanaType": "HIRAGANA", "character": "みゅ", "romaji": "myu", "pronunciation": "뮤", "row": "mya", "column": "u", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 88 },
+  { "kanaType": "HIRAGANA", "character": "みょ", "romaji": "myo", "pronunciation": "묘", "row": "mya", "column": "o", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 89 },
+
+  { "kanaType": "HIRAGANA", "character": "りゃ", "romaji": "rya", "pronunciation": "랴", "row": "rya", "column": "a", "strokeCount": 5, "category": "youon", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 90 },
+  { "kanaType": "HIRAGANA", "character": "りゅ", "romaji": "ryu", "pronunciation": "류", "row": "rya", "column": "u", "strokeCount": 4, "category": "youon", "exampleWord": "りゅう", "exampleReading": "류우", "exampleMeaning": "용", "order": 91 },
+  { "kanaType": "HIRAGANA", "character": "りょ", "romaji": "ryo", "pronunciation": "료", "row": "rya", "column": "o", "strokeCount": 4, "category": "youon", "exampleWord": "りょうり", "exampleReading": "료우리", "exampleMeaning": "요리", "order": 92 },
+
+  { "kanaType": "HIRAGANA", "character": "ぎゃ", "romaji": "gya", "pronunciation": "갸", "row": "gya", "column": "a", "strokeCount": 9, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 93 },
+  { "kanaType": "HIRAGANA", "character": "ぎゅ", "romaji": "gyu", "pronunciation": "규", "row": "gya", "column": "u", "strokeCount": 8, "category": "youon_dakuten", "exampleWord": "ぎゅうにゅう", "exampleReading": "규우뉴우", "exampleMeaning": "우유", "order": 94 },
+  { "kanaType": "HIRAGANA", "character": "ぎょ", "romaji": "gyo", "pronunciation": "교", "row": "gya", "column": "o", "strokeCount": 8, "category": "youon_dakuten", "exampleWord": "ぎょうざ", "exampleReading": "교우자", "exampleMeaning": "만두", "order": 95 },
+
+  { "kanaType": "HIRAGANA", "character": "じゃ", "romaji": "ja", "pronunciation": "자", "row": "ja", "column": "a", "strokeCount": 6, "category": "youon_dakuten", "exampleWord": "じゃあ", "exampleReading": "자아", "exampleMeaning": "그럼", "order": 96 },
+  { "kanaType": "HIRAGANA", "character": "じゅ", "romaji": "ju", "pronunciation": "주", "row": "ja", "column": "u", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": "じゅう", "exampleReading": "주우", "exampleMeaning": "열", "order": 97 },
+  { "kanaType": "HIRAGANA", "character": "じょ", "romaji": "jo", "pronunciation": "조", "row": "ja", "column": "o", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": "じょうず", "exampleReading": "조우즈", "exampleMeaning": "잘함", "order": 98 },
+
+  { "kanaType": "HIRAGANA", "character": "びゃ", "romaji": "bya", "pronunciation": "뱌", "row": "bya", "column": "a", "strokeCount": 6, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 99 },
+  { "kanaType": "HIRAGANA", "character": "びゅ", "romaji": "byu", "pronunciation": "뷰", "row": "bya", "column": "u", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 100 },
+  { "kanaType": "HIRAGANA", "character": "びょ", "romaji": "byo", "pronunciation": "뵤", "row": "bya", "column": "o", "strokeCount": 5, "category": "youon_dakuten", "exampleWord": "びょういん", "exampleReading": "뵤우인", "exampleMeaning": "병원", "order": 101 },
+
+  { "kanaType": "HIRAGANA", "character": "ぴゃ", "romaji": "pya", "pronunciation": "퍄", "row": "pya", "column": "a", "strokeCount": 5, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 102 },
+  { "kanaType": "HIRAGANA", "character": "ぴゅ", "romaji": "pyu", "pronunciation": "퓨", "row": "pya", "column": "u", "strokeCount": 4, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 103 },
+  { "kanaType": "HIRAGANA", "character": "ぴょ", "romaji": "pyo", "pronunciation": "표", "row": "pya", "column": "o", "strokeCount": 4, "category": "youon_handakuten", "exampleWord": null, "exampleReading": null, "exampleMeaning": null, "order": 104 }
+]

@@ -19,6 +19,12 @@ export const SRS_CONFIG = {
   REVIEW_DELAY_MINUTES: 10,
 };
 
+export const KANA_REWARDS = {
+  STAGE_COMPLETE_XP: 30,
+  QUIZ_PERFECT_XP: 20,
+  QUIZ_PASS_XP: 10,
+};
+
 export const PAGINATION = {
   DEFAULT_PAGE_SIZE: 20,
   MAX_PAGE_SIZE: 50,

@@ -16,6 +16,7 @@ type DailyProgressFields = {
   quizzesCompleted: number;
   correctAnswers: number;
   conversationCount: number;
+  kanaLearned: number;
 };
 
 const MISSION_POOL: MissionDef[] = [
@@ -27,6 +28,7 @@ const MISSION_POOL: MissionDef[] = [
   { missionType: 'correct_20', label: '정답 20개', description: '문제를 20개 맞추세요', targetCount: 20, xpReward: 30, progressField: 'correctAnswers' },
   { missionType: 'chat_1', label: 'AI 회화 1회', description: 'AI와 대화를 1번 완료하세요', targetCount: 1, xpReward: 15, progressField: 'conversationCount' },
   { missionType: 'chat_2', label: 'AI 회화 2회', description: 'AI와 대화를 2번 완료하세요', targetCount: 2, xpReward: 30, progressField: 'conversationCount' },
+  { missionType: 'kana_learn_5', label: '가나 5자 학습', description: '오늘 가나 5자를 배우세요', targetCount: 5, xpReward: 15, progressField: 'kanaLearned' },
 ];
 
 /**

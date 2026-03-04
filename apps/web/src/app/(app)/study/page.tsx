@@ -11,11 +11,14 @@ import {
   Notebook,
   PenLine,
   Flower2,
+  Grid3x3,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { KanaProgressBanner } from '@/components/features/kana/kana-progress-banner';
+import { useKanaProgress } from '@/hooks/use-kana';
 
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 
@@ -37,6 +40,7 @@ type StudyStats = {
 
 export default function StudyPage() {
   const router = useRouter();
+  const { data: kanaProgress } = useKanaProgress();
   const [selectedLevel, setSelectedLevel] = useState<string>('N5');
   const [selectedTab, setSelectedTab] = useState('VOCABULARY');
   const [incompleteSession, setIncompleteSession] =
@@ -128,6 +132,14 @@ export default function StudyPage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Kana Progress Banner */}
+      {kanaProgress && (kanaProgress.hiragana.pct < 100 || kanaProgress.katakana.pct < 100) && (
+        <KanaProgressBanner
+          hiragana={kanaProgress.hiragana}
+          katakana={kanaProgress.katakana}
+        />
       )}
 
       {/* Header */}
@@ -259,6 +271,18 @@ export default function StudyPage() {
             </CardContent>
           </Card>
         ))}
+
+        {/* 50음도 Chart Link */}
+        <Card
+          className="cursor-pointer"
+          onClick={() => router.push('/study/kana/chart')}
+        >
+          <CardContent className="flex items-center gap-3 px-4 py-3">
+            <Grid3x3 className="text-muted-foreground size-4" />
+            <span className="flex-1 text-sm">50음도 차트</span>
+            <ChevronRight className="text-muted-foreground size-4" />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
