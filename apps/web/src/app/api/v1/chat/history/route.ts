@@ -42,6 +42,15 @@ export async function GET(request: Request) {
             difficulty: true,
           },
         },
+        character: {
+          select: {
+            id: true,
+            name: true,
+            nameJa: true,
+            avatarEmoji: true,
+            avatarUrl: true,
+          },
+        },
       },
     });
 
@@ -63,6 +72,15 @@ export async function GET(request: Request) {
               titleJa: c.scenario.titleJa,
               category: c.scenario.category,
               difficulty: c.scenario.difficulty,
+            }
+          : null,
+        character: c.character
+          ? {
+              id: c.character.id,
+              name: c.character.name,
+              nameJa: c.character.nameJa,
+              avatarEmoji: c.character.avatarEmoji,
+              avatarUrl: c.character.avatarUrl,
             }
           : null,
       };

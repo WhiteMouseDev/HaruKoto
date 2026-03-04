@@ -13,6 +13,8 @@ import type { LiveFeedbackResponse } from '@/types/gemini-live';
 export default function AnalyzingPage() {
   const router = useRouter();
   const [status, setStatus] = useState('통화 내용을 분석하고 있어요...');
+  const [avatarUrl, setAvatarUrl] = useState('/images/haru-avatar.png');
+  const [avatarAlt, setAvatarAlt] = useState('하루');
   const calledRef = useRef(false);
 
   useEffect(() => {
@@ -27,7 +29,14 @@ export default function AnalyzingPage() {
       return;
     }
 
-    const { transcript, durationSeconds, scenarioId } = JSON.parse(raw);
+    const { transcript, durationSeconds, scenarioId, characterId, character } = JSON.parse(raw);
+
+    if (character?.avatarUrl) {
+      setAvatarUrl(character.avatarUrl);
+    }
+    if (character?.name) {
+      setAvatarAlt(character.name);
+    }
 
     async function analyze() {
       try {
@@ -37,7 +46,7 @@ export default function AnalyzingPage() {
           '/api/v1/chat/live-feedback',
           {
             method: 'POST',
-            body: JSON.stringify({ transcript, durationSeconds, scenarioId }),
+            body: JSON.stringify({ transcript, durationSeconds, scenarioId, characterId }),
           }
         );
 
@@ -76,8 +85,8 @@ export default function AnalyzingPage() {
         <div className="relative">
           <div className="size-28 overflow-hidden rounded-full shadow-lg shadow-emerald-500/25">
             <Image
-              src="/images/haru-avatar.png"
-              alt="하루"
+              src={avatarUrl}
+              alt={avatarAlt}
               width={112}
               height={112}
               className="size-full object-cover"

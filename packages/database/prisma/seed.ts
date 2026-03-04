@@ -201,7 +201,45 @@ async function main() {
     );
   }
 
-  // 4. Seed Kana Characters (Hiragana + Katakana)
+  // 4. Seed AI Characters (Voice Call)
+  const existingCharacters = await prisma.aiCharacter.count();
+  if (existingCharacters === 0) {
+    try {
+      const characterData = loadJson<any[]>('data/characters/ai-characters.json');
+      await prisma.aiCharacter.createMany({
+        data: characterData.map((c) => ({
+          name: c.name,
+          nameJa: c.nameJa,
+          nameRomaji: c.nameRomaji,
+          gender: c.gender,
+          ageDescription: c.ageDescription,
+          description: c.description,
+          relationship: c.relationship,
+          backgroundStory: c.backgroundStory,
+          personality: c.personality,
+          voiceName: c.voiceName,
+          voiceBackup: c.voiceBackup,
+          speechStyle: c.speechStyle,
+          targetLevel: c.targetLevel,
+          silenceMs: c.silenceMs,
+          tier: c.tier,
+          unlockCondition: c.unlockCondition,
+          isDefault: c.isDefault,
+          avatarEmoji: c.avatarEmoji,
+          avatarUrl: c.avatarUrl,
+          gradient: c.gradient,
+          order: c.order,
+        })),
+      });
+      console.log(`✅ ${characterData.length} AI characters seeded`);
+    } catch (e) {
+      console.log(`⏭️ AI characters file not found, skipping`);
+    }
+  } else {
+    console.log(`⏭️ AI characters already exist (${existingCharacters}), skipping`);
+  }
+
+  // 5. Seed Kana Characters (Hiragana + Katakana)
   const kanaFiles = [
     { file: 'data/kana/hiragana.json', type: 'HIRAGANA' },
     { file: 'data/kana/katakana.json', type: 'KATAKANA' },

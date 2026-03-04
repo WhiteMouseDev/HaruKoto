@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Clock, Star, ChevronRight, Phone, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -106,8 +107,16 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
             >
               <CardContent className="flex items-center gap-3 px-4 py-3">
                 {/* Icon */}
-                <div className="bg-secondary flex size-10 shrink-0 items-center justify-center rounded-full">
-                  {isVoiceCall ? (
+                <div className="bg-secondary flex size-10 shrink-0 items-center justify-center rounded-full overflow-hidden">
+                  {item.character?.avatarUrl ? (
+                    <Image
+                      src={item.character.avatarUrl}
+                      alt={item.character.name}
+                      width={40}
+                      height={40}
+                      className="size-full object-cover"
+                    />
+                  ) : isVoiceCall ? (
                     <Phone className="text-primary size-4" />
                   ) : (
                     <MessageSquare className="text-primary size-4" />
@@ -117,7 +126,9 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
                 {/* Content */}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">
-                    {item.scenario?.title ?? '음성 통화'}
+                    {item.character
+                      ? `${item.character.name}와의 통화`
+                      : item.scenario?.title ?? '음성 통화'}
                   </p>
                   <div className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
                     <span className="flex items-center gap-0.5">

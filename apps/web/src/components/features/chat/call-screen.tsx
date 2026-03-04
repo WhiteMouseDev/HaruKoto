@@ -9,22 +9,23 @@ import type { VoiceCallReturn } from '@/hooks/use-voice-call';
 type CallScreenProps = {
   call: VoiceCallReturn;
   scenarioTitle?: string;
+  characterName?: string;
+  characterNameJa?: string;
+  avatarUrl?: string;
   onBack?: () => void;
 };
 
-const STATUS_TEXT: Record<string, string> = {
-  idle: '',
-  connecting: '연결 중...',
-  connected_idle: '대기 중...',
-  connected_ai_speaking: '하루가 말하고 있어요',
-  connected_user_speaking: '듣고 있어요...',
-  ending: '통화 종료 중...',
-  ended: '통화가 종료되었습니다',
-};
-
-function getStatusKey(state: string, subState: string): string {
-  if (state === 'connected') return `connected_${subState}`;
-  return state;
+function getStatusText(state: string, subState: string, name?: string): string {
+  const displayName = name ?? '하루';
+  if (state === 'connecting') return '연결 중...';
+  if (state === 'ending') return '통화 종료 중...';
+  if (state === 'ended') return '통화가 종료되었습니다';
+  if (state === 'connected') {
+    if (subState === 'ai_speaking') return `${displayName}가 말하고 있어요`;
+    if (subState === 'user_speaking') return '듣고 있어요...';
+    return '대기 중...';
+  }
+  return '';
 }
 
 function formatTime(seconds: number) {
@@ -33,7 +34,7 @@ function formatTime(seconds: number) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
+export function CallScreen({ call, scenarioTitle, characterName, characterNameJa, avatarUrl, onBack }: CallScreenProps) {
   const {
     state,
     subState,
@@ -52,7 +53,10 @@ export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
     toggleAnalysis,
   } = call;
 
-  const statusKey = getStatusKey(state, subState);
+  const displayName = characterName ?? '하루';
+  const displayNameJa = characterNameJa ?? 'ハル';
+  const statusText = getStatusText(state, subState, displayName);
+  const statusKey = `${state}_${subState}`;
 
   // Derive waveform mode and analyser from subState
   const waveformMode =
@@ -83,10 +87,10 @@ export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
             <span>돌아가기</span>
           </button>
         )}
-        <CallWaveform analyserNode={null} mode="idle" />
+        <CallWaveform analyserNode={null} mode="idle" avatarUrl={avatarUrl} />
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white">ハル</h2>
-          <p className="mt-1 text-sm text-white/60">하루</p>
+          <h2 className="text-xl font-bold text-white">{displayNameJa}</h2>
+          <p className="mt-1 text-sm text-white/60">{displayName}</p>
           {scenarioTitle && (
             <p className="mt-3 rounded-full bg-violet-500/20 px-4 py-1.5 text-sm font-medium text-violet-300">
               {scenarioTitle}
@@ -160,7 +164,7 @@ export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {STATUS_TEXT[statusKey] || ''}
+            {statusText}
           </motion.p>
         </AnimatePresence>
       </motion.div>
@@ -172,10 +176,10 @@ export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
 
       {/* Avatar + waveform */}
       <div className="mt-12 flex flex-1 flex-col items-center">
-        <CallWaveform analyserNode={activeAnalyser} mode={waveformMode} />
+        <CallWaveform analyserNode={activeAnalyser} mode={waveformMode} avatarUrl={avatarUrl} />
 
         {/* Name */}
-        <h2 className="mt-8 text-2xl font-bold text-white">하루</h2>
+        <h2 className="mt-8 text-2xl font-bold text-white">{displayName}</h2>
 
         {/* Subtitles — recent transcript + current streaming text */}
         {subtitleEnabled && <div className="mt-4 flex max-w-[300px] flex-col items-center gap-1.5">

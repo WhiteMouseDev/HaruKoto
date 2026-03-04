@@ -16,4 +16,8 @@ export const queryKeys = {
   kanaCharacters: (type: string, category?: string) => ['kana-characters', type, category ?? 'all'] as const,
   kanaStages: (type: string) => ['kana-stages', type] as const,
   kanaProgress: ['kana-progress'] as const,
+  characters: ['characters'] as const,
+  character: (id: string) => ['character', id] as const,
+  characterStats: ['character-stats'] as const,
+  characterFavorites: ['character-favorites'] as const,
 };

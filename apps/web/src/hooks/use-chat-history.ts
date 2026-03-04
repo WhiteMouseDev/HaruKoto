@@ -14,6 +14,13 @@ export type HistoryItem = {
     category: string;
     difficulty: string;
   } | null;
+  character: {
+    id: string;
+    name: string;
+    nameJa: string;
+    avatarEmoji: string;
+    avatarUrl: string | null;
+  } | null;
 };
 
 type HistoryResponse = {

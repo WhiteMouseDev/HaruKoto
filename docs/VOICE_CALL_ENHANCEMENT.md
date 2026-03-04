@@ -133,58 +133,30 @@
 
 ## 4. 캐릭터 시스템
 
+> **📄 상세 문서**: [`CHARACTER_SYSTEM.md`](./CHARACTER_SYSTEM.md)
+>
+> 캐릭터 시스템의 전체 기획(8명 캐릭터 상세, Gemini 음성 매칭, DB 모델, 시스템 프롬프트 가이드)은
+> 별도 문서로 분리되었습니다.
+
 ### 4.1 현재 → 추후 확장 전략
 
 **Phase 0 (지금):** 하루만 유지, UI 구조만 연락처 스타일로 변경
-**Phase 1 (추후):** DB 모델 추가 + 캐릭터 2~3명 추가
+**Phase 1 (추후):** DB 모델 추가 + 캐릭터 8명 구현 (기본 2 + 티어별 6)
 
-### 4.2 DB 모델 (추후 추가)
+### 4.2 캐릭터 구성 요약
 
-```prisma
-model AiCharacter {
-  id              String   @id @default(uuid()) @db.Uuid
-  name            String   // "하루"
-  nameJa          String   @map("name_ja") // "はる"
-  nameRomaji      String   @map("name_romaji") // "Haru"
-  description     String   // "친절한 친구"
-  descriptionJa   String   @map("description_ja")
-  personality     String   // 성격 설명 (시스템 프롬프트용)
-  voiceName       String   @map("voice_name") // Gemini voice ID (e.g., "Kore")
+| 티어 | 해금 | 남성 | 여성 | 말투 |
+|------|------|------|------|------|
+| 기본 | 없음 | 🐺 소라 | 🦊 하루 | タメ語 |
+| 초급 | N4 | 🐕 카이토 | 🐱 유키 | です・ます |
+| 중급 | N3 | 🐾 렌 | 🦋 미오 | 비즈니스 |
+| 고급 | N2 | 🦅 리쿠 | 🌸 아오이 | 敬語 |
 
-  // 레벨 설정
-  speechStyle     String   @map("speech_style") // "casual", "polite", "formal"
-  targetLevel     String   @map("target_level") // "N5-N4", "N4-N3", "N3-N1"
-  silenceMs       Int      @default(1200) @map("silence_ms") // 기본 침묵 대기시간
-
-  // 해금 조건
-  unlockCondition String?  @map("unlock_condition") // "N4_REACHED", "N3_REACHED", null=기본
-  isDefault       Boolean  @default(false) @map("is_default")
-
-  // 아바타
-  avatarUrl       String?  @map("avatar_url")
-
-  order           Int      @default(0)
-  isActive        Boolean  @default(true) @map("is_active")
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  @@map("ai_characters")
-}
-```
-
-### 4.3 초기 캐릭터 데이터
-
-| 캐릭터 | 이름 | 성격 | 말투 | 대상 | 음성 | 해금 |
-|--------|------|------|------|------|------|------|
-| 하루 | はる | 친절한 친구 | 카주얼 (タメ語) | N5~N4 | Kore | 기본 |
-| 유키 | ゆき | 엄격한 선생님 | 정중체 (です/ます) | N4~N3 | (TBD) | N4 도달 |
-| 리코 | りこ | 비즈니스 동료 | 공손체 (敬語) | N3~N1 | (TBD) | N3 도달 |
-
-### 4.4 해금 조건
+### 4.3 해금 조건
 
 ```typescript
-type UnlockCondition = 'N4_REACHED' | 'N3_REACHED' | 'N2_REACHED' | null;
+type UnlockCondition = 'N4' | 'N3' | 'N2' | null;
 
-// 해금 체크 로직
 function isCharacterUnlocked(
   condition: UnlockCondition,
   userJlptLevel: string
@@ -192,9 +164,8 @@ function isCharacterUnlocked(
   if (!condition) return true; // 기본 캐릭터
 
   const levelOrder = ['N5', 'N4', 'N3', 'N2', 'N1'];
-  const requiredLevel = condition.replace('_REACHED', '');
   const userIdx = levelOrder.indexOf(userJlptLevel);
-  const requiredIdx = levelOrder.indexOf(requiredLevel);
+  const requiredIdx = levelOrder.indexOf(condition);
 
   return userIdx >= requiredIdx;
 }
@@ -389,14 +360,14 @@ type Correction = {
 3. 교정 내용을 오답노트에 저장하는 기능
 4. 피드백 내 "이 표현 연습하기" → 미니 플래시카드 UI
 
-### Phase 3: 캐릭터 시스템 (추후)
+### Phase 3: 캐릭터 시스템 (추후) → [상세: CHARACTER_SYSTEM.md](./CHARACTER_SYSTEM.md)
 
-1. `AiCharacter` DB 모델 추가 + 마이그레이션
-2. 초기 캐릭터 3명 시드 데이터
+1. `AiCharacter` DB 모델 추가 + 마이그레이션 (gender, tier 등 확장 필드 포함)
+2. 캐릭터 8명 시드 데이터 (기본 2 + 초급 2 + 중급 2 + 고급 2)
 3. 연락처 페이지를 DB 기반으로 전환
 4. 캐릭터별 시스템 프롬프트, 음성, 침묵 시간 적용
-5. 해금 로직 구현 (JLPT 레벨 기반)
-6. Gemini Live 음성 옵션 확장 (캐릭터별 voiceName)
+5. 해금 로직 구현 (JLPT 레벨 기반, 4티어)
+6. Gemini Live 음성 옵션 확장 (캐릭터별 voiceName — 8개 음성 매칭)
 
 ### Phase 4: 통화 통계/기록 (추후)
 
@@ -480,10 +451,20 @@ CALL_DEFAULT_SILENCE_N1=1200
 
 ### 음성 옵션
 
-현재 `Kore` 한 가지만 사용 중. Gemini Live에서 지원하는 음성 목록:
-- `Kore`: 여성, 차분한 톤 (현재 하루)
-- 추후 캐릭터 추가 시 다른 음성 매핑 필요
-- Gemini API 음성 목록 업데이트 시 반영
+현재 `Kore` 한 가지만 사용 중. 캐릭터 확장 시 8개 음성으로 확대 예정:
+
+| 캐릭터 | 음성 | 성별 | 공식 톤 |
+|--------|------|------|---------|
+| 🦊 하루 | `Kore` | 여성 | Firm (현재 사용 중) |
+| 🐺 소라 | `Puck` | 남성 | Upbeat |
+| 🐱 유키 | `Sulafat` | 여성 | Warm |
+| 🐕 카이토 | `Charon` | 남성 | Informative |
+| 🦋 미오 | `Leda` | 여성 | Youthful |
+| 🐾 렌 | `Schedar` | 남성 | Even |
+| 🌸 아오이 | `Gacrux` | 여성 | Mature |
+| 🦅 리쿠 | `Orus` | 남성 | Firm |
+
+> 상세 매칭 근거 및 대체 후보: [`CHARACTER_SYSTEM.md` §3](./CHARACTER_SYSTEM.md#3-gemini-음성-매칭)
 
 ### 모델 업그레이드
 

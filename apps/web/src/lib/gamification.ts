@@ -166,6 +166,42 @@ export type GameEvent = {
   emoji: string;
 };
 
+// ==========================================
+// 캐릭터 해금 체크
+// ==========================================
+
+const JLPT_LEVEL_ORDER = ['N5', 'N4', 'N3', 'N2', 'N1'];
+
+/**
+ * JLPT 레벨 변경 시 새로 해금된 캐릭터 체크
+ */
+export async function checkCharacterUnlocks(
+  oldLevel: string,
+  newLevel: string
+): Promise<GameEvent[]> {
+  const oldIdx = JLPT_LEVEL_ORDER.indexOf(oldLevel);
+  const newIdx = JLPT_LEVEL_ORDER.indexOf(newLevel);
+
+  if (newIdx <= oldIdx) return [];
+
+  const unlockedLevels = JLPT_LEVEL_ORDER.slice(oldIdx + 1, newIdx + 1);
+
+  const characters = await prisma.aiCharacter.findMany({
+    where: {
+      unlockCondition: { in: unlockedLevels },
+      isActive: true,
+    },
+    select: { name: true, nameJa: true, avatarEmoji: true },
+  });
+
+  return characters.map((char) => ({
+    type: 'achievement' as const,
+    title: '새 캐릭터 해금!',
+    body: `${char.name}(${char.nameJa})와 대화할 수 있게 되었어요!`,
+    emoji: char.avatarEmoji,
+  }));
+}
+
 /**
  * 사용자의 현재 상태를 기반으로 새 업적을 확인하고 부여
  * @returns 새로 획득한 업적 + 레벨업/스트릭 이벤트 목록

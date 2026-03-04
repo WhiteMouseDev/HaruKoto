@@ -11,6 +11,7 @@ import type {
   LiveCallSubState,
   TranscriptEntry,
 } from '@/types/gemini-live';
+import type { CharacterDetail } from '@/hooks/use-characters';
 
 export type CallScenario = {
   id: string;
@@ -35,6 +36,7 @@ type VoiceCallOptions = {
   jlptLevel?: string;
   scenario?: CallScenario;
   callSettings?: CallSettings;
+  character?: CharacterDetail;
 };
 
 const JLPT_VOICE_LEVELS: Record<string, string> = {
@@ -62,11 +64,43 @@ const JLPT_VOICE_LEVELS: Record<string, string> = {
 
 function buildCallSystemInstruction(
   scenario?: CallScenario,
-  jlptLevel?: string
+  jlptLevel?: string,
+  character?: CharacterDetail
 ): string | undefined {
-  if (!scenario) return undefined; // use default in useGeminiLive
-
   const levelSection = JLPT_VOICE_LEVELS[jlptLevel ?? 'N5'] ?? JLPT_VOICE_LEVELS.N5;
+
+  // Character personality takes priority as the base prompt
+  if (character?.personality) {
+    const base = character.personality;
+
+    if (scenario) {
+      const scenarioSection = scenario.systemPrompt
+        ? scenario.systemPrompt
+        : `## シナリオ
+- 状況: ${scenario.situation}
+- ユーザーの役割: ${scenario.yourRole}
+- あなたの役割: ${scenario.aiRole}
+${scenario.keyExpressions.length > 0 ? `- キーフレーズ: ${scenario.keyExpressions.join(', ')}` : ''}`;
+
+      return `${base}
+
+${scenarioSection}
+
+${levelSection}
+
+## 重要なルール
+- これは電話の会話です。実際の電話のように自然に振る舞ってください。
+- 会話中に文法を直接訂正しないでください。自然に正しい表現を使い返してください。
+- 返答は1〜2文で簡潔に。電話の会話は短いやりとりが基本です。`;
+    }
+
+    return `${base}
+
+${levelSection}`;
+  }
+
+  // No character — legacy behavior
+  if (!scenario) return undefined; // use default in useGeminiLive
 
   if (scenario.systemPrompt) {
     return `${scenario.systemPrompt}
@@ -79,7 +113,7 @@ ${levelSection}
 - 返答は1〜2文で簡潔に。電話の会話は短いやりとりが基本です。`;
   }
 
-  return `あなたは「ハル」（春、はる）。日本に住んでいる20代女性で、韓国人の友達と電話するのが好き。
+  return `あなたは日本に住んでいる日本人で、韓国人の友達と電話するのが好き。
 明るくてフレンドリーな性格。
 
 ## シナリオ
@@ -100,12 +134,20 @@ ${levelSection}
 
 function buildCallGreeting(
   scenario?: CallScenario,
-  nickname?: string
+  nickname?: string,
+  character?: CharacterDetail
 ): string | undefined {
-  if (!scenario) return undefined; // use default in useGeminiLive
-
   const nameStr = nickname ?? '友達';
-  return `[システム] ${nameStr}から電話がかかってきました。あなたは「${scenario.aiRole}」の役割です。状況は「${scenario.situation}」です。電話に出て、この状況に合った挨拶から始めてください。`;
+
+  if (scenario) {
+    return `[システム] ${nameStr}から電話がかかってきました。あなたは「${scenario.aiRole}」の役割です。状況は「${scenario.situation}」です。電話に出て、この状況に合った挨拶から始めてください。`;
+  }
+
+  if (character) {
+    return `[システム] ${nameStr}から電話がかかってきました。電話に出て「もしもし」から始めてください。`;
+  }
+
+  return undefined; // use default in useGeminiLive
 }
 
 export type SubtitleEntry = {
@@ -135,7 +177,7 @@ export type VoiceCallReturn = {
 };
 
 export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
-  const { nickname, jlptLevel, scenario, callSettings } = options ?? {};
+  const { nickname, jlptLevel, scenario, callSettings, character } = options ?? {};
   const router = useRouter();
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
@@ -154,10 +196,12 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
   const subtitleIdRef = useRef(0);
   const endCallRef = useRef<() => void>(() => {});
   const scenarioIdRef = useRef(scenario?.id);
+  const characterRef = useRef(character);
 
   stateRef.current = state;
   analysisEnabledRef.current = analysisEnabled;
   scenarioIdRef.current = scenario?.id;
+  characterRef.current = character;
 
   // --- Ringtone ---
   const playRingtone = useCallback(() => {
@@ -182,9 +226,10 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
   // --- Gemini Live WebSocket ---
   const gemini = useGeminiLive({
     nickname,
-    systemInstruction: buildCallSystemInstruction(scenario, jlptLevel),
-    greeting: buildCallGreeting(scenario, nickname),
-    silenceDurationMs: callSettings?.silenceDurationMs,
+    systemInstruction: buildCallSystemInstruction(scenario, jlptLevel, character),
+    greeting: buildCallGreeting(scenario, nickname, character),
+    silenceDurationMs: callSettings?.silenceDurationMs ?? character?.silenceMs,
+    voiceName: character?.voiceName,
     onAudioChunk: useCallback(
       (base64: string) => {
         if (stateRef.current !== 'connected') return;
@@ -328,9 +373,18 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
 
     if (analysisEnabledRef.current && transcript.length > 0) {
       // Store data for the analyzing page, navigate immediately
+      const char = characterRef.current;
       sessionStorage.setItem(
         'call_analysis_data',
-        JSON.stringify({ transcript, durationSeconds, scenarioId: scenarioIdRef.current })
+        JSON.stringify({
+          transcript,
+          durationSeconds,
+          scenarioId: scenarioIdRef.current,
+          characterId: char?.id,
+          character: char
+            ? { name: char.name, nameJa: char.nameJa, avatarUrl: char.avatarUrl }
+            : undefined,
+        })
       );
       router.push('/chat/call/analyzing');
     } else {

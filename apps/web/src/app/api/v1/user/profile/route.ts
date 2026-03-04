@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { z } from 'zod';
+import { checkCharacterUnlocks, type GameEvent } from '@/lib/gamification';
 
 export async function GET() {
   try {
@@ -163,6 +164,21 @@ export async function PATCH(request: Request) {
       };
     }
 
+    // Check for JLPT level change to trigger character unlocks
+    let events: GameEvent[] = [];
+    if (data.jlptLevel) {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { jlptLevel: true },
+      });
+      if (currentUser && currentUser.jlptLevel !== data.jlptLevel) {
+        events = await checkCharacterUnlocks(
+          currentUser.jlptLevel,
+          data.jlptLevel
+        );
+      }
+    }
+
     const updated = await prisma.user.update({
       where: { id: user.id },
       data: updateData,
@@ -185,7 +201,20 @@ export async function PATCH(request: Request) {
       },
     });
 
-    return NextResponse.json({ profile: updated });
+    // Save unlock events as notifications
+    for (const event of events) {
+      await prisma.notification.create({
+        data: {
+          userId: user.id,
+          type: event.type,
+          title: event.title,
+          body: event.body,
+          emoji: event.emoji,
+        },
+      });
+    }
+
+    return NextResponse.json({ profile: updated, events });
   } catch (err) {
     console.error('User profile PATCH error:', err);
     return NextResponse.json(

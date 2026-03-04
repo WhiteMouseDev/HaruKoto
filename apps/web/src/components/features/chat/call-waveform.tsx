@@ -6,13 +6,14 @@ import { motion } from 'framer-motion';
 type CallWaveformProps = {
   analyserNode: AnalyserNode | null;
   mode: 'idle' | 'speaking' | 'listening';
+  avatarUrl?: string;
 };
 
 const RING_COUNT = 4;
 const BASE_SCALE = [1.3, 1.55, 1.8, 2.05];
 const BASE_OPACITY = [0.25, 0.18, 0.12, 0.06];
 
-export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
+export function CallWaveform({ analyserNode, mode, avatarUrl }: CallWaveformProps) {
   const [amplitude, setAmplitude] = useState(0);
   const animFrameRef = useRef<number | null>(null);
 
@@ -91,8 +92,8 @@ export function CallWaveform({ analyserNode, mode }: CallWaveformProps) {
       {/* Avatar */}
       <div className="relative z-10 size-32 overflow-hidden rounded-full shadow-lg shadow-emerald-500/25">
         <img
-          src="/images/haru-avatar.png"
-          alt="하루"
+          src={avatarUrl ?? '/images/haru-avatar.png'}
+          alt="character"
           width={128}
           height={128}
           className="size-full object-cover"

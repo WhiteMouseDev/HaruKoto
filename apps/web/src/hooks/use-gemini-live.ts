@@ -22,6 +22,7 @@ type GeminiLiveOptions = {
   systemInstruction?: string;
   greeting?: string;
   silenceDurationMs?: number;
+  voiceName?: string;
   onAudioChunk: (base64: string) => void;
   onAiTextDelta: (text: string) => void;
   onTranscript: (entry: TranscriptEntry) => void;
@@ -40,11 +41,11 @@ type GeminiLiveReturn = {
 };
 
 const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
-const GEMINI_VOICE = 'Kore';
+const DEFAULT_VOICE = 'Kore';
 const MAX_RECONNECT_ATTEMPTS = 3;
 const RECONNECT_BASE_DELAY_MS = 1000;
-const SYSTEM_INSTRUCTION = `あなたは「ハル」（春、はる）。日本に住んでいる20代女性で、韓国人の友達と電話するのが好き。
-明るくてフレンドリーな性格。タメ口（친구말투）で話す。
+const DEFAULT_SYSTEM_INSTRUCTION = `あなたは日本に住んでいる日本人で、韓国人の友達と電話するのが好き。
+明るくてフレンドリーな性格。
 
 ## ルール
 - これは電話の会話です。実際の友達同士の電話のように自然に振る舞ってください。
@@ -93,10 +94,10 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: GEMINI_VOICE },
+              prebuiltVoiceConfig: { voiceName: optionsRef.current.voiceName ?? DEFAULT_VOICE },
             },
           },
-          systemInstruction: optionsRef.current.systemInstruction ?? SYSTEM_INSTRUCTION,
+          systemInstruction: optionsRef.current.systemInstruction ?? DEFAULT_SYSTEM_INSTRUCTION,
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           // VAD sensitivity — reduce false positives from background noise on mobile

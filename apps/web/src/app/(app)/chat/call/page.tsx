@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useVoiceCall, type CallScenario, type CallSettings } from '@/hooks/use-voice-call';
 import { getDefaultCallSettings } from '@/components/features/my/call-settings';
 import { useProfile } from '@/hooks/use-dashboard';
+import { useCharacter } from '@/hooks/use-characters';
 import { CallScreen } from '@/components/features/chat/call-screen';
 import { apiFetch } from '@/lib/api';
 import type { Scenario } from '@/hooks/use-scenarios';
@@ -13,8 +14,10 @@ function CallPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scenarioId = searchParams.get('scenarioId');
+  const characterId = searchParams.get('characterId');
 
   const { data: profileData } = useProfile();
+  const { data: character, isLoading: characterLoading } = useCharacter(characterId);
   const [scenario, setScenario] = useState<CallScenario | undefined>();
   const [scenarioLoading, setScenarioLoading] = useState(!!scenarioId);
 
@@ -62,6 +65,7 @@ function CallPageInner() {
     jlptLevel,
     scenario,
     callSettings: userCallSettings,
+    character: character ?? undefined,
   });
 
   // Warn before leaving during active call
@@ -76,7 +80,7 @@ function CallPageInner() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [call.state]);
 
-  if (scenarioLoading) {
+  if (scenarioLoading || characterLoading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-linear-to-b from-slate-900 to-black">
         <div className="size-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -89,6 +93,9 @@ function CallPageInner() {
       <CallScreen
         call={call}
         scenarioTitle={scenario?.title}
+        characterName={character?.name}
+        characterNameJa={character?.nameJa}
+        avatarUrl={character?.avatarUrl ?? undefined}
         onBack={() => router.back()}
       />
     </div>

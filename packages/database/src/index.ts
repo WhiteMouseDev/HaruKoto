@@ -13,6 +13,8 @@ export type {
   WordbookEntry,
   UserVocabProgress,
   UserGrammarProgress,
+  AiCharacter,
+  UserFavoriteCharacter,
 } from '@prisma/client';
 export {
   JlptLevel,

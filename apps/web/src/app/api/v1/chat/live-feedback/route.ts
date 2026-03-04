@@ -81,10 +81,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { transcript, scenarioId } = body as {
+    const { transcript, scenarioId, characterId } = body as {
       transcript: { role: 'user' | 'assistant'; text: string }[];
       durationSeconds: number;
       scenarioId?: string;
+      characterId?: string;
     };
 
     if (!transcript || !Array.isArray(transcript) || transcript.length === 0) {
@@ -171,6 +172,7 @@ export async function POST(request: Request) {
       data: {
         userId: user.id,
         scenarioId: resolvedScenarioId,
+        characterId: characterId || undefined,
         messages: JSON.parse(JSON.stringify(messages)),
         messageCount: messages.length,
         feedbackSummary: feedbackSummary

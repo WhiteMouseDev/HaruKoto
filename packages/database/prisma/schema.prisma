@@ -101,18 +101,19 @@ model User {
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
 
-  quizSessions      QuizSession[]
-  conversations     Conversation[]
-  achievements      UserAchievement[]
-  dailyMissions     DailyMission[]
-  wordbook          WordbookEntry[]
-  dailyProgress     DailyProgress[]
-  vocabProgress     UserVocabProgress[]
-  grammarProgress   UserGrammarProgress[]
-  notifications     Notification[]
-  pushSubscriptions PushSubscription[]
-  kanaProgress      UserKanaProgress[]
-  kanaStages        UserKanaStage[]
+  quizSessions        QuizSession[]
+  conversations       Conversation[]
+  achievements        UserAchievement[]
+  dailyMissions       DailyMission[]
+  wordbook            WordbookEntry[]
+  dailyProgress       DailyProgress[]
+  vocabProgress       UserVocabProgress[]
+  grammarProgress     UserGrammarProgress[]
+  notifications       Notification[]
+  pushSubscriptions   PushSubscription[]
+  kanaProgress        UserKanaProgress[]
+  kanaStages          UserKanaStage[]
+  favoriteCharacters  UserFavoriteCharacter[]
 
   @@map("users")
 }
@@ -231,17 +232,20 @@ model Conversation {
   id              String    @id @default(uuid()) @db.Uuid
   userId          String    @map("user_id") @db.Uuid
   scenarioId      String?   @map("scenario_id") @db.Uuid
+  characterId     String?   @map("character_id") @db.Uuid
   messages        Json      @default("[]")
   feedbackSummary Json?     @map("feedback_summary")
   messageCount    Int       @default(0) @map("message_count")
   createdAt       DateTime  @default(now()) @map("created_at")
   endedAt         DateTime? @map("ended_at")
 
-  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  scenario ConversationScenario? @relation(fields: [scenarioId], references: [id])
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenario  ConversationScenario? @relation(fields: [scenarioId], references: [id])
+  character AiCharacter?          @relation(fields: [characterId], references: [id])
 
   @@index([userId])
   @@index([userId, createdAt])
+  @@index([characterId])
   @@map("conversations")
 }
 
@@ -408,6 +412,48 @@ model WordbookEntry {
 }
 
 // ==========================================
+// AI Characters (Voice Call)
+// ==========================================
+
+model AiCharacter {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String          // "하루"
+  nameJa          String   @map("name_ja")     // "はる"
+  nameRomaji      String   @map("name_romaji") // "Haru"
+  gender          String          // "male" | "female"
+  ageDescription  String   @map("age_description") // "21세"
+
+  description     String          // "자신감 있고 솔직한 소꿉친구"
+  relationship    String          // "소꿉친구", "선생님" 등
+  backgroundStory String   @map("background_story")
+  personality     String          // 시스템 프롬프트 전체
+
+  voiceName       String   @map("voice_name")   // Gemini voice ID
+  voiceBackup     String?  @map("voice_backup")  // 대체 음성 ID
+
+  speechStyle     String   @map("speech_style")  // "casual", "polite", "business", "formal"
+  targetLevel     String   @map("target_level")  // "N5~N4", "N4~N3" 등
+  silenceMs       Int      @default(1200) @map("silence_ms")
+
+  tier            String   @default("default")   // "default", "beginner", "intermediate", "advanced"
+  unlockCondition String?  @map("unlock_condition") // "N4", "N3", "N2", null=기본
+  isDefault       Boolean  @default(false) @map("is_default")
+
+  avatarEmoji     String   @map("avatar_emoji")
+  avatarUrl       String?  @map("avatar_url")
+  gradient        String?
+
+  order           Int      @default(0)
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  conversations   Conversation[]
+  favoritedBy     UserFavoriteCharacter[]
+
+  @@map("ai_characters")
+}
+
+// ==========================================
 // Kana Learning System
 // ==========================================
 
@@ -490,4 +536,22 @@ model UserKanaStage {
   @@unique([userId, stageId])
   @@index([userId])
   @@map("user_kana_stages")
+}
+
+// ==========================================
+// User Favorite Characters
+// ==========================================
+
+model UserFavoriteCharacter {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  characterId String   @map("character_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character AiCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([userId])
+  @@map("user_favorite_characters")
 }

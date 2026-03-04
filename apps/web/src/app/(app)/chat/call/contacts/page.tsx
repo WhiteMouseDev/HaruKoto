@@ -1,61 +1,20 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Lock, Phone } from 'lucide-react';
+import { ArrowLeft, Lock, Phone, Heart } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProfile } from '@/hooks/use-dashboard';
+import {
+  useCharacters,
+  useCharacterStats,
+  useCharacterFavorites,
+  useToggleFavorite,
+} from '@/hooks/use-characters';
 import { cn } from '@/lib/utils';
-
-type AiCharacter = {
-  id: string;
-  name: string;
-  nameJa: string;
-  description: string;
-  speechStyle: string;
-  targetLevel: string;
-  avatarEmoji: string;
-  unlockCondition: string | null;
-  gradient: string;
-};
-
-// Phase 0: 하드코딩된 캐릭터 데이터 (추후 DB로 전환)
-const CHARACTERS: AiCharacter[] = [
-  {
-    id: 'haru',
-    name: '하루',
-    nameJa: 'はる',
-    description: '친절한 친구',
-    speechStyle: '카주얼 (タメ語)',
-    targetLevel: '초급~중급',
-    avatarEmoji: '🦊',
-    unlockCondition: null,
-    gradient: 'from-violet-500/15 to-fuchsia-500/10',
-  },
-  {
-    id: 'yuki',
-    name: '유키',
-    nameJa: 'ゆき',
-    description: '엄격한 선생님',
-    speechStyle: '정중체 (です/ます)',
-    targetLevel: '중급',
-    avatarEmoji: '👩‍🏫',
-    unlockCondition: 'N4',
-    gradient: 'from-blue-500/15 to-cyan-500/10',
-  },
-  {
-    id: 'riko',
-    name: '리코',
-    nameJa: 'りこ',
-    description: '비즈니스 동료',
-    speechStyle: '공손체 (敬語)',
-    targetLevel: '고급',
-    avatarEmoji: '👨‍💼',
-    unlockCondition: 'N3',
-    gradient: 'from-amber-500/15 to-orange-500/10',
-  },
-];
 
 const LEVEL_ORDER = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
@@ -79,7 +38,21 @@ const item = {
 export default function ContactsPage() {
   const router = useRouter();
   const { data: profileData } = useProfile();
+  const { data: characters, isLoading } = useCharacters();
+  const { data: stats } = useCharacterStats();
+  const { data: favorites } = useCharacterFavorites();
+  const { mutate: toggleFavorite } = useToggleFavorite();
   const userLevel = profileData?.profile.jlptLevel ?? 'N5';
+
+  const sortedCharacters = useMemo(() => {
+    if (!characters) return [];
+    return [...characters].sort((a, b) => {
+      const aFav = favorites?.has(a.id) ? 1 : 0;
+      const bFav = favorites?.has(b.id) ? 1 : 0;
+      if (aFav !== bFav) return bFav - aFav;
+      return a.order - b.order;
+    });
+  }, [characters, favorites]);
 
   return (
     <motion.div
@@ -101,10 +74,19 @@ export default function ContactsPage() {
         <h1 className="text-2xl font-bold">연락처</h1>
       </motion.div>
 
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex justify-center py-12">
+          <div className="size-6 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+        </div>
+      )}
+
       {/* Character List */}
       <div className="flex flex-col gap-3">
-        {CHARACTERS.map((char) => {
+        {sortedCharacters.map((char) => {
           const unlocked = isUnlocked(char.unlockCondition, userLevel);
+          const callCount = stats?.[char.id] ?? 0;
+          const isFavorite = favorites?.has(char.id) ?? false;
 
           return (
             <motion.div key={char.id} variants={item}>
@@ -125,11 +107,23 @@ export default function ContactsPage() {
                   {/* Avatar */}
                   <div
                     className={cn(
-                      'flex size-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-2xl',
-                      char.gradient
+                      'flex size-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-2xl overflow-hidden',
+                      char.gradient ?? 'from-violet-500/15 to-fuchsia-500/10'
                     )}
                   >
-                    {unlocked ? char.avatarEmoji : <Lock className="text-muted-foreground size-5" />}
+                    {!unlocked ? (
+                      <Lock className="text-muted-foreground size-5" />
+                    ) : char.avatarUrl ? (
+                      <Image
+                        src={char.avatarUrl}
+                        alt={char.name}
+                        width={56}
+                        height={56}
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      char.avatarEmoji
+                    )}
                   </div>
 
                   {/* Info */}
@@ -147,15 +141,34 @@ export default function ContactsPage() {
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
                       {unlocked
-                        ? `${char.speechStyle} · ${char.targetLevel}`
+                        ? `${char.speechStyle} · ${char.targetLevel}${callCount > 0 ? ` · ${callCount}회 통화` : ''}`
                         : `${char.unlockCondition} 도달 시 해금`}
                     </p>
                   </div>
 
-                  {/* Call button */}
+                  {/* Favorite + Call */}
                   {unlocked && (
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
-                      <Phone className="size-4 text-emerald-500" />
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        className="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-accent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(char.id);
+                        }}
+                      >
+                        <Heart
+                          className={cn(
+                            'size-4 transition-colors',
+                            isFavorite
+                              ? 'fill-rose-500 text-rose-500'
+                              : 'text-muted-foreground'
+                          )}
+                        />
+                      </button>
+                      <div className="flex size-10 items-center justify-center rounded-full bg-emerald-500/15">
+                        <Phone className="size-4 text-emerald-500" />
+                      </div>
                     </div>
                   )}
                 </CardContent>
