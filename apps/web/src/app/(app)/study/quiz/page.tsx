@@ -320,41 +320,81 @@ function QuizContent() {
 
       {/* Options */}
       <div className="flex flex-col gap-2.5 px-4 pb-4">
-        {question.options.map((option, i) => {
-          const isSelected = selectedOption === option.id;
-          const isCorrectOption = option.id === question.correctOptionId;
-          let optionStyle = 'border-border';
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-2.5"
+          >
+            {question.options.map((option, i) => {
+              const isSelected = selectedOption === option.id;
+              const isCorrectOption = option.id === question.correctOptionId;
+              let optionStyle = 'border-border';
 
-          if (answerState !== 'idle') {
-            if (isCorrectOption) {
-              optionStyle = 'border-hk-success bg-hk-success/10';
-            } else if (isSelected && !isCorrectOption) {
-              optionStyle = 'border-hk-error bg-hk-error/10';
-            } else {
-              optionStyle = 'border-border opacity-40';
-            }
-          } else if (isSelected) {
-            optionStyle = 'border-primary bg-primary/5';
-          }
+              if (answerState !== 'idle') {
+                if (isCorrectOption) {
+                  optionStyle = 'border-hk-success bg-hk-success/10';
+                } else if (isSelected && !isCorrectOption) {
+                  optionStyle = 'border-hk-error bg-hk-error/10';
+                } else {
+                  optionStyle = 'border-border opacity-40';
+                }
+              } else if (isSelected) {
+                optionStyle = 'border-primary bg-primary/5';
+              }
 
-          return (
-            <motion.button
-              key={option.id}
-              className={cn(
-                'flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all',
-                optionStyle
-              )}
-              onClick={() => handleAnswer(option.id)}
-              disabled={answerState !== 'idle'}
-              whileTap={answerState === 'idle' ? { scale: 0.98 } : undefined}
-            >
-              <span className="bg-secondary flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-                {i + 1}
-              </span>
-              <span className="text-sm font-medium">{option.text}</span>
-            </motion.button>
-          );
-        })}
+              const getAnimateVariant = () => {
+                if (answerState === 'idle') return 'visible';
+                if (isCorrectOption) return 'pulse';
+                if (isSelected && !isCorrectOption) return 'shake';
+                return 'visible';
+              };
+
+              return (
+                <motion.button
+                  key={option.id}
+                  className={cn(
+                    'flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-colors',
+                    optionStyle
+                  )}
+                  onClick={() => handleAnswer(option.id)}
+                  disabled={answerState !== 'idle'}
+                  whileTap={answerState === 'idle' ? { scale: 0.98 } : undefined}
+                  variants={{
+                    hidden: { opacity: 0, y: 12 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      x: 0,
+                      scale: 1,
+                      transition: { delay: i * 0.06, duration: 0.25 },
+                    },
+                    pulse: {
+                      opacity: 1,
+                      y: 0,
+                      scale: [1, 1.04, 1],
+                      transition: { duration: 0.3 },
+                    },
+                    shake: {
+                      opacity: 1,
+                      y: 0,
+                      x: [0, -8, 8, -6, 6, -3, 3, 0],
+                      transition: { duration: 0.4 },
+                    },
+                  }}
+                  initial="hidden"
+                  animate={getAnimateVariant()}
+                >
+                  <span className="bg-secondary flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm font-medium">{option.text}</span>
+                </motion.button>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Hint */}

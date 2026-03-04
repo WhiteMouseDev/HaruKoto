@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Confetti } from '@/components/ui/confetti';
+import { useCountUp } from '@/hooks/use-count-up';
 import { queryKeys } from '@/lib/query-keys';
 
 type WrongAnswer = {
@@ -130,8 +132,15 @@ function ResultContent() {
         ? '잘 하셨어요!'
         : '다음엔 더 잘할 수 있어요!';
 
+  const animatedAccuracy = useCountUp(accuracy, 0.8, 0.7);
+  const animatedCorrect = useCountUp(correct, 0.6, 0.5);
+  const animatedXp = useCountUp(xp, 0.6, 0.5);
+
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
+      {/* Confetti for high accuracy */}
+      {accuracy >= 80 && <Confetti duration={2000} />}
+
       {/* Mascot & Message */}
       <motion.div
         className="flex flex-col items-center gap-2"
@@ -185,7 +194,7 @@ function ResultContent() {
                 />
               </svg>
               <div className="flex flex-col items-center">
-                <span className="text-2xl font-bold">{accuracy}%</span>
+                <span className="text-2xl font-bold">{animatedAccuracy}%</span>
                 <span className="text-muted-foreground text-xs">정답률</span>
               </div>
             </div>
@@ -195,13 +204,13 @@ function ResultContent() {
               <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
                 <Target className="text-primary size-4" />
                 <span className="text-lg font-bold">
-                  {correct}/{total}
+                  {animatedCorrect}/{total}
                 </span>
                 <span className="text-muted-foreground text-[10px]">정답</span>
               </div>
               <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
                 <Zap className="text-hk-yellow size-4" />
-                <span className="text-lg font-bold">+{xp}</span>
+                <span className="text-lg font-bold">+{animatedXp}</span>
                 <span className="text-muted-foreground text-[10px]">XP</span>
                 <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
                   <motion.div

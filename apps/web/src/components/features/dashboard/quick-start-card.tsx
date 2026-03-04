@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Logo } from '@/components/brand/logo';
+import { cardHoverVariants } from '@/lib/motion';
 
 type QuickStartCardProps = {
   jlptLevel: string;
@@ -12,7 +13,12 @@ type QuickStartCardProps = {
 export function QuickStartCard({ jlptLevel }: QuickStartCardProps) {
   return (
     <Link href="/study">
-      <motion.div whileTap={{ scale: 0.98 }}>
+      <motion.div
+        variants={cardHoverVariants}
+        initial="rest"
+        whileHover="hover"
+        whileTap="tap"
+      >
         <Card className="border-primary/30 from-primary/10 to-accent bg-gradient-to-r">
           <CardContent className="flex items-center gap-4 p-4">
             <div className="bg-primary flex size-12 shrink-0 items-center justify-center rounded-full">

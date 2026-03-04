@@ -21,13 +21,13 @@ const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 },
+    transition: { staggerChildren: 0.1 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 export default function HomePage() {
@@ -44,13 +44,13 @@ export default function HomePage() {
       <div className="flex flex-col gap-6 p-4">
         <div className="flex items-center justify-between pt-2">
           <div className="flex flex-col gap-2">
-            <div className="bg-secondary h-4 w-16 animate-pulse rounded" />
-            <div className="bg-secondary h-7 w-36 animate-pulse rounded" />
+            <div className="bg-secondary h-4 w-16 rounded"><div className="h-full animate-shimmer rounded" /></div>
+            <div className="bg-secondary h-7 w-36 rounded"><div className="h-full animate-shimmer rounded" /></div>
           </div>
-          <div className="bg-secondary h-8 w-16 animate-pulse rounded-full" />
+          <div className="bg-secondary h-8 w-16 rounded-full"><div className="h-full animate-shimmer rounded-full" /></div>
         </div>
         {[1, 2, 3, 4].map((n) => (
-          <div key={n} className="bg-secondary h-32 animate-pulse rounded-xl" />
+          <div key={n} className="bg-secondary h-32 rounded-xl"><div className="h-full animate-shimmer rounded-xl" /></div>
         ))}
       </div>
     );

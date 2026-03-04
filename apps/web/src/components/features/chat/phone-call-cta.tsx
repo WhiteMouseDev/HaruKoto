@@ -3,6 +3,7 @@
 import { Phone, FlaskConical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
+import { cardHoverVariants } from '@/lib/motion';
 
 type PhoneCallCtaProps = {
   onClick: () => void;
@@ -10,9 +11,14 @@ type PhoneCallCtaProps = {
 
 export function PhoneCallCta({ onClick }: PhoneCallCtaProps) {
   return (
-    <motion.div whileTap={{ scale: 0.98 }}>
+    <motion.div
+      variants={cardHoverVariants}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+    >
       <Card
-        className="cursor-pointer border-violet-500/30 bg-gradient-to-br from-violet-500/15 via-fuchsia-500/10 to-pink-500/10 py-4 transition-shadow hover:shadow-md hover:shadow-violet-500/10"
+        className="cursor-pointer border-violet-500/30 bg-gradient-to-br from-violet-500/15 via-fuchsia-500/10 to-pink-500/10 py-4"
         onClick={onClick}
       >
         <CardContent className="flex items-center gap-4 p-4">

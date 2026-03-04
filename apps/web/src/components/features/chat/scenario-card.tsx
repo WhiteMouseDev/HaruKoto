@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Clock, ChevronRight, Phone } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { cardHoverVariants } from '@/lib/motion';
 
 type Scenario = {
   id: string;
@@ -35,9 +36,14 @@ export function ScenarioCard({ scenario, onSelect, onCall }: ScenarioCardProps) 
   };
 
   return (
-    <motion.div whileTap={{ scale: 0.98 }}>
+    <motion.div
+      variants={cardHoverVariants}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+    >
       <Card
-        className="cursor-pointer border-transparent py-3 transition-colors hover:border-primary/30"
+        className="cursor-pointer border-transparent py-3"
         onClick={() => onSelect(scenario)}
       >
         <CardContent className="flex items-center gap-3 p-3">

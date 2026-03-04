@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   Home,
   BarChart3,
@@ -54,20 +55,29 @@ export function BottomNav() {
               )}
             >
               <div className="relative">
-                <Icon
-                  className={cn(
-                    'size-5 transition-all',
-                    isActive && 'fill-primary/20'
-                  )}
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
+                <motion.div
+                  animate={{ scale: isActive ? 1.15 : 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                >
+                  <Icon
+                    className={cn(
+                      'size-5 transition-all',
+                      isActive && 'fill-primary/20'
+                    )}
+                    strokeWidth={isActive ? 2.5 : 2}
+                  />
+                </motion.div>
                 {tab.beta && (
                   <FlaskConical className="text-primary absolute -top-1.5 -right-2 size-2.5" />
                 )}
               </div>
               <span>{tab.label}</span>
               {isActive && (
-                <span className="bg-primary absolute -top-px left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full" />
+                <motion.span
+                  layoutId="nav-indicator"
+                  className="bg-primary absolute -top-px left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
               )}
             </Link>
           );
