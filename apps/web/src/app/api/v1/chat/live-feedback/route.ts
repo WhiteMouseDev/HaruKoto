@@ -114,14 +114,34 @@ export async function POST(request: Request) {
         const { object } = await generateObject({
           model: getAIProvider(),
           schema: feedbackSchema,
+          // [v1 원본 프롬프트 — 한국어 전사 미처리]
+          // system: `あなたは韓国人向け日本語学習アプリ「ハルコト」の会話評価AIです。
+          // ユーザー（韓国人の日本語学習者）とAIチューターの会話を分析してください。
+          //
+          // 評価ルール:
+          // - strengths, improvementsは韓国語で記述
+          // - recommendedExpressionsは日本語表現(ja)と韓国語の意味(ko)の両方を提供
+          // - correctionsはユーザー発話の文法・語彙・助詞の誤りのみ。誤りがない場合は空配列
+          // - translatedTranscriptは全発話を日本語原文(ja)と韓国語翻訳(ko)の対で提供
+          // - 翻訳は自然な韓国語で、直訳ではなく意訳を優先`,
+
+          // [v2 개선 프롬프트 — 한국어 전사 → 일본어 복원 처리]
           system: `あなたは韓国人向け日本語学習アプリ「ハルコト」の会話評価AIです。
-ユーザー（韓国人の日本語学習者）とAIチューターの会話を分析してください。
+ユーザー（韓国人の日本語学習者）とAIチューターの音声会話を分析してください。
+
+重要: ユーザーの発話はSTT（音声認識）で文字起こしされています。
+韓国人学習者の日本語発音がSTTによって韓国語として誤認識され、韓国語テキストで記録されている場合があります。
+例: 「그렁기 때에 하루 상황」→ 実際は「元気？一日の状況」と言おうとした
+この場合、会話の文脈とAIの応答から、ユーザーが意図した日本語を推測・復元してください。
 
 評価ルール:
 - strengths, improvementsは韓国語で記述
 - recommendedExpressionsは日本語表現(ja)と韓国語の意味(ko)の両方を提供
 - correctionsはユーザー発話の文法・語彙・助詞の誤りのみ。誤りがない場合は空配列
-- translatedTranscriptは全発話を日本語原文(ja)と韓国語翻訳(ko)の対で提供
+- translatedTranscriptのルール:
+  - assistant発話: そのまま日本語原文(ja)と韓国語翻訳(ko)を提供
+  - user発話: STTテキストが韓国語の場合、文脈から推測した意図された日本語を(ja)に、韓国語翻訳を(ko)に記入
+  - user発話: STTテキストが日本語の場合、そのまま(ja)に記入し、韓国語翻訳を(ko)に記入
 - 翻訳は自然な韓国語で、直訳ではなく意訳を優先`,
           messages: [
             ...conversationHistory,
