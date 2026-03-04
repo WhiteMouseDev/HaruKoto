@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -165,6 +166,7 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  Color _scaffoldBgColor = Colors.white;
 
   @override
   void initState() {
@@ -172,14 +174,33 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _initWebView();
   }
 
+  void _onBridgeMessage(JavaScriptMessage message) {
+    try {
+      final data = jsonDecode(message.message) as Map<String, dynamic>;
+      if (data['type'] == 'setTheme') {
+        final hexColor = data['bg'] as String;
+        final color = Color(int.parse(hexColor.replaceFirst('#', '0xFF')));
+        final isLight = (data['statusBar'] ?? 'dark') == 'light';
+
+        setState(() => _scaffoldBgColor = color);
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness:
+              isLight ? Brightness.light : Brightness.dark,
+        ));
+      }
+    } catch (_) {}
+  }
+
   void _initWebView() {
     _controller = WebViewController(
       onPermissionRequest: (request) {
-        // WebView 내 마이크 등 미디어 권한 요청 허용
         request.grant();
       },
     )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel('HarukotoBridge',
+          onMessageReceived: _onBridgeMessage)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (_) {
@@ -217,6 +238,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: _scaffoldBgColor,
         body: SafeArea(
           child: Stack(
             children: [

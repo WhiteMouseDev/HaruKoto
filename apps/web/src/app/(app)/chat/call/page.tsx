@@ -7,6 +7,7 @@ import { getDefaultCallSettings } from '@/components/features/my/call-settings';
 import { useProfile } from '@/hooks/use-dashboard';
 import { useCharacter } from '@/hooks/use-characters';
 import { CallScreen } from '@/components/features/chat/call-screen';
+import { setDarkTheme, setLightTheme } from '@/lib/flutter-bridge';
 import { apiFetch } from '@/lib/api';
 import type { Scenario } from '@/hooks/use-scenarios';
 
@@ -67,6 +68,12 @@ function CallPageInner() {
     callSettings: userCallSettings,
     character: character ?? undefined,
   });
+
+  // Flutter WebView 배경색 동기화
+  useEffect(() => {
+    setDarkTheme();
+    return () => setLightTheme();
+  }, []);
 
   // Warn before leaving during active call
   useEffect(() => {
