@@ -65,6 +65,12 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+  verification: {
+    google: '8ig4BdUC_tedEa1u79uPwqjm9pcfbs6e0s5xYPiBjrs',
+    other: {
+      'naver-site-verification': '0f90303d9154978da76a527c7ed14989aeacdc49',
+    },
+  },
 };
 
 const organizationJsonLd = {
