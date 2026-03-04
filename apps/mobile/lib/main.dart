@@ -8,14 +8,10 @@ const kBrandPink = Color(0xFFFFB7C5);
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Edge-to-edge: 시스템 바를 투명하게 설정
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -212,7 +208,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Edge-to-edge: SafeArea 제거, 웹 CSS의 env(safe-area-inset-*) 에 위임
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
@@ -222,14 +217,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
         }
       },
       child: Scaffold(
-        body: Stack(
-          children: [
-            WebViewWidget(controller: _controller),
-            if (_isLoading)
-              const Center(
-                child: CircularProgressIndicator(color: kBrandPink),
-              ),
-          ],
+        body: SafeArea(
+          child: Stack(
+            children: [
+              WebViewWidget(controller: _controller),
+              if (_isLoading)
+                const Center(
+                  child: CircularProgressIndicator(color: kBrandPink),
+                ),
+            ],
+          ),
         ),
       ),
     );
