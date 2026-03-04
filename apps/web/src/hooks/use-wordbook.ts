@@ -55,6 +55,7 @@ export function useAddWord() {
       word: string;
       reading: string;
       meaningKo: string;
+      source?: 'QUIZ' | 'CONVERSATION' | 'MANUAL';
       note?: string;
     }) =>
       apiFetch('/api/v1/wordbook', {

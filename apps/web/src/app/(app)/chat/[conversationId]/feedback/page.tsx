@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { FeedbackScores } from '@/components/features/chat/feedback-scores';
 import { FeedbackDetails } from '@/components/features/chat/feedback-details';
 import { FeedbackTranscript } from '@/components/features/chat/feedback-transcript';
+import { ExpressionFlashcards } from '@/components/features/chat/expression-flashcards';
 import { queryKeys } from '@/lib/query-keys';
 
 type GrammarCorrection = {
@@ -181,6 +182,15 @@ export default function FeedbackPage({
 
   const { feedbackSummary, vocabulary, scenario } = feedback;
 
+  // Normalize expressions: can be string[] or {ja, ko}[]
+  const normalizedExpressions = (feedbackSummary.recommendedExpressions ?? [])
+    .map((expr) =>
+      typeof expr === 'string'
+        ? { ja: expr, ko: '' }
+        : expr
+    )
+    .filter((e) => e.ja);
+
   return (
     <motion.div
       className="flex flex-col gap-4 p-4 pb-8"
@@ -231,6 +241,18 @@ export default function FeedbackPage({
           vocabulary={vocabulary ?? []}
         />
       </motion.div>
+
+      {/* Expression Flashcards + Corrections → Wordbook */}
+      {(normalizedExpressions.length > 0 ||
+        (feedbackSummary.corrections ?? []).length > 0) && (
+        <motion.div variants={item}>
+          <ExpressionFlashcards
+            expressions={normalizedExpressions}
+            corrections={feedbackSummary.corrections ?? []}
+            conversationId={conversationId}
+          />
+        </motion.div>
+      )}
 
       {/* Action buttons */}
       <motion.div variants={item} className="mt-2 space-y-3">
