@@ -8,6 +8,7 @@
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
+    "@harukoto/config": "workspace:*",
     "typescript": "^5.8.0"
   },
   "peerDependencies": {

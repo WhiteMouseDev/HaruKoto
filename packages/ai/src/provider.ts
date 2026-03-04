@@ -1,5 +1,6 @@
 import { openai } from '@ai-sdk/openai';
 import { google } from '@ai-sdk/google';
+import type { LanguageModelV1 } from '@ai-sdk/provider';
 import OpenAI from 'openai';
 import { GoogleGenAI } from '@google/genai';
 
@@ -25,7 +26,7 @@ type ProviderType = 'openai' | 'google';
 
 const AI_PROVIDER = (process.env.AI_PROVIDER as ProviderType) || 'openai';
 
-export function getAIProvider() {
+export function getAIProvider(): LanguageModelV1 {
   switch (AI_PROVIDER) {
     case 'google':
       return google('gemini-2.5-flash');
@@ -35,6 +36,6 @@ export function getAIProvider() {
   }
 }
 
-export function createConversation() {
+export function createConversation(): LanguageModelV1 {
   return getAIProvider();
 }
