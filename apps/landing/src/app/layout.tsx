@@ -3,7 +3,8 @@ import { Noto_Sans_KR, Noto_Sans_JP } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://harukoto.app';
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.harukoto.co.kr';
 
 const notoSansKR = Noto_Sans_KR({
   variable: '--font-noto-sans-kr',
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
     siteName: '하루코토',
     images: [
       {
-        url: '/images/og-image.svg',
+        url: '/images/og-image.png',
         width: 1200,
         height: 630,
         alt: '하루코토 - 매일 한 단어, 봄처럼 피어나는 나의 일본어',
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
     title: '하루코토 - 매일 한 단어, 봄처럼 피어나는 나의 일본어',
     description:
       'JLPT 시험 대비부터 AI 회화 연습까지, 한국인을 위한 재미있는 일본어 학습 앱',
-    images: ['/images/og-image.svg'],
+    images: ['/images/og-image.png'],
   },
   icons: {
     icon: '/favicon.svg',

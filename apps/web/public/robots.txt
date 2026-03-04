@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# 웹앱은 인증 필요 페이지이므로 크롤링 차단
+# 랜딩 페이지(www.harukoto.co.kr)만 검색엔진에 노출
