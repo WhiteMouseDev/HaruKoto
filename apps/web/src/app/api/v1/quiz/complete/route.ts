@@ -39,6 +39,10 @@ export async function POST(request: Request) {
     });
 
     const xpEarned = session.correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
+    const studyTimeSeconds = session.answers.reduce(
+      (sum, a) => sum + a.timeSpentSeconds,
+      0
+    );
 
     // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
     const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(async (tx) => {
@@ -59,6 +63,7 @@ export async function POST(request: Request) {
           totalAnswers: { increment: session.totalQuestions },
           wordsStudied: { increment: session.totalQuestions },
           xpEarned: { increment: xpEarned },
+          studyTimeSeconds: { increment: studyTimeSeconds },
         },
         create: {
           userId: user.id,
@@ -68,6 +73,7 @@ export async function POST(request: Request) {
           totalAnswers: session.totalQuestions,
           wordsStudied: session.totalQuestions,
           xpEarned,
+          studyTimeSeconds,
         },
       });
 

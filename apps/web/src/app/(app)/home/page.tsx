@@ -145,7 +145,7 @@ export default function HomePage() {
 
       {/* Weekly Chart */}
       <motion.div variants={item}>
-        <WeeklyChart weeklyStats={dashboard.weeklyStats} />
+        <WeeklyChart weeklyStats={dashboard.weeklyStats} dailyGoal={dailyGoal} />
       </motion.div>
 
       {/* Level Progress */}

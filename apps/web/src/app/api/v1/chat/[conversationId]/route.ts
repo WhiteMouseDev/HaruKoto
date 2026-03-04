@@ -7,6 +7,49 @@ interface StoredMessage {
   content: string;
 }
 
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ conversationId: string }> }
+) {
+  try {
+    const { conversationId } = await params;
+
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
+    }
+
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { userId: true },
+    });
+    if (!conversation) {
+      return NextResponse.json(
+        { error: '대화를 찾을 수 없습니다' },
+        { status: 404 }
+      );
+    }
+    if (conversation.userId !== user.id) {
+      return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
+    }
+
+    await prisma.conversation.delete({
+      where: { id: conversationId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Chat conversation DELETE error:', err);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ conversationId: string }> }

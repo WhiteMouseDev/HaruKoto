@@ -36,6 +36,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import { openExternalUrl } from '@/lib/flutter-bridge';
 import type { CallSettingsData } from './call-settings';
 
 type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
@@ -99,8 +100,6 @@ export function SettingsMenu({
   const [goalSheetOpen, setGoalSheetOpen] = useState(false);
   const [themeSheetOpen, setThemeSheetOpen] = useState(false);
   const [callSheetOpen, setCallSheetOpen] = useState(false);
-  const [updating, setUpdating] = useState(false);
-
   // Local slider state for instant UI feedback
   const [localSilence, setLocalSilence] = useState(
     callSettings.silenceDurationMs
@@ -125,24 +124,14 @@ export function SettingsMenu({
     };
   }, []);
 
-  const handleLevelChange = async (level: JlptLevel) => {
-    setUpdating(true);
-    try {
-      await onUpdate('jlptLevel', level);
-      setLevelSheetOpen(false);
-    } finally {
-      setUpdating(false);
-    }
+  const handleLevelChange = (level: JlptLevel) => {
+    setLevelSheetOpen(false);
+    onUpdate('jlptLevel', level);
   };
 
-  const handleGoalChange = async (goal: number) => {
-    setUpdating(true);
-    try {
-      await onUpdate('dailyGoal', goal);
-      setGoalSheetOpen(false);
-    } finally {
-      setUpdating(false);
-    }
+  const handleGoalChange = (goal: number) => {
+    setGoalSheetOpen(false);
+    onUpdate('dailyGoal', goal);
   };
 
   const handleCallToggle = useCallback(
@@ -198,7 +187,6 @@ export function SettingsMenu({
               <button
                 className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
                 onClick={() => setLevelSheetOpen(true)}
-                disabled={updating}
               >
                 <div className="flex items-center gap-3">
                   <BookOpen className="text-primary size-5" />
@@ -218,7 +206,6 @@ export function SettingsMenu({
               <button
                 className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
                 onClick={() => setGoalSheetOpen(true)}
-                disabled={updating}
               >
                 <div className="flex items-center gap-3">
                   <Target className="text-hk-blue size-5" />
@@ -331,48 +318,44 @@ export function SettingsMenu({
           <Card>
             <CardContent className="flex flex-col p-0">
               {/* Terms */}
-              <a
-                href="https://www.harukoto.co.kr/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 transition-colors"
+              <button
+                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
+                onClick={() => openExternalUrl('https://www.harukoto.co.kr/terms')}
               >
                 <div className="flex items-center gap-3">
                   <ScrollText className="text-muted-foreground size-5" />
                   <span className="text-sm font-medium">이용약관</span>
                 </div>
                 <ChevronRight className="text-muted-foreground size-4" />
-              </a>
+              </button>
 
               <Separator />
 
               {/* Privacy */}
-              <a
-                href="https://www.harukoto.co.kr/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 transition-colors"
+              <button
+                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
+                onClick={() => openExternalUrl('https://www.harukoto.co.kr/privacy')}
               >
                 <div className="flex items-center gap-3">
                   <Shield className="text-muted-foreground size-5" />
                   <span className="text-sm font-medium">개인정보처리방침</span>
                 </div>
                 <ChevronRight className="text-muted-foreground size-4" />
-              </a>
+              </button>
 
               <Separator />
 
               {/* Contact */}
-              <a
-                href="mailto:whitemousedev@whitemouse.dev"
-                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 transition-colors"
+              <button
+                className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
+                onClick={() => openExternalUrl('mailto:whitemousedev@whitemouse.dev')}
               >
                 <div className="flex items-center gap-3">
                   <Mail className="text-muted-foreground size-5" />
                   <span className="text-sm font-medium">문의하기</span>
                 </div>
                 <ChevronRight className="text-muted-foreground size-4" />
-              </a>
+              </button>
             </CardContent>
           </Card>
         </motion.div>
@@ -440,7 +423,6 @@ export function SettingsMenu({
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border hover:bg-accent'
                 }`}
-                disabled={updating}
                 onClick={() => handleLevelChange(level)}
               >
                 {level}
@@ -469,7 +451,6 @@ export function SettingsMenu({
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border hover:bg-accent'
                 }`}
-                disabled={updating}
                 onClick={() => handleGoalChange(goal)}
               >
                 {goal}문제

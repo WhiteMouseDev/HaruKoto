@@ -129,6 +129,9 @@ export async function POST(request: Request) {
     });
 
     const xpEarned = REWARDS.CONVERSATION_COMPLETE_XP;
+    const durationSeconds = Math.round(
+      (now.getTime() - conversation.createdAt.getTime()) / 1000
+    );
 
     // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
     const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(async (tx) => {
@@ -149,12 +152,14 @@ export async function POST(request: Request) {
         update: {
           conversationCount: { increment: 1 },
           xpEarned: { increment: xpEarned },
+          studyTimeSeconds: { increment: durationSeconds },
         },
         create: {
           userId: user.id,
           date: today,
           conversationCount: 1,
           xpEarned,
+          studyTimeSeconds: durationSeconds,
         },
       });
 

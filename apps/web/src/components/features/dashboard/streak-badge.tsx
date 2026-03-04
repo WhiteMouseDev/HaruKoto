@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Check, Flame } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 type StreakBadgeProps = {
@@ -51,7 +51,7 @@ export function StreakBadge({ currentStreak, weeklyStats }: StreakBadgeProps) {
                     : 'bg-secondary text-muted-foreground'
                 }`}
               >
-                {day.studied ? 'O' : '-'}
+                {day.studied ? <Check className="size-3.5" strokeWidth={3} /> : '-'}
               </div>
             </div>
           ))}

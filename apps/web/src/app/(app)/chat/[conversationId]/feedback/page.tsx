@@ -116,12 +116,14 @@ export default function FeedbackPage({
     }
     return null;
   });
+  const [serverLoading, setServerLoading] = useState(!feedback);
 
   useEffect(() => {
     // Skip server fetch if sessionStorage had data (already set via initializer)
     if (feedback) return;
 
     let cancelled = false;
+    setServerLoading(true);
 
     async function fetchFeedbackFromServer() {
       try {
@@ -145,6 +147,8 @@ export default function FeedbackPage({
         }
       } catch {
         // Failed to load — stay on "no data" state
+      } finally {
+        if (!cancelled) setServerLoading(false);
       }
     }
 
@@ -153,7 +157,26 @@ export default function FeedbackPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
-  // Loading / no data state
+  // Loading state — show skeleton while fetching from server
+  if (serverLoading && !feedback) {
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        <div className="flex items-center gap-3 pt-2">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/chat')}>
+            <ArrowLeft className="size-5" />
+          </Button>
+          <h1 className="text-xl font-bold">회화 리포트</h1>
+        </div>
+        <div className="space-y-4">
+          <div className="bg-secondary h-40 animate-pulse rounded-xl" />
+          <div className="bg-secondary h-32 animate-pulse rounded-xl" />
+          <div className="bg-secondary h-24 animate-pulse rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  // No data state — server fetch completed but no feedback
   if (!feedback || !feedback.feedbackSummary) {
     return (
       <div className="flex flex-col gap-4 p-4">

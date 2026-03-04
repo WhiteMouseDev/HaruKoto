@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { transcript, scenarioId, characterId } = body as {
+    const { transcript, durationSeconds, scenarioId, characterId } = body as {
       transcript: { role: 'user' | 'assistant'; text: string }[];
       durationSeconds: number;
       scenarioId?: string;
@@ -194,6 +194,8 @@ export async function POST(request: Request) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        const studyTimeSeconds = durationSeconds || 0;
+
         await tx.dailyProgress.upsert({
           where: {
             userId_date: {
@@ -204,12 +206,14 @@ export async function POST(request: Request) {
           update: {
             conversationCount: { increment: 1 },
             xpEarned: { increment: xpEarned },
+            studyTimeSeconds: { increment: studyTimeSeconds },
           },
           create: {
             userId: user.id,
             date: today,
             conversationCount: 1,
             xpEarned,
+            studyTimeSeconds,
           },
         });
 

@@ -41,6 +41,11 @@ export async function POST(request: Request) {
       session.totalQuestions > 0 &&
       session.correctCount === session.totalQuestions;
 
+    const studyTimeSeconds = session.answers.reduce(
+      (sum, a) => sum + a.timeSpentSeconds,
+      0
+    );
+
     let xpEarned = session.correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
     if (isKanaQuiz && isPerfect) {
       xpEarned += KANA_REWARDS.QUIZ_PERFECT_XP;
@@ -63,6 +68,7 @@ export async function POST(request: Request) {
             correctAnswers: { increment: session.correctCount },
             totalAnswers: { increment: session.totalQuestions },
             xpEarned: { increment: xpEarned },
+            studyTimeSeconds: { increment: studyTimeSeconds },
           },
           create: {
             userId: user.id,
@@ -71,6 +77,7 @@ export async function POST(request: Request) {
             correctAnswers: session.correctCount,
             totalAnswers: session.totalQuestions,
             xpEarned,
+            studyTimeSeconds,
           },
         });
 

@@ -5,12 +5,13 @@ import { Card, CardContent } from '@/components/ui/card';
 
 type WeeklyChartProps = {
   weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
+  dailyGoal?: number;
 };
 
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
 
-export function WeeklyChart({ weeklyStats }: WeeklyChartProps) {
-  const maxWords = Math.max(...weeklyStats.map((d) => d.wordsStudied), 1);
+export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
+  const maxWords = Math.max(...weeklyStats.map((d) => d.wordsStudied), dailyGoal);
   const totalWords = weeklyStats.reduce((sum, d) => sum + d.wordsStudied, 0);
   const totalXp = weeklyStats.reduce((sum, d) => sum + d.xpEarned, 0);
 
@@ -33,9 +34,18 @@ export function WeeklyChart({ weeklyStats }: WeeklyChartProps) {
 
         {/* Bar chart */}
         <div
-          className="flex items-end justify-between gap-2"
-          style={{ height: 80 }}
+          className="relative flex items-end justify-between gap-2"
+          style={{ height: 100 }}
         >
+          {/* Goal line */}
+          <div
+            className="border-muted-foreground/30 pointer-events-none absolute left-0 right-0 border-t border-dashed"
+            style={{ bottom: `${(dailyGoal / maxWords) * 100}%` }}
+          >
+            <span className="text-muted-foreground/50 absolute -top-3.5 right-0 text-[9px]">
+              목표
+            </span>
+          </div>
           {bars.map((bar, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
               <motion.div

@@ -28,6 +28,7 @@ type AchievementsSectionProps = {
 };
 
 type CategoryTab = 'all' | AchievementCategory;
+type StatusFilter = 'all' | 'achieved' | 'locked';
 
 const CATEGORY_TABS: { value: CategoryTab; label: string }[] = [
   { value: 'all', label: '전체' },
@@ -38,6 +39,12 @@ const CATEGORY_TABS: { value: CategoryTab; label: string }[] = [
   { value: 'level', label: '레벨' },
   { value: 'xp', label: 'XP' },
   { value: 'special', label: '특별' },
+];
+
+const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
+  { value: 'all', label: '전체' },
+  { value: 'achieved', label: '완료' },
+  { value: 'locked', label: '미완료' },
 ];
 
 const gridContainer = {
@@ -58,6 +65,7 @@ export function AchievementsSection({
 }: AchievementsSectionProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const achievedMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -67,13 +75,28 @@ export function AchievementsSection({
     return map;
   }, [achievements]);
 
-  const filtered = useMemo(
-    () =>
+  const filtered = useMemo(() => {
+    let list =
       activeTab === 'all'
         ? ACHIEVEMENTS
-        : ACHIEVEMENTS.filter((a) => a.category === activeTab),
-    [activeTab]
-  );
+        : ACHIEVEMENTS.filter((a) => a.category === activeTab);
+
+    if (statusFilter === 'achieved') {
+      list = list.filter((a) => achievedMap.has(a.type));
+    } else if (statusFilter === 'locked') {
+      list = list.filter((a) => !achievedMap.has(a.type));
+    }
+
+    // Sort: achieved first (by achievedAt descending), then locked
+    return [...list].sort((a, b) => {
+      const aAt = achievedMap.get(a.type);
+      const bAt = achievedMap.get(b.type);
+      if (aAt && !bAt) return -1;
+      if (!aAt && bAt) return 1;
+      if (aAt && bAt) return bAt.localeCompare(aAt);
+      return 0;
+    });
+  }, [activeTab, statusFilter, achievedMap]);
 
   const achievedCount = achievements.length;
   const totalCount = ACHIEVEMENTS.length;
@@ -149,21 +172,41 @@ export function AchievementsSection({
           </SheetHeader>
 
           <div className="flex flex-1 flex-col overflow-hidden px-4 pb-4">
-            {/* Category Tabs */}
-            <div className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1">
-              {CATEGORY_TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  onClick={() => setActiveTab(tab.value)}
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                    activeTab === tab.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* Sticky filter area */}
+            <div className="bg-background sticky top-0 z-10 pb-2">
+              {/* Category Tabs */}
+              <div className="-mx-1 mb-2 flex gap-1.5 overflow-x-auto px-1 pb-1">
+                {CATEGORY_TABS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                      activeTab === tab.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Status Filter */}
+              <div className="border-border flex gap-1 rounded-lg border p-0.5">
+                {STATUS_FILTERS.map((filter) => (
+                  <button
+                    key={filter.value}
+                    onClick={() => setStatusFilter(filter.value)}
+                    className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                      statusFilter === filter.value
+                        ? 'bg-secondary text-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Achievements Grid */}
@@ -172,7 +215,7 @@ export function AchievementsSection({
               variants={gridContainer}
               initial="hidden"
               animate="show"
-              key={activeTab}
+              key={`${activeTab}-${statusFilter}`}
             >
               {filtered.map((achievement) => {
                 const achievedAt = achievedMap.get(achievement.type);

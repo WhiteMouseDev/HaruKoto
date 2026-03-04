@@ -37,3 +37,12 @@ export function setDarkTheme() {
 export function setCallTheme() {
   setThemeColors({ topColor: '#0f172a', bottomColor: '#000000', statusBar: 'light' });
 }
+
+/** 외부 URL 열기 — WebView에서는 Flutter url_launcher, 일반 브라우저에서는 window.open */
+export function openExternalUrl(url: string) {
+  if (window.HarukotoBridge) {
+    postToFlutter({ type: 'openUrl', url });
+  } else {
+    window.open(url, '_blank');
+  }
+}
