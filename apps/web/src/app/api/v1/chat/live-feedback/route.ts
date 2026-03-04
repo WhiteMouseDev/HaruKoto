@@ -81,9 +81,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { transcript } = body as {
+    const { transcript, scenarioId } = body as {
       transcript: { role: 'user' | 'assistant'; text: string }[];
       durationSeconds: number;
+      scenarioId?: string;
     };
 
     if (!transcript || !Array.isArray(transcript) || transcript.length === 0) {
@@ -147,10 +148,21 @@ export async function POST(request: Request) {
       }
     }
 
-    // Get a FREE scenario for the conversation record
-    const freeScenario = await prisma.conversationScenario.findFirst({
-      where: { category: 'FREE' },
-    });
+    // Resolve scenario: use provided scenarioId or fallback to FREE
+    let resolvedScenarioId: string | undefined;
+    if (scenarioId) {
+      const scenario = await prisma.conversationScenario.findUnique({
+        where: { id: scenarioId },
+        select: { id: true },
+      });
+      resolvedScenarioId = scenario?.id;
+    }
+    if (!resolvedScenarioId) {
+      const freeScenario = await prisma.conversationScenario.findFirst({
+        where: { category: 'FREE' },
+      });
+      resolvedScenarioId = freeScenario?.id;
+    }
 
     // Create conversation record
     const now = new Date();
@@ -158,7 +170,7 @@ export async function POST(request: Request) {
     const conversation = await prisma.conversation.create({
       data: {
         userId: user.id,
-        scenarioId: freeScenario?.id,
+        scenarioId: resolvedScenarioId,
         messages: JSON.parse(JSON.stringify(messages)),
         messageCount: messages.length,
         feedbackSummary: feedbackSummary

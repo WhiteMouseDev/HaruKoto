@@ -27,7 +27,7 @@ export default function AnalyzingPage() {
       return;
     }
 
-    const { transcript, durationSeconds } = JSON.parse(raw);
+    const { transcript, durationSeconds, scenarioId } = JSON.parse(raw);
 
     async function analyze() {
       try {
@@ -37,7 +37,7 @@ export default function AnalyzingPage() {
           '/api/v1/chat/live-feedback',
           {
             method: 'POST',
-            body: JSON.stringify({ transcript, durationSeconds }),
+            body: JSON.stringify({ transcript, durationSeconds, scenarioId }),
           }
         );
 

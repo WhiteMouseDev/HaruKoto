@@ -19,6 +19,8 @@ type ConnectionState =
 
 type GeminiLiveOptions = {
   nickname?: string;
+  systemInstruction?: string;
+  greeting?: string;
   onAudioChunk: (base64: string) => void;
   onAiTextDelta: (text: string) => void;
   onTranscript: (entry: TranscriptEntry) => void;
@@ -93,7 +95,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
               prebuiltVoiceConfig: { voiceName: GEMINI_VOICE },
             },
           },
-          systemInstruction: SYSTEM_INSTRUCTION,
+          systemInstruction: optionsRef.current.systemInstruction ?? SYSTEM_INSTRUCTION,
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           // VAD sensitivity — reduce false positives from background noise on mobile
@@ -311,9 +313,10 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
 
     // Send initial prompt to trigger AI greeting like a real phone call
     const name = optionsRef.current.nickname;
-    const greeting = name
+    const defaultGreeting = name
       ? `[システム] ${name}から電話がかかってきました。電話に出て「もしもし」から始めてください。`
       : '[システム] 友達から電話がかかってきました。電話に出て「もしもし」から始めてください。';
+    const greeting = optionsRef.current.greeting ?? defaultGreeting;
     session.sendClientContent({
       turns: [
         {

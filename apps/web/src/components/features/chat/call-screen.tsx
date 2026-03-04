@@ -8,6 +8,7 @@ import type { VoiceCallReturn } from '@/hooks/use-voice-call';
 
 type CallScreenProps = {
   call: VoiceCallReturn;
+  scenarioTitle?: string;
 };
 
 const STATUS_TEXT: Record<string, string> = {
@@ -31,7 +32,7 @@ function formatTime(seconds: number) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-export function CallScreen({ call }: CallScreenProps) {
+export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
   const {
     state,
     subState,
@@ -74,6 +75,11 @@ export function CallScreen({ call }: CallScreenProps) {
         <div className="text-center">
           <h2 className="text-xl font-bold text-white">ハル</h2>
           <p className="mt-1 text-sm text-white/60">하루</p>
+          {scenarioTitle && (
+            <p className="mt-3 rounded-full bg-violet-500/20 px-4 py-1.5 text-sm font-medium text-violet-300">
+              {scenarioTitle}
+            </p>
+          )}
         </div>
         {call.error && (
           <p className="rounded-lg bg-red-500/20 px-4 py-2 text-center text-sm text-red-300">
@@ -114,9 +120,22 @@ export function CallScreen({ call }: CallScreenProps) {
         )}
       </AnimatePresence>
 
+      {/* Scenario badge */}
+      {scenarioTitle && (
+        <motion.div
+          className="mt-12"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <span className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-medium text-violet-300">
+            {scenarioTitle}
+          </span>
+        </motion.div>
+      )}
+
       {/* Status text */}
       <motion.div
-        className="mt-16"
+        className={scenarioTitle ? 'mt-3' : 'mt-16'}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Clock, ChevronRight } from 'lucide-react';
+import { Clock, ChevronRight, Phone } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,6 +19,7 @@ type Scenario = {
 type ScenarioCardProps = {
   scenario: Scenario;
   onSelect: (scenario: Scenario) => void;
+  onCall?: (scenario: Scenario) => void;
 };
 
 const DIFFICULTY_LABELS: Record<string, { label: string; color: string }> = {
@@ -27,7 +28,7 @@ const DIFFICULTY_LABELS: Record<string, { label: string; color: string }> = {
   ADVANCED: { label: '고급', color: 'bg-hk-red/20 text-hk-red' },
 };
 
-export function ScenarioCard({ scenario, onSelect }: ScenarioCardProps) {
+export function ScenarioCard({ scenario, onSelect, onCall }: ScenarioCardProps) {
   const diff = DIFFICULTY_LABELS[scenario.difficulty] ?? {
     label: scenario.difficulty,
     color: 'bg-secondary',
@@ -60,6 +61,19 @@ export function ScenarioCard({ scenario, onSelect }: ScenarioCardProps) {
               </p>
             )}
           </div>
+          {onCall && (
+            <button
+              type="button"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-violet-500 transition-colors hover:bg-violet-500/25"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCall(scenario);
+              }}
+              aria-label={`${scenario.title} 음성 통화`}
+            >
+              <Phone className="size-4" />
+            </button>
+          )}
           <ChevronRight className="text-muted-foreground size-4 shrink-0" />
         </CardContent>
       </Card>

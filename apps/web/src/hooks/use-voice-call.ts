@@ -12,6 +12,94 @@ import type {
   TranscriptEntry,
 } from '@/types/gemini-live';
 
+export type CallScenario = {
+  id: string;
+  title: string;
+  titleJa: string;
+  situation: string;
+  yourRole: string;
+  aiRole: string;
+  systemPrompt: string | null;
+  keyExpressions: string[];
+};
+
+type VoiceCallOptions = {
+  nickname?: string;
+  jlptLevel?: string;
+  scenario?: CallScenario;
+};
+
+const JLPT_VOICE_LEVELS: Record<string, string> = {
+  N5: `## ユーザーレベル: JLPT N5 (初級)
+- 基本的な挨拶と簡単な文だけ分かります
+- N5レベルの語彙のみ使用（約800語以内）
+- です/ます形、基本的な助詞のみ
+- 短く簡潔な返答（1文）`,
+  N4: `## ユーザーレベル: JLPT N4 (初級上)
+- 基本的な日常会話ができます
+- N5〜N4レベルの語彙（約1,500語以内）
+- て形、ない形、可能形を使用可能
+- 返答は1〜2文`,
+  N3: `## ユーザーレベル: JLPT N3 (中級)
+- 日常会話がある程度できます
+- N5〜N3レベルの語彙（約3,000語以内）
+- 自然な口語表現を使用`,
+  N2: `## ユーザーレベル: JLPT N2 (上級)
+- 複雑な会話も理解できます
+- 語彙制限少なめ、慣用句も使用可能`,
+  N1: `## ユーザーレベル: JLPT N1 (最上級)
+- ネイティブに近い理解力があります
+- 語彙制限なし`,
+};
+
+function buildCallSystemInstruction(
+  scenario?: CallScenario,
+  jlptLevel?: string
+): string | undefined {
+  if (!scenario) return undefined; // use default in useGeminiLive
+
+  const levelSection = JLPT_VOICE_LEVELS[jlptLevel ?? 'N5'] ?? JLPT_VOICE_LEVELS.N5;
+
+  if (scenario.systemPrompt) {
+    return `${scenario.systemPrompt}
+
+${levelSection}
+
+## 重要なルール
+- これは電話の会話です。実際の電話のように自然に振る舞ってください。
+- 会話中に文法を直接訂正しないでください。自然に正しい表現を使い返してください。
+- 返答は1〜2文で簡潔に。電話の会話は短いやりとりが基本です。`;
+  }
+
+  return `あなたは「ハル」（春、はる）。日本に住んでいる20代女性で、韓国人の友達と電話するのが好き。
+明るくてフレンドリーな性格。
+
+## シナリオ
+- 状況: ${scenario.situation}
+- ユーザーの役割: ${scenario.yourRole}
+- あなたの役割: ${scenario.aiRole}
+${scenario.keyExpressions.length > 0 ? `- キーフレーズ: ${scenario.keyExpressions.join(', ')}` : ''}
+
+${levelSection}
+
+## ルール
+- これは電話の会話です。実際の電話のように自然に振る舞ってください。
+- 会話中に文法を直接訂正しないでください。自然に正しい表現を使い返してください。
+- 返答は1〜2文で簡潔に。電話の会話は短いやりとりが基本です。
+- シナリオの状況と役割に沿って会話を進めてください。
+- 相手のレベルに合わせて語彙の難易度を調整してください。`;
+}
+
+function buildCallGreeting(
+  scenario?: CallScenario,
+  nickname?: string
+): string | undefined {
+  if (!scenario) return undefined; // use default in useGeminiLive
+
+  const nameStr = nickname ?? '友達';
+  return `[システム] ${nameStr}から電話がかかってきました。あなたは「${scenario.aiRole}」の役割です。状況は「${scenario.situation}」です。電話に出て、この状況に合った挨拶から始めてください。`;
+}
+
 export type SubtitleEntry = {
   id: number;
   role: 'user' | 'assistant';
@@ -37,7 +125,8 @@ export type VoiceCallReturn = {
   toggleAnalysis: () => void;
 };
 
-export function useVoiceCall(nickname?: string): VoiceCallReturn {
+export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
+  const { nickname, jlptLevel, scenario } = options ?? {};
   const router = useRouter();
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
@@ -55,9 +144,11 @@ export function useVoiceCall(nickname?: string): VoiceCallReturn {
   const analysisEnabledRef = useRef(true);
   const subtitleIdRef = useRef(0);
   const endCallRef = useRef<() => void>(() => {});
+  const scenarioIdRef = useRef(scenario?.id);
 
   stateRef.current = state;
   analysisEnabledRef.current = analysisEnabled;
+  scenarioIdRef.current = scenario?.id;
 
   // --- Ringtone ---
   const playRingtone = useCallback(() => {
@@ -82,6 +173,8 @@ export function useVoiceCall(nickname?: string): VoiceCallReturn {
   // --- Gemini Live WebSocket ---
   const gemini = useGeminiLive({
     nickname,
+    systemInstruction: buildCallSystemInstruction(scenario, jlptLevel),
+    greeting: buildCallGreeting(scenario, nickname),
     onAudioChunk: useCallback(
       (base64: string) => {
         if (stateRef.current !== 'connected') return;
@@ -227,7 +320,7 @@ export function useVoiceCall(nickname?: string): VoiceCallReturn {
       // Store data for the analyzing page, navigate immediately
       sessionStorage.setItem(
         'call_analysis_data',
-        JSON.stringify({ transcript, durationSeconds })
+        JSON.stringify({ transcript, durationSeconds, scenarioId: scenarioIdRef.current })
       );
       router.push('/chat/call/analyzing');
     } else {

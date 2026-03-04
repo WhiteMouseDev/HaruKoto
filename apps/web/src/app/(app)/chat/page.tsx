@@ -192,6 +192,7 @@ export default function ChatPage() {
                 key={scenario.id}
                 scenario={scenario}
                 onSelect={() => handleStartConversation(scenario)}
+                onCall={() => router.push(`/chat/call?scenarioId=${scenario.id}`)}
               />
             ))}
           </motion.div>
