@@ -1,14 +1,16 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useVoiceCall, type CallScenario } from '@/hooks/use-voice-call';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useVoiceCall, type CallScenario, type CallSettings } from '@/hooks/use-voice-call';
+import { getDefaultCallSettings } from '@/components/features/my/call-settings';
 import { useProfile } from '@/hooks/use-dashboard';
 import { CallScreen } from '@/components/features/chat/call-screen';
 import { apiFetch } from '@/lib/api';
 import type { Scenario } from '@/hooks/use-scenarios';
 
 function CallPageInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const scenarioId = searchParams.get('scenarioId');
 
@@ -49,10 +51,17 @@ function CallPageInner() {
     fetchScenario();
   }, [scenarioId]);
 
+  const jlptLevel = profileData?.profile.jlptLevel ?? 'N5';
+  const userCallSettings: CallSettings = {
+    ...getDefaultCallSettings(jlptLevel),
+    ...((profileData?.profile as Record<string, unknown>)?.callSettings as CallSettings ?? {}),
+  };
+
   const call = useVoiceCall({
     nickname: profileData?.profile.nickname,
-    jlptLevel: profileData?.profile.jlptLevel,
+    jlptLevel,
     scenario,
+    callSettings: userCallSettings,
   });
 
   // Warn before leaving during active call
@@ -77,7 +86,11 @@ function CallPageInner() {
 
   return (
     <div className="fixed inset-0 z-50 bg-linear-to-b from-slate-900 to-black">
-      <CallScreen call={call} scenarioTitle={scenario?.title} />
+      <CallScreen
+        call={call}
+        scenarioTitle={scenario?.title}
+        onBack={() => router.back()}
+      />
     </div>
   );
 }

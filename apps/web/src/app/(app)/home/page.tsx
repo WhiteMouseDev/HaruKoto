@@ -94,7 +94,7 @@ export default function HomePage() {
 
       {/* Voice Call CTA - 핵심 차별화 기능 */}
       <motion.div variants={item}>
-        <PhoneCallCta onClick={() => router.push('/chat/call')} />
+        <PhoneCallCta onClick={() => router.push('/chat/call/contacts')} />
       </motion.div>
 
       {/* Kana CTA - for N5 users who haven't completed kana */}

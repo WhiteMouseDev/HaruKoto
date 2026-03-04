@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, PhoneOff, MicOff, Mic, FileText, FileX, WifiOff } from 'lucide-react';
+import { Phone, PhoneOff, MicOff, Mic, FileText, FileX, WifiOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CallWaveform } from '@/components/features/chat/call-waveform';
 import type { VoiceCallReturn } from '@/hooks/use-voice-call';
@@ -9,6 +9,7 @@ import type { VoiceCallReturn } from '@/hooks/use-voice-call';
 type CallScreenProps = {
   call: VoiceCallReturn;
   scenarioTitle?: string;
+  onBack?: () => void;
 };
 
 const STATUS_TEXT: Record<string, string> = {
@@ -32,7 +33,7 @@ function formatTime(seconds: number) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
+export function CallScreen({ call, scenarioTitle, onBack }: CallScreenProps) {
   const {
     state,
     subState,
@@ -44,6 +45,7 @@ export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
     isMuted,
     isReconnecting,
     analysisEnabled,
+    subtitleEnabled,
     startCall,
     endCall,
     toggleMute,
@@ -70,7 +72,17 @@ export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
   // Idle screen — show start button
   if (state === 'idle') {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-8">
+      <div className="relative flex h-full flex-col items-center justify-center gap-8">
+        {/* Back button */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="absolute left-4 top-[max(1rem,env(safe-area-inset-top))] flex items-center gap-1 text-sm text-white/60 transition-colors hover:text-white/90"
+          >
+            <ArrowLeft className="size-5" />
+            <span>돌아가기</span>
+          </button>
+        )}
         <CallWaveform analyserNode={null} mode="idle" />
         <div className="text-center">
           <h2 className="text-xl font-bold text-white">ハル</h2>
@@ -166,7 +178,7 @@ export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
         <h2 className="mt-8 text-2xl font-bold text-white">하루</h2>
 
         {/* Subtitles — recent transcript + current streaming text */}
-        <div className="mt-4 flex max-w-[300px] flex-col items-center gap-1.5">
+        {subtitleEnabled && <div className="mt-4 flex max-w-[300px] flex-col items-center gap-1.5">
           <AnimatePresence>
             {subtitles.map((sub, i) => {
               // Older entries fade out progressively based on position
@@ -201,7 +213,7 @@ export function CallScreen({ call, scenarioTitle }: CallScreenProps) {
               </motion.p>
             )}
           </AnimatePresence>
-        </div>
+        </div>}
       </div>
 
       {/* Controls */}

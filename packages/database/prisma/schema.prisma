@@ -96,6 +96,7 @@ model User {
   lastStudyDate        DateTime? @map("last_study_date")
   isPremium            Boolean   @default(false) @map("is_premium")
   subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+  callSettings         Json?     @default("{}") @map("call_settings")
   onboardingCompleted  Boolean   @default(false) @map("onboarding_completed")
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")

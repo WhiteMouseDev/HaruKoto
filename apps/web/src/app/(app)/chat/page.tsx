@@ -263,7 +263,7 @@ export default function ChatPage() {
         <>
           {/* Direct Call CTA */}
           <motion.div variants={item}>
-            <PhoneCallCta onClick={() => router.push('/chat/call')} />
+            <PhoneCallCta onClick={() => router.push('/chat/call/contacts')} />
           </motion.div>
 
           {/* Scenario-based Calls */}

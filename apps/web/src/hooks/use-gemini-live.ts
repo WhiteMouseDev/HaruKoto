@@ -21,6 +21,7 @@ type GeminiLiveOptions = {
   nickname?: string;
   systemInstruction?: string;
   greeting?: string;
+  silenceDurationMs?: number;
   onAudioChunk: (base64: string) => void;
   onAiTextDelta: (text: string) => void;
   onTranscript: (entry: TranscriptEntry) => void;
@@ -104,7 +105,7 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
               startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
               endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
               prefixPaddingMs: 300,
-              silenceDurationMs: 1200,
+              silenceDurationMs: optionsRef.current.silenceDurationMs ?? 1200,
             },
           },
           // Session resumption — enables reconnection without losing context

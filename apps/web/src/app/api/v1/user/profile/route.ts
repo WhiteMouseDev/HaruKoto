@@ -29,6 +29,7 @@ export async function GET() {
         longestStreak: true,
         lastStudyDate: true,
         isPremium: true,
+        callSettings: true,
         createdAt: true,
       },
     });
@@ -89,6 +90,13 @@ export async function GET() {
   }
 }
 
+const callSettingsSchema = z.object({
+  silenceDurationMs: z.number().int().min(1000).max(5000).optional(),
+  aiResponseSpeed: z.number().min(0.8).max(1.2).optional(),
+  subtitleEnabled: z.boolean().optional(),
+  autoAnalysis: z.boolean().optional(),
+});
+
 const updateProfileSchema = z.object({
   nickname: z.string().min(1).max(20).optional(),
   jlptLevel: z.enum(['N5', 'N4', 'N3', 'N2', 'N1']).optional(),
@@ -105,6 +113,7 @@ const updateProfileSchema = z.object({
       'HOBBY',
     ])
     .optional(),
+  callSettings: callSettingsSchema.optional(),
 });
 
 export async function PATCH(request: Request) {
@@ -140,9 +149,23 @@ export async function PATCH(request: Request) {
       );
     }
 
+    // For callSettings, merge with existing instead of replacing
+    let updateData: Record<string, unknown> = { ...data };
+    if (data.callSettings) {
+      const existing = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { callSettings: true },
+      });
+      const existingSettings = (existing?.callSettings as Record<string, unknown>) ?? {};
+      updateData = {
+        ...data,
+        callSettings: { ...existingSettings, ...data.callSettings },
+      };
+    }
+
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data,
+      data: updateData,
       select: {
         id: true,
         email: true,
@@ -157,6 +180,7 @@ export async function PATCH(request: Request) {
         longestStreak: true,
         lastStudyDate: true,
         isPremium: true,
+        callSettings: true,
         createdAt: true,
       },
     });

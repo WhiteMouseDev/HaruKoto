@@ -7,6 +7,7 @@ import { ProfileHeader } from '@/components/features/my/profile-header';
 import { StatsOverview } from '@/components/features/my/stats-overview';
 import { AchievementsSection } from '@/components/features/my/achievements-section';
 import { SettingsMenu } from '@/components/features/my/settings-menu';
+import { CallSettings, getDefaultCallSettings, type CallSettingsData } from '@/components/features/my/call-settings';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useProfile } from '@/hooks/use-dashboard';
@@ -25,6 +26,7 @@ type MyProfileData = {
     level: number;
     streakCount: number;
     longestStreak: number;
+    callSettings: Partial<CallSettingsData> | null;
     createdAt: string;
   };
   summary: {
@@ -57,6 +59,13 @@ export default function MyPage() {
   const handleUpdate = useCallback(
     async (field: string, value: unknown) => {
       await updateProfile.mutateAsync({ [field]: value });
+    },
+    [updateProfile]
+  );
+
+  const handleCallSettingsUpdate = useCallback(
+    async (partial: Partial<CallSettingsData>) => {
+      await updateProfile.mutateAsync({ callSettings: partial });
     },
     [updateProfile]
   );
@@ -131,6 +140,15 @@ export default function MyPage() {
         jlptLevel={profile.jlptLevel}
         dailyGoal={profile.dailyGoal}
         onUpdate={handleUpdate}
+      />
+
+      <CallSettings
+        settings={{
+          ...getDefaultCallSettings(profile.jlptLevel),
+          ...(profile.callSettings ?? {}),
+        }}
+        jlptLevel={profile.jlptLevel}
+        onUpdate={handleCallSettingsUpdate}
       />
 
       <motion.div

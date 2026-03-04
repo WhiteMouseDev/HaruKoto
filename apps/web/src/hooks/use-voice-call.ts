@@ -23,10 +23,18 @@ export type CallScenario = {
   keyExpressions: string[];
 };
 
+export type CallSettings = {
+  silenceDurationMs?: number;
+  aiResponseSpeed?: number;
+  subtitleEnabled?: boolean;
+  autoAnalysis?: boolean;
+};
+
 type VoiceCallOptions = {
   nickname?: string;
   jlptLevel?: string;
   scenario?: CallScenario;
+  callSettings?: CallSettings;
 };
 
 const JLPT_VOICE_LEVELS: Record<string, string> = {
@@ -119,6 +127,7 @@ export type VoiceCallReturn = {
   isMuted: boolean;
   isReconnecting: boolean;
   analysisEnabled: boolean;
+  subtitleEnabled: boolean;
   startCall: () => Promise<void>;
   endCall: () => void;
   toggleMute: () => void;
@@ -126,7 +135,7 @@ export type VoiceCallReturn = {
 };
 
 export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
-  const { nickname, jlptLevel, scenario } = options ?? {};
+  const { nickname, jlptLevel, scenario, callSettings } = options ?? {};
   const router = useRouter();
   const [state, setState] = useState<LiveCallState>('idle');
   const [subState, setSubState] = useState<LiveCallSubState>('idle');
@@ -135,7 +144,7 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
   const [subtitles, setSubtitles] = useState<SubtitleEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [analysisEnabled, setAnalysisEnabled] = useState(true);
+  const [analysisEnabled, setAnalysisEnabled] = useState(callSettings?.autoAnalysis ?? true);
 
   const stateRef = useRef<LiveCallState>('idle');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -175,6 +184,7 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
     nickname,
     systemInstruction: buildCallSystemInstruction(scenario, jlptLevel),
     greeting: buildCallGreeting(scenario, nickname),
+    silenceDurationMs: callSettings?.silenceDurationMs,
     onAudioChunk: useCallback(
       (base64: string) => {
         if (stateRef.current !== 'connected') return;
@@ -385,6 +395,7 @@ export function useVoiceCall(options?: VoiceCallOptions): VoiceCallReturn {
     isMuted,
     isReconnecting,
     analysisEnabled,
+    subtitleEnabled: callSettings?.subtitleEnabled ?? true,
     startCall,
     endCall,
     toggleMute,
