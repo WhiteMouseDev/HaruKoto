@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Bell, BellOff, Check } from 'lucide-react';
 import { GameIcon } from '@/components/ui/game-icon';
 import { Button } from '@/components/ui/button';
@@ -22,13 +21,6 @@ const TYPE_ICON: Record<string, string> = {
   level_up: 'party-popper',
   streak: 'flame',
   achievement: 'trophy',
-};
-
-const TYPE_LINK: Record<string, string> = {
-  level_up: '/my',
-  streak: '/home',
-  achievement: '/my',
-  xp: '/home',
 };
 
 function formatRelativeTime(dateStr: string): string {
@@ -52,7 +44,6 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 export function NotificationCenter() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { data, isLoading: loading } = useNotifications();
   const markRead = useMarkNotificationsRead();
@@ -62,17 +53,12 @@ export function NotificationCenter() {
   const unreadCount = data?.unreadCount ?? 0;
 
   const handleNotificationClick = useCallback(
-    (id: string, type: string, isRead: boolean) => {
+    (id: string, isRead: boolean) => {
       if (!isRead) {
         markOne.mutate(id);
       }
-      const link = TYPE_LINK[type];
-      if (link) {
-        setOpen(false);
-        router.push(link);
-      }
     },
-    [markOne, router]
+    [markOne]
   );
 
   return (
@@ -131,7 +117,6 @@ export function NotificationCenter() {
                   onClick={() =>
                     handleNotificationClick(
                       notification.id,
-                      notification.type,
                       notification.isRead
                     )
                   }

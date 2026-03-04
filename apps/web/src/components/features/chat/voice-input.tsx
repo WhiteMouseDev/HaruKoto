@@ -261,7 +261,7 @@ export function VoiceInput({ onSend, disabled, onCancel }: VoiceInputProps) {
                 ref={textareaRef}
                 value={transcription}
                 onChange={(e) => setTranscription(e.target.value)}
-                className="font-jp border-input bg-secondary/50 w-full resize-none rounded-xl border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                className="font-jp border-input bg-secondary/50 w-full resize-none rounded-xl border px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 rows={2}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
