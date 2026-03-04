@@ -2,9 +2,17 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { ChevronRight, Lock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { GameIcon } from '@/components/ui/game-icon';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import {
   ACHIEVEMENTS,
   type AchievementCategory,
@@ -32,7 +40,7 @@ const CATEGORY_TABS: { value: CategoryTab; label: string }[] = [
   { value: 'special', label: '특별' },
 ];
 
-const container = {
+const gridContainer = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -40,7 +48,7 @@ const container = {
   },
 };
 
-const item = {
+const gridItem = {
   hidden: { scale: 0.9, opacity: 0 },
   show: { scale: 1, opacity: 1 },
 };
@@ -48,6 +56,7 @@ const item = {
 export function AchievementsSection({
   achievements,
 }: AchievementsSectionProps) {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
 
   const achievedMap = useMemo(() => {
@@ -67,83 +76,143 @@ export function AchievementsSection({
   );
 
   const achievedCount = achievements.length;
+  const totalCount = ACHIEVEMENTS.length;
+
+  // Get achieved achievements for the inline preview
+  const achievedAchievements = useMemo(
+    () => ACHIEVEMENTS.filter((a) => achievedMap.has(a.type)),
+    [achievedMap]
+  );
 
   return (
-    <motion.div
-      initial={{ y: 10, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.1 }}
-    >
-      <Card>
-        <CardContent className="p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base font-bold">업적</h3>
-            <span className="text-muted-foreground text-sm">
-              {achievedCount}/{ACHIEVEMENTS.length}
-            </span>
-          </div>
-
-          <div className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1">
-            {CATEGORY_TABS.map((tab) => (
+    <>
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Card>
+          <CardContent className="p-4">
+            {/* Header Row */}
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-base font-bold">업적</h3>
               <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                  activeTab === tab.value
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
-                }`}
+                className="text-muted-foreground flex items-center gap-0.5 text-sm"
+                onClick={() => setSheetOpen(true)}
               >
-                {tab.label}
+                <span>
+                  {achievedCount}/{totalCount} 달성
+                </span>
+                <ChevronRight className="size-4" />
               </button>
-            ))}
-          </div>
+            </div>
 
-          <motion.div
-            className="grid grid-cols-3 gap-2.5"
-            variants={container}
-            initial="hidden"
-            animate="show"
-            key={activeTab}
-          >
-            {filtered.map((achievement) => {
-              const achievedAt = achievedMap.get(achievement.type);
-              const isAchieved = !!achievedAt;
+            {/* Progress Bar */}
+            <Progress
+              value={achievedCount}
+              max={totalCount}
+              className="mb-3 h-1.5"
+            />
 
-              return (
-                <motion.div
-                  key={achievement.type}
-                  variants={item}
-                  className={`relative flex flex-col items-center gap-1 rounded-xl p-3 ${
-                    isAchieved ? 'bg-secondary' : 'bg-secondary opacity-40'
+            {/* Achieved Icons Row */}
+            {achievedAchievements.length > 0 ? (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {achievedAchievements.map((achievement) => (
+                  <div
+                    key={achievement.type}
+                    className="bg-secondary flex shrink-0 items-center justify-center rounded-lg p-2"
+                  >
+                    <GameIcon
+                      name={achievement.emoji}
+                      className="text-primary size-5"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center text-xs">
+                첫 번째 업적을 달성해보세요!
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Full Achievements Sheet */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl">
+          <SheetHeader>
+            <SheetTitle>업적</SheetTitle>
+            <SheetDescription>
+              {achievedCount}/{totalCount} 달성
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex flex-1 flex-col overflow-hidden px-4 pb-4">
+            {/* Category Tabs */}
+            <div className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1">
+              {CATEGORY_TABS.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    activeTab === tab.value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
                   }`}
                 >
-                  {!isAchieved && (
-                    <div className="absolute right-1.5 top-1.5">
-                      <Lock className="text-muted-foreground size-3" />
-                    </div>
-                  )}
-                  <GameIcon
-                    name={achievement.emoji}
-                    className={`size-7 ${isAchieved ? 'text-primary' : 'text-muted-foreground'}`}
-                  />
-                  <span className="text-center text-[11px] font-medium leading-tight">
-                    {achievement.title}
-                  </span>
-                  {isAchieved && achievedAt && (
-                    <span className="text-muted-foreground text-[10px]">
-                      {new Date(achievedAt).toLocaleDateString('ko-KR', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Achievements Grid */}
+            <motion.div
+              className="grid grid-cols-3 gap-2.5 overflow-y-auto"
+              variants={gridContainer}
+              initial="hidden"
+              animate="show"
+              key={activeTab}
+            >
+              {filtered.map((achievement) => {
+                const achievedAt = achievedMap.get(achievement.type);
+                const isAchieved = !!achievedAt;
+
+                return (
+                  <motion.div
+                    key={achievement.type}
+                    variants={gridItem}
+                    className={`relative flex flex-col items-center gap-1 rounded-xl p-3 ${
+                      isAchieved ? 'bg-secondary' : 'bg-secondary opacity-40'
+                    }`}
+                  >
+                    {!isAchieved && (
+                      <div className="absolute right-1.5 top-1.5">
+                        <Lock className="text-muted-foreground size-3" />
+                      </div>
+                    )}
+                    <GameIcon
+                      name={achievement.emoji}
+                      className={`size-7 ${isAchieved ? 'text-primary' : 'text-muted-foreground'}`}
+                    />
+                    <span className="text-center text-[11px] font-medium leading-tight">
+                      {achievement.title}
                     </span>
-                  )}
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </CardContent>
-      </Card>
-    </motion.div>
+                    {isAchieved && achievedAt && (
+                      <span className="text-muted-foreground text-[10px]">
+                        {new Date(achievedAt).toLocaleDateString('ko-KR', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }

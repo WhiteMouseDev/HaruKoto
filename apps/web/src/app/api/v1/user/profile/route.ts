@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { z } from 'zod';
-import { checkCharacterUnlocks, type GameEvent } from '@/lib/gamification';
+import { calculateLevel, checkCharacterUnlocks, type GameEvent } from '@/lib/gamification';
 
 export async function GET() {
   try {
@@ -62,9 +62,17 @@ export async function GET() {
         }),
       ]);
 
+    const levelProgress = calculateLevel(dbUser.experiencePoints);
+
     return NextResponse.json(
       {
-        profile: dbUser,
+        profile: {
+          ...dbUser,
+          levelProgress: {
+            currentXp: levelProgress.currentXp,
+            xpForNext: levelProgress.xpForNext,
+          },
+        },
         summary: {
           totalWordsStudied: totalWordsStudied._sum.wordsStudied ?? 0,
           totalQuizzesCompleted: totalQuizzes,

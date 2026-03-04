@@ -3,11 +3,10 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { ProfileHeader } from '@/components/features/my/profile-header';
-import { StatsOverview } from '@/components/features/my/stats-overview';
+import { ProfileHero } from '@/components/features/my/profile-hero';
 import { AchievementsSection } from '@/components/features/my/achievements-section';
 import { SettingsMenu } from '@/components/features/my/settings-menu';
-import { CallSettings, getDefaultCallSettings, type CallSettingsData } from '@/components/features/my/call-settings';
+import { getDefaultCallSettings, type CallSettingsData } from '@/components/features/my/call-settings';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useProfile } from '@/hooks/use-dashboard';
@@ -24,6 +23,7 @@ type MyProfileData = {
     dailyGoal: number;
     experiencePoints: number;
     level: number;
+    levelProgress: { currentXp: number; xpForNext: number };
     streakCount: number;
     longestStreak: number;
     callSettings: Partial<CallSettingsData> | null;
@@ -85,18 +85,25 @@ export default function MyPage() {
     return (
       <div className="flex flex-col gap-4 p-4">
         <h1 className="pt-2 text-2xl font-bold">MY</h1>
-        <div className="flex items-center gap-4">
-          <div className="bg-muted size-16 animate-pulse rounded-full" />
-          <div className="flex flex-col gap-2">
-            <div className="bg-muted h-5 w-24 animate-pulse rounded" />
-            <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+        {/* ProfileHero skeleton */}
+        <div className="rounded-xl border p-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-muted size-12 animate-pulse rounded-full" />
+            <div className="flex flex-col gap-2">
+              <div className="bg-muted h-5 w-24 animate-pulse rounded" />
+              <div className="bg-muted h-1.5 w-32 animate-pulse rounded-full" />
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-4 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-muted h-12 animate-pulse rounded-lg" />
+            ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-muted h-24 animate-pulse rounded-xl" />
-          ))}
-        </div>
+        {/* Achievements skeleton */}
+        <div className="bg-muted h-20 animate-pulse rounded-xl" />
+        {/* Settings skeleton */}
+        <div className="bg-muted h-48 animate-pulse rounded-xl" />
       </div>
     );
   }
@@ -115,23 +122,20 @@ export default function MyPage() {
   const { profile, summary, achievements } = data;
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-4 p-4">
       <h1 className="pt-2 text-2xl font-bold">MY</h1>
 
-      <ProfileHeader
+      <ProfileHero
         nickname={profile.nickname}
         avatarUrl={profile.avatarUrl}
         jlptLevel={profile.jlptLevel}
-        createdAt={profile.createdAt}
-        onNicknameUpdate={handleNicknameUpdate}
-      />
-
-      <StatsOverview
-        totalStudyDays={summary.totalStudyDays}
-        totalWordsStudied={summary.totalWordsStudied}
         experiencePoints={profile.experiencePoints}
         level={profile.level}
+        levelProgress={profile.levelProgress}
+        totalStudyDays={summary.totalStudyDays}
+        totalWordsStudied={summary.totalWordsStudied}
         longestStreak={profile.longestStreak}
+        onNicknameUpdate={handleNicknameUpdate}
       />
 
       <AchievementsSection achievements={achievements} />
@@ -140,15 +144,11 @@ export default function MyPage() {
         jlptLevel={profile.jlptLevel}
         dailyGoal={profile.dailyGoal}
         onUpdate={handleUpdate}
-      />
-
-      <CallSettings
-        settings={{
+        callSettings={{
           ...getDefaultCallSettings(profile.jlptLevel),
           ...(profile.callSettings ?? {}),
         }}
-        jlptLevel={profile.jlptLevel}
-        onUpdate={handleCallSettingsUpdate}
+        onCallSettingsUpdate={handleCallSettingsUpdate}
       />
 
       <motion.div
