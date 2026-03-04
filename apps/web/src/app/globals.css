@@ -84,7 +84,7 @@
 
   /* Primary: Cherry Pink */
   --primary: #FFB7C5;
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #5C1A2A;
 
   /* Secondary: Soft Pink */
   --secondary: #FFF0F5;
@@ -117,7 +117,7 @@
   --sidebar: #FFF8F0;
   --sidebar-foreground: #2D2D2D;
   --sidebar-primary: #FFB7C5;
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary-foreground: #5C1A2A;
   --sidebar-accent: #FFE4EC;
   --sidebar-accent-foreground: #2D2D2D;
   --sidebar-border: #F0E6DE;
@@ -148,7 +148,7 @@
   --popover-foreground: #F0F0F0;
 
   --primary: #FF8FA3;
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #5C1A2A;
 
   --secondary: #2A2A4A;
   --secondary-foreground: #F0F0F0;
@@ -174,7 +174,7 @@
   --sidebar: #1A1A2E;
   --sidebar-foreground: #F0F0F0;
   --sidebar-primary: #FF8FA3;
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary-foreground: #5C1A2A;
   --sidebar-accent: #3D1F2A;
   --sidebar-accent-foreground: #F0F0F0;
   --sidebar-border: rgba(255, 255, 255, 0.1);
