@@ -197,17 +197,72 @@ useEffect(() => {
 - **일반 브라우저 영향 없음**: `window.HarukotoBridge`가 없으면 무시됨
 - **확장 가능**: 다른 Flutter ↔ Web 통신에도 활용 가능
 
-### 결과
+### 최종 구현: 상/하단 독립 색상 + 다크모드 동기화
 
-**스크린샷**: (통화 화면에서 SafeArea까지 어두운 배경으로 통일된 스크린샷 첨부)
+단순히 하나의 배경색이 아닌, **상단/하단 SafeArea를 독립적으로 제어**하도록 발전시켰습니다.
+
+**Flutter — SafeArea를 수동 Container로 교체:**
+
+```dart
+body: Column(
+  children: [
+    Container(color: _topColor, height: MediaQuery.of(context).padding.top),
+    Expanded(child: WebViewWidget(controller: _controller)),
+    Container(color: _bottomColor, height: MediaQuery.of(context).padding.bottom),
+  ],
+)
+```
+
+**Web — 테마 변경 자동 감지:**
+
+```typescript
+// theme-provider.tsx
+function FlutterThemeSync() {
+  const { resolvedTheme } = useTheme();
+  useEffect(() => {
+    if (resolvedTheme === 'dark') setDarkTheme();
+    else setLightTheme();
+  }, [resolvedTheme]);
+  return null;
+}
+```
+
+**Web — 통화 화면 전용 그라데이션 대응:**
+
+```typescript
+// chat/call/page.tsx
+useEffect(() => {
+  setCallTheme(); // 상단: #0f172a, 하단: #000000
+  return () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) setDarkTheme();
+    else setLightTheme();
+  };
+}, []);
+```
+
+### 결과: 성공
+
+- 라이트 모드: SafeArea가 `#FFF8F0` (크림색)으로 페이지 배경과 일치
+- 다크 모드: SafeArea가 `#1A1A2E` (진한 남색)으로 자동 전환
+- 통화 화면: 상단 `slate-900` / 하단 `black` 으로 그라데이션과 매칭
+- 외부 페이지 (OAuth 등): SafeArea가 유지되어 정상 동작
+
+**스크린샷**: (각 모드별 SafeArea가 배경과 일치하는 스크린샷 첨부)
 
 ---
 
 ## 정리
 
-| 방식 | SafeArea | 외부 페이지 | 구현 난이도 | 결과 |
-|------|---------|------------|-----------|------|
-| CSS SafeArea (`viewport-fit: cover`) | 제거 | 침범 문제 | 낮음 | 실패 |
-| JavaScript Channel | 유지 | 정상 | 중간 | 성공 |
+| 방식 | SafeArea | 외부 페이지 | 상/하단 분리 | 다크모드 | 결과 |
+|------|---------|------------|------------|---------|------|
+| CSS SafeArea (`viewport-fit: cover`) | 제거 | 침범 문제 | - | - | 실패 |
+| JavaScript Channel (단일 색상) | 유지 | 정상 | 불가 | 수동 | 부분 성공 |
+| JavaScript Channel (상/하단 분리) | 수동 Container | 정상 | 가능 | 자동 | 성공 |
 
-**핵심 교훈**: WebView 앱에서 SafeArea를 제거하면 우리가 제어할 수 없는 외부 페이지에서 문제가 발생합니다. SafeArea는 유지하되, Scaffold 배경색을 동적으로 바꾸는 것이 더 안전한 접근법입니다.
+**핵심 교훈**:
+
+1. WebView 앱에서 SafeArea를 제거하면 외부 페이지에서 문제가 발생한다
+2. SafeArea는 유지하되, Flutter ↔ Web JavaScript Channel로 배경색을 동적으로 제어하는 것이 안전한 접근법이다
+3. 상/하단을 독립 Container로 분리하면 그라데이션 배경에도 대응 가능하다
+4. `next-themes`의 `useTheme()` + Flutter 브릿지를 조합하면 다크모드 전환도 자동 처리된다
