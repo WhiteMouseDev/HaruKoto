@@ -228,7 +228,7 @@ export default function ChatConversationPage({
 
   if (!initialized) {
     return (
-      <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
+      <div className="flex min-h-dvh flex-col">
         <div className="flex items-center gap-3 border-b p-3">
           <div className="bg-secondary h-5 w-32 animate-pulse rounded" />
         </div>
@@ -241,7 +241,7 @@ export default function ChatConversationPage({
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
+    <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <div className="shrink-0 border-b bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2 p-3">

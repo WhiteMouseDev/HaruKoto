@@ -30,6 +30,11 @@ const tabs: Tab[] = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  // Hide on active chat/call pages where keyboard input exists
+  const isConversationPage =
+    /^\/chat\/[^/]+$/.test(pathname) || pathname.startsWith('/chat/call');
+  if (isConversationPage) return null;
+
   return (
     <nav className="bg-background/95 safe-area-bottom fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
