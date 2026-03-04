@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-4 p-6 text-center">
+    <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-4 bg-background p-6 text-center">
       <span className="text-4xl">🦊</span>
       <h2 className="text-lg font-semibold">페이지를 찾을 수 없습니다</h2>
       <p className="text-muted-foreground max-w-sm text-sm">

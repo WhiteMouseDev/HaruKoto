@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
           ? { correctCount: 'desc' as const }
           : { lastReviewedAt: 'desc' as const };
 
-    const [entries, total, masteredCount] = await Promise.all([
+    const [entries, total, summaryByMastered] = await Promise.all([
       prisma.userVocabProgress.findMany({
         where: { ...where, ...searchFilter },
         include: { vocabulary: true },
@@ -63,14 +63,15 @@ export async function GET(request: NextRequest) {
       prisma.userVocabProgress.count({
         where: { ...where, ...searchFilter },
       }),
-      prisma.userVocabProgress.count({
-        where: { userId: user.id, mastered: true },
+      prisma.userVocabProgress.groupBy({
+        by: ['mastered'],
+        where: { userId: user.id },
+        _count: true,
       }),
     ]);
 
-    const totalAll = await prisma.userVocabProgress.count({
-      where: { userId: user.id },
-    });
+    const masteredCount = summaryByMastered.find((s) => s.mastered)?._count ?? 0;
+    const totalAll = summaryByMastered.reduce((sum, s) => sum + s._count, 0);
 
     return NextResponse.json({
       entries: entries.map((e) => ({

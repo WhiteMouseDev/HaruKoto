@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const [hiraganaTotal, katakanaTotal, hiraganaLearned, katakanaLearned] =
+    const [hiraganaTotal, katakanaTotal, hiraganaLearned, katakanaLearned, hiraganaMastered, katakanaMastered] =
       await Promise.all([
         prisma.kanaCharacter.count({
           where: { kanaType: 'HIRAGANA' },
@@ -32,24 +32,21 @@ export async function GET() {
             kana: { kanaType: 'KATAKANA' },
           },
         }),
+        prisma.userKanaProgress.count({
+          where: {
+            userId: user.id,
+            mastered: true,
+            kana: { kanaType: 'HIRAGANA' },
+          },
+        }),
+        prisma.userKanaProgress.count({
+          where: {
+            userId: user.id,
+            mastered: true,
+            kana: { kanaType: 'KATAKANA' },
+          },
+        }),
       ]);
-
-    const [hiraganaMastered, katakanaMastered] = await Promise.all([
-      prisma.userKanaProgress.count({
-        where: {
-          userId: user.id,
-          mastered: true,
-          kana: { kanaType: 'HIRAGANA' },
-        },
-      }),
-      prisma.userKanaProgress.count({
-        where: {
-          userId: user.id,
-          mastered: true,
-          kana: { kanaType: 'KATAKANA' },
-        },
-      }),
-    ]);
 
     return NextResponse.json({
       hiragana: {

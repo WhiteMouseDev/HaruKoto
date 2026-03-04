@@ -16,7 +16,7 @@ export async function GET() {
     today.setHours(0, 0, 0, 0);
 
     // Fetch user, today's progress, and weekly stats in parallel
-    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, kanaTotalHiragana, kanaTotalKatakana] =
+    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, kanaTotalHiragana, kanaTotalKatakana, totalVocab, totalGrammar] =
       await Promise.all([
         prisma.user.findUnique({
           where: { id: user.id },
@@ -52,17 +52,13 @@ export async function GET() {
         prisma.kanaCharacter.count({
           where: { kanaType: 'KATAKANA', category: 'basic' },
         }),
+        prisma.vocabulary.count(),
+        prisma.grammar.count(),
       ]);
 
     if (!dbUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-
-    // Count total vocab/grammar for user's level
-    const [totalVocab, totalGrammar] = await Promise.all([
-      prisma.vocabulary.count(),
-      prisma.grammar.count(),
-    ]);
 
     // Calculate vocab level progress
     const vocabMastered =

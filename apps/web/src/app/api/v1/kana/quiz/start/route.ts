@@ -120,12 +120,14 @@ export async function POST(request: Request) {
       const answerType = isHiraganaToKatakana ? 'KATAKANA' : 'HIRAGANA';
       const subText = isHiraganaToKatakana ? '→ 가타카나는?' : '→ 히라가나는?';
 
-      const questionChars = await prisma.kanaCharacter.findMany({
-        where: { kanaType: questionType },
-      });
-      const answerChars = await prisma.kanaCharacter.findMany({
-        where: { kanaType: answerType },
-      });
+      const [questionChars, answerChars] = await Promise.all([
+        prisma.kanaCharacter.findMany({
+          where: { kanaType: questionType },
+        }),
+        prisma.kanaCharacter.findMany({
+          where: { kanaType: answerType },
+        }),
+      ]);
 
       const answerByRomaji = new Map(
         answerChars.map((c) => [c.romaji, c])

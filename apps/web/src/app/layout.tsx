@@ -68,7 +68,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${notoSansKR.variable} ${notoSansJP.variable} antialiased`}
+        className={`${notoSansKR.variable} ${notoSansJP.variable} bg-background antialiased`}
       >
         <ThemeProvider
           attribute="class"

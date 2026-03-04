@@ -150,22 +150,28 @@ export async function GET() {
       };
     });
 
-    // DB 진행 상황도 업데이트 (비동기, 응답은 기다리지 않음)
+    // DB 진행 상황도 업데이트 (변경된 미션만 병렬 업데이트)
     if (progress) {
-      for (const m of missions) {
-        const def = defs.get(m.missionType);
-        if (!def) continue;
-        const actual = Math.min(
-          progress[def.progressField] as number,
-          m.targetCount
-        );
-        const completed = actual >= m.targetCount;
-        if (actual !== m.currentCount || completed !== m.isCompleted) {
-          await prisma.dailyMission.update({
-            where: { id: m.id },
-            data: { currentCount: actual, isCompleted: completed },
-          });
-        }
+      const updates = missions
+        .map((m) => {
+          const def = defs.get(m.missionType);
+          if (!def) return null;
+          const actual = Math.min(
+            progress[def.progressField] as number,
+            m.targetCount
+          );
+          const completed = actual >= m.targetCount;
+          if (actual !== m.currentCount || completed !== m.isCompleted) {
+            return prisma.dailyMission.update({
+              where: { id: m.id },
+              data: { currentCount: actual, isCompleted: completed },
+            });
+          }
+          return null;
+        })
+        .filter(Boolean);
+      if (updates.length > 0) {
+        await Promise.all(updates);
       }
     }
 
