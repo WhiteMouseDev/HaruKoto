@@ -26,6 +26,12 @@ build/
 *.swp
 *.swo
 
+# Claude Code (local only)
+.claude/settings.local.json
+
+# TypeScript build info
+*.tsbuildinfo
+
 # OS
 .DS_Store
 Thumbs.db
