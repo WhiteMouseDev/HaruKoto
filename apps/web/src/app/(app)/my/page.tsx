@@ -64,8 +64,8 @@ export default function MyPage() {
   );
 
   const handleCallSettingsUpdate = useCallback(
-    async (partial: Partial<CallSettingsData>) => {
-      await updateProfile.mutateAsync({ callSettings: partial });
+    (partial: Partial<CallSettingsData>) => {
+      updateProfile.mutate({ callSettings: partial });
     },
     [updateProfile]
   );

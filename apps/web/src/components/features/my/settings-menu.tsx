@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 import {
@@ -36,7 +36,7 @@ type SettingsMenuProps = {
   dailyGoal: number;
   onUpdate: (field: string, value: unknown) => Promise<void>;
   callSettings: CallSettingsData;
-  onCallSettingsUpdate: (settings: Partial<CallSettingsData>) => Promise<void>;
+  onCallSettingsUpdate: (settings: Partial<CallSettingsData>) => void;
 };
 
 const JLPT_LEVELS: JlptLevel[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -62,7 +62,29 @@ export function SettingsMenu({
   const [levelSheetOpen, setLevelSheetOpen] = useState(false);
   const [goalSheetOpen, setGoalSheetOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [callUpdating, setCallUpdating] = useState(false);
+
+  // Local slider state for instant UI feedback
+  const [localSilence, setLocalSilence] = useState(callSettings.silenceDurationMs);
+  const [localSpeed, setLocalSpeed] = useState(callSettings.aiResponseSpeed);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const speedTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Sync local state when props change (e.g. server refetch)
+  useEffect(() => {
+    setLocalSilence(callSettings.silenceDurationMs);
+  }, [callSettings.silenceDurationMs]);
+
+  useEffect(() => {
+    setLocalSpeed(callSettings.aiResponseSpeed);
+  }, [callSettings.aiResponseSpeed]);
+
+  // Cleanup debounce timers on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(silenceTimerRef.current);
+      clearTimeout(speedTimerRef.current);
+    };
+  }, []);
 
   const handleLevelChange = async (level: JlptLevel) => {
     setUpdating(true);
@@ -84,23 +106,40 @@ export function SettingsMenu({
     }
   };
 
-  const handleCallUpdate = useCallback(
-    async (partial: Partial<CallSettingsData>) => {
-      setCallUpdating(true);
-      try {
-        await onCallSettingsUpdate(partial);
-      } finally {
-        setCallUpdating(false);
-      }
+  const handleCallToggle = useCallback(
+    (partial: Partial<CallSettingsData>) => {
+      onCallSettingsUpdate(partial);
     },
     [onCallSettingsUpdate]
   );
 
-  const silenceSeconds = (callSettings.silenceDurationMs / 1000).toFixed(1);
+  const handleSilenceChange = useCallback(
+    (value: number) => {
+      setLocalSilence(value);
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = setTimeout(() => {
+        onCallSettingsUpdate({ silenceDurationMs: value });
+      }, 400);
+    },
+    [onCallSettingsUpdate]
+  );
+
+  const handleSpeedChange = useCallback(
+    (value: number) => {
+      setLocalSpeed(Math.round(value * 100) / 100);
+      clearTimeout(speedTimerRef.current);
+      speedTimerRef.current = setTimeout(() => {
+        onCallSettingsUpdate({ aiResponseSpeed: Math.round(value * 100) / 100 });
+      }, 400);
+    },
+    [onCallSettingsUpdate]
+  );
+
+  const silenceSeconds = (localSilence / 1000).toFixed(1);
   const speedLabel =
-    callSettings.aiResponseSpeed <= 0.85
+    localSpeed <= 0.85
       ? '느리게'
-      : callSettings.aiResponseSpeed >= 1.15
+      : localSpeed >= 1.15
         ? '빠르게'
         : '보통';
 
@@ -226,12 +265,11 @@ export function SettingsMenu({
                 </span>
               </div>
               <Slider
-                value={[callSettings.silenceDurationMs]}
-                onValueChange={([v]) => handleCallUpdate({ silenceDurationMs: v })}
+                value={[localSilence]}
+                onValueChange={([v]) => handleSilenceChange(v)}
                 min={1000}
                 max={5000}
                 step={100}
-                disabled={callUpdating}
                 className="w-full"
               />
               <div className="text-muted-foreground flex justify-between text-[10px]">
@@ -256,14 +294,11 @@ export function SettingsMenu({
                 <span className="text-sm font-medium">{speedLabel}</span>
               </div>
               <Slider
-                value={[callSettings.aiResponseSpeed]}
-                onValueChange={([v]) =>
-                  handleCallUpdate({ aiResponseSpeed: Math.round(v * 100) / 100 })
-                }
+                value={[localSpeed]}
+                onValueChange={([v]) => handleSpeedChange(v)}
                 min={0.8}
                 max={1.2}
                 step={0.05}
-                disabled={callUpdating}
                 className="w-full"
               />
               <div className="text-muted-foreground flex justify-between text-[10px]">
@@ -283,8 +318,7 @@ export function SettingsMenu({
               </div>
               <Switch
                 checked={callSettings.subtitleEnabled}
-                onCheckedChange={(v) => handleCallUpdate({ subtitleEnabled: v })}
-                disabled={callUpdating}
+                onCheckedChange={(v) => handleCallToggle({ subtitleEnabled: v })}
               />
             </div>
 
@@ -298,8 +332,7 @@ export function SettingsMenu({
               </div>
               <Switch
                 checked={callSettings.autoAnalysis}
-                onCheckedChange={(v) => handleCallUpdate({ autoAnalysis: v })}
-                disabled={callUpdating}
+                onCheckedChange={(v) => handleCallToggle({ autoAnalysis: v })}
               />
             </div>
           </CardContent>
