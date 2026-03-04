@@ -13,7 +13,7 @@ import {
   Bell,
   Phone,
   Clock,
-  Gauge,
+  // Gauge,
   Subtitles,
   FileText,
   ScrollText,
@@ -104,22 +104,23 @@ export function SettingsMenu({
   const [localSilence, setLocalSilence] = useState(
     callSettings.silenceDurationMs
   );
-  const [localSpeed, setLocalSpeed] = useState(callSettings.aiResponseSpeed);
+  // aiResponseSpeed — 현재 미사용 (Gemini Live에서 소비하지 않음). 기능 연결 후 복원.
+  // const [localSpeed, setLocalSpeed] = useState(callSettings.aiResponseSpeed);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const speedTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // const speedTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     setLocalSilence(callSettings.silenceDurationMs);
   }, [callSettings.silenceDurationMs]);
 
-  useEffect(() => {
-    setLocalSpeed(callSettings.aiResponseSpeed);
-  }, [callSettings.aiResponseSpeed]);
+  // useEffect(() => {
+  //   setLocalSpeed(callSettings.aiResponseSpeed);
+  // }, [callSettings.aiResponseSpeed]);
 
   useEffect(() => {
     return () => {
       clearTimeout(silenceTimerRef.current);
-      clearTimeout(speedTimerRef.current);
+      // clearTimeout(speedTimerRef.current);
     };
   }, []);
 
@@ -161,26 +162,20 @@ export function SettingsMenu({
     [onCallSettingsUpdate]
   );
 
-  const handleSpeedChange = useCallback(
-    (value: number) => {
-      setLocalSpeed(Math.round(value * 100) / 100);
-      clearTimeout(speedTimerRef.current);
-      speedTimerRef.current = setTimeout(() => {
-        onCallSettingsUpdate({
-          aiResponseSpeed: Math.round(value * 100) / 100,
-        });
-      }, 400);
-    },
-    [onCallSettingsUpdate]
-  );
+  // const handleSpeedChange = useCallback(
+  //   (value: number) => {
+  //     setLocalSpeed(Math.round(value * 100) / 100);
+  //     clearTimeout(speedTimerRef.current);
+  //     speedTimerRef.current = setTimeout(() => {
+  //       onCallSettingsUpdate({
+  //         aiResponseSpeed: Math.round(value * 100) / 100,
+  //       });
+  //     }, 400);
+  //   },
+  //   [onCallSettingsUpdate]
+  // );
 
   const silenceSeconds = (localSilence / 1000).toFixed(1);
-  const speedLabel =
-    localSpeed <= 0.85
-      ? '느리게'
-      : localSpeed >= 1.15
-        ? '빠르게'
-        : '보통';
 
   const themeLabel =
     theme === 'dark' ? '다크' : theme === 'system' ? '시스템' : '라이트';
@@ -553,9 +548,8 @@ export function SettingsMenu({
               </div>
             </div>
 
+            {/* AI Response Speed — 현재 미사용. 기능 연결 후 복원.
             <Separator />
-
-            {/* AI Response Speed */}
             <div className="flex flex-col gap-3 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -578,6 +572,7 @@ export function SettingsMenu({
                 <span>빠르게</span>
               </div>
             </div>
+            */}
 
             <Separator />
 
