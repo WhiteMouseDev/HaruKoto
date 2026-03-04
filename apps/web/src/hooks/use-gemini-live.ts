@@ -98,6 +98,8 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
             },
           },
           systemInstruction: optionsRef.current.systemInstruction ?? DEFAULT_SYSTEM_INSTRUCTION,
+          enableAffectiveDialog: true,
+          proactivity: { proactiveAudio: true },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           // VAD sensitivity — reduce false positives from background noise on mobile
