@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -330,12 +329,6 @@ export default function LoginPage() {
         </CardContent>
       </Card>
 
-      <Link
-        href="/"
-        className="text-muted-foreground hover:text-foreground mt-6 text-sm"
-      >
-        ← 처음으로
-      </Link>
     </div>
   );
 }
