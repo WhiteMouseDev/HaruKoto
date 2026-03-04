@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
@@ -201,6 +202,37 @@ class _WebViewScreenState extends State<WebViewScreen> {
     } catch (_) {}
   }
 
+  /// 카카오앱 등 외부 앱 URL scheme 처리
+  Future<void> _launchExternalUrl(String url) async {
+    // Android intent:// URL 처리
+    if (url.startsWith('intent://')) {
+      // intent:// URL에서 scheme 추출하여 일반 URL로 변환
+      final schemeMatch = RegExp(r'scheme=([^;]+)').firstMatch(url);
+      if (schemeMatch != null) {
+        final scheme = schemeMatch.group(1)!;
+        final cleanUrl = url.replaceFirst('intent://', '$scheme://').split('#Intent')[0];
+        final uri = Uri.parse(cleanUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        }
+      }
+      // 앱이 없으면 fallback URL로 이동
+      final fallback = RegExp(r'S\.browser_fallback_url=([^;]+)').firstMatch(url);
+      if (fallback != null) {
+        final fallbackUrl = Uri.decodeFull(fallback.group(1)!);
+        _controller.loadRequest(Uri.parse(fallbackUrl));
+      }
+      return;
+    }
+
+    // 일반 커스텀 URL scheme (kakaokompassauth://, kakaolink:// 등)
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   void _initWebView() {
     _controller = WebViewController(
       onPermissionRequest: (request) {
@@ -220,6 +252,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
           onNavigationRequest: (request) {
             final url = request.url;
+
+            // 카카오앱 등 커스텀 URL scheme 처리
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+              _launchExternalUrl(url);
+              return NavigationDecision.prevent;
+            }
+
             // 앱 URL 허용
             if (url.startsWith(kAppUrl)) return NavigationDecision.navigate;
             // Supabase OAuth 허용
