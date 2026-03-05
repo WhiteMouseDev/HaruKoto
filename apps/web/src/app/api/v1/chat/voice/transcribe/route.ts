@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { openaiClient } from '@harukoto/ai';
+import { transcribeAudio } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
@@ -68,13 +68,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const transcription = await openaiClient.audio.transcriptions.create({
-      file: audioFile,
-      model: 'whisper-1',
-      language: 'ja',
-    });
+    const arrayBuffer = await audioFile.arrayBuffer();
+    const audioBuffer = Buffer.from(arrayBuffer);
+    const mimeType = audioFile.type || 'audio/webm';
 
-    return NextResponse.json({ transcription: transcription.text });
+    const text = await transcribeAudio(audioBuffer, mimeType);
+
+    return NextResponse.json({ transcription: text });
   } catch (err) {
     console.error('STT transcribe error:', err);
     return NextResponse.json(

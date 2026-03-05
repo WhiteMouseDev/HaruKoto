@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getGoogleGenAI } from '@harukoto/ai';
+import { getGoogleGenAIAlpha } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 // Ephemeral tokens require BidiGenerateContentConstrained + access_token param
@@ -32,7 +32,7 @@ export async function POST() {
       );
     }
 
-    const genai = getGoogleGenAI();
+    const genai = getGoogleGenAIAlpha();
 
     // expireTime must be ISO 8601 / RFC 3339 format
     const expireTime = new Date(Date.now() + 5 * 60 * 1000).toISOString();
