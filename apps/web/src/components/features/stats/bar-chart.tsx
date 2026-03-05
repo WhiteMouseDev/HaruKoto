@@ -39,15 +39,19 @@ function formatMinutes(seconds: number): string {
 function getWeekBars(records: BarChartRecord[]): BarData[] {
   const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
   const today = new Date();
+  // Start from Monday of the current week
+  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
   const bars: BarData[] = [];
 
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     const dateStr = d.toISOString().split('T')[0];
     const record = records.find((r) => r.date === dateStr);
     bars.push({
-      label: DAY_LABELS[(d.getDay() + 6) % 7],
+      label: DAY_LABELS[i],
       value: record?.studyTimeSeconds ?? 0,
       dateRange: dateStr,
     });
