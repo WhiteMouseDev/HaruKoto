@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
-const kLightBg = Color(0xFFFFF8F0);
+const kLightBg = Color(0xFFFCF6F5);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFFF0F3), Color(0xFFFFE4EC), Color(0xFFFFD6E0)],
+            colors: [Color(0xFFFCF6F5), Color(0xFFFFF0F3), Color(0xFFFFE4EC)],
           ),
         ),
         child: Center(
