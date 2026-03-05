@@ -55,17 +55,17 @@
   --color-hk-info: var(--hk-info);
 
   /* Font families */
-  --font-sans: var(--font-noto-sans-kr), "Noto Sans KR", system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-jp: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
 
   /* Border radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-xl: 1rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 }
 
 /* ========================================
@@ -75,7 +75,7 @@
   --radius: 0.75rem;
 
   /* Core colors */
-  --background: #FFF8F0;
+  --background: #FCF6F5;
   --foreground: #2D2D2D;
   --card: #FFFFFF;
   --card-foreground: #2D2D2D;
@@ -83,49 +83,49 @@
   --popover-foreground: #2D2D2D;
 
   /* Primary: Cherry Pink */
-  --primary: #FFB7C5;
-  --primary-foreground: #5C1A2A;
+  --primary: #F6A5B3;
+  --primary-foreground: #FFFFFF;
 
   /* Secondary: Soft Pink */
-  --secondary: #FFF0F5;
+  --secondary: #FFF0F3;
   --secondary-foreground: #2D2D2D;
 
   /* Muted */
-  --muted: #F5F0EB;
+  --muted: #FCF6F5;
   --muted-foreground: #6B7280;
 
   /* Accent: Light Pink */
-  --accent: #FFE4EC;
+  --accent: #FCE7EC;
   --accent-foreground: #2D2D2D;
 
   /* Destructive */
   --destructive: #EF4444;
 
   /* Borders & Input */
-  --border: #F0E6DE;
-  --input: #F0E6DE;
-  --ring: #FFB7C5;
+  --border: #FCE7EC;
+  --input: #FCE7EC;
+  --ring: #F6A5B3;
 
   /* Chart colors (gamification/stats) */
-  --chart-1: #FFB7C5;
+  --chart-1: #F6A5B3;
   --chart-2: #87CEEB;
   --chart-3: #98D8C8;
   --chart-4: #FFD93D;
   --chart-5: #FF6B6B;
 
   /* Sidebar */
-  --sidebar: #FFF8F0;
+  --sidebar: #FCF6F5;
   --sidebar-foreground: #2D2D2D;
-  --sidebar-primary: #FFB7C5;
+  --sidebar-primary: #F6A5B3;
   --sidebar-primary-foreground: #5C1A2A;
-  --sidebar-accent: #FFE4EC;
+  --sidebar-accent: #FCE7EC;
   --sidebar-accent-foreground: #2D2D2D;
-  --sidebar-border: #F0E6DE;
-  --sidebar-ring: #FFB7C5;
+  --sidebar-border: #FCE7EC;
+  --sidebar-ring: #F6A5B3;
 
   /* HaruKoto custom */
-  --hk-primary-hover: #FF8FA3;
-  --hk-primary-light: #FFE4EC;
+  --hk-primary-hover: #F494A4;
+  --hk-primary-light: #FFF0F3;
   --hk-blue: #87CEEB;
   --hk-green: #98D8C8;
   --hk-red: #FF6B6B;
@@ -147,8 +147,8 @@
   --popover: #242442;
   --popover-foreground: #F0F0F0;
 
-  --primary: #FF8FA3;
-  --primary-foreground: #5C1A2A;
+  --primary: #F6A5B3;
+  --primary-foreground: #FFFFFF;
 
   --secondary: #2A2A4A;
   --secondary-foreground: #F0F0F0;
@@ -163,9 +163,9 @@
 
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);
-  --ring: #FF8FA3;
+  --ring: #F6A5B3;
 
-  --chart-1: #FF8FA3;
+  --chart-1: #F6A5B3;
   --chart-2: #5BA3C9;
   --chart-3: #6BC4AD;
   --chart-4: #E5C235;
@@ -173,12 +173,12 @@
 
   --sidebar: #1A1A2E;
   --sidebar-foreground: #F0F0F0;
-  --sidebar-primary: #FF8FA3;
+  --sidebar-primary: #F6A5B3;
   --sidebar-primary-foreground: #5C1A2A;
   --sidebar-accent: #3D1F2A;
   --sidebar-accent-foreground: #F0F0F0;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #FF8FA3;
+  --sidebar-ring: #F6A5B3;
 
   --hk-primary-hover: #FFB7C5;
   --hk-primary-light: #3D1F2A;

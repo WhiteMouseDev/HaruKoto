@@ -14,34 +14,28 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: {
-        id: true,
-        email: true,
-        nickname: true,
-        avatarUrl: true,
-        jlptLevel: true,
-        goal: true,
-        dailyGoal: true,
-        experiencePoints: true,
-        level: true,
-        streakCount: true,
-        longestStreak: true,
-        lastStudyDate: true,
-        isPremium: true,
-        callSettings: true,
-        createdAt: true,
-      },
-    });
-
-    if (!dbUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Summary stats + achievements (3 DailyProgress queries merged into 1)
-    const [dailyStats, totalQuizzes, userAchievements] =
+    const [dbUser, dailyStats, totalQuizzes, userAchievements] =
       await Promise.all([
+        prisma.user.findUnique({
+          where: { id: user.id },
+          select: {
+            id: true,
+            email: true,
+            nickname: true,
+            avatarUrl: true,
+            jlptLevel: true,
+            goal: true,
+            dailyGoal: true,
+            experiencePoints: true,
+            level: true,
+            streakCount: true,
+            longestStreak: true,
+            lastStudyDate: true,
+            isPremium: true,
+            callSettings: true,
+            createdAt: true,
+          },
+        }),
         prisma.dailyProgress.aggregate({
           where: { userId: user.id },
           _sum: { wordsStudied: true, xpEarned: true },
@@ -55,6 +49,10 @@ export async function GET() {
           select: { achievementType: true, achievedAt: true },
         }),
       ]);
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
     const levelProgress = calculateLevel(dbUser.experiencePoints);
 

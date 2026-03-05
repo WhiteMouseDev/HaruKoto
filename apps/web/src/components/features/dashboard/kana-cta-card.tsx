@@ -1,9 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 import { useKanaProgress } from '@/hooks/use-kana';
 
 export function KanaCtaCard() {
@@ -23,25 +21,30 @@ export function KanaCtaCard() {
     : '일본어의 기본! 히라가나 46자를 배우면 단어 학습을 시작할 수 있어요.';
 
   return (
-    <Card className="border-primary/30 bg-primary/5">
-      <CardContent className="flex flex-col gap-3 p-5">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
-            <span className="font-jp text-primary text-lg font-bold">{kanaChar}</span>
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold">{label} 배워볼까요?</h3>
-            <p className="text-muted-foreground text-xs">{description}</p>
-          </div>
+    <div className="group cursor-pointer overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm">
+      <div className="relative z-10 flex items-start gap-4">
+        <div className="bg-secondary flex size-12 shrink-0 items-center justify-center rounded-full">
+          <span className="font-jp text-primary text-xl font-bold">
+            {kanaChar}
+          </span>
         </div>
-        <Button
-          className="h-10 rounded-xl"
-          onClick={() => router.push('/study/kana')}
-        >
-          {label} 배우기
-          <ArrowRight className="ml-1 size-4" />
-        </Button>
-      </CardContent>
-    </Card>
+        <div className="flex-1">
+          <h3 className="mb-1 text-lg font-bold">{label} 배워볼까요?</h3>
+          <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+            {description}
+          </p>
+          <button
+            className="bg-primary text-primary-foreground flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold shadow-sm transition-colors hover:bg-[var(--hk-primary-hover)]"
+            onClick={() => router.push('/study/kana')}
+          >
+            <span>{label} 배우기</span>
+            <ChevronRight
+              size={18}
+              className="transition-transform group-hover:translate-x-1"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

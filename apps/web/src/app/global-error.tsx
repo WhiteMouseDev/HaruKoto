@@ -18,7 +18,7 @@ export default function GlobalError({
 
   return (
     <html lang="ko">
-      <body style={{ backgroundColor: '#FFF8F0', color: '#1A1A2E' }}>
+      <body className="bg-background text-foreground">
         <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-4 p-6 text-center">
           <span className="text-4xl">🦊</span>
           <h2 className="text-lg font-semibold">문제가 발생했습니다</h2>

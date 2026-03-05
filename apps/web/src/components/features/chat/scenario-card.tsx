@@ -37,6 +37,7 @@ export function ScenarioCard({ scenario, onSelect, onCall }: ScenarioCardProps) 
 
   return (
     <motion.div
+      className="rounded-xl"
       variants={cardHoverVariants}
       initial="rest"
       whileHover="hover"

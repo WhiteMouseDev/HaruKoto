@@ -14,8 +14,8 @@ export function LevelProgress({ currentLevel }: LevelProgressProps) {
   );
 
   return (
-    <div>
-      <h2 className="mb-3 font-semibold">JLPT 레벨</h2>
+    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+      <h2 className="mb-4 text-base font-bold">JLPT 레벨</h2>
       <div className="grid grid-cols-5 gap-2">
         {JLPT_LEVELS.map((level, i) => {
           const isCurrent = i === currentIndex;
@@ -27,7 +27,7 @@ export function LevelProgress({ currentLevel }: LevelProgressProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`flex flex-col items-center gap-1 rounded-xl border p-3 ${
+              className={`flex flex-col items-center gap-1 rounded-2xl border p-3 ${
                 isCurrent
                   ? 'border-primary bg-primary/10'
                   : isPast

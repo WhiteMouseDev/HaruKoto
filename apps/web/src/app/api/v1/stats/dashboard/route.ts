@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 
+// 정적 콘텐츠 개수 — DB에서 매번 조회할 필요 없음
+const KANA_TOTAL_HIRAGANA = 46;
+const KANA_TOTAL_KATAKANA = 46;
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -16,7 +20,7 @@ export async function GET() {
     today.setHours(0, 0, 0, 0);
 
     // Fetch user, today's progress, and weekly stats in parallel
-    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, kanaTotalHiragana, kanaTotalKatakana, totalVocab, totalGrammar] =
+    const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, totalVocab, totalGrammar] =
       await Promise.all([
         prisma.user.findUnique({
           where: { id: user.id },
@@ -45,12 +49,6 @@ export async function GET() {
         }),
         prisma.userKanaProgress.count({
           where: { userId: user.id, kana: { kanaType: 'KATAKANA', category: 'basic' } },
-        }),
-        prisma.kanaCharacter.count({
-          where: { kanaType: 'HIRAGANA', category: 'basic' },
-        }),
-        prisma.kanaCharacter.count({
-          where: { kanaType: 'KATAKANA', category: 'basic' },
         }),
         prisma.vocabulary.count(),
         prisma.grammar.count(),
@@ -81,13 +79,13 @@ export async function GET() {
     const kanaProgress = {
       hiragana: {
         learned: kanaLearnedHiragana,
-        total: kanaTotalHiragana,
-        pct: kanaTotalHiragana > 0 ? Math.round((kanaLearnedHiragana / kanaTotalHiragana) * 100) : 0,
+        total: KANA_TOTAL_HIRAGANA,
+        pct: Math.round((kanaLearnedHiragana / KANA_TOTAL_HIRAGANA) * 100),
       },
       katakana: {
         learned: kanaLearnedKatakana,
-        total: kanaTotalKatakana,
-        pct: kanaTotalKatakana > 0 ? Math.round((kanaLearnedKatakana / kanaTotalKatakana) * 100) : 0,
+        total: KANA_TOTAL_KATAKANA,
+        pct: Math.round((kanaLearnedKatakana / KANA_TOTAL_KATAKANA) * 100),
       },
     };
 

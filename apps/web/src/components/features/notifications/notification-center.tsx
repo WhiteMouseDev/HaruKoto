@@ -64,10 +64,10 @@ export function NotificationCenter() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="bg-accent relative flex items-center justify-center rounded-full p-2">
-          <Bell className="text-muted-foreground size-5" />
+        <button className="bg-secondary relative flex size-10 items-center justify-center rounded-full">
+          <Bell className="text-primary size-5" />
           {unreadCount > 0 && (
-            <span className="bg-hk-red absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full text-[10px] font-bold text-white">
+            <span className="bg-primary text-primary-foreground absolute top-0 right-0.5 flex size-4 items-center justify-center rounded-full text-[10px] font-bold">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}

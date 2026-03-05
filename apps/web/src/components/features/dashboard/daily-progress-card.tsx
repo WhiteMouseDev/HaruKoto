@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { Target, BookOpen, Trophy } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { cardHoverVariants } from '@/lib/motion';
 import { useCountUp } from '@/hooks/use-count-up';
 
 type DailyProgressCardProps = {
@@ -29,61 +27,64 @@ export function DailyProgressCard({
   const animatedAccuracy = useCountUp(accuracyPercent, 0.8, 0.3);
 
   return (
-    <motion.div
-      variants={cardHoverVariants}
-      initial="rest"
-      whileHover="hover"
-      whileTap="tap"
-    >
-      <Card>
-        <CardContent className="flex flex-col gap-4 p-4">
-          <h2 className="font-semibold">오늘의 학습</h2>
+    <div>
+      <div className="mb-3 flex items-end justify-between">
+        <h3 className="text-base font-bold">오늘의 학습</h3>
+        <span className="text-muted-foreground text-sm font-medium">
+          <span className="font-bold text-foreground">{wordsStudied}</span>/
+          {dailyGoal}
+        </span>
+      </div>
 
-          {/* Goal progress bar */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">하루 목표</span>
-              <span className="font-medium">
-                {wordsStudied}/{dailyGoal}
-              </span>
-            </div>
-            <div className="bg-secondary h-2 overflow-hidden rounded-full">
-              <motion.div
-                className="bg-primary h-full rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-              />
-            </div>
-            <span className="text-muted-foreground text-right text-xs">
-              {progressPercent}%
+      {/* Progress Bar */}
+      <div className="bg-secondary mb-5 h-2 w-full overflow-hidden rounded-full">
+        <motion.div
+          className="bg-primary h-full rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${Math.max(progressPercent, 2)}%` }}
+          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+        />
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-secondary flex flex-col items-center justify-center rounded-2xl p-4 text-center">
+          <Target size={20} className="text-primary mb-2" />
+          <span className="text-muted-foreground mb-1 text-xs font-medium">
+            목표
+          </span>
+          <span className="text-lg font-bold">
+            {animatedWords}
+            <span className="text-muted-foreground text-sm font-medium">
+              /{dailyGoal}
             </span>
-          </div>
-
-          {/* Stats grid */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
-              <Target className="text-primary size-5" />
-              <span className="text-muted-foreground text-xs">목표</span>
-              <span className="text-lg font-bold">
-                {animatedWords}/{dailyGoal}
-              </span>
-            </div>
-            <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
-              <BookOpen className="text-hk-blue size-5" />
-              <span className="text-muted-foreground text-xs">단어</span>
-              <span className="text-lg font-bold">{animatedWords}개</span>
-            </div>
-            <div className="bg-secondary flex flex-col items-center gap-1 rounded-xl p-3">
-              <Trophy className="text-hk-yellow size-5" />
-              <span className="text-muted-foreground text-xs">정답률</span>
-              <span className="text-lg font-bold">
-                {totalAnswers > 0 ? `${animatedAccuracy}%` : '--%'}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+          </span>
+        </div>
+        <div className="bg-secondary flex flex-col items-center justify-center rounded-2xl p-4 text-center">
+          <BookOpen size={20} className="text-hk-blue mb-2" />
+          <span className="text-muted-foreground mb-1 text-xs font-medium">
+            단어
+          </span>
+          <span className="text-lg font-bold">
+            {animatedWords}
+            <span className="text-muted-foreground text-sm font-medium">
+              개
+            </span>
+          </span>
+        </div>
+        <div className="bg-secondary flex flex-col items-center justify-center rounded-2xl p-4 text-center">
+          <Trophy size={20} className="text-hk-yellow mb-2" />
+          <span className="text-muted-foreground mb-1 text-xs font-medium">
+            정답률
+          </span>
+          <span className="text-lg font-bold">
+            {totalAnswers > 0 ? animatedAccuracy : '--'}
+            <span className="text-muted-foreground text-sm font-medium">
+              %
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }

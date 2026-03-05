@@ -84,11 +84,16 @@ export async function GET() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 오늘 미션이 있는지 확인
-    let missions = await prisma.dailyMission.findMany({
-      where: { userId: user.id, date: today },
-      orderBy: { missionType: 'asc' },
-    });
+    // 오늘 미션 + DailyProgress 병렬 조회
+    let [missions, progress] = await Promise.all([
+      prisma.dailyMission.findMany({
+        where: { userId: user.id, date: today },
+        orderBy: { missionType: 'asc' },
+      }),
+      prisma.dailyProgress.findUnique({
+        where: { userId_date: { userId: user.id, date: today } },
+      }),
+    ]);
 
     // 없으면 자동 생성
     if (missions.length === 0) {
@@ -107,11 +112,6 @@ export async function GET() {
         orderBy: { missionType: 'asc' },
       });
     }
-
-    // DailyProgress로 현재 진행 상황 동기화
-    const progress = await prisma.dailyProgress.findUnique({
-      where: { userId_date: { userId: user.id, date: today } },
-    });
 
     const defs = new Map(MISSION_POOL.map((m) => [m.missionType, m]));
 

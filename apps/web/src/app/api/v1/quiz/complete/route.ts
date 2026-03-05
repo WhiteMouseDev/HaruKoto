@@ -127,15 +127,15 @@ export async function POST(request: Request) {
     });
 
     // 이벤트를 알림으로 저장
-    for (const event of events) {
-      await prisma.notification.create({
-        data: {
+    if (events.length > 0) {
+      await prisma.notification.createMany({
+        data: events.map((event) => ({
           userId: user.id,
           type: event.type,
           title: event.title,
           body: event.body,
           emoji: event.emoji,
-        },
+        })),
       });
     }
 

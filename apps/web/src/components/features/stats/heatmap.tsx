@@ -45,9 +45,9 @@ function getIntensity(count: number, max: number): number {
 
 const INTENSITY_COLORS = [
   'bg-secondary', // 0 - no activity
-  'bg-[#FFE4EC]', // 1 - light pink
-  'bg-[#FFB7C5]', // 2 - cherry pink
-  'bg-[#FF8FA3]', // 3 - medium pink
+  'bg-[#FCE7EC]', // 1 - light pink
+  'bg-[#F6A5B3]', // 2 - cherry pink
+  'bg-[#F494A4]', // 3 - medium pink
   'bg-[#E5607A]', // 4 - deep pink
 ];
 

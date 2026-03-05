@@ -231,13 +231,13 @@ export default function ChatPage() {
       </motion.div>
 
       {/* Sub Tabs */}
-      <motion.div variants={item} className="flex gap-1 rounded-xl bg-secondary p-1">
+      <motion.div variants={item} className="flex gap-1 rounded-2xl bg-secondary p-1">
         <button
           onClick={() => setActiveTab('voice')}
           className={cn(
-            'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            'flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-all',
             activeTab === 'voice'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-card text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
@@ -247,9 +247,9 @@ export default function ChatPage() {
         <button
           onClick={() => setActiveTab('text')}
           className={cn(
-            'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            'flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-all',
             activeTab === 'text'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-card text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >

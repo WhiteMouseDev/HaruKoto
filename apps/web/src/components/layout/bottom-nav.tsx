@@ -47,11 +47,12 @@ export function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
+              prefetch={false}
               className={cn(
                 'relative flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] transition-colors',
                 isActive
-                  ? 'text-primary font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-primary font-bold'
+                  : 'text-muted-foreground font-medium hover:text-foreground'
               )}
             >
               <div className="relative">
