@@ -122,10 +122,7 @@ export default function MyPage() {
           </div>
           <div className="mt-4 grid grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-muted h-12 animate-pulse rounded-lg"
-              />
+              <div key={i} className="bg-muted h-12 animate-pulse rounded-lg" />
             ))}
           </div>
         </div>
@@ -184,6 +181,25 @@ export default function MyPage() {
         deleting={deleting}
       />
 
+      {/* 사업자 정보 */}
+      <footer className="text-muted-foreground/60 mt-4 mb-20 space-y-1 px-1 text-[11px] leading-relaxed">
+        <p className="text-muted-foreground/80 font-medium">
+          화이트마우스데브 (WhiteMouseDev)
+        </p>
+        <p>대표: 김건우</p>
+        <p>사업자등록번호: 364-26-01985, 통신판매업신고번호: </p>
+        <p>주소: 서울특별시 송파구 양재대로 1218</p>
+        <p>연락처: whitemousedev@whitemouse.dev</p>
+        <div className="flex gap-3 pt-1">
+          <a href="/terms" className="underline underline-offset-2">
+            이용약관
+          </a>
+          <a href="/privacy" className="underline underline-offset-2">
+            개인정보처리방침
+          </a>
+        </div>
+      </footer>
+
       {/* Delete Account Dialog */}
       <Dialog
         open={deleteDialogOpen}
@@ -212,10 +228,7 @@ export default function MyPage() {
           </ul>
 
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="delete-confirm"
-              className="text-sm font-medium"
-            >
+            <label htmlFor="delete-confirm" className="text-sm font-medium">
               확인을 위해 &quot;탈퇴&quot;를 입력해주세요.
             </label>
             <Input

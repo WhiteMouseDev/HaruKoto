@@ -134,7 +134,104 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-foreground font-bold">
-              제6조 (이용자의 의무)
+              제6조 (유료 서비스 및 결제)
+            </h2>
+            <ol className="mt-2 list-inside list-decimal space-y-1.5">
+              <li>
+                회사는 무료 서비스 외에 유료 구독 서비스(이하
+                &quot;프리미엄&quot;)를 제공하며, 이용자는 회사가 정한 요금을
+                결제하고 이용할 수 있습니다.
+              </li>
+              <li>
+                프리미엄 서비스는 결제 완료 시점부터 즉시 제공되며, 구독
+                기간은 월간(결제일로부터 30일) 또는 연간(결제일로부터
+                365일)입니다.
+              </li>
+              <li>
+                구독은 별도의 해지 요청이 없는 한, 구독 기간 만료 시
+                자동으로 갱신됩니다.
+              </li>
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="text-foreground font-bold">
+              제7조 (청약철회 및 환불)
+            </h2>
+            <ol className="mt-2 list-inside list-decimal space-y-1.5">
+              <li>
+                이용자는 결제일로부터 <strong>7일 이내</strong>에 서비스를
+                이용하지 않은 경우 청약철회(전액 환불)를 요청할 수 있습니다.
+              </li>
+              <li>
+                다만, 다음의 경우 청약철회가 제한됩니다:
+                <ul className="mt-1 ml-5 list-disc space-y-1">
+                  <li>
+                    서비스 이용 이력이 있는 경우 (퀴즈 풀기, AI 회화 등
+                    유료 기능 사용)
+                  </li>
+                  <li>
+                    「전자상거래 등에서의 소비자보호에 관한 법률」 제17조
+                    제2항에 해당하는 경우
+                  </li>
+                </ul>
+              </li>
+              <li>
+                서비스 이용 이력이 있으나 결제일로부터 7일 이내인 경우,
+                이용일수를 차감한 잔여 금액을 환불합니다. (일할 계산)
+              </li>
+              <li>
+                결제일로부터 7일 경과 후에는 환불이 불가하며, 구독 해지 시
+                잔여 구독 기간까지 서비스를 이용할 수 있습니다.
+              </li>
+              <li>
+                환불 요청은 서비스 내 설정 또는 이메일
+                (whitemousedev@whitemouse.dev)을 통해 접수하며, 접수 후
+                영업일 기준 3일 이내에 처리됩니다.
+              </li>
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="text-foreground font-bold">
+              제8조 (구독 해지 및 취소)
+            </h2>
+            <ol className="mt-2 list-inside list-decimal space-y-1.5">
+              <li>
+                이용자는 언제든지 서비스 내 &quot;MY &gt; 구독 관리&quot;
+                메뉴에서 구독을 해지할 수 있습니다.
+              </li>
+              <li>
+                구독 해지 시 즉시 서비스가 중단되지 않으며, 현재 결제한
+                구독 기간이 만료될 때까지 프리미엄 서비스를 이용할 수
+                있습니다.
+              </li>
+              <li>
+                구독 기간 만료 후에는 무료 플랜으로 자동 전환되며, 학습
+                데이터는 유지됩니다.
+              </li>
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="text-foreground font-bold">
+              제9조 (교환 규정)
+            </h2>
+            <ol className="mt-2 list-inside list-decimal space-y-1.5">
+              <li>
+                본 서비스는 디지털 콘텐츠 제공 서비스로, 물리적 상품의
+                배송이 수반되지 않으므로 교환은 적용되지 않습니다.
+              </li>
+              <li>
+                구독 플랜 변경(월간 ↔ 연간)을 원하는 경우, 현재 구독을
+                해지한 후 새로운 플랜으로 재구독할 수 있습니다.
+              </li>
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="text-foreground font-bold">
+              제10조 (이용자의 의무)
             </h2>
             <p className="mt-2">이용자는 다음 행위를 해서는 안 됩니다:</p>
             <ol className="mt-1.5 list-inside list-decimal space-y-1.5">
@@ -153,7 +250,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-foreground font-bold">
-              제7조 (서비스 이용 제한)
+              제11조 (서비스 이용 제한)
             </h2>
             <ol className="mt-2 list-inside list-decimal space-y-1.5">
               <li>
@@ -168,7 +265,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-foreground font-bold">제8조 (지적재산권)</h2>
+            <h2 className="text-foreground font-bold">제12조 (지적재산권)</h2>
             <ol className="mt-2 list-inside list-decimal space-y-1.5">
               <li>
                 서비스 내 콘텐츠(학습 자료, 디자인, 소프트웨어 등)에 대한
@@ -183,7 +280,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-foreground font-bold">제9조 (면책 조항)</h2>
+            <h2 className="text-foreground font-bold">제13조 (면책 조항)</h2>
             <ol className="mt-2 list-inside list-decimal space-y-1.5">
               <li>
                 회사는 천재지변, 전쟁, 기간통신사업자의 서비스 중단 등
@@ -202,7 +299,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-foreground font-bold">
-              제10조 (회원 탈퇴 및 자격 상실)
+              제14조 (회원 탈퇴 및 자격 상실)
             </h2>
             <ol className="mt-2 list-inside list-decimal space-y-1.5">
               <li>
@@ -218,7 +315,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-foreground font-bold">
-              제11조 (분쟁 해결)
+              제15조 (분쟁 해결)
             </h2>
             <ol className="mt-2 list-inside list-decimal space-y-1.5">
               <li>
