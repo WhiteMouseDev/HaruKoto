@@ -58,10 +58,7 @@ export default function LoginPage() {
 
     const script = document.createElement('script');
     script.id = 'kakao-sdk';
-    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js';
-    script.integrity =
-      'sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nk';
-    script.crossOrigin = 'anonymous';
+    script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
     script.onload = initKakaoSdk;
     document.head.appendChild(script);
   }, [initKakaoSdk]);
