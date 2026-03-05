@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
@@ -127,19 +128,18 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // App name
-                  const Text(
-                    '하루코토',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1a1a1a),
-                      letterSpacing: -0.5,
+                  // App name (SVG wordmark)
+                  SvgPicture.asset(
+                    'assets/logo-wordmark.svg',
+                    width: 140,
+                    colorFilter: const ColorFilter.mode(
+                      kBrandPink,
+                      BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
-                    '매일 한 단어, 봄처럼 피어나는 일본어',
+                    '매일 한 단어, 봄처럼 피어나는 나의 일본어',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black.withValues(alpha: 0.5),
