@@ -56,7 +56,7 @@
 
 - **배포**: Vercel
 - **스토리지**: Supabase Storage (오디오/이미지)
-- **결제**: Stripe 또는 Toss Payments (국내 결제)
+- **결제**: PortOne (포트원)
 - **모니터링**: Vercel Analytics
 
 ### 2.4 PWA
@@ -319,10 +319,10 @@ daily_missions
   ├── /jlpt/[level]/grammar (문법 퀴즈)
   └── /jlpt/[level]/review (오답 노트)
 
-/conversation (AI 회화) [프리미엄]
-  ├── /conversation/scenarios (시나리오 목록)
-  ├── /conversation/chat/[id] (대화 화면)
-  └── /conversation/history (대화 기록)
+/chat (AI 회화) [프리미엄]
+  ├── /chat/scenarios (시나리오 목록)
+  ├── /chat/[id] (대화 화면)
+  └── /chat/history (대화 기록)
 
 /profile (프로필)
   ├── 학습 통계
@@ -340,14 +340,14 @@ daily_missions
 
 - [ ] 한자 학습 모듈 (필기 인식)
 - [ ] 청해 (듣기) 퀴즈 + TTS
-- [ ] 데일리 미션 시스템
-- [ ] 업적/뱃지 시스템
+- [x] 데일리 미션 시스템
+- [x] 업적/뱃지 시스템
 - [ ] 소셜 기능 (친구 추가, 랭킹)
 
 ### Phase 3 (3~4개월)
 
 - [ ] 오프라인 모드 강화
-- [ ] 푸시 알림 (학습 리마인더)
+- [x] 푸시 알림 (학습 리마인더)
 - [ ] Capacitor 래핑 → 앱스토어 배포
 - [ ] 단어장 직접 만들기
 - [ ] 음성 인식 (발음 평가)

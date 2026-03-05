@@ -1,7 +1,9 @@
 # 결제/구독 시스템 설계 문서
 
-> **상태**: 설계 완료 / 구현 전
-> **최종 업데이트**: 2026-03-04
+> PG: PortOne (포트원) V2 — TossPayments에서 전환 (2026-03)
+
+> **상태**: 설계 완료 / 구현 완료
+> **최종 업데이트**: 2026-03-05
 > **대상 시장**: 한국 (KR)
 
 ---
@@ -12,18 +14,16 @@
 
 ### 현재 단계 — 무료 런칭 (결제 없음)
 
-토스페이먼츠 가맹점 등록비 22만원 + 연회비 11만원의 초기 비용이 발생하므로,
-유저가 없는 상태에서 선투자하지 않는다.
+초기에는 결제 시스템 없이 런칭하는 전략을 취했으나,
+전환 트리거 충족 후 PortOne V2 기반으로 구현을 완료하였다.
 
 **지금 구현할 것:**
-- AI 회화 **하루 30분 제한**만 서버에서 적용 (DailyAiUsage 모델 + 체크 로직)
-- 무료 사용자에게 남은 시간 표시 UI
+- AI 회화 **하루 채팅 3회/5분, 통화 1회/3분 제한**을 서버에서 적용 (DailyAiUsage 모델 + 체크 로직)
+- 무료 사용자에게 남은 횟수/시간 표시 UI
 - 프리미엄/결제 관련 UI는 **노출하지 않음**
 
 **지금 구현하지 않을 것:**
-- 토스페이먼츠 SDK 연동
-- 구독/결제 API
-- Pricing 페이지
+- 구독/결제 UI (Pricing 페이지 포함)
 - 프로필 내 구독 관리
 
 ### 전환 트리거 — 결제 도입 시점
@@ -48,7 +48,7 @@
 1. **학습 콘텐츠는 무료** — 단어, 문법, 가나, 퀴즈는 전 레벨(N5~N1) 무료
 2. **AI가 프리미엄 핵심 가치** — AI 회화 무제한이 구독의 주요 동기
 3. **무료도 충분히 쓸 만하게** — 하루 30분 AI 회화는 무료로 체험 가능
-4. **한국 시장 최적화** — 토스페이먼츠 기반 웹 결제, 원화(KRW) 결제
+4. **한국 시장 최적화** — PortOne (포트원) V2 기반 웹 결제, 원화(KRW) 결제
 5. **점진적 도입** — 유저 확보 후 결제 시스템 도입 (초기 비용 최소화)
 
 ---
@@ -92,13 +92,13 @@
 
 | 플랜 | 가격 | 월 환산 | 할인율 |
 |------|------|---------|--------|
-| 월간 구독 | **₩7,900/월** | ₩7,900 | - |
-| 연간 구독 | **₩71,000/년** | ₩5,917 | **25% 할인** (3개월 무료) |
+| 월간 구독 | **₩4,900/월** | ₩4,900 | - |
+| 연간 구독 | **₩39,900/년** | ₩3,325 | **32% 할인** |
 
 > **가격 결정 근거**:
 > - 듀오링고 슈퍼: ~₩8,900/월
 > - 한국 학습 앱 평균: ₩5,000~₩10,000/월
-> - ₩7,900은 중간 포지셔닝으로, 커피 한 잔 가격 마케팅 가능
+> - ₩4,900은 진입 장벽을 낮춘 공격적 포지셔닝 (subscription-constants.ts 기준)
 
 ### 3.2 무료 체험 (Free Trial)
 
@@ -121,19 +121,24 @@
 
 ## 4. PG(Payment Gateway) 설계
 
-### 4.1 토스페이먼츠 (Toss Payments)
+### 4.1 PortOne V2 (포트원)
 
 **선택 이유**:
-- 한국 시장 최적화 (카드/계좌이체/간편결제 모두 지원)
-- 개발자 친화적 REST API + 우수한 문서
-- Next.js/React SDK 공식 지원
-- 정기결제(빌링) 기능 내장
-- 합리적 수수료 (PG 수수료 ~3.3% + VAT)
+- 한국 시장 최적화 (카드/간편결제 모두 지원)
+- REST API V2 — 단순하고 일관된 인터페이스
+- 빌링키 기반 정기결제(자동결제) 지원
+- 합리적 수수료
+- TossPayments 채널을 PortOne을 통해 연결 가능
 
 **결제 수단**:
 - 신용/체크카드 (국내 전 카드사)
-- 계좌이체
 - 간편결제 (토스페이, 네이버페이, 카카오페이 등)
+
+**환경 변수 (실제 사용)**:
+- `NEXT_PUBLIC_PORTONE_STORE_ID` — 스토어 ID (클라이언트 노출 가능)
+- `PORTONE_CHANNEL_KEY` — 채널키 (서버)
+- `PORTONE_V2_SECRET_KEY` — REST API 시크릿 (서버)
+- `PORTONE_WEBHOOK_SECRET` — 웹훅 서명 검증 시크릿 (서버)
 
 ### 4.2 결제 채널
 
@@ -141,50 +146,84 @@
 - 앱스토어 IAP 없음 → 30% 수수료 회피
 - 추후 네이티브 앱 전환 시 IAP 추가 검토
 
-### 4.3 토스페이먼츠 연동 흐름
+### 4.3 PortOne V2 결제 연동 흐름
 
 ```
-[클라이언트]                    [서버]                     [토스페이먼츠]
+[클라이언트]                    [서버]                      [PortOne V2]
     │                            │                            │
-    │  1. 구독 시작 요청          │                            │
+    │  1. POST /subscription/     │                            │
+    │     checkout {plan}         │                            │
     │ ─────────────────────────> │                            │
-    │                            │  2. 빌링키 발급 요청        │
-    │                            │ ─────────────────────────> │
-    │                            │                            │
-    │  3. 카드 정보 입력 위젯     │ <───────────────────────── │
-    │ <───────────────────────── │     결제 위젯 URL           │
-    │                            │                            │
-    │  4. 카드 정보 입력 완료     │                            │
-    │ ─────────────────────────> │  5. 빌링키 확인             │
-    │                            │ ─────────────────────────> │
-    │                            │ <───────────────────────── │
-    │                            │     billingKey              │
-    │                            │                            │
-    │                            │  6. 첫 결제 실행            │
-    │                            │ ─────────────────────────> │
-    │                            │ <───────────────────────── │
-    │  7. 구독 활성화             │     결제 성공               │
+    │                            │  2. Payment(PENDING) 생성  │
+    │                            │     paymentId 발급          │
     │ <───────────────────────── │                            │
+    │  {paymentId, storeId,       │                            │
+    │   channelKey, amount, ...}  │                            │
+    │                            │                            │
+    │  3. PortOne JS SDK로        │                            │
+    │     결제창 오픈             │                            │
+    │ ─────────────────────────────────────────────────────> │
+    │ <───────────────────────────────────────────────────── │
+    │  결제 완료 (billingKey 포함) │                            │
+    │                            │                            │
+    │  4. POST /subscription/     │                            │
+    │     activate {paymentId,    │                            │
+    │     plan}                   │                            │
+    │ ─────────────────────────> │  5. getPayment(paymentId)  │
+    │                            │ ─────────────────────────> │
+    │                            │ <───────────────────────── │
+    │                            │  결제 검증 (status=PAID,    │
+    │                            │  amount 일치 확인)          │
+    │                            │                            │
+    │                            │  6. activateSubscription() │
+    │                            │     Subscription 생성       │
+    │                            │     User.isPremium 업데이트 │
+    │ <───────────────────────── │                            │
+    │  구독 활성화 완료            │                            │
 ```
 
 ### 4.4 정기결제 (빌링) 흐름
 
 ```
-[Cron Job / Vercel Cron]           [서버]                [토스페이먼츠]
-    │                                │                        │
-    │  매일 00:05 실행                │                        │
-    │ ─────────────────────────────> │                        │
-    │                                │  결제 예정 구독 조회     │
-    │                                │  (expiresAt ≤ today)    │
-    │                                │                        │
-    │                                │  billingKey로 결제 요청  │
-    │                                │ ─────────────────────> │
-    │                                │ <───────────────────── │
-    │                                │   결제 성공/실패         │
-    │                                │                        │
-    │                                │  성공: 구독 갱신         │
-    │                                │  실패: 재시도 스케줄링   │
-    │                                │                        │
+[Cron Job / Vercel Cron]           [서버]                  [PortOne V2]
+    │                                │                          │
+    │  매일 00:05 실행                │                          │
+    │ ─────────────────────────────> │                          │
+    │                                │  갱신 대상 구독 조회       │
+    │                                │  (currentPeriodEnd ≤ now) │
+    │                                │                          │
+    │                                │  payWithBillingKey()     │
+    │                                │ ───────────────────────> │
+    │                                │ <─────────────────────── │
+    │                                │   결제 성공/실패           │
+    │                                │                          │
+    │                                │  성공: Subscription 갱신  │
+    │                                │  실패: 재시도 스케줄링     │
+    │                                │                          │
+```
+
+### 4.5 웹훅 처리 흐름
+
+```
+[PortOne V2]          [POST /api/v1/webhook/portone]        [DB]
+    │                            │                            │
+    │  Transaction.Paid 이벤트   │                            │
+    │ ─────────────────────────> │                            │
+    │                            │  x-portone-signature 검증  │
+    │                            │  (HMAC-SHA256)             │
+    │                            │                            │
+    │                            │  getPayment(paymentId)     │
+    │ <───────────────────────── │                            │
+    │  결제 정보 반환              │                            │
+    │ ─────────────────────────> │                            │
+    │                            │  기존 PENDING 결제 확인     │
+    │                            │ ─────────────────────────> │
+    │                            │                            │
+    │                            │  activateSubscription()    │
+    │                            │  (중복 처리 방지 포함)       │
+    │                            │ ─────────────────────────> │
+    │                            │ <───────────────────────── │
+    │ <───────────────────────── │  {ok: true}                │
 ```
 
 ---
@@ -199,7 +238,7 @@ isPremium            Boolean   @default(false)
 subscriptionExpiresAt DateTime?
 ```
 
-### 5.2 추가 필요 모델
+### 5.2 실제 구현된 모델 (schema.prisma 기준)
 
 ```prisma
 // ==========================================
@@ -207,69 +246,68 @@ subscriptionExpiresAt DateTime?
 // ==========================================
 
 model Subscription {
-  id                String             @id @default(uuid()) @db.Uuid
-  userId            String             @map("user_id") @db.Uuid
-  plan              SubscriptionPlan   // MONTHLY, YEARLY
-  status            SubscriptionStatus // ACTIVE, CANCELLED, PAST_DUE, EXPIRED, TRIAL
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @map("user_id") @db.Uuid
+  plan               SubscriptionPlan   @default(FREE) // FREE, MONTHLY, YEARLY
+  status             SubscriptionStatus @default(ACTIVE) // ACTIVE, CANCELLED, EXPIRED, PAST_DUE
 
-  // 토스페이먼츠 빌링
-  billingKey        String?            @map("billing_key")
+  // PortOne 빌링
+  billingKey         String?            @map("billing_key")
+  portoneCustomerId  String?            @map("portone_customer_id")
 
   // 기간
-  currentPeriodStart DateTime          @map("current_period_start")
-  currentPeriodEnd   DateTime          @map("current_period_end")
-  trialEndsAt        DateTime?         @map("trial_ends_at")
-  cancelledAt        DateTime?         @map("cancelled_at")
-  cancelAtPeriodEnd  Boolean           @default(false) @map("cancel_at_period_end")
+  currentPeriodStart DateTime           @map("current_period_start")
+  currentPeriodEnd   DateTime           @map("current_period_end")
+  cancelledAt        DateTime?          @map("cancelled_at")
+  cancelReason       String?            @map("cancel_reason")
 
-  // 가격 (결제 당시 가격 기록)
-  priceAmount        Int               @map("price_amount") // 원 단위
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
 
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
 
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  payments          Payment[]
-
+  @@index([userId])
+  @@index([status])
+  @@index([currentPeriodEnd])
   @@map("subscriptions")
 }
 
 model Payment {
-  id              String        @id @default(uuid()) @db.Uuid
-  subscriptionId  String        @map("subscription_id") @db.Uuid
-  userId          String        @map("user_id") @db.Uuid
+  id               String        @id @default(uuid()) @db.Uuid
+  userId           String        @map("user_id") @db.Uuid
+  subscriptionId   String?       @map("subscription_id") @db.Uuid
 
-  // 토스페이먼츠
-  paymentKey      String?       @unique @map("payment_key") // 토스 paymentKey
-  orderId         String        @unique @map("order_id")    // 우리 주문 ID
+  // PortOne
+  portonePaymentId String?       @unique @map("portone_payment_id") // PortOne paymentId
 
-  amount          Int           // 결제 금액 (원)
-  status          PaymentStatus // SUCCESS, FAILED, REFUNDED, CANCELLED
+  amount           Int           // 결제 금액 (원)
+  currency         String        @default("KRW")
+  status           PaymentStatus @default(PENDING) // PENDING, PAID, FAILED, REFUNDED, CANCELLED
+  plan             SubscriptionPlan
 
-  // 결제 수단 정보
-  method          String?       // CARD, TRANSFER, etc.
-  cardCompany     String?       @map("card_company")
-  cardNumber      String?       @map("card_number") // 마스킹된 번호 (끝 4자리)
-  receiptUrl      String?       @map("receipt_url")
+  failReason       String?       @map("fail_reason")
+  paidAt           DateTime?     @map("paid_at")
+  refundedAt       DateTime?     @map("refunded_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
 
-  failReason      String?       @map("fail_reason")
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
-  paidAt          DateTime?     @map("paid_at")
-  createdAt       DateTime      @default(now()) @map("created_at")
-
-  subscription    Subscription  @relation(fields: [subscriptionId], references: [id])
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([portonePaymentId])
   @@map("payments")
 }
 
 enum SubscriptionPlan {
+  FREE
   MONTHLY
   YEARLY
 }
 
 enum SubscriptionStatus {
-  TRIAL      // 무료 체험 중
   ACTIVE     // 활성 구독
   PAST_DUE   // 결제 실패 (유예 기간)
   CANCELLED  // 취소됨 (기간 만료 전까지 이용 가능)
@@ -277,103 +315,138 @@ enum SubscriptionStatus {
 }
 
 enum PaymentStatus {
-  SUCCESS
-  FAILED
-  REFUNDED
-  CANCELLED
+  PENDING    // 결제 대기 (checkout 후, activate 전)
+  PAID       // 결제 성공
+  FAILED     // 결제 실패
+  REFUNDED   // 환불
+  CANCELLED  // 취소
 }
 ```
 
-### 5.3 AI 사용량 추적 모델
+> **변경 사항 (TossPayments → PortOne)**:
+> - `paymentKey` / `orderId` 제거 → `portonePaymentId` 단일 식별자 사용
+> - `portoneCustomerId` 필드 추가 (Subscription 모델)
+> - `currency` 필드 추가 (Payment 모델, 기본값 "KRW")
+> - `PaymentStatus`: `SUCCESS` → `PAID`, `PENDING` 상태 추가
+> - `SubscriptionPlan`: `FREE` 값 추가
+> - `SubscriptionStatus`: `TRIAL` 제거 (미구현)
+> - `Subscription`: `trialEndsAt`, `cancelAtPeriodEnd`, `priceAmount` 제거
+
+### 5.3 AI 사용량 추적 모델 (실제 구현)
 
 ```prisma
 model DailyAiUsage {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  date      DateTime @db.Date
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  date        DateTime @db.Date
 
-  // 시간 기반 사용량 (초 단위)
-  usedSeconds Int    @default(0) @map("used_seconds")
+  // 채팅/통화 분리 추적
+  chatCount   Int      @default(0) @map("chat_count")   // 하루 채팅 세션 수
+  chatSeconds Int      @default(0) @map("chat_seconds") // 하루 채팅 시간 (초)
+  callCount   Int      @default(0) @map("call_count")   // 하루 통화 세션 수
+  callSeconds Int      @default(0) @map("call_seconds") // 하루 통화 시간 (초)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
+  @@index([userId, date])
   @@map("daily_ai_usage")
 }
 ```
+
+> **변경 사항**: `usedSeconds` 단일 필드 → 채팅/통화 분리 (chatCount, chatSeconds, callCount, callSeconds)
 
 ---
 
 ## 6. API 설계
 
-### 6.1 구독 관련 API
+### 6.1 구독 관련 API (실제 구현된 라우트)
 
 ```
-POST   /api/v1/subscription/checkout     # 구독 시작 (빌링키 발급)
-POST   /api/v1/subscription/activate     # 결제 확인 + 구독 활성화
-GET    /api/v1/subscription/status       # 현재 구독 상태 조회
+POST   /api/v1/subscription/checkout     # paymentId 발급 + Payment(PENDING) 생성
+POST   /api/v1/subscription/activate     # PortOne 결제 검증 + 구독 활성화
+GET    /api/v1/subscription/status       # 현재 구독 상태 + AI 사용량 조회
 POST   /api/v1/subscription/cancel       # 구독 취소 (기간 만료 시 해지)
 POST   /api/v1/subscription/resume       # 취소 철회 (기간 내)
 
-POST   /api/v1/webhook/toss             # 토스페이먼츠 웹훅 수신
+POST   /api/v1/webhook/portone           # PortOne V2 웹훅 수신 (Transaction.Paid)
 ```
 
 ### 6.2 결제 관련 API
 
 ```
-GET    /api/v1/payments                  # 결제 내역 조회
-GET    /api/v1/payments/:id              # 결제 상세
-POST   /api/v1/payments/refund           # 환불 요청
+GET    /api/v1/payments                  # 결제 내역 조회 (page 쿼리 파라미터 지원)
 ```
 
 ### 6.3 AI 사용량 API
 
 ```
-GET    /api/v1/ai-usage/today            # 오늘 AI 사용량 조회
-POST   /api/v1/ai-usage/track            # AI 사용 시간 기록 (내부용)
+# subscription/status 응답 내 aiUsage 필드로 통합 제공
+# 별도 /api/v1/ai-usage 엔드포인트는 미구현 (chat/end, chat/start 라우트에서 내부 처리)
 ```
 
 ### 6.4 주요 API 응답 예시
 
-#### `GET /api/v1/subscription/status`
+#### `POST /api/v1/subscription/checkout` 응답
 
 ```json
 {
-  "hasSubscription": true,
-  "isPremium": true,
-  "plan": "MONTHLY",
-  "status": "ACTIVE",
-  "currentPeriodEnd": "2026-04-04T00:00:00Z",
-  "cancelAtPeriodEnd": false,
-  "trial": {
-    "isTrialing": false,
-    "trialEndsAt": null
+  "paymentId": "hk_monthly_abc12345_1741130000000",
+  "storeId": "store-xxxx",
+  "channelKey": "channel-xxxx",
+  "orderName": "하루코토 월간 프리미엄",
+  "totalAmount": 4900,
+  "currency": "KRW",
+  "customerId": "uuid-of-user",
+  "customerEmail": "user@example.com"
+}
+```
+
+#### `GET /api/v1/subscription/status` 응답 (프리미엄 사용자)
+
+```json
+{
+  "subscription": {
+    "isPremium": true,
+    "plan": "monthly",
+    "expiresAt": "2026-04-05T00:00:00.000Z",
+    "cancelledAt": null
   },
   "aiUsage": {
-    "usedMinutes": 12,
-    "limitMinutes": null,
-    "isUnlimited": true
+    "chatCount": 2,
+    "chatSeconds": 180,
+    "callCount": 0,
+    "callSeconds": 0,
+    "chatLimit": 999,
+    "callLimit": 999,
+    "chatSecondsLimit": 99999,
+    "callSecondsLimit": 99999
   }
 }
 ```
 
-#### 무료 사용자 응답
+#### `GET /api/v1/subscription/status` 응답 (무료 사용자)
 
 ```json
 {
-  "hasSubscription": false,
-  "isPremium": false,
-  "plan": null,
-  "status": null,
-  "trial": {
-    "isTrialing": false,
-    "trialEndsAt": null,
-    "trialAvailable": true
+  "subscription": {
+    "isPremium": false,
+    "plan": "free",
+    "expiresAt": null,
+    "cancelledAt": null
   },
   "aiUsage": {
-    "usedMinutes": 18,
-    "limitMinutes": 30,
-    "isUnlimited": false
+    "chatCount": 1,
+    "chatSeconds": 85,
+    "callCount": 0,
+    "callSeconds": 0,
+    "chatLimit": 3,
+    "callLimit": 1,
+    "chatSecondsLimit": 300,
+    "callSecondsLimit": 180
   }
 }
 ```
@@ -386,9 +459,9 @@ POST   /api/v1/ai-usage/track            # AI 사용 시간 기록 (내부용)
 
 ```
 /pricing                    # 가격/플랜 비교 페이지 (비로그인도 접근 가능)
-/subscription/checkout      # 결제 진행 페이지 (토스 위젯)
+/subscription/checkout      # 결제 진행 페이지 (PortOne JS SDK)
 /subscription/success       # 결제 완료 페이지
-/profile                    # 프로필 > 구독 관리 섹션 포함
+/my                         # 프로필 > 구독 관리 섹션 포함
 ```
 
 ### 7.2 프리미엄 게이팅 패턴
@@ -427,22 +500,25 @@ export function useAiUsage() {
 
 ### 7.3 AI 사용 제한 UI 시나리오
 
+**무료 사용자 제한 (subscription-constants.ts 기준)**:
+- AI 채팅: 하루 3회 / 5분(300초) 이내
+- AI 통화: 하루 1회 / 3분(180초) 이내
+
 ```
-사용자가 AI 회화 시작 시:
-  1. useAiUsage()로 남은 시간 확인
-  2. 남은 시간 > 0 → 회화 시작, 타이머 표시
-  3. 남은 시간 = 0 → 업그레이드 유도 모달
-  4. 프리미엄 사용자 → 제한 없이 시작
+사용자가 AI 채팅/통화 시작 시:
+  1. 서버에서 checkAiLimit(userId, 'chat'|'call') 호출
+  2. 횟수 또는 시간 초과 → 업그레이드 유도 모달
+  3. 제한 이내 → 시작 허용
 
 회화 중:
-  1. 무료 사용자: 상단에 남은 시간 표시 (예: "남은 시간: 12:30")
-  2. 30분 도달 시 → 자연스럽게 대화 종료 + 업그레이드 유도
-  3. 프리미엄 사용자: 타이머 없음
+  1. 무료 사용자: 남은 횟수 표시 (예: "오늘 채팅 2회 남음")
+  2. 제한 도달 시 → 자연스럽게 대화 종료 + 업그레이드 유도
+  3. 프리미엄 사용자: 제한 없음 (chatLimit=999, callLimit=999)
 
 업그레이드 유도 모달:
-  - "오늘 무료 회화 시간을 모두 사용했어요!"
+  - "오늘 무료 AI 대화를 모두 사용했어요!"
   - "프리미엄으로 업그레이드하면 무제한으로 연습할 수 있어요"
-  - [7일 무료 체험 시작하기] / [나중에]
+  - [프리미엄 시작하기] / [나중에]
 ```
 
 ### 7.4 프로필 > 구독 관리 UI
@@ -468,62 +544,66 @@ export function useAiUsage() {
 ### 8.1 서버 사이드 검증
 
 ```typescript
-// 모든 프리미엄 기능 접근 시 서버에서 검증
-async function requirePremium(userId: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isPremium: true, subscriptionExpiresAt: true },
+// lib/subscription-service.ts — 구독 상태 조회
+export async function getSubscriptionStatus(userId: string) {
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      userId,
+      status: { in: ['ACTIVE', 'CANCELLED'] },
+    },
+    orderBy: { createdAt: 'desc' },
   });
 
-  if (!user) return false;
+  const isPremium =
+    !!subscription &&
+    subscription.plan !== 'FREE' &&
+    subscription.status === 'ACTIVE' &&
+    subscription.currentPeriodEnd > new Date();
 
-  // isPremium이 true이고 만료되지 않았는지 확인
-  if (user.isPremium && user.subscriptionExpiresAt) {
-    return user.subscriptionExpiresAt > new Date();
-  }
-
-  return false;
+  return { isPremium, plan: subscription?.plan, ... };
 }
 
-// AI 사용량 서버 사이드 체크
-async function checkAiLimit(userId: string): Promise<{
-  allowed: boolean;
-  remainingSeconds: number;
-}> {
-  const isPremium = await requirePremium(userId);
-  if (isPremium) return { allowed: true, remainingSeconds: Infinity };
+// lib/subscription-service.ts — AI 사용 제한 체크 (채팅/통화 분리)
+export async function checkAiLimit(
+  userId: string,
+  type: 'chat' | 'call'
+): Promise<{ allowed: boolean; reason?: string }> {
+  const { isPremium } = await getSubscriptionStatus(userId);
+  const limits = isPremium ? AI_LIMITS.PREMIUM : AI_LIMITS.FREE;
+  const usage = await getDailyAiUsage(userId);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  if (type === 'chat') {
+    if (usage.chatCount >= limits.CHAT_COUNT) return { allowed: false, reason: '횟수 초과' };
+    if (usage.chatSeconds >= limits.CHAT_SECONDS) return { allowed: false, reason: '시간 초과' };
+  } else {
+    if (usage.callCount >= limits.CALL_COUNT) return { allowed: false, reason: '횟수 초과' };
+    if (usage.callSeconds >= limits.CALL_SECONDS) return { allowed: false, reason: '시간 초과' };
+  }
 
-  const usage = await prisma.dailyAiUsage.findUnique({
-    where: { userId_date: { userId, date: today } },
-  });
-
-  const usedSeconds = usage?.usedSeconds ?? 0;
-  const limitSeconds = 30 * 60; // 30분
-  const remaining = Math.max(0, limitSeconds - usedSeconds);
-
-  return { allowed: remaining > 0, remainingSeconds: remaining };
+  return { allowed: true };
 }
 ```
 
 ### 8.2 웹훅 보안
 
 ```typescript
-// 토스페이먼츠 웹훅 시그니처 검증
-// POST /api/v1/webhook/toss
+// PortOne V2 웹훅 시그니처 검증
+// POST /api/v1/webhook/portone
 export async function POST(request: Request) {
-  const body = await request.text();
-  const signature = request.headers.get('Toss-Signature');
+  const bodyText = await request.text();
+  const signature = request.headers.get('x-portone-signature'); // PortOne V2 헤더명
 
-  // HMAC SHA-256으로 서명 검증
-  const isValid = verifyTossSignature(body, signature, TOSS_WEBHOOK_SECRET);
-  if (!isValid) {
+  // HMAC SHA-256으로 서명 검증 (lib/portone.ts verifyWebhookSignature 사용)
+  const webhookSecret = process.env.PORTONE_WEBHOOK_SECRET;
+  if (webhookSecret && !verifyWebhookSignature(bodyText, signature, webhookSecret)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
-  // 웹훅 처리...
+  const body = JSON.parse(bodyText);
+  const { type, data } = body;
+
+  // 지원 이벤트: Transaction.Paid
+  // 중복 처리 방지: portonePaymentId로 기존 PAID 레코드 확인 후 스킵
 }
 ```
 
@@ -560,68 +640,68 @@ export async function POST(request: Request) {
 4. 무료 사용자: 회화 중 남은 시간 표시 UI
 5. 30분 소진 시: "오늘 무료 회화 시간을 모두 사용했어요!" 안내
 
-### Phase 1: 결제 기반 — 전환 트리거 충족 시
+### Phase 1: 결제 기반 — 전환 트리거 충족 시 ✅ (완료)
 
-> 토스페이먼츠 가맹점 신청 + 결제 연동
+> PortOne V2 가맹점 신청 + 결제 연동
 
-1. 토스페이먼츠 사업자 등록 + 가맹점 심사 (3~5 영업일)
-2. DB 마이그레이션 (Subscription, Payment 모델 추가)
-3. 토스페이먼츠 SDK 연동
-4. `/pricing` 가격 페이지
-5. `/subscription/checkout` 결제 플로우
-6. 빌링키 발급 + 첫 결제
-7. 구독 활성화 + `isPremium` 업데이트
+1. PortOne V2 가맹점 심사 + 채널 설정
+2. DB 마이그레이션 (Subscription, Payment 모델 추가) ✅
+3. PortOne V2 REST API 연동 (`lib/portone.ts`) ✅
+4. `/pricing` 가격 페이지 ✅
+5. `/subscription/checkout` 결제 플로우 ✅
+6. 빌링키 발급 + 첫 결제 (PortOne JS SDK) ✅
+7. 구독 활성화 + `isPremium` 업데이트 ✅
 
-### Phase 2: 구독 관리
+### Phase 2: 구독 관리 ✅ (완료)
 
-1. 프로필 내 구독 관리 섹션
-2. 구독 취소/재개
-3. 결제 내역 조회
-4. 결제 수단 변경
-5. 7일 무료 체험 플로우
+1. 프로필 내 구독 관리 섹션 ✅
+2. 구독 취소/재개 (`/subscription/cancel`, `/subscription/resume`) ✅
+3. 결제 내역 조회 (`/payments`) ✅
+4. 결제 수단 변경 (미구현)
+5. 7일 무료 체험 플로우 (미구현)
 
 ### Phase 3: 운영 안정화
 
 1. 정기결제 Cron Job (Vercel Cron)
-2. 토스 웹훅 수신 + 처리
+2. PortOne 웹훅 수신 + 처리 (`/webhook/portone`) ✅
 3. 결제 실패 재시도 로직
 4. 이메일/푸시 알림 연동
-5. 환불 처리
+5. 환불 처리 (`cancelPayment()` in `lib/portone.ts` 구현됨, API 라우트 미연결)
 
 ---
 
 ## 10. 환경 변수
 
 ```env
-# 토스페이먼츠
-TOSS_CLIENT_KEY=test_ck_xxx              # 클라이언트 키 (프론트)
-TOSS_SECRET_KEY=test_sk_xxx              # 시크릿 키 (서버)
-TOSS_WEBHOOK_SECRET=whsec_xxx            # 웹훅 시크릿
+# PortOne V2
+NEXT_PUBLIC_PORTONE_STORE_ID=store-xxx  # 스토어 ID (클라이언트 노출 가능)
+PORTONE_CHANNEL_KEY=channel-xxx         # 채널키 (서버 전용)
+PORTONE_V2_SECRET_KEY=xxx               # REST API 시크릿 (서버 전용)
+PORTONE_WEBHOOK_SECRET=xxx              # 웹훅 서명 검증 시크릿 (서버 전용)
 
-# 구독 설정
-SUBSCRIPTION_MONTHLY_PRICE=7900          # 월간 구독 가격 (원)
-SUBSCRIPTION_YEARLY_PRICE=71000          # 연간 구독 가격 (원)
-FREE_AI_DAILY_LIMIT_MINUTES=30           # 무료 AI 일일 제한 (분)
-FREE_TRIAL_DAYS=7                        # 무료 체험 기간 (일)
+# 구독 설정 (subscription-constants.ts에 하드코딩되어 있으나, 환경 변수로 분리 가능)
+# PRICES.MONTHLY = 4900
+# PRICES.YEARLY  = 39900
 ```
+
+> **TossPayments 변수 삭제**: `TOSS_CLIENT_KEY`, `TOSS_SECRET_KEY`, `TOSS_WEBHOOK_SECRET`은 더 이상 사용하지 않는다.
 
 ---
 
 ## 11. 참고 사항
 
-### 토스페이먼츠 사업자 등록
+### PortOne V2 가맹점 등록
 
-- 결제 연동 전 **사업자 등록 + 토스페이먼츠 가맹점 심사** 필요
-- **초기 비용**: 등록비 ₩220,000 + 연회비 ₩110,000 = **₩330,000**
-- 심사 기간: 보통 3~5 영업일
-- 필요 서류: 사업자등록증, 통장 사본, 서비스 URL
+- 결제 연동 전 **사업자 등록 + PortOne 가맹점 심사** 필요
+- PortOne 콘솔: https://admin.portone.io
+- 채널 설정: PortOne 콘솔 > 결제 연동 > 채널 관리에서 TossPayments 채널 추가
 - 테스트 모드는 심사 없이 바로 사용 가능
-- **전략**: 유저 확보 전에는 가입하지 않고, 전환 트리거 충족 시 신청 (0장 참조)
+- REST API V2 문서: https://developers.portone.io/api/rest-v2
 
 ### 부가가치세 (VAT)
 
 - 디지털 콘텐츠 공급 → 부가가치세 10% 포함 가격 설정
-- ₩7,900 (VAT 포함) → 공급가 ₩7,182 / VAT ₩718
+- ₩4,900 (VAT 포함) → 공급가 ₩4,455 / VAT ₩445
 
 ### 전자상거래 관련 법률
 
