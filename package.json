@@ -11,11 +11,13 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma"
   },
   "devDependencies": {
     "prettier": "^3.5.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "prisma": "^6.5.0",
     "turbo": "^2.5.0"
   },
   "packageManager": "pnpm@10.19.0",
