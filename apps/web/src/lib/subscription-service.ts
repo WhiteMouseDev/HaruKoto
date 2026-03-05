@@ -136,14 +136,14 @@ export async function activateSubscription(params: {
     },
   });
 
-  // 결제 기록 생성
-  await prisma.payment.create({
-    data: {
-      userId: params.userId,
-      subscriptionId: subscription.id,
+  // 결제 기록 업데이트 (checkout에서 PENDING으로 이미 생성됨)
+  await prisma.payment.updateMany({
+    where: {
       portonePaymentId: params.portonePaymentId,
-      amount: params.amount,
-      plan: params.plan === 'monthly' ? 'MONTHLY' : 'YEARLY',
+      userId: params.userId,
+    },
+    data: {
+      subscriptionId: subscription.id,
       status: 'PAID',
       paidAt: now,
     },
