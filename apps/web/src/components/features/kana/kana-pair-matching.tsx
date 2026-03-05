@@ -20,7 +20,9 @@ type PairMatchingProps = {
 
 type CardState = 'default' | 'selected' | 'matched' | 'wrong';
 
-const PAIRS_PER_ROUND = 4;
+// Show all pairs in one round (typical stage has 5 chars)
+// Only split into rounds if more than 6
+const PAIRS_PER_ROUND = 6;
 
 const shakeAnimation = {
   x: [0, -8, 8, -6, 6, -3, 3, 0],
@@ -49,7 +51,7 @@ export function KanaPairMatching({ pairs, onComplete }: PairMatchingProps) {
     romajiId: string;
   } | null>(null);
 
-  // Reset state when round changes (React recommended pattern)
+  // Reset state when round changes
   if (prevRound !== currentRound) {
     setPrevRound(currentRound);
     setMatchedIds(new Set());
@@ -176,31 +178,24 @@ export function KanaPairMatching({ pairs, onComplete }: PairMatchingProps) {
       : 0;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-1 flex-col gap-4">
       {/* Progress */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">짝 맞추기</span>
-          <div className="flex items-center gap-2">
-            {totalRounds > 1 && (
-              <Badge variant="secondary" className="text-xs">
-                라운드 {currentRound + 1}/{totalRounds}
-              </Badge>
-            )}
-            <span className="font-medium">
-              {matchedIds.size}/{currentPairs.length}
-            </span>
-          </div>
+      <div className="flex items-center gap-3">
+        <span className="text-muted-foreground shrink-0 text-xs font-medium">짝 맞추기</span>
+        <Progress value={progressPercent} className="h-2 flex-1" />
+        <div className="flex shrink-0 items-center gap-2">
+          {totalRounds > 1 && (
+            <Badge variant="secondary" className="text-xs">
+              {currentRound + 1}/{totalRounds}
+            </Badge>
+          )}
+          <span className="text-muted-foreground text-xs font-medium">
+            {matchedIds.size}/{currentPairs.length}
+          </span>
         </div>
-        <Progress value={progressPercent} />
       </div>
 
-      {/* Instruction */}
-      <p className="text-muted-foreground text-center text-sm">
-        왼쪽 가나와 오른쪽 로마지를 짝지어 주세요
-      </p>
-
-      {/* Card Grid */}
+      {/* Card Grid — fill available height */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentRound}
@@ -208,10 +203,10 @@ export function KanaPairMatching({ pairs, onComplete }: PairMatchingProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.25 }}
-          className="grid grid-cols-2 gap-3"
+          className="grid flex-1 grid-cols-2 gap-3 content-center"
         >
           {/* Left Column: Kana */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {currentPairs.map((pair) => {
               const state = getCardState(pair.id, 'kana');
               return (
@@ -227,7 +222,7 @@ export function KanaPairMatching({ pairs, onComplete }: PairMatchingProps) {
           </div>
 
           {/* Right Column: Romaji (shuffled) */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {shuffledRomaji.map((pair) => {
               const state = getCardState(pair.id, 'romaji');
               return (
@@ -264,12 +259,12 @@ function PairCard({ text, state, isKana, onClick }: PairCardProps) {
       onClick={onClick}
       disabled={isDisabled}
       className={cn(
-        'relative flex min-h-[60px] items-center justify-center rounded-xl border px-4 py-3 font-medium transition-colors',
+        'relative flex items-center justify-center rounded-xl border-2 px-4 py-3 font-medium transition-colors',
         isKana ? 'font-jp text-2xl' : 'text-lg',
         state === 'default' && 'bg-card hover:bg-accent',
-        state === 'selected' && 'border-primary ring-primary/30 ring-2',
+        state === 'selected' && 'border-primary bg-primary/5 ring-primary/20 ring-2',
         state === 'matched' &&
-          'border-hk-success bg-hk-success/20 opacity-60 cursor-default',
+          'border-hk-success/50 bg-hk-success/10 opacity-50 cursor-default',
         state === 'wrong' && 'border-destructive bg-destructive/10'
       )}
     >
@@ -278,9 +273,9 @@ function PairCard({ text, state, isKana, onClick }: PairCardProps) {
         <motion.span
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-hk-success absolute right-2 top-2"
+          className="text-hk-success absolute right-1.5 top-1.5"
         >
-          <Check className="size-4" />
+          <Check className="size-3.5" />
         </motion.span>
       )}
     </motion.button>

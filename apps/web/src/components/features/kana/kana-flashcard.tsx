@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, type PanInfo } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { ThumbsDown, ThumbsUp, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type KanaFlashcardProps = {
@@ -39,7 +39,7 @@ export function KanaFlashcard({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-6">
       {/* Flashcard */}
       <motion.div
         aria-live="polite"
@@ -48,7 +48,7 @@ export function KanaFlashcard({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
-        className="cursor-grab active:cursor-grabbing"
+        className="w-full max-w-[280px] cursor-grab active:cursor-grabbing"
         style={{ perspective: 1000 }}
       >
         <motion.div
@@ -59,68 +59,79 @@ export function KanaFlashcard({
           onClick={() => setIsFlipped((v) => !v)}
         >
           {/* Front */}
-          <Card
-            className="min-h-[300px]"
+          <div
+            className="flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-br from-background to-primary/5 shadow-lg"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <CardContent className="flex min-h-[300px] flex-col items-center justify-center gap-3 p-6">
-              <span className="font-jp text-7xl font-bold">{character}</span>
-              <span className="text-muted-foreground text-sm">
-                탭하여 뒤집기
+            <div className="bg-primary/8 flex size-32 items-center justify-center rounded-2xl">
+              <span className="font-jp text-primary text-8xl font-bold drop-shadow-sm">
+                {character}
               </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <RotateCw className="size-3.5" />
+              <span className="text-xs font-medium">탭하여 뒤집기</span>
+            </div>
+          </div>
 
           {/* Back */}
-          <Card
-            className="absolute inset-0 min-h-[300px]"
+          <div
+            className="absolute inset-0 flex aspect-[3/4] flex-col items-center justify-center gap-5 rounded-3xl border bg-gradient-to-br from-primary/5 to-background shadow-lg"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
             }}
           >
-            <CardContent className="flex min-h-[300px] flex-col items-center justify-center gap-4 p-6">
-              <span className="text-3xl font-bold">{romaji}</span>
-              <span className="text-muted-foreground text-xl">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-primary text-4xl font-extrabold">{romaji}</span>
+              <span className="text-muted-foreground text-lg">
                 {pronunciation}
               </span>
-              {exampleWord && (
-                <div className="bg-secondary mt-2 flex flex-col items-center gap-1 rounded-xl px-4 py-3">
-                  <span className="font-jp text-lg font-medium">
-                    {exampleWord}
+            </div>
+
+            {exampleWord && (
+              <div className="bg-secondary/80 flex flex-col items-center gap-0.5 rounded-xl px-5 py-3">
+                <span className="font-jp text-lg font-semibold">
+                  {exampleWord}
+                </span>
+                {exampleReading && (
+                  <span className="font-jp text-muted-foreground text-sm">
+                    {exampleReading}
                   </span>
-                  {exampleReading && (
-                    <span className="font-jp text-muted-foreground text-sm">
-                      {exampleReading}
-                    </span>
-                  )}
-                  {exampleMeaning && (
-                    <span className="text-muted-foreground text-sm">
-                      {exampleMeaning}
-                    </span>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+                {exampleMeaning && (
+                  <span className="text-muted-foreground text-sm">
+                    {exampleMeaning}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <RotateCw className="size-3.5" />
+              <span className="text-xs font-medium">탭하여 뒤집기</span>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
 
       {/* Action buttons */}
-      <div className="flex gap-3">
+      <div className="flex w-full max-w-[280px] gap-3">
         <Button
           variant="outline"
-          className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10"
+          className="h-12 flex-1 gap-2 rounded-xl border-2 text-base font-semibold"
           onClick={onDontKnow}
           aria-label="모르겠다 - 다음 카드로"
         >
+          <ThumbsDown className="size-4" />
           모르겠다
         </Button>
         <Button
-          className="flex-1"
+          className="h-12 flex-1 gap-2 rounded-xl text-base font-semibold"
           onClick={onKnow}
           aria-label="알겠다 - 다음 카드로"
         >
+          <ThumbsUp className="size-4" />
           알겠다
         </Button>
       </div>

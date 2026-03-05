@@ -182,45 +182,49 @@ export default function KanaStageLearningPage({ params }: Props) {
         {phase === 'intro' && currentIntroChar && (
           <motion.div
             key={`intro-${introIndex}`}
-            className="flex flex-1 flex-col items-center justify-center gap-6"
+            className="flex flex-1 flex-col items-center gap-5 pt-2"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
           >
-            <Progress
-              value={((introIndex + 1) / stageCharacters.length) * 100}
-              className="h-2"
-            />
-            <p className="text-muted-foreground text-sm">
-              {introIndex + 1} / {stageCharacters.length}
-            </p>
-
-            <div className="bg-primary/5 flex size-40 items-center justify-center rounded-3xl">
-              <span className="font-jp text-primary text-7xl">
-                {currentIntroChar.character}
+            <div className="flex w-full items-center gap-3">
+              <Progress
+                value={((introIndex + 1) / stageCharacters.length) * 100}
+                className="h-2 flex-1"
+              />
+              <span className="text-muted-foreground shrink-0 text-xs font-medium">
+                {introIndex + 1}/{stageCharacters.length}
               </span>
             </div>
 
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold">{currentIntroChar.romaji}</span>
-              <span className="text-muted-foreground text-lg">
-                {currentIntroChar.pronunciation}
-              </span>
-            </div>
+            <div className="flex flex-1 flex-col items-center justify-center gap-6">
+              <div className="flex size-36 items-center justify-center rounded-3xl border bg-gradient-to-br from-background to-primary/5 shadow-lg">
+                <span className="font-jp text-primary text-8xl font-bold drop-shadow-sm">
+                  {currentIntroChar.character}
+                </span>
+              </div>
 
-            {currentIntroChar.exampleWord && (
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <p className="font-jp text-lg">{currentIntroChar.exampleWord}</p>
-                  <p className="text-muted-foreground text-sm">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-primary text-3xl font-extrabold">{currentIntroChar.romaji}</span>
+                <span className="text-muted-foreground text-lg">
+                  {currentIntroChar.pronunciation}
+                </span>
+              </div>
+
+              {currentIntroChar.exampleWord && (
+                <div className="bg-secondary/80 flex flex-col items-center gap-0.5 rounded-xl px-5 py-3">
+                  <span className="font-jp text-lg font-semibold">
+                    {currentIntroChar.exampleWord}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
                     {currentIntroChar.exampleReading} · {currentIntroChar.exampleMeaning}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+                  </span>
+                </div>
+              )}
+            </div>
 
             <Button
-              className="h-12 w-full max-w-xs rounded-xl"
+              className="h-12 w-full max-w-[280px] rounded-xl text-base font-semibold"
               onClick={() => {
                 recordIntroProgress(currentIntroChar.id);
                 if (introIndex < stageCharacters.length - 1) {
@@ -246,20 +250,23 @@ export default function KanaStageLearningPage({ params }: Props) {
         {phase === 'practice' && currentPracticeChar && (
           <motion.div
             key={`practice-${practiceIndex}`}
-            className="flex flex-1 flex-col items-center justify-center gap-4"
+            className="flex flex-1 flex-col items-center gap-5 pt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <Progress
-              value={((practiceIndex + 1) / stageCharacters.length) * 100}
-              className="h-2 w-full"
-            />
-            <p className="text-muted-foreground text-sm">
-              연습 {practiceIndex + 1} / {stageCharacters.length}
-            </p>
+            <div className="flex w-full items-center gap-3">
+              <Progress
+                value={((practiceIndex + 1) / stageCharacters.length) * 100}
+                className="h-2 flex-1"
+              />
+              <span className="text-muted-foreground shrink-0 text-xs font-medium">
+                {practiceIndex + 1}/{stageCharacters.length}
+              </span>
+            </div>
 
-            <KanaFlashcard
+            <div className="flex flex-1 items-center">
+              <KanaFlashcard
               character={currentPracticeChar.character}
               romaji={currentPracticeChar.romaji}
               pronunciation={currentPracticeChar.pronunciation}
@@ -289,6 +296,7 @@ export default function KanaStageLearningPage({ params }: Props) {
                 }
               }}
             />
+            </div>
           </motion.div>
         )}
 
@@ -296,14 +304,11 @@ export default function KanaStageLearningPage({ params }: Props) {
         {phase === 'matching' && stageCharacters.length > 0 && (
           <motion.div
             key="matching"
-            className="flex flex-1 flex-col gap-4"
+            className="flex flex-1 flex-col"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <p className="text-muted-foreground text-center text-sm font-medium">
-              짝 맞추기로 복습해보세요
-            </p>
             <KanaPairMatching
               pairs={stageCharacters.map((c) => ({
                 id: c.id,
@@ -336,26 +341,27 @@ export default function KanaStageLearningPage({ params }: Props) {
         {phase === 'review' && reviewCharacters.length > 0 && (
           <motion.div
             key={`review-${reviewIndex}`}
-            className="flex flex-1 flex-col items-center justify-center gap-4"
+            className="flex flex-1 flex-col items-center gap-5 pt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="flex items-center gap-2">
-              <RotateCcw className="text-muted-foreground size-4" />
-              <p className="text-muted-foreground text-sm font-medium">
-                틀린 글자 복습
-              </p>
+            <div className="flex w-full items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <RotateCcw className="text-muted-foreground size-3.5" />
+                <span className="text-muted-foreground text-xs font-medium">복습</span>
+              </div>
+              <Progress
+                value={((reviewIndex + 1) / reviewCharacters.length) * 100}
+                className="h-2 flex-1"
+              />
+              <span className="text-muted-foreground shrink-0 text-xs font-medium">
+                {reviewIndex + 1}/{reviewCharacters.length}
+              </span>
             </div>
-            <Progress
-              value={((reviewIndex + 1) / reviewCharacters.length) * 100}
-              className="h-2 w-full"
-            />
-            <p className="text-muted-foreground text-sm">
-              복습 {reviewIndex + 1} / {reviewCharacters.length}
-            </p>
 
-            <KanaFlashcard
+            <div className="flex flex-1 items-center">
+              <KanaFlashcard
               character={reviewCharacters[reviewIndex].character}
               romaji={reviewCharacters[reviewIndex].romaji}
               pronunciation={reviewCharacters[reviewIndex].pronunciation}
@@ -377,6 +383,7 @@ export default function KanaStageLearningPage({ params }: Props) {
                 }
               }}
             />
+            </div>
           </motion.div>
         )}
 

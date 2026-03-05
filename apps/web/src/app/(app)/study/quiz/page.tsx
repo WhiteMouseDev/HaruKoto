@@ -655,12 +655,13 @@ function QuizContent() {
         </AnimatePresence>
       </div>
 
-      {/* Hint */}
-      {answerState === 'idle' && question.hint && (
-        <div className="px-4 pb-4">
+      {/* Hint — invisible (not removed) when answered to prevent layout shift */}
+      {question.hint && (
+        <div className={cn('px-4 pb-4', answerState !== 'idle' && 'invisible')}>
           <button
             className="text-muted-foreground mx-auto flex items-center gap-1.5 text-sm"
             onClick={() => setShowHint(!showHint)}
+            disabled={answerState !== 'idle'}
           >
             <Lightbulb className="size-4" />
             힌트 보기
