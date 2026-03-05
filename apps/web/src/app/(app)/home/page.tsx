@@ -107,8 +107,8 @@ export default function HomePage() {
         <PhoneCallCta onClick={() => router.push('/chat/call/contacts')} />
       </motion.div>
 
-      {/* Kana CTA - N5 users who haven't completed kana */}
-      {jlptLevel === 'N5' &&
+      {/* Kana CTA - users with showKana enabled who haven't completed kana */}
+      {dashboard.showKana &&
         dashboard.kanaProgress &&
         (dashboard.kanaProgress.hiragana.pct < 100 || dashboard.kanaProgress.katakana.pct < 100) && (
           <motion.div variants={item}>

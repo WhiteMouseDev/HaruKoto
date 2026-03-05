@@ -136,37 +136,39 @@ export async function POST(request: Request) {
       where: { userId: user.id },
     });
 
+    // Check completion status for hiragana and katakana
+    const [hiraganaCompletedCount, hiraganaTotalCount, katakanaCompletedCount, katakanaTotalCount] =
+      await Promise.all([
+        prisma.userKanaStage.count({
+          where: { userId: user.id, isCompleted: true, stage: { kanaType: 'HIRAGANA' } },
+        }),
+        prisma.kanaLearningStage.count({ where: { kanaType: 'HIRAGANA' } }),
+        prisma.userKanaStage.count({
+          where: { userId: user.id, isCompleted: true, stage: { kanaType: 'KATAKANA' } },
+        }),
+        prisma.kanaLearningStage.count({ where: { kanaType: 'KATAKANA' } }),
+      ]);
+
+    const isHiraganaComplete = hiraganaCompletedCount >= hiraganaTotalCount;
+    const isKatakanaComplete = katakanaCompletedCount >= katakanaTotalCount;
+
     const events: GameEvent[] = await checkAndGrantAchievements(user.id, {
       totalXp,
       newLevel,
       oldLevel,
       streakCount: streak.streakCount,
       kanaFirstChar: totalKanaLearned >= 1,
-      kanaHiraganaComplete:
-        stage.kanaType === 'HIRAGANA' &&
-        (await prisma.userKanaStage.count({
-          where: {
-            userId: user.id,
-            isCompleted: true,
-            stage: { kanaType: 'HIRAGANA' },
-          },
-        })) >=
-          (await prisma.kanaLearningStage.count({
-            where: { kanaType: 'HIRAGANA' },
-          })),
-      kanaKatakanaComplete:
-        stage.kanaType === 'KATAKANA' &&
-        (await prisma.userKanaStage.count({
-          where: {
-            userId: user.id,
-            isCompleted: true,
-            stage: { kanaType: 'KATAKANA' },
-          },
-        })) >=
-          (await prisma.kanaLearningStage.count({
-            where: { kanaType: 'KATAKANA' },
-          })),
+      kanaHiraganaComplete: stage.kanaType === 'HIRAGANA' && isHiraganaComplete,
+      kanaKatakanaComplete: stage.kanaType === 'KATAKANA' && isKatakanaComplete,
     });
+
+    // Auto-disable showKana when both hiragana and katakana are fully completed
+    if (isHiraganaComplete && isKatakanaComplete) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { showKana: false },
+      });
+    }
 
     // Save notifications
     for (const event of events) {

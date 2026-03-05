@@ -12,6 +12,14 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
+    // Get user's JLPT level
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { jlptLevel: true },
+    });
+
+    const jlptLevel = dbUser?.jlptLevel ?? 'N5';
+
     const now = new Date();
 
     // Count words due for review
@@ -23,10 +31,10 @@ export async function GET() {
       },
     });
 
-    // Count new words not yet studied (N5)
+    // Count new words not yet studied (user's level)
     const newWordsCount = await prisma.vocabulary.count({
       where: {
-        jlptLevel: 'N5',
+        jlptLevel,
         userProgress: { none: { userId: user.id } },
       },
     });

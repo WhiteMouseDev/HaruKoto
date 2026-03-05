@@ -484,6 +484,15 @@ export async function POST(request: Request) {
       });
     }
 
+    // Handle empty content for levels without data
+    if (questions.length === 0) {
+      return NextResponse.json({
+        questions: [],
+        sessionId: null,
+        message: '이 레벨의 콘텐츠를 준비하고 있어요',
+      });
+    }
+
     // Create quiz session
     const session = await prisma.quizSession.create({
       data: {

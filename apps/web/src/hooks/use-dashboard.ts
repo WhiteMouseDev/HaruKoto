@@ -3,6 +3,7 @@ import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
 export type DashboardData = {
+  showKana?: boolean;
   today: {
     wordsStudied: number;
     quizzesCompleted: number;

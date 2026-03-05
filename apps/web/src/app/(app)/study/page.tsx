@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { KanaProgressBanner } from '@/components/features/kana/kana-progress-banner';
 import { useKanaProgress } from '@/hooks/use-kana';
+import { useDashboard } from '@/hooks/use-dashboard';
 import {
   useIncompleteQuiz,
   useQuizStats,
@@ -54,6 +55,7 @@ type StudyTab = 'recommend' | 'free';
 export default function StudyPage() {
   const router = useRouter();
   const { data: kanaProgress } = useKanaProgress();
+  const { data: dashboard } = useDashboard();
   const [studyTab, setStudyTab] = useState<StudyTab>('recommend');
   const [selectedLevel, setSelectedLevel] = useState<string>('N5');
   const [selectedTab, setSelectedTab] = useState('VOCABULARY');
@@ -158,7 +160,8 @@ export default function StudyPage() {
       )}
 
       {/* Kana Progress Banner */}
-      {kanaProgress &&
+      {dashboard?.showKana &&
+        kanaProgress &&
         (kanaProgress.hiragana.pct < 100 ||
           kanaProgress.katakana.pct < 100) && (
           <KanaProgressBanner
@@ -296,7 +299,6 @@ export default function StudyPage() {
           <div className="flex gap-2">
             {JLPT_LEVELS.map((level) => {
               const isActive = selectedLevel === level;
-              const isAvailable = level === 'N5' || level === 'N4';
               return (
                 <button
                   key={level}
@@ -304,9 +306,8 @@ export default function StudyPage() {
                     isActive
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-border text-muted-foreground'
-                  } ${!isAvailable ? 'opacity-40' : ''}`}
-                  onClick={() => isAvailable && setSelectedLevel(level)}
-                  disabled={!isAvailable}
+                  }`}
+                  onClick={() => setSelectedLevel(level)}
                 >
                   {level}
                 </button>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import {
   ChevronRight,
   BookOpen,
+  Languages,
   Target,
   Sun,
   Moon,
@@ -44,6 +45,7 @@ type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 type SettingsMenuProps = {
   jlptLevel: string;
   dailyGoal: number;
+  showKana: boolean;
   onUpdate: (field: string, value: unknown) => Promise<void>;
   callSettings: CallSettingsData;
   onCallSettingsUpdate: (settings: Partial<CallSettingsData>) => void;
@@ -81,6 +83,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export function SettingsMenu({
   jlptLevel,
   dailyGoal,
+  showKana,
   onUpdate,
   callSettings,
   onCallSettingsUpdate,
@@ -214,6 +217,20 @@ export function SettingsMenu({
                   <ChevronRight className="text-muted-foreground size-4" />
                 </div>
               </button>
+
+              <Separator />
+
+              {/* Show Kana */}
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <div className="flex items-center gap-3">
+                  <Languages className="text-emerald-500 size-5" />
+                  <span className="text-sm font-medium">가나 학습 표시</span>
+                </div>
+                <Switch
+                  checked={showKana}
+                  onCheckedChange={(checked) => onUpdate('showKana', checked)}
+                />
+              </div>
             </CardContent>
           </Card>
         </motion.div>

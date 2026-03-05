@@ -28,6 +28,7 @@ export async function GET() {
             dailyGoal: true,
             streakCount: true,
             longestStreak: true,
+            showKana: true,
           },
         }),
         prisma.dailyProgress.findUnique({
@@ -90,6 +91,7 @@ export async function GET() {
     };
 
     return NextResponse.json({
+      showKana: dbUser.showKana,
       kanaProgress,
       today: {
         wordsStudied,

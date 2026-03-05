@@ -12,30 +12,32 @@ const LEVELS = [
   {
     value: 'N5' as const,
     emoji: '🌱',
-    label: '완전 초보',
-    desc: '히라가나도 아직 몰라요',
-    disabled: false,
+    label: 'N5 — 완전 초보',
+    desc: '히라가나부터 시작',
   },
   {
     value: 'N4' as const,
     emoji: '🌿',
-    label: '기초 (N5~N4)',
-    desc: '기본 인사/숫자 정도 알아요',
-    disabled: true,
+    label: 'N4 — 기초',
+    desc: '기본 문법과 단어를 알아요',
   },
   {
     value: 'N3' as const,
     emoji: '🌳',
-    label: '중급 (N3)',
-    desc: '간단한 회화가 가능해요',
-    disabled: true,
+    label: 'N3 — 중급',
+    desc: '일상 회화가 가능해요',
   },
   {
     value: 'N2' as const,
     emoji: '🌲',
-    label: '고급 (N2~N1)',
-    desc: '복잡한 문장도 이해해요',
-    disabled: true,
+    label: 'N2 — 중상급',
+    desc: '뉴스/소설을 읽을 수 있어요',
+  },
+  {
+    value: 'N1' as const,
+    emoji: '🗻',
+    label: 'N1 — 상급',
+    desc: '네이티브에 가까워요',
   },
 ];
 
@@ -55,13 +57,19 @@ export default function OnboardingPage() {
     nickname,
     jlptLevel,
     goal,
+    showKana,
     setStep,
     setNickname,
     setJlptLevel,
     setGoal,
+    setShowKana,
   } = useOnboardingStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const totalSteps = jlptLevel === 'N5' ? 4 : 3;
+  const isGoalStep =
+    (step === 3 && jlptLevel !== 'N5') || step === 4;
 
   async function handleComplete() {
     if (!nickname || !jlptLevel || !goal) return;
@@ -72,7 +80,7 @@ export default function OnboardingPage() {
       const res = await fetch('/api/v1/auth/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname, jlptLevel, goal }),
+        body: JSON.stringify({ nickname, jlptLevel, goal, showKana }),
       });
 
       if (!res.ok) {
@@ -80,8 +88,7 @@ export default function OnboardingPage() {
         throw new Error(data.error || '오류가 발생했습니다');
       }
 
-      // N5 beginners should start with kana learning
-      if (jlptLevel === 'N5') {
+      if (showKana) {
         router.push('/study/kana');
       } else {
         router.push('/home');
@@ -98,7 +105,7 @@ export default function OnboardingPage() {
     <div className="from-background to-secondary flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b px-6">
       {/* Progress */}
       <div className="mb-8 flex items-center gap-2">
-        {[1, 2, 3].map((s) => (
+        {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s) => (
           <div
             key={s}
             className={`h-1.5 w-12 rounded-full transition-colors ${
@@ -150,17 +157,12 @@ export default function OnboardingPage() {
               {LEVELS.map((level) => (
                 <button
                   key={level.value}
-                  disabled={level.disabled}
                   className={`flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-all ${
-                    level.disabled
-                      ? 'border-border cursor-not-allowed opacity-50'
-                      : jlptLevel === level.value
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
+                    jlptLevel === level.value
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
                   }`}
-                  onClick={() => {
-                    if (!level.disabled) setJlptLevel(level.value);
-                  }}
+                  onClick={() => setJlptLevel(level.value)}
                 >
                   <span className="text-2xl">{level.emoji}</span>
                   <div className="flex-1">
@@ -169,11 +171,6 @@ export default function OnboardingPage() {
                       {level.desc}
                     </p>
                   </div>
-                  {level.disabled && (
-                    <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
-                      준비 중
-                    </span>
-                  )}
                 </button>
               ))}
             </div>
@@ -197,8 +194,68 @@ export default function OnboardingPage() {
         </Card>
       )}
 
-      {/* Step 3: Goal */}
-      {step === 3 && (
+      {/* Step 3 (N5 only): Kana question */}
+      {step === 3 && jlptLevel === 'N5' && (
+        <Card className="w-full max-w-sm">
+          <CardContent className="flex flex-col gap-4 p-6">
+            <div className="text-center">
+              <FoxMascot size={48} className="mb-2" />
+              <h2 className="text-xl font-bold">
+                히라가나/가타카나부터 배워볼까요?
+              </h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                일본어의 기초 문자를 먼저 학습할 수 있어요
+              </p>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <button
+                className={`rounded-xl border-2 p-4 text-left transition-all ${
+                  showKana
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => setShowKana(true)}
+              >
+                <p className="font-semibold">네, 기초부터 배울래요</p>
+                <p className="text-muted-foreground text-sm">
+                  히라가나/가타카나부터 차근차근 시작해요
+                </p>
+              </button>
+              <button
+                className={`rounded-xl border-2 p-4 text-left transition-all ${
+                  !showKana
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => setShowKana(false)}
+              >
+                <p className="font-semibold">건너뛸게요</p>
+                <p className="text-muted-foreground text-sm">
+                  이미 가나를 알고 있어요
+                </p>
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="h-12 flex-1 rounded-xl"
+                onClick={() => setStep(2)}
+              >
+                ← 이전
+              </Button>
+              <Button
+                className="h-12 flex-1 rounded-xl text-base"
+                onClick={() => setStep(4)}
+              >
+                다음 →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Goal step: step 3 for non-N5, step 4 for N5 */}
+      {isGoalStep && (
         <Card className="w-full max-w-sm">
           <CardContent className="flex flex-col gap-4 p-6">
             <div className="text-center">
@@ -230,7 +287,7 @@ export default function OnboardingPage() {
               <Button
                 variant="outline"
                 className="h-12 flex-1 rounded-xl"
-                onClick={() => setStep(2)}
+                onClick={() => setStep(jlptLevel === 'N5' ? 3 : 2)}
               >
                 ← 이전
               </Button>

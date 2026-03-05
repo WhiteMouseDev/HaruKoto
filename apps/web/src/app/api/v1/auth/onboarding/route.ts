@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { nickname, jlptLevel, goal } = body;
+    const { nickname, jlptLevel, goal, showKana } = body;
 
     if (!nickname || !jlptLevel || !goal) {
       return NextResponse.json(
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         nickname,
         jlpt_level: jlptLevel,
         goal,
+        show_kana: !!showKana,
         onboarding_completed: true,
       },
     });
@@ -44,12 +45,14 @@ export async function POST(request: Request) {
         nickname,
         jlptLevel,
         goal,
+        showKana: !!showKana,
         onboardingCompleted: true,
       },
       update: {
         nickname,
         jlptLevel,
         goal,
+        showKana: !!showKana,
         onboardingCompleted: true,
       },
     });

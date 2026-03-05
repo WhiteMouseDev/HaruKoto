@@ -12,14 +12,16 @@ type UserGoal =
   | 'HOBBY';
 
 interface OnboardingState {
-  step: 1 | 2 | 3;
+  step: 1 | 2 | 3 | 4;
   nickname: string;
   jlptLevel: JlptLevel | null;
   goal: UserGoal | null;
-  setStep: (step: 1 | 2 | 3) => void;
+  showKana: boolean;
+  setStep: (step: 1 | 2 | 3 | 4) => void;
   setNickname: (nickname: string) => void;
   setJlptLevel: (level: JlptLevel) => void;
   setGoal: (goal: UserGoal) => void;
+  setShowKana: (showKana: boolean) => void;
   reset: () => void;
 }
 
@@ -28,9 +30,11 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   nickname: '',
   jlptLevel: null,
   goal: null,
+  showKana: false,
   setStep: (step) => set({ step }),
   setNickname: (nickname) => set({ nickname }),
   setJlptLevel: (jlptLevel) => set({ jlptLevel }),
   setGoal: (goal) => set({ goal }),
-  reset: () => set({ step: 1, nickname: '', jlptLevel: null, goal: null }),
+  setShowKana: (showKana) => set({ showKana }),
+  reset: () => set({ step: 1, nickname: '', jlptLevel: null, goal: null, showKana: false }),
 }));

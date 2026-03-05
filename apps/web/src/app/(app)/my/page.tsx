@@ -38,6 +38,7 @@ type MyProfileData = {
     streakCount: number;
     longestStreak: number;
     callSettings: Partial<CallSettingsData> | null;
+    showKana: boolean;
     createdAt: string;
   };
   summary: {
@@ -169,6 +170,7 @@ export default function MyPage() {
       <SettingsMenu
         jlptLevel={profile.jlptLevel}
         dailyGoal={profile.dailyGoal}
+        showKana={profile.showKana}
         onUpdate={handleUpdate}
         callSettings={{
           ...getDefaultCallSettings(profile.jlptLevel),

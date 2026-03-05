@@ -43,7 +43,6 @@ yarn-error.log*
 
 # Prisma
 packages/database/prisma/*.db
-packages/database/prisma/migrations/
 
 # Test
 coverage/

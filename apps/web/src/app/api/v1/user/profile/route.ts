@@ -33,6 +33,7 @@ export async function GET() {
             lastStudyDate: true,
             isPremium: true,
             callSettings: true,
+            showKana: true,
             createdAt: true,
           },
         }),
@@ -115,6 +116,7 @@ const updateProfileSchema = z.object({
     ])
     .optional(),
   callSettings: callSettingsSchema.optional(),
+  showKana: z.boolean().optional(),
 });
 
 export async function PATCH(request: Request) {
@@ -182,6 +184,7 @@ export async function PATCH(request: Request) {
         lastStudyDate: true,
         isPremium: true,
         callSettings: true,
+        showKana: true,
         createdAt: true,
       },
     });
