@@ -78,7 +78,7 @@ export function SubscriptionSection() {
                     )}
                     {isCancelled && (
                       <span className="text-amber-500 text-[11px]">
-                        취소됨 - 만료일까지 이용 가능
+                        취소됨 - {formatDate(sub!.expiresAt)}까지 이용 가능
                       </span>
                     )}
                   </div>

@@ -11,10 +11,11 @@ export async function getSubscriptionStatus(userId: string) {
     orderBy: { createdAt: 'desc' },
   });
 
+  // 취소된 구독도 만료일 전이면 프리미엄 유지
   const isPremium =
     !!subscription &&
     subscription.plan !== 'FREE' &&
-    subscription.status === 'ACTIVE' &&
+    (subscription.status === 'ACTIVE' || subscription.status === 'CANCELLED') &&
     subscription.currentPeriodEnd > new Date();
 
   return {
