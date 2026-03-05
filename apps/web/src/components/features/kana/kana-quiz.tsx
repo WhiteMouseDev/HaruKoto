@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { apiFetch } from '@/lib/api';
+import { useAnswerKanaQuestion } from '@/hooks/use-kana-quiz';
 
 type QuizQuestion = {
   questionId: string;
@@ -33,6 +33,7 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
   const [answers, setAnswers] = useState<
     { questionId: string; selectedOptionId: string; isCorrect: boolean }[]
   >([]);
+  const answerMutation = useAnswerKanaQuestion();
 
   const total = questions.length;
   const current = questions[currentIndex];
@@ -58,15 +59,10 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
 
       // Report answer to server for per-question progress tracking
       if (sessionId) {
-        apiFetch('/api/v1/kana/quiz/answer', {
-          method: 'POST',
-          body: JSON.stringify({
-            sessionId,
-            questionId: current.questionId,
-            selectedOptionId: optionId,
-          }),
-        }).catch(() => {
-          // Non-blocking: don't break quiz flow on API error
+        answerMutation.mutate({
+          sessionId,
+          questionId: current.questionId,
+          selectedOptionId: optionId,
         });
       }
 
@@ -90,7 +86,7 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
         }
       }, 1000);
     },
-    [showFeedback, current, answers, currentIndex, total, sessionId, onComplete]
+    [showFeedback, current, answers, currentIndex, total, sessionId, onComplete, answerMutation]
   );
 
   if (!current) return null;

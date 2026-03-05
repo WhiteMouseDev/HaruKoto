@@ -1,8 +1,7 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy,
@@ -21,16 +20,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Confetti } from '@/components/ui/confetti';
 import { useCountUp } from '@/hooks/use-count-up';
-import { queryKeys } from '@/lib/query-keys';
-
-type WrongAnswer = {
-  questionId: string;
-  word: string;
-  reading: string | null;
-  meaningKo: string;
-  exampleSentence: string | null;
-  exampleTranslation: string | null;
-};
+import { useWrongAnswers } from '@/hooks/use-quiz';
+import { useAddWord } from '@/hooks/use-wordbook';
 
 export default function QuizResultPage() {
   return (
@@ -43,24 +34,10 @@ export default function QuizResultPage() {
 function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
-  const hasInvalidated = useRef(false);
 
-  const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
   const [showWrongList, setShowWrongList] = useState(false);
   const [savedWords, setSavedWords] = useState<Set<string>>(new Set());
   const [bulkSaving, setBulkSaving] = useState(false);
-
-  useEffect(() => {
-    if (hasInvalidated.current) return;
-    hasInvalidated.current = true;
-
-    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
-    queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
-    queryClient.invalidateQueries({ queryKey: queryKeys.profile });
-    queryClient.invalidateQueries({ queryKey: queryKeys.quizStats });
-    queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
-  }, [queryClient]);
 
   const correct = parseInt(searchParams.get('correct') || '0');
   const total = parseInt(searchParams.get('total') || '0');
@@ -73,49 +50,48 @@ function ResultContent() {
   const xpForNext = parseInt(searchParams.get('xpForNext') || '100');
   const sessionId = searchParams.get('sessionId');
 
-  // Fetch wrong answers (skip for kana quizzes)
-  useEffect(() => {
-    if (!sessionId || total - correct === 0 || isKana) return;
-    async function fetchWrongAnswers() {
-      try {
-        const res = await fetch(
-          `/api/v1/quiz/wrong-answers?sessionId=${sessionId}`
-        );
-        const data = await res.json();
-        if (data.wrongAnswers) setWrongAnswers(data.wrongAnswers);
-      } catch {
-        // Silently ignore
-      }
-    }
-    fetchWrongAnswers();
-  }, [sessionId, total, correct, isKana]);
+  const hasWrongAnswers = total - correct > 0 && !isKana;
+  const { data: wrongAnswersData } = useWrongAnswers(
+    hasWrongAnswers ? sessionId : null
+  );
+  const wrongAnswers = wrongAnswersData?.wrongAnswers ?? [];
 
-  async function saveToWordbook(item: WrongAnswer) {
+  const addWordMutation = useAddWord();
+
+  function saveToWordbook(item: { questionId: string; word: string; reading: string | null; meaningKo: string }) {
     if (savedWords.has(item.questionId)) return;
-    try {
-      const res = await fetch('/api/v1/wordbook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          word: item.word,
-          reading: item.reading || item.word,
-          meaningKo: item.meaningKo,
-          source: 'QUIZ',
-        }),
-      });
-      if (res.ok) {
-        setSavedWords((prev) => new Set(prev).add(item.questionId));
+    addWordMutation.mutate(
+      {
+        word: item.word,
+        reading: item.reading || item.word,
+        meaningKo: item.meaningKo,
+        source: 'QUIZ',
+      },
+      {
+        onSuccess: () => {
+          setSavedWords((prev) => new Set(prev).add(item.questionId));
+        },
       }
-    } catch {
-      // Silently ignore
-    }
+    );
   }
 
   async function saveAllToWordbook() {
     if (bulkSaving) return;
     setBulkSaving(true);
     const unsaved = wrongAnswers.filter((w) => !savedWords.has(w.questionId));
-    await Promise.allSettled(unsaved.map((item) => saveToWordbook(item)));
+    for (const item of unsaved) {
+      try {
+        await addWordMutation.mutateAsync({
+          word: item.word,
+          reading: item.reading || item.word,
+          meaningKo: item.meaningKo,
+          source: 'QUIZ',
+        });
+        setSavedWords((prev) => new Set(prev).add(item.questionId));
+      } catch {
+        // Continue with remaining items
+      }
+    }
     setBulkSaving(false);
   }
 

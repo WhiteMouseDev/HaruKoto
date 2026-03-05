@@ -7,7 +7,7 @@ import { ArrowLeft, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { KanaQuiz } from '@/components/features/kana/kana-quiz';
-import { apiFetch } from '@/lib/api';
+import { useStartKanaQuiz, useCompleteKanaQuiz } from '@/hooks/use-kana-quiz';
 
 type Props = {
   params: Promise<{ type: string }>;
@@ -47,23 +47,19 @@ function KanaQuizContent({ params }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
+  const startKanaQuizMutation = useStartKanaQuiz();
+  const completeKanaQuizMutation = useCompleteKanaQuiz();
+
   useEffect(() => {
     async function startQuiz() {
       setLoading(true);
       setError(null);
       try {
-        const res = await apiFetch<{
-          sessionId: string | null;
-          questions: QuizQuestion[];
-          message?: string;
-        }>('/api/v1/kana/quiz/start', {
-          method: 'POST',
-          body: JSON.stringify({
-            kanaType,
-            stageNumber,
-            quizMode: mode,
-            count: isMaster ? 46 : 10,
-          }),
+        const res = await startKanaQuizMutation.mutateAsync({
+          kanaType,
+          stageNumber,
+          quizMode: mode,
+          count: isMaster ? 46 : 10,
         });
 
         if (!res.sessionId || res.questions.length === 0) {
@@ -79,6 +75,7 @@ function KanaQuizContent({ params }: Props) {
       }
     }
     startQuiz();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kanaType, stageNumber, mode, isMaster, retryKey]);
 
   const [masterResult, setMasterResult] = useState<{
@@ -96,15 +93,7 @@ function KanaQuizContent({ params }: Props) {
   }) {
     if (sessionId) {
       try {
-        const res = await apiFetch<{
-          accuracy: number;
-          xpEarned: number;
-          currentXp: number;
-          xpForNext: number;
-        }>('/api/v1/kana/quiz/complete', {
-          method: 'POST',
-          body: JSON.stringify({ sessionId }),
-        });
+        const res = await completeKanaQuizMutation.mutateAsync({ sessionId });
 
         if (isMaster) {
           const accuracy = Math.round((result.correct / result.total) * 100);

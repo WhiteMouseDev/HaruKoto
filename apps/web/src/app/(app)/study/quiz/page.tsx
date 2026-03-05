@@ -17,20 +17,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { showGameEvents } from '@/lib/show-events';
 import { Logo } from '@/components/brand/logo';
-
-interface QuizOption {
-  id: string;
-  text: string;
-}
-
-interface QuizQuestion {
-  questionId: string;
-  questionText: string;
-  questionSubText: string | null;
-  hint: string | null;
-  options: QuizOption[];
-  correctOptionId: string;
-}
+import {
+  useStartQuiz,
+  useResumeQuiz,
+  useAnswerQuestion,
+  useCompleteQuiz,
+  type QuizQuestion,
+} from '@/hooks/use-quiz';
+import { useAddWord } from '@/hooks/use-wordbook';
 
 type AnswerState = 'idle' | 'correct' | 'incorrect';
 
@@ -70,28 +64,28 @@ function QuizContent() {
   const [loading, setLoading] = useState(true);
   const [, setResults] = useState<boolean[]>([]);
   const [wordSaved, setWordSaved] = useState(false);
-  const [wordSaving, setWordSaving] = useState(false);
   const timerRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startQuizMutation = useStartQuiz();
+  const resumeQuizMutation = useResumeQuiz();
+  const answerMutation = useAnswerQuestion();
+  const completeQuizMutation = useCompleteQuiz();
+  const addWordMutation = useAddWord();
 
   // Start or resume quiz
   useEffect(() => {
     async function initQuiz() {
       try {
         if (resumeSessionId) {
-          // Resume mode
-          const res = await fetch('/api/v1/quiz/resume', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: resumeSessionId }),
+          const data = await resumeQuizMutation.mutateAsync({
+            sessionId: resumeSessionId,
           });
-          const data = await res.json();
-          if (res.ok && data.questions) {
+          if (data.questions) {
             setSessionId(data.sessionId);
             setQuestions(data.questions);
             const answeredCount = data.answeredQuestionIds.length;
             setCurrentIndex(answeredCount);
-            // Restore results: correctCount trues, rest false
             const restoredResults = Array.from(
               { length: answeredCount },
               (_, i) => i < data.correctCount
@@ -99,17 +93,14 @@ function QuizContent() {
             setResults(restoredResults);
           }
         } else {
-          // Normal start
-          const res = await fetch('/api/v1/quiz/start', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quizType, jlptLevel, count, mode: mode || undefined }),
+          const data = await startQuizMutation.mutateAsync({
+            quizType,
+            jlptLevel,
+            count,
+            mode: mode || undefined,
           });
-          const data = await res.json();
-          if (res.ok) {
-            setSessionId(data.sessionId);
-            setQuestions(data.questions);
-          }
+          setSessionId(data.sessionId);
+          setQuestions(data.questions);
         }
       } catch (err) {
         console.error('Failed to init quiz:', err);
@@ -118,6 +109,7 @@ function QuizContent() {
       }
     }
     initQuiz();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizType, jlptLevel, count, mode, resumeSessionId]);
 
   // Timer
@@ -158,31 +150,24 @@ function QuizContent() {
       setResults((prev) => [...prev, isCorrect]);
 
       // Submit answer
-      await fetch('/api/v1/quiz/answer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId,
-          questionId: question.questionId,
-          selectedOptionId: optionId,
-          isCorrect,
-          timeSpentSeconds: timerRef.current,
-          questionType: quizType,
-        }),
+      answerMutation.mutate({
+        sessionId,
+        questionId: question.questionId,
+        selectedOptionId: optionId,
+        isCorrect,
+        timeSpentSeconds: timerRef.current,
+        questionType: quizType,
       });
     },
-    [answerState, sessionId, questions, currentIndex, quizType]
+    [answerState, sessionId, questions, currentIndex, quizType, answerMutation]
   );
 
   async function handleNext() {
     if (currentIndex + 1 >= questions.length) {
       // Complete quiz
-      const res = await fetch('/api/v1/quiz/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId }),
+      const data = await completeQuizMutation.mutateAsync({
+        sessionId: sessionId!,
       });
-      const data = await res.json();
       showGameEvents(data.events);
       router.replace(
         `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
@@ -195,33 +180,25 @@ function QuizContent() {
     setAnswerState('idle');
     setShowHint(false);
     setWordSaved(false);
-    setWordSaving(false);
   }
 
-  async function handleSaveToWordbook() {
-    if (wordSaving || wordSaved) return;
+  function handleSaveToWordbook() {
+    if (addWordMutation.isPending || wordSaved) return;
     const q = questions[currentIndex];
     const correctOption = q.options.find((o) => o.id === q.correctOptionId);
     if (!correctOption) return;
 
-    setWordSaving(true);
-    try {
-      const res = await fetch('/api/v1/wordbook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          word: q.questionText,
-          reading: q.questionSubText || q.questionText,
-          meaningKo: correctOption.text,
-          source: 'QUIZ',
-        }),
-      });
-      if (res.ok) setWordSaved(true);
-    } catch {
-      // Silently ignore
-    } finally {
-      setWordSaving(false);
-    }
+    addWordMutation.mutate(
+      {
+        word: q.questionText,
+        reading: q.questionSubText || q.questionText,
+        meaningKo: correctOption.text,
+        source: 'QUIZ',
+      },
+      {
+        onSuccess: () => setWordSaved(true),
+      }
+    );
   }
 
   if (loading) {
@@ -470,7 +447,7 @@ function QuizContent() {
                           : 'bg-secondary text-muted-foreground'
                       )}
                       onClick={handleSaveToWordbook}
-                      disabled={wordSaving || wordSaved}
+                      disabled={addWordMutation.isPending || wordSaved}
                     >
                       {wordSaved ? (
                         <>

@@ -85,7 +85,10 @@ export function useUpdateKanaProgress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.kanaProgress });
       queryClient.invalidateQueries({
-        queryKey: ['kana-characters'],
+        queryKey: queryKeys.kanaCharacters('HIRAGANA'),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.kanaCharacters('KATAKANA'),
       });
     },
   });
