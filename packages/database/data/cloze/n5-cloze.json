@@ -1,0 +1,134 @@
+[
+  {
+    "sentence": "わたし{blank}がくせいです。",
+    "translation": "나는 학생입니다.",
+    "correctAnswer": "は",
+    "options": ["は", "が", "を", "に"],
+    "explanation": "は는 주제를 나타내는 조사예요. '~은/는'에 해당합니다. 자기소개처럼 주제를 제시할 때 사용해요.",
+    "grammarPoint": "주제 조사 は",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 1
+  },
+  {
+    "sentence": "みず{blank}のみます。",
+    "translation": "물을 마십니다.",
+    "correctAnswer": "を",
+    "options": ["を", "が", "に", "で"],
+    "explanation": "を는 동작의 대상(목적어)을 나타내는 조사예요. '~을/를'에 해당합니다.",
+    "grammarPoint": "목적어 조사 を",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 2
+  },
+  {
+    "sentence": "がっこう{blank}いきます。",
+    "translation": "학교에 갑니다.",
+    "correctAnswer": "に",
+    "options": ["に", "を", "で", "へ"],
+    "explanation": "に는 이동의 목적지를 나타내요. '~에'에 해당합니다. へ도 비슷하지만 に가 더 구체적인 도착점을 나타내요.",
+    "grammarPoint": "방향 조사 に",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 3
+  },
+  {
+    "sentence": "としょかん{blank}べんきょうします。",
+    "translation": "도서관에서 공부합니다.",
+    "correctAnswer": "で",
+    "options": ["で", "に", "を", "は"],
+    "explanation": "で는 동작이 이루어지는 장소를 나타내요. '~에서'에 해당합니다. に(존재)와 구별하세요.",
+    "grammarPoint": "장소 조사 で",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 4
+  },
+  {
+    "sentence": "ねこ{blank}います。",
+    "translation": "고양이가 있습니다.",
+    "correctAnswer": "が",
+    "options": ["が", "は", "を", "も"],
+    "explanation": "が는 존재(いる/ある)의 주어를 나타내요. '~이/가'에 해당합니다. 새로운 정보를 소개할 때 사용해요.",
+    "grammarPoint": "주어 조사 が",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 5
+  },
+  {
+    "sentence": "にほんご{blank}えいご{blank}はなします。",
+    "translation": "일본어와 영어를 말합니다.",
+    "correctAnswer": "と",
+    "options": ["と", "や", "も", "の"],
+    "explanation": "と는 명사를 나열할 때 사용해요. '~와/과'에 해당합니다. 나열하는 항목이 전부일 때 사용해요.",
+    "grammarPoint": "나열 조사 と",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 6
+  },
+  {
+    "sentence": "わたし{blank}にほんじんです。",
+    "translation": "저도 일본인입니다.",
+    "correctAnswer": "も",
+    "options": ["も", "は", "が", "と"],
+    "explanation": "も는 '~도'를 나타내는 조사예요. 앞서 언급된 것과 같은 경우에 사용합니다.",
+    "grammarPoint": "첨가 조사 も",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 7
+  },
+  {
+    "sentence": "これ{blank}ほんです。",
+    "translation": "이것은 책입니다.",
+    "correctAnswer": "は",
+    "options": ["は", "が", "の", "を"],
+    "explanation": "これは~です는 '이것은 ~입니다'라는 기본 문형이에요. は로 주제를 제시합니다.",
+    "grammarPoint": "주제 조사 は (これは~です)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 8
+  },
+  {
+    "sentence": "せんせい{blank}ほん",
+    "translation": "선생님의 책",
+    "correctAnswer": "の",
+    "options": ["の", "が", "を", "に"],
+    "explanation": "の는 소유나 소속을 나타내요. '~의'에 해당합니다. 명사와 명사를 연결할 때 사용해요.",
+    "grammarPoint": "소유 조사 の",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 9
+  },
+  {
+    "sentence": "バス{blank}かいしゃにいきます。",
+    "translation": "버스로 회사에 갑니다.",
+    "correctAnswer": "で",
+    "options": ["で", "に", "を", "が"],
+    "explanation": "で는 수단이나 방법을 나타낼 때도 사용해요. '~(으)로'에 해당합니다. 교통수단 + で는 자주 나오는 패턴이에요.",
+    "grammarPoint": "수단 조사 で",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 10
+  },
+  {
+    "sentence": "あした{blank}しけんがあります。",
+    "translation": "내일 시험이 있습니다.",
+    "correctAnswer": "は",
+    "options": ["は", "に", "が", "で"],
+    "explanation": "시간 표현 뒤에 は를 붙이면 '~에는'이라는 대비/강조의 의미가 돼요. 여기서는 '내일은(특별히)'이라는 뉘앙스예요.",
+    "grammarPoint": "시간 표현 + は",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 11
+  },
+  {
+    "sentence": "ともだち{blank}えいがをみます。",
+    "translation": "친구와 영화를 봅니다.",
+    "correctAnswer": "と",
+    "options": ["と", "に", "で", "を"],
+    "explanation": "と는 함께 행동하는 상대를 나타낼 때도 사용해요. '~와/과 (함께)'에 해당합니다.",
+    "grammarPoint": "동반 조사 と",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 12
+  }
+]

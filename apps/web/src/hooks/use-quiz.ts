@@ -123,6 +123,22 @@ export function useWrongAnswers(sessionId: string | null) {
   });
 }
 
+type RecommendationData = {
+  reviewDueCount: number;
+  newWordsCount: number;
+  wrongCount: number;
+  lastReviewedAt: string | null;
+};
+
+export function useRecommendations() {
+  return useQuery<RecommendationData>({
+    queryKey: ['recommendations'],
+    queryFn: () =>
+      apiFetch<RecommendationData>('/api/v1/quiz/recommendations'),
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
 // Mutation hooks
 
 export function useStartQuiz() {
@@ -187,4 +203,5 @@ export type {
   QuizOption,
   CompleteQuizResponse,
   WrongAnswer,
+  RecommendationData,
 };

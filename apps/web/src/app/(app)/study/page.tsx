@@ -14,12 +14,23 @@ import {
   Grid3x3,
   PlayCircle,
   RotateCcw,
+  Link2,
+  TextCursorInput,
+  ArrowUpDown,
+  Keyboard,
+  RefreshCw,
+  Flame,
+  Library,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { KanaProgressBanner } from '@/components/features/kana/kana-progress-banner';
 import { useKanaProgress } from '@/hooks/use-kana';
-import { useIncompleteQuiz, useQuizStats } from '@/hooks/use-quiz';
+import {
+  useIncompleteQuiz,
+  useQuizStats,
+  useRecommendations,
+} from '@/hooks/use-quiz';
 
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 
@@ -30,22 +41,70 @@ const QUIZ_TYPES = [
   { value: 'LISTENING', label: '청해', disabled: true },
 ] as const;
 
+const QUIZ_MODES = [
+  { mode: 'normal' as const, icon: BookOpen, label: '4지선다' },
+  { mode: 'matching' as const, icon: Link2, label: '매칭' },
+  { mode: 'cloze' as const, icon: TextCursorInput, label: '빈칸' },
+  { mode: 'arrange' as const, icon: ArrowUpDown, label: '어순' },
+  { mode: 'typing' as const, icon: Keyboard, label: '쓰기' },
+] as const;
+
+type StudyTab = 'recommend' | 'free';
+
 export default function StudyPage() {
   const router = useRouter();
   const { data: kanaProgress } = useKanaProgress();
+  const [studyTab, setStudyTab] = useState<StudyTab>('recommend');
   const [selectedLevel, setSelectedLevel] = useState<string>('N5');
   const [selectedTab, setSelectedTab] = useState('VOCABULARY');
+  const [quizMode, setQuizMode] = useState<
+    'normal' | 'matching' | 'cloze' | 'arrange' | 'typing'
+  >('normal');
 
   const { data: incompleteData } = useIncompleteQuiz();
   const incompleteSession = incompleteData?.session ?? null;
 
   const { data: stats } = useQuizStats(selectedLevel, selectedTab);
+  const { data: recommendations } = useRecommendations();
 
   function startQuiz() {
+    const modeParam =
+      quizMode === 'matching'
+        ? '&mode=matching'
+        : quizMode === 'cloze'
+          ? '&mode=cloze'
+          : quizMode === 'arrange'
+            ? '&mode=arrange'
+            : quizMode === 'typing'
+              ? '&mode=typing'
+              : '';
     router.push(
-      `/study/quiz?type=${selectedTab}&level=${selectedLevel}&count=10`
+      `/study/quiz?type=${selectedTab}&level=${selectedLevel}&count=10${modeParam}`
     );
   }
+
+  function getLastReviewText() {
+    if (!recommendations?.lastReviewedAt) return null;
+    const last = new Date(recommendations.lastReviewedAt);
+    const now = new Date();
+    const diffDays = Math.floor(
+      (now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffDays === 0) return '오늘';
+    if (diffDays === 1) return '어제';
+    return `${diffDays}일 전`;
+  }
+
+  const modeLabel =
+    quizMode === 'matching'
+      ? '매칭'
+      : quizMode === 'cloze'
+        ? '빈칸 채우기'
+        : quizMode === 'arrange'
+          ? '어순 배열'
+          : quizMode === 'typing'
+            ? '단어 쓰기'
+            : '4지선다';
 
   return (
     <div className="flex flex-col gap-5 px-6 pt-6 pb-6">
@@ -111,94 +170,233 @@ export default function StudyPage() {
       {/* Header */}
       <h1 className="pt-2 text-2xl font-bold">JLPT 학습</h1>
 
-      {/* Level Selector */}
-      <div className="flex gap-2">
-        {JLPT_LEVELS.map((level) => {
-          const isActive = selectedLevel === level;
-          const isAvailable = level === 'N5' || level === 'N4';
-          return (
-            <button
-              key={level}
-              className={`flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
-                isActive
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted-foreground'
-              } ${!isAvailable ? 'opacity-40' : ''}`}
-              onClick={() => isAvailable && setSelectedLevel(level)}
-              disabled={!isAvailable}
-            >
-              {level}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Quiz Type Selector */}
+      {/* Study Tab Switcher */}
       <div className="flex gap-1 rounded-2xl bg-secondary p-1">
-        {QUIZ_TYPES.map((type) => {
-          const isActive = selectedTab === type.value;
-          return (
-            <button
-              key={type.value}
-              className={`flex-1 rounded-xl py-2 text-sm font-medium transition-all ${
-                isActive
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground'
-              } ${type.disabled ? 'opacity-40' : ''}`}
-              onClick={() => !type.disabled && setSelectedTab(type.value)}
-              disabled={type.disabled}
-            >
-              {type.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Study Card */}
-      <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
-            {selectedTab === 'VOCABULARY' ? (
-              <BookOpen className="text-primary size-5" />
-            ) : (
-              <Languages className="text-primary size-5" />
-            )}
-          </div>
-          <div className="flex-1">
-            <h3 className="font-bold">
-              {selectedLevel}{' '}
-              {selectedTab === 'VOCABULARY' ? '단어' : '문법'} 학습
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              {stats
-                ? `${stats.totalCount}개 ${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · 4지선다`
-                : `${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · 4지선다`}
-            </p>
-          </div>
-          <Badge variant="secondary">10문제</Badge>
-        </div>
-
-        <div className="mb-4 flex flex-col gap-1.5">
-          <div className="text-muted-foreground flex justify-between text-xs">
-            <span>학습 진행률</span>
-            <span>{stats ? `${stats.progress}%` : '0%'}</span>
-          </div>
-          <div className="bg-secondary h-2 overflow-hidden rounded-full">
-            <div
-              className="bg-primary h-full rounded-full transition-all"
-              style={{ width: `${stats?.progress ?? 0}%` }}
-            />
-          </div>
-        </div>
-
-        <Button
-          className="h-12 w-full text-base"
-          onClick={startQuiz}
+        <button
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-all ${
+            studyTab === 'recommend'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground'
+          }`}
+          onClick={() => setStudyTab('recommend')}
         >
-          학습 시작하기
-          <Flower2 className="ml-1.5 size-4" />
-        </Button>
+          <Flame className="size-3.5" />
+          추천
+        </button>
+        <button
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-all ${
+            studyTab === 'free'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground'
+          }`}
+          onClick={() => setStudyTab('free')}
+        >
+          <Library className="size-3.5" />
+          자율
+        </button>
       </div>
+
+      {/* Recommend Tab */}
+      {studyTab === 'recommend' && (
+        <div className="flex flex-col gap-3">
+          {/* Review due */}
+          {recommendations && recommendations.reviewDueCount > 0 && (
+            <div
+              className="from-primary/5 to-primary/10 border-primary/30 cursor-pointer rounded-3xl border bg-gradient-to-r p-5 shadow-sm transition-colors hover:from-primary/10 hover:to-primary/15"
+              onClick={() =>
+                router.push(
+                  `/study/quiz?type=VOCABULARY&level=N5&count=10&mode=review`
+                )
+              }
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <RefreshCw className="text-primary size-5" />
+                <span className="font-bold">복습할 단어</span>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                오늘 복습이 필요한 단어{' '}
+                <span className="text-primary font-semibold">
+                  {recommendations.reviewDueCount}개
+                </span>
+                가 있어요
+              </p>
+              {getLastReviewText() && (
+                <p className="text-muted-foreground mt-1 text-xs">
+                  마지막 복습: {getLastReviewText()}
+                </p>
+              )}
+              <p className="text-primary mt-3 text-sm font-medium">
+                지금 복습하기 →
+              </p>
+            </div>
+          )}
+
+          {/* New words */}
+          {recommendations && recommendations.newWordsCount > 0 && (
+            <div
+              className="cursor-pointer rounded-3xl border bg-card p-5 shadow-sm transition-colors hover:bg-secondary/50"
+              onClick={() =>
+                router.push(
+                  `/study/quiz?type=VOCABULARY&level=N5&count=10`
+                )
+              }
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <BookOpen className="text-primary size-5" />
+                <span className="font-bold">새로운 N5 단어</span>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                아직 안 본 단어 {recommendations.newWordsCount}개
+              </p>
+              <p className="text-primary mt-3 text-sm font-medium">
+                학습 시작 →
+              </p>
+            </div>
+          )}
+
+          {/* Wrong answers */}
+          {recommendations && recommendations.wrongCount > 0 && (
+            <div
+              className="cursor-pointer rounded-3xl border bg-card p-5 shadow-sm transition-colors hover:bg-secondary/50"
+              onClick={() => router.push('/study/wrong-answers')}
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <FileX className="text-hk-error size-5" />
+                <span className="font-bold">오답 노트</span>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                최근 틀린 단어 {recommendations.wrongCount}개
+              </p>
+              <p className="text-primary mt-3 text-sm font-medium">
+                오답 복습 →
+              </p>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {recommendations &&
+            recommendations.reviewDueCount === 0 &&
+            recommendations.newWordsCount === 0 &&
+            recommendations.wrongCount === 0 && (
+              <div className="flex flex-col items-center gap-2 rounded-3xl border bg-card p-8">
+                <Flower2 className="text-primary size-8" />
+                <p className="font-semibold">추천 학습이 없어요</p>
+                <p className="text-muted-foreground text-center text-sm">
+                  자율 탭에서 원하는 학습을 시작해보세요
+                </p>
+              </div>
+            )}
+        </div>
+      )}
+
+      {/* Free Tab */}
+      {studyTab === 'free' && (
+        <>
+          {/* Level Selector */}
+          <div className="flex gap-2">
+            {JLPT_LEVELS.map((level) => {
+              const isActive = selectedLevel === level;
+              const isAvailable = level === 'N5' || level === 'N4';
+              return (
+                <button
+                  key={level}
+                  className={`flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
+                    isActive
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground'
+                  } ${!isAvailable ? 'opacity-40' : ''}`}
+                  onClick={() => isAvailable && setSelectedLevel(level)}
+                  disabled={!isAvailable}
+                >
+                  {level}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Quiz Type Selector */}
+          <div className="flex gap-1 rounded-2xl bg-secondary p-1">
+            {QUIZ_TYPES.map((type) => {
+              const isActive = selectedTab === type.value;
+              return (
+                <button
+                  key={type.value}
+                  className={`flex-1 rounded-xl py-2 text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
+                  } ${type.disabled ? 'opacity-40' : ''}`}
+                  onClick={() => !type.disabled && setSelectedTab(type.value)}
+                  disabled={type.disabled}
+                >
+                  {type.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Study Card */}
+          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
+                {selectedTab === 'VOCABULARY' ? (
+                  <BookOpen className="text-primary size-5" />
+                ) : (
+                  <Languages className="text-primary size-5" />
+                )}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold">
+                  {selectedLevel}{' '}
+                  {selectedTab === 'VOCABULARY' ? '단어' : '문법'} 학습
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {stats
+                    ? `${stats.totalCount}개 ${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · ${modeLabel}`
+                    : `${selectedTab === 'VOCABULARY' ? '단어' : '문법'} · ${modeLabel}`}
+                </p>
+              </div>
+              <Badge variant="secondary">10문제</Badge>
+            </div>
+
+            {/* Quiz Mode Selector */}
+            <div className="mb-4 flex flex-wrap gap-2">
+              {QUIZ_MODES.map(({ mode, icon: Icon, label }) => (
+                <button
+                  key={mode}
+                  className={`flex flex-1 basis-[calc(33%-0.5rem)] items-center justify-center gap-1.5 rounded-xl border-2 py-2.5 text-sm font-medium transition-all ${
+                    quizMode === mode
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground'
+                  }`}
+                  onClick={() => setQuizMode(mode)}
+                >
+                  <Icon className="size-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mb-4 flex flex-col gap-1.5">
+              <div className="text-muted-foreground flex justify-between text-xs">
+                <span>학습 진행률</span>
+                <span>{stats ? `${stats.progress}%` : '0%'}</span>
+              </div>
+              <div className="bg-secondary h-2 overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full rounded-full transition-all"
+                  style={{ width: `${stats?.progress ?? 0}%` }}
+                />
+              </div>
+            </div>
+
+            <Button className="h-12 w-full text-base" onClick={startQuiz}>
+              학습 시작하기
+              <Flower2 className="ml-1.5 size-4" />
+            </Button>
+          </div>
+        </>
+      )}
 
       {/* My Study Data */}
       <div className="flex flex-col gap-3">

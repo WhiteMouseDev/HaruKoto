@@ -414,6 +414,73 @@ async function main() {
     }
   }
 
+  // 9. Seed Cloze Questions (N5)
+  const clozeFiles = [
+    { file: 'data/cloze/n5-cloze.json', level: 'N5' },
+  ];
+
+  for (const { file, level } of clozeFiles) {
+    const existingCount = await prisma.clozeQuestion.count({
+      where: { jlptLevel: level as any },
+    });
+    if (existingCount === 0) {
+      try {
+        const clozeData = loadJson<any[]>(file);
+        await prisma.clozeQuestion.createMany({
+          data: clozeData.map((c) => ({
+            sentence: c.sentence,
+            translation: c.translation,
+            correctAnswer: c.correctAnswer,
+            options: c.options,
+            explanation: c.explanation,
+            grammarPoint: c.grammarPoint,
+            jlptLevel: c.jlptLevel,
+            difficulty: c.difficulty,
+            order: c.order,
+          })),
+        });
+        console.log(`✅ ${clozeData.length} ${level} cloze questions seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${level} cloze file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${level} cloze questions already exist (${existingCount}), skipping`);
+    }
+  }
+
+  // 10. Seed Sentence Arrange Questions (N5)
+  const arrangeFiles = [
+    { file: 'data/sentence-arrange/n5-arrange.json', level: 'N5' },
+  ];
+
+  for (const { file, level } of arrangeFiles) {
+    const existingCount = await prisma.sentenceArrangeQuestion.count({
+      where: { jlptLevel: level as any },
+    });
+    if (existingCount === 0) {
+      try {
+        const arrangeData = loadJson<any[]>(file);
+        await prisma.sentenceArrangeQuestion.createMany({
+          data: arrangeData.map((a) => ({
+            koreanSentence: a.koreanSentence,
+            japaneseSentence: a.japaneseSentence,
+            tokens: a.tokens,
+            explanation: a.explanation,
+            grammarPoint: a.grammarPoint,
+            jlptLevel: a.jlptLevel,
+            difficulty: a.difficulty,
+            order: a.order,
+          })),
+        });
+        console.log(`✅ ${arrangeData.length} ${level} sentence arrange questions seeded`);
+      } catch (e) {
+        console.log(`⏭️ ${level} sentence arrange file not found, skipping`);
+      }
+    } else {
+      console.log(`⏭️ ${level} sentence arrange questions already exist (${existingCount}), skipping`);
+    }
+  }
+
   console.log('🌸 Seeding complete!');
 }
 

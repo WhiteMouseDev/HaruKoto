@@ -77,10 +77,181 @@ export async function POST(request: Request) {
       hint: string | null;
       options: { id: string; text: string }[];
       correctOptionId: string;
+      // Cloze-specific fields
+      sentence?: string;
+      translation?: string;
+      explanation?: string;
+      grammarPoint?: string;
     };
     let questions: Question[] = [];
 
-    if (mode === 'review') {
+    if (mode === 'arrange') {
+      // Sentence arrange mode: fetch SentenceArrangeQuestion records
+      const arrangeQuestions = await prisma.sentenceArrangeQuestion.findMany({
+        where: { jlptLevel },
+        orderBy: { order: 'asc' },
+      });
+
+      const selected = shuffleArray(arrangeQuestions).slice(0, count);
+
+      if (selected.length === 0) {
+        return NextResponse.json({
+          questions: [],
+          sessionId: null,
+          message: '어순 배열 문제가 없습니다',
+        });
+      }
+
+      const arrangeQuestionsData = selected.map((aq) => ({
+        questionId: aq.id,
+        koreanSentence: aq.koreanSentence,
+        japaneseSentence: aq.japaneseSentence,
+        tokens: aq.tokens,
+        explanation: aq.explanation,
+        grammarPoint: aq.grammarPoint ?? undefined,
+        // Compatibility fields for session tracking
+        questionText: aq.koreanSentence,
+        questionSubText: null,
+        hint: null,
+        options: [],
+        correctOptionId: aq.id,
+      }));
+
+      const session = await prisma.quizSession.create({
+        data: {
+          userId: user.id,
+          quizType: 'SENTENCE_ARRANGE',
+          jlptLevel,
+          totalQuestions: arrangeQuestionsData.length,
+          questionsData: JSON.parse(JSON.stringify(arrangeQuestionsData)),
+        },
+      });
+
+      return NextResponse.json({
+        sessionId: session.id,
+        questions: arrangeQuestionsData,
+        totalQuestions: arrangeQuestionsData.length,
+      });
+    }
+
+    if (mode === 'typing') {
+      // Typing mode: generate character bank questions from vocabulary
+      const HIRAGANA_POOL = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ';
+      const KATAKANA_POOL = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ';
+
+      const words = await prisma.vocabulary.findMany({
+        where: { jlptLevel },
+        orderBy: { order: 'asc' },
+      });
+
+      const selected = shuffleArray(words).slice(0, count);
+
+      if (selected.length === 0) {
+        return NextResponse.json({
+          questions: [],
+          sessionId: null,
+          message: '단어 쓰기 문제가 없습니다',
+        });
+      }
+
+      const typingQuestionsData = selected.map((word) => {
+        const answer = word.reading || word.word;
+        const answerChars = [...answer];
+
+        // Determine if answer is hiragana or katakana
+        const isKatakana = answerChars.some((c) => KATAKANA_POOL.includes(c));
+        const pool = isKatakana ? KATAKANA_POOL : HIRAGANA_POOL;
+
+        // Generate 2-3 distractor characters not in the answer
+        const distractorCount = Math.min(3, Math.max(2, Math.ceil(answerChars.length * 0.6)));
+        const poolChars = [...pool].filter((c) => !answerChars.includes(c));
+        const distractors = shuffleArray(poolChars).slice(0, distractorCount);
+
+        return {
+          questionId: word.id,
+          prompt: word.meaningKo,
+          answer,
+          hint: word.word !== answer ? word.word : null,
+          distractors,
+          // Compatibility fields
+          questionText: word.meaningKo,
+          questionSubText: null,
+          options: [],
+          correctOptionId: word.id,
+        };
+      });
+
+      const session = await prisma.quizSession.create({
+        data: {
+          userId: user.id,
+          quizType: 'VOCABULARY',
+          jlptLevel,
+          totalQuestions: typingQuestionsData.length,
+          questionsData: JSON.parse(JSON.stringify(typingQuestionsData)),
+        },
+      });
+
+      return NextResponse.json({
+        sessionId: session.id,
+        questions: typingQuestionsData,
+        totalQuestions: typingQuestionsData.length,
+      });
+    }
+
+    if (mode === 'cloze') {
+      // Cloze mode: fetch ClozeQuestion records
+      const clozeQuestions = await prisma.clozeQuestion.findMany({
+        where: { jlptLevel },
+        orderBy: { order: 'asc' },
+      });
+
+      const selected = shuffleArray(clozeQuestions).slice(0, count);
+
+      if (selected.length === 0) {
+        return NextResponse.json({
+          questions: [],
+          sessionId: null,
+          message: '빈칸 채우기 문제가 없습니다',
+        });
+      }
+
+      questions = selected.map((cq) => {
+        const options = (cq.options as string[]).map((opt, i) => ({
+          id: `${cq.id}_opt_${i}`,
+          text: opt,
+        }));
+        const correctOption = options.find((o) => o.text === cq.correctAnswer);
+
+        return {
+          questionId: cq.id,
+          questionText: cq.sentence,
+          questionSubText: null,
+          hint: null,
+          options: shuffleArray(options),
+          correctOptionId: correctOption?.id || options[0].id,
+          sentence: cq.sentence,
+          translation: cq.translation,
+          explanation: cq.explanation,
+          grammarPoint: cq.grammarPoint ?? undefined,
+        };
+      });
+
+      const session = await prisma.quizSession.create({
+        data: {
+          userId: user.id,
+          quizType: 'CLOZE',
+          jlptLevel,
+          totalQuestions: questions.length,
+          questionsData: JSON.parse(JSON.stringify(questions)),
+        },
+      });
+
+      return NextResponse.json({
+        sessionId: session.id,
+        questions,
+        totalQuestions: questions.length,
+      });
+    } else if (mode === 'review') {
       // Review mode: focus on previously incorrect items
       if (quizType === 'VOCABULARY') {
         const incorrectProgress = await prisma.userVocabProgress.findMany({

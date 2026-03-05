@@ -40,6 +40,8 @@ enum QuizType {
   KANJI
   LISTENING
   KANA
+  CLOZE
+  SENTENCE_ARRANGE
 }
 
 enum KanaType {
@@ -223,6 +225,49 @@ model QuizAnswer {
 
   @@index([sessionId])
   @@map("quiz_answers")
+}
+
+// ==========================================
+// Cloze Questions (빈칸 채우기)
+// ==========================================
+
+model ClozeQuestion {
+  id            String    @id @default(uuid()) @db.Uuid
+  sentence      String    // 빈칸({blank}) 포함 문장
+  translation   String    // 한국어 번역
+  correctAnswer String    @map("correct_answer")
+  options       Json      // string[] — 보기 배열
+  explanation   String    // 문법 해설
+  grammarPoint  String?   @map("grammar_point")
+  jlptLevel     JlptLevel @map("jlpt_level")
+  difficulty    Int       @default(1) // 1-5
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@index([jlptLevel])
+  @@index([jlptLevel, difficulty])
+  @@map("cloze_questions")
+}
+
+// ==========================================
+// Sentence Arrange Questions (어순 배열)
+// ==========================================
+
+model SentenceArrangeQuestion {
+  id             String    @id @default(uuid()) @db.Uuid
+  koreanSentence String    @map("korean_sentence") // 한국어 번역 (프롬프트)
+  japaneseSentence String  @map("japanese_sentence") // 정답 일본어 문장
+  tokens         Json      // SentenceToken[] — {text, type, meaning, order}
+  explanation    String    // 문법 해설
+  grammarPoint   String?   @map("grammar_point")
+  jlptLevel      JlptLevel @map("jlpt_level")
+  difficulty     Int       @default(1) // 1-5
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@index([jlptLevel])
+  @@index([jlptLevel, difficulty])
+  @@map("sentence_arrange_questions")
 }
 
 // ==========================================

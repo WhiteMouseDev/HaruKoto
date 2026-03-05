@@ -15,6 +15,8 @@ export type {
   UserGrammarProgress,
   AiCharacter,
   UserFavoriteCharacter,
+  ClozeQuestion,
+  SentenceArrangeQuestion,
 } from '@prisma/client';
 export {
   JlptLevel,

@@ -14,6 +14,7 @@ import {
   PartyPopper,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { showGameEvents } from '@/lib/show-events';
 import { Logo } from '@/components/brand/logo';
@@ -25,6 +26,10 @@ import {
   type QuizQuestion,
 } from '@/hooks/use-quiz';
 import { useAddWord } from '@/hooks/use-wordbook';
+import { MatchingPairQuiz, type MatchingPair } from '@/components/features/quiz/matching-pair';
+import { ClozeQuiz, type ClozeQuizQuestion } from '@/components/features/quiz/cloze-quiz';
+import { SentenceArrangeQuiz, type SentenceArrangeQuestion as SentenceArrangeQ } from '@/components/features/quiz/sentence-arrange';
+import { TypingQuiz, type TypingQuestion } from '@/components/features/quiz/typing-quiz';
 
 type AnswerState = 'idle' | 'correct' | 'incorrect';
 
@@ -54,6 +59,10 @@ function QuizContent() {
   const mode = searchParams.get('mode');
   const resumeSessionId = searchParams.get('resume');
   const isReview = mode === 'review';
+  const isMatching = mode === 'matching';
+  const isCloze = mode === 'cloze';
+  const isArrange = mode === 'arrange';
+  const isTyping = mode === 'typing';
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -201,6 +210,74 @@ function QuizContent() {
     );
   }
 
+  // Matching quiz state & handlers
+  const [matchingRound, setMatchingRound] = useState(0);
+  const PAIRS_PER_ROUND = 5;
+
+  const matchingPairs: MatchingPair[] = isMatching
+    ? questions.map((q) => {
+        const correctOption = q.options.find((o) => o.id === q.correctOptionId);
+        return {
+          id: q.questionId,
+          left: q.questionText,
+          right: correctOption?.text || '',
+        };
+      })
+    : [];
+
+  const matchingRounds: MatchingPair[][] = [];
+  for (let i = 0; i < matchingPairs.length; i += PAIRS_PER_ROUND) {
+    matchingRounds.push(matchingPairs.slice(i, i + PAIRS_PER_ROUND));
+  }
+  const currentMatchingRound = matchingRounds[matchingRound] || [];
+
+  const [matchingResults, setMatchingResults] = useState<{
+    correct: number;
+    total: number;
+    wrongPairIds: string[];
+  }>({ correct: 0, total: 0, wrongPairIds: [] });
+
+  function handleMatchResult(pairId: string, isCorrect: boolean) {
+    if (!sessionId) return;
+    const question = questions.find((q) => q.questionId === pairId);
+    if (question) {
+      answerMutation.mutate({
+        sessionId,
+        questionId: pairId,
+        selectedOptionId: isCorrect ? question.correctOptionId : 'wrong',
+        isCorrect,
+        timeSpentSeconds: 0,
+        questionType: quizType,
+      });
+    }
+  }
+
+  async function handleMatchingComplete(result: {
+    correct: number;
+    total: number;
+    wrongPairIds: string[];
+  }) {
+    const accumulated = {
+      correct: matchingResults.correct + result.correct,
+      total: matchingResults.total + result.total,
+      wrongPairIds: [...matchingResults.wrongPairIds, ...result.wrongPairIds],
+    };
+
+    if (matchingRound + 1 < matchingRounds.length) {
+      setMatchingResults(accumulated);
+      setMatchingRound((r) => r + 1);
+    } else {
+      // All rounds done — complete quiz
+      const data = await completeQuizMutation.mutateAsync({
+        sessionId: sessionId!,
+      });
+      showGameEvents(data.events);
+      router.replace(
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+      );
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
@@ -231,6 +308,199 @@ function QuizContent() {
           학습으로 돌아가기
         </Button>
       </div>
+    );
+  }
+
+  // Matching mode rendering
+  if (isMatching) {
+    const matchingProgress =
+      matchingRounds.length > 0
+        ? Math.round((matchingRound / matchingRounds.length) * 100)
+        : 0;
+
+    return (
+      <div className="flex min-h-dvh flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 p-4">
+          <button
+            onClick={() => {
+              if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+                router.push('/study');
+              }
+            }}
+          >
+            <ArrowLeft className="size-5" />
+          </button>
+          <span className="flex-1 text-center text-sm font-medium">
+            {jlptLevel} {quizType === 'VOCABULARY' ? '단어' : '문법'} 매칭
+          </span>
+          <span className="text-muted-foreground text-sm">
+            {matchingRound + 1}/{matchingRounds.length}
+          </span>
+        </div>
+
+        {/* Progress */}
+        {matchingRounds.length > 1 && (
+          <div className="px-4 pb-2">
+            <Progress value={matchingProgress} />
+          </div>
+        )}
+
+        {/* Matching Quiz */}
+        <div className="flex-1 px-4 py-6">
+          <MatchingPairQuiz
+            key={matchingRound}
+            pairs={currentMatchingRound}
+            onComplete={handleMatchingComplete}
+            onMatchResult={handleMatchResult}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Cloze mode rendering
+  if (isCloze) {
+    const clozeQuestions: ClozeQuizQuestion[] = questions.map((q) => ({
+      questionId: q.questionId,
+      sentence: (q as any).sentence || q.questionText,
+      translation: (q as any).translation || '',
+      options: q.options,
+      correctOptionId: q.correctOptionId,
+      explanation: (q as any).explanation || '',
+      grammarPoint: (q as any).grammarPoint || null,
+    }));
+
+    async function handleClozeComplete(result: {
+      correct: number;
+      total: number;
+      wrongQuestionIds: string[];
+    }) {
+      const data = await completeQuizMutation.mutateAsync({
+        sessionId: sessionId!,
+      });
+      showGameEvents(data.events);
+      router.replace(
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=CLOZE&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+      );
+    }
+
+    function handleClozeAnswer(
+      questionId: string,
+      selectedOptionId: string,
+      isCorrect: boolean
+    ) {
+      if (!sessionId) return;
+      answerMutation.mutate({
+        sessionId,
+        questionId,
+        selectedOptionId,
+        isCorrect,
+        timeSpentSeconds: 0,
+        questionType: 'CLOZE',
+      });
+    }
+
+    return (
+      <ClozeQuiz
+        questions={clozeQuestions}
+        sessionId={sessionId!}
+        onAnswer={handleClozeAnswer}
+        onComplete={handleClozeComplete}
+      />
+    );
+  }
+
+  // Sentence arrange mode rendering
+  if (isArrange) {
+    const arrangeQuestions: SentenceArrangeQ[] = questions.map((q) => ({
+      questionId: q.questionId,
+      koreanSentence: (q as any).koreanSentence || q.questionText,
+      japaneseSentence: (q as any).japaneseSentence || '',
+      tokens: (q as any).tokens || [],
+      explanation: (q as any).explanation || '',
+      grammarPoint: (q as any).grammarPoint || null,
+    }));
+
+    async function handleArrangeComplete(result: {
+      correct: number;
+      total: number;
+      wrongQuestionIds: string[];
+    }) {
+      const data = await completeQuizMutation.mutateAsync({
+        sessionId: sessionId!,
+      });
+      showGameEvents(data.events);
+      router.replace(
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=SENTENCE_ARRANGE&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+      );
+    }
+
+    function handleArrangeAnswer(questionId: string, isCorrect: boolean) {
+      if (!sessionId) return;
+      answerMutation.mutate({
+        sessionId,
+        questionId,
+        selectedOptionId: isCorrect ? questionId : 'wrong',
+        isCorrect,
+        timeSpentSeconds: 0,
+        questionType: 'SENTENCE_ARRANGE',
+      });
+    }
+
+    return (
+      <SentenceArrangeQuiz
+        questions={arrangeQuestions}
+        sessionId={sessionId!}
+        onAnswer={handleArrangeAnswer}
+        onComplete={handleArrangeComplete}
+      />
+    );
+  }
+
+  // Typing mode rendering
+  if (isTyping) {
+    const typingQuestions: TypingQuestion[] = questions.map((q) => ({
+      questionId: q.questionId,
+      prompt: (q as any).prompt || q.questionText,
+      answer: (q as any).answer || '',
+      hint: (q as any).hint || null,
+      distractors: (q as any).distractors || [],
+    }));
+
+    async function handleTypingComplete(result: {
+      correct: number;
+      total: number;
+      wrongQuestionIds: string[];
+    }) {
+      const data = await completeQuizMutation.mutateAsync({
+        sessionId: sessionId!,
+      });
+      showGameEvents(data.events);
+      router.replace(
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=VOCABULARY&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+      );
+    }
+
+    function handleTypingAnswer(questionId: string, isCorrect: boolean) {
+      if (!sessionId) return;
+      answerMutation.mutate({
+        sessionId,
+        questionId,
+        selectedOptionId: isCorrect ? questionId : 'wrong',
+        isCorrect,
+        timeSpentSeconds: 0,
+        questionType: 'VOCABULARY',
+      });
+    }
+
+    return (
+      <TypingQuiz
+        questions={typingQuestions}
+        sessionId={sessionId!}
+        onAnswer={handleTypingAnswer}
+        onComplete={handleTypingComplete}
+      />
     );
   }
 

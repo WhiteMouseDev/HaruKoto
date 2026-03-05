@@ -6,8 +6,10 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { KanaQuiz } from '@/components/features/kana/kana-quiz';
-import { useStartKanaQuiz, useCompleteKanaQuiz } from '@/hooks/use-kana-quiz';
+import { MatchingPairQuiz, type MatchingPair } from '@/components/features/quiz/matching-pair';
+import { useStartKanaQuiz, useCompleteKanaQuiz, useAnswerKanaQuestion } from '@/hooks/use-kana-quiz';
 
 type Props = {
   params: Promise<{ type: string }>;
@@ -47,8 +49,11 @@ function KanaQuizContent({ params }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
+  const isMatchingMode = mode === 'kana_matching';
+
   const startKanaQuizMutation = useStartKanaQuiz();
   const completeKanaQuizMutation = useCompleteKanaQuiz();
+  const answerKanaMutation = useAnswerKanaQuestion();
 
   useEffect(() => {
     async function startQuiz() {
@@ -77,6 +82,70 @@ function KanaQuizContent({ params }: Props) {
     startQuiz();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kanaType, stageNumber, mode, isMaster, retryKey]);
+
+  // Convert questions to matching pairs for matching mode
+  const matchingPairs: MatchingPair[] = isMatchingMode
+    ? questions.map((q) => {
+        const correctOption = q.options.find((o) => o.id === q.correctOptionId);
+        return {
+          id: q.questionId,
+          left: q.questionText,
+          right: correctOption?.text || '',
+        };
+      })
+    : [];
+
+  // Chunk pairs into rounds of 5-6
+  const [matchingRound, setMatchingRound] = useState(0);
+  const PAIRS_PER_ROUND = 5;
+  const matchingRounds: MatchingPair[][] = [];
+  for (let i = 0; i < matchingPairs.length; i += PAIRS_PER_ROUND) {
+    matchingRounds.push(matchingPairs.slice(i, i + PAIRS_PER_ROUND));
+  }
+  const currentRoundPairs = matchingRounds[matchingRound] || [];
+  const [matchingResults, setMatchingResults] = useState<{
+    correct: number;
+    total: number;
+    wrongPairIds: string[];
+  }>({ correct: 0, total: 0, wrongPairIds: [] });
+
+  function handleMatchResult(pairId: string, isCorrect: boolean) {
+    if (sessionId) {
+      const question = questions.find((q) => q.questionId === pairId);
+      if (question) {
+        answerKanaMutation.mutate({
+          sessionId,
+          questionId: pairId,
+          selectedOptionId: isCorrect ? question.correctOptionId : 'wrong',
+        });
+      }
+    }
+  }
+
+  function handleMatchingRoundComplete(result: {
+    correct: number;
+    total: number;
+    wrongPairIds: string[];
+  }) {
+    const accumulated = {
+      correct: matchingResults.correct + result.correct,
+      total: matchingResults.total + result.total,
+      wrongPairIds: [...matchingResults.wrongPairIds, ...result.wrongPairIds],
+    };
+
+    if (matchingRound + 1 < matchingRounds.length) {
+      // More rounds to go
+      setMatchingResults(accumulated);
+      setMatchingRound((r) => r + 1);
+    } else {
+      // All rounds done — complete quiz
+      handleComplete({
+        correct: accumulated.correct,
+        total: accumulated.total,
+        wrongQuestionIds: accumulated.wrongPairIds,
+      });
+    }
+  }
 
   const [masterResult, setMasterResult] = useState<{
     correct: number;
@@ -240,7 +309,33 @@ function KanaQuizContent({ params }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <KanaQuiz questions={questions} sessionId={sessionId} onComplete={handleComplete} />
+        {isMatchingMode ? (
+          <div className="flex flex-col gap-6">
+            {matchingRounds.length > 1 && (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">라운드</span>
+                  <span className="font-medium">
+                    {matchingRound + 1}/{matchingRounds.length}
+                  </span>
+                </div>
+                <Progress
+                  value={Math.round(
+                    (matchingRound / matchingRounds.length) * 100
+                  )}
+                />
+              </div>
+            )}
+            <MatchingPairQuiz
+              key={matchingRound}
+              pairs={currentRoundPairs}
+              onComplete={handleMatchingRoundComplete}
+              onMatchResult={handleMatchResult}
+            />
+          </div>
+        ) : (
+          <KanaQuiz questions={questions} sessionId={sessionId} onComplete={handleComplete} />
+        )}
       </motion.div>
     </div>
   );

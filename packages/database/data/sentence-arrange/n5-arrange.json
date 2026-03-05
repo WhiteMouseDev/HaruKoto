@@ -1,0 +1,185 @@
+[
+  {
+    "koreanSentence": "나는 학생입니다",
+    "japaneseSentence": "わたしはがくせいです",
+    "tokens": [
+      { "text": "わたし", "type": "noun", "meaning": "나", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "がくせい", "type": "noun", "meaning": "학생", "order": 2 },
+      { "text": "です", "type": "copula", "meaning": "입니다", "order": 3 }
+    ],
+    "explanation": "일본어의 기본 어순은 '주어 + は + 명사 + です'입니다. 'わたし(나) は(는) がくせい(학생) です(입니다)'로 구성됩니다.",
+    "grammarPoint": "~は~です (기본 긍정문)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 1
+  },
+  {
+    "koreanSentence": "이것은 책입니다",
+    "japaneseSentence": "これはほんです",
+    "tokens": [
+      { "text": "これ", "type": "noun", "meaning": "이것", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "ほん", "type": "noun", "meaning": "책", "order": 2 },
+      { "text": "です", "type": "copula", "meaning": "입니다", "order": 3 }
+    ],
+    "explanation": "'これ(이것)'은 가까운 것을 가리키는 지시대명사입니다. 'これ は ほん です'로 '이것은 책입니다'가 됩니다.",
+    "grammarPoint": "これ/それ/あれ + は~です",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 2
+  },
+  {
+    "koreanSentence": "매일 일본어를 공부합니다",
+    "japaneseSentence": "まいにちにほんごをべんきょうします",
+    "tokens": [
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 0 },
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 1 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 2 },
+      { "text": "べんきょう", "type": "noun", "meaning": "공부", "order": 3 },
+      { "text": "します", "type": "verb", "meaning": "합니다", "order": 4 }
+    ],
+    "explanation": "'まいにち(매일)'은 시간 부사로 문장 앞에 옵니다. 목적어 'にほんご(일본어)'에 'を'를 붙이고 동사 'します'가 마지막에 옵니다.",
+    "grammarPoint": "~を~します (목적어 + 동사)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 3
+  },
+  {
+    "koreanSentence": "학교에 갑니다",
+    "japaneseSentence": "がっこうにいきます",
+    "tokens": [
+      { "text": "がっこう", "type": "noun", "meaning": "학교", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "いきます", "type": "verb", "meaning": "갑니다", "order": 2 }
+    ],
+    "explanation": "'に'는 이동의 목적지를 나타내는 조사입니다. 'がっこう(학교) に(에) いきます(갑니다)'로 장소+に+이동동사 패턴입니다.",
+    "grammarPoint": "~に いきます/きます (방향의 に)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 4
+  },
+  {
+    "koreanSentence": "도서관에서 책을 읽습니다",
+    "japaneseSentence": "としょかんでほんをよみます",
+    "tokens": [
+      { "text": "としょかん", "type": "noun", "meaning": "도서관", "order": 0 },
+      { "text": "で", "type": "particle", "meaning": "에서", "order": 1 },
+      { "text": "ほん", "type": "noun", "meaning": "책", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "よみます", "type": "verb", "meaning": "읽습니다", "order": 4 }
+    ],
+    "explanation": "'で'는 동작이 이루어지는 장소를 나타냅니다. 장소+で+목적어+を+동사 순서로 배열합니다.",
+    "grammarPoint": "~で~を~ます (장소의 で)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 5
+  },
+  {
+    "koreanSentence": "친구와 영화를 봅니다",
+    "japaneseSentence": "ともだちとえいがをみます",
+    "tokens": [
+      { "text": "ともだち", "type": "noun", "meaning": "친구", "order": 0 },
+      { "text": "と", "type": "particle", "meaning": "와/과", "order": 1 },
+      { "text": "えいが", "type": "noun", "meaning": "영화", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "みます", "type": "verb", "meaning": "봅니다", "order": 4 }
+    ],
+    "explanation": "'と'는 함께 하는 대상을 나타내는 조사입니다. 'ともだち(친구) と(와) えいが(영화) を みます(봅니다)'로 구성됩니다.",
+    "grammarPoint": "~と~を~ます (동반의 と)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 6
+  },
+  {
+    "koreanSentence": "어제 스시를 먹었습니다",
+    "japaneseSentence": "きのうすしをたべました",
+    "tokens": [
+      { "text": "きのう", "type": "adverb", "meaning": "어제", "order": 0 },
+      { "text": "すし", "type": "noun", "meaning": "스시", "order": 1 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 2 },
+      { "text": "たべました", "type": "verb", "meaning": "먹었습니다", "order": 3 }
+    ],
+    "explanation": "'きのう(어제)'는 시간 표현으로 문장 앞에 위치합니다. 과거형은 'ます→ました'로 변환합니다.",
+    "grammarPoint": "~ました (과거 정중형)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 7
+  },
+  {
+    "koreanSentence": "일본어는 어렵지 않습니다",
+    "japaneseSentence": "にほんごはむずかしくないです",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "むずかしく", "type": "adjective", "meaning": "어렵(지)", "order": 2 },
+      { "text": "ない", "type": "suffix", "meaning": "않다", "order": 3 },
+      { "text": "です", "type": "copula", "meaning": "입니다", "order": 4 }
+    ],
+    "explanation": "い형용사의 부정은 'い→くない'로 변환합니다. 'むずかしい(어렵다) → むずかしくない(어렵지 않다)'입니다.",
+    "grammarPoint": "い형용사 + くないです (부정)",
+    "jlptLevel": "N5",
+    "difficulty": 3,
+    "order": 8
+  },
+  {
+    "koreanSentence": "7시에 일어납니다",
+    "japaneseSentence": "しちじにおきます",
+    "tokens": [
+      { "text": "しちじ", "type": "noun", "meaning": "7시", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "おきます", "type": "verb", "meaning": "일어납니다", "order": 2 }
+    ],
+    "explanation": "'に'는 시간을 나타낼 때도 사용됩니다. 'しちじ(7시) に(에) おきます(일어납니다)'로 시간+に+동사 패턴입니다.",
+    "grammarPoint": "시간 + に (시간의 に)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 9
+  },
+  {
+    "koreanSentence": "이 가방은 비쌉니다",
+    "japaneseSentence": "このかばんはたかいです",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "かばん", "type": "noun", "meaning": "가방", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "たかい", "type": "adjective", "meaning": "비싼", "order": 3 },
+      { "text": "です", "type": "copula", "meaning": "입니다", "order": 4 }
+    ],
+    "explanation": "'この(이)'는 뒤에 명사가 오는 연체사입니다. い형용사 'たかい(비싸다)'는 そのまま + です로 정중하게 만듭니다.",
+    "grammarPoint": "この/その/あの + 명사 + は + い형용사 + です",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 10
+  },
+  {
+    "koreanSentence": "커피도 마십니다",
+    "japaneseSentence": "コーヒーものみます",
+    "tokens": [
+      { "text": "コーヒー", "type": "noun", "meaning": "커피", "order": 0 },
+      { "text": "も", "type": "particle", "meaning": "도", "order": 1 },
+      { "text": "のみます", "type": "verb", "meaning": "마십니다", "order": 2 }
+    ],
+    "explanation": "'も'는 '~도'라는 뜻의 조사로, 'は'를 대체합니다. 'コーヒー(커피) も(도) のみます(마십니다)'로 구성됩니다.",
+    "grammarPoint": "~も (첨가의 も)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 11
+  },
+  {
+    "koreanSentence": "버스로 회사에 갑니다",
+    "japaneseSentence": "バスでかいしゃにいきます",
+    "tokens": [
+      { "text": "バス", "type": "noun", "meaning": "버스", "order": 0 },
+      { "text": "で", "type": "particle", "meaning": "(으)로", "order": 1 },
+      { "text": "かいしゃ", "type": "noun", "meaning": "회사", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 3 },
+      { "text": "いきます", "type": "verb", "meaning": "갑니다", "order": 4 }
+    ],
+    "explanation": "'で'는 수단/방법도 나타냅니다. 'バス(버스) で(로) かいしゃ(회사) に(에) いきます(갑니다)'로 수단+で+목적지+に+동사 패턴입니다.",
+    "grammarPoint": "~で~に いきます (수단의 で + 방향의 に)",
+    "jlptLevel": "N5",
+    "difficulty": 3,
+    "order": 12
+  }
+]
