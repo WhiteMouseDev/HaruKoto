@@ -23,14 +23,21 @@ export function setThemeColors({ topColor, bottomColor, statusBar }: ThemeColors
   postToFlutter({ type: 'setTheme', topColor, bottomColor, statusBar });
 }
 
-/** 라이트 테마 기본 색상 */
-export function setLightTheme() {
-  setThemeColors({ topColor: '#FFF8F0', bottomColor: '#FFF8F0', statusBar: 'dark' });
+/** CSS 변수에서 현재 배경색 읽기 */
+function getCssVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-/** 다크 테마 기본 색상 */
+/** 라이트 테마 기본 색상 — CSS --background 변수에서 읽어옴 */
+export function setLightTheme() {
+  const bg = getCssVar('--background') || '#FCF6F5';
+  setThemeColors({ topColor: bg, bottomColor: bg, statusBar: 'dark' });
+}
+
+/** 다크 테마 기본 색상 — CSS --background 변수에서 읽어옴 */
 export function setDarkTheme() {
-  setThemeColors({ topColor: '#1A1A2E', bottomColor: '#1A1A2E', statusBar: 'light' });
+  const bg = getCssVar('--background') || '#1A1A2E';
+  setThemeColors({ topColor: bg, bottomColor: bg, statusBar: 'light' });
 }
 
 /** 통화 화면 (그라데이션: slate-900 → black) */

@@ -22,6 +22,10 @@ declare global {
         }) => void;
       };
     };
+    HarukotoBridge?: {
+      postMessage: (message: string) => void;
+    };
+    handleGoogleIdToken?: (idToken: string) => void;
   }
 }
 
@@ -118,12 +122,29 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    // Register callback for Flutter native Google Sign-In
+    window.handleGoogleIdToken = (idToken: string) => {
+      router.push(`/auth/google/complete?id_token=${encodeURIComponent(idToken)}`);
+    };
+    return () => {
+      delete window.handleGoogleIdToken;
+    };
+  }, [router]);
+
   async function handleSocialLogin(provider: 'google' | 'kakao') {
     if (provider === 'kakao') {
       handleKakaoLogin();
       return;
     }
 
+    // Flutter WebView — use native Google Sign-In via bridge
+    if (window.HarukotoBridge) {
+      window.HarukotoBridge.postMessage(JSON.stringify({ type: 'googleSignIn' }));
+      return;
+    }
+
+    // Regular browser — use Supabase OAuth
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {

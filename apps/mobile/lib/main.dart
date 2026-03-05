@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 const kAppUrl = 'https://app.harukoto.co.kr';
 const kBrandPink = Color(0xFFFFB7C5);
@@ -172,6 +172,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Color _topColor = kLightBg;
   Color _bottomColor = kLightBg;
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId: '842843944454-stgesdh75b31fs28bi8qnkrqftv1ergv.apps.googleusercontent.com',
+  );
+
   @override
   void initState() {
     super.initState();
@@ -185,7 +190,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
   void _onBridgeMessage(JavaScriptMessage message) {
     try {
       final data = jsonDecode(message.message) as Map<String, dynamic>;
-      if (data['type'] == 'setTheme') {
+      final type = data['type'] as String?;
+
+      if (type == 'setTheme') {
         final top = _parseHex(data['topColor'] as String);
         final bottom = _parseHex(data['bottomColor'] as String);
         final isLight = (data['statusBar'] ?? 'dark') == 'light';
@@ -199,8 +206,28 @@ class _WebViewScreenState extends State<WebViewScreen> {
           statusBarIconBrightness:
               isLight ? Brightness.light : Brightness.dark,
         ));
+      } else if (type == 'googleSignIn') {
+        _handleGoogleSignIn();
       }
     } catch (_) {}
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final account = await _googleSignIn.signIn();
+      if (account == null) return; // User cancelled
+
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+
+      if (idToken != null) {
+        _controller.runJavaScript(
+          'window.handleGoogleIdToken && window.handleGoogleIdToken("$idToken");',
+        );
+      }
+    } catch (e) {
+      debugPrint('Google Sign-In error: $e');
+    }
   }
 
   /// 카카오앱 등 외부 앱 URL scheme 처리
@@ -242,9 +269,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
     )
       ..setBackgroundColor(kLightBg)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setUserAgent(Platform.isIOS
-          ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'
-          : 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36')
       ..addJavaScriptChannel('HarukotoBridge',
           onMessageReceived: _onBridgeMessage)
       ..setNavigationDelegate(
@@ -270,8 +294,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (url.contains('supabase.co')) return NavigationDecision.navigate;
             // 카카오 OAuth 허용
             if (url.contains('kakao.com')) return NavigationDecision.navigate;
-            // 구글 OAuth 허용
-            if (url.contains('accounts.google.com')) return NavigationDecision.navigate;
+            // 구글 OAuth — 네이티브 로그인 사용, WebView 차단
+            if (url.contains('accounts.google.com')) return NavigationDecision.prevent;
             // 포트원 + PG사 결제 허용
             if (url.contains('portone.io')) return NavigationDecision.navigate;
             if (url.contains('tosspayments.com')) return NavigationDecision.navigate;
