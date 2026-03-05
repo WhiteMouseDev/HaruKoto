@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/home",
+      "permanent": false
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/daily-reminder",
