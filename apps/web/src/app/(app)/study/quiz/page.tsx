@@ -551,7 +551,18 @@ function QuizContent() {
             className="flex flex-col items-center gap-2"
           >
             <p className="font-jp text-4xl font-bold">
-              {question.questionText}
+              {question.questionText.includes('{blank}')
+                ? question.questionText.split('{blank}').map((part, i, arr) => (
+                    <span key={i}>
+                      {part}
+                      {i < arr.length - 1 && (
+                        <span className="border-primary/40 mx-1 inline-block min-w-[48px] border-b-2 border-dashed align-baseline">
+                          &nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                      )}
+                    </span>
+                  ))
+                : question.questionText}
             </p>
             {question.questionSubText && (
               <p className="font-jp text-muted-foreground text-lg">
@@ -678,7 +689,7 @@ function QuizContent() {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-lg rounded-t-2xl border-t p-5 pb-24',
+              'fixed bottom-20 left-0 right-0 z-50 mx-auto max-w-lg rounded-t-2xl border-t p-5',
               answerState === 'correct'
                 ? 'bg-background border-hk-success/30'
                 : 'bg-background border-hk-error/30'
