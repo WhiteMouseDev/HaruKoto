@@ -33,7 +33,10 @@ export async function POST(request: Request) {
       select: { email: true, nickname: true },
     });
 
-    const paymentId = `harukoto_${plan}_${user.id}_${Date.now()}`;
+    // orderId: 영문, 숫자, -, _ 만 허용 / 6~64자
+    // UUID 앞 8자 + timestamp로 충분히 고유
+    const shortId = user.id.replace(/-/g, '').slice(0, 8);
+    const paymentId = `hk_${plan}_${shortId}_${Date.now()}`;
 
     const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
     const channelKey = process.env.PORTONE_CHANNEL_KEY;
