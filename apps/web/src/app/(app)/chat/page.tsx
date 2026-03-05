@@ -261,13 +261,17 @@ export default function ChatPage() {
 
       {/* Voice Tab Content */}
       {activeTab === 'voice' && (
-        <>
-          {/* Direct Call CTA */}
+        <motion.div
+          key="voice"
+          className="flex flex-col gap-5"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
           <motion.div variants={item}>
             <PhoneCallCta onClick={() => router.push('/chat/call/contacts')} />
           </motion.div>
 
-          {/* Scenario-based Calls */}
           <motion.div variants={item}>
             <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
               <FolderOpen className="size-4" />
@@ -279,7 +283,6 @@ export default function ChatPage() {
             />
           </motion.div>
 
-          {/* Call History */}
           <motion.div variants={item}>
             <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
               <Clock className="size-4" />
@@ -287,13 +290,18 @@ export default function ChatPage() {
             </h2>
             <ConversationHistory filter="voice" />
           </motion.div>
-        </>
+        </motion.div>
       )}
 
       {/* Text Tab Content */}
       {activeTab === 'text' && (
-        <>
-          {/* Free Chat CTA */}
+        <motion.div
+          key="text"
+          className="flex flex-col gap-5"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
           <motion.div variants={item}>
             <motion.div whileTap={{ scale: 0.98 }}>
               <Card
@@ -316,7 +324,6 @@ export default function ChatPage() {
             </motion.div>
           </motion.div>
 
-          {/* Category Grid */}
           <motion.div variants={item}>
             <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
               <FolderOpen className="size-4" />
@@ -325,7 +332,6 @@ export default function ChatPage() {
             <CategoryGrid onSelect={setSelectedCategory} />
           </motion.div>
 
-          {/* Text Conversation History */}
           <motion.div variants={item}>
             <h2 className="mb-3 flex items-center gap-1.5 font-semibold">
               <Clock className="size-4" />
@@ -333,7 +339,7 @@ export default function ChatPage() {
             </h2>
             <ConversationHistory filter="text" />
           </motion.div>
-        </>
+        </motion.div>
       )}
 
       {/* Starting overlay */}
