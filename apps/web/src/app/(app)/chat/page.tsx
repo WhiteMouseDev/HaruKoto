@@ -26,6 +26,7 @@ import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
 import { ConversationHistory } from '@/components/features/chat/conversation-history';
 import { useScenarios, type Scenario, type ScenariosResponse } from '@/hooks/use-scenarios';
 import { cn } from '@/lib/utils';
+import { FoxMascot } from '@/components/brand/fox-mascot';
 
 type StartResponse = {
   conversationId: string;
@@ -300,8 +301,8 @@ export default function ChatPage() {
                 onClick={handleFreeChat}
               >
                 <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-2xl">
-                    🦊
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+                    <FoxMascot size={28} />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">하루와 자유롭게 대화</h3>

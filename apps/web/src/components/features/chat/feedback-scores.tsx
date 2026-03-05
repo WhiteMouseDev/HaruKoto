@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Star, MessageSquare, Target, Library, Leaf } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { FoxMascot } from '@/components/brand/fox-mascot';
 
 type FeedbackScoresProps = {
   overallScore: number;
@@ -56,13 +57,12 @@ export function FeedbackScores({
       <CardContent className="space-y-5 px-5">
         {/* Mascot & Overall */}
         <div className="flex flex-col items-center gap-2 text-center">
-          <motion.span
-            className="text-5xl"
+          <motion.div
             animate={{ rotate: [0, -5, 5, 0] }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
           >
-            🦊
-          </motion.span>
+            <FoxMascot size={56} />
+          </motion.div>
           <p className="text-sm font-medium">
             {starRating >= 4
               ? '일본어 실력이 훌륭해요!'

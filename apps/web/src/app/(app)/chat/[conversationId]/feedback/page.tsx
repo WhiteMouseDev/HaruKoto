@@ -11,6 +11,7 @@ import { FeedbackDetails } from '@/components/features/chat/feedback-details';
 import { FeedbackTranscript } from '@/components/features/chat/feedback-transcript';
 import { ExpressionFlashcards } from '@/components/features/chat/expression-flashcards';
 import { queryKeys } from '@/lib/query-keys';
+import { FoxMascot } from '@/components/brand/fox-mascot';
 
 type GrammarCorrection = {
   original: string;
@@ -191,7 +192,7 @@ export default function FeedbackPage({
           <h1 className="text-xl font-bold">회화 리포트</h1>
         </div>
         <div className="flex flex-col items-center gap-3 py-12">
-          <span className="text-4xl">🦊</span>
+          <FoxMascot size={48} />
           <p className="text-muted-foreground text-sm">
             피드백 데이터를 불러올 수 없습니다.
           </p>

@@ -20,7 +20,7 @@ export default function GlobalError({
     <html lang="ko">
       <body className="bg-background text-foreground">
         <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-4 p-6 text-center">
-          <span className="text-4xl">🦊</span>
+          <img src="/images/fox.svg" alt="하루코토 여우" width={48} height={48} />
           <h2 className="text-lg font-semibold">문제가 발생했습니다</h2>
           <p className="text-muted-foreground max-w-sm text-sm">
             예상치 못한 오류가 발생했습니다. 다시 시도해주세요.

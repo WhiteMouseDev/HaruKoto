@@ -6,6 +6,7 @@ import { useOnboardingStore } from '@/stores/onboarding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { FoxMascot } from '@/components/brand/fox-mascot';
 
 const LEVELS = [
   {
@@ -112,7 +113,7 @@ export default function OnboardingPage() {
         <Card className="w-full max-w-sm">
           <CardContent className="flex flex-col gap-6 p-6">
             <div className="text-center">
-              <div className="mb-2 text-4xl">🦊</div>
+              <FoxMascot size={48} className="mb-2" />
               <h2 className="text-xl font-bold">반가워요!</h2>
               <p className="text-muted-foreground mt-1 text-sm">
                 어떻게 불러드릴까요?
@@ -142,7 +143,7 @@ export default function OnboardingPage() {
         <Card className="w-full max-w-sm">
           <CardContent className="flex flex-col gap-4 p-6">
             <div className="text-center">
-              <div className="mb-2 text-4xl">🦊</div>
+              <FoxMascot size={48} className="mb-2" />
               <h2 className="text-xl font-bold">일본어, 얼마나 알고 계세요?</h2>
             </div>
             <div className="flex flex-col gap-2.5">
@@ -201,7 +202,7 @@ export default function OnboardingPage() {
         <Card className="w-full max-w-sm">
           <CardContent className="flex flex-col gap-4 p-6">
             <div className="text-center">
-              <div className="mb-2 text-4xl">🦊</div>
+              <FoxMascot size={48} className="mb-2" />
               <h2 className="text-xl font-bold">목표를 정해볼까요?</h2>
             </div>
             <div className="grid grid-cols-2 gap-2.5">
