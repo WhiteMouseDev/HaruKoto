@@ -54,7 +54,7 @@ type SettingsMenuProps = {
 };
 
 const JLPT_LEVELS: JlptLevel[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
-const DAILY_GOALS = [5, 10, 15, 20];
+const DAILY_GOALS = [5, 10, 15, 20, 30, 50, 100];
 
 const DEFAULT_SILENCE_BY_LEVEL: Record<string, number> = {
   N5: 3000,
