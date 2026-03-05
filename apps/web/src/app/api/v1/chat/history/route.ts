@@ -30,6 +30,7 @@ export async function GET(request: Request) {
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       select: {
         id: true,
+        type: true,
         createdAt: true,
         endedAt: true,
         messageCount: true,
@@ -62,6 +63,7 @@ export async function GET(request: Request) {
       const fb = c.feedbackSummary as FeedbackJson | null;
       return {
         id: c.id,
+        type: c.type,
         createdAt: c.createdAt,
         endedAt: c.endedAt,
         messageCount: c.messageCount,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 import { getAIProvider } from '@harukoto/ai';
@@ -193,6 +194,7 @@ export async function POST(request: Request) {
         userId: user.id,
         scenarioId: resolvedScenarioId,
         characterId: characterId || undefined,
+        type: 'VOICE',
         messages: JSON.parse(JSON.stringify(messages)),
         messageCount: messages.length,
         feedbackSummary: feedbackSummary
@@ -211,8 +213,7 @@ export async function POST(request: Request) {
           where: { id: user.id },
         });
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = getTodayKST();
 
         const studyTimeSeconds = durationSeconds || 0;
 

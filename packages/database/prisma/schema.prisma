@@ -100,6 +100,11 @@ enum PaymentStatus {
   CANCELLED
 }
 
+enum ConversationType {
+  VOICE
+  TEXT
+}
+
 // ==========================================
 // User & Auth
 // ==========================================
@@ -299,15 +304,16 @@ model ConversationScenario {
 }
 
 model Conversation {
-  id              String    @id @default(uuid()) @db.Uuid
-  userId          String    @map("user_id") @db.Uuid
-  scenarioId      String?   @map("scenario_id") @db.Uuid
-  characterId     String?   @map("character_id") @db.Uuid
-  messages        Json      @default("[]")
-  feedbackSummary Json?     @map("feedback_summary")
-  messageCount    Int       @default(0) @map("message_count")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  endedAt         DateTime? @map("ended_at")
+  id              String           @id @default(uuid()) @db.Uuid
+  userId          String           @map("user_id") @db.Uuid
+  scenarioId      String?          @map("scenario_id") @db.Uuid
+  characterId     String?          @map("character_id") @db.Uuid
+  type            ConversationType @default(TEXT)
+  messages        Json             @default("[]")
+  feedbackSummary Json?            @map("feedback_summary")
+  messageCount    Int              @default(0) @map("message_count")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  endedAt         DateTime?        @map("ended_at")
 
   user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   scenario  ConversationScenario? @relation(fields: [scenarioId], references: [id])

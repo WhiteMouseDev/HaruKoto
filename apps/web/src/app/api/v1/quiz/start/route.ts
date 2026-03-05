@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { REWARDS, QUIZ_CONFIG } from '@/lib/constants';
+import { getTodayKST } from '@/lib/date';
 import { shuffleArray } from '@/lib/shuffle';
 
 export async function POST(request: Request) {
@@ -43,8 +44,7 @@ export async function POST(request: Request) {
       // Award partial XP
       if (correctCount > 0) {
         const partialXp = correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = getTodayKST();
 
         await prisma.dailyProgress.upsert({
           where: { userId_date: { userId: user.id, date: today } },

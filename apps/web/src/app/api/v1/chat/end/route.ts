@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 import { generateText } from 'ai';
 import { getAIProvider } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
@@ -146,8 +147,7 @@ export async function POST(request: Request) {
         where: { id: user.id },
       });
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const today = getTodayKST();
 
       await tx.dailyProgress.upsert({
         where: {

@@ -8,6 +8,7 @@ import {
   type GameEvent,
 } from '@/lib/gamification';
 import { REWARDS } from '@/lib/constants';
+import { getTodayKST } from '@/lib/date';
 
 export async function POST(request: Request) {
   try {
@@ -50,8 +51,7 @@ export async function POST(request: Request) {
         where: { id: user.id },
       });
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const today = getTodayKST();
 
       await tx.dailyProgress.upsert({
         where: {

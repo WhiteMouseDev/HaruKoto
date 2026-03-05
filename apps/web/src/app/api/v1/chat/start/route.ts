@@ -138,6 +138,7 @@ export async function POST(request: Request) {
       data: {
         userId: user.id,
         scenarioId,
+        type: 'TEXT',
         messages: [
           {
             role: 'system',

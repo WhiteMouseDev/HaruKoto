@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 import { sendPushNotification } from '@/lib/web-push';
 
 // Vercel Cron에서 호출 (매일 오전 9시 KST = 0시 UTC)
@@ -12,8 +13,7 @@ export async function GET(request: Request) {
 
   try {
     // 오늘 아직 학습하지 않은 사용자 중 푸시 구독이 있는 사용자
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getTodayKST();
 
     const usersWithSubscriptions = await prisma.pushSubscription.findMany({
       select: {

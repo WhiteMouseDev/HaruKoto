@@ -5,6 +5,7 @@ import { queryKeys } from '@/lib/query-keys';
 
 export type HistoryItem = {
   id: string;
+  type: 'VOICE' | 'TEXT';
   createdAt: string;
   endedAt: string | null;
   messageCount: number;

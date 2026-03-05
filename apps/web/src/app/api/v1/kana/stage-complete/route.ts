@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 import {
   calculateLevel,
   updateStreak,
@@ -93,8 +94,7 @@ export async function POST(request: Request) {
           where: { id: user.id },
         });
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = getTodayKST();
 
         await tx.dailyProgress.upsert({
           where: { userId_date: { userId: user.id, date: today } },

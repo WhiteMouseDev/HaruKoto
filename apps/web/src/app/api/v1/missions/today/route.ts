@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 
 type MissionDef = {
   missionType: string;
@@ -81,11 +82,10 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getTodayKST();
 
     // 오늘 미션 + DailyProgress 병렬 조회
-    let [missions, progress] = await Promise.all([
+    const [initialMissions, progress] = await Promise.all([
       prisma.dailyMission.findMany({
         where: { userId: user.id, date: today },
         orderBy: { missionType: 'asc' },
@@ -94,6 +94,8 @@ export async function GET() {
         where: { userId_date: { userId: user.id, date: today } },
       }),
     ]);
+
+    let missions = initialMissions;
 
     // 없으면 자동 생성
     if (missions.length === 0) {

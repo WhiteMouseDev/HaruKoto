@@ -69,13 +69,11 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
 
   const allItems = data?.pages.flatMap((page) => page.history) ?? [];
 
-  // Filter by conversation type if specified
+  // Filter by conversation type using DB type field
   const items = filter
-    ? allItems.filter((item) => {
-        // Voice: no scenario (direct call) or FREE category
-        const isVoice = !item.scenario || item.scenario.category === 'FREE';
-        return filter === 'voice' ? isVoice : !isVoice;
-      })
+    ? allItems.filter((item) =>
+        filter === 'voice' ? item.type === 'VOICE' : item.type === 'TEXT'
+      )
     : allItems;
 
   if (loading) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 
 // 정적 콘텐츠 개수 — DB에서 매번 조회할 필요 없음
 const KANA_TOTAL_HIRAGANA = 46;
@@ -16,8 +17,7 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getTodayKST();
 
     // Fetch user, today's progress, and weekly stats in parallel
     const [dbUser, todayProgress, weeklyStats, vocabProgress, grammarProgress, kanaLearnedHiragana, kanaLearnedKatakana, totalVocab, totalGrammar] =

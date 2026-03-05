@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
 
 export async function GET() {
   try {
@@ -132,8 +133,7 @@ export async function POST(request: Request) {
     }
 
     // Update DailyProgress.kanaLearned
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getTodayKST();
 
     await prisma.dailyProgress.upsert({
       where: { userId_date: { userId: user.id, date: today } },
