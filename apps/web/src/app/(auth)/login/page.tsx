@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Logo } from '@/components/brand/logo';
+
+declare global {
+  interface Window {
+    Kakao?: {
+      init: (key: string) => void;
+      isInitialized: () => boolean;
+      Auth: {
+        authorize: (options: {
+          redirectUri: string;
+          scope?: string;
+          throughTalk?: boolean;
+        }) => void;
+      };
+    };
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +39,32 @@ export default function LoginPage() {
   const [resetMessage, setResetMessage] = useState('');
 
   const supabase = createClient();
+
+  const initKakaoSdk = useCallback(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      const jsKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
+      if (jsKey) {
+        window.Kakao.init(jsKey);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Load Kakao JS SDK
+    if (document.getElementById('kakao-sdk')) {
+      initKakaoSdk();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'kakao-sdk';
+    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js';
+    script.integrity =
+      'sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nk';
+    script.crossOrigin = 'anonymous';
+    script.onload = initKakaoSdk;
+    document.head.appendChild(script);
+  }, [initKakaoSdk]);
 
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
@@ -80,6 +122,11 @@ export default function LoginPage() {
   }
 
   async function handleSocialLogin(provider: 'google' | 'kakao') {
+    if (provider === 'kakao') {
+      handleKakaoLogin();
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -89,6 +136,19 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     }
+  }
+
+  function handleKakaoLogin() {
+    if (!window.Kakao || !window.Kakao.isInitialized()) {
+      setError('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    window.Kakao.Auth.authorize({
+      redirectUri: `${window.location.origin}/auth/kakao/callback`,
+      scope: 'openid',
+      throughTalk: true,
+    });
   }
 
   async function handleResetPassword(e: React.FormEvent) {
