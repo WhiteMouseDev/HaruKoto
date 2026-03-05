@@ -36,7 +36,7 @@ export function useUpdateProfile() {
           }
 
           // Direct profile fields (nickname, jlptLevel, dailyGoal, etc.)
-          const { callSettings: _, ...directFields } = data;
+          const { callSettings: _, ...directFields } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
           Object.assign(newProfile, directFields);
 
           return { ...old, profile: newProfile };

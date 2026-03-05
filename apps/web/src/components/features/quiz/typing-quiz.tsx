@@ -32,7 +32,6 @@ type AnswerState = 'idle' | 'correct' | 'incorrect';
 
 export function TypingQuiz({
   questions,
-  sessionId,
   onAnswer,
   onComplete,
 }: TypingQuizProps) {

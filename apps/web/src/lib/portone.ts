@@ -3,6 +3,8 @@
  * @see https://developers.portone.io/api/rest-v2
  */
 
+import crypto from 'node:crypto';
+
 const PORTONE_API_BASE = 'https://api.portone.io';
 
 function getHeaders() {
@@ -94,7 +96,6 @@ export function verifyWebhookSignature(
   // PortOne V2 웹훅은 HMAC-SHA256 시그니처 사용
   // 실제 환경에서는 crypto.subtle 또는 node:crypto 사용
   try {
-    const crypto = require('node:crypto');
     const expected = crypto
       .createHmac('sha256', secret)
       .update(body)

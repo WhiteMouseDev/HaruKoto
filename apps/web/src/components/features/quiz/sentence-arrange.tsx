@@ -50,7 +50,6 @@ const TOKEN_COLORS: Record<SentenceToken['type'], string> = {
 
 export function SentenceArrangeQuiz({
   questions,
-  sessionId,
   onAnswer,
   onComplete,
 }: SentenceArrangeQuizProps) {

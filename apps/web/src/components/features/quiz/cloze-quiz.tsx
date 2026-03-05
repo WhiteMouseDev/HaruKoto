@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CircleCheck, CircleX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 type ClozeQuizQuestion = {
@@ -34,7 +33,6 @@ type AnswerState = 'idle' | 'correct' | 'incorrect';
 
 export function ClozeQuiz({
   questions,
-  sessionId,
   onAnswer,
   onComplete,
 }: ClozeQuizProps) {

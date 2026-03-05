@@ -375,19 +375,15 @@ function QuizContent() {
   if (isCloze) {
     const clozeQuestions: ClozeQuizQuestion[] = questions.map((q) => ({
       questionId: q.questionId,
-      sentence: (q as any).sentence || q.questionText,
-      translation: (q as any).translation || '',
+      sentence: q.sentence || q.questionText,
+      translation: q.translation || '',
       options: q.options,
       correctOptionId: q.correctOptionId,
-      explanation: (q as any).explanation || '',
-      grammarPoint: (q as any).grammarPoint || null,
+      explanation: q.explanation || '',
+      grammarPoint: q.grammarPoint || null,
     }));
 
-    async function handleClozeComplete(result: {
-      correct: number;
-      total: number;
-      wrongQuestionIds: string[];
-    }) {
+    async function handleClozeComplete() {
       const data = await completeQuizMutation.mutateAsync({
         sessionId: sessionId!,
       });
@@ -427,18 +423,14 @@ function QuizContent() {
   if (isArrange) {
     const arrangeQuestions: SentenceArrangeQ[] = questions.map((q) => ({
       questionId: q.questionId,
-      koreanSentence: (q as any).koreanSentence || q.questionText,
-      japaneseSentence: (q as any).japaneseSentence || '',
-      tokens: (q as any).tokens || [],
-      explanation: (q as any).explanation || '',
-      grammarPoint: (q as any).grammarPoint || null,
+      koreanSentence: q.koreanSentence || q.questionText,
+      japaneseSentence: q.japaneseSentence || '',
+      tokens: q.tokens || [],
+      explanation: q.explanation || '',
+      grammarPoint: q.grammarPoint || null,
     }));
 
-    async function handleArrangeComplete(result: {
-      correct: number;
-      total: number;
-      wrongQuestionIds: string[];
-    }) {
+    async function handleArrangeComplete() {
       const data = await completeQuizMutation.mutateAsync({
         sessionId: sessionId!,
       });
@@ -474,17 +466,13 @@ function QuizContent() {
   if (isTyping) {
     const typingQuestions: TypingQuestion[] = questions.map((q) => ({
       questionId: q.questionId,
-      prompt: (q as any).prompt || q.questionText,
-      answer: (q as any).answer || '',
-      hint: (q as any).hint || null,
-      distractors: (q as any).distractors || [],
+      prompt: q.prompt || q.questionText,
+      answer: q.answer || '',
+      hint: q.hint || null,
+      distractors: q.distractors || [],
     }));
 
-    async function handleTypingComplete(result: {
-      correct: number;
-      total: number;
-      wrongQuestionIds: string[];
-    }) {
+    async function handleTypingComplete() {
       const data = await completeQuizMutation.mutateAsync({
         sessionId: sessionId!,
       });

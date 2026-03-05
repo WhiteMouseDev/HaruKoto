@@ -1,17 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Crown, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const CONFETTI_COLORS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F472B6', '#34D399'];
+
+function generateConfettiPieces(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    rotate: Math.random() * 720 - 360,
+    duration: 2 + Math.random() * 2,
+    delay: Math.random() * 1,
+    width: 8 + Math.random() * 8,
+    height: 8 + Math.random() * 8,
+    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+  }));
+}
+
 export default function SubscriptionSuccessPage() {
   const router = useRouter();
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(true);
+  const confettiPieces = useMemo(() => generateConfettiPieces(30), []);
 
   useEffect(() => {
-    setShowConfetti(true);
     const timer = setTimeout(() => setShowConfetti(false), 4000);
     return () => clearTimeout(timer);
   }, []);
@@ -21,33 +37,31 @@ export default function SubscriptionSuccessPage() {
       {/* Confetti effect */}
       {showConfetti && (
         <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
-          {Array.from({ length: 30 }).map((_, i) => (
+          {confettiPieces.map((piece) => (
             <motion.div
-              key={i}
+              key={piece.id}
               className="absolute"
               initial={{
                 top: -20,
-                left: `${Math.random() * 100}%`,
+                left: piece.left,
                 opacity: 1,
                 scale: 1,
               }}
               animate={{
                 top: '110%',
-                rotate: Math.random() * 720 - 360,
+                rotate: piece.rotate,
                 opacity: 0,
               }}
               transition={{
-                duration: 2 + Math.random() * 2,
-                delay: Math.random() * 1,
+                duration: piece.duration,
+                delay: piece.delay,
                 ease: 'easeOut',
               }}
               style={{
-                width: 8 + Math.random() * 8,
-                height: 8 + Math.random() * 8,
-                borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                backgroundColor: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#F472B6', '#34D399'][
-                  Math.floor(Math.random() * 6)
-                ],
+                width: piece.width,
+                height: piece.height,
+                borderRadius: piece.borderRadius,
+                backgroundColor: piece.color,
               }}
             />
           ))}

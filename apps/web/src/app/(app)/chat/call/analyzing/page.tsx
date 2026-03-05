@@ -31,14 +31,14 @@ export default function AnalyzingPage() {
 
     const { transcript, durationSeconds, scenarioId, characterId, character } = JSON.parse(raw);
 
-    if (character?.avatarUrl) {
-      setAvatarUrl(character.avatarUrl);
-    }
-    if (character?.name) {
-      setAvatarAlt(character.name);
-    }
-
     async function analyze() {
+      if (character?.avatarUrl) {
+        setAvatarUrl(character.avatarUrl);
+      }
+      if (character?.name) {
+        setAvatarAlt(character.name);
+      }
+
       try {
         setStatus('AI가 피드백을 생성하고 있어요...');
 

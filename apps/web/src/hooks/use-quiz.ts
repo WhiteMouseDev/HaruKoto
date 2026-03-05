@@ -34,6 +34,19 @@ type QuizQuestion = {
   hint: string | null;
   options: QuizOption[];
   correctOptionId: string;
+  // Cloze fields
+  sentence?: string;
+  translation?: string;
+  explanation?: string;
+  grammarPoint?: string | null;
+  // SentenceArrange fields
+  koreanSentence?: string;
+  japaneseSentence?: string;
+  tokens?: { text: string; type: 'noun' | 'particle' | 'verb' | 'adjective' | 'copula' | 'adverb' | 'suffix'; meaning: string; order: number }[];
+  // Typing fields
+  prompt?: string;
+  answer?: string;
+  distractors?: string[];
 };
 
 type StartQuizParams = {

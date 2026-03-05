@@ -105,18 +105,13 @@ export function SettingsMenu({
   const [localSilence, setLocalSilence] = useState(
     callSettings.silenceDurationMs
   );
-  // aiResponseSpeed — 현재 미사용 (Gemini Live에서 소비하지 않음). 기능 연결 후 복원.
-  // const [localSpeed, setLocalSpeed] = useState(callSettings.aiResponseSpeed);
+  const [prevSilence, setPrevSilence] = useState(callSettings.silenceDurationMs);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  // const speedTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useEffect(() => {
+  if (prevSilence !== callSettings.silenceDurationMs) {
+    setPrevSilence(callSettings.silenceDurationMs);
     setLocalSilence(callSettings.silenceDurationMs);
-  }, [callSettings.silenceDurationMs]);
-
-  // useEffect(() => {
-  //   setLocalSpeed(callSettings.aiResponseSpeed);
-  // }, [callSettings.aiResponseSpeed]);
+  }
 
   useEffect(() => {
     return () => {

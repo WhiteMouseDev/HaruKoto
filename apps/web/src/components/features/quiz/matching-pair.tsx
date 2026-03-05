@@ -179,15 +179,6 @@ export function MatchingPairQuiz({
               const isFading = fadingOut.has(item.pairId);
               const isCorrectFeedback =
                 feedback.type === 'correct' && feedback.pairId === item.pairId;
-              const isIncorrectFeedback =
-                feedback.type === 'incorrect' &&
-                feedback.pairId !== item.pairId &&
-                selectedLeft !== null;
-
-              // Only highlight the tapped right card on incorrect
-              const isTappedIncorrect =
-                feedback.type === 'incorrect' && feedback.pairId === selectedLeft;
-
               return (
                 <motion.button
                   key={`right-${item.pairId}`}
