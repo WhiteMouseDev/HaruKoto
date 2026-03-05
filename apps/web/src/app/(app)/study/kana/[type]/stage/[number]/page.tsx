@@ -158,7 +158,7 @@ export default function KanaStageLearningPage({ params }: Props) {
   const currentPracticeChar = stageCharacters[practiceIndex];
 
   return (
-    <div className="flex min-h-dvh flex-col p-4">
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col p-4">
       {/* Header */}
       <div className="flex items-center gap-2 pb-4">
         <Button
@@ -197,23 +197,23 @@ export default function KanaStageLearningPage({ params }: Props) {
               </span>
             </div>
 
-            <div className="flex flex-1 flex-col items-center justify-center gap-6">
-              <div className="flex size-36 items-center justify-center rounded-3xl border bg-gradient-to-br from-background to-primary/5 shadow-lg">
-                <span className="font-jp text-primary text-8xl font-bold drop-shadow-sm">
+            <div className="flex flex-1 flex-col items-center justify-center gap-4">
+              <div className="flex size-28 items-center justify-center rounded-2xl border bg-gradient-to-br from-background to-primary/5 shadow-lg">
+                <span className="font-jp text-primary text-7xl font-bold drop-shadow-sm">
                   {currentIntroChar.character}
                 </span>
               </div>
 
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-primary text-3xl font-extrabold">{currentIntroChar.romaji}</span>
-                <span className="text-muted-foreground text-lg">
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-primary text-2xl font-extrabold">{currentIntroChar.romaji}</span>
+                <span className="text-muted-foreground text-base">
                   {currentIntroChar.pronunciation}
                 </span>
               </div>
 
               {currentIntroChar.exampleWord && (
-                <div className="bg-secondary/80 flex flex-col items-center gap-0.5 rounded-xl px-5 py-3">
-                  <span className="font-jp text-lg font-semibold">
+                <div className="bg-secondary/80 flex flex-col items-center gap-0.5 rounded-xl px-5 py-2.5">
+                  <span className="font-jp text-base font-semibold">
                     {currentIntroChar.exampleWord}
                   </span>
                   <span className="text-muted-foreground text-sm">

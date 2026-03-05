@@ -48,7 +48,7 @@ export function KanaFlashcard({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
-        className="w-full max-w-[280px] cursor-grab active:cursor-grabbing"
+        className="w-full max-w-[260px] cursor-grab active:cursor-grabbing"
         style={{ perspective: 1000 }}
       >
         <motion.div
@@ -60,11 +60,11 @@ export function KanaFlashcard({
         >
           {/* Front */}
           <div
-            className="flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-br from-background to-primary/5 shadow-lg"
+            className="flex aspect-[4/5] flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-br from-background to-primary/5 shadow-lg"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <div className="bg-primary/8 flex size-32 items-center justify-center rounded-2xl">
-              <span className="font-jp text-primary text-8xl font-bold drop-shadow-sm">
+            <div className="bg-primary/8 flex size-24 items-center justify-center rounded-2xl">
+              <span className="font-jp text-primary text-6xl font-bold drop-shadow-sm">
                 {character}
               </span>
             </div>
@@ -76,7 +76,7 @@ export function KanaFlashcard({
 
           {/* Back */}
           <div
-            className="absolute inset-0 flex aspect-[3/4] flex-col items-center justify-center gap-5 rounded-3xl border bg-gradient-to-br from-primary/5 to-background shadow-lg"
+            className="absolute inset-0 flex aspect-[4/5] flex-col items-center justify-center gap-5 rounded-3xl border bg-gradient-to-br from-primary/5 to-background shadow-lg"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
@@ -116,7 +116,7 @@ export function KanaFlashcard({
       </motion.div>
 
       {/* Action buttons */}
-      <div className="flex w-full max-w-[280px] gap-3">
+      <div className="flex w-full max-w-[260px] gap-3">
         <Button
           variant="outline"
           className="h-12 flex-1 gap-2 rounded-xl border-2 text-base font-semibold"
