@@ -51,8 +51,10 @@ export default function CheckoutPage(props: {
         paymentId: checkout.paymentId,
         orderName: checkout.orderName,
         totalAmount: checkout.totalAmount,
-        currency: checkout.currency as 'CURRENCY_KRW',
+        currency: 'KRW',
         payMethod: 'CARD',
+        windowType: { pc: 'IFRAME', mobile: 'REDIRECTION' },
+        redirectUrl: `${window.location.origin}/subscription/success`,
         customer: {
           customerId: checkout.customerId,
           email: checkout.customerEmail,
