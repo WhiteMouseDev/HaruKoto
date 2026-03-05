@@ -268,6 +268,25 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (url.contains('kakao.com')) return NavigationDecision.navigate;
             // 구글 OAuth 허용
             if (url.contains('accounts.google.com')) return NavigationDecision.navigate;
+            // 포트원 + PG사 결제 허용
+            if (url.contains('portone.io')) return NavigationDecision.navigate;
+            if (url.contains('tosspayments.com')) return NavigationDecision.navigate;
+            if (url.contains('toss.im')) return NavigationDecision.navigate;
+            if (url.contains('kakaopay.com')) return NavigationDecision.navigate;
+            if (url.contains('naverpay.com')) return NavigationDecision.navigate;
+            if (url.contains('payco.com')) return NavigationDecision.navigate;
+            if (url.contains('inicis.com')) return NavigationDecision.navigate;
+            if (url.contains('nice.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('niceapi.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('samsungpay.com')) return NavigationDecision.navigate;
+            if (url.contains('hanacard.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('shinhancard.com')) return NavigationDecision.navigate;
+            if (url.contains('lottecard.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('hyundaicard.com')) return NavigationDecision.navigate;
+            if (url.contains('kbcard.com')) return NavigationDecision.navigate;
+            if (url.contains('bccard.com')) return NavigationDecision.navigate;
+            if (url.contains('nhcard.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('citibank.co.kr')) return NavigationDecision.navigate;
             // 그 외 차단
             return NavigationDecision.prevent;
           },
