@@ -255,7 +255,7 @@ export function ClozeQuiz({
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'rounded-t-2xl border-t p-5',
+              'fixed bottom-20 left-0 right-0 z-50 mx-auto max-w-lg rounded-t-2xl border-t p-5',
               answerState === 'correct'
                 ? 'bg-hk-success/5 border-hk-success/30'
                 : 'bg-hk-error/5 border-hk-error/30'
