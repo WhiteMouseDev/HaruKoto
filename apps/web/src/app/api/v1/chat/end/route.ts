@@ -11,6 +11,7 @@ import {
   type GameEvent,
 } from '@/lib/gamification';
 import { REWARDS } from '@/lib/constants';
+import { trackAiUsage } from '@/lib/subscription-service';
 
 interface StoredMessage {
   role: 'system' | 'user' | 'assistant';
@@ -127,6 +128,12 @@ export async function POST(request: Request) {
           : undefined,
       },
     });
+
+    // AI 사용 시간 기록
+    const durationSecondsAi = Math.round(
+      (now.getTime() - conversation.createdAt.getTime()) / 1000
+    );
+    await trackAiUsage(user.id, 'chat', durationSecondsAi);
 
     const xpEarned = REWARDS.CONVERSATION_COMPLETE_XP;
     const durationSeconds = Math.round(

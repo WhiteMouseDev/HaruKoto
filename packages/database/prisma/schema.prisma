@@ -77,6 +77,27 @@ enum WordbookSource {
   MANUAL
 }
 
+enum SubscriptionPlan {
+  FREE
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAST_DUE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
 // ==========================================
 // User & Auth
 // ==========================================
@@ -115,6 +136,9 @@ model User {
   kanaStages          UserKanaStage[]
   favoriteCharacters  UserFavoriteCharacter[]
   characterUnlocks    UserCharacterUnlock[]
+  subscriptions       Subscription[]
+  payments            Payment[]
+  dailyAiUsage        DailyAiUsage[]
 
   @@map("users")
 }
@@ -574,4 +598,73 @@ model UserCharacterUnlock {
   @@unique([userId, characterId])
   @@index([userId])
   @@map("user_character_unlocks")
+}
+
+// ==========================================
+// Subscription & Payments
+// ==========================================
+
+model Subscription {
+  id                String             @id @default(uuid()) @db.Uuid
+  userId            String             @map("user_id") @db.Uuid
+  plan              SubscriptionPlan   @default(FREE)
+  status            SubscriptionStatus @default(ACTIVE)
+  billingKey        String?            @map("billing_key")
+  portoneCustomerId String?            @map("portone_customer_id")
+  currentPeriodStart DateTime          @map("current_period_start")
+  currentPeriodEnd   DateTime          @map("current_period_end")
+  cancelledAt       DateTime?          @map("cancelled_at")
+  cancelReason      String?            @map("cancel_reason")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id               String        @id @default(uuid()) @db.Uuid
+  userId           String        @map("user_id") @db.Uuid
+  subscriptionId   String?       @map("subscription_id") @db.Uuid
+  portonePaymentId String?       @unique @map("portone_payment_id")
+  amount           Int
+  currency         String        @default("KRW")
+  status           PaymentStatus @default(PENDING)
+  plan             SubscriptionPlan
+  failReason       String?       @map("fail_reason")
+  paidAt           DateTime?     @map("paid_at")
+  refundedAt       DateTime?     @map("refunded_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([portonePaymentId])
+  @@map("payments")
+}
+
+model DailyAiUsage {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  date           DateTime @db.Date
+  chatCount      Int      @default(0) @map("chat_count")
+  chatSeconds    Int      @default(0) @map("chat_seconds")
+  callCount      Int      @default(0) @map("call_count")
+  callSeconds    Int      @default(0) @map("call_seconds")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_ai_usage")
 }

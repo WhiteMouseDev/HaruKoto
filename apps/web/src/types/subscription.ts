@@ -1,14 +1,12 @@
 export type SubscriptionPlan = 'free' | 'monthly' | 'yearly';
 
-export type SubscriptionStatus = {
-  isPremium: boolean;
-  plan: SubscriptionPlan;
-  expiresAt: string | null;
-  cancelledAt: string | null;
-};
-
 export type SubscriptionStatusResponse = {
-  subscription: SubscriptionStatus;
+  subscription: {
+    isPremium: boolean;
+    plan: SubscriptionPlan;
+    expiresAt: string | null;
+    cancelledAt: string | null;
+  };
   aiUsage: {
     chatCount: number;
     chatSeconds: number;

@@ -16,6 +16,13 @@ export type {
   Scenario,
   Difficulty,
 } from './conversation';
-export type { SubscriptionStatus, SubscriptionPlan } from './subscription';
+export type {
+  SubscriptionStatus,
+  SubscriptionPlan,
+  SubscriptionStatusResponse,
+  CheckoutResponse,
+  PaymentRecord,
+  PricingPlan,
+} from './subscription';
 export type { Streak, DailyProgress, LevelInfo } from './gamification';
 export type { ApiError, Pagination, ApiResponse } from './api';

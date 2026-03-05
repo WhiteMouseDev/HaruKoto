@@ -20,4 +20,7 @@ export const queryKeys = {
   character: (id: string) => ['character', id] as const,
   characterStats: ['character-stats'] as const,
   characterFavorites: ['character-favorites'] as const,
+  subscription: ['subscription'] as const,
+  payments: (page: number) => ['payments', page] as const,
+  aiUsage: ['ai-usage'] as const,
 };

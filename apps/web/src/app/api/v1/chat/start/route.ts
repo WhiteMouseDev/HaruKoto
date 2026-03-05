@@ -4,6 +4,7 @@ import { prisma } from '@harukoto/database';
 import { generateText } from 'ai';
 import { getAIProvider, SYSTEM_PROMPTS } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { checkAiLimit } from '@/lib/subscription-service';
 
 function buildSystemPrompt(
   scenario: {
@@ -57,6 +58,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
         { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)) } }
+      );
+    }
+
+    // AI 사용량 체크
+    const aiCheck = await checkAiLimit(user.id, 'chat');
+    if (!aiCheck.allowed) {
+      return NextResponse.json(
+        { error: aiCheck.reason, code: 'AI_LIMIT_EXCEEDED' },
+        { status: 429 }
       );
     }
 

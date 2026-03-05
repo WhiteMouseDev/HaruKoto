@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { ProfileHero } from '@/components/features/my/profile-hero';
 import { AchievementsSection } from '@/components/features/my/achievements-section';
+import { SubscriptionSection } from '@/components/features/my/subscription-section';
 import { SettingsMenu } from '@/components/features/my/settings-menu';
 import {
   getDefaultCallSettings,
@@ -165,6 +166,8 @@ export default function MyPage() {
       />
 
       <AchievementsSection achievements={achievements} />
+
+      <SubscriptionSection />
 
       <SettingsMenu
         jlptLevel={profile.jlptLevel}
