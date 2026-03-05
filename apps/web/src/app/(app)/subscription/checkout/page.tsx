@@ -91,6 +91,11 @@ export default function CheckoutPage(props: {
       // 리디렉션 URL: 이 페이지로 다시 돌아옴 (paymentId 쿼리 파라미터 포함)
       const redirectUrl = `${window.location.origin}/subscription/checkout?plan=${plan}`;
 
+      // Flutter WebView는 PC로 감지될 수 있으므로, 모바일 기기면 REDIRECTION 강제
+      const isMobileDevice =
+        /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+        window.innerWidth < 768;
+
       const response = await PortOne.requestPayment({
         storeId: checkout.storeId,
         channelKey: checkout.channelKey,
@@ -99,7 +104,9 @@ export default function CheckoutPage(props: {
         totalAmount: checkout.totalAmount,
         currency: 'KRW',
         payMethod: 'CARD',
-        windowType: { pc: 'IFRAME', mobile: 'REDIRECTION' },
+        windowType: isMobileDevice
+          ? { pc: 'REDIRECTION', mobile: 'REDIRECTION' }
+          : { pc: 'IFRAME', mobile: 'REDIRECTION' },
         redirectUrl,
         customer: {
           customerId: checkout.customerId,
