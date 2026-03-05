@@ -55,6 +55,7 @@ export async function POST(request: Request) {
       answeredQuestionIds,
       totalQuestions: session.totalQuestions,
       correctCount,
+      quizType: session.quizType,
     });
   } catch (err) {
     console.error('Quiz resume error:', err);

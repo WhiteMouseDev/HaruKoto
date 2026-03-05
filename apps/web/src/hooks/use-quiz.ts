@@ -53,6 +53,7 @@ type ResumeQuizResponse = {
   questions: QuizQuestion[];
   answeredQuestionIds: string[];
   correctCount: number;
+  quizType?: string;
 };
 
 type AnswerQuestionParams = {

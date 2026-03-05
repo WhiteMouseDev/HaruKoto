@@ -58,11 +58,12 @@ function QuizContent() {
   const count = parseInt(searchParams.get('count') || '10');
   const mode = searchParams.get('mode');
   const resumeSessionId = searchParams.get('resume');
-  const isReview = mode === 'review';
-  const isMatching = mode === 'matching';
-  const isCloze = mode === 'cloze';
-  const isArrange = mode === 'arrange';
-  const isTyping = mode === 'typing';
+  const [resolvedMode, setResolvedMode] = useState<string | null>(mode);
+  const isReview = resolvedMode === 'review';
+  const isMatching = resolvedMode === 'matching';
+  const isCloze = resolvedMode === 'cloze';
+  const isArrange = resolvedMode === 'arrange';
+  const isTyping = resolvedMode === 'typing';
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -100,6 +101,17 @@ function QuizContent() {
               (_, i) => i < data.correctCount
             );
             setResults(restoredResults);
+
+            // Resolve mode from session quizType
+            if (data.quizType) {
+              const modeMap: Record<string, string> = {
+                CLOZE: 'cloze',
+                SENTENCE_ARRANGE: 'arrange',
+              };
+              if (modeMap[data.quizType]) {
+                setResolvedMode(modeMap[data.quizType]);
+              }
+            }
           }
         } else {
           const data = await startQuizMutation.mutateAsync({
