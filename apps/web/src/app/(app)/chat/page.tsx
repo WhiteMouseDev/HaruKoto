@@ -69,6 +69,7 @@ export default function ChatPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<SubTab>('voice');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categorySource, setCategorySource] = useState<SubTab>('text');
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -196,8 +197,14 @@ export default function ChatPage() {
               <ScenarioCard
                 key={scenario.id}
                 scenario={scenario}
-                onSelect={() => handleStartConversation(scenario)}
-                onCall={() => router.push(`/chat/call?scenarioId=${scenario.id}`)}
+                onSelect={() =>
+                  categorySource === 'voice'
+                    ? router.push(`/chat/call?scenarioId=${scenario.id}`)
+                    : handleStartConversation(scenario)
+                }
+                {...(categorySource === 'text' ? {} : {
+                  onCall: () => router.push(`/chat/call?scenarioId=${scenario.id}`),
+                })}
               />
             ))}
           </motion.div>
@@ -278,7 +285,10 @@ export default function ChatPage() {
               시나리오 통화
             </h2>
             <CategoryGrid
-              onSelect={(cat) => setSelectedCategory(cat)}
+              onSelect={(cat) => {
+                setCategorySource('voice');
+                setSelectedCategory(cat);
+              }}
               variant="call"
             />
           </motion.div>
@@ -329,7 +339,10 @@ export default function ChatPage() {
               <FolderOpen className="size-4" />
               상황별 시나리오
             </h2>
-            <CategoryGrid onSelect={setSelectedCategory} />
+            <CategoryGrid onSelect={(cat) => {
+              setCategorySource('text');
+              setSelectedCategory(cat);
+            }} />
           </motion.div>
 
           <motion.div variants={item}>

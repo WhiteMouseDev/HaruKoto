@@ -44,7 +44,7 @@ export function AudioPlayer({ text, className }: AudioPlayerProps) {
       return;
     }
 
-    const speed = slow ? 0.7 : 0.9;
+    const speed = slow ? 0.8 : 1.0;
     try {
       const blob = await fetchTTS(speed);
       playBlob(blob);
