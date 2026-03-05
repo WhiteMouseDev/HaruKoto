@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useCallback, use } from 'react';
+import { useState, useCallback, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 import { PRICES } from '@/lib/subscription-constants';
 import type { CheckoutResponse } from '@/types/subscription';
 
@@ -13,16 +15,56 @@ function formatPrice(price: number): string {
 }
 
 export default function CheckoutPage(props: {
-  searchParams: Promise<{ plan?: string }>;
+  searchParams: Promise<{
+    plan?: string;
+    // PortOne 리디렉션 콜백 파라미터
+    paymentId?: string;
+    code?: string;
+    message?: string;
+  }>;
 }) {
   const searchParams = use(props.searchParams);
   const plan = (searchParams.plan === 'yearly' ? 'yearly' : 'monthly') as 'monthly' | 'yearly';
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [activating, setActivating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const amount = plan === 'yearly' ? PRICES.YEARLY : PRICES.MONTHLY;
   const planName = plan === 'yearly' ? '연간 프리미엄' : '월간 프리미엄';
+
+  // PortOne 리디렉션 콜백 처리 (모바일 REDIRECTION 방식)
+  useEffect(() => {
+    const { paymentId, code, message } = searchParams;
+    if (!paymentId) return;
+
+    // 에러 코드가 있으면 결제 실패
+    if (code != null && code !== '') {
+      setError(message ?? '결제가 실패했습니다');
+      return;
+    }
+
+    // 결제 성공 → 구독 활성화
+    setActivating(true);
+    fetch('/api/v1/subscription/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentId, plan }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error ?? '구독 활성화에 실패했습니다');
+        }
+        queryClient.invalidateQueries({ queryKey: queryKeys.subscription });
+        router.replace('/subscription/success');
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : '구독 활성화에 실패했습니다');
+        setActivating(false);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePayment = useCallback(async () => {
     setLoading(true);
@@ -45,6 +87,10 @@ export default function CheckoutPage(props: {
 
       // 2. PortOne SDK 로드 + 결제 요청
       const PortOne = await import('@portone/browser-sdk/v2');
+
+      // 리디렉션 URL: 이 페이지로 다시 돌아옴 (paymentId 쿼리 파라미터 포함)
+      const redirectUrl = `${window.location.origin}/subscription/checkout?plan=${plan}`;
+
       const response = await PortOne.requestPayment({
         storeId: checkout.storeId,
         channelKey: checkout.channelKey,
@@ -54,24 +100,26 @@ export default function CheckoutPage(props: {
         currency: 'KRW',
         payMethod: 'CARD',
         windowType: { pc: 'IFRAME', mobile: 'REDIRECTION' },
-        redirectUrl: `${window.location.origin}/subscription/success`,
+        redirectUrl,
         customer: {
           customerId: checkout.customerId,
           email: checkout.customerEmail,
+          fullName: checkout.customerEmail.split('@')[0],
         },
       });
 
-      if (response?.code != null) {
-        // 사용자 취소 또는 에러
-        if (response.code === 'FAILURE_TYPE_PG') {
-          throw new Error(response.message ?? '결제가 실패했습니다');
-        }
-        // 사용자가 결제창을 닫은 경우
-        setLoading(false);
-        return;
+      // REDIRECTION 모드에서는 여기까지 오지 않음 (페이지가 리디렉트됨)
+      // IFRAME 모드에서만 아래 코드가 실행됨
+
+      if (!response) {
+        throw new Error('결제 응답을 받지 못했습니다. 다시 시도해주세요.');
       }
 
-      // 3. 결제 검증 + 구독 활성화
+      if (response.code != null) {
+        throw new Error(response.message ?? `결제에 실패했습니다 (${response.code})`);
+      }
+
+      // 3. 결제 검증 + 구독 활성화 (IFRAME 모드)
       const activateRes = await fetch('/api/v1/subscription/activate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -87,12 +135,23 @@ export default function CheckoutPage(props: {
       }
 
       // 4. 성공 페이지로 이동
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription });
       router.push('/subscription/success');
     } catch (err) {
       setError(err instanceof Error ? err.message : '결제 중 오류가 발생했습니다');
       setLoading(false);
     }
-  }, [plan, router]);
+  }, [plan, router, queryClient]);
+
+  // 리디렉션 콜백 처리 중
+  if (activating) {
+    return (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-4">
+        <Loader2 className="text-primary size-8 animate-spin" />
+        <p className="text-muted-foreground text-sm">결제를 확인하고 있습니다...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-4">
