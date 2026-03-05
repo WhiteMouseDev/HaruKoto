@@ -291,7 +291,7 @@ function QuizContent() {
 
   if (questions.length === 0) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-4">
         <span className="text-primary">
           {isReview ? (
             <PartyPopper className="size-12" />
@@ -319,7 +319,7 @@ function QuizContent() {
         : 0;
 
     return (
-      <div className="flex min-h-dvh flex-col">
+      <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 p-4">
           <button
@@ -508,7 +508,7 @@ function QuizContent() {
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
         <button
@@ -541,7 +541,7 @@ function QuizContent() {
       </div>
 
       {/* Question */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-8">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}

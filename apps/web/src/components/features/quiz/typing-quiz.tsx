@@ -129,7 +129,7 @@ export function TypingQuiz({
   if (!question) return null;
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
       {/* Header */}
       <div className="flex flex-col gap-2 p-4 pb-2">
         <div className="flex items-center justify-between text-sm">
