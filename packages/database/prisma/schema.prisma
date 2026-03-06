@@ -172,6 +172,7 @@ model Vocabulary {
 
   userProgress UserVocabProgress[]
 
+  @@unique([word, jlptLevel])
   @@index([jlptLevel])
   @@index([partOfSpeech])
   @@map("vocabularies")
@@ -190,6 +191,7 @@ model Grammar {
 
   userProgress UserGrammarProgress[]
 
+  @@unique([pattern, jlptLevel])
   @@index([jlptLevel])
   @@map("grammars")
 }
@@ -250,6 +252,7 @@ model ClozeQuestion {
   order         Int       @default(0)
   createdAt     DateTime  @default(now()) @map("created_at")
 
+  @@unique([sentence, jlptLevel])
   @@index([jlptLevel])
   @@index([jlptLevel, difficulty])
   @@map("cloze_questions")
@@ -271,6 +274,7 @@ model SentenceArrangeQuestion {
   order          Int       @default(0)
   createdAt      DateTime  @default(now()) @map("created_at")
 
+  @@unique([koreanSentence, jlptLevel])
   @@index([jlptLevel])
   @@index([jlptLevel, difficulty])
   @@map("sentence_arrange_questions")
@@ -299,6 +303,7 @@ model ConversationScenario {
 
   conversations Conversation[]
 
+  @@unique([title])
   @@index([category])
   @@index([difficulty])
   @@map("conversation_scenarios")

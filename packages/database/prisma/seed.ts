@@ -1,5 +1,5 @@
-import { PrismaClient, ScenarioCategory, Difficulty } from '@prisma/client';
-import { readFileSync } from 'fs';
+import { PrismaClient } from '@prisma/client';
+import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 const prisma = new PrismaClient();
@@ -9,24 +9,36 @@ function loadJson<T>(relativePath: string): T {
   return JSON.parse(readFileSync(fullPath, 'utf-8'));
 }
 
-async function main() {
-  console.log('🌸 Seeding HaruKoto database...');
+function findJsonFiles(relativePath: string): string[] {
+  const fullPath = join(__dirname, '..', relativePath);
+  if (!existsSync(fullPath)) return [];
+  return readdirSync(fullPath)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => `${relativePath}/${f}`);
+}
 
-  // 1. Seed Vocabulary (N5 + N4)
-  const vocabFiles = [
-    { file: 'data/vocabulary/n5-words.json', level: 'N5' },
-    { file: 'data/vocabulary/n4-words.json', level: 'N4' },
-  ];
+// ─────────────────────────────────────────
+// Vocabulary — upsert by (word, jlptLevel)
+// ─────────────────────────────────────────
+async function seedVocabulary() {
+  const files = findJsonFiles('data/vocabulary');
+  if (files.length === 0) return;
 
-  for (const { file, level } of vocabFiles) {
-    const existingCount = await prisma.vocabulary.count({
-      where: { jlptLevel: level as any },
-    });
-    if (existingCount === 0) {
+  let total = 0;
+  let created = 0;
+
+  for (const file of files) {
+    const vocabData = loadJson<any[]>(file);
+    total += vocabData.length;
+
+    for (const v of vocabData) {
       try {
-        const vocabData = loadJson<any[]>(file);
-        await prisma.vocabulary.createMany({
-          data: vocabData.map((v) => ({
+        await prisma.vocabulary.upsert({
+          where: {
+            word_jlptLevel: { word: v.word, jlptLevel: v.jlptLevel },
+          },
+          update: {},
+          create: {
             word: v.word,
             reading: v.reading,
             meaningKo: v.meaningKo,
@@ -37,223 +49,188 @@ async function main() {
             exampleTranslation: v.exampleTranslation,
             tags: v.tags,
             order: v.order,
-          })),
+          },
         });
-        console.log(`✅ ${vocabData.length} ${level} vocabulary words seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${level} vocabulary file not found, skipping`);
+        created++;
+      } catch {
+        // Duplicate — skip
       }
-    } else {
-      console.log(`⏭️ ${level} vocabulary already exists (${existingCount}), skipping`);
     }
   }
 
-  // 2. Seed Grammar (N5 + N4)
-  const grammarFiles = [
-    { file: 'data/grammar/n5-grammar.json', level: 'N5' },
-    { file: 'data/grammar/n4-grammar.json', level: 'N4' },
-  ];
+  const skipped = total - created;
+  console.log(
+    `✅ Vocabulary: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
 
-  for (const { file, level } of grammarFiles) {
-    const existingCount = await prisma.grammar.count({
-      where: { jlptLevel: level as any },
-    });
-    if (existingCount === 0) {
+// ─────────────────────────────────────────
+// Grammar — upsert by (pattern, jlptLevel)
+// ─────────────────────────────────────────
+async function seedGrammar() {
+  const files = findJsonFiles('data/grammar');
+  if (files.length === 0) return;
+
+  let total = 0;
+  let created = 0;
+
+  for (const file of files) {
+    const grammarData = loadJson<any[]>(file);
+    total += grammarData.length;
+
+    for (const g of grammarData) {
       try {
-        const grammarData = loadJson<any[]>(file);
-        await prisma.grammar.createMany({
-          data: grammarData.map((g) => ({
+        await prisma.grammar.upsert({
+          where: {
+            pattern_jlptLevel: { pattern: g.pattern, jlptLevel: g.jlptLevel },
+          },
+          update: {},
+          create: {
             pattern: g.pattern,
             meaningKo: g.meaningKo,
             explanation: g.explanation,
             jlptLevel: g.jlptLevel,
             exampleSentences: g.exampleSentences,
             order: g.order,
-          })),
+          },
         });
-        console.log(`✅ ${grammarData.length} ${level} grammar patterns seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${level} grammar file not found, skipping`);
+        created++;
+      } catch {
+        // Duplicate — skip
       }
-    } else {
-      console.log(`⏭️ ${level} grammar already exists (${existingCount}), skipping`);
     }
   }
 
-  // 3. Seed Conversation Scenarios
-  const scenarios = [
-    {
-      title: '호텔 체크인',
-      titleJa: 'ホテルチェックイン',
-      description: '일본 호텔에서 체크인하는 상황을 연습합니다.',
-      category: ScenarioCategory.TRAVEL,
-      difficulty: Difficulty.BEGINNER,
-      estimatedMinutes: 5,
-      keyExpressions: [
-        'チェックインお願いします',
-        '予約した〜です',
-        '鍵をお願いします',
-      ],
-      situation: '일본 호텔 프론트에서 체크인합니다.',
-      yourRole: '여행객 (호텔 손님)',
-      aiRole: '호텔 프론트 직원',
-      systemPrompt: `## シナリオ: ホテルチェックイン
-あなたは日本のホテルのフロントスタッフです。
-- 丁寧な敬語を使ってください
-- チェックインの流れ: 名前確認 → 予約確認 → 部屋の説明 → 鍵の受け渡し
-- ユーザーが困っている場合は、優しくリードしてください
-- 朝食の時間やWi-Fiのパスワードなど、実用的な情報も提供してください`,
-      order: 1,
-    },
-    {
-      title: '편의점에서',
-      titleJa: 'コンビニで買い物',
-      description: '일본 편의점에서 물건을 사는 상황을 연습합니다.',
-      category: ScenarioCategory.DAILY,
-      difficulty: Difficulty.BEGINNER,
-      estimatedMinutes: 3,
-      keyExpressions: [
-        '袋はいりますか',
-        'お弁当温めますか',
-        'ポイントカードはお持ちですか',
-      ],
-      situation: '일본 편의점에서 물건을 고르고 계산합니다.',
-      yourRole: '손님',
-      aiRole: '편의점 점원',
-      systemPrompt: `## シナリオ: コンビニで買い物
-あなたは日本のコンビニの店員です。
-- 「いらっしゃいませ」から始めてください
-- よくある質問: 袋、お弁当の温め、ポイントカード、お箸・スプーン
-- 会計の流れを自然に進めてください
-- 丁寧だが親しみやすい接客をしてください`,
-      order: 2,
-    },
-    {
-      title: '자기소개',
-      titleJa: '自己紹介',
-      description: '새로운 사람을 만나 자기소개하는 연습을 합니다.',
-      category: ScenarioCategory.DAILY,
-      difficulty: Difficulty.BEGINNER,
-      estimatedMinutes: 5,
-      keyExpressions: ['はじめまして', '〜と言います', 'よろしくお願いします'],
-      situation: '일본어 교실에서 새로운 친구를 만나 자기소개합니다.',
-      yourRole: '일본어 학습자',
-      aiRole: '일본어 교실의 일본인 학생',
-      systemPrompt: `## シナリオ: 自己紹介
-あなたは日本語教室の日本人学生です。
-- 自己紹介から始めてください（名前、趣味、出身など）
-- ユーザーにも自己紹介を促してください
-- 共通の趣味があれば話を広げてください
-- カジュアルだが丁寧な話し方をしてください（です/ます形）`,
-      order: 3,
-    },
-    {
-      title: '레스토랑 주문',
-      titleJa: 'レストランで注文',
-      description: '일본 레스토랑에서 음식을 주문하는 연습을 합니다.',
-      category: ScenarioCategory.TRAVEL,
-      difficulty: Difficulty.BEGINNER,
-      estimatedMinutes: 5,
-      keyExpressions: [
-        'メニューをお願いします',
-        'これをください',
-        'お会計お願いします',
-      ],
-      situation: '일본 레스토랑에 방문하여 주문하고 식사합니다.',
-      yourRole: '손님',
-      aiRole: '레스토랑 직원',
-      systemPrompt: `## シナリオ: レストランで注文
-あなたは日本のレストランの店員です。
-- 「いらっしゃいませ、何名様ですか？」から始めてください
-- メニューの説明、おすすめ料理の提案をしてください
-- 注文の流れ: 人数確認 → 席案内 → メニュー → 注文 → 食事 → 会計
-- アレルギーの確認なども自然に行ってください`,
-      order: 4,
-    },
-    {
-      title: '자유 대화',
-      titleJa: 'フリートーク',
-      description: '자유롭게 일본어로 대화를 나눠보세요.',
-      category: ScenarioCategory.FREE,
-      difficulty: Difficulty.BEGINNER,
-      estimatedMinutes: 10,
-      keyExpressions: [],
-      situation: '일본인 친구와 자유롭게 대화합니다.',
-      yourRole: '일본어 학습자',
-      aiRole: '친근한 일본인 친구',
-      systemPrompt: `## シナリオ: フリートーク
-あなたはユーザーの日本人の友達です。
-- フレンドリーで親しみやすい話し方をしてください
-- ユーザーの興味に合わせて話題を変えてください
-- 日本の文化、食べ物、アニメ、旅行など幅広い話題に対応してください
-- カジュアルですが、ユーザーのレベルに合わせた表現を使ってください`,
-      order: 5,
-    },
-  ];
+  const skipped = total - created;
+  console.log(
+    `✅ Grammar: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
 
-  const existingScenarios = await prisma.conversationScenario.count();
-  if (existingScenarios === 0) {
-    await prisma.conversationScenario.createMany({ data: scenarios });
-    console.log(`✅ ${scenarios.length} conversation scenarios seeded`);
-  } else {
-    console.log(
-      `⏭️ Conversation scenarios already exist (${existingScenarios}), skipping`
-    );
+// ─────────────────────────────────────────
+// Conversation Scenarios — upsert by title
+// ─────────────────────────────────────────
+async function seedScenarios() {
+  const file = 'data/scenarios/scenarios.json';
+  const fullPath = join(__dirname, '..', file);
+  if (!existsSync(fullPath)) {
+    console.log('⏭️ Scenarios file not found, skipping');
+    return;
   }
 
-  // 4. Seed AI Characters (Voice Call)
-  const existingCharacters = await prisma.aiCharacter.count();
-  if (existingCharacters === 0) {
+  const scenarios = loadJson<any[]>(file);
+  let created = 0;
+
+  for (const s of scenarios) {
     try {
-      const characterData = loadJson<any[]>('data/characters/ai-characters.json');
-      await prisma.aiCharacter.createMany({
-        data: characterData.map((c) => ({
-          name: c.name,
-          nameJa: c.nameJa,
-          nameRomaji: c.nameRomaji,
-          gender: c.gender,
-          ageDescription: c.ageDescription,
-          description: c.description,
-          relationship: c.relationship,
-          backgroundStory: c.backgroundStory,
-          personality: c.personality,
-          voiceName: c.voiceName,
-          voiceBackup: c.voiceBackup,
-          speechStyle: c.speechStyle,
-          targetLevel: c.targetLevel,
-          silenceMs: c.silenceMs,
-          tier: c.tier,
-          unlockCondition: c.unlockCondition,
-          isDefault: c.isDefault,
-          avatarEmoji: c.avatarEmoji,
-          avatarUrl: c.avatarUrl,
-          gradient: c.gradient,
-          order: c.order,
-        })),
+      await prisma.conversationScenario.upsert({
+        where: { title: s.title },
+        update: {
+          titleJa: s.titleJa,
+          description: s.description,
+          category: s.category,
+          difficulty: s.difficulty,
+          estimatedMinutes: s.estimatedMinutes,
+          keyExpressions: s.keyExpressions,
+          situation: s.situation,
+          yourRole: s.yourRole,
+          aiRole: s.aiRole,
+          systemPrompt: s.systemPrompt,
+          order: s.order,
+        },
+        create: s,
       });
-      console.log(`✅ ${characterData.length} AI characters seeded`);
-    } catch (e) {
-      console.log(`⏭️ AI characters file not found, skipping`);
+      created++;
+    } catch {
+      // Skip
     }
-  } else {
-    console.log(`⏭️ AI characters already exist (${existingCharacters}), skipping`);
   }
 
-  // 5. Seed Kana Characters (Hiragana + Katakana)
+  console.log(`✅ Scenarios: ${created} upserted (${scenarios.length} total)`);
+}
+
+// ─────────────────────────────────────────
+// AI Characters — upsert by name
+// ─────────────────────────────────────────
+async function seedCharacters() {
+  const file = 'data/characters/ai-characters.json';
+  const fullPath = join(__dirname, '..', file);
+  if (!existsSync(fullPath)) {
+    console.log('⏭️ AI characters file not found, skipping');
+    return;
+  }
+
+  const existingCount = await prisma.aiCharacter.count();
+  if (existingCount > 0) {
+    console.log(
+      `⏭️ AI characters already exist (${existingCount}), skipping`
+    );
+    return;
+  }
+
+  const characterData = loadJson<any[]>(file);
+  await prisma.aiCharacter.createMany({
+    data: characterData.map((c) => ({
+      name: c.name,
+      nameJa: c.nameJa,
+      nameRomaji: c.nameRomaji,
+      gender: c.gender,
+      ageDescription: c.ageDescription,
+      description: c.description,
+      relationship: c.relationship,
+      backgroundStory: c.backgroundStory,
+      personality: c.personality,
+      voiceName: c.voiceName,
+      voiceBackup: c.voiceBackup,
+      speechStyle: c.speechStyle,
+      targetLevel: c.targetLevel,
+      silenceMs: c.silenceMs,
+      tier: c.tier,
+      unlockCondition: c.unlockCondition,
+      isDefault: c.isDefault,
+      avatarEmoji: c.avatarEmoji,
+      avatarUrl: c.avatarUrl,
+      gradient: c.gradient,
+      order: c.order,
+    })),
+  });
+  console.log(`✅ ${characterData.length} AI characters seeded`);
+}
+
+// ─────────────────────────────────────────
+// Kana Characters — upsert by (kanaType, character)
+// ─────────────────────────────────────────
+async function seedKana() {
   const kanaFiles = [
-    { file: 'data/kana/hiragana.json', type: 'HIRAGANA' },
-    { file: 'data/kana/katakana.json', type: 'KATAKANA' },
+    'data/kana/hiragana.json',
+    'data/kana/katakana.json',
+    'data/kana/hiragana-dakuten.json',
+    'data/kana/katakana-dakuten.json',
+    'data/kana/hiragana-youon.json',
+    'data/kana/katakana-youon.json',
   ];
 
-  for (const { file, type } of kanaFiles) {
-    const existingCount = await prisma.kanaCharacter.count({
-      where: { kanaType: type as any },
-    });
-    if (existingCount === 0) {
+  let total = 0;
+  let created = 0;
+
+  for (const file of kanaFiles) {
+    const fullPath = join(__dirname, '..', file);
+    if (!existsSync(fullPath)) continue;
+
+    const kanaData = loadJson<any[]>(file);
+    total += kanaData.length;
+
+    for (const k of kanaData) {
       try {
-        const kanaData = loadJson<any[]>(file);
-        await prisma.kanaCharacter.createMany({
-          data: kanaData.map((k) => ({
+        await prisma.kanaCharacter.upsert({
+          where: {
+            kanaType_character: {
+              kanaType: k.kanaType,
+              character: k.character,
+            },
+          },
+          update: {},
+          create: {
             kanaType: k.kanaType,
             character: k.character,
             romaji: k.romaji,
@@ -266,168 +243,97 @@ async function main() {
             exampleReading: k.exampleReading,
             exampleMeaning: k.exampleMeaning,
             order: k.order,
-          })),
+          },
         });
-        console.log(`✅ ${kanaData.length} ${type} characters seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${type} kana file not found, skipping`);
+        created++;
+      } catch {
+        // Skip
       }
-    } else {
-      console.log(`⏭️ ${type} kana already exists (${existingCount}), skipping`);
     }
   }
 
-  // 4b. Seed Kana Dakuten + Handakuten Characters
-  const dakutenFiles = [
-    { file: 'data/kana/hiragana-dakuten.json', type: 'HIRAGANA' },
-    { file: 'data/kana/katakana-dakuten.json', type: 'KATAKANA' },
-  ];
+  const skipped = total - created;
+  console.log(
+    `✅ Kana: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
 
-  for (const { file, type } of dakutenFiles) {
-    const existingDakuten = await prisma.kanaCharacter.count({
-      where: { kanaType: type as any, category: 'dakuten' },
-    });
-    const existingHandakuten = await prisma.kanaCharacter.count({
-      where: { kanaType: type as any, category: 'handakuten' },
-    });
-    if (existingDakuten === 0 && existingHandakuten === 0) {
-      try {
-        const kanaData = loadJson<any[]>(file);
-        await prisma.kanaCharacter.createMany({
-          data: kanaData.map((k) => ({
-            kanaType: k.kanaType,
-            character: k.character,
-            romaji: k.romaji,
-            pronunciation: k.pronunciation,
-            row: k.row,
-            column: k.column,
-            strokeCount: k.strokeCount,
-            category: k.category,
-            exampleWord: k.exampleWord,
-            exampleReading: k.exampleReading,
-            exampleMeaning: k.exampleMeaning,
-            order: k.order,
-          })),
-        });
-        console.log(`✅ ${kanaData.length} ${type} dakuten/handakuten characters seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${type} dakuten file not found, skipping`);
-      }
-    } else {
-      console.log(
-        `⏭️ ${type} dakuten/handakuten already exists (${existingDakuten + existingHandakuten}), skipping`
-      );
-    }
-  }
-
-  // 4c. Seed Kana Youon (Compound Kana) Characters
-  const youonFiles = [
-    { file: 'data/kana/hiragana-youon.json', type: 'HIRAGANA' },
-    { file: 'data/kana/katakana-youon.json', type: 'KATAKANA' },
-  ];
-
-  for (const { file, type } of youonFiles) {
-    const existingYouon = await prisma.kanaCharacter.count({
-      where: { kanaType: type as any, category: { startsWith: 'youon' } },
-    });
-    if (existingYouon === 0) {
-      try {
-        const kanaData = loadJson<any[]>(file);
-        await prisma.kanaCharacter.createMany({
-          data: kanaData.map((k) => ({
-            kanaType: k.kanaType,
-            character: k.character,
-            romaji: k.romaji,
-            pronunciation: k.pronunciation,
-            row: k.row,
-            column: k.column,
-            strokeCount: k.strokeCount,
-            category: k.category,
-            exampleWord: k.exampleWord,
-            exampleReading: k.exampleReading,
-            exampleMeaning: k.exampleMeaning,
-            order: k.order,
-          })),
-        });
-        console.log(`✅ ${kanaData.length} ${type} youon characters seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${type} youon file not found, skipping`);
-      }
-    } else {
-      console.log(`⏭️ ${type} youon already exists (${existingYouon}), skipping`);
-    }
-  }
-
-  // 5. Seed Kana Learning Stages
+// ─────────────────────────────────────────
+// Kana Learning Stages — upsert by (kanaType, stageNumber)
+// ─────────────────────────────────────────
+async function seedKanaStages() {
   const stageFiles = [
-    { file: 'data/kana/stages-hiragana.json', type: 'HIRAGANA' },
-    { file: 'data/kana/stages-katakana.json', type: 'KATAKANA' },
+    'data/kana/stages-hiragana.json',
+    'data/kana/stages-katakana.json',
   ];
 
-  for (const { file, type } of stageFiles) {
-    const existingCount = await prisma.kanaLearningStage.count({
-      where: { kanaType: type as any },
-    });
-    if (existingCount === 0) {
+  let total = 0;
+  let created = 0;
+
+  for (const file of stageFiles) {
+    const fullPath = join(__dirname, '..', file);
+    if (!existsSync(fullPath)) continue;
+
+    const stageData = loadJson<any[]>(file);
+    total += stageData.length;
+
+    for (const s of stageData) {
       try {
-        const stageData = loadJson<any[]>(file);
-        await prisma.kanaLearningStage.createMany({
-          data: stageData.map((s) => ({
+        await prisma.kanaLearningStage.upsert({
+          where: {
+            kanaType_stageNumber: {
+              kanaType: s.kanaType,
+              stageNumber: s.stageNumber,
+            },
+          },
+          update: {},
+          create: {
             kanaType: s.kanaType,
             stageNumber: s.stageNumber,
             title: s.title,
             description: s.description,
             characters: s.characters,
             order: s.order,
-          })),
+          },
         });
-        console.log(`✅ ${stageData.length} ${type} stages seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${type} stages file not found, skipping`);
+        created++;
+      } catch {
+        // Skip
       }
-    } else {
-      // Check if new stages need to be added (e.g. youon stages 11-12)
-      try {
-        const stageData = loadJson<any[]>(file);
-        for (const s of stageData) {
-          const exists = await prisma.kanaLearningStage.findUnique({
-            where: { kanaType_stageNumber: { kanaType: s.kanaType, stageNumber: s.stageNumber } },
-          });
-          if (!exists) {
-            await prisma.kanaLearningStage.create({
-              data: {
-                kanaType: s.kanaType,
-                stageNumber: s.stageNumber,
-                title: s.title,
-                description: s.description,
-                characters: s.characters,
-                order: s.order,
-              },
-            });
-            console.log(`✅ ${type} Stage ${s.stageNumber} (${s.title}) seeded`);
-          }
-        }
-      } catch (e) {
-        // Ignore
-      }
-      console.log(`⏭️ ${type} stages already exist (${existingCount}), checked for new stages`);
     }
   }
 
-  // 9. Seed Cloze Questions (N5)
-  const clozeFiles = [
-    { file: 'data/cloze/n5-cloze.json', level: 'N5' },
-  ];
+  const skipped = total - created;
+  console.log(
+    `✅ Kana Stages: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
 
-  for (const { file, level } of clozeFiles) {
-    const existingCount = await prisma.clozeQuestion.count({
-      where: { jlptLevel: level as any },
-    });
-    if (existingCount === 0) {
+// ─────────────────────────────────────────
+// Cloze Questions — upsert by (sentence, jlptLevel)
+// ─────────────────────────────────────────
+async function seedCloze() {
+  const files = findJsonFiles('data/cloze');
+  if (files.length === 0) return;
+
+  let total = 0;
+  let created = 0;
+
+  for (const file of files) {
+    const clozeData = loadJson<any[]>(file);
+    total += clozeData.length;
+
+    for (const c of clozeData) {
       try {
-        const clozeData = loadJson<any[]>(file);
-        await prisma.clozeQuestion.createMany({
-          data: clozeData.map((c) => ({
+        await prisma.clozeQuestion.upsert({
+          where: {
+            sentence_jlptLevel: {
+              sentence: c.sentence,
+              jlptLevel: c.jlptLevel,
+            },
+          },
+          update: {},
+          create: {
             sentence: c.sentence,
             translation: c.translation,
             correctAnswer: c.correctAnswer,
@@ -437,31 +343,46 @@ async function main() {
             jlptLevel: c.jlptLevel,
             difficulty: c.difficulty,
             order: c.order,
-          })),
+          },
         });
-        console.log(`✅ ${clozeData.length} ${level} cloze questions seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${level} cloze file not found, skipping`);
+        created++;
+      } catch {
+        // Skip
       }
-    } else {
-      console.log(`⏭️ ${level} cloze questions already exist (${existingCount}), skipping`);
     }
   }
 
-  // 10. Seed Sentence Arrange Questions (N5)
-  const arrangeFiles = [
-    { file: 'data/sentence-arrange/n5-arrange.json', level: 'N5' },
-  ];
+  const skipped = total - created;
+  console.log(
+    `✅ Cloze: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
 
-  for (const { file, level } of arrangeFiles) {
-    const existingCount = await prisma.sentenceArrangeQuestion.count({
-      where: { jlptLevel: level as any },
-    });
-    if (existingCount === 0) {
+// ─────────────────────────────────────────
+// Sentence Arrange — upsert by (koreanSentence, jlptLevel)
+// ─────────────────────────────────────────
+async function seedSentenceArrange() {
+  const files = findJsonFiles('data/sentence-arrange');
+  if (files.length === 0) return;
+
+  let total = 0;
+  let created = 0;
+
+  for (const file of files) {
+    const arrangeData = loadJson<any[]>(file);
+    total += arrangeData.length;
+
+    for (const a of arrangeData) {
       try {
-        const arrangeData = loadJson<any[]>(file);
-        await prisma.sentenceArrangeQuestion.createMany({
-          data: arrangeData.map((a) => ({
+        await prisma.sentenceArrangeQuestion.upsert({
+          where: {
+            koreanSentence_jlptLevel: {
+              koreanSentence: a.koreanSentence,
+              jlptLevel: a.jlptLevel,
+            },
+          },
+          update: {},
+          create: {
             koreanSentence: a.koreanSentence,
             japaneseSentence: a.japaneseSentence,
             tokens: a.tokens,
@@ -470,18 +391,37 @@ async function main() {
             jlptLevel: a.jlptLevel,
             difficulty: a.difficulty,
             order: a.order,
-          })),
+          },
         });
-        console.log(`✅ ${arrangeData.length} ${level} sentence arrange questions seeded`);
-      } catch (e) {
-        console.log(`⏭️ ${level} sentence arrange file not found, skipping`);
+        created++;
+      } catch {
+        // Skip
       }
-    } else {
-      console.log(`⏭️ ${level} sentence arrange questions already exist (${existingCount}), skipping`);
     }
   }
 
-  console.log('🌸 Seeding complete!');
+  const skipped = total - created;
+  console.log(
+    `✅ Sentence Arrange: ${created} created, ${skipped} already existed (${total} total)`
+  );
+}
+
+// ─────────────────────────────────────────
+// Main
+// ─────────────────────────────────────────
+async function main() {
+  console.log('🌸 Seeding HaruKoto database...\n');
+
+  await seedVocabulary();
+  await seedGrammar();
+  await seedScenarios();
+  await seedCharacters();
+  await seedKana();
+  await seedKanaStages();
+  await seedCloze();
+  await seedSentenceArrange();
+
+  console.log('\n🌸 Seeding complete!');
 }
 
 main()
