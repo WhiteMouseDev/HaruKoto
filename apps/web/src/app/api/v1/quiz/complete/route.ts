@@ -84,7 +84,8 @@ export async function POST(request: Request) {
       const txStreak = updateStreak(
         currentUser.lastStudyDate,
         currentUser.streakCount,
-        currentUser.longestStreak
+        currentUser.longestStreak,
+        today
       );
 
       await tx.user.update({
@@ -94,7 +95,7 @@ export async function POST(request: Request) {
           level: txNewLevel,
           streakCount: txStreak.streakCount,
           longestStreak: txStreak.longestStreak,
-          lastStudyDate: new Date(),
+          lastStudyDate: today,
         },
       });
 

@@ -38,10 +38,9 @@ export default function StatsPage() {
 
   const {
     data: historyRecords = [],
-    isLoading: historyLoading,
   } = useStatsHistory(heatmapYear);
 
-  const loading = dashboardLoading || profileLoading || historyLoading;
+  const loading = dashboardLoading || profileLoading;
   const error = dashboardError
     ? dashboardError instanceof Error
       ? dashboardError.message
@@ -121,7 +120,6 @@ export default function StatsPage() {
 
           <TabsContent value="study" className="mt-4">
             <StudyTab
-              today={dashboard.today}
               levelProgress={dashboard.levelProgress}
               historyRecords={historyRecords}
             />

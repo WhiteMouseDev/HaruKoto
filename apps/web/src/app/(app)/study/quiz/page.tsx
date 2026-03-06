@@ -9,14 +9,17 @@ import {
   Check,
   CircleCheck,
   CircleX,
+  Flame,
   Frown,
   Lightbulb,
   PartyPopper,
+  Volume2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { showGameEvents } from '@/lib/show-events';
+import { playSound } from '@/lib/sounds';
 import { Logo } from '@/components/brand/logo';
 import {
   useStartQuiz,
@@ -30,6 +33,16 @@ import { MatchingPairQuiz, type MatchingPair } from '@/components/features/quiz/
 import { ClozeQuiz, type ClozeQuizQuestion } from '@/components/features/quiz/cloze-quiz';
 import { SentenceArrangeQuiz, type SentenceArrangeQuestion as SentenceArrangeQ } from '@/components/features/quiz/sentence-arrange';
 import { TypingQuiz, type TypingQuestion } from '@/components/features/quiz/typing-quiz';
+
+function speakJapanese(text: string) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const cleaned = text.replace(/\{blank\}/g, '');
+  const utterance = new SpeechSynthesisUtterance(cleaned);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.8;
+  window.speechSynthesis.speak(utterance);
+}
 
 type AnswerState = 'idle' | 'correct' | 'incorrect';
 
@@ -74,6 +87,7 @@ function QuizContent() {
   const [loading, setLoading] = useState(true);
   const [, setResults] = useState<boolean[]>([]);
   const [wordSaved, setWordSaved] = useState(false);
+  const [streak, setStreak] = useState(0);
   const timerRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -168,7 +182,9 @@ function QuizContent() {
       const question = questions[currentIndex];
       const isCorrect = optionId === question.correctOptionId;
       setAnswerState(isCorrect ? 'correct' : 'incorrect');
+      setStreak((prev) => (isCorrect ? prev + 1 : 0));
       setResults((prev) => [...prev, isCorrect]);
+      playSound(isCorrect ? 'correct' : 'incorrect');
 
       // Submit answer
       answerMutation.mutate({
@@ -530,14 +546,32 @@ function QuizContent() {
         </span>
       </div>
 
-      {/* Progress Bar */}
-      <div className="bg-secondary mx-4 h-1.5 overflow-hidden rounded-full">
-        <motion.div
-          className="bg-primary h-full rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.3 }}
-        />
+      {/* Streak Counter + Progress Bar */}
+      <div className="relative mx-4">
+        <AnimatePresence>
+          {streak >= 3 && answerState !== 'idle' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ type: 'spring', damping: 15, stiffness: 300 }}
+              className="absolute -top-6 left-1/2 flex -translate-x-1/2 items-center gap-1"
+            >
+              <Flame className="size-4 text-orange-500" />
+              <span className="text-sm font-bold text-orange-500">
+                {streak}연속 정답!
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="bg-secondary h-1.5 overflow-hidden rounded-full">
+          <motion.div
+            className="bg-primary h-full rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
       </div>
 
       {/* Question */}
@@ -569,11 +603,20 @@ function QuizContent() {
                 {question.questionSubText}
               </p>
             )}
-            <p className="text-muted-foreground mt-2 text-sm">
+            <button
+              type="button"
+              onClick={() => speakJapanese(question.questionText)}
+              className="text-muted-foreground hover:text-primary mt-1 transition-colors"
+              aria-label="발음 듣기"
+            >
+              <Volume2 className="size-5" />
+            </button>
+            <p className="text-muted-foreground mt-1 text-sm">
               이 {quizType === 'VOCABULARY' ? '단어' : '문법'}의 뜻은?
             </p>
           </motion.div>
         </AnimatePresence>
+
       </div>
 
       {/* Options */}
@@ -690,10 +733,10 @@ function QuizContent() {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'fixed bottom-20 left-0 right-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5',
+              'fixed bottom-0 left-0 right-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5 pb-24',
               answerState === 'correct'
-                ? 'bg-background border-hk-success/30'
-                : 'bg-background border-hk-error/30'
+                ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950 dark:border-emerald-800'
+                : 'bg-rose-100 border-rose-300 dark:bg-rose-950 dark:border-rose-800'
             )}
           >
             <div className="flex flex-col gap-3">
@@ -706,8 +749,20 @@ function QuizContent() {
                   )}
                 </span>
                 <span className="text-lg font-bold">
-                  {answerState === 'correct' ? '정답이에요!' : '아쉬워요!'}
+                  {answerState === 'correct'
+                    ? streak >= 5
+                      ? '대단해요!'
+                      : streak >= 3
+                        ? '연속 정답!'
+                        : '정답이에요!'
+                    : '아쉬워요!'}
                 </span>
+                {answerState === 'correct' && streak >= 3 && (
+                  <span className="ml-auto flex items-center gap-1 text-sm font-bold text-orange-500">
+                    <Flame className="size-4" />
+                    {streak}
+                  </span>
+                )}
               </div>
 
               {answerState === 'incorrect' && (
@@ -723,22 +778,22 @@ function QuizContent() {
                   {quizType === 'VOCABULARY' && (
                     <button
                       className={cn(
-                        'flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                        'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors',
                         wordSaved
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-secondary text-muted-foreground'
+                          ? 'border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                          : 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950 dark:text-amber-400'
                       )}
                       onClick={handleSaveToWordbook}
                       disabled={addWordMutation.isPending || wordSaved}
                     >
                       {wordSaved ? (
                         <>
-                          <Check className="size-3" />
+                          <Check className="size-3.5" />
                           저장됨
                         </>
                       ) : (
                         <>
-                          <BookmarkPlus className="size-3" />
+                          <BookmarkPlus className="size-3.5" />
                           단어장에 추가
                         </>
                       )}
@@ -747,7 +802,7 @@ function QuizContent() {
                 </div>
               )}
 
-              {question.hint && (
+              {answerState === 'incorrect' && question.hint && (
                 <p className="font-jp text-muted-foreground text-sm">
                   {question.hint}
                 </p>

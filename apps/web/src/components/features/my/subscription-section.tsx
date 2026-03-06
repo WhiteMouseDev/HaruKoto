@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Crown, ChevronRight, CreditCard } from 'lucide-react';
+import { Crown, ChevronRight, CreditCard, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -63,14 +63,30 @@ export function SubscriptionSection() {
           ) : (
             <CardContent className="flex flex-col p-0">
               {/* Current Plan */}
-              <div className="flex items-center justify-between px-4 py-3.5">
-                <div className="flex items-center gap-3">
-                  <Crown className={`size-5 ${isPremium ? 'text-hk-yellow' : 'text-muted-foreground'}`} />
+              {!isPremium ? (
+                <button
+                  className="hover:bg-accent flex items-center justify-between px-4 py-3.5 text-left transition-colors"
+                  onClick={() => router.push('/pricing')}
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="text-primary size-5" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">프리미엄으로 업그레이드</span>
+                      <span className="text-muted-foreground text-[11px]">
+                        AI 회화 무제한 · 모든 퀴즈 모드
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="text-muted-foreground size-4" />
+                </button>
+              ) : (
+                <div className="flex items-center gap-3 px-4 py-3.5">
+                  <Crown className="text-hk-yellow size-5" />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">
                       {planLabel(sub?.plan ?? 'free')}
                     </span>
-                    {isPremium && sub?.expiresAt && (
+                    {sub?.expiresAt && (
                       <span className="text-muted-foreground text-[11px]">
                         {isCancelled ? '만료 예정: ' : '다음 결제: '}
                         {formatDate(sub.expiresAt)}
@@ -83,15 +99,7 @@ export function SubscriptionSection() {
                     )}
                   </div>
                 </div>
-                {!isPremium && (
-                  <Button
-                    size="sm"
-                    onClick={() => router.push('/pricing')}
-                  >
-                    업그레이드
-                  </Button>
-                )}
-              </div>
+              )}
 
               {isPremium && (
                 <>

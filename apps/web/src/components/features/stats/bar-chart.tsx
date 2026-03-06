@@ -28,6 +28,10 @@ type BarData = {
   dateRange?: string;
 };
 
+const CHART_HEIGHT = 120; // px
+const BASE_LINE_PX = 3; // baseline for 0-value days
+const MIN_BAR_PX = 16; // minimum bar for non-zero values
+
 function formatMinutes(seconds: number): string {
   const mins = Math.round(seconds / 60);
   if (mins < 60) return `${mins}분`;
@@ -36,11 +40,21 @@ function formatMinutes(seconds: number): string {
   return remainder > 0 ? `${hours}시간 ${remainder}분` : `${hours}시간`;
 }
 
+const MAX_BAR_PX = CHART_HEIGHT - 20; // leave room for value labels
+
+// Square-root scale so small values still look meaningful
+function calcBarPx(value: number, maxValue: number): number {
+  if (value <= 0) return 0;
+  if (maxValue <= 0) return MIN_BAR_PX;
+  const ratio = value / maxValue;
+  const scaled = Math.sqrt(ratio) * MAX_BAR_PX;
+  return Math.min(Math.max(scaled, MIN_BAR_PX), MAX_BAR_PX);
+}
+
 function getWeekBars(records: BarChartRecord[]): BarData[] {
   const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
   const today = new Date();
-  // Start from Monday of the current week
-  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const dayOfWeek = today.getDay();
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
   const bars: BarData[] = [];
@@ -91,18 +105,8 @@ function getMonthBars(records: BarChartRecord[]): BarData[] {
 
 function getYearBars(records: BarChartRecord[]): BarData[] {
   const MONTH_LABELS = [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월',
+    '1월', '2월', '3월', '4월', '5월', '6월',
+    '7월', '8월', '9월', '10월', '11월', '12월',
   ];
   const monthTotals = new Array<number>(12).fill(0);
 
@@ -165,17 +169,20 @@ export function BarChart({ records }: BarChartProps) {
         </div>
 
         {/* Chart */}
-        <div
-          className="flex items-end justify-between gap-1.5"
-          style={{ height: 120 }}
+        <motion.div
+          key={viewMode}
+          className="mt-1 flex items-end justify-between gap-1.5"
+          style={{ height: CHART_HEIGHT }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
         >
           {bars.map((bar, i) => {
-            const heightPercent =
-              bar.value > 0 ? (bar.value / maxValue) * 100 : 0;
+            const barPx = calcBarPx(bar.value, maxValue);
             return (
               <div
-                key={i}
-                className="flex flex-1 flex-col items-center gap-1"
+                key={bar.label}
+                className="flex flex-1 flex-col items-center justify-end gap-1"
               >
                 {bar.value > 0 && (
                   <span className="text-muted-foreground text-[9px]">
@@ -183,28 +190,27 @@ export function BarChart({ records }: BarChartProps) {
                   </span>
                 )}
                 <motion.div
-                  className="bg-primary w-full rounded-t-md"
+                  className={`w-full rounded-t-md ${
+                    bar.value > 0 ? 'bg-primary' : 'bg-muted-foreground/15'
+                  }`}
                   initial={{ height: 0 }}
-                  animate={{
-                    height: `${Math.max(heightPercent, bar.value > 0 ? 4 : 0)}%`,
-                  }}
+                  animate={{ height: bar.value > 0 ? barPx : BASE_LINE_PX }}
                   transition={{
                     delay: i * 0.04,
                     duration: 0.4,
                     ease: 'easeOut',
                   }}
-                  style={{ minHeight: bar.value > 0 ? 4 : 2 }}
                 />
               </div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Labels */}
-        <div className="flex justify-between gap-1.5">
-          {bars.map((bar, i) => (
+        <div key={`labels-${viewMode}`} className="flex justify-between gap-1.5">
+          {bars.map((bar) => (
             <span
-              key={i}
+              key={bar.label}
               className="text-muted-foreground flex-1 text-center text-[10px]"
             >
               {bar.label}

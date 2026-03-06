@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
+import { calculateLevel } from '@/lib/gamification';
 
 type MissionDef = {
   missionType: string;
@@ -174,6 +175,48 @@ export async function GET() {
         .filter(Boolean);
       if (updates.length > 0) {
         await Promise.all(updates);
+      }
+    }
+
+    // 자동 보상 지급: 완료되었지만 보상 미수령인 미션들
+    const unclaimedCompleted = result.filter(
+      (m) => m.isCompleted && !m.rewardClaimed
+    );
+
+    if (unclaimedCompleted.length > 0) {
+      const totalReward = unclaimedCompleted.reduce(
+        (sum, m) => sum + m.xpReward,
+        0
+      );
+
+      await prisma.$transaction(async (tx) => {
+        // 미션 보상 수령 처리
+        await tx.dailyMission.updateMany({
+          where: {
+            id: { in: unclaimedCompleted.map((m) => m.id) },
+          },
+          data: { rewardClaimed: true },
+        });
+
+        // XP 지급 + 레벨 업데이트
+        const currentUser = await tx.user.findUniqueOrThrow({
+          where: { id: user.id },
+          select: { experiencePoints: true },
+        });
+        const newTotalXp = currentUser.experiencePoints + totalReward;
+        const { level: newLevel } = calculateLevel(newTotalXp);
+
+        await tx.user.update({
+          where: { id: user.id },
+          data: { experiencePoints: newTotalXp, level: newLevel },
+        });
+      });
+
+      // result 반영
+      for (const m of result) {
+        if (m.isCompleted && !m.rewardClaimed) {
+          m.rewardClaimed = true;
+        }
       }
     }
 

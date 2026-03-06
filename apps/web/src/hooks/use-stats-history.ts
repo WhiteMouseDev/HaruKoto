@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -41,5 +41,6 @@ export function useStatsHistory(year: number) {
     queryKey: queryKeys.statsHistory(year),
     queryFn: () => fetchAllHistory(year),
     staleTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }

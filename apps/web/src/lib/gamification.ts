@@ -38,14 +38,17 @@ export function calculateLevel(totalXp: number): {
 export function updateStreak(
   lastStudyDate: Date | null,
   currentStreakCount: number,
-  currentLongestStreak: number
+  currentLongestStreak: number,
+  todayKST?: Date
 ): {
   streakCount: number;
   longestStreak: number;
   streakBroken: boolean;
 } {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // todayKST가 전달되면 그것을 사용, 아니면 서버 로컬 시간 (후방 호환)
+  const today = todayKST
+    ? new Date(todayKST.getUTCFullYear(), todayKST.getUTCMonth(), todayKST.getUTCDate())
+    : (() => { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate()); })();
 
   if (!lastStudyDate) {
     return { streakCount: 1, longestStreak: Math.max(1, currentLongestStreak), streakBroken: false };

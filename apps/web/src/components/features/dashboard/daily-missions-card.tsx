@@ -1,16 +1,14 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Gift, Check, BookOpen, MessageCircle, Target, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Check, BookOpen, MessageCircle, Target, Sparkles, Zap } from 'lucide-react';
 import type { Mission } from '@/hooks/use-daily-missions';
 
 type DailyMissionsCardProps = {
   missions: Mission[];
   completedCount: number;
   totalCount: number;
-  onClaim: (missionId: string) => void;
-  claiming: boolean;
 };
 
 const MISSION_ICONS: Record<string, typeof BookOpen> = {
@@ -18,6 +16,15 @@ const MISSION_ICONS: Record<string, typeof BookOpen> = {
   quiz: Target,
   correct: Sparkles,
   chat: MessageCircle,
+  kana: BookOpen,
+};
+
+const MISSION_ROUTES: Record<string, string> = {
+  words: '/study',
+  quiz: '/study',
+  correct: '/study',
+  chat: '/chat',
+  kana: '/study/kana',
 };
 
 function getMissionIcon(missionType: string) {
@@ -38,13 +45,17 @@ const item = {
   show: { x: 0, opacity: 1 },
 };
 
+function getMissionRoute(missionType: string): string {
+  const prefix = missionType.split('_')[0];
+  return MISSION_ROUTES[prefix] ?? '/study';
+}
+
 export function DailyMissionsCard({
   missions,
   completedCount,
   totalCount,
-  onClaim,
-  claiming,
 }: DailyMissionsCardProps) {
+  const router = useRouter();
   const allDone = completedCount === totalCount;
 
   return (
@@ -70,30 +81,43 @@ export function DailyMissionsCard({
         initial="hidden"
         animate="show"
       >
-        {missions.map((mission) => {
+        {[...missions].sort((a, b) => {
+          // 미완료 미션을 위쪽에 배치
+          if (a.rewardClaimed !== b.rewardClaimed) return a.rewardClaimed ? 1 : -1;
+          return 0;
+        }).map((mission) => {
           const Icon = getMissionIcon(mission.missionType);
-          const canClaim = mission.isCompleted && !mission.rewardClaimed;
+          const isDone = mission.rewardClaimed;
 
           return (
             <motion.div
               key={mission.id}
               variants={item}
-              className={`group flex cursor-pointer items-center rounded-2xl border p-4 transition-colors ${
-                mission.rewardClaimed
-                  ? 'border-primary/20 bg-primary/5 opacity-60'
-                  : 'border-border bg-card hover:border-primary/40 hover:bg-secondary'
+              className={`group flex items-center rounded-2xl border p-4 transition-colors ${
+                isDone
+                  ? 'border-primary/30 bg-primary/5'
+                  : 'cursor-pointer border-border bg-card hover:border-primary/40 hover:bg-secondary'
               }`}
+              onClick={() => {
+                if (!isDone) {
+                  router.push(getMissionRoute(mission.missionType));
+                }
+              }}
             >
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                {mission.rewardClaimed ? (
-                  <Check className="size-[18px]" />
+              <div className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
+                isDone
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-primary'
+              }`}>
+                {isDone ? (
+                  <Check className="size-[18px]" strokeWidth={3} />
                 ) : (
                   <Icon className="size-[18px]" />
                 )}
               </div>
               <span
                 className={`ml-3 flex-1 text-sm font-medium ${
-                  mission.rewardClaimed
+                  isDone
                     ? 'text-muted-foreground line-through'
                     : 'text-foreground/80 group-hover:text-foreground'
                 }`}
@@ -101,16 +125,11 @@ export function DailyMissionsCard({
                 {mission.label}
               </span>
               <div className="ml-3 shrink-0">
-                {canClaim ? (
-                  <Button
-                    size="sm"
-                    className="h-7 gap-1 rounded-lg px-2 text-xs"
-                    onClick={() => onClaim(mission.id)}
-                    disabled={claiming}
-                  >
-                    <Gift className="size-3" />
+                {isDone ? (
+                  <span className="flex items-center gap-1 text-xs font-semibold text-primary">
+                    <Zap className="size-3" />
                     +{mission.xpReward}
-                  </Button>
+                  </span>
                 ) : (
                   <span className="text-sm font-semibold text-muted-foreground">
                     {mission.currentCount}/{mission.targetCount}

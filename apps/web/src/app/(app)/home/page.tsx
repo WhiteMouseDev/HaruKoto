@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { useDashboard, useProfile } from '@/hooks/use-dashboard';
-import { useDailyMissions, useClaimMissionReward } from '@/hooks/use-daily-missions';
+import { useDailyMissions } from '@/hooks/use-daily-missions';
 import { KanaCtaCard } from '@/components/features/dashboard/kana-cta-card';
 import { NotificationCenter } from '@/components/features/notifications/notification-center';
 import { PhoneCallCta } from '@/components/features/chat/phone-call-cta';
@@ -14,7 +14,6 @@ import { DailyProgressCard } from '@/components/features/dashboard/daily-progres
 import { DailyMissionsCard } from '@/components/features/dashboard/daily-missions-card';
 import { WeeklyChart } from '@/components/features/dashboard/weekly-chart';
 import { QuickStartCard } from '@/components/features/dashboard/quick-start-card';
-import { LevelProgress } from '@/components/features/dashboard/level-progress';
 
 const container = {
   hidden: { opacity: 0 },
@@ -33,8 +32,7 @@ export default function HomePage() {
   const router = useRouter();
   const { data: dashboard, isLoading, error, refetch } = useDashboard();
   const { data: profile } = useProfile();
-  const { data: missionsData } = useDailyMissions();
-  const claimReward = useClaimMissionReward();
+  const { data: missionsData, isLoading: missionsLoading } = useDailyMissions();
 
   // Loading skeleton
   if (isLoading) {
@@ -42,21 +40,13 @@ export default function HomePage() {
       <div className="flex flex-col gap-5 px-6 pt-12 pb-6">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
-            <div className="bg-secondary h-4 w-16 rounded">
-              <div className="h-full animate-shimmer rounded" />
-            </div>
-            <div className="bg-secondary h-7 w-36 rounded">
-              <div className="h-full animate-shimmer rounded" />
-            </div>
+            <div className="bg-secondary h-4 w-16 animate-pulse rounded" />
+            <div className="bg-secondary h-7 w-36 animate-pulse rounded" />
           </div>
-          <div className="bg-secondary h-10 w-10 rounded-full">
-            <div className="h-full animate-shimmer rounded-full" />
-          </div>
+          <div className="bg-secondary h-10 w-10 animate-pulse rounded-full" />
         </div>
         {[1, 2, 3, 4].map((n) => (
-          <div key={n} className="bg-secondary h-36 rounded-3xl">
-            <div className="h-full animate-shimmer rounded-3xl" />
-          </div>
+          <div key={n} className="bg-secondary h-36 animate-pulse rounded-3xl" />
         ))}
       </div>
     );
@@ -135,17 +125,17 @@ export default function HomePage() {
       </motion.div>
 
       {/* Daily Missions */}
-      {missionsData && (
-        <motion.div variants={item}>
+      <motion.div variants={item}>
+        {missionsLoading ? (
+          <div className="h-48 animate-pulse rounded-3xl border border-border bg-card" />
+        ) : missionsData ? (
           <DailyMissionsCard
             missions={missionsData.missions}
             completedCount={missionsData.completedCount}
             totalCount={missionsData.totalCount}
-            onClaim={(id) => claimReward.mutate(id)}
-            claiming={claimReward.isPending}
           />
-        </motion.div>
-      )}
+        ) : null}
+      </motion.div>
 
       {/* Quick Start CTA */}
       <motion.div variants={item}>
@@ -157,10 +147,6 @@ export default function HomePage() {
         <WeeklyChart weeklyStats={dashboard.weeklyStats} dailyGoal={dailyGoal} />
       </motion.div>
 
-      {/* Level Progress */}
-      <motion.div variants={item}>
-        <LevelProgress currentLevel={jlptLevel || 'N5'} />
-      </motion.div>
     </motion.div>
   );
 }

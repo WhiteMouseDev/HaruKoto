@@ -264,12 +264,12 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
           </div>
         </div>
 
-        {/* Tooltip */}
-        {hoveredCell && (
-          <div className="text-muted-foreground text-center text-xs">
-            {hoveredCell.date} · {hoveredCell.count}개 학습
-          </div>
-        )}
+        {/* Tooltip — fixed height to prevent layout shift */}
+        <div className="text-muted-foreground h-5 text-center text-xs">
+          {hoveredCell
+            ? `${hoveredCell.date} · ${hoveredCell.count}개 학습`
+            : '\u00A0'}
+        </div>
 
         {/* Legend + Summary */}
         <div className="flex items-center justify-between">

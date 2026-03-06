@@ -5,7 +5,7 @@ import { Check, Flame } from 'lucide-react';
 
 type StreakBadgeProps = {
   currentStreak: number;
-  weeklyStats: { date: string; wordsStudied: number }[];
+  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
 };
 
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -19,7 +19,7 @@ export function StreakBadge({ currentStreak, weeklyStats }: StreakBadgeProps) {
     const dayIndex = (date.getUTCDay() + 6) % 7;
     return {
       label: DAY_LABELS[dayIndex],
-      studied: day.wordsStudied > 0,
+      studied: day.wordsStudied > 0 || day.xpEarned > 0,
       isToday:
         dayIndex === todayIndex &&
         date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10),

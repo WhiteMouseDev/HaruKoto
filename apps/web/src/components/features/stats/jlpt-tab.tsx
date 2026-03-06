@@ -1,7 +1,8 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, BookCheck, Loader } from 'lucide-react';
+import { BookOpen, BookText, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
@@ -15,9 +16,21 @@ type JlptTabProps = {
   currentLevel: string;
 };
 
-const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
+const JLPT_INFO: Record<string, { label: string; desc: string }> = {
+  N5: { label: 'N5', desc: '기초 일본어' },
+  N4: { label: 'N4', desc: '기본적인 일본어' },
+  N3: { label: 'N3', desc: '일상적인 일본어' },
+  N2: { label: 'N2', desc: '일반적인 일본어' },
+  N1: { label: 'N1', desc: '고급 일본어' },
+};
 
-type LevelStatus = 'completed' | 'current' | 'locked';
+const NEXT_LEVEL: Record<string, string | null> = {
+  N5: 'N4',
+  N4: 'N3',
+  N3: 'N2',
+  N2: 'N1',
+  N1: null,
+};
 
 const item = {
   hidden: { opacity: 0, y: 12 },
@@ -25,164 +38,142 @@ const item = {
 };
 
 export function JlptTab({ levelProgress, currentLevel }: JlptTabProps) {
-  const currentIndex = JLPT_LEVELS.indexOf(
-    currentLevel as (typeof JLPT_LEVELS)[number]
-  );
+  const vocab = levelProgress.vocabulary;
+  const grammar = levelProgress.grammar;
 
-  const vocabProgress =
-    levelProgress.vocabulary.total > 0
-      ? Math.round(
-          (levelProgress.vocabulary.mastered /
-            levelProgress.vocabulary.total) *
-            100
-        )
-      : 0;
+  const vocabPct = vocab.total > 0
+    ? Math.round((vocab.mastered / vocab.total) * 100)
+    : 0;
+  const grammarPct = grammar.total > 0
+    ? Math.round((grammar.mastered / grammar.total) * 100)
+    : 0;
 
-  const grammarProgress =
-    levelProgress.grammar.total > 0
-      ? Math.round(
-          (levelProgress.grammar.mastered / levelProgress.grammar.total) * 100
-        )
-      : 0;
+  // Weighted average based on actual item counts
+  const overallPct = useMemo(() => {
+    const totalItems = vocab.total + grammar.total;
+    if (totalItems === 0) return 0;
+    const totalMastered = vocab.mastered + grammar.mastered;
+    return Math.round((totalMastered / totalItems) * 100);
+  }, [vocab, grammar]);
 
-  const overallProgress = Math.round((vocabProgress + grammarProgress) / 2);
+  const vocabRemaining = Math.max(0, vocab.total - vocab.mastered);
+  const grammarRemaining = Math.max(0, grammar.total - grammar.mastered);
+
+  const nextLevel = NEXT_LEVEL[currentLevel];
+  const currentInfo = JLPT_INFO[currentLevel] ?? JLPT_INFO.N5;
 
   return (
     <motion.div
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-3"
       initial="hidden"
       animate="show"
       variants={{ show: { transition: { staggerChildren: 0.08 } } }}
     >
-      {/* Current Level Overview */}
+      {/* Current Level Progress */}
       <motion.div variants={item}>
         <Card>
-          <CardContent className="flex flex-col gap-4 p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">현재 레벨</h3>
-              <span className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm font-bold">
-                {currentLevel}
-              </span>
-            </div>
-
-            {/* Overall progress */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">전체 진도</span>
-                <span className="font-medium">{overallProgress}%</span>
-              </div>
-              <Progress value={overallProgress} />
-            </div>
-
-            {/* Vocabulary */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">단어</span>
-                <span className="text-xs">
-                  <span className="font-medium">
-                    {levelProgress.vocabulary.mastered}
-                  </span>
-                  <span className="text-muted-foreground">
-                    /{levelProgress.vocabulary.total}
-                  </span>
+          <CardContent className="flex flex-col gap-5 p-4">
+            {/* Level badge + overall */}
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 flex size-16 shrink-0 items-center justify-center rounded-2xl">
+                <span className="text-primary text-2xl font-black">
+                  {currentLevel}
                 </span>
               </div>
-              <Progress value={vocabProgress} />
-            </div>
-
-            {/* Grammar */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">문법</span>
-                <span className="text-xs">
-                  <span className="font-medium">
-                    {levelProgress.grammar.mastered}
-                  </span>
-                  <span className="text-muted-foreground">
-                    /{levelProgress.grammar.total}
-                  </span>
+              <div className="flex flex-1 flex-col gap-1.5">
+                <div className="flex items-baseline justify-between">
+                  <span className="font-semibold">{currentInfo.desc}</span>
+                  <span className="text-primary text-lg font-bold">{overallPct}%</span>
+                </div>
+                <Progress value={overallPct} className="h-2.5" />
+                <span className="text-muted-foreground text-[11px]">
+                  마스터 {vocab.mastered + grammar.mastered} / {vocab.total + grammar.total}개
                 </span>
               </div>
-              <Progress value={grammarProgress} />
             </div>
+
+            {/* Vocab & Grammar breakdown */}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5">
+                    <BookOpen className="text-primary size-4" />
+                    <span className="font-medium">단어</span>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    <span className="text-foreground font-medium">{vocab.mastered}</span>
+                    /{vocab.total}
+                  </span>
+                </div>
+                <Progress value={vocabPct} className="h-2" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5">
+                    <BookText className="text-hk-green size-4" />
+                    <span className="font-medium">문법</span>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    <span className="text-foreground font-medium">{grammar.mastered}</span>
+                    /{grammar.total}
+                  </span>
+                </div>
+                <Progress value={grammarPct} className="h-2" />
+              </div>
+            </div>
+
+            {/* Remaining summary */}
+            {(vocabRemaining > 0 || grammarRemaining > 0) && (
+              <div className="bg-secondary/50 rounded-lg p-3">
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  {currentLevel} 마스터까지{' '}
+                  {vocabRemaining > 0 && (
+                    <>단어 <span className="text-foreground font-medium">{vocabRemaining}개</span></>
+                  )}
+                  {vocabRemaining > 0 && grammarRemaining > 0 && ', '}
+                  {grammarRemaining > 0 && (
+                    <>문법 <span className="text-foreground font-medium">{grammarRemaining}개</span></>
+                  )}
+                  {' '}남았어요
+                </p>
+              </div>
+            )}
+
+            {overallPct >= 100 && (
+              <div className="bg-hk-green/10 rounded-lg p-3">
+                <p className="text-hk-green text-center text-sm font-semibold">
+                  {currentLevel} 완전 마스터!
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* JLPT Level Cards */}
-      <motion.div variants={item}>
-        <Card>
-          <CardContent className="flex flex-col gap-3 p-4">
-            <h3 className="font-semibold">JLPT 진도</h3>
-            <div className="flex flex-col gap-2">
-              {JLPT_LEVELS.map((level, i) => {
-                const status: LevelStatus =
-                  i < currentIndex
-                    ? 'completed'
-                    : i === currentIndex
-                      ? 'current'
-                      : 'locked';
-
-                return (
-                  <motion.div
-                    key={level}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06, duration: 0.3 }}
-                    className={`flex items-center justify-between rounded-xl border p-3 ${
-                      status === 'current'
-                        ? 'border-primary bg-primary/5'
-                        : status === 'completed'
-                          ? 'border-hk-green/40 bg-hk-green/5'
-                          : 'border-border opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`flex size-10 items-center justify-center rounded-full ${
-                          status === 'current'
-                            ? 'bg-primary/20'
-                            : status === 'completed'
-                              ? 'bg-hk-green/20'
-                              : 'bg-secondary'
-                        }`}
-                      >
-                        {status === 'completed' ? (
-                          <BookCheck className="text-hk-green size-5" />
-                        ) : status === 'current' ? (
-                          <Loader className="text-primary size-5" />
-                        ) : (
-                          <Lock className="text-muted-foreground size-5" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-bold">{level}</p>
-                        <p className="text-muted-foreground text-xs">
-                          {status === 'current'
-                            ? '학습 중'
-                            : status === 'completed'
-                              ? '완료'
-                              : '잠금'}
-                        </p>
-                      </div>
-                    </div>
-                    {status === 'current' && (
-                      <span className="text-primary text-sm font-semibold">
-                        {overallProgress}%
-                      </span>
-                    )}
-                    {status === 'completed' && (
-                      <span className="text-hk-green text-sm font-semibold">
-                        완료
-                      </span>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+      {/* Next Level Teaser */}
+      {nextLevel && (
+        <motion.div variants={item}>
+          <Card>
+            <CardContent className="flex items-center gap-3 p-4">
+              <div className="bg-secondary flex size-12 shrink-0 items-center justify-center rounded-xl">
+                <span className="text-muted-foreground text-lg font-bold">
+                  {nextLevel}
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm font-medium">
+                  다음 목표: {JLPT_INFO[nextLevel]?.desc}
+                </span>
+                <span className="text-muted-foreground text-[11px]">
+                  학습 탭에서 {nextLevel} 콘텐츠를 바로 시작할 수 있어요
+                </span>
+              </div>
+              <ArrowRight className="text-muted-foreground size-4 shrink-0" />
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
