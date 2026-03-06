@@ -17,18 +17,8 @@ type HeatmapProps = {
 };
 
 const MONTH_LABELS = [
-  '1월',
-  '2월',
-  '3월',
-  '4월',
-  '5월',
-  '6월',
-  '7월',
-  '8월',
-  '9월',
-  '10월',
-  '11월',
-  '12월',
+  '1월', '2월', '3월', '4월', '5월', '6월',
+  '7월', '8월', '9월', '10월', '11월', '12월',
 ];
 
 const DAY_LABELS = ['월', '', '수', '', '금', '', ''];
@@ -66,55 +56,48 @@ type DayCell = {
   dayIndex: number;
 };
 
-function buildYearGrid(year: number, records: HeatmapRecord[]) {
-  const recordMap = new Map(records.map((r) => [r.date, r.wordsStudied]));
-
+function getGridStart(year: number): Date {
   const startDate = new Date(Date.UTC(year, 0, 1));
-  const endDate = new Date(Date.UTC(year, 11, 31));
-
-  // Adjust start to previous Monday
   const startDay = startDate.getUTCDay();
   const mondayOffset = startDay === 0 ? -6 : 1 - startDay;
   const gridStart = new Date(startDate);
   gridStart.setUTCDate(gridStart.getUTCDate() + mondayOffset);
+  return gridStart;
+}
+
+function buildYearGrid(year: number, records: HeatmapRecord[]) {
+  const recordMap = new Map(records.map((r) => [r.date, r.wordsStudied]));
+
+  const endDate = new Date(Date.UTC(year, 11, 31));
+  const gridStart = getGridStart(year);
 
   const cells: DayCell[] = [];
   const current = new Date(gridStart);
   let weekIndex = 0;
 
-  while (current <= endDate || current.getUTCDay() !== 1) {
+  while (current <= endDate) {
     const dayIndex = (current.getUTCDay() + 6) % 7; // Mon=0
     const dateStr = current.toISOString().split('T')[0];
-    const isInYear =
-      current.getUTCFullYear() === year ||
-      (current < startDate && dayIndex < 7);
 
-    if (isInYear || current <= endDate) {
-      cells.push({
-        date: dateStr,
-        count: recordMap.get(dateStr) ?? 0,
-        weekIndex,
-        dayIndex,
-      });
-    }
+    cells.push({
+      date: dateStr,
+      count: recordMap.get(dateStr) ?? 0,
+      weekIndex,
+      dayIndex,
+    });
 
     current.setUTCDate(current.getUTCDate() + 1);
     if (current.getUTCDay() === 1) weekIndex++;
 
-    // Safety: don't go too far past end of year
     if (weekIndex > 53) break;
   }
 
   return cells;
 }
 
-function getMonthPositions(year: number): { label: string; weekIndex: number }[] {
-  const positions: { label: string; weekIndex: number }[] = [];
-  const startDate = new Date(Date.UTC(year, 0, 1));
-  const startDay = startDate.getUTCDay();
-  const mondayOffset = startDay === 0 ? -6 : 1 - startDay;
-  const gridStart = new Date(startDate);
-  gridStart.setUTCDate(gridStart.getUTCDate() + mondayOffset);
+function getMonthPositions(year: number, totalWeeks: number): { label: string; weekIndex: number; span: number }[] {
+  const gridStart = getGridStart(year);
+  const positions: { label: string; weekIndex: number; span: number }[] = [];
 
   for (let m = 0; m < 12; m++) {
     const firstOfMonth = new Date(Date.UTC(year, m, 1));
@@ -122,7 +105,13 @@ function getMonthPositions(year: number): { label: string; weekIndex: number }[]
       (firstOfMonth.getTime() - gridStart.getTime()) / (1000 * 60 * 60 * 24)
     );
     const weekIndex = Math.floor(diff / 7);
-    positions.push({ label: MONTH_LABELS[m], weekIndex });
+    positions.push({ label: MONTH_LABELS[m], weekIndex, span: 0 });
+  }
+
+  // Calculate spans
+  for (let i = 0; i < 12; i++) {
+    const nextWeek = i < 11 ? positions[i + 1].weekIndex : totalWeeks;
+    positions[i].span = nextWeek - positions[i].weekIndex;
   }
 
   return positions;
@@ -132,7 +121,6 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
   const [hoveredCell, setHoveredCell] = useState<DayCell | null>(null);
 
   const cells = useMemo(() => buildYearGrid(year, records), [year, records]);
-  const monthPositions = useMemo(() => getMonthPositions(year), [year]);
 
   const maxCount = useMemo(
     () => Math.max(...cells.map((c) => c.count), 1),
@@ -143,6 +131,11 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
     if (cells.length === 0) return 0;
     return Math.max(...cells.map((c) => c.weekIndex)) + 1;
   }, [cells]);
+
+  const monthPositions = useMemo(
+    () => getMonthPositions(year, totalWeeks),
+    [year, totalWeeks]
+  );
 
   const totalStudied = useMemo(
     () => cells.reduce((sum, c) => sum + c.count, 0),
@@ -155,6 +148,25 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
   );
 
   const currentYear = new Date().getFullYear();
+
+  // Build week columns for rendering
+  const weekColumns = useMemo(() => {
+    const columns: (DayCell | null)[][] = [];
+    for (let wi = 0; wi < totalWeeks; wi++) {
+      const column: (DayCell | null)[] = [];
+      for (let di = 0; di < 7; di++) {
+        const cell = cells.find((c) => c.weekIndex === wi && c.dayIndex === di);
+        column.push(cell ?? null);
+      }
+      columns.push(column);
+    }
+    return columns;
+  }, [cells, totalWeeks]);
+
+  const DAY_LABEL_WIDTH = 20;
+  const CELL_SIZE = 11;
+  const GAP = 3;
+  const gridWidth = totalWeeks * CELL_SIZE + (totalWeeks - 1) * GAP;
 
   return (
     <Card>
@@ -186,37 +198,43 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
 
         {/* Heatmap grid */}
         <div className="overflow-x-auto">
-          <div className="min-w-[640px]">
-            {/* Month labels */}
-            <div className="mb-1 flex" style={{ paddingLeft: 28 }}>
-              {monthPositions.map((mp, i) => {
-                const nextWeek =
-                  i < 11 ? monthPositions[i + 1].weekIndex : totalWeeks;
-                const span = nextWeek - mp.weekIndex;
+          <div style={{ width: gridWidth + DAY_LABEL_WIDTH + 4, minWidth: 640 }}>
+            {/* Month labels — same grid as cells */}
+            <div
+              className="mb-1"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `${DAY_LABEL_WIDTH + 4}px repeat(${totalWeeks}, ${CELL_SIZE}px)`,
+                gap: `0 ${GAP}px`,
+              }}
+            >
+              {/* Day label spacer */}
+              <div />
+              {monthPositions.map((mp) => {
+                if (mp.span < 3) return null;
                 return (
                   <span
                     key={mp.label}
                     className="text-muted-foreground text-[10px]"
                     style={{
-                      width: `${(span / totalWeeks) * 100}%`,
-                      minWidth: 0,
+                      gridColumn: `${mp.weekIndex + 2} / span ${Math.min(mp.span, totalWeeks - mp.weekIndex)}`,
                     }}
                   >
-                    {span >= 3 ? mp.label : ''}
+                    {mp.label}
                   </span>
                 );
               })}
             </div>
 
             {/* Grid with day labels */}
-            <div className="flex gap-1">
+            <div className="flex" style={{ gap: 4 }}>
               {/* Day labels */}
-              <div className="flex flex-col gap-[3px]" style={{ width: 20 }}>
+              <div className="flex flex-col" style={{ width: DAY_LABEL_WIDTH, gap: GAP }}>
                 {DAY_LABELS.map((label, i) => (
                   <span
                     key={i}
                     className="text-muted-foreground flex items-center text-[10px]"
-                    style={{ height: 11 }}
+                    style={{ height: CELL_SIZE }}
                   >
                     {label}
                   </span>
@@ -224,19 +242,16 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
               </div>
 
               {/* Cells */}
-              <div className="flex flex-1 gap-[3px]">
-                {Array.from({ length: totalWeeks }, (_, wi) => (
-                  <div key={wi} className="flex flex-col gap-[3px]">
-                    {Array.from({ length: 7 }, (_, di) => {
-                      const cell = cells.find(
-                        (c) => c.weekIndex === wi && c.dayIndex === di
-                      );
+              <div className="flex" style={{ gap: GAP }}>
+                {weekColumns.map((column, wi) => (
+                  <div key={wi} className="flex flex-col" style={{ gap: GAP }}>
+                    {column.map((cell, di) => {
                       if (!cell) {
                         return (
                           <div
                             key={di}
                             className="rounded-sm"
-                            style={{ width: 11, height: 11 }}
+                            style={{ width: CELL_SIZE, height: CELL_SIZE }}
                           />
                         );
                       }
@@ -251,7 +266,7 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
                             duration: 0.2,
                           }}
                           className={`rounded-sm ${INTENSITY_COLORS[intensity]} ${DARK_INTENSITY_COLORS[intensity]} cursor-pointer transition-transform hover:scale-125`}
-                          style={{ width: 11, height: 11 }}
+                          style={{ width: CELL_SIZE, height: CELL_SIZE }}
                           onMouseEnter={() => setHoveredCell(cell)}
                           onMouseLeave={() => setHoveredCell(null)}
                         />
@@ -279,7 +294,7 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
               <div
                 key={i}
                 className={`rounded-sm ${color} ${DARK_INTENSITY_COLORS[i]}`}
-                style={{ width: 11, height: 11 }}
+                style={{ width: CELL_SIZE, height: CELL_SIZE }}
               />
             ))}
             <span className="text-muted-foreground text-[10px]">More</span>

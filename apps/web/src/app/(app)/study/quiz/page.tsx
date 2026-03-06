@@ -546,24 +546,8 @@ function QuizContent() {
         </span>
       </div>
 
-      {/* Streak Counter + Progress Bar */}
+      {/* Progress Bar + Streak Counter */}
       <div className="relative mx-4">
-        <AnimatePresence>
-          {streak >= 3 && answerState !== 'idle' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ type: 'spring', damping: 15, stiffness: 300 }}
-              className="absolute -top-6 left-1/2 flex -translate-x-1/2 items-center gap-1"
-            >
-              <Flame className="size-4 text-orange-500" />
-              <span className="text-sm font-bold text-orange-500">
-                {streak}연속 정답!
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
         <div className="bg-secondary h-1.5 overflow-hidden rounded-full">
           <motion.div
             className="bg-primary h-full rounded-full"
@@ -572,6 +556,22 @@ function QuizContent() {
             transition={{ duration: 0.3 }}
           />
         </div>
+        <AnimatePresence>
+          {streak >= 3 && answerState !== 'idle' && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ type: 'spring', damping: 15, stiffness: 300 }}
+              className="mt-1.5 flex items-center justify-center gap-1"
+            >
+              <Flame className="size-3.5 text-orange-500" />
+              <span className="text-xs font-bold text-orange-500">
+                {streak}연속 정답!
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Question */}
