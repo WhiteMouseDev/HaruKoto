@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getGoogleGenAIAlpha } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { checkAiLimit } from '@/lib/subscription-service';
 
 // Ephemeral tokens require BidiGenerateContentConstrained + access_token param
 const WS_BASE_URI =
@@ -29,6 +30,15 @@ export async function POST() {
             ),
           },
         }
+      );
+    }
+
+    // AI 사용량 체크 (음성 통화)
+    const aiCheck = await checkAiLimit(user.id, 'call');
+    if (!aiCheck.allowed) {
+      return NextResponse.json(
+        { error: aiCheck.reason, code: 'AI_LIMIT_EXCEEDED' },
+        { status: 429 }
       );
     }
 

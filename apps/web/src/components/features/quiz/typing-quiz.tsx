@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CircleCheck, CircleX, Delete } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -100,10 +100,12 @@ export function TypingQuiz({
   }, [answerState, question, placed, slotCount, onAnswer]);
 
   // Trigger check when slots are filled
-  if (placed.length === slotCount && answerState === 'idle') {
-    // Use setTimeout to avoid state update during render
-    setTimeout(checkAnswer, 300);
-  }
+  useEffect(() => {
+    if (placed.length === slotCount && answerState === 'idle') {
+      const timer = setTimeout(checkAnswer, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [placed.length, slotCount, answerState, checkAnswer]);
 
   function handleNext() {
     const nextIndex = currentIndex + 1;

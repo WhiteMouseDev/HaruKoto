@@ -86,7 +86,12 @@ export default function StudyPage() {
   const incompleteSession = incompleteData?.session ?? null;
 
   const { data: stats } = useQuizStats(selectedLevel, selectedTab);
-  const { data: recommendations, isLoading: recsLoading } = useRecommendations();
+  const {
+    data: recommendations,
+    isLoading: recsLoading,
+    isError: recsError,
+    refetch: refetchRecs,
+  } = useRecommendations();
 
   const isLoading = recsLoading && !recommendations;
 
@@ -244,6 +249,17 @@ export default function StudyPage() {
       {/* Recommend Tab */}
       {studyTab === 'recommend' && (
         <motion.div variants={item} className="flex flex-col gap-3">
+          {/* Error state */}
+          {recsError && (
+            <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border bg-card p-8">
+              <p className="text-muted-foreground text-center">추천을 불러올 수 없습니다</p>
+              <Button variant="outline" onClick={() => refetchRecs()} className="gap-2">
+                <RefreshCw className="size-4" />
+                다시 시도
+              </Button>
+            </div>
+          )}
+
           {/* Review due */}
           {recommendations && recommendations.reviewDueCount > 0 && (
             <div

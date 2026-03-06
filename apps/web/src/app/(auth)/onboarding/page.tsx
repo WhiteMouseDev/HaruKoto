@@ -101,11 +101,7 @@ export default function OnboardingPage() {
         throw new Error(data.error || '오류가 발생했습니다');
       }
 
-      if (showKana) {
-        router.push('/study/kana');
-      } else {
-        router.push('/home');
-      }
+      router.push('/home');
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : '오류가 발생했습니다');

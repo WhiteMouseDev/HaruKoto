@@ -138,10 +138,12 @@ export async function activateSubscription(params: {
   });
 
   // 결제 기록 업데이트 (checkout에서 PENDING으로 이미 생성됨)
+  // status: 'PENDING' 조건으로 이미 처리된 결제의 중복 업데이트 방지
   await prisma.payment.updateMany({
     where: {
       portonePaymentId: params.portonePaymentId,
       userId: params.userId,
+      status: 'PENDING',
     },
     data: {
       subscriptionId: subscription.id,
