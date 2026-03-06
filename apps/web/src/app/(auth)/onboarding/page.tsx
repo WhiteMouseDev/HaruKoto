@@ -25,19 +25,19 @@ const LEVELS = [
     value: 'N3' as const,
     emoji: '🌳',
     label: 'N3 — 중급',
-    desc: '일상 회화가 가능해요',
+    desc: '일상 회화가 가능해요 · 콘텐츠 준비 중',
   },
   {
     value: 'N2' as const,
     emoji: '🌲',
     label: 'N2 — 중상급',
-    desc: '뉴스/소설을 읽을 수 있어요',
+    desc: '뉴스/소설을 읽을 수 있어요 · 콘텐츠 준비 중',
   },
   {
     value: 'N1' as const,
     emoji: '🗻',
     label: 'N1 — 상급',
-    desc: '네이티브에 가까워요',
+    desc: '네이티브에 가까워요 · 콘텐츠 준비 중',
   },
 ];
 

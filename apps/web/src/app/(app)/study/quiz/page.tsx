@@ -314,7 +314,7 @@ function QuizContent() {
         <p className="text-muted-foreground text-center">
           {isReview
             ? '복습할 문제가 없어요!'
-            : '퀴즈 데이터를 불러올 수 없습니다.'}
+            : '이 레벨의 콘텐츠를 준비하고 있어요'}
         </p>
         <Button variant="outline" onClick={() => router.push('/study')}>
           학습으로 돌아가기

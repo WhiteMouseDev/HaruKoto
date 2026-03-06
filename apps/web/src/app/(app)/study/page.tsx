@@ -22,6 +22,7 @@ import {
   Flame,
   Library,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { KanaProgressBanner } from '@/components/features/kana/kana-progress-banner';
@@ -33,13 +34,17 @@ import {
   useRecommendations,
 } from '@/hooks/use-quiz';
 
-const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
+const JLPT_LEVELS = [
+  { value: 'N5', available: true },
+  { value: 'N4', available: true },
+  { value: 'N3', available: false },
+  { value: 'N2', available: false },
+  { value: 'N1', available: false },
+] as const;
 
 const QUIZ_TYPES = [
-  { value: 'VOCABULARY', label: '단어', disabled: false },
-  { value: 'GRAMMAR', label: '문법', disabled: false },
-  { value: 'KANJI', label: '한자', disabled: true },
-  { value: 'LISTENING', label: '청해', disabled: true },
+  { value: 'VOCABULARY', label: '단어' },
+  { value: 'GRAMMAR', label: '문법' },
 ] as const;
 
 const QUIZ_MODES = [
@@ -298,18 +303,35 @@ export default function StudyPage() {
           {/* Level Selector */}
           <div className="flex gap-2">
             {JLPT_LEVELS.map((level) => {
-              const isActive = selectedLevel === level;
+              const isActive = selectedLevel === level.value;
+              const isAvailable = level.available;
+
               return (
                 <button
-                  key={level}
-                  className={`flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
+                  key={level.value}
+                  className={`relative flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
                     isActive
                       ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border text-muted-foreground'
+                      : isAvailable
+                        ? 'border-border text-muted-foreground'
+                        : 'border-border/50 text-muted-foreground/40'
                   }`}
-                  onClick={() => setSelectedLevel(level)}
+                  onClick={() => {
+                    if (isAvailable) {
+                      setSelectedLevel(level.value);
+                    } else {
+                      toast('곧 추가 예정이에요!', {
+                        description: `${level.value} 콘텐츠를 열심히 준비하고 있어요`,
+                      });
+                    }
+                  }}
                 >
-                  {level}
+                  {level.value}
+                  {!isAvailable && (
+                    <span className="absolute -top-2 -right-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                      곧 추가
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -326,9 +348,8 @@ export default function StudyPage() {
                     isActive
                       ? 'bg-card text-foreground shadow-sm'
                       : 'text-muted-foreground'
-                  } ${type.disabled ? 'opacity-40' : ''}`}
-                  onClick={() => !type.disabled && setSelectedTab(type.value)}
-                  disabled={type.disabled}
+                  }`}
+                  onClick={() => setSelectedTab(type.value)}
                 >
                   {type.label}
                 </button>
