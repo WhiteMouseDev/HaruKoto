@@ -23,6 +23,7 @@ export function DailyProgressCard({
     totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
   const progressPercent = Math.round(goalProgress * 100);
 
+  const animatedProgress = useCountUp(progressPercent, 0.8, 0.3);
   const animatedWords = useCountUp(wordsStudied, 0.8, 0.3);
   const animatedAccuracy = useCountUp(accuracyPercent, 0.8, 0.3);
 
@@ -54,9 +55,9 @@ export function DailyProgressCard({
             목표
           </span>
           <span className="text-lg font-bold">
-            {animatedWords}
+            {animatedProgress}
             <span className="text-muted-foreground text-sm font-medium">
-              /{dailyGoal}
+              %
             </span>
           </span>
         </div>

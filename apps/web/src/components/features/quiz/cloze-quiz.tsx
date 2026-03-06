@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CircleCheck, CircleX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { playSound } from '@/lib/sounds';
 
 type ClozeQuizQuestion = {
   questionId: string;
@@ -54,6 +55,7 @@ export function ClozeQuiz({
       setSelectedOption(optionId);
 
       const isCorrect = optionId === question.correctOptionId;
+      playSound(isCorrect ? 'correct' : 'incorrect');
       setAnswerState(isCorrect ? 'correct' : 'incorrect');
       setResults((prev) => [
         ...prev,

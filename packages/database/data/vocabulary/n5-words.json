@@ -8,7 +8,10 @@
     "exampleSentence": "あの人は日本人です。",
     "exampleReading": "あのひとはにほんじんです。",
     "exampleTranslation": "저 사람은 일본인입니다.",
-    "tags": ["사람", "기본"],
+    "tags": [
+      "사람",
+      "기본"
+    ],
     "order": 1
   },
   {
@@ -20,7 +23,9 @@
     "exampleSentence": "あの男の人は先生です。",
     "exampleReading": "あのおとこのひとはせんせいです。",
     "exampleTranslation": "저 남자는 선생님입니다.",
-    "tags": ["사람"],
+    "tags": [
+      "사람"
+    ],
     "order": 2
   },
   {
@@ -32,7 +37,9 @@
     "exampleSentence": "あの女の人は学生です。",
     "exampleReading": "あのおんなのひとはがくせいです。",
     "exampleTranslation": "저 여자는 학생입니다.",
-    "tags": ["사람"],
+    "tags": [
+      "사람"
+    ],
     "order": 3
   },
   {
@@ -44,7 +51,10 @@
     "exampleSentence": "子供が公園で遊んでいます。",
     "exampleReading": "こどもがこうえんであそんでいます。",
     "exampleTranslation": "아이가 공원에서 놀고 있습니다.",
-    "tags": ["사람", "가족"],
+    "tags": [
+      "사람",
+      "가족"
+    ],
     "order": 4
   },
   {
@@ -56,7 +66,10 @@
     "exampleSentence": "友達と映画を見ます。",
     "exampleReading": "ともだちとえいがをみます。",
     "exampleTranslation": "친구와 영화를 봅니다.",
-    "tags": ["사람", "관계"],
+    "tags": [
+      "사람",
+      "관계"
+    ],
     "order": 5
   },
   {
@@ -68,7 +81,10 @@
     "exampleSentence": "先生はとても優しいです。",
     "exampleReading": "せんせいはとてもやさしいです。",
     "exampleTranslation": "선생님은 매우 친절합니다.",
-    "tags": ["사람", "학교"],
+    "tags": [
+      "사람",
+      "학교"
+    ],
     "order": 6
   },
   {
@@ -80,7 +96,10 @@
     "exampleSentence": "私は大学の学生です。",
     "exampleReading": "わたしはだいがくのがくせいです。",
     "exampleTranslation": "저는 대학교 학생입니다.",
-    "tags": ["사람", "학교"],
+    "tags": [
+      "사람",
+      "학교"
+    ],
     "order": 7
   },
   {
@@ -92,7 +111,10 @@
     "exampleSentence": "お父さんは会社員です。",
     "exampleReading": "おとうさんはかいしゃいんです。",
     "exampleTranslation": "아버지는 회사원입니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 8
   },
   {
@@ -104,7 +126,10 @@
     "exampleSentence": "お母さんは料理が上手です。",
     "exampleReading": "おかあさんはりょうりがじょうずです。",
     "exampleTranslation": "어머니는 요리를 잘합니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 9
   },
   {
@@ -116,7 +141,10 @@
     "exampleSentence": "お兄さんは大学生です。",
     "exampleReading": "おにいさんはだいがくせいです。",
     "exampleTranslation": "형은 대학생입니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 10
   },
   {
@@ -128,7 +156,10 @@
     "exampleSentence": "お姉さんは東京に住んでいます。",
     "exampleReading": "おねえさんはとうきょうにすんでいます。",
     "exampleTranslation": "누나는 도쿄에 살고 있습니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 11
   },
   {
@@ -140,7 +171,10 @@
     "exampleSentence": "弟は高校生です。",
     "exampleReading": "おとうとはこうこうせいです。",
     "exampleTranslation": "남동생은 고등학생입니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 12
   },
   {
@@ -152,7 +186,10 @@
     "exampleSentence": "妹はピアノが好きです。",
     "exampleReading": "いもうとはぴあのがすきです。",
     "exampleTranslation": "여동생은 피아노를 좋아합니다.",
-    "tags": ["가족", "사람"],
+    "tags": [
+      "가족",
+      "사람"
+    ],
     "order": 13
   },
   {
@@ -164,7 +201,9 @@
     "exampleSentence": "家族は五人です。",
     "exampleReading": "かぞくはごにんです。",
     "exampleTranslation": "가족은 다섯 명입니다.",
-    "tags": ["가족"],
+    "tags": [
+      "가족"
+    ],
     "order": 14
   },
   {
@@ -176,7 +215,9 @@
     "exampleSentence": "時間がありません。",
     "exampleReading": "じかんがありません。",
     "exampleTranslation": "시간이 없습니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 15
   },
   {
@@ -188,7 +229,10 @@
     "exampleSentence": "今日は天気がいいです。",
     "exampleReading": "きょうはてんきがいいです。",
     "exampleTranslation": "오늘은 날씨가 좋습니다.",
-    "tags": ["시간", "일상"],
+    "tags": [
+      "시간",
+      "일상"
+    ],
     "order": 16
   },
   {
@@ -200,7 +244,9 @@
     "exampleSentence": "明日は学校へ行きます。",
     "exampleReading": "あしたはがっこうへいきます。",
     "exampleTranslation": "내일은 학교에 갑니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 17
   },
   {
@@ -212,7 +258,9 @@
     "exampleSentence": "昨日は雨でした。",
     "exampleReading": "きのうはあめでした。",
     "exampleTranslation": "어제는 비였습니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 18
   },
   {
@@ -224,7 +272,10 @@
     "exampleSentence": "朝は六時に起きます。",
     "exampleReading": "あさはろくじにおきます。",
     "exampleTranslation": "아침에는 6시에 일어납니다.",
-    "tags": ["시간", "일상"],
+    "tags": [
+      "시간",
+      "일상"
+    ],
     "order": 19
   },
   {
@@ -236,7 +287,10 @@
     "exampleSentence": "昼ごはんを食べましょう。",
     "exampleReading": "ひるごはんをたべましょう。",
     "exampleTranslation": "점심을 먹읍시다.",
-    "tags": ["시간", "식사"],
+    "tags": [
+      "시간",
+      "식사"
+    ],
     "order": 20
   },
   {
@@ -248,7 +302,10 @@
     "exampleSentence": "夜は十一時に寝ます。",
     "exampleReading": "よるはじゅういちじにねます。",
     "exampleTranslation": "밤에는 11시에 잡니다.",
-    "tags": ["시간", "일상"],
+    "tags": [
+      "시간",
+      "일상"
+    ],
     "order": 21
   },
   {
@@ -260,7 +317,9 @@
     "exampleSentence": "今、何時ですか。",
     "exampleReading": "いま、なんじですか。",
     "exampleTranslation": "지금 몇 시입니까?",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 22
   },
   {
@@ -272,7 +331,10 @@
     "exampleSentence": "毎日日本語を勉強します。",
     "exampleReading": "まいにちにほんごをべんきょうします。",
     "exampleTranslation": "매일 일본어를 공부합니다.",
-    "tags": ["시간", "일상"],
+    "tags": [
+      "시간",
+      "일상"
+    ],
     "order": 23
   },
   {
@@ -284,7 +346,9 @@
     "exampleSentence": "毎週テニスをします。",
     "exampleReading": "まいしゅうてにすをします。",
     "exampleTranslation": "매주 테니스를 합니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 24
   },
   {
@@ -296,7 +360,9 @@
     "exampleSentence": "来年日本へ行きたいです。",
     "exampleReading": "らいねんにほんへいきたいです。",
     "exampleTranslation": "내년에 일본에 가고 싶습니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 25
   },
   {
@@ -308,7 +374,10 @@
     "exampleSentence": "学校は八時に始まります。",
     "exampleReading": "がっこうははちじにはじまります。",
     "exampleTranslation": "학교는 8시에 시작됩니다.",
-    "tags": ["장소", "학교"],
+    "tags": [
+      "장소",
+      "학교"
+    ],
     "order": 26
   },
   {
@@ -320,7 +389,10 @@
     "exampleSentence": "大学で経済学を勉強しています。",
     "exampleReading": "だいがくでけいざいがくをべんきょうしています。",
     "exampleTranslation": "대학교에서 경제학을 공부하고 있습니다.",
-    "tags": ["장소", "학교"],
+    "tags": [
+      "장소",
+      "학교"
+    ],
     "order": 27
   },
   {
@@ -332,7 +404,10 @@
     "exampleSentence": "病院へ行きます。",
     "exampleReading": "びょういんへいきます。",
     "exampleTranslation": "병원에 갑니다.",
-    "tags": ["장소", "건강"],
+    "tags": [
+      "장소",
+      "건강"
+    ],
     "order": 28
   },
   {
@@ -344,7 +419,10 @@
     "exampleSentence": "駅まで歩きます。",
     "exampleReading": "えきまであるきます。",
     "exampleTranslation": "역까지 걸어갑니다.",
-    "tags": ["장소", "교통"],
+    "tags": [
+      "장소",
+      "교통"
+    ],
     "order": 29
   },
   {
@@ -356,7 +434,10 @@
     "exampleSentence": "会社は九時からです。",
     "exampleReading": "かいしゃはくじからです。",
     "exampleTranslation": "회사는 9시부터입니다.",
-    "tags": ["장소", "일"],
+    "tags": [
+      "장소",
+      "일"
+    ],
     "order": 30
   },
   {
@@ -368,7 +449,9 @@
     "exampleSentence": "銀行は三時に閉まります。",
     "exampleReading": "ぎんこうはさんじにしまります。",
     "exampleTranslation": "은행은 3시에 닫습니다.",
-    "tags": ["장소"],
+    "tags": [
+      "장소"
+    ],
     "order": 31
   },
   {
@@ -380,7 +463,10 @@
     "exampleSentence": "図書館で本を読みます。",
     "exampleReading": "としょかんでほんをよみます。",
     "exampleTranslation": "도서관에서 책을 읽습니다.",
-    "tags": ["장소", "학교"],
+    "tags": [
+      "장소",
+      "학교"
+    ],
     "order": 32
   },
   {
@@ -392,7 +478,10 @@
     "exampleSentence": "公園を散歩します。",
     "exampleReading": "こうえんをさんぽします。",
     "exampleTranslation": "공원을 산책합니다.",
-    "tags": ["장소", "자연"],
+    "tags": [
+      "장소",
+      "자연"
+    ],
     "order": 33
   },
   {
@@ -404,7 +493,10 @@
     "exampleSentence": "あの店は安いです。",
     "exampleReading": "あのみせはやすいです。",
     "exampleTranslation": "저 가게는 쌉니다.",
-    "tags": ["장소", "쇼핑"],
+    "tags": [
+      "장소",
+      "쇼핑"
+    ],
     "order": 34
   },
   {
@@ -416,7 +508,10 @@
     "exampleSentence": "部屋をきれいにしてください。",
     "exampleReading": "へやをきれいにしてください。",
     "exampleTranslation": "방을 깨끗이 해 주세요.",
-    "tags": ["장소", "집"],
+    "tags": [
+      "장소",
+      "집"
+    ],
     "order": 35
   },
   {
@@ -428,7 +523,10 @@
     "exampleSentence": "家に帰ります。",
     "exampleReading": "いえにかえります。",
     "exampleTranslation": "집에 돌아갑니다.",
-    "tags": ["장소", "집"],
+    "tags": [
+      "장소",
+      "집"
+    ],
     "order": 36
   },
   {
@@ -440,7 +538,10 @@
     "exampleSentence": "水を飲みます。",
     "exampleReading": "みずをのみます。",
     "exampleTranslation": "물을 마십니다.",
-    "tags": ["음식", "자연"],
+    "tags": [
+      "음식",
+      "자연"
+    ],
     "order": 37
   },
   {
@@ -452,7 +553,10 @@
     "exampleSentence": "お茶を飲みませんか。",
     "exampleReading": "おちゃをのみませんか。",
     "exampleTranslation": "차를 마시지 않겠습니까?",
-    "tags": ["음식", "일상"],
+    "tags": [
+      "음식",
+      "일상"
+    ],
     "order": 38
   },
   {
@@ -464,7 +568,10 @@
     "exampleSentence": "御飯を食べましたか。",
     "exampleReading": "ごはんをたべましたか。",
     "exampleTranslation": "밥을 먹었습니까?",
-    "tags": ["음식", "식사"],
+    "tags": [
+      "음식",
+      "식사"
+    ],
     "order": 39
   },
   {
@@ -476,7 +583,9 @@
     "exampleSentence": "肉と野菜を買います。",
     "exampleReading": "にくとやさいをかいます。",
     "exampleTranslation": "고기와 채소를 삽니다.",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 40
   },
   {
@@ -488,7 +597,10 @@
     "exampleSentence": "魚が好きです。",
     "exampleReading": "さかながすきです。",
     "exampleTranslation": "생선을 좋아합니다.",
-    "tags": ["음식", "자연"],
+    "tags": [
+      "음식",
+      "자연"
+    ],
     "order": 41
   },
   {
@@ -500,7 +612,9 @@
     "exampleSentence": "野菜をたくさん食べてください。",
     "exampleReading": "やさいをたくさんたべてください。",
     "exampleTranslation": "채소를 많이 드세요.",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 42
   },
   {
@@ -512,7 +626,9 @@
     "exampleSentence": "果物が好きですか。",
     "exampleReading": "くだものがすきですか。",
     "exampleTranslation": "과일을 좋아합니까?",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 43
   },
   {
@@ -524,7 +640,9 @@
     "exampleSentence": "卵を三つ買いました。",
     "exampleReading": "たまごをみっつかいました。",
     "exampleTranslation": "달걀을 세 개 샀습니다.",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 44
   },
   {
@@ -536,7 +654,10 @@
     "exampleSentence": "この本はとても面白いです。",
     "exampleReading": "このほんはとてもおもしろいです。",
     "exampleTranslation": "이 책은 매우 재미있습니다.",
-    "tags": ["물건", "학교"],
+    "tags": [
+      "물건",
+      "학교"
+    ],
     "order": 45
   },
   {
@@ -548,7 +669,10 @@
     "exampleSentence": "毎朝新聞を読みます。",
     "exampleReading": "まいあさしんぶんをよみます。",
     "exampleTranslation": "매일 아침 신문을 읽습니다.",
-    "tags": ["물건", "일상"],
+    "tags": [
+      "물건",
+      "일상"
+    ],
     "order": 46
   },
   {
@@ -560,7 +684,10 @@
     "exampleSentence": "写真を撮ってもいいですか。",
     "exampleReading": "しゃしんをとってもいいですか。",
     "exampleTranslation": "사진을 찍어도 됩니까?",
-    "tags": ["물건", "취미"],
+    "tags": [
+      "물건",
+      "취미"
+    ],
     "order": 47
   },
   {
@@ -572,7 +699,10 @@
     "exampleSentence": "電話をかけます。",
     "exampleReading": "でんわをかけます。",
     "exampleTranslation": "전화를 겁니다.",
-    "tags": ["물건", "일상"],
+    "tags": [
+      "물건",
+      "일상"
+    ],
     "order": 48
   },
   {
@@ -584,7 +714,9 @@
     "exampleSentence": "その時計は高いです。",
     "exampleReading": "そのとけいはたかいです。",
     "exampleTranslation": "그 시계는 비쌉니다.",
-    "tags": ["물건"],
+    "tags": [
+      "물건"
+    ],
     "order": 49
   },
   {
@@ -596,7 +728,10 @@
     "exampleSentence": "傘を持っていますか。",
     "exampleReading": "かさをもっていますか。",
     "exampleTranslation": "우산을 가지고 있습니까?",
-    "tags": ["물건", "날씨"],
+    "tags": [
+      "물건",
+      "날씨"
+    ],
     "order": 50
   },
   {
@@ -608,7 +743,10 @@
     "exampleSentence": "鍵を忘れました。",
     "exampleReading": "かぎをわすれました。",
     "exampleTranslation": "열쇠를 잊었습니다.",
-    "tags": ["물건", "일상"],
+    "tags": [
+      "물건",
+      "일상"
+    ],
     "order": 51
   },
   {
@@ -620,7 +758,9 @@
     "exampleSentence": "鞄の中に本があります。",
     "exampleReading": "かばんのなかにほんがあります。",
     "exampleTranslation": "가방 안에 책이 있습니다.",
-    "tags": ["물건"],
+    "tags": [
+      "물건"
+    ],
     "order": 52
   },
   {
@@ -632,7 +772,10 @@
     "exampleSentence": "新しい靴を買いました。",
     "exampleReading": "あたらしいくつをかいました。",
     "exampleTranslation": "새 신발을 샀습니다.",
-    "tags": ["물건", "쇼핑"],
+    "tags": [
+      "물건",
+      "쇼핑"
+    ],
     "order": 53
   },
   {
@@ -644,7 +787,10 @@
     "exampleSentence": "きれいな服を着ています。",
     "exampleReading": "きれいなふくをきています。",
     "exampleTranslation": "예쁜 옷을 입고 있습니다.",
-    "tags": ["물건", "쇼핑"],
+    "tags": [
+      "물건",
+      "쇼핑"
+    ],
     "order": 54
   },
   {
@@ -656,7 +802,9 @@
     "exampleSentence": "花がきれいに咲いています。",
     "exampleReading": "はながきれいにさいています。",
     "exampleTranslation": "꽃이 예쁘게 피어 있습니다.",
-    "tags": ["자연"],
+    "tags": [
+      "자연"
+    ],
     "order": 55
   },
   {
@@ -668,7 +816,9 @@
     "exampleSentence": "大きい木があります。",
     "exampleReading": "おおきいきがあります。",
     "exampleTranslation": "큰 나무가 있습니다.",
-    "tags": ["자연"],
+    "tags": [
+      "자연"
+    ],
     "order": 56
   },
   {
@@ -680,7 +830,10 @@
     "exampleSentence": "山に登ります。",
     "exampleReading": "やまにのぼります。",
     "exampleTranslation": "산에 오릅니다.",
-    "tags": ["자연", "장소"],
+    "tags": [
+      "자연",
+      "장소"
+    ],
     "order": 57
   },
   {
@@ -692,7 +845,10 @@
     "exampleSentence": "川で泳ぎます。",
     "exampleReading": "かわでおよぎます。",
     "exampleTranslation": "강에서 수영합니다.",
-    "tags": ["자연", "장소"],
+    "tags": [
+      "자연",
+      "장소"
+    ],
     "order": 58
   },
   {
@@ -704,7 +860,10 @@
     "exampleSentence": "夏に海へ行きます。",
     "exampleReading": "なつにうみへいきます。",
     "exampleTranslation": "여름에 바다에 갑니다.",
-    "tags": ["자연", "장소"],
+    "tags": [
+      "자연",
+      "장소"
+    ],
     "order": 59
   },
   {
@@ -716,7 +875,10 @@
     "exampleSentence": "今日は天気がいいです。",
     "exampleReading": "きょうはてんきがいいです。",
     "exampleTranslation": "오늘은 날씨가 좋습니다.",
-    "tags": ["자연", "날씨"],
+    "tags": [
+      "자연",
+      "날씨"
+    ],
     "order": 60
   },
   {
@@ -728,7 +890,10 @@
     "exampleSentence": "明日は雨が降ります。",
     "exampleReading": "あしたはあめがふります。",
     "exampleTranslation": "내일은 비가 옵니다.",
-    "tags": ["자연", "날씨"],
+    "tags": [
+      "자연",
+      "날씨"
+    ],
     "order": 61
   },
   {
@@ -740,7 +905,10 @@
     "exampleSentence": "雪が降っています。",
     "exampleReading": "ゆきがふっています。",
     "exampleTranslation": "눈이 오고 있습니다.",
-    "tags": ["자연", "날씨"],
+    "tags": [
+      "자연",
+      "날씨"
+    ],
     "order": 62
   },
   {
@@ -752,7 +920,9 @@
     "exampleSentence": "目が大きいです。",
     "exampleReading": "めがおおきいです。",
     "exampleTranslation": "눈이 큽니다.",
-    "tags": ["신체"],
+    "tags": [
+      "신체"
+    ],
     "order": 63
   },
   {
@@ -764,7 +934,10 @@
     "exampleSentence": "耳が痛いです。",
     "exampleReading": "みみがいたいです。",
     "exampleTranslation": "귀가 아픕니다.",
-    "tags": ["신체", "건강"],
+    "tags": [
+      "신체",
+      "건강"
+    ],
     "order": 64
   },
   {
@@ -776,7 +949,9 @@
     "exampleSentence": "口を大きく開けてください。",
     "exampleReading": "くちをおおきくあけてください。",
     "exampleTranslation": "입을 크게 벌려 주세요.",
-    "tags": ["신체"],
+    "tags": [
+      "신체"
+    ],
     "order": 65
   },
   {
@@ -788,7 +963,10 @@
     "exampleSentence": "手を洗ってください。",
     "exampleReading": "てをあらってください。",
     "exampleTranslation": "손을 씻어 주세요.",
-    "tags": ["신체", "일상"],
+    "tags": [
+      "신체",
+      "일상"
+    ],
     "order": 66
   },
   {
@@ -800,7 +978,10 @@
     "exampleSentence": "足が痛いです。",
     "exampleReading": "あしがいたいです。",
     "exampleTranslation": "다리가 아픕니다.",
-    "tags": ["신체", "건강"],
+    "tags": [
+      "신체",
+      "건강"
+    ],
     "order": 67
   },
   {
@@ -812,7 +993,10 @@
     "exampleSentence": "頭が痛いです。",
     "exampleReading": "あたまがいたいです。",
     "exampleTranslation": "머리가 아픕니다.",
-    "tags": ["신체", "건강"],
+    "tags": [
+      "신체",
+      "건강"
+    ],
     "order": 68
   },
   {
@@ -824,7 +1008,10 @@
     "exampleSentence": "お腹がすきました。",
     "exampleReading": "おなかがすきました。",
     "exampleTranslation": "배가 고픕니다.",
-    "tags": ["신체", "일상"],
+    "tags": [
+      "신체",
+      "일상"
+    ],
     "order": 69
   },
   {
@@ -836,7 +1023,9 @@
     "exampleSentence": "電車で会社に行きます。",
     "exampleReading": "でんしゃでかいしゃにいきます。",
     "exampleTranslation": "전철로 회사에 갑니다.",
-    "tags": ["교통"],
+    "tags": [
+      "교통"
+    ],
     "order": 70
   },
   {
@@ -848,7 +1037,9 @@
     "exampleSentence": "車で来ました。",
     "exampleReading": "くるまできました。",
     "exampleTranslation": "자동차로 왔습니다.",
-    "tags": ["교통"],
+    "tags": [
+      "교통"
+    ],
     "order": 71
   },
   {
@@ -860,7 +1051,9 @@
     "exampleSentence": "自転車に乗ります。",
     "exampleReading": "じてんしゃにのります。",
     "exampleTranslation": "자전거를 탑니다.",
-    "tags": ["교통"],
+    "tags": [
+      "교통"
+    ],
     "order": 72
   },
   {
@@ -872,7 +1065,10 @@
     "exampleSentence": "この道をまっすぐ行ってください。",
     "exampleReading": "このみちをまっすぐいってください。",
     "exampleTranslation": "이 길을 곧장 가 주세요.",
-    "tags": ["장소", "교통"],
+    "tags": [
+      "장소",
+      "교통"
+    ],
     "order": 73
   },
   {
@@ -884,7 +1080,10 @@
     "exampleSentence": "お名前は何ですか。",
     "exampleReading": "おなまえはなんですか。",
     "exampleTranslation": "이름이 무엇입니까?",
-    "tags": ["기본", "사람"],
+    "tags": [
+      "기본",
+      "사람"
+    ],
     "order": 74
   },
   {
@@ -896,7 +1095,10 @@
     "exampleSentence": "この言葉の意味が分かりません。",
     "exampleReading": "このことばのいみがわかりません。",
     "exampleTranslation": "이 단어의 뜻을 모르겠습니다.",
-    "tags": ["학교", "언어"],
+    "tags": [
+      "학교",
+      "언어"
+    ],
     "order": 75
   },
   {
@@ -908,7 +1110,9 @@
     "exampleSentence": "映画を見に行きましょう。",
     "exampleReading": "えいがをみにいきましょう。",
     "exampleTranslation": "영화를 보러 갑시다.",
-    "tags": ["취미"],
+    "tags": [
+      "취미"
+    ],
     "order": 76
   },
   {
@@ -920,7 +1124,9 @@
     "exampleSentence": "音楽を聞くのが好きです。",
     "exampleReading": "おんがくをきくのがすきです。",
     "exampleTranslation": "음악을 듣는 것을 좋아합니다.",
-    "tags": ["취미"],
+    "tags": [
+      "취미"
+    ],
     "order": 77
   },
   {
@@ -932,7 +1138,10 @@
     "exampleSentence": "来月旅行に行きます。",
     "exampleReading": "らいげつりょこうにいきます。",
     "exampleTranslation": "다음 달에 여행을 갑니다.",
-    "tags": ["취미", "여행"],
+    "tags": [
+      "취미",
+      "여행"
+    ],
     "order": 78
   },
   {
@@ -944,7 +1153,10 @@
     "exampleSentence": "日本料理が好きです。",
     "exampleReading": "にほんりょうりがすきです。",
     "exampleTranslation": "일본 요리를 좋아합니다.",
-    "tags": ["음식", "취미"],
+    "tags": [
+      "음식",
+      "취미"
+    ],
     "order": 79
   },
   {
@@ -956,7 +1168,10 @@
     "exampleSentence": "仕事は何ですか。",
     "exampleReading": "しごとはなんですか。",
     "exampleTranslation": "직업이 무엇입니까?",
-    "tags": ["일", "일상"],
+    "tags": [
+      "일",
+      "일상"
+    ],
     "order": 80
   },
   {
@@ -968,7 +1183,9 @@
     "exampleSentence": "日本語の勉強は楽しいです。",
     "exampleReading": "にほんごのべんきょうはたのしいです。",
     "exampleTranslation": "일본어 공부는 즐겁습니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 81
   },
   {
@@ -980,7 +1197,9 @@
     "exampleSentence": "来週テストがあります。",
     "exampleReading": "らいしゅうてすとがあります。",
     "exampleTranslation": "다음 주에 시험이 있습니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 82
   },
   {
@@ -992,7 +1211,9 @@
     "exampleSentence": "宿題をしましたか。",
     "exampleReading": "しゅくだいをしましたか。",
     "exampleTranslation": "숙제를 했습니까?",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 83
   },
   {
@@ -1004,7 +1225,9 @@
     "exampleSentence": "質問がありますか。",
     "exampleReading": "しつもんがありますか。",
     "exampleTranslation": "질문이 있습니까?",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 84
   },
   {
@@ -1016,7 +1239,10 @@
     "exampleSentence": "この漢字の意味は何ですか。",
     "exampleReading": "このかんじのいみはなんですか。",
     "exampleTranslation": "이 한자의 뜻은 무엇입니까?",
-    "tags": ["학교", "언어"],
+    "tags": [
+      "학교",
+      "언어"
+    ],
     "order": 85
   },
   {
@@ -1028,7 +1254,10 @@
     "exampleSentence": "お金が足りません。",
     "exampleReading": "おかねがたりません。",
     "exampleTranslation": "돈이 부족합니다.",
-    "tags": ["일상", "쇼핑"],
+    "tags": [
+      "일상",
+      "쇼핑"
+    ],
     "order": 86
   },
   {
@@ -1040,7 +1269,10 @@
     "exampleSentence": "切符を買いました。",
     "exampleReading": "きっぷをかいました。",
     "exampleTranslation": "표를 샀습니다.",
-    "tags": ["교통", "여행"],
+    "tags": [
+      "교통",
+      "여행"
+    ],
     "order": 87
   },
   {
@@ -1052,7 +1284,10 @@
     "exampleSentence": "誕生日はいつですか。",
     "exampleReading": "たんじょうびはいつですか。",
     "exampleTranslation": "생일은 언제입니까?",
-    "tags": ["일상", "시간"],
+    "tags": [
+      "일상",
+      "시간"
+    ],
     "order": 88
   },
   {
@@ -1064,7 +1299,9 @@
     "exampleSentence": "何色が好きですか。",
     "exampleReading": "なにいろがすきですか。",
     "exampleTranslation": "무슨 색을 좋아합니까?",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 89
   },
   {
@@ -1076,7 +1313,10 @@
     "exampleSentence": "窓を開けてください。",
     "exampleReading": "まどをあけてください。",
     "exampleTranslation": "창문을 열어 주세요.",
-    "tags": ["물건", "집"],
+    "tags": [
+      "물건",
+      "집"
+    ],
     "order": 90
   },
   {
@@ -1088,7 +1328,10 @@
     "exampleSentence": "朝ごはんを食べます。",
     "exampleReading": "あさごはんをたべます。",
     "exampleTranslation": "아침밥을 먹습니다.",
-    "tags": ["일상", "식사"],
+    "tags": [
+      "일상",
+      "식사"
+    ],
     "order": 91
   },
   {
@@ -1100,7 +1343,10 @@
     "exampleSentence": "コーヒーを飲みます。",
     "exampleReading": "こーひーをのみます。",
     "exampleTranslation": "커피를 마십니다.",
-    "tags": ["일상", "식사"],
+    "tags": [
+      "일상",
+      "식사"
+    ],
     "order": 92
   },
   {
@@ -1112,7 +1358,10 @@
     "exampleSentence": "学校に行きます。",
     "exampleReading": "がっこうにいきます。",
     "exampleTranslation": "학교에 갑니다.",
-    "tags": ["이동", "일상"],
+    "tags": [
+      "이동",
+      "일상"
+    ],
     "order": 93
   },
   {
@@ -1124,7 +1373,9 @@
     "exampleSentence": "友達が家に来ます。",
     "exampleReading": "ともだちがいえにきます。",
     "exampleTranslation": "친구가 집에 옵니다.",
-    "tags": ["이동"],
+    "tags": [
+      "이동"
+    ],
     "order": 94
   },
   {
@@ -1136,7 +1387,10 @@
     "exampleSentence": "六時に家に帰ります。",
     "exampleReading": "ろくじにいえにかえります。",
     "exampleTranslation": "6시에 집에 돌아갑니다.",
-    "tags": ["이동", "일상"],
+    "tags": [
+      "이동",
+      "일상"
+    ],
     "order": 95
   },
   {
@@ -1148,7 +1402,9 @@
     "exampleSentence": "テレビを見ます。",
     "exampleReading": "てれびをみます。",
     "exampleTranslation": "텔레비전을 봅니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 96
   },
   {
@@ -1160,7 +1416,9 @@
     "exampleSentence": "音楽を聞きます。",
     "exampleReading": "おんがくをききます。",
     "exampleTranslation": "음악을 듣습니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 97
   },
   {
@@ -1172,7 +1430,10 @@
     "exampleSentence": "毎日本を読みます。",
     "exampleReading": "まいにちほんをよみます。",
     "exampleTranslation": "매일 책을 읽습니다.",
-    "tags": ["일상", "학교"],
+    "tags": [
+      "일상",
+      "학교"
+    ],
     "order": 98
   },
   {
@@ -1184,7 +1445,10 @@
     "exampleSentence": "手紙を書きます。",
     "exampleReading": "てがみをかきます。",
     "exampleTranslation": "편지를 씁니다.",
-    "tags": ["일상", "학교"],
+    "tags": [
+      "일상",
+      "학교"
+    ],
     "order": 99
   },
   {
@@ -1196,7 +1460,10 @@
     "exampleSentence": "日本語を話します。",
     "exampleReading": "にほんごをはなします。",
     "exampleTranslation": "일본어를 말합니다.",
-    "tags": ["언어", "일상"],
+    "tags": [
+      "언어",
+      "일상"
+    ],
     "order": 100
   },
   {
@@ -1208,7 +1475,10 @@
     "exampleSentence": "スーパーで野菜を買います。",
     "exampleReading": "すーぱーでやさいをかいます。",
     "exampleTranslation": "슈퍼에서 채소를 삽니다.",
-    "tags": ["쇼핑", "일상"],
+    "tags": [
+      "쇼핑",
+      "일상"
+    ],
     "order": 101
   },
   {
@@ -1220,7 +1490,9 @@
     "exampleSentence": "サッカーをします。",
     "exampleReading": "さっかーをします。",
     "exampleTranslation": "축구를 합니다.",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 102
   },
   {
@@ -1232,7 +1504,9 @@
     "exampleSentence": "机の上に本があります。",
     "exampleReading": "つくえのうえにほんがあります。",
     "exampleTranslation": "책상 위에 책이 있습니다.",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 103
   },
   {
@@ -1244,7 +1518,9 @@
     "exampleSentence": "猫が庭にいます。",
     "exampleReading": "ねこがにわにいます。",
     "exampleTranslation": "고양이가 마당에 있습니다.",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 104
   },
   {
@@ -1256,7 +1532,9 @@
     "exampleSentence": "毎朝七時に起きます。",
     "exampleReading": "まいあさしちじにおきます。",
     "exampleTranslation": "매일 아침 7시에 일어납니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 105
   },
   {
@@ -1268,7 +1546,9 @@
     "exampleSentence": "十一時に寝ます。",
     "exampleReading": "じゅういちじにねます。",
     "exampleTranslation": "11시에 잡니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 106
   },
   {
@@ -1280,7 +1560,9 @@
     "exampleSentence": "公園を歩きます。",
     "exampleReading": "こうえんをあるきます。",
     "exampleTranslation": "공원을 걷습니다.",
-    "tags": ["이동"],
+    "tags": [
+      "이동"
+    ],
     "order": 107
   },
   {
@@ -1292,7 +1574,10 @@
     "exampleSentence": "毎朝走ります。",
     "exampleReading": "まいあさはしります。",
     "exampleTranslation": "매일 아침 달립니다.",
-    "tags": ["이동", "운동"],
+    "tags": [
+      "이동",
+      "운동"
+    ],
     "order": 108
   },
   {
@@ -1304,7 +1589,9 @@
     "exampleSentence": "プールで泳ぎます。",
     "exampleReading": "ぷーるでおよぎます。",
     "exampleTranslation": "수영장에서 수영합니다.",
-    "tags": ["운동"],
+    "tags": [
+      "운동"
+    ],
     "order": 109
   },
   {
@@ -1316,7 +1603,9 @@
     "exampleSentence": "ここに立ってください。",
     "exampleReading": "ここにたってください。",
     "exampleTranslation": "여기에 서 주세요.",
-    "tags": ["동작"],
+    "tags": [
+      "동작"
+    ],
     "order": 110
   },
   {
@@ -1328,7 +1617,9 @@
     "exampleSentence": "椅子に座ってください。",
     "exampleReading": "いすにすわってください。",
     "exampleTranslation": "의자에 앉아 주세요.",
-    "tags": ["동작"],
+    "tags": [
+      "동작"
+    ],
     "order": 111
   },
   {
@@ -1340,7 +1631,9 @@
     "exampleSentence": "ここで待ってください。",
     "exampleReading": "ここでまってください。",
     "exampleTranslation": "여기서 기다려 주세요.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 112
   },
   {
@@ -1352,7 +1645,9 @@
     "exampleSentence": "荷物を持ちます。",
     "exampleReading": "にもつをもちます。",
     "exampleTranslation": "짐을 듭니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 113
   },
   {
@@ -1364,7 +1659,9 @@
     "exampleSentence": "パソコンを使います。",
     "exampleReading": "ぱそこんをつかいます。",
     "exampleTranslation": "컴퓨터를 사용합니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 114
   },
   {
@@ -1376,7 +1673,10 @@
     "exampleSentence": "ケーキを作ります。",
     "exampleReading": "けーきをつくります。",
     "exampleTranslation": "케이크를 만듭니다.",
-    "tags": ["일상", "음식"],
+    "tags": [
+      "일상",
+      "음식"
+    ],
     "order": 115
   },
   {
@@ -1388,7 +1688,9 @@
     "exampleSentence": "部屋に入ります。",
     "exampleReading": "へやにはいります。",
     "exampleTranslation": "방에 들어갑니다.",
-    "tags": ["이동"],
+    "tags": [
+      "이동"
+    ],
     "order": 116
   },
   {
@@ -1400,7 +1702,9 @@
     "exampleSentence": "家を出ます。",
     "exampleReading": "いえをでます。",
     "exampleTranslation": "집을 나갑니다.",
-    "tags": ["이동"],
+    "tags": [
+      "이동"
+    ],
     "order": 117
   },
   {
@@ -1412,7 +1716,9 @@
     "exampleSentence": "ドアを開けてください。",
     "exampleReading": "どあをあけてください。",
     "exampleTranslation": "문을 열어 주세요.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 118
   },
   {
@@ -1424,7 +1730,9 @@
     "exampleSentence": "窓を閉めてください。",
     "exampleReading": "まどをしめてください。",
     "exampleTranslation": "창문을 닫아 주세요.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 119
   },
   {
@@ -1436,7 +1744,9 @@
     "exampleSentence": "日本語を教えます。",
     "exampleReading": "にほんごをおしえます。",
     "exampleTranslation": "일본어를 가르칩니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 120
   },
   {
@@ -1448,7 +1758,9 @@
     "exampleSentence": "ピアノを習います。",
     "exampleReading": "ぴあのをならいます。",
     "exampleTranslation": "피아노를 배웁니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 121
   },
   {
@@ -1460,7 +1772,9 @@
     "exampleSentence": "日本語が分かります。",
     "exampleReading": "にほんごがわかります。",
     "exampleTranslation": "일본어를 알겠습니다.",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 122
   },
   {
@@ -1472,7 +1786,9 @@
     "exampleSentence": "宿題を忘れました。",
     "exampleReading": "しゅくだいをわすれました。",
     "exampleTranslation": "숙제를 잊었습니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 123
   },
   {
@@ -1484,7 +1800,9 @@
     "exampleSentence": "銀行で働いています。",
     "exampleReading": "ぎんこうではたらいています。",
     "exampleTranslation": "은행에서 일하고 있습니다.",
-    "tags": ["일"],
+    "tags": [
+      "일"
+    ],
     "order": 124
   },
   {
@@ -1496,7 +1814,9 @@
     "exampleSentence": "今日は学校を休みます。",
     "exampleReading": "きょうはがっこうをやすみます。",
     "exampleTranslation": "오늘은 학교를 쉽니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 125
   },
   {
@@ -1508,7 +1828,9 @@
     "exampleSentence": "友達と遊びます。",
     "exampleReading": "ともだちとあそびます。",
     "exampleTranslation": "친구와 놉니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 126
   },
   {
@@ -1520,7 +1842,10 @@
     "exampleSentence": "東京に住んでいます。",
     "exampleReading": "とうきょうにすんでいます。",
     "exampleTranslation": "도쿄에 살고 있습니다.",
-    "tags": ["일상", "장소"],
+    "tags": [
+      "일상",
+      "장소"
+    ],
     "order": 127
   },
   {
@@ -1532,7 +1857,9 @@
     "exampleSentence": "コートを着ます。",
     "exampleReading": "こーとをきます。",
     "exampleTranslation": "코트를 입습니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 128
   },
   {
@@ -1544,7 +1871,9 @@
     "exampleSentence": "手を洗います。",
     "exampleReading": "てをあらいます。",
     "exampleTranslation": "손을 씻습니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 129
   },
   {
@@ -1556,7 +1885,9 @@
     "exampleSentence": "写真を撮ります。",
     "exampleReading": "しゃしんをとります。",
     "exampleTranslation": "사진을 찍습니다.",
-    "tags": ["취미"],
+    "tags": [
+      "취미"
+    ],
     "order": 130
   },
   {
@@ -1568,7 +1899,10 @@
     "exampleSentence": "日曜日に出かけます。",
     "exampleReading": "にちようびにでかけます。",
     "exampleTranslation": "일요일에 외출합니다.",
-    "tags": ["이동", "일상"],
+    "tags": [
+      "이동",
+      "일상"
+    ],
     "order": 131
   },
   {
@@ -1580,7 +1914,9 @@
     "exampleSentence": "バスに乗ります。",
     "exampleReading": "ばすにのります。",
     "exampleTranslation": "버스를 탑니다.",
-    "tags": ["교통"],
+    "tags": [
+      "교통"
+    ],
     "order": 132
   },
   {
@@ -1592,7 +1928,9 @@
     "exampleSentence": "次の駅で降ります。",
     "exampleReading": "つぎのえきでおります。",
     "exampleTranslation": "다음 역에서 내립니다.",
-    "tags": ["교통"],
+    "tags": [
+      "교통"
+    ],
     "order": 133
   },
   {
@@ -1604,7 +1942,10 @@
     "exampleSentence": "右に曲がってください。",
     "exampleReading": "みぎにまがってください。",
     "exampleTranslation": "오른쪽으로 돌아 주세요.",
-    "tags": ["이동", "교통"],
+    "tags": [
+      "이동",
+      "교통"
+    ],
     "order": 134
   },
   {
@@ -1616,7 +1957,9 @@
     "exampleSentence": "花が死にました。",
     "exampleReading": "はながしにました。",
     "exampleTranslation": "꽃이 죽었습니다.",
-    "tags": ["기본"],
+    "tags": [
+      "기본"
+    ],
     "order": 135
   },
   {
@@ -1628,7 +1971,9 @@
     "exampleSentence": "この部屋は大きいです。",
     "exampleReading": "このへやはおおきいです。",
     "exampleTranslation": "이 방은 큽니다.",
-    "tags": ["크기"],
+    "tags": [
+      "크기"
+    ],
     "order": 136
   },
   {
@@ -1640,7 +1985,9 @@
     "exampleSentence": "小さい犬がいます。",
     "exampleReading": "ちいさいいぬがいます。",
     "exampleTranslation": "작은 개가 있습니다.",
-    "tags": ["크기"],
+    "tags": [
+      "크기"
+    ],
     "order": 137
   },
   {
@@ -1652,7 +1999,9 @@
     "exampleSentence": "新しい靴を買いました。",
     "exampleReading": "あたらしいくつをかいました。",
     "exampleTranslation": "새 신발을 샀습니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 138
   },
   {
@@ -1664,7 +2013,9 @@
     "exampleSentence": "この建物は古いです。",
     "exampleReading": "このたてものはふるいです。",
     "exampleTranslation": "이 건물은 오래됐습니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 139
   },
   {
@@ -1676,7 +2027,10 @@
     "exampleSentence": "この鞄は高いです。",
     "exampleReading": "このかばんはたかいです。",
     "exampleTranslation": "이 가방은 비쌉니다.",
-    "tags": ["크기", "쇼핑"],
+    "tags": [
+      "크기",
+      "쇼핑"
+    ],
     "order": 140
   },
   {
@@ -1688,7 +2042,9 @@
     "exampleSentence": "あの店は安いです。",
     "exampleReading": "あのみせはやすいです。",
     "exampleTranslation": "저 가게는 쌉니다.",
-    "tags": ["쇼핑"],
+    "tags": [
+      "쇼핑"
+    ],
     "order": 141
   },
   {
@@ -1700,7 +2056,9 @@
     "exampleSentence": "この映画は長いです。",
     "exampleReading": "このえいがはながいです。",
     "exampleTranslation": "이 영화는 깁니다.",
-    "tags": ["크기"],
+    "tags": [
+      "크기"
+    ],
     "order": 142
   },
   {
@@ -1712,7 +2070,9 @@
     "exampleSentence": "夏休みは短いです。",
     "exampleReading": "なつやすみはみじかいです。",
     "exampleTranslation": "여름 방학은 짧습니다.",
-    "tags": ["크기"],
+    "tags": [
+      "크기"
+    ],
     "order": 143
   },
   {
@@ -1724,7 +2084,9 @@
     "exampleSentence": "今日は暑いです。",
     "exampleReading": "きょうはあついです。",
     "exampleTranslation": "오늘은 덥습니다.",
-    "tags": ["날씨"],
+    "tags": [
+      "날씨"
+    ],
     "order": 144
   },
   {
@@ -1736,7 +2098,9 @@
     "exampleSentence": "冬は寒いです。",
     "exampleReading": "ふゆはさむいです。",
     "exampleTranslation": "겨울은 춥습니다.",
-    "tags": ["날씨"],
+    "tags": [
+      "날씨"
+    ],
     "order": 145
   },
   {
@@ -1748,7 +2112,9 @@
     "exampleSentence": "今日は暖かいです。",
     "exampleReading": "きょうはあたたかいです。",
     "exampleTranslation": "오늘은 따뜻합니다.",
-    "tags": ["날씨"],
+    "tags": [
+      "날씨"
+    ],
     "order": 146
   },
   {
@@ -1760,7 +2126,9 @@
     "exampleSentence": "秋は涼しいです。",
     "exampleReading": "あきはすずしいです。",
     "exampleTranslation": "가을은 시원합니다.",
-    "tags": ["날씨"],
+    "tags": [
+      "날씨"
+    ],
     "order": 147
   },
   {
@@ -1772,7 +2140,9 @@
     "exampleSentence": "この料理は美味しいです。",
     "exampleReading": "このりょうりはおいしいです。",
     "exampleTranslation": "이 요리는 맛있습니다.",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 148
   },
   {
@@ -1784,7 +2154,9 @@
     "exampleSentence": "この薬は不味いです。",
     "exampleReading": "このくすりはまずいです。",
     "exampleTranslation": "이 약은 맛없습니다.",
-    "tags": ["음식"],
+    "tags": [
+      "음식"
+    ],
     "order": 149
   },
   {
@@ -1796,7 +2168,9 @@
     "exampleSentence": "旅行は楽しいです。",
     "exampleReading": "りょこうはたのしいです。",
     "exampleTranslation": "여행은 즐겁습니다.",
-    "tags": ["감정"],
+    "tags": [
+      "감정"
+    ],
     "order": 150
   },
   {
@@ -1808,7 +2182,9 @@
     "exampleSentence": "この本は面白いです。",
     "exampleReading": "このほんはおもしろいです。",
     "exampleTranslation": "이 책은 재미있습니다.",
-    "tags": ["감정"],
+    "tags": [
+      "감정"
+    ],
     "order": 151
   },
   {
@@ -1820,7 +2196,9 @@
     "exampleSentence": "漢字は難しいです。",
     "exampleReading": "かんじはむずかしいです。",
     "exampleTranslation": "한자는 어렵습니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 152
   },
   {
@@ -1832,7 +2210,9 @@
     "exampleSentence": "このテストは易しいです。",
     "exampleReading": "このてすとはやさしいです。",
     "exampleTranslation": "이 시험은 쉽습니다.",
-    "tags": ["학교"],
+    "tags": [
+      "학교"
+    ],
     "order": 153
   },
   {
@@ -1844,7 +2224,9 @@
     "exampleSentence": "今週は忙しいです。",
     "exampleReading": "こんしゅうはいそがしいです。",
     "exampleTranslation": "이번 주는 바쁩니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 154
   },
   {
@@ -1856,7 +2238,9 @@
     "exampleSentence": "白い猫が好きです。",
     "exampleReading": "しろいねこがすきです。",
     "exampleTranslation": "하얀 고양이를 좋아합니다.",
-    "tags": ["색"],
+    "tags": [
+      "색"
+    ],
     "order": 155
   },
   {
@@ -1868,7 +2252,9 @@
     "exampleSentence": "黒い靴を履いています。",
     "exampleReading": "くろいくつをはいています。",
     "exampleTranslation": "검은 신발을 신고 있습니다.",
-    "tags": ["색"],
+    "tags": [
+      "색"
+    ],
     "order": 156
   },
   {
@@ -1880,7 +2266,9 @@
     "exampleSentence": "赤い花がきれいです。",
     "exampleReading": "あかいはながきれいです。",
     "exampleTranslation": "빨간 꽃이 예쁩니다.",
-    "tags": ["색"],
+    "tags": [
+      "색"
+    ],
     "order": 157
   },
   {
@@ -1892,7 +2280,10 @@
     "exampleSentence": "空が青いです。",
     "exampleReading": "そらがあおいです。",
     "exampleTranslation": "하늘이 파랗습니다.",
-    "tags": ["색", "자연"],
+    "tags": [
+      "색",
+      "자연"
+    ],
     "order": 158
   },
   {
@@ -1904,7 +2295,10 @@
     "exampleSentence": "お腹が痛いです。",
     "exampleReading": "おなかがいたいです。",
     "exampleTranslation": "배가 아픕니다.",
-    "tags": ["건강", "신체"],
+    "tags": [
+      "건강",
+      "신체"
+    ],
     "order": 159
   },
   {
@@ -1916,7 +2310,10 @@
     "exampleSentence": "この映画は良いです。",
     "exampleReading": "このえいがはいいです。",
     "exampleTranslation": "이 영화는 좋습니다.",
-    "tags": ["감정", "기본"],
+    "tags": [
+      "감정",
+      "기본"
+    ],
     "order": 160
   },
   {
@@ -1928,7 +2325,10 @@
     "exampleSentence": "お元気ですか。",
     "exampleReading": "おげんきですか。",
     "exampleTranslation": "잘 지내십니까?",
-    "tags": ["인사", "건강"],
+    "tags": [
+      "인사",
+      "건강"
+    ],
     "order": 161
   },
   {
@@ -1940,7 +2340,9 @@
     "exampleSentence": "日本料理が好きです。",
     "exampleReading": "にほんりょうりがすきです。",
     "exampleTranslation": "일본 요리를 좋아합니다.",
-    "tags": ["감정"],
+    "tags": [
+      "감정"
+    ],
     "order": 162
   },
   {
@@ -1952,7 +2354,9 @@
     "exampleSentence": "野菜が嫌いです。",
     "exampleReading": "やさいがきらいです。",
     "exampleTranslation": "채소를 싫어합니다.",
-    "tags": ["감정"],
+    "tags": [
+      "감정"
+    ],
     "order": 163
   },
   {
@@ -1964,7 +2368,9 @@
     "exampleSentence": "田中さんは歌が上手です。",
     "exampleReading": "たなかさんはうたがじょうずです。",
     "exampleTranslation": "다나카 씨는 노래를 잘합니다.",
-    "tags": ["능력"],
+    "tags": [
+      "능력"
+    ],
     "order": 164
   },
   {
@@ -1976,7 +2382,9 @@
     "exampleSentence": "料理が下手です。",
     "exampleReading": "りょうりがへたです。",
     "exampleTranslation": "요리를 못합니다.",
-    "tags": ["능력"],
+    "tags": [
+      "능력"
+    ],
     "order": 165
   },
   {
@@ -1988,7 +2396,9 @@
     "exampleSentence": "図書館は静かです。",
     "exampleReading": "としょかんはしずかです。",
     "exampleTranslation": "도서관은 조용합니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 166
   },
   {
@@ -2000,7 +2410,10 @@
     "exampleSentence": "この町は賑やかです。",
     "exampleReading": "このまちはにぎやかです。",
     "exampleTranslation": "이 마을은 번화합니다.",
-    "tags": ["상태", "장소"],
+    "tags": [
+      "상태",
+      "장소"
+    ],
     "order": 167
   },
   {
@@ -2012,7 +2425,9 @@
     "exampleSentence": "この寺は有名です。",
     "exampleReading": "このてらはゆうめいです。",
     "exampleTranslation": "이 절은 유명합니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 168
   },
   {
@@ -2024,7 +2439,9 @@
     "exampleSentence": "この辞書は便利です。",
     "exampleReading": "このじしょはべんりです。",
     "exampleTranslation": "이 사전은 편리합니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 169
   },
   {
@@ -2036,7 +2453,10 @@
     "exampleSentence": "ここは交通が不便です。",
     "exampleReading": "ここはこうつうがふべんです。",
     "exampleTranslation": "여기는 교통이 불편합니다.",
-    "tags": ["상태", "교통"],
+    "tags": [
+      "상태",
+      "교통"
+    ],
     "order": 170
   },
   {
@@ -2048,7 +2468,9 @@
     "exampleSentence": "日曜日は暇です。",
     "exampleReading": "にちようびはひまです。",
     "exampleTranslation": "일요일은 한가합니다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 171
   },
   {
@@ -2060,7 +2482,10 @@
     "exampleSentence": "仕事が大変です。",
     "exampleReading": "しごとがたいへんです。",
     "exampleTranslation": "일이 힘듭니다.",
-    "tags": ["일상", "감정"],
+    "tags": [
+      "일상",
+      "감정"
+    ],
     "order": 172
   },
   {
@@ -2072,7 +2497,10 @@
     "exampleSentence": "大丈夫ですか。",
     "exampleReading": "だいじょうぶですか。",
     "exampleTranslation": "괜찮습니까?",
-    "tags": ["일상", "건강"],
+    "tags": [
+      "일상",
+      "건강"
+    ],
     "order": 173
   },
   {
@@ -2084,7 +2512,9 @@
     "exampleSentence": "この花はきれいです。",
     "exampleReading": "このはなはきれいです。",
     "exampleTranslation": "이 꽃은 예쁩니다.",
-    "tags": ["상태"],
+    "tags": [
+      "상태"
+    ],
     "order": 174
   },
   {
@@ -2096,7 +2526,10 @@
     "exampleSentence": "あの人は親切です。",
     "exampleReading": "あのひとはしんせつです。",
     "exampleTranslation": "저 사람은 친절합니다.",
-    "tags": ["사람", "성격"],
+    "tags": [
+      "사람",
+      "성격"
+    ],
     "order": 175
   },
   {
@@ -2108,7 +2541,9 @@
     "exampleSentence": "この料理はとても美味しいです。",
     "exampleReading": "このりょうりはとてもおいしいです。",
     "exampleTranslation": "이 요리는 매우 맛있습니다.",
-    "tags": ["정도"],
+    "tags": [
+      "정도"
+    ],
     "order": 176
   },
   {
@@ -2120,7 +2555,9 @@
     "exampleSentence": "本をたくさん読みます。",
     "exampleReading": "ほんをたくさんよみます。",
     "exampleTranslation": "책을 많이 읽습니다.",
-    "tags": ["수량"],
+    "tags": [
+      "수량"
+    ],
     "order": 177
   },
   {
@@ -2132,7 +2569,10 @@
     "exampleSentence": "日本語が少し分かります。",
     "exampleReading": "にほんごがすこしわかります。",
     "exampleTranslation": "일본어를 조금 알겠습니다.",
-    "tags": ["수량", "정도"],
+    "tags": [
+      "수량",
+      "정도"
+    ],
     "order": 178
   },
   {
@@ -2144,7 +2584,9 @@
     "exampleSentence": "いつもここで朝ごはんを食べます。",
     "exampleReading": "いつもここであさごはんをたべます。",
     "exampleTranslation": "항상 여기서 아침밥을 먹습니다.",
-    "tags": ["빈도"],
+    "tags": [
+      "빈도"
+    ],
     "order": 179
   },
   {
@@ -2156,7 +2598,9 @@
     "exampleSentence": "時々映画を見ます。",
     "exampleReading": "ときどきえいがをみます。",
     "exampleTranslation": "가끔 영화를 봅니다.",
-    "tags": ["빈도"],
+    "tags": [
+      "빈도"
+    ],
     "order": 180
   },
   {
@@ -2168,7 +2612,9 @@
     "exampleSentence": "よくコーヒーを飲みます。",
     "exampleReading": "よくこーひーをのみます。",
     "exampleTranslation": "자주 커피를 마십니다.",
-    "tags": ["빈도"],
+    "tags": [
+      "빈도"
+    ],
     "order": 181
   },
   {
@@ -2180,7 +2626,10 @@
     "exampleSentence": "あまり甘いものは食べません。",
     "exampleReading": "あまりあまいものはたべません。",
     "exampleTranslation": "별로 단 것은 먹지 않습니다.",
-    "tags": ["빈도", "정도"],
+    "tags": [
+      "빈도",
+      "정도"
+    ],
     "order": 182
   },
   {
@@ -2192,7 +2641,9 @@
     "exampleSentence": "全然分かりません。",
     "exampleReading": "ぜんぜんわかりません。",
     "exampleTranslation": "전혀 모르겠습니다.",
-    "tags": ["정도"],
+    "tags": [
+      "정도"
+    ],
     "order": 183
   },
   {
@@ -2204,7 +2655,9 @@
     "exampleSentence": "まだ準備ができていません。",
     "exampleReading": "まだじゅんびができていません。",
     "exampleTranslation": "아직 준비가 안 됐습니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 184
   },
   {
@@ -2216,7 +2669,9 @@
     "exampleSentence": "もう御飯を食べましたか。",
     "exampleReading": "もうごはんをたべましたか。",
     "exampleTranslation": "이미 밥을 먹었습니까?",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 185
   },
   {
@@ -2228,7 +2683,10 @@
     "exampleSentence": "まっすぐ行ってください。",
     "exampleReading": "まっすぐいってください。",
     "exampleTranslation": "곧장 가 주세요.",
-    "tags": ["이동", "교통"],
+    "tags": [
+      "이동",
+      "교통"
+    ],
     "order": 186
   },
   {
@@ -2240,7 +2698,10 @@
     "exampleSentence": "ゆっくり話してください。",
     "exampleReading": "ゆっくりはなしてください。",
     "exampleTranslation": "천천히 말해 주세요.",
-    "tags": ["정도", "언어"],
+    "tags": [
+      "정도",
+      "언어"
+    ],
     "order": 187
   },
   {
@@ -2252,7 +2713,9 @@
     "exampleSentence": "一緒に食べましょう。",
     "exampleReading": "いっしょにたべましょう。",
     "exampleTranslation": "함께 먹읍시다.",
-    "tags": ["일상"],
+    "tags": [
+      "일상"
+    ],
     "order": 188
   },
   {
@@ -2264,7 +2727,9 @@
     "exampleSentence": "多分明日は雨です。",
     "exampleReading": "たぶんあしたはあめです。",
     "exampleTranslation": "아마 내일은 비입니다.",
-    "tags": ["추측"],
+    "tags": [
+      "추측"
+    ],
     "order": 189
   },
   {
@@ -2276,7 +2741,9 @@
     "exampleSentence": "初めて日本に来ました。",
     "exampleReading": "はじめてにほんにきました。",
     "exampleTranslation": "처음으로 일본에 왔습니다.",
-    "tags": ["시간"],
+    "tags": [
+      "시간"
+    ],
     "order": 190
   },
   {
@@ -2288,7 +2755,10 @@
     "exampleSentence": "りんごを一つください。",
     "exampleReading": "りんごをひとつください。",
     "exampleTranslation": "사과를 하나 주세요.",
-    "tags": ["수", "쇼핑"],
+    "tags": [
+      "수",
+      "쇼핑"
+    ],
     "order": 191
   },
   {
@@ -2300,7 +2770,10 @@
     "exampleSentence": "卵を二つ買いました。",
     "exampleReading": "たまごをふたつかいました。",
     "exampleTranslation": "달걀을 두 개 샀습니다.",
-    "tags": ["수", "쇼핑"],
+    "tags": [
+      "수",
+      "쇼핑"
+    ],
     "order": 192
   },
   {
@@ -2312,7 +2785,9 @@
     "exampleSentence": "みかんを三つ食べました。",
     "exampleReading": "みかんをみっつたべました。",
     "exampleTranslation": "귤을 세 개 먹었습니다.",
-    "tags": ["수"],
+    "tags": [
+      "수"
+    ],
     "order": 193
   },
   {
@@ -2324,7 +2799,10 @@
     "exampleSentence": "一人で旅行します。",
     "exampleReading": "ひとりでりょこうします。",
     "exampleTranslation": "혼자서 여행합니다.",
-    "tags": ["수", "사람"],
+    "tags": [
+      "수",
+      "사람"
+    ],
     "order": 194
   },
   {
@@ -2336,7 +2814,10 @@
     "exampleSentence": "二人で行きましょう。",
     "exampleReading": "ふたりでいきましょう。",
     "exampleTranslation": "둘이서 갑시다.",
-    "tags": ["수", "사람"],
+    "tags": [
+      "수",
+      "사람"
+    ],
     "order": 195
   },
   {
@@ -2348,7 +2829,9 @@
     "exampleSentence": "先生、おはようございます。",
     "exampleReading": "せんせい、おはようございます。",
     "exampleTranslation": "선생님, 안녕하세요.",
-    "tags": ["인사"],
+    "tags": [
+      "인사"
+    ],
     "order": 196
   },
   {
@@ -2360,7 +2843,9 @@
     "exampleSentence": "プレゼント、ありがとうございます。",
     "exampleReading": "ぷれぜんと、ありがとうございます。",
     "exampleTranslation": "선물, 감사합니다.",
-    "tags": ["인사"],
+    "tags": [
+      "인사"
+    ],
     "order": 197
   },
   {
@@ -2372,7 +2857,10 @@
     "exampleSentence": "すみません、トイレはどこですか。",
     "exampleReading": "すみません、といれはどこですか。",
     "exampleTranslation": "실례합니다, 화장실은 어디입니까?",
-    "tags": ["인사", "일상"],
+    "tags": [
+      "인사",
+      "일상"
+    ],
     "order": 198
   },
   {
@@ -2384,7 +2872,10 @@
     "exampleSentence": "これをお願いします。",
     "exampleReading": "これをおねがいします。",
     "exampleTranslation": "이것을 부탁합니다.",
-    "tags": ["인사", "쇼핑"],
+    "tags": [
+      "인사",
+      "쇼핑"
+    ],
     "order": 199
   },
   {
@@ -2396,7 +2887,4882 @@
     "exampleSentence": "では、いただきます。",
     "exampleReading": "では、いただきます。",
     "exampleTranslation": "그럼, 잘 먹겠습니다.",
-    "tags": ["인사", "식사"],
+    "tags": [
+      "인사",
+      "식사"
+    ],
     "order": 200
+  },
+  {
+    "word": "間",
+    "reading": "あいだ",
+    "meaningKo": "사이. 동안",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "授業の間に寝てしまいました。",
+    "exampleReading": "じゅぎょうのあいだにねてしまいました。",
+    "exampleTranslation": "수업 시간 동안 자버렸습니다.",
+    "tags": [],
+    "order": 201
+  },
+  {
+    "word": "会う",
+    "reading": "あう",
+    "meaningKo": "(-に+) 만나다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅で友達に会いました。",
+    "exampleReading": "えきでともだちにあいました。",
+    "exampleTranslation": "역에서 친구를 만났습니다.",
+    "tags": [],
+    "order": 202
+  },
+  {
+    "word": "明るい",
+    "reading": "あかるい",
+    "meaningKo": "밝다. 환하다. 명랑하다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この部屋は明るいです。",
+    "exampleReading": "このへやはあかるいです。",
+    "exampleTranslation": "이 방은 밝습니다.",
+    "tags": [],
+    "order": 203
+  },
+  {
+    "word": "秋",
+    "reading": "あき",
+    "meaningKo": "가을",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "秋はくだものがおいしいです。",
+    "exampleReading": "あきはくだものがおいしいです。",
+    "exampleTranslation": "가을에는 과일이 맛있습니다.",
+    "tags": [],
+    "order": 204
+  },
+  {
+    "word": "開く",
+    "reading": "あく",
+    "meaningKo": "열리다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ドアが開きました。",
+    "exampleReading": "ドアがあきました。",
+    "exampleTranslation": "문이 열렸습니다.",
+    "tags": [],
+    "order": 205
+  },
+  {
+    "word": "朝御飯",
+    "reading": "あさごはん",
+    "meaningKo": "아침 식사",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎日朝御飯を食べます。",
+    "exampleReading": "まいにちあさごはんをたべます。",
+    "exampleTranslation": "매일 아침 식사를 합니다.",
+    "tags": [],
+    "order": 206
+  },
+  {
+    "word": "あさって",
+    "reading": "あさって",
+    "meaningKo": "모레",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あさってテストがあります。",
+    "exampleReading": "あさってテストがあります。",
+    "exampleTranslation": "모레 시험이 있습니다.",
+    "tags": [],
+    "order": 207
+  },
+  {
+    "word": "あそこ",
+    "reading": "あそこ",
+    "meaningKo": "저기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あそこに学校があります。",
+    "exampleReading": "あそこにがっこうがあります。",
+    "exampleTranslation": "저기에 학교가 있습니다.",
+    "tags": [],
+    "order": 208
+  },
+  {
+    "word": "あちら",
+    "reading": "あちら",
+    "meaningKo": "저쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "トイレはあちらです。",
+    "exampleReading": "トイレはあちらです。",
+    "exampleTranslation": "화장실은 저쪽입니다.",
+    "tags": [],
+    "order": 209
+  },
+  {
+    "word": "後",
+    "reading": "あと",
+    "meaningKo": "(시간적으로)후. 나중",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "後で電話します。",
+    "exampleReading": "あとででんわします。",
+    "exampleTranslation": "나중에 전화하겠습니다.",
+    "tags": [],
+    "order": 210
+  },
+  {
+    "word": "あなた",
+    "reading": "あなた",
+    "meaningKo": "당신",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あなたのお名前は何ですか。",
+    "exampleReading": "あなたのおなまえはなんですか。",
+    "exampleTranslation": "당신의 이름은 무엇입니까?",
+    "tags": [],
+    "order": 211
+  },
+  {
+    "word": "兄",
+    "reading": "あに",
+    "meaningKo": "(나의)형. 오빠",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "兄は大学生です。",
+    "exampleReading": "あにはだいがくせいです。",
+    "exampleTranslation": "형은 대학생입니다.",
+    "tags": [],
+    "order": 212
+  },
+  {
+    "word": "姉",
+    "reading": "あね",
+    "meaningKo": "(나의)누나. 언니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "姉は東京に住んでいます。",
+    "exampleReading": "あねはとうきょうにすんでいます。",
+    "exampleTranslation": "언니는 도쿄에 살고 있습니다.",
+    "tags": [],
+    "order": 213
+  },
+  {
+    "word": "あの",
+    "reading": "あの",
+    "meaningKo": "저",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの人はだれですか。",
+    "exampleReading": "あのひとはだれですか。",
+    "exampleTranslation": "저 사람은 누구입니까?",
+    "tags": [],
+    "order": 214
+  },
+  {
+    "word": "アパート",
+    "reading": "アパート",
+    "meaningKo": "아파트",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "アパートに住んでいます。",
+    "exampleReading": "アパートにすんでいます。",
+    "exampleTranslation": "아파트에 살고 있습니다.",
+    "tags": [],
+    "order": 215
+  },
+  {
+    "word": "浴びる",
+    "reading": "あびる",
+    "meaningKo": "뒤집어쓰다. (샤워를) 하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎朝シャワーを浴びます。",
+    "exampleReading": "まいあさシャワーをあびます。",
+    "exampleTranslation": "매일 아침 샤워를 합니다.",
+    "tags": [],
+    "order": 216
+  },
+  {
+    "word": "危ない",
+    "reading": "あぶない",
+    "meaningKo": "위험하다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "ここは危ないですよ。",
+    "exampleReading": "ここはあぶないですよ。",
+    "exampleTranslation": "여기는 위험해요.",
+    "tags": [],
+    "order": 217
+  },
+  {
+    "word": "甘い",
+    "reading": "あまい",
+    "meaningKo": "달다. 달콤하다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "このケーキは甘いです。",
+    "exampleReading": "このケーキはあまいです。",
+    "exampleTranslation": "이 케이크는 달아요.",
+    "tags": [],
+    "order": 218
+  },
+  {
+    "word": "あれ",
+    "reading": "あれ",
+    "meaningKo": "저것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あれは何ですか。",
+    "exampleReading": "あれはなんですか。",
+    "exampleTranslation": "저것은 무엇입니까?",
+    "tags": [],
+    "order": 219
+  },
+  {
+    "word": "あんな",
+    "reading": "あんな",
+    "meaningKo": "저런",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "あんな所に行きたいです。",
+    "exampleReading": "あんなところにいきたいです。",
+    "exampleTranslation": "저런 곳에 가고 싶습니다.",
+    "tags": [],
+    "order": 220
+  },
+  {
+    "word": "いい",
+    "reading": "いい",
+    "meaningKo": "좋다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日はいい天気ですね。",
+    "exampleReading": "きょうはいいてんきですね。",
+    "exampleTranslation": "오늘은 좋은 날씨네요.",
+    "tags": [],
+    "order": 221
+  },
+  {
+    "word": "いいえ",
+    "reading": "いいえ",
+    "meaningKo": "아니오",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "いいえ、違います。",
+    "exampleReading": "いいえ、ちがいます。",
+    "exampleTranslation": "아니오, 다릅니다.",
+    "tags": [],
+    "order": 222
+  },
+  {
+    "word": "言う",
+    "reading": "いう/ゆう",
+    "meaningKo": "말하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "先生が何と言いましたか。",
+    "exampleReading": "せんせいがなんといいましたか。",
+    "exampleTranslation": "선생님이 뭐라고 말씀하셨습니까?",
+    "tags": [],
+    "order": 223
+  },
+  {
+    "word": "いくつ",
+    "reading": "いくつ",
+    "meaningKo": "몇. 몇개. 몇살",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "りんごはいくつありますか。",
+    "exampleReading": "りんごはいくつありますか。",
+    "exampleTranslation": "사과는 몇 개 있습니까?",
+    "tags": [],
+    "order": 224
+  },
+  {
+    "word": "いくら",
+    "reading": "いくら",
+    "meaningKo": "얼마",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この本はいくらですか。",
+    "exampleReading": "このほんはいくらですか。",
+    "exampleTranslation": "이 책은 얼마입니까?",
+    "tags": [],
+    "order": 225
+  },
+  {
+    "word": "医者",
+    "reading": "いしゃ",
+    "meaningKo": "의사",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "姉は医者です。",
+    "exampleReading": "あねはいしゃです。",
+    "exampleTranslation": "언니는 의사입니다.",
+    "tags": [],
+    "order": 226
+  },
+  {
+    "word": "椅子",
+    "reading": "いす",
+    "meaningKo": "의자",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "椅子に座ってください。",
+    "exampleReading": "いすにすわってください。",
+    "exampleTranslation": "의자에 앉아 주세요.",
+    "tags": [],
+    "order": 227
+  },
+  {
+    "word": "一",
+    "reading": "いち",
+    "meaningKo": "일. 하나",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "一から十まで数えます。",
+    "exampleReading": "いちからじゅうまでかぞえます。",
+    "exampleTranslation": "1부터 10까지 셉니다.",
+    "tags": [],
+    "order": 228
+  },
+  {
+    "word": "一日",
+    "reading": "いちにち",
+    "meaningKo": "하루 (기간)",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "一日中家にいました。",
+    "exampleReading": "いちにちじゅういえにいました。",
+    "exampleTranslation": "하루 종일 집에 있었습니다.",
+    "tags": [],
+    "order": 229
+  },
+  {
+    "word": "一番",
+    "reading": "いちばん",
+    "meaningKo": "일번. 첫째. 가장. 제일",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本語が一番好きです。",
+    "exampleReading": "にほんごがいちばんすきです。",
+    "exampleTranslation": "일본어를 가장 좋아합니다.",
+    "tags": [],
+    "order": 230
+  },
+  {
+    "word": "いつ",
+    "reading": "いつ",
+    "meaningKo": "언제",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "テストはいつですか。",
+    "exampleReading": "テストはいつですか。",
+    "exampleTranslation": "시험은 언제입니까?",
+    "tags": [],
+    "order": 231
+  },
+  {
+    "word": "五日",
+    "reading": "いつか",
+    "meaningKo": "5일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "五日に会いましょう。",
+    "exampleReading": "いつかにあいましょう。",
+    "exampleTranslation": "5일에 만납시다.",
+    "tags": [],
+    "order": 232
+  },
+  {
+    "word": "一週間",
+    "reading": "いっしゅうかん",
+    "meaningKo": "일주일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "一週間に二回テニスをします。",
+    "exampleReading": "いっしゅうかんににかいテニスをします。",
+    "exampleTranslation": "일주일에 두 번 테니스를 칩니다.",
+    "tags": [],
+    "order": 233
+  },
+  {
+    "word": "いっしょに",
+    "reading": "いっしょに",
+    "meaningKo": "같이. 함께",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "いっしょに昼ご飯を食べませんか。",
+    "exampleReading": "いっしょにひるごはんをたべませんか。",
+    "exampleTranslation": "같이 점심을 먹지 않겠습니까?",
+    "tags": [],
+    "order": 234
+  },
+  {
+    "word": "五つ",
+    "reading": "いつつ",
+    "meaningKo": "다섯 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "みかんを五つ買いました。",
+    "exampleReading": "みかんをいつつかいました。",
+    "exampleTranslation": "귤을 다섯 개 샀습니다.",
+    "tags": [],
+    "order": 235
+  },
+  {
+    "word": "犬",
+    "reading": "いぬ",
+    "meaningKo": "개",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの犬はかわいいです。",
+    "exampleReading": "あのいぬはかわいいです。",
+    "exampleTranslation": "저 개는 귀엽습니다.",
+    "tags": [],
+    "order": 236
+  },
+  {
+    "word": "嫌な",
+    "reading": "いやな",
+    "meaningKo": "싫은",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "嫌な天気ですね。",
+    "exampleReading": "いやなてんきですね。",
+    "exampleTranslation": "싫은 날씨네요.",
+    "tags": [],
+    "order": 237
+  },
+  {
+    "word": "いらっしゃいませ",
+    "reading": "いらっしゃいませ",
+    "meaningKo": "어서 오십시오",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "いらっしゃいませ。何名様ですか。",
+    "exampleReading": "いらっしゃいませ。なんめいさまですか。",
+    "exampleTranslation": "어서 오십시오. 몇 분이십니까?",
+    "tags": [],
+    "order": 238
+  },
+  {
+    "word": "入口",
+    "reading": "いりぐち",
+    "meaningKo": "입구",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "入口はあちらです。",
+    "exampleReading": "いりぐちはあちらです。",
+    "exampleTranslation": "입구는 저쪽입니다.",
+    "tags": [],
+    "order": 239
+  },
+  {
+    "word": "要る",
+    "reading": "いる",
+    "meaningKo": "필요하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "パスポートが要ります。",
+    "exampleReading": "パスポートがいります。",
+    "exampleTranslation": "여권이 필요합니다.",
+    "tags": [],
+    "order": 240
+  },
+  {
+    "word": "入れる",
+    "reading": "いれる",
+    "meaningKo": "넣다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "かばんに本を入れました。",
+    "exampleReading": "かばんにほんをいれました。",
+    "exampleTranslation": "가방에 책을 넣었습니다.",
+    "tags": [],
+    "order": 241
+  },
+  {
+    "word": "色々",
+    "reading": "いろいろ",
+    "meaningKo": "여러 가지로",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "色々ありがとうございました。",
+    "exampleReading": "いろいろありがとうございました。",
+    "exampleTranslation": "여러모로 감사했습니다.",
+    "tags": [],
+    "order": 242
+  },
+  {
+    "word": "色々な",
+    "reading": "いろいろな",
+    "meaningKo": "여러가지의",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "色々な国の料理が好きです。",
+    "exampleReading": "いろいろなくにのりょうりがすきです。",
+    "exampleTranslation": "여러 나라의 요리를 좋아합니다.",
+    "tags": [],
+    "order": 243
+  },
+  {
+    "word": "上",
+    "reading": "うえ",
+    "meaningKo": "위",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "テーブルの上に花があります。",
+    "exampleReading": "テーブルのうえにはながあります。",
+    "exampleTranslation": "테이블 위에 꽃이 있습니다.",
+    "tags": [],
+    "order": 244
+  },
+  {
+    "word": "後ろ",
+    "reading": "うしろ",
+    "meaningKo": "뒤. 뒤쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "学校の後ろに山があります。",
+    "exampleReading": "がっこうのうしろにやまがあります。",
+    "exampleTranslation": "학교 뒤에 산이 있습니다.",
+    "tags": [],
+    "order": 245
+  },
+  {
+    "word": "歌",
+    "reading": "うた",
+    "meaningKo": "노래",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本の歌を知っていますか。",
+    "exampleReading": "にほんのうたをしっていますか。",
+    "exampleTranslation": "일본 노래를 알고 있습니까?",
+    "tags": [],
+    "order": 246
+  },
+  {
+    "word": "歌う",
+    "reading": "うたう",
+    "meaningKo": "노래 부르다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "友達と歌を歌いました。",
+    "exampleReading": "ともだちとうたをうたいました。",
+    "exampleTranslation": "친구와 노래를 불렀습니다.",
+    "tags": [],
+    "order": 247
+  },
+  {
+    "word": "うどん",
+    "reading": "うどん",
+    "meaningKo": "우동",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "このうどんはおいしいです。",
+    "exampleReading": "このうどんはおいしいです。",
+    "exampleTranslation": "이 우동은 맛있습니다.",
+    "tags": [],
+    "order": 248
+  },
+  {
+    "word": "生まれる",
+    "reading": "うまれる",
+    "meaningKo": "태어나다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "私は東京で生まれました。",
+    "exampleReading": "わたしはとうきょうでうまれました。",
+    "exampleTranslation": "저는 도쿄에서 태어났습니다.",
+    "tags": [],
+    "order": 249
+  },
+  {
+    "word": "売る",
+    "reading": "うる",
+    "meaningKo": "팔다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの店で花を売っています。",
+    "exampleReading": "あのみせではなをうっています。",
+    "exampleTranslation": "저 가게에서 꽃을 팔고 있습니다.",
+    "tags": [],
+    "order": 250
+  },
+  {
+    "word": "うるさい",
+    "reading": "うるさい",
+    "meaningKo": "시끄럽다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "となりの部屋がうるさいです。",
+    "exampleReading": "となりのへやがうるさいです。",
+    "exampleTranslation": "옆방이 시끄럽습니다.",
+    "tags": [],
+    "order": 251
+  },
+  {
+    "word": "上着",
+    "reading": "うわぎ",
+    "meaningKo": "겉옷. 내복 위에 입는 옷",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "上着を脱いでください。",
+    "exampleReading": "うわぎをぬいでください。",
+    "exampleTranslation": "겉옷을 벗어 주세요.",
+    "tags": [],
+    "order": 252
+  },
+  {
+    "word": "絵",
+    "reading": "え",
+    "meaningKo": "그림",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "妹は絵が上手です。",
+    "exampleReading": "いもうとはえがじょうずです。",
+    "exampleTranslation": "여동생은 그림을 잘 그립니다.",
+    "tags": [],
+    "order": 253
+  },
+  {
+    "word": "英語",
+    "reading": "えいご",
+    "meaningKo": "영어",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "英語の本を読みます。",
+    "exampleReading": "えいごのほんをよみます。",
+    "exampleTranslation": "영어 책을 읽습니다.",
+    "tags": [],
+    "order": 254
+  },
+  {
+    "word": "エレベーター",
+    "reading": "エレベーター",
+    "meaningKo": "엘리베이터. 승강기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "エレベーターで三階に行きます。",
+    "exampleReading": "エレベーターでさんがいにいきます。",
+    "exampleTranslation": "엘리베이터로 3층에 갑니다.",
+    "tags": [],
+    "order": 255
+  },
+  {
+    "word": "-円",
+    "reading": "えん",
+    "meaningKo": "엔(일본 화폐 단위)",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "このノートは百円です。",
+    "exampleReading": "このノートはひゃくえんです。",
+    "exampleTranslation": "이 노트는 100엔입니다.",
+    "tags": [],
+    "order": 256
+  },
+  {
+    "word": "鉛筆",
+    "reading": "えんぴつ",
+    "meaningKo": "연필",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "鉛筆で名前を書いてください。",
+    "exampleReading": "えんぴつでなまえをかいてください。",
+    "exampleTranslation": "연필로 이름을 써 주세요.",
+    "tags": [],
+    "order": 257
+  },
+  {
+    "word": "おいしい",
+    "reading": "おいしい",
+    "meaningKo": "맛있다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この料理はおいしいです。",
+    "exampleReading": "このりょうりはおいしいです。",
+    "exampleTranslation": "이 요리는 맛있습니다.",
+    "tags": [],
+    "order": 258
+  },
+  {
+    "word": "多い",
+    "reading": "おおい",
+    "meaningKo": "많다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は人が多いですね。",
+    "exampleReading": "きょうはひとがおおいですね。",
+    "exampleTranslation": "오늘은 사람이 많네요.",
+    "tags": [],
+    "order": 259
+  },
+  {
+    "word": "お菓子",
+    "reading": "おかし",
+    "meaningKo": "과자",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "お菓子を買って帰ります。",
+    "exampleReading": "おかしをかってかえります。",
+    "exampleTranslation": "과자를 사서 돌아갑니다.",
+    "tags": [],
+    "order": 260
+  },
+  {
+    "word": "置く",
+    "reading": "おく",
+    "meaningKo": "두다. 놓다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ここに荷物を置いてください。",
+    "exampleReading": "ここににもつをおいてください。",
+    "exampleTranslation": "여기에 짐을 놓아 주세요.",
+    "tags": [],
+    "order": 261
+  },
+  {
+    "word": "奥さん",
+    "reading": "おくさん",
+    "meaningKo": "부인. 아주머니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "田中さんの奥さんは先生です。",
+    "exampleReading": "たなかさんのおくさんはせんせいです。",
+    "exampleTranslation": "다나카 씨의 부인은 선생님입니다.",
+    "tags": [],
+    "order": 262
+  },
+  {
+    "word": "お酒",
+    "reading": "おさけ",
+    "meaningKo": "술",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "お酒は飲みません。",
+    "exampleReading": "おさけはのみません。",
+    "exampleTranslation": "술은 마시지 않습니다.",
+    "tags": [],
+    "order": 263
+  },
+  {
+    "word": "おじいさん",
+    "reading": "おじいさん",
+    "meaningKo": "할아버지",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おじいさんは元気です。",
+    "exampleReading": "おじいさんはげんきです。",
+    "exampleTranslation": "할아버지는 건강하십니다.",
+    "tags": [],
+    "order": 264
+  },
+  {
+    "word": "おじさん",
+    "reading": "おじさん",
+    "meaningKo": "아저씨",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おじさんは会社員です。",
+    "exampleReading": "おじさんはかいしゃいんです。",
+    "exampleTranslation": "아저씨는 회사원입니다.",
+    "tags": [],
+    "order": 265
+  },
+  {
+    "word": "押す",
+    "reading": "おす",
+    "meaningKo": "밀다. 누르다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "このボタンを押してください。",
+    "exampleReading": "このボタンをおしてください。",
+    "exampleTranslation": "이 버튼을 눌러 주세요.",
+    "tags": [],
+    "order": 266
+  },
+  {
+    "word": "遅い",
+    "reading": "おそい",
+    "meaningKo": "늦다. 느리다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は帰りが遅いです。",
+    "exampleReading": "きょうはかえりがおそいです。",
+    "exampleTranslation": "오늘은 귀가가 늦습니다.",
+    "tags": [],
+    "order": 267
+  },
+  {
+    "word": "男の子",
+    "reading": "おとこのこ",
+    "meaningKo": "남자 아이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "男の子が三人います。",
+    "exampleReading": "おとこのこがさんにんいます。",
+    "exampleTranslation": "남자아이가 세 명 있습니다.",
+    "tags": [],
+    "order": 268
+  },
+  {
+    "word": "おととい",
+    "reading": "おととい",
+    "meaningKo": "그저께",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おととい映画を見ました。",
+    "exampleReading": "おとといえいがをみました。",
+    "exampleTranslation": "그저께 영화를 봤습니다.",
+    "tags": [],
+    "order": 269
+  },
+  {
+    "word": "おととし",
+    "reading": "おととし",
+    "meaningKo": "재작년",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おととし日本に来ました。",
+    "exampleReading": "おととしにほんにきました。",
+    "exampleTranslation": "재작년에 일본에 왔습니다.",
+    "tags": [],
+    "order": 270
+  },
+  {
+    "word": "大人",
+    "reading": "おとな",
+    "meaningKo": "어른",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "大人は千円です。",
+    "exampleReading": "おとなはせんえんです。",
+    "exampleTranslation": "어른은 1000엔입니다.",
+    "tags": [],
+    "order": 271
+  },
+  {
+    "word": "同じ",
+    "reading": "おなじ",
+    "meaningKo": "같은. 동일한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "私たちは同じ学校です。",
+    "exampleReading": "わたしたちはおなじがっこうです。",
+    "exampleTranslation": "우리는 같은 학교입니다.",
+    "tags": [],
+    "order": 272
+  },
+  {
+    "word": "おねがいします",
+    "reading": "おねがいします",
+    "meaningKo": "부탁합니다",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "コーヒーをおねがいします。",
+    "exampleReading": "コーヒーをおねがいします。",
+    "exampleTranslation": "커피 부탁합니다.",
+    "tags": [],
+    "order": 273
+  },
+  {
+    "word": "おばあさん",
+    "reading": "おばあさん",
+    "meaningKo": "할머니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おばあさんは八十歳です。",
+    "exampleReading": "おばあさんははちじっさいです。",
+    "exampleTranslation": "할머니는 여든 살입니다.",
+    "tags": [],
+    "order": 274
+  },
+  {
+    "word": "おばさん",
+    "reading": "おばさん",
+    "meaningKo": "아주머니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おばさんの家に行きました。",
+    "exampleReading": "おばさんのいえにいきました。",
+    "exampleTranslation": "아주머니 댁에 갔습니다.",
+    "tags": [],
+    "order": 275
+  },
+  {
+    "word": "お風呂",
+    "reading": "おふろ",
+    "meaningKo": "목욕. 목욕탕",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "お風呂に入ります。",
+    "exampleReading": "おふろにはいります。",
+    "exampleTranslation": "목욕을 합니다.",
+    "tags": [],
+    "order": 276
+  },
+  {
+    "word": "覚える",
+    "reading": "おぼえる",
+    "meaningKo": "외우다. 기억하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "漢字を覚えます。",
+    "exampleReading": "かんじをおぼえます。",
+    "exampleTranslation": "한자를 외웁니다.",
+    "tags": [],
+    "order": 277
+  },
+  {
+    "word": "重い",
+    "reading": "おもい",
+    "meaningKo": "무겁다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "このかばんは重いです。",
+    "exampleReading": "このかばんはおもいです。",
+    "exampleTranslation": "이 가방은 무겁습니다.",
+    "tags": [],
+    "order": 278
+  },
+  {
+    "word": "思う",
+    "reading": "おもう",
+    "meaningKo": "생각하다. 헤아리다. 느끼다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本語は楽しいと思います。",
+    "exampleReading": "にほんごはたのしいとおもいます。",
+    "exampleTranslation": "일본어는 즐겁다고 생각합니다.",
+    "tags": [],
+    "order": 279
+  },
+  {
+    "word": "おもしろい",
+    "reading": "おもしろい",
+    "meaningKo": "재미있다. 우습다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この本はおもしろいです。",
+    "exampleReading": "このほんはおもしろいです。",
+    "exampleTranslation": "이 책은 재미있습니다.",
+    "tags": [],
+    "order": 280
+  },
+  {
+    "word": "おやすみなさい",
+    "reading": "おやすみなさい",
+    "meaningKo": "안녕히 주무세요",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "おやすみなさい。また明日。",
+    "exampleReading": "おやすみなさい。またあした。",
+    "exampleTranslation": "안녕히 주무세요. 또 내일 봐요.",
+    "tags": [],
+    "order": 281
+  },
+  {
+    "word": "終わる",
+    "reading": "おわる",
+    "meaningKo": "끝나다. 마치다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "授業は三時に終わります。",
+    "exampleReading": "じゅぎょうはさんじにおわります。",
+    "exampleTranslation": "수업은 3시에 끝납니다.",
+    "tags": [],
+    "order": 282
+  },
+  {
+    "word": "女の子",
+    "reading": "おんなのこ",
+    "meaningKo": "여자 아이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "女の子が二人遊んでいます。",
+    "exampleReading": "おんなのこがふたりあそんでいます。",
+    "exampleTranslation": "여자아이가 두 명 놀고 있습니다.",
+    "tags": [],
+    "order": 283
+  },
+  {
+    "word": "外国",
+    "reading": "がいこく",
+    "meaningKo": "외국",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "外国に行きたいです。",
+    "exampleReading": "がいこくにいきたいです。",
+    "exampleTranslation": "외국에 가고 싶습니다.",
+    "tags": [],
+    "order": 284
+  },
+  {
+    "word": "階段",
+    "reading": "かいだん",
+    "meaningKo": "계단",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "階段を上がってください。",
+    "exampleReading": "かいだんをあがってください。",
+    "exampleTranslation": "계단을 올라가 주세요.",
+    "tags": [],
+    "order": 285
+  },
+  {
+    "word": "買い物",
+    "reading": "かいもの",
+    "meaningKo": "물건을 삼. 쇼핑. 장보기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "デパートで買い物をします。",
+    "exampleReading": "デパートでかいものをします。",
+    "exampleTranslation": "백화점에서 쇼핑을 합니다.",
+    "tags": [],
+    "order": 286
+  },
+  {
+    "word": "返す",
+    "reading": "かえす",
+    "meaningKo": "돌려주다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "図書館に本を返します。",
+    "exampleReading": "としょかんにほんをかえします。",
+    "exampleTranslation": "도서관에 책을 반납합니다.",
+    "tags": [],
+    "order": 287
+  },
+  {
+    "word": "顔",
+    "reading": "かお",
+    "meaningKo": "얼굴",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "朝起きて顔を洗います。",
+    "exampleReading": "あさおきてかおをあらいます。",
+    "exampleTranslation": "아침에 일어나서 세수를 합니다.",
+    "tags": [],
+    "order": 288
+  },
+  {
+    "word": "かかる",
+    "reading": "かかる",
+    "meaningKo": "(시간이) 걸리다. (돈이) 들다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅まで十分かかります。",
+    "exampleReading": "えきまでじっぷんかかります。",
+    "exampleTranslation": "역까지 10분 걸립니다.",
+    "tags": [],
+    "order": 289
+  },
+  {
+    "word": "-か月",
+    "reading": "かげつ",
+    "meaningKo": "-개월",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本語を三か月勉強しました。",
+    "exampleReading": "にほんごをさんかげつべんきょうしました。",
+    "exampleTranslation": "일본어를 3개월 공부했습니다.",
+    "tags": [],
+    "order": 290
+  },
+  {
+    "word": "かける",
+    "reading": "かける",
+    "meaningKo": "(안경을) 쓰다. 끼다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "めがねをかけています。",
+    "exampleReading": "めがねをかけています。",
+    "exampleTranslation": "안경을 쓰고 있습니다.",
+    "tags": [],
+    "order": 291
+  },
+  {
+    "word": "貸す",
+    "reading": "かす",
+    "meaningKo": "빌려주다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "友達に本を貸しました。",
+    "exampleReading": "ともだちにほんをかしました。",
+    "exampleTranslation": "친구에게 책을 빌려주었습니다.",
+    "tags": [],
+    "order": 292
+  },
+  {
+    "word": "風",
+    "reading": "かぜ",
+    "meaningKo": "바람",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は風が強いです。",
+    "exampleReading": "きょうはかぜがつよいです。",
+    "exampleTranslation": "오늘은 바람이 강합니다.",
+    "tags": [],
+    "order": 293
+  },
+  {
+    "word": "風邪",
+    "reading": "かぜ",
+    "meaningKo": "감기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "風邪をひきました。",
+    "exampleReading": "かぜをひきました。",
+    "exampleTranslation": "감기에 걸렸습니다.",
+    "tags": [],
+    "order": 294
+  },
+  {
+    "word": "-月",
+    "reading": "がつ",
+    "meaningKo": "-월",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "三月に日本へ行きます。",
+    "exampleReading": "さんがつににほんへいきます。",
+    "exampleTranslation": "3월에 일본에 갑니다.",
+    "tags": [],
+    "order": 295
+  },
+  {
+    "word": "角",
+    "reading": "かど",
+    "meaningKo": "모난 귀퉁이. 구석. 길모퉁이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの角を右に曲がってください。",
+    "exampleReading": "あのかどをみぎにまがってください。",
+    "exampleTranslation": "저 모퉁이를 오른쪽으로 돌아 주세요.",
+    "tags": [],
+    "order": 296
+  },
+  {
+    "word": "花瓶",
+    "reading": "かびん",
+    "meaningKo": "화병. 꽃병",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "花瓶に花を入れました。",
+    "exampleReading": "かびんにはなをいれました。",
+    "exampleTranslation": "꽃병에 꽃을 꽂았습니다.",
+    "tags": [],
+    "order": 297
+  },
+  {
+    "word": "かぶる",
+    "reading": "かぶる",
+    "meaningKo": "(모자를) 쓰다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "帽子をかぶっています。",
+    "exampleReading": "ぼうしをかぶっています。",
+    "exampleTranslation": "모자를 쓰고 있습니다.",
+    "tags": [],
+    "order": 298
+  },
+  {
+    "word": "紙",
+    "reading": "かみ",
+    "meaningKo": "종이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "紙に名前を書いてください。",
+    "exampleReading": "かみになまえをかいてください。",
+    "exampleTranslation": "종이에 이름을 써 주세요.",
+    "tags": [],
+    "order": 299
+  },
+  {
+    "word": "カメラ",
+    "reading": "カメラ",
+    "meaningKo": "카메라",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "新しいカメラを買いました。",
+    "exampleReading": "あたらしいカメラをかいました。",
+    "exampleTranslation": "새 카메라를 샀습니다.",
+    "tags": [],
+    "order": 300
+  },
+  {
+    "word": "火曜日",
+    "reading": "かようび",
+    "meaningKo": "화요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "火曜日にテストがあります。",
+    "exampleReading": "かようびにテストがあります。",
+    "exampleTranslation": "화요일에 시험이 있습니다.",
+    "tags": [],
+    "order": 301
+  },
+  {
+    "word": "辛い",
+    "reading": "からい",
+    "meaningKo": "맵다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この料理は辛いです。",
+    "exampleReading": "このりょうりはからいです。",
+    "exampleTranslation": "이 요리는 맵습니다.",
+    "tags": [],
+    "order": 302
+  },
+  {
+    "word": "体",
+    "reading": "からだ",
+    "meaningKo": "몸",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "体に気をつけてください。",
+    "exampleReading": "からだにきをつけてください。",
+    "exampleTranslation": "몸 조심하세요.",
+    "tags": [],
+    "order": 303
+  },
+  {
+    "word": "借りる",
+    "reading": "かりる",
+    "meaningKo": "빌리다. 꾸다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "図書館で本を借ります。",
+    "exampleReading": "としょかんでほんをかります。",
+    "exampleTranslation": "도서관에서 책을 빌립니다.",
+    "tags": [],
+    "order": 304
+  },
+  {
+    "word": "軽い",
+    "reading": "かるい",
+    "meaningKo": "가볍다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "このかばんは軽いです。",
+    "exampleReading": "このかばんはかるいです。",
+    "exampleTranslation": "이 가방은 가볍습니다.",
+    "tags": [],
+    "order": 305
+  },
+  {
+    "word": "カレンダー",
+    "reading": "カレンダー",
+    "meaningKo": "달력",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "カレンダーを見てください。",
+    "exampleReading": "カレンダーをみてください。",
+    "exampleTranslation": "달력을 봐 주세요.",
+    "tags": [],
+    "order": 306
+  },
+  {
+    "word": "かわいい",
+    "reading": "かわいい",
+    "meaningKo": "귀엽다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この猫はかわいいですね。",
+    "exampleReading": "このねこはかわいいですね。",
+    "exampleTranslation": "이 고양이는 귀엽네요.",
+    "tags": [],
+    "order": 307
+  },
+  {
+    "word": "-間",
+    "reading": "かん",
+    "meaningKo": "-간",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "二時間待ちました。",
+    "exampleReading": "にじかんまちました。",
+    "exampleTranslation": "2시간 기다렸습니다.",
+    "tags": [],
+    "order": 308
+  },
+  {
+    "word": "漢字",
+    "reading": "かんじ",
+    "meaningKo": "한자",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "漢字の読み方を教えてください。",
+    "exampleReading": "かんじのよみかたをおしえてください。",
+    "exampleTranslation": "한자 읽는 법을 알려 주세요.",
+    "tags": [],
+    "order": 309
+  },
+  {
+    "word": "黄色い",
+    "reading": "きいろい",
+    "meaningKo": "노랗다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "黄色い花が咲いています。",
+    "exampleReading": "きいろいはながさいています。",
+    "exampleTranslation": "노란 꽃이 피어 있습니다.",
+    "tags": [],
+    "order": 310
+  },
+  {
+    "word": "消える",
+    "reading": "きえる",
+    "meaningKo": "꺼지다. 사라지다. 지워지다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "電気が消えました。",
+    "exampleReading": "でんきがきえました。",
+    "exampleTranslation": "불이 꺼졌습니다.",
+    "tags": [],
+    "order": 311
+  },
+  {
+    "word": "北",
+    "reading": "きた",
+    "meaningKo": "북쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "北の方は寒いです。",
+    "exampleReading": "きたのほうはさむいです。",
+    "exampleTranslation": "북쪽은 춥습니다.",
+    "tags": [],
+    "order": 312
+  },
+  {
+    "word": "ギター",
+    "reading": "ギター",
+    "meaningKo": "기타",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ギターを弾くのが好きです。",
+    "exampleReading": "ギターをひくのがすきです。",
+    "exampleTranslation": "기타 치는 것을 좋아합니다.",
+    "tags": [],
+    "order": 313
+  },
+  {
+    "word": "汚い",
+    "reading": "きたない",
+    "meaningKo": "더럽다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "手が汚いですから洗います。",
+    "exampleReading": "てがきたないですからあらいます。",
+    "exampleTranslation": "손이 더러우니까 씻겠습니다.",
+    "tags": [],
+    "order": 314
+  },
+  {
+    "word": "喫茶店",
+    "reading": "きっさてん",
+    "meaningKo": "찻집. 다방",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "喫茶店でコーヒーを飲みます。",
+    "exampleReading": "きっさてんでコーヒーをのみます。",
+    "exampleTranslation": "찻집에서 커피를 마십니다.",
+    "tags": [],
+    "order": 315
+  },
+  {
+    "word": "切手",
+    "reading": "きって",
+    "meaningKo": "우표",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "切手を貼ってください。",
+    "exampleReading": "きってをはってください。",
+    "exampleTranslation": "우표를 붙여 주세요.",
+    "tags": [],
+    "order": 316
+  },
+  {
+    "word": "九",
+    "reading": "きゅう",
+    "meaningKo": "구. 아홉",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "九時に学校に行きます。",
+    "exampleReading": "くじにがっこうにいきます。",
+    "exampleTranslation": "9시에 학교에 갑니다.",
+    "tags": [],
+    "order": 317
+  },
+  {
+    "word": "牛肉",
+    "reading": "ぎゅうにく",
+    "meaningKo": "쇠고기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "牛肉が好きです。",
+    "exampleReading": "ぎゅうにくがすきです。",
+    "exampleTranslation": "쇠고기를 좋아합니다.",
+    "tags": [],
+    "order": 318
+  },
+  {
+    "word": "牛乳",
+    "reading": "ぎゅうにゅう",
+    "meaningKo": "우유",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎朝牛乳を飲みます。",
+    "exampleReading": "まいあさぎゅうにゅうをのみます。",
+    "exampleTranslation": "매일 아침 우유를 마십니다.",
+    "tags": [],
+    "order": 319
+  },
+  {
+    "word": "教室",
+    "reading": "きょうしつ",
+    "meaningKo": "교실",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "教室に学生がいます。",
+    "exampleReading": "きょうしつにがくせいがいます。",
+    "exampleTranslation": "교실에 학생이 있습니다.",
+    "tags": [],
+    "order": 320
+  },
+  {
+    "word": "兄弟",
+    "reading": "きょうだい",
+    "meaningKo": "형제",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "兄弟は何人ですか。",
+    "exampleReading": "きょうだいはなんにんですか。",
+    "exampleTranslation": "형제는 몇 명입니까?",
+    "tags": [],
+    "order": 321
+  },
+  {
+    "word": "去年",
+    "reading": "きょねん",
+    "meaningKo": "작년",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "去年の夏に海へ行きました。",
+    "exampleReading": "きょねんのなつにうみへいきました。",
+    "exampleTranslation": "작년 여름에 바다에 갔습니다.",
+    "tags": [],
+    "order": 322
+  },
+  {
+    "word": "嫌いな",
+    "reading": "きらいな",
+    "meaningKo": "싫어하는",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "野菜が嫌いです。",
+    "exampleReading": "やさいがきらいです。",
+    "exampleTranslation": "채소를 싫어합니다.",
+    "tags": [],
+    "order": 323
+  },
+  {
+    "word": "きれいな",
+    "reading": "きれいな",
+    "meaningKo": "예쁜. 깨끗한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この部屋はきれいですね。",
+    "exampleReading": "このへやはきれいですね。",
+    "exampleTranslation": "이 방은 깨끗하네요.",
+    "tags": [],
+    "order": 324
+  },
+  {
+    "word": "金曜日",
+    "reading": "きんようび",
+    "meaningKo": "금요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "金曜日に友達と会います。",
+    "exampleReading": "きんようびにともだちとあいます。",
+    "exampleTranslation": "금요일에 친구와 만납니다.",
+    "tags": [],
+    "order": 325
+  },
+  {
+    "word": "薬",
+    "reading": "くすり",
+    "meaningKo": "약",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "薬を飲んでください。",
+    "exampleReading": "くすりをのんでください。",
+    "exampleTranslation": "약을 드세요.",
+    "tags": [],
+    "order": 326
+  },
+  {
+    "word": "靴下",
+    "reading": "くつした",
+    "meaningKo": "양말",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "白い靴下をはいています。",
+    "exampleReading": "しろいくつしたをはいています。",
+    "exampleTranslation": "흰 양말을 신고 있습니다.",
+    "tags": [],
+    "order": 327
+  },
+  {
+    "word": "国",
+    "reading": "くに",
+    "meaningKo": "나라",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "どの国から来ましたか。",
+    "exampleReading": "どのくにからきましたか。",
+    "exampleTranslation": "어느 나라에서 왔습니까?",
+    "tags": [],
+    "order": 328
+  },
+  {
+    "word": "くらい/ぐらい",
+    "reading": "くらい/ぐらい",
+    "meaningKo": "-정도. -만큼",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "三十分ぐらいかかります。",
+    "exampleReading": "さんじっぷんぐらいかかります。",
+    "exampleTranslation": "30분 정도 걸립니다.",
+    "tags": [],
+    "order": 329
+  },
+  {
+    "word": "暗い",
+    "reading": "くらい",
+    "meaningKo": "어둡다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この部屋は暗いです。",
+    "exampleReading": "このへやはくらいです。",
+    "exampleTranslation": "이 방은 어둡습니다.",
+    "tags": [],
+    "order": 330
+  },
+  {
+    "word": "クラス",
+    "reading": "クラス",
+    "meaningKo": "클래스. 반. 학급",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "クラスに三十人います。",
+    "exampleReading": "クラスにさんじゅうにんいます。",
+    "exampleTranslation": "반에 30명이 있습니다.",
+    "tags": [],
+    "order": 331
+  },
+  {
+    "word": "今朝",
+    "reading": "けさ",
+    "meaningKo": "오늘 아침",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今朝は寒かったです。",
+    "exampleReading": "けさはさむかったです。",
+    "exampleTranslation": "오늘 아침은 추웠습니다.",
+    "tags": [],
+    "order": 332
+  },
+  {
+    "word": "消す",
+    "reading": "けす",
+    "meaningKo": "끄다. 지우다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "電気を消してください。",
+    "exampleReading": "でんきをけしてください。",
+    "exampleTranslation": "불을 꺼 주세요.",
+    "tags": [],
+    "order": 333
+  },
+  {
+    "word": "結婚",
+    "reading": "けっこん",
+    "meaningKo": "결혼",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来年結婚します。",
+    "exampleReading": "らいねんけっこんします。",
+    "exampleTranslation": "내년에 결혼합니다.",
+    "tags": [],
+    "order": 334
+  },
+  {
+    "word": "月曜日",
+    "reading": "げつようび",
+    "meaningKo": "월요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "月曜日から仕事が始まります。",
+    "exampleReading": "げつようびからしごとがはじまります。",
+    "exampleTranslation": "월요일부터 일이 시작됩니다.",
+    "tags": [],
+    "order": 335
+  },
+  {
+    "word": "元気な",
+    "reading": "げんきな",
+    "meaningKo": "건강한. 잘 있는",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "田中さんは元気ですか。",
+    "exampleReading": "たなかさんはげんきですか。",
+    "exampleTranslation": "다나카 씨는 잘 지냅니까?",
+    "tags": [],
+    "order": 336
+  },
+  {
+    "word": "五",
+    "reading": "ご",
+    "meaningKo": "오. 다섯",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "五と三で八です。",
+    "exampleReading": "ごとさんではちです。",
+    "exampleTranslation": "5와 3으로 8입니다.",
+    "tags": [],
+    "order": 337
+  },
+  {
+    "word": "-語",
+    "reading": "ご",
+    "meaningKo": "-어(언어)",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本語を勉強しています。",
+    "exampleReading": "にほんごをべんきょうしています。",
+    "exampleTranslation": "일본어를 공부하고 있습니다.",
+    "tags": [],
+    "order": 338
+  },
+  {
+    "word": "紅茶",
+    "reading": "こうちゃ",
+    "meaningKo": "홍차",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "紅茶を一杯ください。",
+    "exampleReading": "こうちゃをいっぱいください。",
+    "exampleTranslation": "홍차를 한 잔 주세요.",
+    "tags": [],
+    "order": 339
+  },
+  {
+    "word": "交番",
+    "reading": "こうばん",
+    "meaningKo": "파출소",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "交番はあそこにあります。",
+    "exampleReading": "こうばんはあそこにあります。",
+    "exampleTranslation": "파출소는 저기에 있습니다.",
+    "tags": [],
+    "order": 340
+  },
+  {
+    "word": "声",
+    "reading": "こえ",
+    "meaningKo": "소리",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "大きい声で読んでください。",
+    "exampleReading": "おおきいこえでよんでください。",
+    "exampleTranslation": "큰 소리로 읽어 주세요.",
+    "tags": [],
+    "order": 341
+  },
+  {
+    "word": "コート",
+    "reading": "コート",
+    "meaningKo": "코트",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "寒いですからコートを着ます。",
+    "exampleReading": "さむいですからコートをきます。",
+    "exampleTranslation": "추우니까 코트를 입습니다.",
+    "tags": [],
+    "order": 342
+  },
+  {
+    "word": "コーヒー",
+    "reading": "コーヒー",
+    "meaningKo": "커피",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "コーヒーを二つおねがいします。",
+    "exampleReading": "コーヒーをふたつおねがいします。",
+    "exampleTranslation": "커피 두 잔 부탁합니다.",
+    "tags": [],
+    "order": 343
+  },
+  {
+    "word": "ここ",
+    "reading": "ここ",
+    "meaningKo": "여기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ここに座ってください。",
+    "exampleReading": "ここにすわってください。",
+    "exampleTranslation": "여기에 앉아 주세요.",
+    "tags": [],
+    "order": 344
+  },
+  {
+    "word": "午後",
+    "reading": "ごご",
+    "meaningKo": "오후",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "午後三時に会いましょう。",
+    "exampleReading": "ごごさんじにあいましょう。",
+    "exampleTranslation": "오후 3시에 만납시다.",
+    "tags": [],
+    "order": 345
+  },
+  {
+    "word": "九日",
+    "reading": "ここのか",
+    "meaningKo": "9일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "九日に友達が来ます。",
+    "exampleReading": "ここのかにともだちがきます。",
+    "exampleTranslation": "9일에 친구가 옵니다.",
+    "tags": [],
+    "order": 346
+  },
+  {
+    "word": "九つ",
+    "reading": "ここのつ",
+    "meaningKo": "아홉 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "りんごが九つあります。",
+    "exampleReading": "りんごがここのつあります。",
+    "exampleTranslation": "사과가 아홉 개 있습니다.",
+    "tags": [],
+    "order": 347
+  },
+  {
+    "word": "午前",
+    "reading": "ごぜん",
+    "meaningKo": "오전",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "午前中は授業があります。",
+    "exampleReading": "ごぜんちゅうはじゅぎょうがあります。",
+    "exampleTranslation": "오전에는 수업이 있습니다.",
+    "tags": [],
+    "order": 348
+  },
+  {
+    "word": "答える",
+    "reading": "こたえる",
+    "meaningKo": "대답하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "先生の質問に答えました。",
+    "exampleReading": "せんせいのしつもんにこたえました。",
+    "exampleTranslation": "선생님의 질문에 대답했습니다.",
+    "tags": [],
+    "order": 349
+  },
+  {
+    "word": "ごちそうさまでした",
+    "reading": "ごちそうさまでした",
+    "meaningKo": "잘 먹었습니다",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "ごちそうさまでした。おいしかったです。",
+    "exampleReading": "ごちそうさまでした。おいしかったです。",
+    "exampleTranslation": "잘 먹었습니다. 맛있었습니다.",
+    "tags": [],
+    "order": 350
+  },
+  {
+    "word": "こちら",
+    "reading": "こちら",
+    "meaningKo": "이쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "こちらは山田さんです。",
+    "exampleReading": "こちらはやまださんです。",
+    "exampleTranslation": "이쪽은 야마다 씨입니다.",
+    "tags": [],
+    "order": 351
+  },
+  {
+    "word": "コップ",
+    "reading": "コップ",
+    "meaningKo": "컵",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "コップに水を入れてください。",
+    "exampleReading": "コップにみずをいれてください。",
+    "exampleTranslation": "컵에 물을 넣어 주세요.",
+    "tags": [],
+    "order": 352
+  },
+  {
+    "word": "今年",
+    "reading": "ことし",
+    "meaningKo": "올해",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今年の夏は暑いです。",
+    "exampleReading": "ことしのなつはあついです。",
+    "exampleTranslation": "올해 여름은 덥습니다.",
+    "tags": [],
+    "order": 353
+  },
+  {
+    "word": "この",
+    "reading": "この",
+    "meaningKo": "이",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "この本はおもしろいです。",
+    "exampleReading": "このほんはおもしろいです。",
+    "exampleTranslation": "이 책은 재미있습니다.",
+    "tags": [],
+    "order": 354
+  },
+  {
+    "word": "コピー",
+    "reading": "コピー",
+    "meaningKo": "복사",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この書類をコピーしてください。",
+    "exampleReading": "このしょるいをコピーしてください。",
+    "exampleTranslation": "이 서류를 복사해 주세요.",
+    "tags": [],
+    "order": 355
+  },
+  {
+    "word": "困る",
+    "reading": "こまる",
+    "meaningKo": "곤란하다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "お金がなくて困りました。",
+    "exampleReading": "おかねがなくてこまりました。",
+    "exampleTranslation": "돈이 없어서 곤란했습니다.",
+    "tags": [],
+    "order": 356
+  },
+  {
+    "word": "これ",
+    "reading": "これ",
+    "meaningKo": "이것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "これはいくらですか。",
+    "exampleReading": "これはいくらですか。",
+    "exampleTranslation": "이것은 얼마입니까?",
+    "tags": [],
+    "order": 357
+  },
+  {
+    "word": "-頃",
+    "reading": "ごろ",
+    "meaningKo": "-경. -쯤",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "七時ごろ家に帰ります。",
+    "exampleReading": "しちじごろいえにかえります。",
+    "exampleTranslation": "7시쯤 집에 돌아갑니다.",
+    "tags": [],
+    "order": 358
+  },
+  {
+    "word": "今月",
+    "reading": "こんげつ",
+    "meaningKo": "이번달",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今月は忙しいです。",
+    "exampleReading": "こんげつはいそがしいです。",
+    "exampleTranslation": "이번 달은 바쁩니다.",
+    "tags": [],
+    "order": 359
+  },
+  {
+    "word": "今週",
+    "reading": "こんしゅう",
+    "meaningKo": "이번주",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今週の土曜日は暇です。",
+    "exampleReading": "こんしゅうのどようびはひまです。",
+    "exampleTranslation": "이번 주 토요일은 한가합니다.",
+    "tags": [],
+    "order": 360
+  },
+  {
+    "word": "こんな",
+    "reading": "こんな",
+    "meaningKo": "이런",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "こんな所で会うとは思いませんでした。",
+    "exampleReading": "こんなところであうとはおもいませんでした。",
+    "exampleTranslation": "이런 곳에서 만날 줄 몰랐습니다.",
+    "tags": [],
+    "order": 361
+  },
+  {
+    "word": "こんにちは",
+    "reading": "こんにちは",
+    "meaningKo": "안녕하세요(낮인사)",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "こんにちは。お元気ですか。",
+    "exampleReading": "こんにちは。おげんきですか。",
+    "exampleTranslation": "안녕하세요. 잘 지내십니까?",
+    "tags": [],
+    "order": 362
+  },
+  {
+    "word": "今晩",
+    "reading": "こんばん",
+    "meaningKo": "오늘 밤",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今晩は何をしますか。",
+    "exampleReading": "こんばんはなにをしますか。",
+    "exampleTranslation": "오늘 밤은 무엇을 합니까?",
+    "tags": [],
+    "order": 363
+  },
+  {
+    "word": "こんばんは",
+    "reading": "こんばんは",
+    "meaningKo": "안녕하세요(저녁인사)",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "こんばんは。寒いですね。",
+    "exampleReading": "こんばんは。さむいですね。",
+    "exampleTranslation": "안녕하세요. 춥네요.",
+    "tags": [],
+    "order": 364
+  },
+  {
+    "word": "-歳",
+    "reading": "さい",
+    "meaningKo": "-살. -세",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "私は二十歳です。",
+    "exampleReading": "わたしははたちです。",
+    "exampleTranslation": "저는 스무 살입니다.",
+    "tags": [],
+    "order": 365
+  },
+  {
+    "word": "財布",
+    "reading": "さいふ",
+    "meaningKo": "지갑",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "財布を忘れてしまいました。",
+    "exampleReading": "さいふをわすれてしまいました。",
+    "exampleTranslation": "지갑을 잊어버렸습니다.",
+    "tags": [],
+    "order": 366
+  },
+  {
+    "word": "先",
+    "reading": "さき",
+    "meaningKo": "앞부분. 선두. 먼저",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "お先にどうぞ。",
+    "exampleReading": "おさきにどうぞ。",
+    "exampleTranslation": "먼저 가세요.",
+    "tags": [],
+    "order": 367
+  },
+  {
+    "word": "咲く",
+    "reading": "さく",
+    "meaningKo": "(꽃이) 피다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "桜の花が咲きました。",
+    "exampleReading": "さくらのはながさきました。",
+    "exampleTranslation": "벚꽃이 피었습니다.",
+    "tags": [],
+    "order": 368
+  },
+  {
+    "word": "作文",
+    "reading": "さくぶん",
+    "meaningKo": "작문",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本語で作文を書きます。",
+    "exampleReading": "にほんごでさくぶんをかきます。",
+    "exampleTranslation": "일본어로 작문을 씁니다.",
+    "tags": [],
+    "order": 369
+  },
+  {
+    "word": "雑誌",
+    "reading": "ざっし",
+    "meaningKo": "잡지",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "雑誌を読んでいます。",
+    "exampleReading": "ざっしをよんでいます。",
+    "exampleTranslation": "잡지를 읽고 있습니다.",
+    "tags": [],
+    "order": 370
+  },
+  {
+    "word": "砂糖",
+    "reading": "さとう",
+    "meaningKo": "설탕",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "コーヒーに砂糖を入れますか。",
+    "exampleReading": "コーヒーにさとうをいれますか。",
+    "exampleTranslation": "커피에 설탕을 넣습니까?",
+    "tags": [],
+    "order": 371
+  },
+  {
+    "word": "さようなら",
+    "reading": "さようなら",
+    "meaningKo": "안녕히 가세요. 안녕히 계세요",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "さようなら。また来週。",
+    "exampleReading": "さようなら。またらいしゅう。",
+    "exampleTranslation": "안녕히 가세요. 또 다음 주에.",
+    "tags": [],
+    "order": 372
+  },
+  {
+    "word": "さん",
+    "reading": "さん",
+    "meaningKo": "-씨",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "田中さんはどこですか。",
+    "exampleReading": "たなかさんはどこですか。",
+    "exampleTranslation": "다나카 씨는 어디에 있습니까?",
+    "tags": [],
+    "order": 373
+  },
+  {
+    "word": "三",
+    "reading": "さん",
+    "meaningKo": "삼. 셋",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "兄弟は三人です。",
+    "exampleReading": "きょうだいはさんにんです。",
+    "exampleTranslation": "형제는 세 명입니다.",
+    "tags": [],
+    "order": 374
+  },
+  {
+    "word": "散歩",
+    "reading": "さんぽ",
+    "meaningKo": "산책",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎朝公園を散歩します。",
+    "exampleReading": "まいあさこうえんをさんぽします。",
+    "exampleTranslation": "매일 아침 공원을 산책합니다.",
+    "tags": [],
+    "order": 375
+  },
+  {
+    "word": "四",
+    "reading": "し",
+    "meaningKo": "사. 넷",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "四月に学校が始まります。",
+    "exampleReading": "しがつにがっこうがはじまります。",
+    "exampleTranslation": "4월에 학교가 시작됩니다.",
+    "tags": [],
+    "order": 376
+  },
+  {
+    "word": "-時",
+    "reading": "じ",
+    "meaningKo": "-시",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "今は三時です。",
+    "exampleReading": "いまはさんじです。",
+    "exampleTranslation": "지금은 3시입니다.",
+    "tags": [],
+    "order": 377
+  },
+  {
+    "word": "塩",
+    "reading": "しお",
+    "meaningKo": "소금",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "塩を少し入れてください。",
+    "exampleReading": "しおをすこしいれてください。",
+    "exampleTranslation": "소금을 조금 넣어 주세요.",
+    "tags": [],
+    "order": 378
+  },
+  {
+    "word": "しか",
+    "reading": "しか",
+    "meaningKo": "-밖에(+부정문)",
+    "partOfSpeech": "PARTICLE",
+    "jlptLevel": "N5",
+    "exampleSentence": "百円しかありません。",
+    "exampleReading": "ひゃくえんしかありません。",
+    "exampleTranslation": "100엔밖에 없습니다.",
+    "tags": [],
+    "order": 379
+  },
+  {
+    "word": "辞書",
+    "reading": "じしょ",
+    "meaningKo": "사전",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "辞書で言葉を調べます。",
+    "exampleReading": "じしょでことばをしらべます。",
+    "exampleTranslation": "사전으로 단어를 찾습니다.",
+    "tags": [],
+    "order": 380
+  },
+  {
+    "word": "静かな",
+    "reading": "しずかな",
+    "meaningKo": "조용한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この町は静かです。",
+    "exampleReading": "このまちはしずかです。",
+    "exampleTranslation": "이 마을은 조용합니다.",
+    "tags": [],
+    "order": 381
+  },
+  {
+    "word": "下",
+    "reading": "した",
+    "meaningKo": "아래. 밑",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "机の下に猫がいます。",
+    "exampleReading": "つくえのしたにねこがいます。",
+    "exampleTranslation": "책상 아래에 고양이가 있습니다.",
+    "tags": [],
+    "order": 382
+  },
+  {
+    "word": "七",
+    "reading": "しち",
+    "meaningKo": "칠. 일곱",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "七時に起きます。",
+    "exampleReading": "しちじにおきます。",
+    "exampleTranslation": "7시에 일어납니다.",
+    "tags": [],
+    "order": 383
+  },
+  {
+    "word": "閉まる",
+    "reading": "しまる",
+    "meaningKo": "닫히다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ドアが閉まりました。",
+    "exampleReading": "ドアがしまりました。",
+    "exampleTranslation": "문이 닫혔습니다.",
+    "tags": [],
+    "order": 384
+  },
+  {
+    "word": "締める",
+    "reading": "しめる",
+    "meaningKo": "(넥타이를) 매다. 조이다. 조르다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ネクタイを締めます。",
+    "exampleReading": "ネクタイをしめます。",
+    "exampleTranslation": "넥타이를 맵니다.",
+    "tags": [],
+    "order": 385
+  },
+  {
+    "word": "シャツ",
+    "reading": "シャツ",
+    "meaningKo": "셔츠",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "白いシャツを買いました。",
+    "exampleReading": "しろいシャツをかいました。",
+    "exampleTranslation": "흰 셔츠를 샀습니다.",
+    "tags": [],
+    "order": 386
+  },
+  {
+    "word": "シャワー",
+    "reading": "シャワー",
+    "meaningKo": "샤워",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "シャワーを浴びてから寝ます。",
+    "exampleReading": "シャワーをあびてからねます。",
+    "exampleTranslation": "샤워를 하고 나서 잡니다.",
+    "tags": [],
+    "order": 387
+  },
+  {
+    "word": "十",
+    "reading": "じゅう",
+    "meaningKo": "십. 열",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "十から一まで数えます。",
+    "exampleReading": "じゅうからいちまでかぞえます。",
+    "exampleTranslation": "10부터 1까지 셉니다.",
+    "tags": [],
+    "order": 388
+  },
+  {
+    "word": "-週間",
+    "reading": "しゅうかん",
+    "meaningKo": "-주일. -주간",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "二週間日本にいます。",
+    "exampleReading": "にしゅうかんにほんにいます。",
+    "exampleTranslation": "2주일 일본에 있습니다.",
+    "tags": [],
+    "order": 389
+  },
+  {
+    "word": "上手な",
+    "reading": "じょうずな",
+    "meaningKo": "잘하는. 능숙한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "田中さんは料理が上手です。",
+    "exampleReading": "たなかさんはりょうりがじょうずです。",
+    "exampleTranslation": "다나카 씨는 요리를 잘합니다.",
+    "tags": [],
+    "order": 390
+  },
+  {
+    "word": "丈夫な",
+    "reading": "じょうぶな",
+    "meaningKo": "튼튼한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "このかばんは丈夫です。",
+    "exampleReading": "このかばんはじょうぶです。",
+    "exampleTranslation": "이 가방은 튼튼합니다.",
+    "tags": [],
+    "order": 391
+  },
+  {
+    "word": "食堂",
+    "reading": "しょくどう",
+    "meaningKo": "식당",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "食堂で昼ご飯を食べます。",
+    "exampleReading": "しょくどうでひるごはんをたべます。",
+    "exampleTranslation": "식당에서 점심을 먹습니다.",
+    "tags": [],
+    "order": 392
+  },
+  {
+    "word": "知る",
+    "reading": "しる",
+    "meaningKo": "(지식으로) 알다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "この人を知っていますか。",
+    "exampleReading": "このひとをしっていますか。",
+    "exampleTranslation": "이 사람을 알고 있습니까?",
+    "tags": [],
+    "order": 393
+  },
+  {
+    "word": "-人",
+    "reading": "じん",
+    "meaningKo": "-인. -사람",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "私は韓国人です。",
+    "exampleReading": "わたしはかんこくじんです。",
+    "exampleTranslation": "저는 한국 사람입니다.",
+    "tags": [],
+    "order": 394
+  },
+  {
+    "word": "水曜日",
+    "reading": "すいようび",
+    "meaningKo": "수요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "水曜日は休みです。",
+    "exampleReading": "すいようびはやすみです。",
+    "exampleTranslation": "수요일은 쉬는 날입니다.",
+    "tags": [],
+    "order": 395
+  },
+  {
+    "word": "吸う",
+    "reading": "すう",
+    "meaningKo": "(담배를) 피우다. 들이마시다. 빨아들이다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ここでたばこを吸わないでください。",
+    "exampleReading": "ここでたばこをすわないでください。",
+    "exampleTranslation": "여기서 담배를 피우지 마세요.",
+    "tags": [],
+    "order": 396
+  },
+  {
+    "word": "スカート",
+    "reading": "スカート",
+    "meaningKo": "치마",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "赤いスカートをはいています。",
+    "exampleReading": "あかいスカートをはいています。",
+    "exampleTranslation": "빨간 치마를 입고 있습니다.",
+    "tags": [],
+    "order": 397
+  },
+  {
+    "word": "好きな",
+    "reading": "すきな",
+    "meaningKo": "좋아하는",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "音楽が好きです。",
+    "exampleReading": "おんがくがすきです。",
+    "exampleTranslation": "음악을 좋아합니다.",
+    "tags": [],
+    "order": 398
+  },
+  {
+    "word": "すぐ",
+    "reading": "すぐ",
+    "meaningKo": "곧. 바로",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "すぐ行きますから待ってください。",
+    "exampleReading": "すぐいきますからまってください。",
+    "exampleTranslation": "곧 가니까 기다려 주세요.",
+    "tags": [],
+    "order": 399
+  },
+  {
+    "word": "少ない",
+    "reading": "すくない",
+    "meaningKo": "적다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は学生が少ないです。",
+    "exampleReading": "きょうはがくせいがすくないです。",
+    "exampleTranslation": "오늘은 학생이 적습니다.",
+    "tags": [],
+    "order": 400
+  },
+  {
+    "word": "ストーブ",
+    "reading": "ストーブ",
+    "meaningKo": "스토브. 난로",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ストーブをつけてください。",
+    "exampleReading": "ストーブをつけてください。",
+    "exampleTranslation": "스토브를 켜 주세요.",
+    "tags": [],
+    "order": 401
+  },
+  {
+    "word": "スプーン",
+    "reading": "スプーン",
+    "meaningKo": "스푼. 숟가락",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "スプーンでスープを飲みます。",
+    "exampleReading": "スプーンでスープをのみます。",
+    "exampleTranslation": "숟가락으로 수프를 먹습니다.",
+    "tags": [],
+    "order": 402
+  },
+  {
+    "word": "スポーツ",
+    "reading": "スポーツ",
+    "meaningKo": "스포츠",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "どんなスポーツが好きですか。",
+    "exampleReading": "どんなスポーツがすきですか。",
+    "exampleTranslation": "어떤 스포츠를 좋아합니까?",
+    "tags": [],
+    "order": 403
+  },
+  {
+    "word": "ズボン",
+    "reading": "ズボン",
+    "meaningKo": "바지",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "新しいズボンを買いました。",
+    "exampleReading": "あたらしいズボンをかいました。",
+    "exampleTranslation": "새 바지를 샀습니다.",
+    "tags": [],
+    "order": 404
+  },
+  {
+    "word": "背",
+    "reading": "せ",
+    "meaningKo": "키",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "兄は背が高いです。",
+    "exampleReading": "あにはせがたかいです。",
+    "exampleTranslation": "형은 키가 큽니다.",
+    "tags": [],
+    "order": 405
+  },
+  {
+    "word": "生徒",
+    "reading": "せいと",
+    "meaningKo": "(초중고등)학생",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "教室に生徒がたくさんいます。",
+    "exampleReading": "きょうしつにせいとがたくさんいます。",
+    "exampleTranslation": "교실에 학생이 많이 있습니다.",
+    "tags": [],
+    "order": 406
+  },
+  {
+    "word": "セーター",
+    "reading": "セーター",
+    "meaningKo": "스웨터",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "冬はセーターを着ます。",
+    "exampleReading": "ふゆはセーターをきます。",
+    "exampleTranslation": "겨울에는 스웨터를 입습니다.",
+    "tags": [],
+    "order": 407
+  },
+  {
+    "word": "狭い",
+    "reading": "せまい",
+    "meaningKo": "좁다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この部屋は狭いです。",
+    "exampleReading": "このへやはせまいです。",
+    "exampleTranslation": "이 방은 좁습니다.",
+    "tags": [],
+    "order": 408
+  },
+  {
+    "word": "ゼロ",
+    "reading": "ゼロ",
+    "meaningKo": "제로. 영",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "テストはゼロ点でした。",
+    "exampleReading": "テストはゼロてんでした。",
+    "exampleTranslation": "시험은 0점이었습니다.",
+    "tags": [],
+    "order": 409
+  },
+  {
+    "word": "千",
+    "reading": "せん",
+    "meaningKo": "천",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この本は千円です。",
+    "exampleReading": "このほんはせんえんです。",
+    "exampleTranslation": "이 책은 1000엔입니다.",
+    "tags": [],
+    "order": 410
+  },
+  {
+    "word": "先月",
+    "reading": "せんげつ",
+    "meaningKo": "지난달",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "先月日本に行きました。",
+    "exampleReading": "せんげつにほんにいきました。",
+    "exampleTranslation": "지난달 일본에 갔습니다.",
+    "tags": [],
+    "order": 411
+  },
+  {
+    "word": "先週",
+    "reading": "せんしゅう",
+    "meaningKo": "지난주",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "先週の日曜日は雨でした。",
+    "exampleReading": "せんしゅうのにちようびはあめでした。",
+    "exampleTranslation": "지난주 일요일은 비였습니다.",
+    "tags": [],
+    "order": 412
+  },
+  {
+    "word": "そこ",
+    "reading": "そこ",
+    "meaningKo": "거기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "そこに本がありますか。",
+    "exampleReading": "そこにほんがありますか。",
+    "exampleTranslation": "거기에 책이 있습니까?",
+    "tags": [],
+    "order": 413
+  },
+  {
+    "word": "そちら",
+    "reading": "そちら",
+    "meaningKo": "그쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "そちらは何時ですか。",
+    "exampleReading": "そちらはなんじですか。",
+    "exampleTranslation": "그쪽은 몇 시입니까?",
+    "tags": [],
+    "order": 414
+  },
+  {
+    "word": "外",
+    "reading": "そと",
+    "meaningKo": "밖. 바깥. 겉",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "外は寒いですよ。",
+    "exampleReading": "そとはさむいですよ。",
+    "exampleTranslation": "밖은 추워요.",
+    "tags": [],
+    "order": 415
+  },
+  {
+    "word": "その",
+    "reading": "その",
+    "meaningKo": "그",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "その映画はおもしろいです。",
+    "exampleReading": "そのえいがはおもしろいです。",
+    "exampleTranslation": "그 영화는 재미있습니다.",
+    "tags": [],
+    "order": 416
+  },
+  {
+    "word": "そば",
+    "reading": "そば",
+    "meaningKo": "곁. 옆",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅のそばにコンビニがあります。",
+    "exampleReading": "えきのそばにコンビニがあります。",
+    "exampleTranslation": "역 옆에 편의점이 있습니다.",
+    "tags": [],
+    "order": 417
+  },
+  {
+    "word": "空",
+    "reading": "そら",
+    "meaningKo": "하늘",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "空がとてもきれいです。",
+    "exampleReading": "そらがとてもきれいです。",
+    "exampleTranslation": "하늘이 매우 예쁩니다.",
+    "tags": [],
+    "order": 418
+  },
+  {
+    "word": "それ",
+    "reading": "それ",
+    "meaningKo": "그것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "それは何ですか。",
+    "exampleReading": "それはなんですか。",
+    "exampleTranslation": "그것은 무엇입니까?",
+    "tags": [],
+    "order": 419
+  },
+  {
+    "word": "そんな",
+    "reading": "そんな",
+    "meaningKo": "그런",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "そんなことはありません。",
+    "exampleReading": "そんなことはありません。",
+    "exampleTranslation": "그런 일은 없습니다.",
+    "tags": [],
+    "order": 420
+  },
+  {
+    "word": "大丈夫な",
+    "reading": "だいじょうぶな",
+    "meaningKo": "괜찮은",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "大丈夫ですか。心配しないでください。",
+    "exampleReading": "だいじょうぶですか。しんぱいしないでください。",
+    "exampleTranslation": "괜찮습니까? 걱정하지 마세요.",
+    "tags": [],
+    "order": 421
+  },
+  {
+    "word": "大好きな",
+    "reading": "だいすきな",
+    "meaningKo": "매우 좋아하는",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "猫が大好きです。",
+    "exampleReading": "ねこがだいすきです。",
+    "exampleTranslation": "고양이를 매우 좋아합니다.",
+    "tags": [],
+    "order": 422
+  },
+  {
+    "word": "台所",
+    "reading": "だいどころ",
+    "meaningKo": "부엌",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "台所で料理を作ります。",
+    "exampleReading": "だいどころでりょうりをつくります。",
+    "exampleTranslation": "부엌에서 요리를 만듭니다.",
+    "tags": [],
+    "order": 423
+  },
+  {
+    "word": "大変な",
+    "reading": "たいへんな",
+    "meaningKo": "힘든. 큰일의",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は大変な一日でした。",
+    "exampleReading": "きょうはたいへんないちにちでした。",
+    "exampleTranslation": "오늘은 힘든 하루였습니다.",
+    "tags": [],
+    "order": 424
+  },
+  {
+    "word": "タクシー",
+    "reading": "タクシー",
+    "meaningKo": "택시",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "タクシーで病院に行きました。",
+    "exampleReading": "タクシーでびょういんにいきました。",
+    "exampleTranslation": "택시로 병원에 갔습니다.",
+    "tags": [],
+    "order": 425
+  },
+  {
+    "word": "だけ",
+    "reading": "だけ",
+    "meaningKo": "-만. -만큼",
+    "partOfSpeech": "PARTICLE",
+    "jlptLevel": "N5",
+    "exampleSentence": "一人だけ来ました。",
+    "exampleReading": "ひとりだけきました。",
+    "exampleTranslation": "한 명만 왔습니다.",
+    "tags": [],
+    "order": 426
+  },
+  {
+    "word": "出す",
+    "reading": "だす",
+    "meaningKo": "내다. 꺼내다. 내놓다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "かばんから本を出しました。",
+    "exampleReading": "かばんからほんをだしました。",
+    "exampleTranslation": "가방에서 책을 꺼냈습니다.",
+    "tags": [],
+    "order": 427
+  },
+  {
+    "word": "建物",
+    "reading": "たてもの",
+    "meaningKo": "건물",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの建物は何ですか。",
+    "exampleReading": "あのたてものはなんですか。",
+    "exampleTranslation": "저 건물은 무엇입니까?",
+    "tags": [],
+    "order": 428
+  },
+  {
+    "word": "食べ物",
+    "reading": "たべもの",
+    "meaningKo": "음식물. 먹을 것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本の食べ物が好きです。",
+    "exampleReading": "にほんのたべものがすきです。",
+    "exampleTranslation": "일본 음식을 좋아합니다.",
+    "tags": [],
+    "order": 429
+  },
+  {
+    "word": "誰",
+    "reading": "だれ",
+    "meaningKo": "누구",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの人は誰ですか。",
+    "exampleReading": "あのひとはだれですか。",
+    "exampleTranslation": "저 사람은 누구입니까?",
+    "tags": [],
+    "order": 430
+  },
+  {
+    "word": "段々",
+    "reading": "だんだん",
+    "meaningKo": "점점. 차차",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "段々暖かくなりました。",
+    "exampleReading": "だんだんあたたかくなりました。",
+    "exampleTranslation": "점점 따뜻해졌습니다.",
+    "tags": [],
+    "order": 431
+  },
+  {
+    "word": "近い",
+    "reading": "ちかい",
+    "meaningKo": "가깝다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅は家から近いです。",
+    "exampleReading": "えきはいえからちかいです。",
+    "exampleTranslation": "역은 집에서 가깝습니다.",
+    "tags": [],
+    "order": 432
+  },
+  {
+    "word": "近く",
+    "reading": "ちかく",
+    "meaningKo": "가까운 곳. 근처",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "学校の近くに住んでいます。",
+    "exampleReading": "がっこうのちかくにすんでいます。",
+    "exampleTranslation": "학교 근처에 살고 있습니다.",
+    "tags": [],
+    "order": 433
+  },
+  {
+    "word": "地下鉄",
+    "reading": "ちかてつ",
+    "meaningKo": "지하철",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "地下鉄で会社に行きます。",
+    "exampleReading": "ちかてつでかいしゃにいきます。",
+    "exampleTranslation": "지하철로 회사에 갑니다.",
+    "tags": [],
+    "order": 434
+  },
+  {
+    "word": "父",
+    "reading": "ちち",
+    "meaningKo": "(나의)아버지",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "父は五十歳です。",
+    "exampleReading": "ちちはごじっさいです。",
+    "exampleTranslation": "아버지는 쉰 살입니다.",
+    "tags": [],
+    "order": 435
+  },
+  {
+    "word": "ちょっと",
+    "reading": "ちょっと",
+    "meaningKo": "조금. 좀. 잠깐",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "ちょっと待ってください。",
+    "exampleReading": "ちょっとまってください。",
+    "exampleTranslation": "잠깐 기다려 주세요.",
+    "tags": [],
+    "order": 436
+  },
+  {
+    "word": "一日",
+    "reading": "ついたち",
+    "meaningKo": "1일 (날짜)",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "一月一日は休みです。",
+    "exampleReading": "いちがつついたちはやすみです。",
+    "exampleTranslation": "1월 1일은 쉬는 날입니다.",
+    "tags": [],
+    "order": 437
+  },
+  {
+    "word": "次",
+    "reading": "つぎ",
+    "meaningKo": "다음",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "次の駅で降ります。",
+    "exampleReading": "つぎのえきでおります。",
+    "exampleTranslation": "다음 역에서 내립니다.",
+    "tags": [],
+    "order": 438
+  },
+  {
+    "word": "机",
+    "reading": "つくえ",
+    "meaningKo": "책상",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "机の上にノートがあります。",
+    "exampleReading": "つくえのうえにノートがあります。",
+    "exampleTranslation": "책상 위에 노트가 있습니다.",
+    "tags": [],
+    "order": 439
+  },
+  {
+    "word": "つもり",
+    "reading": "つもり",
+    "meaningKo": "(-할)생각",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来年日本に行くつもりです。",
+    "exampleReading": "らいねんにほんにいくつもりです。",
+    "exampleTranslation": "내년에 일본에 갈 생각입니다.",
+    "tags": [],
+    "order": 440
+  },
+  {
+    "word": "強い",
+    "reading": "つよい",
+    "meaningKo": "강하다. 세다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は風が強いです。",
+    "exampleReading": "きょうはかぜがつよいです。",
+    "exampleTranslation": "오늘은 바람이 강합니다.",
+    "tags": [],
+    "order": 441
+  },
+  {
+    "word": "テープ",
+    "reading": "テープ",
+    "meaningKo": "테이프",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "テープを貸してください。",
+    "exampleReading": "テープをかしてください。",
+    "exampleTranslation": "테이프를 빌려 주세요.",
+    "tags": [],
+    "order": 442
+  },
+  {
+    "word": "テーブル",
+    "reading": "テーブル",
+    "meaningKo": "테이블",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "テーブルの上にコップがあります。",
+    "exampleReading": "テーブルのうえにコップがあります。",
+    "exampleTranslation": "테이블 위에 컵이 있습니다.",
+    "tags": [],
+    "order": 443
+  },
+  {
+    "word": "手紙",
+    "reading": "てがみ",
+    "meaningKo": "편지",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "友達に手紙を書きました。",
+    "exampleReading": "ともだちにてがみをかきました。",
+    "exampleTranslation": "친구에게 편지를 썼습니다.",
+    "tags": [],
+    "order": 444
+  },
+  {
+    "word": "出口",
+    "reading": "でぐち",
+    "meaningKo": "출구",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "出口はどこですか。",
+    "exampleReading": "でぐちはどこですか。",
+    "exampleTranslation": "출구는 어디입니까?",
+    "tags": [],
+    "order": 445
+  },
+  {
+    "word": "テスト",
+    "reading": "テスト",
+    "meaningKo": "테스트. 검사. 시험",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来週テストがあります。",
+    "exampleReading": "らいしゅうテストがあります。",
+    "exampleTranslation": "다음 주에 시험이 있습니다.",
+    "tags": [],
+    "order": 446
+  },
+  {
+    "word": "デパート",
+    "reading": "デパート",
+    "meaningKo": "백화점",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "デパートで買い物をしました。",
+    "exampleReading": "デパートでかいものをしました。",
+    "exampleTranslation": "백화점에서 쇼핑을 했습니다.",
+    "tags": [],
+    "order": 447
+  },
+  {
+    "word": "でも",
+    "reading": "でも",
+    "meaningKo": "-라도",
+    "partOfSpeech": "PARTICLE",
+    "jlptLevel": "N5",
+    "exampleSentence": "コーヒーでも飲みませんか。",
+    "exampleReading": "コーヒーでものみませんか。",
+    "exampleTranslation": "커피라도 마시지 않겠습니까?",
+    "tags": [],
+    "order": 448
+  },
+  {
+    "word": "テレビ",
+    "reading": "テレビ",
+    "meaningKo": "텔레비전",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎晩テレビを見ます。",
+    "exampleReading": "まいばんテレビをみます。",
+    "exampleTranslation": "매일 밤 TV를 봅니다.",
+    "tags": [],
+    "order": 449
+  },
+  {
+    "word": "電気",
+    "reading": "でんき",
+    "meaningKo": "전기. 전깃불",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "部屋の電気をつけました。",
+    "exampleReading": "へやのでんきをつけました。",
+    "exampleTranslation": "방의 불을 켰습니다.",
+    "tags": [],
+    "order": 450
+  },
+  {
+    "word": "ドア",
+    "reading": "ドア",
+    "meaningKo": "도어. 문",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ドアを開けてもいいですか。",
+    "exampleReading": "ドアをあけてもいいですか。",
+    "exampleTranslation": "문을 열어도 됩니까?",
+    "tags": [],
+    "order": 451
+  },
+  {
+    "word": "トイレ",
+    "reading": "トイレ",
+    "meaningKo": "화장실",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "トイレはどこですか。",
+    "exampleReading": "トイレはどこですか。",
+    "exampleTranslation": "화장실은 어디입니까?",
+    "tags": [],
+    "order": 452
+  },
+  {
+    "word": "どう",
+    "reading": "どう",
+    "meaningKo": "어떻게",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "日本の生活はどうですか。",
+    "exampleReading": "にほんのせいかつはどうですか。",
+    "exampleTranslation": "일본 생활은 어떻습니까?",
+    "tags": [],
+    "order": 453
+  },
+  {
+    "word": "どういたしまして",
+    "reading": "どういたしまして",
+    "meaningKo": "천만의 말씀입니다. 별 말씀을 다 하십니다",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "どういたしまして。また来てください。",
+    "exampleReading": "どういたしまして。またきてください。",
+    "exampleTranslation": "천만에요. 또 오세요.",
+    "tags": [],
+    "order": 454
+  },
+  {
+    "word": "どうして",
+    "reading": "どうして",
+    "meaningKo": "어째서. 왜",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "どうして遅れましたか。",
+    "exampleReading": "どうしておくれましたか。",
+    "exampleTranslation": "왜 늦었습니까?",
+    "tags": [],
+    "order": 455
+  },
+  {
+    "word": "どうぞ",
+    "reading": "どうぞ",
+    "meaningKo": "아무쪼록. 부디. 어서 (+…하세요)",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "どうぞお入りください。",
+    "exampleReading": "どうぞおはいりください。",
+    "exampleTranslation": "어서 들어오세요.",
+    "tags": [],
+    "order": 456
+  },
+  {
+    "word": "動物",
+    "reading": "どうぶつ",
+    "meaningKo": "동물",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "動物園に行きたいです。",
+    "exampleReading": "どうぶつえんにいきたいです。",
+    "exampleTranslation": "동물원에 가고 싶습니다.",
+    "tags": [],
+    "order": 457
+  },
+  {
+    "word": "どうも",
+    "reading": "どうも",
+    "meaningKo": "정말. 참. 매우 (+고마워요)",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "どうもありがとうございます。",
+    "exampleReading": "どうもありがとうございます。",
+    "exampleTranslation": "정말 감사합니다.",
+    "tags": [],
+    "order": 458
+  },
+  {
+    "word": "十",
+    "reading": "とお",
+    "meaningKo": "열 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "みかんが十あります。",
+    "exampleReading": "みかんがとおあります。",
+    "exampleTranslation": "귤이 열 개 있습니다.",
+    "tags": [],
+    "order": 459
+  },
+  {
+    "word": "遠い",
+    "reading": "とおい",
+    "meaningKo": "멀다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "学校は家から遠いです。",
+    "exampleReading": "がっこうはいえからとおいです。",
+    "exampleTranslation": "학교는 집에서 멉니다.",
+    "tags": [],
+    "order": 460
+  },
+  {
+    "word": "十日",
+    "reading": "とおか",
+    "meaningKo": "10일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "十日に会いましょう。",
+    "exampleReading": "とおかにあいましょう。",
+    "exampleTranslation": "10일에 만납시다.",
+    "tags": [],
+    "order": 461
+  },
+  {
+    "word": "どこ",
+    "reading": "どこ",
+    "meaningKo": "어디",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "学校はどこにありますか。",
+    "exampleReading": "がっこうはどこにありますか。",
+    "exampleTranslation": "학교는 어디에 있습니까?",
+    "tags": [],
+    "order": 462
+  },
+  {
+    "word": "所",
+    "reading": "ところ",
+    "meaningKo": "곳. 장소",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "静かな所が好きです。",
+    "exampleReading": "しずかなところがすきです。",
+    "exampleTranslation": "조용한 곳을 좋아합니다.",
+    "tags": [],
+    "order": 463
+  },
+  {
+    "word": "年",
+    "reading": "とし",
+    "meaningKo": "해. 나이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今年は何年ですか。",
+    "exampleReading": "ことしはなんねんですか。",
+    "exampleTranslation": "올해는 몇 년입니까?",
+    "tags": [],
+    "order": 464
+  },
+  {
+    "word": "どちら",
+    "reading": "どちら",
+    "meaningKo": "어느 쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "どちらが好きですか。",
+    "exampleReading": "どちらがすきですか。",
+    "exampleTranslation": "어느 쪽을 좋아합니까?",
+    "tags": [],
+    "order": 465
+  },
+  {
+    "word": "どなた",
+    "reading": "どなた",
+    "meaningKo": "어느 분. 누구(경어)",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "どなたですか。",
+    "exampleReading": "どなたですか。",
+    "exampleTranslation": "어느 분이십니까?",
+    "tags": [],
+    "order": 466
+  },
+  {
+    "word": "隣",
+    "reading": "となり",
+    "meaningKo": "이웃. 옆",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "隣の人は中国人です。",
+    "exampleReading": "となりのひとはちゅうごくじんです。",
+    "exampleTranslation": "옆 사람은 중국인입니다.",
+    "tags": [],
+    "order": 467
+  },
+  {
+    "word": "どの",
+    "reading": "どの",
+    "meaningKo": "어느",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "どの本がいいですか。",
+    "exampleReading": "どのほんがいいですか。",
+    "exampleTranslation": "어느 책이 좋습니까?",
+    "tags": [],
+    "order": 468
+  },
+  {
+    "word": "飛ぶ",
+    "reading": "とぶ",
+    "meaningKo": "날다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "鳥が空を飛んでいます。",
+    "exampleReading": "とりがそらをとんでいます。",
+    "exampleTranslation": "새가 하늘을 날고 있습니다.",
+    "tags": [],
+    "order": 469
+  },
+  {
+    "word": "土曜日",
+    "reading": "どようび",
+    "meaningKo": "토요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "土曜日に買い物に行きます。",
+    "exampleReading": "どようびにかいものにいきます。",
+    "exampleTranslation": "토요일에 쇼핑하러 갑니다.",
+    "tags": [],
+    "order": 470
+  },
+  {
+    "word": "鳥",
+    "reading": "とり",
+    "meaningKo": "새",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "庭に鳥がいます。",
+    "exampleReading": "にわにとりがいます。",
+    "exampleTranslation": "마당에 새가 있습니다.",
+    "tags": [],
+    "order": 471
+  },
+  {
+    "word": "鳥肉",
+    "reading": "とりにく",
+    "meaningKo": "닭고기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "鳥肉が一番好きです。",
+    "exampleReading": "とりにくがいちばんすきです。",
+    "exampleTranslation": "닭고기를 가장 좋아합니다.",
+    "tags": [],
+    "order": 472
+  },
+  {
+    "word": "どれ",
+    "reading": "どれ",
+    "meaningKo": "어느 것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "どれがあなたのですか。",
+    "exampleReading": "どれがあなたのですか。",
+    "exampleTranslation": "어느 것이 당신 것입니까?",
+    "tags": [],
+    "order": 473
+  },
+  {
+    "word": "どんな",
+    "reading": "どんな",
+    "meaningKo": "어떤",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "どんな音楽が好きですか。",
+    "exampleReading": "どんなおんがくがすきですか。",
+    "exampleTranslation": "어떤 음악을 좋아합니까?",
+    "tags": [],
+    "order": 474
+  },
+  {
+    "word": "ない",
+    "reading": "ない",
+    "meaningKo": "없다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "今日は時間がないです。",
+    "exampleReading": "きょうはじかんがないです。",
+    "exampleTranslation": "오늘은 시간이 없습니다.",
+    "tags": [],
+    "order": 475
+  },
+  {
+    "word": "ナイフ",
+    "reading": "ナイフ",
+    "meaningKo": "나이프. 칼",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ナイフでパンを切ります。",
+    "exampleReading": "ナイフでパンをきります。",
+    "exampleTranslation": "칼로 빵을 자릅니다.",
+    "tags": [],
+    "order": 476
+  },
+  {
+    "word": "中",
+    "reading": "なか",
+    "meaningKo": "가운데. 중. 안. 속",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "箱の中に何がありますか。",
+    "exampleReading": "はこのなかになにがありますか。",
+    "exampleTranslation": "상자 안에 무엇이 있습니까?",
+    "tags": [],
+    "order": 477
+  },
+  {
+    "word": "なぜ",
+    "reading": "なぜ",
+    "meaningKo": "왜.어째서",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "なぜ来なかったのですか。",
+    "exampleReading": "なぜこなかったのですか。",
+    "exampleTranslation": "왜 오지 않았습니까?",
+    "tags": [],
+    "order": 478
+  },
+  {
+    "word": "夏",
+    "reading": "なつ",
+    "meaningKo": "여름",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "夏はとても暑いです。",
+    "exampleReading": "なつはとてもあついです。",
+    "exampleTranslation": "여름은 매우 덥습니다.",
+    "tags": [],
+    "order": 479
+  },
+  {
+    "word": "夏休み",
+    "reading": "なつやすみ",
+    "meaningKo": "여름방학. 여름휴가",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "夏休みに海に行きます。",
+    "exampleReading": "なつやすみにうみにいきます。",
+    "exampleTranslation": "여름방학에 바다에 갑니다.",
+    "tags": [],
+    "order": 480
+  },
+  {
+    "word": "七",
+    "reading": "なな",
+    "meaningKo": "일곱 ＝しち",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "七月は暑いです。",
+    "exampleReading": "しちがつはあついです。",
+    "exampleTranslation": "7월은 덥습니다.",
+    "tags": [],
+    "order": 481
+  },
+  {
+    "word": "七つ",
+    "reading": "ななつ",
+    "meaningKo": "일곱 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "お皿が七つあります。",
+    "exampleReading": "おさらがななつあります。",
+    "exampleTranslation": "접시가 일곱 개 있습니다.",
+    "tags": [],
+    "order": 482
+  },
+  {
+    "word": "何",
+    "reading": "なに",
+    "meaningKo": "무엇",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "何を食べたいですか。",
+    "exampleReading": "なにをたべたいですか。",
+    "exampleTranslation": "무엇을 먹고 싶습니까?",
+    "tags": [],
+    "order": 483
+  },
+  {
+    "word": "七日",
+    "reading": "なのか",
+    "meaningKo": "7일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "七日は友達の誕生日です。",
+    "exampleReading": "なのかはともだちのたんじょうびです。",
+    "exampleTranslation": "7일은 친구 생일입니다.",
+    "tags": [],
+    "order": 484
+  },
+  {
+    "word": "何",
+    "reading": "なん",
+    "meaningKo": "무엇. 몇　なん-[難-] N2, 난- (어려운)",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "今何時ですか。",
+    "exampleReading": "いまなんじですか。",
+    "exampleTranslation": "지금 몇 시입니까?",
+    "tags": [],
+    "order": 485
+  },
+  {
+    "word": "二",
+    "reading": "に",
+    "meaningKo": "이. 둘",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "二つください。",
+    "exampleReading": "ふたつください。",
+    "exampleTranslation": "두 개 주세요.",
+    "tags": [],
+    "order": 486
+  },
+  {
+    "word": "にぎやかな",
+    "reading": "にぎやかな",
+    "meaningKo": "번화한. 활기찬",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この町はにぎやかです。",
+    "exampleReading": "このまちはにぎやかです。",
+    "exampleTranslation": "이 마을은 활기찹니다.",
+    "tags": [],
+    "order": 487
+  },
+  {
+    "word": "西",
+    "reading": "にし",
+    "meaningKo": "서쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "西の空が赤いです。",
+    "exampleReading": "にしのそらがあかいです。",
+    "exampleTranslation": "서쪽 하늘이 붉습니다.",
+    "tags": [],
+    "order": 488
+  },
+  {
+    "word": "-日",
+    "reading": "にち",
+    "meaningKo": "-일",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "三日に出かけます。",
+    "exampleReading": "みっかにでかけます。",
+    "exampleTranslation": "3일에 외출합니다.",
+    "tags": [],
+    "order": 489
+  },
+  {
+    "word": "日曜日",
+    "reading": "にちようび",
+    "meaningKo": "일요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "日曜日は休みです。",
+    "exampleReading": "にちようびはやすみです。",
+    "exampleTranslation": "일요일은 쉬는 날입니다.",
+    "tags": [],
+    "order": 490
+  },
+  {
+    "word": "庭",
+    "reading": "にわ",
+    "meaningKo": "정원. 뜰. 마당",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "庭で花を育てています。",
+    "exampleReading": "にわではなをそだてています。",
+    "exampleTranslation": "정원에서 꽃을 키우고 있습니다.",
+    "tags": [],
+    "order": 491
+  },
+  {
+    "word": "-人",
+    "reading": "にん",
+    "meaningKo": "-명",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "三人で食事をしました。",
+    "exampleReading": "さんにんでしょくじをしました。",
+    "exampleTranslation": "세 명이서 식사를 했습니다.",
+    "tags": [],
+    "order": 492
+  },
+  {
+    "word": "ネクタイ",
+    "reading": "ネクタイ",
+    "meaningKo": "넥타이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "青いネクタイをしています。",
+    "exampleReading": "あおいネクタイをしています。",
+    "exampleTranslation": "파란 넥타이를 하고 있습니다.",
+    "tags": [],
+    "order": 493
+  },
+  {
+    "word": "猫",
+    "reading": "ねこ",
+    "meaningKo": "고양이",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "猫が二匹います。",
+    "exampleReading": "ねこがにひきいます。",
+    "exampleTranslation": "고양이가 두 마리 있습니다.",
+    "tags": [],
+    "order": 494
+  },
+  {
+    "word": "-年",
+    "reading": "ねん",
+    "meaningKo": "-년",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "二〇二五年に来ました。",
+    "exampleReading": "にせんにじゅうごねんにきました。",
+    "exampleTranslation": "2025년에 왔습니다.",
+    "tags": [],
+    "order": 495
+  },
+  {
+    "word": "ノート",
+    "reading": "ノート",
+    "meaningKo": "노트",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ノートに漢字を書きます。",
+    "exampleReading": "ノートにかんじをかきます。",
+    "exampleTranslation": "노트에 한자를 씁니다.",
+    "tags": [],
+    "order": 496
+  },
+  {
+    "word": "登る",
+    "reading": "のぼる",
+    "meaningKo": "(산에) 올라가다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "山に登りたいです。",
+    "exampleReading": "やまにのぼりたいです。",
+    "exampleTranslation": "산에 오르고 싶습니다.",
+    "tags": [],
+    "order": 497
+  },
+  {
+    "word": "飲み物",
+    "reading": "のみもの",
+    "meaningKo": "마실 것. 음료",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "飲み物は何がいいですか。",
+    "exampleReading": "のみものはなにがいいですか。",
+    "exampleTranslation": "음료는 뭐가 좋겠습니까?",
+    "tags": [],
+    "order": 498
+  },
+  {
+    "word": "はい",
+    "reading": "はい",
+    "meaningKo": "예. 네",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "はい、わかりました。",
+    "exampleReading": "はい、わかりました。",
+    "exampleTranslation": "네, 알겠습니다.",
+    "tags": [],
+    "order": 499
+  },
+  {
+    "word": "葉書",
+    "reading": "はがき",
+    "meaningKo": "엽서",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "友達に葉書を出しました。",
+    "exampleReading": "ともだちにはがきをだしました。",
+    "exampleTranslation": "친구에게 엽서를 보냈습니다.",
+    "tags": [],
+    "order": 500
+  },
+  {
+    "word": "はく",
+    "reading": "はく",
+    "meaningKo": "(바지 치마를) 입다. (신발을) 신다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "黒い靴をはいています。",
+    "exampleReading": "くろいくつをはいています。",
+    "exampleTranslation": "검은 구두를 신고 있습니다.",
+    "tags": [],
+    "order": 501
+  },
+  {
+    "word": "始まる",
+    "reading": "はじまる",
+    "meaningKo": "시작되다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "授業は九時に始まります。",
+    "exampleReading": "じゅぎょうはくじにはじまります。",
+    "exampleTranslation": "수업은 9시에 시작됩니다.",
+    "tags": [],
+    "order": 502
+  },
+  {
+    "word": "はじめまして",
+    "reading": "はじめまして",
+    "meaningKo": "처음 뵙겠습니다",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "はじめまして。よろしくおねがいします。",
+    "exampleReading": "はじめまして。よろしくおねがいします。",
+    "exampleTranslation": "처음 뵙겠습니다. 잘 부탁드립니다.",
+    "tags": [],
+    "order": 503
+  },
+  {
+    "word": "バス",
+    "reading": "バス",
+    "meaningKo": "버스",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "バスで学校に行きます。",
+    "exampleReading": "バスでがっこうにいきます。",
+    "exampleTranslation": "버스로 학교에 갑니다.",
+    "tags": [],
+    "order": 504
+  },
+  {
+    "word": "二十歳",
+    "reading": "はたち",
+    "meaningKo": "스무살",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来年二十歳になります。",
+    "exampleReading": "らいねんはたちになります。",
+    "exampleTranslation": "내년에 스무 살이 됩니다.",
+    "tags": [],
+    "order": 505
+  },
+  {
+    "word": "八",
+    "reading": "はち",
+    "meaningKo": "팔. 여덟",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "八時に会いましょう。",
+    "exampleReading": "はちじにあいましょう。",
+    "exampleTranslation": "8시에 만납시다.",
+    "tags": [],
+    "order": 506
+  },
+  {
+    "word": "二十日",
+    "reading": "はつか",
+    "meaningKo": "20일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "二十日に旅行に行きます。",
+    "exampleReading": "はつかにりょこうにいきます。",
+    "exampleTranslation": "20일에 여행을 갑니다.",
+    "tags": [],
+    "order": 507
+  },
+  {
+    "word": "鼻",
+    "reading": "はな",
+    "meaningKo": "코",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "鼻が高いですね。",
+    "exampleReading": "はながたかいですね。",
+    "exampleTranslation": "코가 높네요.",
+    "tags": [],
+    "order": 508
+  },
+  {
+    "word": "話",
+    "reading": "はなし",
+    "meaningKo": "이야기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "おもしろい話を聞きました。",
+    "exampleReading": "おもしろいはなしをききました。",
+    "exampleTranslation": "재미있는 이야기를 들었습니다.",
+    "tags": [],
+    "order": 509
+  },
+  {
+    "word": "母",
+    "reading": "はは",
+    "meaningKo": "(나의)어머니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "母は料理が上手です。",
+    "exampleReading": "はははりょうりがじょうずです。",
+    "exampleTranslation": "어머니는 요리를 잘합니다.",
+    "tags": [],
+    "order": 510
+  },
+  {
+    "word": "早い",
+    "reading": "はやい",
+    "meaningKo": "이르다. 빠르다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "朝早く起きました。",
+    "exampleReading": "あさはやくおきました。",
+    "exampleTranslation": "아침 일찍 일어났습니다.",
+    "tags": [],
+    "order": 511
+  },
+  {
+    "word": "春",
+    "reading": "はる",
+    "meaningKo": "봄",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "春は桜がきれいです。",
+    "exampleReading": "はるはさくらがきれいです。",
+    "exampleTranslation": "봄에는 벚꽃이 예쁩니다.",
+    "tags": [],
+    "order": 512
+  },
+  {
+    "word": "パン",
+    "reading": "パン",
+    "meaningKo": "빵",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "朝パンを食べます。",
+    "exampleReading": "あさパンをたべます。",
+    "exampleTranslation": "아침에 빵을 먹습니다.",
+    "tags": [],
+    "order": 513
+  },
+  {
+    "word": "-半",
+    "reading": "はん",
+    "meaningKo": "-반. 30분",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "三時半に会いましょう。",
+    "exampleReading": "さんじはんにあいましょう。",
+    "exampleTranslation": "3시 반에 만납시다.",
+    "tags": [],
+    "order": 514
+  },
+  {
+    "word": "ハンカチ",
+    "reading": "ハンカチ",
+    "meaningKo": "손수건",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ハンカチを持っていますか。",
+    "exampleReading": "ハンカチをもっていますか。",
+    "exampleTranslation": "손수건을 가지고 있습니까?",
+    "tags": [],
+    "order": 515
+  },
+  {
+    "word": "番号",
+    "reading": "ばんごう",
+    "meaningKo": "번호",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "電話番号を教えてください。",
+    "exampleReading": "でんわばんごうをおしえてください。",
+    "exampleTranslation": "전화번호를 알려 주세요.",
+    "tags": [],
+    "order": 516
+  },
+  {
+    "word": "晩御飯",
+    "reading": "ばんごはん",
+    "meaningKo": "저녁 식사",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "晩御飯は何を食べますか。",
+    "exampleReading": "ばんごはんはなにをたべますか。",
+    "exampleTranslation": "저녁 식사는 무엇을 먹습니까?",
+    "tags": [],
+    "order": 517
+  },
+  {
+    "word": "ハンサムな",
+    "reading": "ハンサムな",
+    "meaningKo": "잘생긴. 미남의",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "あの人はハンサムですね。",
+    "exampleReading": "あのひとはハンサムですね。",
+    "exampleTranslation": "저 사람은 잘생겼네요.",
+    "tags": [],
+    "order": 518
+  },
+  {
+    "word": "東",
+    "reading": "ひがし",
+    "meaningKo": "동쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "東の方に山があります。",
+    "exampleReading": "ひがしのほうにやまがあります。",
+    "exampleTranslation": "동쪽에 산이 있습니다.",
+    "tags": [],
+    "order": 519
+  },
+  {
+    "word": "低い",
+    "reading": "ひくい",
+    "meaningKo": "낮다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この山は低いです。",
+    "exampleReading": "このやまはひくいです。",
+    "exampleTranslation": "이 산은 낮습니다.",
+    "tags": [],
+    "order": 520
+  },
+  {
+    "word": "飛行機",
+    "reading": "ひこうき",
+    "meaningKo": "비행기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "飛行機で日本に行きます。",
+    "exampleReading": "ひこうきでにほんにいきます。",
+    "exampleTranslation": "비행기로 일본에 갑니다.",
+    "tags": [],
+    "order": 521
+  },
+  {
+    "word": "左",
+    "reading": "ひだり",
+    "meaningKo": "왼쪽. 좌측",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "左に曲がってください。",
+    "exampleReading": "ひだりにまがってください。",
+    "exampleTranslation": "왼쪽으로 돌아 주세요.",
+    "tags": [],
+    "order": 522
+  },
+  {
+    "word": "暇な",
+    "reading": "ひまな",
+    "meaningKo": "한가한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "日曜日は暇ですか。",
+    "exampleReading": "にちようびはひまですか。",
+    "exampleTranslation": "일요일은 한가합니까?",
+    "tags": [],
+    "order": 523
+  },
+  {
+    "word": "百",
+    "reading": "ひゃく",
+    "meaningKo": "백",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "百円のお菓子を買いました。",
+    "exampleReading": "ひゃくえんのおかしをかいました。",
+    "exampleTranslation": "100엔짜리 과자를 샀습니다.",
+    "tags": [],
+    "order": 524
+  },
+  {
+    "word": "病気",
+    "reading": "びょうき",
+    "meaningKo": "병",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "病気で学校を休みました。",
+    "exampleReading": "びょうきでがっこうをやすみました。",
+    "exampleTranslation": "병으로 학교를 쉬었습니다.",
+    "tags": [],
+    "order": 525
+  },
+  {
+    "word": "昼御飯",
+    "reading": "ひるごはん",
+    "meaningKo": "점심",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "昼御飯を食べに行きましょう。",
+    "exampleReading": "ひるごはんをたべにいきましょう。",
+    "exampleTranslation": "점심을 먹으러 갑시다.",
+    "tags": [],
+    "order": 526
+  },
+  {
+    "word": "広い",
+    "reading": "ひろい",
+    "meaningKo": "넓다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この公園は広いですね。",
+    "exampleReading": "このこうえんはひろいですね。",
+    "exampleTranslation": "이 공원은 넓네요.",
+    "tags": [],
+    "order": 527
+  },
+  {
+    "word": "豚肉",
+    "reading": "ぶたにく",
+    "meaningKo": "돼지고기",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "豚肉でカレーを作ります。",
+    "exampleReading": "ぶたにくでカレーをつくります。",
+    "exampleTranslation": "돼지고기로 카레를 만듭니다.",
+    "tags": [],
+    "order": 528
+  },
+  {
+    "word": "二日",
+    "reading": "ふつか",
+    "meaningKo": "2일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "二日に会いましょう。",
+    "exampleReading": "ふつかにあいましょう。",
+    "exampleTranslation": "2일에 만납시다.",
+    "tags": [],
+    "order": 529
+  },
+  {
+    "word": "冬",
+    "reading": "ふゆ",
+    "meaningKo": "겨울",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "冬は雪が降ります。",
+    "exampleReading": "ふゆはゆきがふります。",
+    "exampleTranslation": "겨울에는 눈이 내립니다.",
+    "tags": [],
+    "order": 530
+  },
+  {
+    "word": "降る",
+    "reading": "ふる",
+    "meaningKo": "(비가) 내리다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "明日雨が降るでしょう。",
+    "exampleReading": "あしたあめがふるでしょう。",
+    "exampleTranslation": "내일 비가 내리겠지요.",
+    "tags": [],
+    "order": 531
+  },
+  {
+    "word": "-分",
+    "reading": "ふん",
+    "meaningKo": "-분",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "十分歩きました。",
+    "exampleReading": "じっぷんあるきました。",
+    "exampleTranslation": "10분 걸었습니다.",
+    "tags": [],
+    "order": 532
+  },
+  {
+    "word": "下手な",
+    "reading": "へたな",
+    "meaningKo": "못하는. 서투른",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "歌が下手です。",
+    "exampleReading": "うたがへたです。",
+    "exampleTranslation": "노래를 못합니다.",
+    "tags": [],
+    "order": 533
+  },
+  {
+    "word": "ペン",
+    "reading": "ペン",
+    "meaningKo": "펜",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ペンを貸してください。",
+    "exampleReading": "ペンをかしてください。",
+    "exampleTranslation": "펜을 빌려 주세요.",
+    "tags": [],
+    "order": 534
+  },
+  {
+    "word": "便利な",
+    "reading": "べんりな",
+    "meaningKo": "편리한",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この駅はとても便利です。",
+    "exampleReading": "このえきはとてもべんりです。",
+    "exampleTranslation": "이 역은 매우 편리합니다.",
+    "tags": [],
+    "order": 535
+  },
+  {
+    "word": "方",
+    "reading": "ほう",
+    "meaningKo": "방면. 방향. 쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "こちらの方が安いです。",
+    "exampleReading": "こちらのほうがやすいです。",
+    "exampleTranslation": "이쪽이 더 쌉니다.",
+    "tags": [],
+    "order": 536
+  },
+  {
+    "word": "帽子",
+    "reading": "ぼうし",
+    "meaningKo": "모자",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "帽子をかぶってください。",
+    "exampleReading": "ぼうしをかぶってください。",
+    "exampleTranslation": "모자를 쓰세요.",
+    "tags": [],
+    "order": 537
+  },
+  {
+    "word": "ボールペン",
+    "reading": "ボールペン",
+    "meaningKo": "볼펜",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ボールペンで書いてください。",
+    "exampleReading": "ボールペンでかいてください。",
+    "exampleTranslation": "볼펜으로 써 주세요.",
+    "tags": [],
+    "order": 538
+  },
+  {
+    "word": "他",
+    "reading": "ほか",
+    "meaningKo": "다른 것. 딴 것",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "他に何かありますか。",
+    "exampleReading": "ほかになにかありますか。",
+    "exampleTranslation": "그 밖에 뭐가 있습니까?",
+    "tags": [],
+    "order": 539
+  },
+  {
+    "word": "他に",
+    "reading": "ほかに",
+    "meaningKo": "그밖에. 그외에",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "他に質問はありませんか。",
+    "exampleReading": "ほかにしつもんはありませんか。",
+    "exampleTranslation": "그 밖에 질문은 없습니까?",
+    "tags": [],
+    "order": 540
+  },
+  {
+    "word": "他の",
+    "reading": "ほかの",
+    "meaningKo": "다른",
+    "partOfSpeech": "PREFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "他の人に聞いてください。",
+    "exampleReading": "ほかのひとにきいてください。",
+    "exampleTranslation": "다른 사람에게 물어보세요.",
+    "tags": [],
+    "order": 541
+  },
+  {
+    "word": "ポケット",
+    "reading": "ポケット",
+    "meaningKo": "포켓. 호주머니",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ポケットに鍵があります。",
+    "exampleReading": "ポケットにかぎがあります。",
+    "exampleTranslation": "주머니에 열쇠가 있습니다.",
+    "tags": [],
+    "order": 542
+  },
+  {
+    "word": "欲しい",
+    "reading": "ほしい",
+    "meaningKo": "갖고 싶다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "新しいパソコンが欲しいです。",
+    "exampleReading": "あたらしいパソコンがほしいです。",
+    "exampleTranslation": "새 컴퓨터가 갖고 싶습니다.",
+    "tags": [],
+    "order": 543
+  },
+  {
+    "word": "ボタン",
+    "reading": "ボタン",
+    "meaningKo": "단추. 버튼",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "このボタンを押してください。",
+    "exampleReading": "このボタンをおしてください。",
+    "exampleTranslation": "이 버튼을 눌러 주세요.",
+    "tags": [],
+    "order": 544
+  },
+  {
+    "word": "ホテル",
+    "reading": "ホテル",
+    "meaningKo": "호텔",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅の近くのホテルに泊まります。",
+    "exampleReading": "えきのちかくのホテルにとまります。",
+    "exampleTranslation": "역 근처 호텔에 묵습니다.",
+    "tags": [],
+    "order": 545
+  },
+  {
+    "word": "-本",
+    "reading": "ほん/-ぽん/-ぼん",
+    "meaningKo": "-자루. -개비. -병",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "ペンを二本買いました。",
+    "exampleReading": "ペンをにほんかいました。",
+    "exampleTranslation": "펜을 두 자루 샀습니다.",
+    "tags": [],
+    "order": 546
+  },
+  {
+    "word": "-枚",
+    "reading": "まい",
+    "meaningKo": "-장",
+    "partOfSpeech": "SUFFIX",
+    "jlptLevel": "N5",
+    "exampleSentence": "紙を三枚ください。",
+    "exampleReading": "かみをさんまいください。",
+    "exampleTranslation": "종이 세 장 주세요.",
+    "tags": [],
+    "order": 547
+  },
+  {
+    "word": "毎朝",
+    "reading": "まいあさ",
+    "meaningKo": "매일 아침. 아침마다",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎朝六時に起きます。",
+    "exampleReading": "まいあさろくじにおきます。",
+    "exampleTranslation": "매일 아침 6시에 일어납니다.",
+    "tags": [],
+    "order": 548
+  },
+  {
+    "word": "毎月",
+    "reading": "まいげつ",
+    "meaningKo": "매월 ＝まいつき",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎月一回映画を見ます。",
+    "exampleReading": "まいげついっかいえいがをみます。",
+    "exampleTranslation": "매달 한 번 영화를 봅니다.",
+    "tags": [],
+    "order": 549
+  },
+  {
+    "word": "毎月",
+    "reading": "まいつき",
+    "meaningKo": "매월",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎月本を三冊読みます。",
+    "exampleReading": "まいつきほんをさんさつよみます。",
+    "exampleTranslation": "매달 책을 세 권 읽습니다.",
+    "tags": [],
+    "order": 550
+  },
+  {
+    "word": "毎年",
+    "reading": "まいとし",
+    "meaningKo": "매년",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎年夏に旅行します。",
+    "exampleReading": "まいとしなつにりょこうします。",
+    "exampleTranslation": "매년 여름에 여행합니다.",
+    "tags": [],
+    "order": 551
+  },
+  {
+    "word": "毎年",
+    "reading": "まいねん",
+    "meaningKo": "매년 ＝まいとし",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎年お正月に国へ帰ります。",
+    "exampleReading": "まいねんおしょうがつにくにへかえります。",
+    "exampleTranslation": "매년 설날에 고향에 돌아갑니다.",
+    "tags": [],
+    "order": 552
+  },
+  {
+    "word": "毎晩",
+    "reading": "まいばん",
+    "meaningKo": "매일 밤. 밤마다",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎晩テレビを見ます。",
+    "exampleReading": "まいばんテレビをみます。",
+    "exampleTranslation": "매일 밤 TV를 봅니다.",
+    "tags": [],
+    "order": 553
+  },
+  {
+    "word": "前",
+    "reading": "まえ",
+    "meaningKo": "앞. 전",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "駅の前に銀行があります。",
+    "exampleReading": "えきのまえにぎんこうがあります。",
+    "exampleTranslation": "역 앞에 은행이 있습니다.",
+    "tags": [],
+    "order": 554
+  },
+  {
+    "word": "まずい",
+    "reading": "まずい",
+    "meaningKo": "맛없다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "この料理はまずいです。",
+    "exampleReading": "このりょうりはまずいです。",
+    "exampleTranslation": "이 요리는 맛없습니다.",
+    "tags": [],
+    "order": 555
+  },
+  {
+    "word": "また",
+    "reading": "また",
+    "meaningKo": "또. 다시",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "また明日会いましょう。",
+    "exampleReading": "またあしたあいましょう。",
+    "exampleTranslation": "또 내일 만납시다.",
+    "tags": [],
+    "order": 556
+  },
+  {
+    "word": "町",
+    "reading": "まち",
+    "meaningKo": "동네. 동. 시내",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この町はきれいですね。",
+    "exampleReading": "このまちはきれいですね。",
+    "exampleTranslation": "이 동네는 깨끗하네요.",
+    "tags": [],
+    "order": 557
+  },
+  {
+    "word": "丸い",
+    "reading": "まるい",
+    "meaningKo": "둥글다. 동그랗다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "丸いテーブルがあります。",
+    "exampleReading": "まるいテーブルがあります。",
+    "exampleTranslation": "둥근 테이블이 있습니다.",
+    "tags": [],
+    "order": 558
+  },
+  {
+    "word": "万",
+    "reading": "まん",
+    "meaningKo": "만",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この車は百万円です。",
+    "exampleReading": "このくるまはひゃくまんえんです。",
+    "exampleTranslation": "이 차는 100만 엔입니다.",
+    "tags": [],
+    "order": 559
+  },
+  {
+    "word": "磨く",
+    "reading": "みがく",
+    "meaningKo": "닦다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "毎晩歯を磨きます。",
+    "exampleReading": "まいばんはをみがきます。",
+    "exampleTranslation": "매일 밤 이를 닦습니다.",
+    "tags": [],
+    "order": 560
+  },
+  {
+    "word": "右",
+    "reading": "みぎ",
+    "meaningKo": "오른쪽. 우측",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "右に曲がってください。",
+    "exampleReading": "みぎにまがってください。",
+    "exampleTranslation": "오른쪽으로 도세요.",
+    "tags": [],
+    "order": 561
+  },
+  {
+    "word": "見せる",
+    "reading": "みせる",
+    "meaningKo": "보여주다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "写真を見せてください。",
+    "exampleReading": "しゃしんをみせてください。",
+    "exampleTranslation": "사진을 보여 주세요.",
+    "tags": [],
+    "order": 562
+  },
+  {
+    "word": "三日",
+    "reading": "みっか",
+    "meaningKo": "3일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "三日から旅行です。",
+    "exampleReading": "みっかからりょこうです。",
+    "exampleTranslation": "3일부터 여행입니다.",
+    "tags": [],
+    "order": 563
+  },
+  {
+    "word": "緑",
+    "reading": "みどり",
+    "meaningKo": "녹색",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "緑のかばんはだれのですか。",
+    "exampleReading": "みどりのかばんはだれのですか。",
+    "exampleTranslation": "초록색 가방은 누구 것입니까?",
+    "tags": [],
+    "order": 564
+  },
+  {
+    "word": "皆さん",
+    "reading": "みなさん",
+    "meaningKo": "여러분",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "みなさん、おはようございます。",
+    "exampleReading": "みなさん、おはようございます。",
+    "exampleTranslation": "여러분, 안녕하세요.",
+    "tags": [],
+    "order": 565
+  },
+  {
+    "word": "南",
+    "reading": "みなみ",
+    "meaningKo": "남쪽",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "南の方は暖かいです。",
+    "exampleReading": "みなみのほうはあたたかいです。",
+    "exampleTranslation": "남쪽은 따뜻합니다.",
+    "tags": [],
+    "order": 566
+  },
+  {
+    "word": "みんな",
+    "reading": "みんな",
+    "meaningKo": "모두들",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "みんなで公園に行きました。",
+    "exampleReading": "みんなでこうえんにいきました。",
+    "exampleTranslation": "모두 함께 공원에 갔습니다.",
+    "tags": [],
+    "order": 567
+  },
+  {
+    "word": "六日",
+    "reading": "むいか",
+    "meaningKo": "6일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "六日に会いましょう。",
+    "exampleReading": "むいかにあいましょう。",
+    "exampleTranslation": "6일에 만납시다.",
+    "tags": [],
+    "order": 568
+  },
+  {
+    "word": "六つ",
+    "reading": "むっつ",
+    "meaningKo": "여섯 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "卵が六つあります。",
+    "exampleReading": "たまごがむっつあります。",
+    "exampleTranslation": "달걀이 여섯 개 있습니다.",
+    "tags": [],
+    "order": 569
+  },
+  {
+    "word": "眼鏡",
+    "reading": "めがね",
+    "meaningKo": "안경",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "眼鏡をかけています。",
+    "exampleReading": "めがねをかけています。",
+    "exampleTranslation": "안경을 쓰고 있습니다.",
+    "tags": [],
+    "order": 570
+  },
+  {
+    "word": "もう一度",
+    "reading": "もういちど",
+    "meaningKo": "한번 더. 다시 한번",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "もう一度言ってください。",
+    "exampleReading": "もういちどいってください。",
+    "exampleTranslation": "한 번 더 말해 주세요.",
+    "tags": [],
+    "order": 571
+  },
+  {
+    "word": "木曜日",
+    "reading": "もくようび",
+    "meaningKo": "목요일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "木曜日に会議があります。",
+    "exampleReading": "もくようびにかいぎがあります。",
+    "exampleTranslation": "목요일에 회의가 있습니다.",
+    "tags": [],
+    "order": 572
+  },
+  {
+    "word": "もしもし",
+    "reading": "もしもし",
+    "meaningKo": "여보세요",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "もしもし、田中ですが。",
+    "exampleReading": "もしもし、たなかですが。",
+    "exampleTranslation": "여보세요, 다나카입니다만.",
+    "tags": [],
+    "order": 573
+  },
+  {
+    "word": "もっと",
+    "reading": "もっと",
+    "meaningKo": "더. 좀더. 더욱",
+    "partOfSpeech": "ADVERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "もっとゆっくり話してください。",
+    "exampleReading": "もっとゆっくりはなしてください。",
+    "exampleTranslation": "더 천천히 말해 주세요.",
+    "tags": [],
+    "order": 574
+  },
+  {
+    "word": "物",
+    "reading": "もの",
+    "meaningKo": "물건",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "買い物をたくさんしました。",
+    "exampleReading": "かいものをたくさんしました。",
+    "exampleTranslation": "쇼핑을 많이 했습니다.",
+    "tags": [],
+    "order": 575
+  },
+  {
+    "word": "門",
+    "reading": "もん",
+    "meaningKo": "대문",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "学校の門の前で会いましょう。",
+    "exampleReading": "がっこうのもんのまえであいましょう。",
+    "exampleTranslation": "학교 정문 앞에서 만납시다.",
+    "tags": [],
+    "order": 576
+  },
+  {
+    "word": "問題",
+    "reading": "もんだい",
+    "meaningKo": "문제",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "この問題がわかりますか。",
+    "exampleReading": "このもんだいがわかりますか。",
+    "exampleTranslation": "이 문제를 알겠습니까?",
+    "tags": [],
+    "order": 577
+  },
+  {
+    "word": "八百屋",
+    "reading": "やおや",
+    "meaningKo": "야채 가게",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "八百屋で野菜を買います。",
+    "exampleReading": "やおやでやさいをかいます。",
+    "exampleTranslation": "야채 가게에서 채소를 삽니다.",
+    "tags": [],
+    "order": 578
+  },
+  {
+    "word": "優しい",
+    "reading": "やさしい",
+    "meaningKo": "상냥하다. 정답다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "先生はとても優しいです。",
+    "exampleReading": "せんせいはとてもやさしいです。",
+    "exampleTranslation": "선생님은 매우 상냥합니다.",
+    "tags": [],
+    "order": 579
+  },
+  {
+    "word": "休み",
+    "reading": "やすみ",
+    "meaningKo": "쉼. 휴식. 쉬는 시간. 휴일. 휴가",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来週は休みです。",
+    "exampleReading": "らいしゅうはやすみです。",
+    "exampleTranslation": "다음 주는 쉬는 날입니다.",
+    "tags": [],
+    "order": 580
+  },
+  {
+    "word": "八つ",
+    "reading": "やっつ",
+    "meaningKo": "여덟 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "お菓子が八つあります。",
+    "exampleReading": "おかしがやっつあります。",
+    "exampleTranslation": "과자가 여덟 개 있습니다.",
+    "tags": [],
+    "order": 581
+  },
+  {
+    "word": "夕方",
+    "reading": "ゆうがた",
+    "meaningKo": "저녁때",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "夕方散歩をします。",
+    "exampleReading": "ゆうがたさんぽをします。",
+    "exampleTranslation": "저녁때 산책을 합니다.",
+    "tags": [],
+    "order": 582
+  },
+  {
+    "word": "夕御飯",
+    "reading": "ゆうごはん",
+    "meaningKo": "저녁 식사",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "夕御飯を作っています。",
+    "exampleReading": "ゆうごはんをつくっています。",
+    "exampleTranslation": "저녁 식사를 만들고 있습니다.",
+    "tags": [],
+    "order": 583
+  },
+  {
+    "word": "夕飯",
+    "reading": "ゆうはん",
+    "meaningKo": "저녁 식사 ＝ゆうごはん",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "夕飯はもう食べましたか。",
+    "exampleReading": "ゆうはんはもうたべましたか。",
+    "exampleTranslation": "저녁은 이미 먹었습니까?",
+    "tags": [],
+    "order": 584
+  },
+  {
+    "word": "郵便局",
+    "reading": "ゆうびんきょく",
+    "meaningKo": "우체국",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "郵便局で手紙を出しました。",
+    "exampleReading": "ゆうびんきょくでてがみをだしました。",
+    "exampleTranslation": "우체국에서 편지를 보냈습니다.",
+    "tags": [],
+    "order": 585
+  },
+  {
+    "word": "良い",
+    "reading": "よい",
+    "meaningKo": "좋다 ＝いい",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "天気が良いですね。",
+    "exampleReading": "てんきがよいですね。",
+    "exampleTranslation": "날씨가 좋네요.",
+    "tags": [],
+    "order": 586
+  },
+  {
+    "word": "八日",
+    "reading": "ようか",
+    "meaningKo": "8일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "八日は母の誕生日です。",
+    "exampleReading": "ようかはははのたんじょうびです。",
+    "exampleTranslation": "8일은 어머니 생신입니다.",
+    "tags": [],
+    "order": 587
+  },
+  {
+    "word": "洋服",
+    "reading": "ようふく",
+    "meaningKo": "양복",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "新しい洋服を買いたいです。",
+    "exampleReading": "あたらしいようふくをかいたいです。",
+    "exampleTranslation": "새 옷을 사고 싶습니다.",
+    "tags": [],
+    "order": 588
+  },
+  {
+    "word": "横",
+    "reading": "よこ",
+    "meaningKo": "옆. 가로. 측면",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "銀行の横にパン屋があります。",
+    "exampleReading": "ぎんこうのよこにパンやがあります。",
+    "exampleTranslation": "은행 옆에 빵집이 있습니다.",
+    "tags": [],
+    "order": 589
+  },
+  {
+    "word": "四日",
+    "reading": "よっか",
+    "meaningKo": "4일",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "四日に病院に行きます。",
+    "exampleReading": "よっかにびょういんにいきます。",
+    "exampleTranslation": "4일에 병원에 갑니다.",
+    "tags": [],
+    "order": 590
+  },
+  {
+    "word": "四つ",
+    "reading": "よっつ",
+    "meaningKo": "네 개",
+    "partOfSpeech": "COUNTER",
+    "jlptLevel": "N5",
+    "exampleSentence": "コップが四つあります。",
+    "exampleReading": "コップがよっつあります。",
+    "exampleTranslation": "컵이 네 개 있습니다.",
+    "tags": [],
+    "order": 591
+  },
+  {
+    "word": "予定",
+    "reading": "よてい",
+    "meaningKo": "예정",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "明日の予定は何ですか。",
+    "exampleReading": "あしたのよていはなんですか。",
+    "exampleTranslation": "내일 예정은 무엇입니까?",
+    "tags": [],
+    "order": 592
+  },
+  {
+    "word": "呼ぶ",
+    "reading": "よぶ",
+    "meaningKo": "부르다",
+    "partOfSpeech": "VERB",
+    "jlptLevel": "N5",
+    "exampleSentence": "タクシーを呼んでください。",
+    "exampleReading": "タクシーをよんでください。",
+    "exampleTranslation": "택시를 불러 주세요.",
+    "tags": [],
+    "order": 593
+  },
+  {
+    "word": "よろしく",
+    "reading": "よろしく",
+    "meaningKo": "잘 (+부탁합니다)",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "どうぞよろしくおねがいします。",
+    "exampleReading": "どうぞよろしくおねがいします。",
+    "exampleTranslation": "잘 부탁드립니다.",
+    "tags": [],
+    "order": 594
+  },
+  {
+    "word": "弱い",
+    "reading": "よわい",
+    "meaningKo": "약하다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "私はお酒に弱いです。",
+    "exampleReading": "わたしはおさけによわいです。",
+    "exampleTranslation": "저는 술에 약합니다.",
+    "tags": [],
+    "order": 595
+  },
+  {
+    "word": "四",
+    "reading": "よん",
+    "meaningKo": "넷 ＝し",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "四人家族です。",
+    "exampleReading": "よにんかぞくです。",
+    "exampleTranslation": "네 식구입니다.",
+    "tags": [],
+    "order": 596
+  },
+  {
+    "word": "ラーメン",
+    "reading": "ラーメン",
+    "meaningKo": "라면",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ラーメンを食べに行きましょう。",
+    "exampleReading": "ラーメンをたべにいきましょう。",
+    "exampleTranslation": "라면을 먹으러 갑시다.",
+    "tags": [],
+    "order": 597
+  },
+  {
+    "word": "来月",
+    "reading": "らいげつ",
+    "meaningKo": "다음달",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来月テストがあります。",
+    "exampleReading": "らいげつテストがあります。",
+    "exampleTranslation": "다음 달 시험이 있습니다.",
+    "tags": [],
+    "order": 598
+  },
+  {
+    "word": "来週",
+    "reading": "らいしゅう",
+    "meaningKo": "다음주",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "来週の月曜日に会いましょう。",
+    "exampleReading": "らいしゅうのげつようびにあいましょう。",
+    "exampleTranslation": "다음 주 월요일에 만납시다.",
+    "tags": [],
+    "order": 599
+  },
+  {
+    "word": "ラジオ",
+    "reading": "ラジオ",
+    "meaningKo": "라디오",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "ラジオを聞いています。",
+    "exampleReading": "ラジオをきいています。",
+    "exampleTranslation": "라디오를 듣고 있습니다.",
+    "tags": [],
+    "order": 600
+  },
+  {
+    "word": "留学生",
+    "reading": "りゅうがくせい",
+    "meaningKo": "유학생",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "私は日本の留学生です。",
+    "exampleReading": "わたしはにほんのりゅうがくせいです。",
+    "exampleTranslation": "저는 일본 유학생입니다.",
+    "tags": [],
+    "order": 601
+  },
+  {
+    "word": "両親",
+    "reading": "りょうしん",
+    "meaningKo": "부모",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "両親は韓国にいます。",
+    "exampleReading": "りょうしんはかんこくにいます。",
+    "exampleTranslation": "부모님은 한국에 계십니다.",
+    "tags": [],
+    "order": 602
+  },
+  {
+    "word": "レストラン",
+    "reading": "レストラン",
+    "meaningKo": "레스토랑",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "レストランで食事をしました。",
+    "exampleReading": "レストランでしょくじをしました。",
+    "exampleTranslation": "레스토랑에서 식사를 했습니다.",
+    "tags": [],
+    "order": 603
+  },
+  {
+    "word": "六",
+    "reading": "ろく",
+    "meaningKo": "육. 여섯",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "六時に起きます。",
+    "exampleReading": "ろくじにおきます。",
+    "exampleTranslation": "6시에 일어납니다.",
+    "tags": [],
+    "order": 604
+  },
+  {
+    "word": "私",
+    "reading": "わたし",
+    "meaningKo": "저",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "私は韓国人です。",
+    "exampleReading": "わたしはかんこくじんです。",
+    "exampleTranslation": "저는 한국 사람입니다.",
+    "tags": [],
+    "order": 605
+  },
+  {
+    "word": "悪い",
+    "reading": "わるい",
+    "meaningKo": "나쁘다",
+    "partOfSpeech": "I_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "天気が悪いですね。",
+    "exampleReading": "てんきがわるいですね。",
+    "exampleTranslation": "날씨가 나쁘네요.",
+    "tags": [],
+    "order": 606
   }
 ]

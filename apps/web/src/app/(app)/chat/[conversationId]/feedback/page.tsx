@@ -11,6 +11,7 @@ import { FeedbackDetails } from '@/components/features/chat/feedback-details';
 import { FeedbackTranscript } from '@/components/features/chat/feedback-transcript';
 import { ExpressionFlashcards } from '@/components/features/chat/expression-flashcards';
 import { queryKeys } from '@/lib/query-keys';
+import { apiFetch } from '@/lib/api';
 import { FoxMascot } from '@/components/brand/fox-mascot';
 
 type GrammarCorrection = {
@@ -55,6 +56,7 @@ type Vocabulary = {
 };
 
 type ScenarioInfo = {
+  id?: string;
   title: string;
   titleJa: string;
   difficulty: string;
@@ -118,6 +120,34 @@ export default function FeedbackPage({
     return null;
   });
   const [serverLoading, setServerLoading] = useState(!feedback);
+  const [restarting, setRestarting] = useState(false);
+
+  async function handleRestartScenario() {
+    if (!feedback?.scenario?.id) return;
+    setRestarting(true);
+    try {
+      const data = await apiFetch<{
+        conversationId: string;
+        firstMessage: { messageJa: string; messageKo: string; hint?: string };
+      }>('/api/v1/chat/start', {
+        method: 'POST',
+        body: JSON.stringify({ scenarioId: feedback.scenario.id }),
+      });
+
+      sessionStorage.setItem(
+        `chat_${data.conversationId}`,
+        JSON.stringify({
+          firstMessage: data.firstMessage,
+          scenario: feedback.scenario,
+        })
+      );
+
+      router.push(`/chat/${data.conversationId}`);
+    } catch {
+      setRestarting(false);
+      router.push('/chat');
+    }
+  }
 
   useEffect(() => {
     // Skip server fetch if sessionStorage had data (already set via initializer)
@@ -280,13 +310,14 @@ export default function FeedbackPage({
 
       {/* Action buttons */}
       <motion.div variants={item} className="mt-2 space-y-3">
-        {scenario && (
+        {scenario?.id && (
           <Button
             className="w-full gap-2"
-            onClick={() => router.push('/chat')}
+            onClick={handleRestartScenario}
+            disabled={restarting}
           >
-            <RotateCcw className="size-4" />
-            같은 시나리오 다시하기
+            <RotateCcw className={`size-4 ${restarting ? 'animate-spin' : ''}`} />
+            {restarting ? '시나리오 준비 중...' : '같은 시나리오 다시하기'}
           </Button>
         )}
         <Button

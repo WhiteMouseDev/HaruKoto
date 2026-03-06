@@ -35,9 +35,17 @@ async function seedVocabulary() {
       try {
         await prisma.vocabulary.upsert({
           where: {
-            word_jlptLevel: { word: v.word, jlptLevel: v.jlptLevel },
+            word_reading_jlptLevel: { word: v.word, reading: v.reading, jlptLevel: v.jlptLevel },
           },
-          update: {},
+          update: {
+            meaningKo: v.meaningKo,
+            partOfSpeech: v.partOfSpeech,
+            exampleSentence: v.exampleSentence,
+            exampleReading: v.exampleReading,
+            exampleTranslation: v.exampleTranslation,
+            tags: v.tags,
+            order: v.order,
+          },
           create: {
             word: v.word,
             reading: v.reading,

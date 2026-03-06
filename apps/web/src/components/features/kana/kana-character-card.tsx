@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -30,12 +31,29 @@ function getStatusBadgeClass(character: KanaCharacterData) {
   return 'bg-muted text-muted-foreground';
 }
 
+function speakJapanese(text: string) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.8;
+  window.speechSynthesis.speak(utterance);
+}
+
 export function KanaCharacterCard({
   character,
   correspondingCharacter,
   open,
   onOpenChange,
 }: KanaCharacterCardProps) {
+  const handleSpeak = useCallback(() => {
+    if (character) speakJapanese(character.character);
+  }, [character]);
+
+  const handleSpeakExample = useCallback(() => {
+    if (character?.exampleWord) speakJapanese(character.exampleWord);
+  }, [character]);
+
   if (!character) return null;
 
   const status = getStatusLabel(character);
@@ -59,16 +77,25 @@ export function KanaCharacterCard({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3, type: 'spring' }}
-            className="bg-secondary flex size-32 items-center justify-center rounded-2xl"
+            className="bg-secondary flex size-32 cursor-pointer items-center justify-center rounded-2xl active:scale-95"
+            onClick={handleSpeak}
           >
             <span className="font-jp text-6xl font-bold">
               {character.character}
             </span>
           </motion.div>
 
-          {/* Romaji + pronunciation */}
+          {/* Romaji + pronunciation + speak button */}
           <div className="flex flex-col items-center gap-1">
-            <span className="text-xl font-semibold">{character.romaji}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-semibold">{character.romaji}</span>
+              <button
+                onClick={handleSpeak}
+                className="text-primary hover:text-primary/80 active:scale-90 transition-transform"
+              >
+                <Volume2 className="size-5" />
+              </button>
+            </div>
             <span className="text-muted-foreground text-sm">
               발음: {character.pronunciation}
             </span>
@@ -112,7 +139,12 @@ export function KanaCharacterCard({
               className="bg-secondary w-full rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-2">
-                <Volume2 className="text-primary size-4 shrink-0" />
+                <button
+                  onClick={handleSpeakExample}
+                  className="text-primary hover:text-primary/80 active:scale-90 transition-transform"
+                >
+                  <Volume2 className="size-4 shrink-0" />
+                </button>
                 <span className="text-muted-foreground text-xs">예시 단어</span>
               </div>
               <div className="mt-1.5 flex items-baseline gap-2">

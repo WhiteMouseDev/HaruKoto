@@ -18,18 +18,18 @@ export function PhoneCallCta({ onClick }: PhoneCallCtaProps) {
       whileTap="tap"
     >
       <div
-        className="relative cursor-pointer overflow-hidden rounded-3xl border border-[#F0E0F5] bg-gradient-to-br from-[#FDF0F8] to-[#F4E8F9] p-6 shadow-sm dark:border-violet-500/20 dark:from-violet-500/15 dark:via-fuchsia-500/10 dark:to-pink-500/10"
+        className="relative cursor-pointer overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/15 p-6 shadow-sm"
         onClick={onClick}
       >
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#A855F7] shadow-sm shadow-purple-200 dark:shadow-violet-500/25">
-              <Phone size={20} className="fill-current text-white" />
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary shadow-sm shadow-primary/30">
+              <Phone size={20} className="fill-current text-primary-foreground" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold">AI 전화 통화</h2>
-                <span className="flex items-center gap-0.5 rounded-full bg-[#A855F7]/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-[#A855F7] dark:text-violet-400">
+                <span className="flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary">
                   <FlaskConical className="size-2.5" />
                   Beta
                 </span>
@@ -39,7 +39,7 @@ export function PhoneCallCta({ onClick }: PhoneCallCtaProps) {
               </p>
             </div>
           </div>
-          <button className="rounded-full p-2 text-[#A855F7] transition-colors hover:bg-[#A855F7]/10 dark:text-violet-400">
+          <button className="rounded-full p-2 text-primary transition-colors hover:bg-primary/10">
             <Phone size={20} />
           </button>
         </div>

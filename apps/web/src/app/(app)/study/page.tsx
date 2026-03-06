@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   BookOpen,
   Languages,
@@ -57,6 +58,19 @@ const QUIZ_MODES = [
 
 type StudyTab = 'recommend' | 'free';
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
 export default function StudyPage() {
   const router = useRouter();
   const { data: kanaProgress } = useKanaProgress();
@@ -72,7 +86,9 @@ export default function StudyPage() {
   const incompleteSession = incompleteData?.session ?? null;
 
   const { data: stats } = useQuizStats(selectedLevel, selectedTab);
-  const { data: recommendations } = useRecommendations();
+  const { data: recommendations, isLoading: recsLoading } = useRecommendations();
+
+  const isLoading = recsLoading && !recommendations;
 
   function startQuiz() {
     const modeParam =
@@ -113,11 +129,32 @@ export default function StudyPage() {
             ? '단어 쓰기'
             : '4지선다';
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-5 px-6 pt-6 pb-6">
+        <div className="bg-secondary h-8 w-32 rounded-lg animate-pulse" />
+        <div className="bg-secondary h-12 rounded-2xl animate-pulse" />
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="bg-secondary h-28 rounded-3xl animate-pulse" />
+        ))}
+        <div className="bg-secondary h-6 w-28 rounded-lg animate-pulse" />
+        {[1, 2, 3, 4].map((n) => (
+          <div key={n} className="bg-secondary h-12 rounded-2xl animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-5 px-6 pt-6 pb-6">
+    <motion.div
+      className="flex flex-col gap-5 px-6 pt-6 pb-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Resume Banner */}
       {incompleteSession && (
-        <div className="overflow-hidden rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm dark:border-amber-900 dark:bg-amber-950/30">
+        <motion.div variants={item} className="overflow-hidden rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm dark:border-amber-900 dark:bg-amber-950/30">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
               <PenLine className="size-5 text-amber-600 dark:text-amber-400" />
@@ -161,7 +198,7 @@ export default function StudyPage() {
               이어서 풀기
             </Button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Kana Progress Banner */}
@@ -176,10 +213,10 @@ export default function StudyPage() {
         )}
 
       {/* Header */}
-      <h1 className="pt-2 text-2xl font-bold">JLPT 학습</h1>
+      <motion.h1 variants={item} className="pt-2 text-2xl font-bold">JLPT 학습</motion.h1>
 
       {/* Study Tab Switcher */}
-      <div className="flex gap-1 rounded-2xl bg-secondary p-1">
+      <motion.div variants={item} className="flex gap-1 rounded-2xl bg-secondary p-1">
         <button
           className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-all ${
             studyTab === 'recommend'
@@ -202,11 +239,11 @@ export default function StudyPage() {
           <Library className="size-3.5" />
           자율
         </button>
-      </div>
+      </motion.div>
 
       {/* Recommend Tab */}
       {studyTab === 'recommend' && (
-        <div className="flex flex-col gap-3">
+        <motion.div variants={item} className="flex flex-col gap-3">
           {/* Review due */}
           {recommendations && recommendations.reviewDueCount > 0 && (
             <div
@@ -294,7 +331,7 @@ export default function StudyPage() {
                 </p>
               </div>
             )}
-        </div>
+        </motion.div>
       )}
 
       {/* Free Tab */}
@@ -421,7 +458,7 @@ export default function StudyPage() {
       )}
 
       {/* My Study Data */}
-      <div className="flex flex-col gap-3">
+      <motion.div variants={item} className="flex flex-col gap-3">
         <h2 className="font-bold">내 학습 데이터</h2>
         {[
           {
@@ -448,19 +485,19 @@ export default function StudyPage() {
             href: '/study/kana/chart',
             disabled: false,
           },
-        ].map((item) => (
+        ].map((link) => (
           <div
-            key={item.label}
+            key={link.label}
             className={`flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-sm transition-colors ${
-              item.disabled
+              link.disabled
                 ? 'cursor-default opacity-50'
                 : 'cursor-pointer hover:bg-secondary'
             }`}
-            onClick={() => !item.disabled && router.push(item.href)}
+            onClick={() => !link.disabled && router.push(link.href)}
           >
-            <item.icon className="text-muted-foreground size-4" />
-            <span className="flex-1 text-sm font-medium">{item.label}</span>
-            {item.disabled ? (
+            <link.icon className="text-muted-foreground size-4" />
+            <span className="flex-1 text-sm font-medium">{link.label}</span>
+            {link.disabled ? (
               <Badge variant="outline" className="text-[10px]">
                 준비 중
               </Badge>
@@ -469,7 +506,7 @@ export default function StudyPage() {
             )}
           </div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

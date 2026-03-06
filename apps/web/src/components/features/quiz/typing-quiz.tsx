@@ -6,6 +6,7 @@ import { CircleCheck, CircleX, Delete } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { shuffleArray } from '@/lib/shuffle';
+import { playSound } from '@/lib/sounds';
 
 type TypingQuestion = {
   questionId: string;
@@ -89,6 +90,7 @@ export function TypingQuiz({
     if (placed.length !== slotCount) return;
 
     const isCorrect = placed.join('') === question.answer;
+    playSound(isCorrect ? 'correct' : 'incorrect');
     setAnswerState(isCorrect ? 'correct' : 'incorrect');
     setResults((prev) => [
       ...prev,

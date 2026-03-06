@@ -60,6 +60,7 @@ type EndResponse = {
 };
 
 type ScenarioInfo = {
+  id?: string;
   title: string;
   titleJa: string;
   difficulty: string;

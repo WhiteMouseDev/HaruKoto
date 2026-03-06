@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { playSound } from '@/lib/sounds';
 
 type MatchingPair = {
   id: string;
@@ -61,6 +62,7 @@ export function MatchingPairQuiz({
       const isCorrect = selectedLeft === rightPairId;
 
       if (isCorrect) {
+        playSound('correct');
         setFeedback({ type: 'correct', pairId: selectedLeft });
         onMatchResult?.(selectedLeft, true);
 
@@ -91,6 +93,7 @@ export function MatchingPairQuiz({
           }
         }, 800);
       } else {
+        playSound('incorrect');
         setFeedback({ type: 'incorrect', pairId: selectedLeft });
         onMatchResult?.(selectedLeft, false);
 

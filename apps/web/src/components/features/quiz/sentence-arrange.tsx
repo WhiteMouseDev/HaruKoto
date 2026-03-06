@@ -6,6 +6,7 @@ import { CircleCheck, CircleX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { shuffleArray } from '@/lib/shuffle';
+import { playSound } from '@/lib/sounds';
 
 type SentenceToken = {
   text: string;
@@ -91,6 +92,7 @@ export function SentenceArrangeQuiz({
     if (placed.length !== question.tokens.length) return;
 
     const isCorrect = placed.every((token, i) => token.order === i);
+    playSound(isCorrect ? 'correct' : 'incorrect');
     setAnswerState(isCorrect ? 'correct' : 'incorrect');
     setResults((prev) => [
       ...prev,
@@ -301,10 +303,10 @@ export function SentenceArrangeQuiz({
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'fixed bottom-20 left-0 right-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5',
+              'fixed bottom-0 left-0 right-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5 pb-24',
               answerState === 'correct'
-                ? 'bg-hk-success/5 border-hk-success/30'
-                : 'bg-hk-error/5 border-hk-error/30'
+                ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950 dark:border-emerald-800'
+                : 'bg-rose-50 border-rose-200 dark:bg-rose-950 dark:border-rose-800'
             )}
           >
             <div className="flex flex-col gap-3">

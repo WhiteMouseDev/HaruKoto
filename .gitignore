@@ -49,3 +49,4 @@ coverage/
 
 # Vercel
 .vercel
+packages/database/data/raw/

@@ -101,6 +101,7 @@ export default function ChatPage() {
         JSON.stringify({
           firstMessage: data.firstMessage,
           scenario: {
+            id: scenario.id,
             title: scenario.title,
             titleJa: scenario.titleJa,
             difficulty: scenario.difficulty,

@@ -172,7 +172,7 @@ model Vocabulary {
 
   userProgress UserVocabProgress[]
 
-  @@unique([word, jlptLevel])
+  @@unique([word, reading, jlptLevel])
   @@index([jlptLevel])
   @@index([partOfSpeech])
   @@map("vocabularies")

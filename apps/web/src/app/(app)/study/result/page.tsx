@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -25,6 +25,7 @@ import { Confetti } from '@/components/ui/confetti';
 import { useCountUp } from '@/hooks/use-count-up';
 import { useWrongAnswers, useRecommendations } from '@/hooks/use-quiz';
 import { useAddWord } from '@/hooks/use-wordbook';
+import { playSound } from '@/lib/sounds';
 
 export default function QuizResultPage() {
   return (
@@ -52,6 +53,10 @@ function ResultContent() {
   const currentXp = parseInt(searchParams.get('currentXp') || '0');
   const xpForNext = parseInt(searchParams.get('xpForNext') || '100');
   const sessionId = searchParams.get('sessionId');
+
+  useEffect(() => {
+    playSound('complete');
+  }, []);
 
   const hasWrongAnswers = total - correct > 0 && !isKana;
   const { data: wrongAnswersData } = useWrongAnswers(

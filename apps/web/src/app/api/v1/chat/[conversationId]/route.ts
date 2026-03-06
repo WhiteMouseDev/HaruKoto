@@ -113,6 +113,7 @@ export async function GET(
 
     const scenario = conversation.scenario
       ? {
+          id: conversation.scenario.id,
           title: conversation.scenario.title,
           titleJa: conversation.scenario.titleJa,
           difficulty: conversation.scenario.difficulty,
