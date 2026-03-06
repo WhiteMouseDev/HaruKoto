@@ -121,6 +121,26 @@ export default function ChatPage() {
     }
   }
 
+  async function handleFreeCall() {
+    setStarting(true);
+    try {
+      const data = await apiFetch<ScenariosResponse>(
+        '/api/v1/chat/scenarios?category=FREE'
+      );
+      if (data.scenarios.length > 0) {
+        router.push(`/chat/call?scenarioId=${data.scenarios[0].id}`);
+      } else {
+        setError('자유 통화 시나리오가 없습니다.');
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : '통화를 시작할 수 없습니다.'
+      );
+    } finally {
+      setStarting(false);
+    }
+  }
+
   async function handleFreeChat() {
     setStarting(true);
     try {
@@ -276,6 +296,28 @@ export default function ChatPage() {
           initial="hidden"
           animate="show"
         >
+          <motion.div variants={item}>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Card
+                className="border-primary/30 from-primary/10 to-accent cursor-pointer bg-gradient-to-r py-4"
+                onClick={handleFreeCall}
+              >
+                <CardContent className="flex items-center gap-4 p-4">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+                    <Phone className="text-primary size-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">하루와 자유롭게 통화</h3>
+                    <p className="text-muted-foreground text-sm">
+                      자유 주제로 음성 대화를 연습해보세요
+                    </p>
+                  </div>
+                  <Play className="text-primary size-5" />
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+
           <motion.div variants={item}>
             <PhoneCallCta onClick={() => router.push('/chat/call/contacts')} />
           </motion.div>

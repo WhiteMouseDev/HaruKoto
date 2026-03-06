@@ -311,7 +311,7 @@ export function SentenceArrangeQuiz({
           >
             <div className="flex flex-col gap-3">
               {/* Result header */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" role="alert">
                 {answerState === 'correct' ? (
                   <CircleCheck className="text-hk-success size-6" />
                 ) : (

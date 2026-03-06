@@ -37,7 +37,7 @@ export default function HomePage() {
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-5 px-6 pt-12 pb-6">
+      <div aria-busy="true" className="flex flex-col gap-5 px-6 pt-12 pb-6">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
             <div className="bg-secondary h-4 w-16 animate-pulse rounded" />

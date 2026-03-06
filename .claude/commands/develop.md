@@ -64,9 +64,6 @@ packages/[package-name]/src/index.ts
 // 공유 타입 사용
 import type { User, Quiz } from '@harukoto/types';
 
-// 공유 UI 컴포넌트 사용
-import { Button, Card } from '@harukoto/ui';
-
 // DB 클라이언트 사용
 import { prisma } from '@harukoto/database';
 

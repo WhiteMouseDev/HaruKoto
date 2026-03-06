@@ -136,7 +136,7 @@ export default function StudyPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-5 px-6 pt-6 pb-6">
+      <div aria-busy="true" className="flex flex-col gap-5 px-6 pt-6 pb-6">
         <div className="bg-secondary h-8 w-32 rounded-lg animate-pulse" />
         <div className="bg-secondary h-12 rounded-2xl animate-pulse" />
         {[1, 2, 3].map((n) => (

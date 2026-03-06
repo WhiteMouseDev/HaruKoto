@@ -37,7 +37,7 @@ export function BottomNav() {
   if (isConversationPage) return null;
 
   return (
-    <nav className="bg-background/95 safe-area-bottom fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-sm">
+    <nav aria-label="메인 네비게이션" className="bg-background/95 safe-area-bottom fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
         {tabs.map((tab) => {
           const isActive = pathname.startsWith(tab.href);
@@ -48,6 +48,7 @@ export function BottomNav() {
               key={tab.href}
               href={tab.href}
               prefetch={false}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
                 'relative flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] transition-colors',
                 isActive

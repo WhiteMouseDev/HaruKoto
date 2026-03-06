@@ -184,6 +184,8 @@ export function ClozeQuiz({
             key={currentIndex}
             initial="hidden"
             animate="visible"
+            role="radiogroup"
+            aria-label="선택지"
             className="flex flex-wrap justify-center gap-2"
           >
             {question.options.map((option, i) => {
@@ -204,6 +206,8 @@ export function ClozeQuiz({
               return (
                 <motion.button
                   key={option.id}
+                  role="radio"
+                  aria-checked={isSelected}
                   className={cn(
                     'font-jp min-w-[56px] rounded-xl border-2 px-5 py-3 text-center text-lg font-medium transition-colors disabled:cursor-default',
                     chipStyle
@@ -263,7 +267,7 @@ export function ClozeQuiz({
           >
             <div className="flex flex-col gap-3">
               {/* Result header */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" role="alert">
                 {answerState === 'correct' ? (
                   <CircleCheck className="text-hk-success size-6" />
                 ) : (
