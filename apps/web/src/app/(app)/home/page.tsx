@@ -67,7 +67,7 @@ export default function HomePage() {
 
   if (!dashboard || !profile) return null;
 
-  const { nickname, jlptLevel, dailyGoal } = profile.profile;
+  const { nickname, dailyGoal } = profile.profile;
 
   return (
     <motion.div
@@ -139,7 +139,7 @@ export default function HomePage() {
 
       {/* Quick Start CTA */}
       <motion.div variants={item}>
-        <QuickStartCard jlptLevel={jlptLevel || 'N5'} />
+        <QuickStartCard />
       </motion.div>
 
       {/* Weekly Chart */}

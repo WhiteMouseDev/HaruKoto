@@ -5,11 +5,7 @@ import { motion } from 'framer-motion';
 import { Logo } from '@/components/brand/logo';
 import { cardHoverVariants } from '@/lib/motion';
 
-type QuickStartCardProps = {
-  jlptLevel: string;
-};
-
-export function QuickStartCard({ jlptLevel }: QuickStartCardProps) {
+export function QuickStartCard() {
   return (
     <Link href="/study">
       <motion.div
@@ -26,7 +22,7 @@ export function QuickStartCard({ jlptLevel }: QuickStartCardProps) {
           <div className="flex-1">
             <h3 className="font-bold">학습 시작하기</h3>
             <p className="text-muted-foreground text-sm">
-              JLPT {jlptLevel} 단어부터 시작해보세요!
+              오늘의 단어와 문법을 학습해보세요!
             </p>
           </div>
         </div>
