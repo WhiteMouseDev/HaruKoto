@@ -3,6 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { calculateSM2 } from '@/lib/spaced-repetition';
 import { SRS_CONFIG } from '@/lib/constants';
+import { z } from 'zod';
+
+const quizAnswerSchema = z.object({
+  sessionId: z.string().min(1),
+  questionId: z.string().min(1),
+  selectedOptionId: z.string().min(1),
+  timeSpentSeconds: z.number().int().min(0).default(0),
+  questionType: z.enum(['VOCABULARY', 'GRAMMAR']).default('VOCABULARY'),
+});
 
 export async function POST(request: Request) {
   try {
@@ -15,20 +24,22 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const parseResult = quizAnswerSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid input' },
+        { status: 400 }
+      );
+    }
+
     const {
       sessionId,
       questionId,
       selectedOptionId,
-      timeSpentSeconds = 0,
-      questionType = 'VOCABULARY',
-    } = body;
-
-    if (!sessionId || !questionId || !selectedOptionId) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
+      timeSpentSeconds,
+      questionType,
+    } = parseResult.data;
 
     // Verify session ownership
     const session = await prisma.quizSession.findUnique({

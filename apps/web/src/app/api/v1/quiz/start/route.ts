@@ -28,44 +28,57 @@ export async function POST(request: Request) {
     // Auto-complete any incomplete sessions
     const incompleteSessions = await prisma.quizSession.findMany({
       where: { userId: user.id, completedAt: null },
-      include: { answers: true },
+      include: { answers: { select: { isCorrect: true } } },
     });
 
-    for (const oldSession of incompleteSessions) {
-      const correctCount = oldSession.answers.filter(a => a.isCorrect).length;
-      await prisma.quizSession.update({
-        where: { id: oldSession.id },
-        data: {
-          completedAt: new Date(),
-          correctCount,
-        },
-      });
+    if (incompleteSessions.length > 0) {
+      const now = new Date();
 
-      // Award partial XP
-      if (correctCount > 0) {
-        const partialXp = correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
+      // Batch update all incomplete sessions with individual correctCount
+      await Promise.all(
+        incompleteSessions.map((s) => {
+          const correctCount = s.answers.filter((a) => a.isCorrect).length;
+          return prisma.quizSession.update({
+            where: { id: s.id },
+            data: { completedAt: now, correctCount },
+          });
+        })
+      );
+
+      // Aggregate XP across all incomplete sessions
+      let totalCorrect = 0;
+      let totalAnswers = 0;
+      for (const s of incompleteSessions) {
+        const correct = s.answers.filter((a) => a.isCorrect).length;
+        totalCorrect += correct;
+        totalAnswers += s.answers.length;
+      }
+
+      if (totalCorrect > 0) {
+        const totalXp = totalCorrect * REWARDS.QUIZ_XP_PER_CORRECT;
         const today = getTodayKST();
 
-        await prisma.dailyProgress.upsert({
-          where: { userId_date: { userId: user.id, date: today } },
-          update: {
-            xpEarned: { increment: partialXp },
-            correctAnswers: { increment: correctCount },
-            totalAnswers: { increment: oldSession.answers.length },
-          },
-          create: {
-            userId: user.id,
-            date: today,
-            xpEarned: partialXp,
-            correctAnswers: correctCount,
-            totalAnswers: oldSession.answers.length,
-          },
-        });
-
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { experiencePoints: { increment: partialXp } },
-        });
+        await Promise.all([
+          prisma.dailyProgress.upsert({
+            where: { userId_date: { userId: user.id, date: today } },
+            update: {
+              xpEarned: { increment: totalXp },
+              correctAnswers: { increment: totalCorrect },
+              totalAnswers: { increment: totalAnswers },
+            },
+            create: {
+              userId: user.id,
+              date: today,
+              xpEarned: totalXp,
+              correctAnswers: totalCorrect,
+              totalAnswers: totalAnswers,
+            },
+          }),
+          prisma.user.update({
+            where: { id: user.id },
+            data: { experiencePoints: { increment: totalXp } },
+          }),
+        ]);
       }
     }
 

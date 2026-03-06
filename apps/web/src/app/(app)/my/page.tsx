@@ -9,6 +9,7 @@ import {
   getDefaultCallSettings,
   type CallSettingsData,
 } from '@/components/features/my/call-settings';
+import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -54,9 +55,11 @@ type MyProfileData = {
 };
 
 export default function MyPage() {
-  const { data, isLoading: loading } = useProfile() as {
+  const { data, isLoading: loading, error, refetch } = useProfile() as {
     data: MyProfileData | undefined;
     isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
   };
   const updateProfile = useUpdateProfile();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -133,13 +136,17 @@ export default function MyPage() {
     );
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <div className="flex flex-col gap-4 p-4">
         <h1 className="pt-2 text-2xl font-bold">MY</h1>
-        <p className="text-muted-foreground">
-          프로필을 불러올 수 없습니다. 다시 시도해주세요.
-        </p>
+        <div className="flex flex-col items-center justify-center gap-4 p-8">
+          <p className="text-muted-foreground text-center">데이터를 불러올 수 없습니다</p>
+          <Button variant="outline" onClick={() => refetch()} className="gap-2">
+            <RefreshCw className="size-4" />
+            다시 시도
+          </Button>
+        </div>
       </div>
     );
   }

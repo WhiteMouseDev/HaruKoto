@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { WordbookSource } from '@harukoto/database';
 import { PAGINATION } from '@/lib/constants';
+import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
   try {
@@ -68,6 +69,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
+const wordbookCreateSchema = z.object({
+  word: z.string().min(1).max(100),
+  reading: z.string().min(1).max(200),
+  meaningKo: z.string().min(1).max(500),
+  source: z.enum(['QUIZ', 'CONVERSATION', 'MANUAL']).optional(),
+  note: z.string().max(1000).nullable().optional(),
+});
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -79,14 +88,16 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { word, reading, meaningKo, source, note } = body;
+    const parseResult = wordbookCreateSchema.safeParse(body);
 
-    if (!word || !reading || !meaningKo) {
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'word, reading, and meaningKo are required' },
+        { error: 'Invalid input' },
         { status: 400 }
       );
     }
+
+    const { word, reading, meaningKo, source, note } = parseResult.data;
 
     const entry = await prisma.wordbookEntry.upsert({
       where: {

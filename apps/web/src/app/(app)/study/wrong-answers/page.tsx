@@ -10,6 +10,7 @@ import {
   Check,
   RotateCcw,
   PartyPopper,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +48,7 @@ export default function WrongAnswersPage() {
   const router = useRouter();
   const [data, setData] = useState<WrongAnswersResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('most-wrong');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export default function WrongAnswersPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -65,7 +68,7 @@ export default function WrongAnswersPage() {
       );
       setData(result);
     } catch {
-      // Silently ignore
+      setError('데이터를 불러올 수 없습니다');
     } finally {
       setLoading(false);
     }
@@ -188,6 +191,14 @@ export default function WrongAnswersPage() {
               className="bg-secondary h-[72px] animate-pulse rounded-xl"
             />
           ))}
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center gap-4 p-8">
+          <p className="text-muted-foreground text-center">{error}</p>
+          <Button variant="outline" onClick={() => fetchData()} className="gap-2">
+            <RefreshCw className="size-4" />
+            다시 시도
+          </Button>
         </div>
       ) : data && data.entries.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16">

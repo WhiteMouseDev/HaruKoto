@@ -4,6 +4,7 @@ import { prisma } from '@harukoto/database';
 import { generateText } from 'ai';
 import { getAIProvider } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { z } from 'zod';
 
 type MessageRole = 'system' | 'user' | 'assistant';
 
@@ -29,6 +30,11 @@ interface AIResponse {
   }[];
 }
 
+const chatMessageSchema = z.object({
+  conversationId: z.string().min(1),
+  message: z.string().min(1).max(2000),
+});
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -48,14 +54,16 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { conversationId, message } = body;
+    const parseResult = chatMessageSchema.safeParse(body);
 
-    if (!conversationId || !message) {
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'conversationId and message are required' },
+        { error: 'Invalid input' },
         { status: 400 }
       );
     }
+
+    const { conversationId, message } = parseResult.data;
 
     const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
@@ -113,19 +121,28 @@ export async function POST(request: Request) {
       };
     }
 
-    // Update conversation with new messages
-    const updatedMessages: StoredMessage[] = [
-      ...storedMessages,
-      { role: 'user', content: message },
-      { role: 'assistant', content: text },
-    ];
+    // Re-read and update conversation inside a transaction to prevent
+    // concurrent requests from overwriting each other's messages
+    await prisma.$transaction(async (tx) => {
+      const latest = await tx.conversation.findUniqueOrThrow({
+        where: { id: conversationId },
+        select: { messages: true },
+      });
 
-    await prisma.conversation.update({
-      where: { id: conversationId },
-      data: {
-        messages: JSON.parse(JSON.stringify(updatedMessages)),
-        messageCount: { increment: 1 },
-      },
+      const latestMessages = latest.messages as unknown as StoredMessage[];
+      const updatedMessages: StoredMessage[] = [
+        ...latestMessages,
+        { role: 'user', content: message },
+        { role: 'assistant', content: text },
+      ];
+
+      await tx.conversation.update({
+        where: { id: conversationId },
+        data: {
+          messages: JSON.parse(JSON.stringify(updatedMessages)),
+          messageCount: { increment: 1 },
+        },
+      });
     });
 
     return NextResponse.json({
