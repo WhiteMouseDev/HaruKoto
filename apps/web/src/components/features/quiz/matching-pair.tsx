@@ -159,8 +159,8 @@ export function MatchingPairQuiz({
                   onClick={() => handleLeftSelect(pair.id)}
                   disabled={isFading || feedback.type !== 'idle'}
                   className={cn(
-                    'flex min-h-[52px] items-center justify-center rounded-xl border-2 px-3 py-2.5 text-center font-medium transition-colors disabled:cursor-default',
-                    isJapanese(pair.left) && 'font-jp text-xl',
+                    'flex h-[52px] items-center justify-center rounded-xl border-2 px-3 text-center font-medium transition-colors disabled:cursor-default',
+                    isJapanese(pair.left) ? 'font-jp text-lg' : 'text-sm',
                     isCorrectFeedback
                       ? 'border-hk-success bg-hk-success/10 text-hk-success'
                       : isIncorrectFeedback
@@ -203,8 +203,8 @@ export function MatchingPairQuiz({
                   onClick={() => handleRightSelect(item.pairId)}
                   disabled={!selectedLeft || isFading || feedback.type !== 'idle'}
                   className={cn(
-                    'flex min-h-[52px] items-center justify-center rounded-xl border-2 px-3 py-2.5 text-center font-medium transition-colors disabled:cursor-default',
-                    isJapanese(item.text) && 'font-jp text-xl',
+                    'flex h-[52px] items-center justify-center rounded-xl border-2 px-3 text-center font-medium transition-colors disabled:cursor-default',
+                    isJapanese(item.text) ? 'font-jp text-lg' : 'text-sm',
                     isCorrectFeedback
                       ? 'border-hk-success bg-hk-success/10 text-hk-success'
                       : 'border-border bg-card',
