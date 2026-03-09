@@ -121,6 +121,8 @@ function QuizContent() {
               const modeMap: Record<string, string> = {
                 CLOZE: 'cloze',
                 SENTENCE_ARRANGE: 'arrange',
+                TYPING: 'typing',
+                MATCHING: 'matching',
               };
               if (modeMap[data.quizType]) {
                 setResolvedMode(modeMap[data.quizType]);
@@ -238,12 +240,15 @@ function QuizContent() {
     );
   }
 
+  // Resume 시 이미 답한 문제를 제외한 나머지 문제
+  const unansweredQuestions = questions.slice(currentIndex);
+
   // Matching quiz state & handlers
   const [matchingRound, setMatchingRound] = useState(0);
   const PAIRS_PER_ROUND = 5;
 
   const matchingPairs: MatchingPair[] = isMatching
-    ? questions.map((q) => {
+    ? unansweredQuestions.map((q) => {
         const correctOption = q.options.find((o) => o.id === q.correctOptionId);
         return {
           id: q.questionId,
@@ -389,7 +394,7 @@ function QuizContent() {
 
   // Cloze mode rendering
   if (isCloze) {
-    const clozeQuestions: ClozeQuizQuestion[] = questions.map((q) => ({
+    const clozeQuestions: ClozeQuizQuestion[] = unansweredQuestions.map((q) => ({
       questionId: q.questionId,
       sentence: q.sentence || q.questionText,
       translation: q.translation || '',
@@ -437,7 +442,7 @@ function QuizContent() {
 
   // Sentence arrange mode rendering
   if (isArrange) {
-    const arrangeQuestions: SentenceArrangeQ[] = questions.map((q) => ({
+    const arrangeQuestions: SentenceArrangeQ[] = unansweredQuestions.map((q) => ({
       questionId: q.questionId,
       koreanSentence: q.koreanSentence || q.questionText,
       japaneseSentence: q.japaneseSentence || '',
@@ -480,7 +485,7 @@ function QuizContent() {
 
   // Typing mode rendering
   if (isTyping) {
-    const typingQuestions: TypingQuestion[] = questions.map((q) => ({
+    const typingQuestions: TypingQuestion[] = unansweredQuestions.map((q) => ({
       questionId: q.questionId,
       prompt: q.prompt || q.questionText,
       answer: q.answer || '',
