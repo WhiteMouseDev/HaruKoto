@@ -111,6 +111,19 @@ export async function activateSubscription(params: {
   amount: number;
   billingKey?: string;
 }) {
+  // 멱등성: 이미 이 paymentId로 활성화된 결제가 있으면 기존 구독 반환
+  const existingPayment = await prisma.payment.findFirst({
+    where: {
+      portonePaymentId: params.portonePaymentId,
+      userId: params.userId,
+      status: 'PAID',
+    },
+    include: { subscription: true },
+  });
+  if (existingPayment?.subscription) {
+    return existingPayment.subscription;
+  }
+
   const now = new Date();
   const periodEnd = getSubscriptionPeriodEnd(params.plan, now);
 
