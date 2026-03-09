@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playSound } from '@/lib/sounds';
 
@@ -36,6 +37,7 @@ export function MatchingPairQuiz({
   const [wrongPairs, setWrongPairs] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<FeedbackState>({ type: 'idle' });
   const [fadingOut, setFadingOut] = useState<Set<string>>(new Set());
+  const [streak, setStreak] = useState(0);
 
   // Shuffle right column once on mount
   const [shuffledRight] = useState(() => {
@@ -63,6 +65,7 @@ export function MatchingPairQuiz({
 
       if (isCorrect) {
         playSound('correct');
+        setStreak((prev) => prev + 1);
         setFeedback({ type: 'correct', pairId: selectedLeft });
         onMatchResult?.(selectedLeft, true);
 
@@ -94,6 +97,7 @@ export function MatchingPairQuiz({
         }, 800);
       } else {
         playSound('incorrect');
+        setStreak(0);
         setFeedback({ type: 'incorrect', pairId: selectedLeft });
         onMatchResult?.(selectedLeft, false);
 
@@ -218,8 +222,21 @@ export function MatchingPairQuiz({
       </div>
 
       {/* Progress indicator */}
-      <div className="text-muted-foreground text-center text-sm">
-        {matchedPairs.size}/{pairs.length} 매칭 완료
+      <div className="text-muted-foreground flex items-center justify-center gap-2 text-center text-sm">
+        <span>{matchedPairs.size}/{pairs.length} 매칭 완료</span>
+        <AnimatePresence>
+          {streak >= 3 && (
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="flex items-center gap-1 text-orange-500"
+            >
+              <Flame className="size-3.5" />
+              <span className="text-xs font-bold">{streak}연속!</span>
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

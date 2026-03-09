@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -45,6 +46,9 @@ export function useStartKanaQuiz() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
+    onError: () => {
+      toast.error('가나 퀴즈를 시작할 수 없어요.');
+    },
   });
 }
 
@@ -55,6 +59,9 @@ export function useAnswerKanaQuestion() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
+    onError: () => {
+      toast.error('답안 저장에 실패했어요.');
+    },
   });
 }
 
@@ -76,6 +83,9 @@ export function useCompleteKanaQuiz() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.kanaStages('KATAKANA'),
       });
+    },
+    onError: () => {
+      toast.error('가나 퀴즈 완료 처리에 실패했어요.');
     },
   });
 }

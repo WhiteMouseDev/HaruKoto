@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -89,6 +90,9 @@ export function useToggleFavorite() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.characterFavorites });
+    },
+    onError: () => {
+      toast.error('즐겨찾기 변경에 실패했어요.');
     },
   });
 }

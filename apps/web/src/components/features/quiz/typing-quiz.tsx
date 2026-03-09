@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleCheck, CircleX, Delete } from 'lucide-react';
+import { CircleCheck, CircleX, Delete, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { shuffleArray } from '@/lib/shuffle';
@@ -48,6 +48,7 @@ export function TypingQuiz({
   const [results, setResults] = useState<
     { questionId: string; isCorrect: boolean }[]
   >([]);
+  const [streak, setStreak] = useState(0);
 
   const total = questions.length;
   const question = questions[currentIndex];
@@ -92,6 +93,7 @@ export function TypingQuiz({
     const isCorrect = placed.join('') === question.answer;
     playSound(isCorrect ? 'correct' : 'incorrect');
     setAnswerState(isCorrect ? 'correct' : 'incorrect');
+    setStreak((prev) => (isCorrect ? prev + 1 : 0));
     setResults((prev) => [
       ...prev,
       { questionId: question.questionId, isCorrect },
@@ -330,6 +332,16 @@ export function TypingQuiz({
                 <span className="text-lg font-bold">
                   {answerState === 'correct' ? '정답이에요!' : '아쉬워요!'}
                 </span>
+                {streak >= 3 && answerState === 'correct' && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="ml-auto flex items-center gap-1 text-orange-500"
+                  >
+                    <Flame className="size-4" />
+                    <span className="text-sm font-bold">{streak}연속!</span>
+                  </motion.span>
+                )}
               </div>
 
               {answerState === 'incorrect' && (

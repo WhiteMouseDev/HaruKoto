@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -167,6 +168,9 @@ export function useStartQuiz() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
     },
+    onError: () => {
+      toast.error('퀴즈를 시작할 수 없어요. 다시 시도해주세요.');
+    },
   });
 }
 
@@ -177,6 +181,9 @@ export function useResumeQuiz() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
+    onError: () => {
+      toast.error('퀴즈를 이어할 수 없어요. 다시 시도해주세요.');
+    },
   });
 }
 
@@ -187,6 +194,9 @@ export function useAnswerQuestion() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
+    onError: () => {
+      toast.error('답안 저장에 실패했어요.');
+    },
   });
 }
 
@@ -205,6 +215,9 @@ export function useCompleteQuiz() {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
       queryClient.invalidateQueries({ queryKey: queryKeys.quizStats });
       queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
+    },
+    onError: () => {
+      toast.error('퀴즈 완료 처리에 실패했어요.');
     },
   });
 }

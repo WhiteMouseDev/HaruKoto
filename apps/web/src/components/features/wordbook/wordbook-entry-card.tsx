@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { Volume2, Loader2, Pause, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useAudioPlayer } from '@/hooks/use-audio-player';
 
 type WordSource = 'QUIZ' | 'CONVERSATION' | 'MANUAL';
 
@@ -34,7 +35,27 @@ export function WordbookEntryCard({
   onDelete,
 }: WordbookEntryCardProps) {
   const [confirming, setConfirming] = useState(false);
+  const { isPlaying, isLoading, playBlob, pause } = useAudioPlayer();
   const sourceConfig = SOURCE_CONFIG[source];
+
+  async function handlePlay() {
+    if (isPlaying) {
+      pause();
+      return;
+    }
+    try {
+      const res = await fetch('/api/v1/chat/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: word }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      playBlob(blob);
+    } catch {
+      // silently fail
+    }
+  }
 
   function handleDelete() {
     if (!confirming) {
@@ -56,6 +77,20 @@ export function WordbookEntryCard({
         <CardContent className="flex items-center gap-3 px-4 py-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
+              <button
+                onClick={handlePlay}
+                disabled={isLoading}
+                className="text-muted-foreground hover:text-primary transition-colors shrink-0"
+                title="발음 듣기"
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : isPlaying ? (
+                  <Pause className="size-4" />
+                ) : (
+                  <Volume2 className="size-4" />
+                )}
+              </button>
               <span className="font-jp text-lg font-bold truncate">{word}</span>
               <span className="font-jp text-muted-foreground text-sm shrink-0">
                 {reading}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { queryKeys } from '@/lib/query-keys';
 import { apiFetch } from '@/lib/api';
 import type { SubscriptionStatusResponse } from '@/types/subscription';
@@ -37,6 +38,9 @@ export function useCancelSubscription() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription });
     },
+    onError: () => {
+      toast.error('구독 해지에 실패했어요. 다시 시도해주세요.');
+    },
   });
 }
 
@@ -50,6 +54,9 @@ export function useResumeSubscription() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription });
+    },
+    onError: () => {
+      toast.error('구독 재개에 실패했어요. 다시 시도해주세요.');
     },
   });
 }

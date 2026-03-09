@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -41,6 +42,9 @@ export function useClaimMissionReward() {
       queryClient.invalidateQueries({ queryKey: queryKeys.missions });
       queryClient.invalidateQueries({ queryKey: queryKeys.profile });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
+    },
+    onError: () => {
+      toast.error('보상 수령에 실패했어요. 다시 시도해주세요.');
     },
   });
 }
