@@ -11,7 +11,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
 
   return (
     <main
-      className={`mx-auto w-full max-w-lg flex-1 ${hideBottomPadding ? '' : 'pb-20'}`}
+      className={`mx-auto w-full max-w-lg flex-1 ${hideBottomPadding ? '' : 'pb-24'}`}
     >
       {children}
     </main>
