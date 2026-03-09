@@ -66,7 +66,7 @@ export function ChatInput({
       {hint && (
         <div className="bg-hk-yellow/10 border-hk-yellow/30 border-b px-4 py-2">
           <p className="text-xs">
-            <span className="font-medium">💡 힌트:</span>{' '}
+            <span className="font-medium flex items-center gap-1"><Lightbulb className="inline size-3.5" /> 힌트:</span>{' '}
             <span className="font-jp">{hint}</span>
           </p>
         </div>

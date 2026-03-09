@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleCheck, CircleX, Delete, Flame } from 'lucide-react';
+import { CircleCheck, CircleX, Delete, Flame, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { shuffleArray } from '@/lib/shuffle';
@@ -259,7 +259,7 @@ export function TypingQuiz({
             )}
           >
             {question.answer}{' '}
-            {answerState === 'correct' ? '✓' : ''}
+            {answerState === 'correct' && <Check className="inline size-4" />}
           </motion.p>
         )}
       </div>

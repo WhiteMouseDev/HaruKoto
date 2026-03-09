@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CheckCircle2, Lightbulb, BookOpen } from 'lucide-react';
+import { CheckCircle2, Lightbulb, BookOpen, Check, PenLine } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 type Vocabulary = {
@@ -55,7 +55,7 @@ export function FeedbackDetails({
                   variants={listItem}
                   className="text-sm flex items-start gap-2"
                 >
-                  <span className="text-hk-success mt-0.5">✅</span>
+                  <Check className="text-hk-success mt-0.5 size-4 shrink-0" />
                   <span>{s}</span>
                 </motion.li>
               ))}
@@ -84,7 +84,7 @@ export function FeedbackDetails({
                   variants={listItem}
                   className="text-sm flex items-start gap-2"
                 >
-                  <span className="text-hk-warning mt-0.5">💡</span>
+                  <Lightbulb className="text-hk-warning mt-0.5 size-4 shrink-0" />
                   <span>{item}</span>
                 </motion.li>
               ))}
@@ -130,7 +130,8 @@ export function FeedbackDetails({
         <Card className="py-4">
           <CardContent className="space-y-2 px-5">
             <h3 className="flex items-center gap-2 font-semibold">
-              📝 새로 배운 표현
+              <PenLine className="text-muted-foreground size-4" />
+              새로 배운 표현
             </h3>
             <div className="space-y-2">
               {vocabulary.map((v, i) => (

@@ -7,6 +7,7 @@ import {
   ChevronUp,
   MessageSquareText,
   Languages,
+  PenLine,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,7 +49,7 @@ function CorrectionToggle({ correction }: { correction: GrammarCorrection }) {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1 text-xs text-amber-200/80 transition-colors hover:text-amber-200"
       >
-        <span className="text-[10px]">📝</span>
+        <PenLine className="size-3" />
         교정 있음
         {open ? (
           <ChevronUp className="size-3" />
