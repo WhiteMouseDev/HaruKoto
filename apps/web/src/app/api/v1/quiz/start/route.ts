@@ -314,7 +314,7 @@ export async function POST(request: Request) {
 
         questions = reviewItems.map((word) => {
           const wrongOptions = shuffleArray(
-            allVocab.filter((v) => v.id !== word.id)
+            allVocab.filter((v) => v.id !== word.id && v.meaningKo !== word.meaningKo)
           ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
           const options = shuffleArray([
@@ -438,16 +438,24 @@ export async function POST(request: Request) {
         allSelected.push(...extraWords);
       }
 
+      // Deduplicate by meaningKo to avoid duplicate meanings in matching quiz
+      const seenMeanings = new Set<string>();
+      const deduped = allSelected.filter((w) => {
+        if (seenMeanings.has(w.meaningKo)) return false;
+        seenMeanings.add(w.meaningKo);
+        return true;
+      });
+
       // Generate 4-choice questions
       const allVocab = await prisma.vocabulary.findMany({
         where: { jlptLevel },
         select: { id: true, meaningKo: true },
       });
 
-      questions = allSelected.map((word) => {
-        // Pick 3 wrong answers from same level
+      questions = deduped.map((word) => {
+        // Pick 3 wrong answers from same level, avoiding same meaning
         const wrongOptions = shuffleArray(
-          allVocab.filter((v) => v.id !== word.id)
+          allVocab.filter((v) => v.id !== word.id && v.meaningKo !== word.meaningKo)
         ).slice(0, QUIZ_CONFIG.WRONG_OPTIONS_COUNT);
 
         const options = shuffleArray([
