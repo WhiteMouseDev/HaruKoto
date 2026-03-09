@@ -10,6 +10,10 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "vocab:audit:n123": "node scripts/audit-n123-vocabulary.mjs",
+    "vocab:review:batch": "node scripts/prepare-vocab-manual-review-batches.mjs",
+    "vocab:review:compile": "node scripts/compile-vocab-reviewed-final.mjs",
+    "vocab:recorrect:priority": "node scripts/recorrect-priority-vocab-v3.mjs",
     "build": "prisma generate",
     "lint": "tsc --noEmit"
   },
