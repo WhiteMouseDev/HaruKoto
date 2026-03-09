@@ -1,0 +1,862 @@
+[
+  {
+    "koreanSentence": "결과 여하에 관계없이 최선을 다하겠습니다",
+    "japaneseSentence": "けっかのいかんによらずぜんりょくをつくします",
+    "tokens": [
+      { "text": "けっか", "type": "noun", "meaning": "결과", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "いかんによらず", "type": "suffix", "meaning": "여하에 관계없이", "order": 2 },
+      { "text": "ぜんりょく", "type": "noun", "meaning": "전력(최선)", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "つくします", "type": "verb", "meaning": "다하겠습니다", "order": 5 }
+    ],
+    "explanation": "~いかんによらず는 '~여하에 관계없이'라는 의미로, 결과나 상황에 상관없이 행동하겠다는 뜻입니다.",
+    "grammarPoint": "~いかんによらず (~여하에 관계없이)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 1
+  },
+  {
+    "koreanSentence": "성적 여하에 따라 장학금이 결정됩니다",
+    "japaneseSentence": "せいせきのいかんでしょうがくきんがけっていされます",
+    "tokens": [
+      { "text": "せいせき", "type": "noun", "meaning": "성적", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "いかんで", "type": "suffix", "meaning": "여하에 따라", "order": 2 },
+      { "text": "しょうがくきん", "type": "noun", "meaning": "장학금", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "けっていされます", "type": "verb", "meaning": "결정됩니다", "order": 5 }
+    ],
+    "explanation": "~いかんで는 '~여하에 따라'라는 의미로, 앞의 내용에 의해 결과가 달라짐을 나타냅니다.",
+    "grammarPoint": "~いかんで (~여하에 따라)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 2
+  },
+  {
+    "koreanSentence": "비가 오든 말든 마라톤 대회는 개최됩니다",
+    "japaneseSentence": "あめがふろうがふるまいがマラソンたいかいはかいさいされます",
+    "tokens": [
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ふろうが", "type": "verb", "meaning": "오든", "order": 2 },
+      { "text": "ふるまいが", "type": "verb", "meaning": "오지 않든", "order": 3 },
+      { "text": "マラソンたいかい", "type": "noun", "meaning": "마라톤 대회", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "かいさいされます", "type": "verb", "meaning": "개최됩니다", "order": 6 }
+    ],
+    "explanation": "~う(よう)が~まいが는 '~하든 ~하지 않든'이라는 의미로, 어떤 상황이든 결과는 변하지 않음을 나타냅니다.",
+    "grammarPoint": "~う(よう)が~まいが (~하든 ~하지 않든)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 3
+  },
+  {
+    "koreanSentence": "인사도 할 겸 스승님 댁을 방문했다",
+    "japaneseSentence": "あいさつかたがたししょうのおたくをほうもんした",
+    "tokens": [
+      { "text": "あいさつ", "type": "noun", "meaning": "인사", "order": 0 },
+      { "text": "かたがた", "type": "suffix", "meaning": "도 할 겸", "order": 1 },
+      { "text": "ししょう", "type": "noun", "meaning": "스승님", "order": 2 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 3 },
+      { "text": "おたく", "type": "noun", "meaning": "댁", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "ほうもんした", "type": "verb", "meaning": "방문했다", "order": 6 }
+    ],
+    "explanation": "~かたがた는 '~도 할 겸'이라는 의미로, 하나의 행동에 두 가지 목적이 있음을 나타냅니다.",
+    "grammarPoint": "~かたがた (~도 할 겸)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 4
+  },
+  {
+    "koreanSentence": "산책하는 김에 편의점에 들렀다",
+    "japaneseSentence": "さんぽがてらコンビニによった",
+    "tokens": [
+      { "text": "さんぽ", "type": "noun", "meaning": "산책", "order": 0 },
+      { "text": "がてら", "type": "suffix", "meaning": "하는 김에", "order": 1 },
+      { "text": "コンビニ", "type": "noun", "meaning": "편의점", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 3 },
+      { "text": "よった", "type": "verb", "meaning": "들렀다", "order": 4 }
+    ],
+    "explanation": "~がてら는 '~하는 김에'라는 의미로, 하나의 행동을 하면서 겸사겸사 다른 일도 함을 나타냅니다.",
+    "grammarPoint": "~がてら (~하는 김에)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 5
+  },
+  {
+    "koreanSentence": "문이 열리자마자 학생들이 교실에 들어갔다",
+    "japaneseSentence": "ドアがあくがはやいかがくせいたちがきょうしつにはいった",
+    "tokens": [
+      { "text": "ドア", "type": "noun", "meaning": "문", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "あくがはやいか", "type": "verb", "meaning": "열리자마자", "order": 2 },
+      { "text": "がくせいたち", "type": "noun", "meaning": "학생들", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "きょうしつ", "type": "noun", "meaning": "교실", "order": 5 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 6 },
+      { "text": "はいった", "type": "verb", "meaning": "들어갔다", "order": 7 }
+    ],
+    "explanation": "~が早いか는 '~하자마자'라는 의미로, 어떤 동작 직후에 다른 동작이 바로 이어짐을 나타냅니다.",
+    "grammarPoint": "~がはやいか (~하자마자)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 6
+  },
+  {
+    "koreanSentence": "그의 무례한 태도는 극히 불쾌하다",
+    "japaneseSentence": "かれのぶれいなたいどはふゆかいきわまりない",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ぶれいな", "type": "adjective", "meaning": "무례한", "order": 2 },
+      { "text": "たいど", "type": "noun", "meaning": "태도", "order": 3 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 4 },
+      { "text": "ふゆかい", "type": "adjective", "meaning": "불쾌", "order": 5 },
+      { "text": "きわまりない", "type": "suffix", "meaning": "극히 ~하다", "order": 6 }
+    ],
+    "explanation": "~極まりない는 '극히 ~하다, 더할 나위 없이 ~하다'라는 의미로, 정도가 극도로 심함을 나타냅니다.",
+    "grammarPoint": "~きわまりない (극히 ~하다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 7
+  },
+  {
+    "koreanSentence": "나 같은 사람에게는 그런 일은 무리입니다",
+    "japaneseSentence": "わたしごときにはそんなことはむりです",
+    "tokens": [
+      { "text": "わたし", "type": "noun", "meaning": "나", "order": 0 },
+      { "text": "ごとき", "type": "suffix", "meaning": "같은", "order": 1 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "そんなこと", "type": "noun", "meaning": "그런 일", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "むりです", "type": "adjective", "meaning": "무리입니다", "order": 6 }
+    ],
+    "explanation": "~ごとき는 '~같은, ~따위'라는 겸양 표현으로, 자신을 낮추거나 상대를 깔볼 때 사용합니다.",
+    "grammarPoint": "~ごとき/ごとく (~같은/~처럼)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 8
+  },
+  {
+    "koreanSentence": "한번 시작하면 끝까지 해야 한다",
+    "japaneseSentence": "いちどはじめたがさいごさいごまでやらなければならない",
+    "tokens": [
+      { "text": "いちど", "type": "adverb", "meaning": "한번", "order": 0 },
+      { "text": "はじめたがさいご", "type": "verb", "meaning": "시작하면(그것으로 끝)", "order": 1 },
+      { "text": "さいご", "type": "noun", "meaning": "끝", "order": 2 },
+      { "text": "まで", "type": "particle", "meaning": "까지", "order": 3 },
+      { "text": "やらなければならない", "type": "verb", "meaning": "해야 한다", "order": 4 }
+    ],
+    "explanation": "~たが最後는 '한번 ~하면(돌이킬 수 없다)'이라는 의미로, 어떤 행동을 하면 되돌릴 수 없음을 나타냅니다.",
+    "grammarPoint": "~たがさいご (한번 ~하면)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 9
+  },
+  {
+    "koreanSentence": "상상조차 하기 싫은 사고였다",
+    "japaneseSentence": "そうぞうするだにおそろしいじこだった",
+    "tokens": [
+      { "text": "そうぞうする", "type": "verb", "meaning": "상상하다", "order": 0 },
+      { "text": "だに", "type": "particle", "meaning": "조차", "order": 1 },
+      { "text": "おそろしい", "type": "adjective", "meaning": "무서운", "order": 2 },
+      { "text": "じこ", "type": "noun", "meaning": "사고", "order": 3 },
+      { "text": "だった", "type": "copula", "meaning": "였다", "order": 4 }
+    ],
+    "explanation": "~だに는 '~조차, ~만으로도'라는 의미로, 최소한의 것만으로도 충분하다는 뉘앙스를 나타냅니다.",
+    "grammarPoint": "~だに (~조차)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 10
+  },
+  {
+    "koreanSentence": "1분이라도 지각은 허용되지 않습니다",
+    "japaneseSentence": "いっぷんたりともちこくはゆるされません",
+    "tokens": [
+      { "text": "いっぷん", "type": "counter", "meaning": "1분", "order": 0 },
+      { "text": "たりとも", "type": "particle", "meaning": "이라도", "order": 1 },
+      { "text": "ちこく", "type": "noun", "meaning": "지각", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "ゆるされません", "type": "verb", "meaning": "허용되지 않습니다", "order": 4 }
+    ],
+    "explanation": "~たりとも~ない는 '~이라도 ~않다'라는 의미로, 아무리 작은 양이라도 허용하지 않음을 나타냅니다.",
+    "grammarPoint": "~たりとも~ない (~이라도 ~않다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 11
+  },
+  {
+    "koreanSentence": "배가 파도에 이리저리 흔들렸다",
+    "japaneseSentence": "ふねがなみにゆれつもどりつした",
+    "tokens": [
+      { "text": "ふね", "type": "noun", "meaning": "배", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "なみ", "type": "noun", "meaning": "파도", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 3 },
+      { "text": "ゆれつ", "type": "verb", "meaning": "흔들리고", "order": 4 },
+      { "text": "もどりつ", "type": "verb", "meaning": "돌아오고", "order": 5 },
+      { "text": "した", "type": "verb", "meaning": "했다", "order": 6 }
+    ],
+    "explanation": "~つ~つ는 두 가지 동작이 교대로 반복됨을 나타내는 문어적 표현입니다.",
+    "grammarPoint": "~つ~つ (이리저리, 번갈아)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 12
+  },
+  {
+    "koreanSentence": "결혼하고 나서부터 생활이 완전히 달라졌다",
+    "japaneseSentence": "けっこんしてからというものせいかつがすっかりかわった",
+    "tokens": [
+      { "text": "けっこん", "type": "noun", "meaning": "결혼", "order": 0 },
+      { "text": "してからというもの", "type": "verb", "meaning": "하고 나서부터", "order": 1 },
+      { "text": "せいかつ", "type": "noun", "meaning": "생활", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "すっかり", "type": "adverb", "meaning": "완전히", "order": 4 },
+      { "text": "かわった", "type": "verb", "meaning": "달라졌다", "order": 5 }
+    ],
+    "explanation": "~てからというもの는 '~하고 나서부터 (쭉)'이라는 의미로, 어떤 일을 계기로 상태가 크게 변했음을 나타냅니다.",
+    "grammarPoint": "~てからというもの (~하고 나서부터)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 13
+  },
+  {
+    "koreanSentence": "현금이든 카드든 지불 가능합니다",
+    "japaneseSentence": "げんきんであれカードであれしはらいかのうです",
+    "tokens": [
+      { "text": "げんきん", "type": "noun", "meaning": "현금", "order": 0 },
+      { "text": "であれ", "type": "particle", "meaning": "이든", "order": 1 },
+      { "text": "カード", "type": "noun", "meaning": "카드", "order": 2 },
+      { "text": "であれ", "type": "particle", "meaning": "이든", "order": 3 },
+      { "text": "しはらい", "type": "noun", "meaning": "지불", "order": 4 },
+      { "text": "かのうです", "type": "adjective", "meaning": "가능합니다", "order": 5 }
+    ],
+    "explanation": "~であれ~であれ는 '~이든 ~이든'이라는 의미로, 어떤 것이든 상관없음을 나타냅니다.",
+    "grammarPoint": "~であれ~であれ (~이든 ~이든)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 14
+  },
+  {
+    "koreanSentence": "세계 평화를 간절히 바라 마지않습니다",
+    "japaneseSentence": "せかいへいわをねがってやみません",
+    "tokens": [
+      { "text": "せかい", "type": "noun", "meaning": "세계", "order": 0 },
+      { "text": "へいわ", "type": "noun", "meaning": "평화", "order": 1 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 2 },
+      { "text": "ねがって", "type": "verb", "meaning": "바라", "order": 3 },
+      { "text": "やみません", "type": "verb", "meaning": "마지않습니다", "order": 4 }
+    ],
+    "explanation": "~てやまない는 '~해 마지않다'라는 의미로, 마음속에서 끊임없이 그러함을 나타내는 격식 표현입니다.",
+    "grammarPoint": "~てやまない (~해 마지않다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 15
+  },
+  {
+    "koreanSentence": "좋은 날씨와 어우러져 축제는 대성공이었다",
+    "japaneseSentence": "よいてんきとあいまってまつりはだいせいこうだった",
+    "tokens": [
+      { "text": "よい", "type": "adjective", "meaning": "좋은", "order": 0 },
+      { "text": "てんき", "type": "noun", "meaning": "날씨", "order": 1 },
+      { "text": "と", "type": "particle", "meaning": "와", "order": 2 },
+      { "text": "あいまって", "type": "verb", "meaning": "어우러져", "order": 3 },
+      { "text": "まつり", "type": "noun", "meaning": "축제", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "だいせいこうだった", "type": "adjective", "meaning": "대성공이었다", "order": 6 }
+    ],
+    "explanation": "~と相まって는 '~와 어우러져, ~와 맞물려'라는 의미로, 두 요소가 합쳐져 효과가 커짐을 나타냅니다.",
+    "grammarPoint": "~とあいまって (~와 어우러져)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 16
+  },
+  {
+    "koreanSentence": "연휴라서 공항은 대단히 혼잡했다",
+    "japaneseSentence": "れんきゅうとあってくうこうはたいへんこんざつしていた",
+    "tokens": [
+      { "text": "れんきゅう", "type": "noun", "meaning": "연휴", "order": 0 },
+      { "text": "とあって", "type": "particle", "meaning": "라서", "order": 1 },
+      { "text": "くうこう", "type": "noun", "meaning": "공항", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "たいへん", "type": "adverb", "meaning": "대단히", "order": 4 },
+      { "text": "こんざつしていた", "type": "verb", "meaning": "혼잡했다", "order": 5 }
+    ],
+    "explanation": "~とあって는 '~라서, ~이기 때문에'라는 의미로, 특별한 상황이 이유가 됨을 나타냅니다.",
+    "grammarPoint": "~とあって (~라서)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 17
+  },
+  {
+    "koreanSentence": "아이를 위해서라면 어떤 고생도 감수합니다",
+    "japaneseSentence": "こどものためとあればどんなくろうもいといません",
+    "tokens": [
+      { "text": "こども", "type": "noun", "meaning": "아이", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ため", "type": "noun", "meaning": "위해", "order": 2 },
+      { "text": "とあれば", "type": "particle", "meaning": "라면", "order": 3 },
+      { "text": "どんな", "type": "adjective", "meaning": "어떤", "order": 4 },
+      { "text": "くろう", "type": "noun", "meaning": "고생", "order": 5 },
+      { "text": "も", "type": "particle", "meaning": "도", "order": 6 },
+      { "text": "いといません", "type": "verb", "meaning": "감수합니다", "order": 7 }
+    ],
+    "explanation": "~とあれば는 '~라면, ~라고 한다면'이라는 의미로, 특별한 조건이 갖추어지면 기꺼이 행동함을 나타냅니다.",
+    "grammarPoint": "~とあれば (~라면)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 18
+  },
+  {
+    "koreanSentence": "우리 아들이란 녀석은 공부는 안 하고 게임만 한다",
+    "japaneseSentence": "うちのむすこときたらべんきょうはせずゲームばかりする",
+    "tokens": [
+      { "text": "うちのむすこ", "type": "noun", "meaning": "우리 아들", "order": 0 },
+      { "text": "ときたら", "type": "particle", "meaning": "란 녀석은", "order": 1 },
+      { "text": "べんきょう", "type": "noun", "meaning": "공부", "order": 2 },
+      { "text": "はせず", "type": "verb", "meaning": "는 안 하고", "order": 3 },
+      { "text": "ゲーム", "type": "noun", "meaning": "게임", "order": 4 },
+      { "text": "ばかりする", "type": "verb", "meaning": "만 한다", "order": 5 }
+    ],
+    "explanation": "~ときたら는 '~란 녀석은, ~라고 하면'이라는 의미로, 불만이나 비난의 감정을 담아 화제를 제시합니다.",
+    "grammarPoint": "~ときたら (~란 녀석은)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 19
+  },
+  {
+    "koreanSentence": "바쁜 와중에 와 주셔서 감사합니다",
+    "japaneseSentence": "おいそがしいところをきてくださりありがとうございます",
+    "tokens": [
+      { "text": "おいそがしい", "type": "adjective", "meaning": "바쁘신", "order": 0 },
+      { "text": "ところを", "type": "particle", "meaning": "와중에", "order": 1 },
+      { "text": "きてくださり", "type": "verb", "meaning": "와 주셔서", "order": 2 },
+      { "text": "ありがとうございます", "type": "verb", "meaning": "감사합니다", "order": 3 }
+    ],
+    "explanation": "~ところを는 '~하는 와중에, ~한 상황인데'라는 의미로, 상대의 상황을 배려하며 감사나 사과를 표현합니다.",
+    "grammarPoint": "~ところを (~하는 와중에)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 20
+  },
+  {
+    "koreanSentence": "프로라고는 하지만 실수는 있을 수 있다",
+    "japaneseSentence": "プロとはいえミスはありうる",
+    "tokens": [
+      { "text": "プロ", "type": "noun", "meaning": "프로", "order": 0 },
+      { "text": "とはいえ", "type": "particle", "meaning": "라고는 하지만", "order": 1 },
+      { "text": "ミス", "type": "noun", "meaning": "실수", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "ありうる", "type": "verb", "meaning": "있을 수 있다", "order": 4 }
+    ],
+    "explanation": "~とはいえ는 '~라고는 하지만'이라는 의미로, 인정은 하지만 예외가 있음을 나타냅니다.",
+    "grammarPoint": "~とはいえ (~라고는 하지만)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 21
+  },
+  {
+    "koreanSentence": "어디선가 음악 소리가 들려왔다",
+    "japaneseSentence": "どこからともなくおんがくのおとがきこえてきた",
+    "tokens": [
+      { "text": "どこ", "type": "noun", "meaning": "어디", "order": 0 },
+      { "text": "からともなく", "type": "particle", "meaning": "에서인지 모르게", "order": 1 },
+      { "text": "おんがく", "type": "noun", "meaning": "음악", "order": 2 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 3 },
+      { "text": "おと", "type": "noun", "meaning": "소리", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "きこえてきた", "type": "verb", "meaning": "들려왔다", "order": 6 }
+    ],
+    "explanation": "~ともなく는 '~인지 모르게, 특별히 ~하지 않는데'라는 의미로, 의식하지 않은 상태를 나타냅니다.",
+    "grammarPoint": "~ともなく (~인지 모르게)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 22
+  },
+  {
+    "koreanSentence": "사장이 되면 책임감도 달라진다",
+    "japaneseSentence": "しゃちょうともなるとせきにんかんもかわってくる",
+    "tokens": [
+      { "text": "しゃちょう", "type": "noun", "meaning": "사장", "order": 0 },
+      { "text": "ともなると", "type": "particle", "meaning": "이 되면", "order": 1 },
+      { "text": "せきにんかん", "type": "noun", "meaning": "책임감", "order": 2 },
+      { "text": "も", "type": "particle", "meaning": "도", "order": 3 },
+      { "text": "かわってくる", "type": "verb", "meaning": "달라진다", "order": 4 }
+    ],
+    "explanation": "~ともなると는 '~정도가 되면'이라는 의미로, 높은 수준이나 지위에 이르면 당연히 그렇게 됨을 나타냅니다.",
+    "grammarPoint": "~ともなると (~정도가 되면)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 23
+  },
+  {
+    "koreanSentence": "완벽하지는 않더라도 최선은 다해야 한다",
+    "japaneseSentence": "かんぺきではないまでもさいぜんはつくすべきだ",
+    "tokens": [
+      { "text": "かんぺき", "type": "adjective", "meaning": "완벽", "order": 0 },
+      { "text": "ではないまでも", "type": "particle", "meaning": "하지는 않더라도", "order": 1 },
+      { "text": "さいぜん", "type": "noun", "meaning": "최선", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "つくすべきだ", "type": "verb", "meaning": "다해야 한다", "order": 4 }
+    ],
+    "explanation": "~ないまでも는 '~하지는 않더라도'라는 의미로, 최선은 아니지만 적어도 그 정도는 해야 함을 나타냅니다.",
+    "grammarPoint": "~ないまでも (~하지는 않더라도)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 24
+  },
+  {
+    "koreanSentence": "태어나면서부터 그녀는 음악의 재능을 가지고 있었다",
+    "japaneseSentence": "うまれながらにしてかのじょはおんがくのさいのうをもっていた",
+    "tokens": [
+      { "text": "うまれながらにして", "type": "verb", "meaning": "태어나면서부터", "order": 0 },
+      { "text": "かのじょ", "type": "noun", "meaning": "그녀", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "おんがく", "type": "noun", "meaning": "음악", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 4 },
+      { "text": "さいのう", "type": "noun", "meaning": "재능", "order": 5 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 6 },
+      { "text": "もっていた", "type": "verb", "meaning": "가지고 있었다", "order": 7 }
+    ],
+    "explanation": "~ながらに(して)는 '~한 채로, ~하면서부터'라는 의미로, 태어날 때부터 변하지 않는 상태를 나타냅니다.",
+    "grammarPoint": "~ながらに (~한 채로)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 25
+  },
+  {
+    "koreanSentence": "노력 없이는 성공은 있을 수 없다",
+    "japaneseSentence": "どりょくなくしてせいこうはありえない",
+    "tokens": [
+      { "text": "どりょく", "type": "noun", "meaning": "노력", "order": 0 },
+      { "text": "なくして", "type": "particle", "meaning": "없이는", "order": 1 },
+      { "text": "せいこう", "type": "noun", "meaning": "성공", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "ありえない", "type": "verb", "meaning": "있을 수 없다", "order": 4 }
+    ],
+    "explanation": "~なくして는 '~없이는'이라는 의미로, 그것 없이는 불가능함을 강조하는 격식 표현입니다.",
+    "grammarPoint": "~なくして (~없이는)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 26
+  },
+  {
+    "koreanSentence": "전화든 메일이든 연락해 주세요",
+    "japaneseSentence": "でんわなりメールなりれんらくしてください",
+    "tokens": [
+      { "text": "でんわ", "type": "noun", "meaning": "전화", "order": 0 },
+      { "text": "なり", "type": "particle", "meaning": "이든", "order": 1 },
+      { "text": "メール", "type": "noun", "meaning": "메일", "order": 2 },
+      { "text": "なり", "type": "particle", "meaning": "이든", "order": 3 },
+      { "text": "れんらく", "type": "noun", "meaning": "연락", "order": 4 },
+      { "text": "してください", "type": "verb", "meaning": "해 주세요", "order": 5 }
+    ],
+    "explanation": "~なり~なり는 '~이든 ~이든'이라는 의미로, 여러 선택지 중 아무거나 해도 됨을 나타냅니다.",
+    "grammarPoint": "~なり~なり (~이든 ~이든)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 27
+  },
+  {
+    "koreanSentence": "이 정도의 실수는 놀랄 일이 아니다",
+    "japaneseSentence": "このていどのミスはおどろくにあたらない",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "ていど", "type": "noun", "meaning": "정도", "order": 1 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 2 },
+      { "text": "ミス", "type": "noun", "meaning": "실수", "order": 3 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 4 },
+      { "text": "おどろく", "type": "verb", "meaning": "놀라다", "order": 5 },
+      { "text": "にあたらない", "type": "suffix", "meaning": "일이 아니다", "order": 6 }
+    ],
+    "explanation": "~にあたらない는 '~할 것까지는 없다, ~할 필요가 없다'라는 의미로, 그 정도로는 충분하지 않음을 나타냅니다.",
+    "grammarPoint": "~にあたらない (~할 것까지는 없다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 28
+  },
+  {
+    "koreanSentence": "그의 성공은 상상하기 어렵지 않다",
+    "japaneseSentence": "かれのせいこうはそうぞうにかたくない",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "せいこう", "type": "noun", "meaning": "성공", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "そうぞう", "type": "noun", "meaning": "상상", "order": 4 },
+      { "text": "にかたくない", "type": "suffix", "meaning": "하기 어렵지 않다", "order": 5 }
+    ],
+    "explanation": "~にかたくない는 '~하기 어렵지 않다, 충분히 ~할 수 있다'라는 의미로, 쉽게 추측 가능함을 나타냅니다.",
+    "grammarPoint": "~にかたくない (~하기 어렵지 않다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 29
+  },
+  {
+    "koreanSentence": "이 나이가 되어서야 비로소 부모님의 마음을 알았다",
+    "japaneseSentence": "このとしにしてはじめておやのきもちがわかった",
+    "tokens": [
+      { "text": "このとし", "type": "noun", "meaning": "이 나이", "order": 0 },
+      { "text": "にして", "type": "particle", "meaning": "가 되어서야", "order": 1 },
+      { "text": "はじめて", "type": "adverb", "meaning": "비로소", "order": 2 },
+      { "text": "おや", "type": "noun", "meaning": "부모님", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 4 },
+      { "text": "きもち", "type": "noun", "meaning": "마음", "order": 5 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 6 },
+      { "text": "わかった", "type": "verb", "meaning": "알았다", "order": 7 }
+    ],
+    "explanation": "~にして는 '~에 이르러서야, ~이 되어서야'라는 의미로, 특정 시점이나 단계에 도달했음을 강조합니다.",
+    "grammarPoint": "~にして (~이 되어서야)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 30
+  },
+  {
+    "koreanSentence": "이 영화는 감상할 가치가 있다",
+    "japaneseSentence": "このえいがはかんしょうにたえる",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "えいが", "type": "noun", "meaning": "영화", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "かんしょう", "type": "noun", "meaning": "감상", "order": 3 },
+      { "text": "にたえる", "type": "verb", "meaning": "할 가치가 있다", "order": 4 }
+    ],
+    "explanation": "~にたえる는 '~할 가치가 있다, ~에 견딜 수 있다'라는 의미로, 충분한 가치가 있음을 나타냅니다.",
+    "grammarPoint": "~にたえる (~할 가치가 있다)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 31
+  },
+  {
+    "koreanSentence": "형에 비해 동생은 성격이 조용하다",
+    "japaneseSentence": "あににひきかえおとうとはせいかくがおとなしい",
+    "tokens": [
+      { "text": "あに", "type": "noun", "meaning": "형", "order": 0 },
+      { "text": "にひきかえ", "type": "particle", "meaning": "에 비해", "order": 1 },
+      { "text": "おとうと", "type": "noun", "meaning": "동생", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "せいかく", "type": "noun", "meaning": "성격", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "おとなしい", "type": "adjective", "meaning": "조용하다", "order": 6 }
+    ],
+    "explanation": "~にひきかえ는 '~에 비해, ~와 반대로'라는 의미로, 대조적인 두 사항을 비교합니다.",
+    "grammarPoint": "~にひきかえ (~에 비해)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 32
+  },
+  {
+    "koreanSentence": "작년보다 더 열심히 공부하고 있습니다",
+    "japaneseSentence": "さくねんにもましてねっしんにべんきょうしています",
+    "tokens": [
+      { "text": "さくねん", "type": "noun", "meaning": "작년", "order": 0 },
+      { "text": "にもまして", "type": "particle", "meaning": "보다 더", "order": 1 },
+      { "text": "ねっしん", "type": "adjective", "meaning": "열심", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "히", "order": 3 },
+      { "text": "べんきょうしています", "type": "verb", "meaning": "공부하고 있습니다", "order": 4 }
+    ],
+    "explanation": "~にもまして는 '~보다 더, ~이상으로'라는 의미로, 이전보다 정도가 더 심해졌음을 나타냅니다.",
+    "grammarPoint": "~にもまして (~보다 더)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 33
+  },
+  {
+    "koreanSentence": "이런 상을 받다니 영광의 극치입니다",
+    "japaneseSentence": "このようなしょうをいただきこうえいのいたりです",
+    "tokens": [
+      { "text": "このような", "type": "adjective", "meaning": "이런", "order": 0 },
+      { "text": "しょう", "type": "noun", "meaning": "상", "order": 1 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 2 },
+      { "text": "いただき", "type": "verb", "meaning": "받아서", "order": 3 },
+      { "text": "こうえい", "type": "noun", "meaning": "영광", "order": 4 },
+      { "text": "のいたりです", "type": "suffix", "meaning": "의 극치입니다", "order": 5 }
+    ],
+    "explanation": "~の至り는 '~의 극치, 더할 나위 없는 ~'이라는 의미로, 감정의 최고 상태를 격식 있게 표현합니다.",
+    "grammarPoint": "~のいたり (~의 극치)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 34
+  },
+  {
+    "koreanSentence": "그는 일본어뿐만 아니라 중국어도 할 수 있다",
+    "japaneseSentence": "かれはにほんごのみならずちゅうごくごもできる",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 2 },
+      { "text": "のみならず", "type": "particle", "meaning": "뿐만 아니라", "order": 3 },
+      { "text": "ちゅうごくご", "type": "noun", "meaning": "중국어", "order": 4 },
+      { "text": "も", "type": "particle", "meaning": "도", "order": 5 },
+      { "text": "できる", "type": "verb", "meaning": "할 수 있다", "order": 6 }
+    ],
+    "explanation": "~のみならず는 '~뿐만 아니라'라는 의미로, ~だけでなく의 격식 표현입니다.",
+    "grammarPoint": "~のみならず (~뿐만 아니라)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 35
+  },
+  {
+    "koreanSentence": "국내는커녕 해외에서도 유명하다",
+    "japaneseSentence": "こくないはおろかかいがいでもゆうめいだ",
+    "tokens": [
+      { "text": "こくない", "type": "noun", "meaning": "국내", "order": 0 },
+      { "text": "はおろか", "type": "particle", "meaning": "는커녕", "order": 1 },
+      { "text": "かいがい", "type": "noun", "meaning": "해외", "order": 2 },
+      { "text": "でも", "type": "particle", "meaning": "에서도", "order": 3 },
+      { "text": "ゆうめいだ", "type": "adjective", "meaning": "유명하다", "order": 4 }
+    ],
+    "explanation": "~はおろか는 '~는커녕, ~는 말할 것도 없고'라는 의미로, 당연한 것 이상의 범위까지 해당함을 나타냅니다.",
+    "grammarPoint": "~はおろか (~는커녕)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 36
+  },
+  {
+    "koreanSentence": "어려운 환경이었기에 지금의 성공이 있다",
+    "japaneseSentence": "きびしいかんきょうだったればこそいまのせいこうがある",
+    "tokens": [
+      { "text": "きびしい", "type": "adjective", "meaning": "어려운", "order": 0 },
+      { "text": "かんきょう", "type": "noun", "meaning": "환경", "order": 1 },
+      { "text": "だったればこそ", "type": "particle", "meaning": "이었기에", "order": 2 },
+      { "text": "いま", "type": "noun", "meaning": "지금", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 4 },
+      { "text": "せいこう", "type": "noun", "meaning": "성공", "order": 5 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 6 },
+      { "text": "ある", "type": "verb", "meaning": "있다", "order": 7 }
+    ],
+    "explanation": "~ばこそ는 '~이기 때문에야말로'라는 의미로, 그것이 원인이기에 좋은 결과가 있음을 강조합니다.",
+    "grammarPoint": "~ばこそ (~이기에야말로)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 37
+  },
+  {
+    "koreanSentence": "교사로서 있어서는 안 될 발언이다",
+    "japaneseSentence": "きょうしとしてあるまじきはつげんだ",
+    "tokens": [
+      { "text": "きょうし", "type": "noun", "meaning": "교사", "order": 0 },
+      { "text": "として", "type": "particle", "meaning": "로서", "order": 1 },
+      { "text": "あるまじき", "type": "suffix", "meaning": "있어서는 안 될", "order": 2 },
+      { "text": "はつげん", "type": "noun", "meaning": "발언", "order": 3 },
+      { "text": "だ", "type": "copula", "meaning": "이다", "order": 4 }
+    ],
+    "explanation": "~まじき는 '~해서는 안 되는'이라는 의미로, 특정 입장에서 해서는 안 되는 행위를 나타냅니다.",
+    "grammarPoint": "~まじき (~해서는 안 되는)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 38
+  },
+  {
+    "koreanSentence": "그런 것은 말할 필요도 없다",
+    "japaneseSentence": "そんなことはいうまでもない",
+    "tokens": [
+      { "text": "そんな", "type": "adjective", "meaning": "그런", "order": 0 },
+      { "text": "こと", "type": "noun", "meaning": "것", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "いう", "type": "verb", "meaning": "말하다", "order": 3 },
+      { "text": "までもない", "type": "suffix", "meaning": "필요도 없다", "order": 4 }
+    ],
+    "explanation": "~までもない는 '~할 필요도 없다'라는 의미로, 너무 당연해서 굳이 할 필요가 없음을 나타냅니다.",
+    "grammarPoint": "~までもない (~할 필요도 없다)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 39
+  },
+  {
+    "koreanSentence": "그를 두고 이 일을 맡길 사람은 없다",
+    "japaneseSentence": "かれをおいてこのしごとをまかせるひとはいない",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "をおいて", "type": "particle", "meaning": "를 두고", "order": 1 },
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 2 },
+      { "text": "しごと", "type": "noun", "meaning": "일", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "まかせる", "type": "verb", "meaning": "맡기다", "order": 5 },
+      { "text": "ひとはいない", "type": "noun", "meaning": "사람은 없다", "order": 6 }
+    ],
+    "explanation": "~をおいて는 '~를 제외하고는, ~말고는'라는 의미로, 그 사람/것이 유일한 선택지임을 나타냅니다.",
+    "grammarPoint": "~をおいて (~를 두고)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 40
+  },
+  {
+    "koreanSentence": "위험을 무릅쓰고 그는 사람들을 구했다",
+    "japaneseSentence": "きけんをものともせずかれはひとびとをすくった",
+    "tokens": [
+      { "text": "きけん", "type": "noun", "meaning": "위험", "order": 0 },
+      { "text": "をものともせず", "type": "particle", "meaning": "을 무릅쓰고", "order": 1 },
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "ひとびと", "type": "noun", "meaning": "사람들", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "すくった", "type": "verb", "meaning": "구했다", "order": 6 }
+    ],
+    "explanation": "~をものともせず는 '~을 무릅쓰고, ~에 개의치 않고'라는 의미로, 어려움에 굴하지 않음을 나타냅니다.",
+    "grammarPoint": "~をものともせず (~을 무릅쓰고)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 41
+  },
+  {
+    "koreanSentence": "회사의 사정으로 전근을 하지 않을 수 없게 되었다",
+    "japaneseSentence": "かいしゃのじじょうでてんきんをよぎなくされた",
+    "tokens": [
+      { "text": "かいしゃ", "type": "noun", "meaning": "회사", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "じじょう", "type": "noun", "meaning": "사정", "order": 2 },
+      { "text": "で", "type": "particle", "meaning": "으로", "order": 3 },
+      { "text": "てんきん", "type": "noun", "meaning": "전근", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "よぎなくされた", "type": "verb", "meaning": "하지 않을 수 없게 되었다", "order": 6 }
+    ],
+    "explanation": "~を余儀なくされる는 '~을 하지 않을 수 없게 되다'라는 의미로, 어쩔 수 없이 그렇게 해야 함을 나타냅니다.",
+    "grammarPoint": "~をよぎなくされる (~하지 않을 수 없게 되다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 42
+  },
+  {
+    "koreanSentence": "주위의 반대를 무시하고 그는 유학을 떠났다",
+    "japaneseSentence": "しゅういのはんたいをよそにかれはりゅうがくにたった",
+    "tokens": [
+      { "text": "しゅうい", "type": "noun", "meaning": "주위", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "はんたい", "type": "noun", "meaning": "반대", "order": 2 },
+      { "text": "をよそに", "type": "particle", "meaning": "를 무시하고", "order": 3 },
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "りゅうがくにたった", "type": "verb", "meaning": "유학을 떠났다", "order": 6 }
+    ],
+    "explanation": "~をよそに는 '~를 무시하고, ~에 아랑곳하지 않고'라는 의미로, 주변 상황을 개의치 않음을 나타냅니다.",
+    "grammarPoint": "~をよそに (~를 무시하고)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 43
+  },
+  {
+    "koreanSentence": "합격하기 위해 밤낮으로 공부했다",
+    "japaneseSentence": "ごうかくせんがためよるひるとわずべんきょうした",
+    "tokens": [
+      { "text": "ごうかく", "type": "noun", "meaning": "합격", "order": 0 },
+      { "text": "せんがため", "type": "verb", "meaning": "하기 위해", "order": 1 },
+      { "text": "よるひる", "type": "noun", "meaning": "밤낮", "order": 2 },
+      { "text": "とわず", "type": "verb", "meaning": "가리지 않고", "order": 3 },
+      { "text": "べんきょうした", "type": "verb", "meaning": "공부했다", "order": 4 }
+    ],
+    "explanation": "~んがため는 '~하기 위해'라는 문어적 표현으로, 강한 목적의식을 나타냅니다.",
+    "grammarPoint": "~んがため (~하기 위해)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 44
+  },
+  {
+    "koreanSentence": "그녀는 울 것만 같은 표정으로 이야기했다",
+    "japaneseSentence": "かのじょはなかんばかりのひょうじょうではなしをした",
+    "tokens": [
+      { "text": "かのじょ", "type": "noun", "meaning": "그녀", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "なかんばかり", "type": "verb", "meaning": "울 것만 같은", "order": 2 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 3 },
+      { "text": "ひょうじょう", "type": "noun", "meaning": "표정", "order": 4 },
+      { "text": "で", "type": "particle", "meaning": "으로", "order": 5 },
+      { "text": "はなしをした", "type": "verb", "meaning": "이야기했다", "order": 6 }
+    ],
+    "explanation": "~んばかりに는 '~할 것만 같이, 거의 ~할 정도로'라는 의미로, 그 직전의 상태를 과장하여 나타냅니다.",
+    "grammarPoint": "~んばかりに (~할 것만 같이)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 45
+  },
+  {
+    "koreanSentence": "여기서 흡연해서는 안 됩니다",
+    "japaneseSentence": "ここでのきつえんはすべからず",
+    "tokens": [
+      { "text": "ここ", "type": "noun", "meaning": "여기", "order": 0 },
+      { "text": "での", "type": "particle", "meaning": "에서의", "order": 1 },
+      { "text": "きつえん", "type": "noun", "meaning": "흡연", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "すべからず", "type": "suffix", "meaning": "해서는 안 된다", "order": 4 }
+    ],
+    "explanation": "~べからず는 '~해서는 안 된다'라는 금지 표현으로, 표지판이나 규칙에서 자주 사용됩니다.",
+    "grammarPoint": "~べからず (~해서는 안 된다)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 46
+  },
+  {
+    "koreanSentence": "이 아름다운 경치를 보면 감동할 따름이다",
+    "japaneseSentence": "このうつくしいけしきをみればかんどうするかぎりだ",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "うつくしい", "type": "adjective", "meaning": "아름다운", "order": 1 },
+      { "text": "けしき", "type": "noun", "meaning": "경치", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "みれば", "type": "verb", "meaning": "보면", "order": 4 },
+      { "text": "かんどうする", "type": "verb", "meaning": "감동하다", "order": 5 },
+      { "text": "かぎりだ", "type": "suffix", "meaning": "따름이다", "order": 6 }
+    ],
+    "explanation": "~かぎりだ는 '~할 따름이다, 더없이 ~하다'라는 의미로, 감정의 정도가 극에 달했음을 나타냅니다.",
+    "grammarPoint": "~かぎりだ (~할 따름이다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 47
+  },
+  {
+    "koreanSentence": "이 보고서는 참을 수 없을 정도로 지루하다",
+    "japaneseSentence": "このほうこくしょはたいくつきわまるものだ",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "ほうこくしょ", "type": "noun", "meaning": "보고서", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "たいくつ", "type": "adjective", "meaning": "지루함", "order": 3 },
+      { "text": "きわまる", "type": "verb", "meaning": "극에 달하다", "order": 4 },
+      { "text": "ものだ", "type": "suffix", "meaning": "것이다", "order": 5 }
+    ],
+    "explanation": "~極まる는 '극히 ~하다, 더할 나위 없이 ~하다'라는 의미로, ~極まりない와 같은 의미입니다.",
+    "grammarPoint": "~きわまる (극히 ~하다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 48
+  },
+  {
+    "koreanSentence": "시간이 허락하는 한 가능한 많이 연습하겠습니다",
+    "japaneseSentence": "じかんのゆるすかぎりできるだけおおくれんしゅうします",
+    "tokens": [
+      { "text": "じかん", "type": "noun", "meaning": "시간", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ゆるすかぎり", "type": "verb", "meaning": "허락하는 한", "order": 2 },
+      { "text": "できるだけ", "type": "adverb", "meaning": "가능한 한", "order": 3 },
+      { "text": "おおく", "type": "adverb", "meaning": "많이", "order": 4 },
+      { "text": "れんしゅうします", "type": "verb", "meaning": "연습하겠습니다", "order": 5 }
+    ],
+    "explanation": "~かぎり는 '~하는 한'이라는 의미로, 어떤 조건이 유지되는 동안이라는 범위를 나타냅니다.",
+    "grammarPoint": "~かぎり (~하는 한)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 49
+  },
+  {
+    "koreanSentence": "그의 행동은 눈에 보듯 뻔한 거짓말이다",
+    "japaneseSentence": "かれのこうどうはめにみるごとくあきらかなうそだ",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "こうどう", "type": "noun", "meaning": "행동", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "めにみる", "type": "verb", "meaning": "눈에 보이는", "order": 4 },
+      { "text": "ごとく", "type": "suffix", "meaning": "처럼", "order": 5 },
+      { "text": "あきらかな", "type": "adjective", "meaning": "명백한", "order": 6 },
+      { "text": "うそだ", "type": "noun", "meaning": "거짓말이다", "order": 7 }
+    ],
+    "explanation": "~ごとく는 '~처럼, ~와 같이'라는 문어적 표현으로, ~ように의 격식 있는 형태입니다.",
+    "grammarPoint": "~ごとく (~처럼)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 50
+  }
+]
