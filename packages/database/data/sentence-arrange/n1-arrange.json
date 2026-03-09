@@ -858,5 +858,345 @@
     "jlptLevel": "N1",
     "difficulty": 2,
     "order": 50
+  },
+  {
+    "koreanSentence": "아무리 사과한들 허락받지 못할 것이다",
+    "japaneseSentence": "いくらあやまったところでゆるしてもらえないだろう",
+    "tokens": [
+      { "text": "いくら", "type": "adverb", "meaning": "아무리", "order": 0 },
+      { "text": "あやまった", "type": "verb", "meaning": "사과한", "order": 1 },
+      { "text": "ところで", "type": "particle", "meaning": "한들", "order": 2 },
+      { "text": "ゆるしてもらえない", "type": "verb", "meaning": "허락받지 못하다", "order": 3 },
+      { "text": "だろう", "type": "copula", "meaning": "것이다", "order": 4 }
+    ],
+    "explanation": "~たところで는 '~한들, ~해봤자'라는 의미로, 어떤 행동을 해도 소용없음을 나타냅니다.",
+    "grammarPoint": "~たところで (~한들)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 51
+  },
+  {
+    "koreanSentence": "직접 경험해야만 비로소 알 수 있다",
+    "japaneseSentence": "じっさいにけいけんしてこそわかることができる",
+    "tokens": [
+      { "text": "じっさいに", "type": "adverb", "meaning": "직접", "order": 0 },
+      { "text": "けいけん", "type": "noun", "meaning": "경험", "order": 1 },
+      { "text": "してこそ", "type": "verb", "meaning": "해야만 비로소", "order": 2 },
+      { "text": "わること", "type": "verb", "meaning": "알 수 있는 것", "order": 3 },
+      { "text": "ができる", "type": "verb", "meaning": "이 가능하다", "order": 4 }
+    ],
+    "explanation": "~てこそ는 '~해야만 비로소'라는 의미로, 그 행동이 필수 조건임을 강조합니다.",
+    "grammarPoint": "~てこそ (~해야만 비로소)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 52
+  },
+  {
+    "koreanSentence": "어린아이도 아닌데 혼자서 할 수 있을 것이다",
+    "japaneseSentence": "こどもではあるまいしひとりでできるだろう",
+    "tokens": [
+      { "text": "こども", "type": "noun", "meaning": "어린아이", "order": 0 },
+      { "text": "ではあるまいし", "type": "particle", "meaning": "도 아닌데", "order": 1 },
+      { "text": "ひとり", "type": "noun", "meaning": "혼자", "order": 2 },
+      { "text": "で", "type": "particle", "meaning": "서", "order": 3 },
+      { "text": "できるだろう", "type": "verb", "meaning": "할 수 있을 것이다", "order": 4 }
+    ],
+    "explanation": "~ではあるまいし는 '~도 아닌데'라는 의미로, 상대가 그 정도는 해야 한다고 지적할 때 사용합니다.",
+    "grammarPoint": "~ではあるまいし (~도 아닌데)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 53
+  },
+  {
+    "koreanSentence": "쉬울 줄 알았더니 의외로 어려웠다",
+    "japaneseSentence": "かんたんだとおもいきやいがいにむずかしかった",
+    "tokens": [
+      { "text": "かんたんだ", "type": "adjective", "meaning": "쉽다", "order": 0 },
+      { "text": "とおもいきや", "type": "particle", "meaning": "라고 생각했더니", "order": 1 },
+      { "text": "いがいに", "type": "adverb", "meaning": "의외로", "order": 2 },
+      { "text": "むずかしかった", "type": "adjective", "meaning": "어려웠다", "order": 3 }
+    ],
+    "explanation": "~と思いきや는 '~라고 생각했더니'라는 의미로, 예상과 다른 결과가 나왔을 때 사용합니다.",
+    "grammarPoint": "~とおもいきや (~라고 생각했더니)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 54
+  },
+  {
+    "koreanSentence": "그의 발언은 신뢰할 만한 것이다",
+    "japaneseSentence": "かれのはつげんはしんらいにたるものだ",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "はつげん", "type": "noun", "meaning": "발언", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "しんらい", "type": "noun", "meaning": "신뢰", "order": 4 },
+      { "text": "にたる", "type": "suffix", "meaning": "할 만한", "order": 5 },
+      { "text": "ものだ", "type": "suffix", "meaning": "것이다", "order": 6 }
+    ],
+    "explanation": "~に足る는 '~할 만하다, ~에 충분하다'라는 의미로, 가치가 충분함을 격식 있게 나타냅니다.",
+    "grammarPoint": "~にたる (~할 만한)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 55
+  },
+  {
+    "koreanSentence": "할 수 없는 것도 아니지만 시간이 걸린다",
+    "japaneseSentence": "できないものでもないがじかんがかかる",
+    "tokens": [
+      { "text": "できない", "type": "verb", "meaning": "할 수 없다", "order": 0 },
+      { "text": "ものでもない", "type": "suffix", "meaning": "것도 아니다", "order": 1 },
+      { "text": "が", "type": "particle", "meaning": "지만", "order": 2 },
+      { "text": "じかん", "type": "noun", "meaning": "시간", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "かかる", "type": "verb", "meaning": "걸린다", "order": 5 }
+    ],
+    "explanation": "~ないものでもない는 '~할 수 없는 것도 아니다'라는 의미로, 소극적 가능성을 나타냅니다.",
+    "grammarPoint": "~ないものでもない (~할 수 없는 것도 아니다)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 56
+  },
+  {
+    "koreanSentence": "자기 이름조차 쓸 수 없는 아이도 있다",
+    "japaneseSentence": "じぶんのなまえすらかけないこどももいる",
+    "tokens": [
+      { "text": "じぶん", "type": "noun", "meaning": "자기", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "なまえ", "type": "noun", "meaning": "이름", "order": 2 },
+      { "text": "すら", "type": "particle", "meaning": "조차", "order": 3 },
+      { "text": "かけない", "type": "verb", "meaning": "쓸 수 없는", "order": 4 },
+      { "text": "こども", "type": "noun", "meaning": "아이", "order": 5 },
+      { "text": "もいる", "type": "verb", "meaning": "도 있다", "order": 6 }
+    ],
+    "explanation": "~すら는 '~조차'라는 문어체 표현으로, 가장 기본적인 것도 해당되지 않음을 강조합니다.",
+    "grammarPoint": "~すら (~조차)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 57
+  },
+  {
+    "koreanSentence": "약속을 어긴 이상 사과하지 않고는 끝나지 않는다",
+    "japaneseSentence": "やくそくをやぶったいじょうあやまらずにはすまない",
+    "tokens": [
+      { "text": "やくそく", "type": "noun", "meaning": "약속", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "やぶった", "type": "verb", "meaning": "어긴", "order": 2 },
+      { "text": "いじょう", "type": "particle", "meaning": "이상", "order": 3 },
+      { "text": "あやまらずにはすまない", "type": "verb", "meaning": "사과하지 않고는 끝나지 않는다", "order": 4 }
+    ],
+    "explanation": "~ずにはすまない는 '~하지 않고는 끝나지 않는다'라는 의미로, 도의적으로 반드시 해야 함을 나타냅니다.",
+    "grammarPoint": "~ずにはすまない (~하지 않고는 끝나지 않는다)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 58
+  },
+  {
+    "koreanSentence": "그 소설은 독자를 감동시키지 않고는 못 배긴다",
+    "japaneseSentence": "そのしょうせつはどくしゃをかんどうさせずにはおかない",
+    "tokens": [
+      { "text": "その", "type": "adjective", "meaning": "그", "order": 0 },
+      { "text": "しょうせつ", "type": "noun", "meaning": "소설", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "どくしゃ", "type": "noun", "meaning": "독자", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "かんどうさせずにはおかない", "type": "verb", "meaning": "감동시키지 않고는 못 배긴다", "order": 5 }
+    ],
+    "explanation": "~ずにはおかない는 '~하지 않고는 두지 않는다, 반드시 ~하게 만든다'라는 의미로, 자연스러운 결과를 강조합니다.",
+    "grammarPoint": "~ずにはおかない (~하지 않고는 못 배긴다)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 59
+  },
+  {
+    "koreanSentence": "안 되면 다시 도전하면 될 뿐이다",
+    "japaneseSentence": "だめならもういちどちょうせんするまでだ",
+    "tokens": [
+      { "text": "だめなら", "type": "adjective", "meaning": "안 되면", "order": 0 },
+      { "text": "もういちど", "type": "adverb", "meaning": "다시", "order": 1 },
+      { "text": "ちょうせん", "type": "noun", "meaning": "도전", "order": 2 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 3 },
+      { "text": "までだ", "type": "suffix", "meaning": "면 될 뿐이다", "order": 4 }
+    ],
+    "explanation": "~までだ는 '~할 뿐이다, ~하면 그만이다'라는 의미로, 각오나 결심을 나타냅니다.",
+    "grammarPoint": "~までだ (~할 뿐이다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 60
+  },
+  {
+    "koreanSentence": "허가 없이 촬영하는 것은 금지입니다",
+    "japaneseSentence": "きょかなしにさつえいすることはきんしです",
+    "tokens": [
+      { "text": "きょか", "type": "noun", "meaning": "허가", "order": 0 },
+      { "text": "なしに", "type": "particle", "meaning": "없이", "order": 1 },
+      { "text": "さつえい", "type": "noun", "meaning": "촬영", "order": 2 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 3 },
+      { "text": "こと", "type": "noun", "meaning": "것", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "きんしです", "type": "noun", "meaning": "금지입니다", "order": 6 }
+    ],
+    "explanation": "~なしに는 '~없이'라는 의미로, 필요한 것이 없는 상태로 행동함을 나타냅니다.",
+    "grammarPoint": "~なしに (~없이)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 61
+  },
+  {
+    "koreanSentence": "이 문제는 일본에 그치지 않고 아시아 전체의 과제이다",
+    "japaneseSentence": "このもんだいはにほんにとどまらずアジアぜんたいのかだいだ",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "もんだい", "type": "noun", "meaning": "문제", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "にほん", "type": "noun", "meaning": "일본", "order": 3 },
+      { "text": "にとどまらず", "type": "particle", "meaning": "에 그치지 않고", "order": 4 },
+      { "text": "アジアぜんたい", "type": "noun", "meaning": "아시아 전체", "order": 5 },
+      { "text": "のかだいだ", "type": "noun", "meaning": "의 과제이다", "order": 6 }
+    ],
+    "explanation": "~にとどまらず는 '~에 그치지 않고'라는 의미로, 범위가 더 넓게 확장됨을 나타냅니다.",
+    "grammarPoint": "~にとどまらず (~에 그치지 않고)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 62
+  },
+  {
+    "koreanSentence": "금일을 기해 영업을 종료합니다",
+    "japaneseSentence": "ほんじつをもってえいぎょうをしゅうりょういたします",
+    "tokens": [
+      { "text": "ほんじつ", "type": "noun", "meaning": "금일", "order": 0 },
+      { "text": "をもって", "type": "particle", "meaning": "를 기해", "order": 1 },
+      { "text": "えいぎょう", "type": "noun", "meaning": "영업", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "しゅうりょういたします", "type": "verb", "meaning": "종료합니다", "order": 4 }
+    ],
+    "explanation": "~をもって는 '~을 기해, ~으로써'라는 의미로, 시점이나 수단을 격식 있게 나타냅니다.",
+    "grammarPoint": "~をもって (~을 기해)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 63
+  },
+  {
+    "koreanSentence": "리더된 자는 항상 솔선수범해야 한다",
+    "japaneseSentence": "リーダーたるものはつねにそっせんすうはんすべきだ",
+    "tokens": [
+      { "text": "リーダー", "type": "noun", "meaning": "리더", "order": 0 },
+      { "text": "たるもの", "type": "suffix", "meaning": "된 자", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "つねに", "type": "adverb", "meaning": "항상", "order": 3 },
+      { "text": "そっせんすうはん", "type": "noun", "meaning": "솔선수범", "order": 4 },
+      { "text": "すべきだ", "type": "verb", "meaning": "해야 한다", "order": 5 }
+    ],
+    "explanation": "~たるもの는 '~된 자, ~이라 할 만한 사람'이라는 의미로, 그 지위에 걸맞은 행동을 요구합니다.",
+    "grammarPoint": "~たるもの (~된 자)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 64
+  },
+  {
+    "koreanSentence": "팬이 있기에 비로소 가수라는 직업이 성립한다",
+    "japaneseSentence": "ファンあってのかしゅというしょくぎょうがせいりつする",
+    "tokens": [
+      { "text": "ファン", "type": "noun", "meaning": "팬", "order": 0 },
+      { "text": "あっての", "type": "particle", "meaning": "이 있기에 비로소", "order": 1 },
+      { "text": "かしゅ", "type": "noun", "meaning": "가수", "order": 2 },
+      { "text": "という", "type": "particle", "meaning": "라는", "order": 3 },
+      { "text": "しょくぎょう", "type": "noun", "meaning": "직업", "order": 4 },
+      { "text": "がせいりつする", "type": "verb", "meaning": "이 성립한다", "order": 5 }
+    ],
+    "explanation": "~あっての는 '~이 있기에 비로소'라는 의미로, 그것 없이는 성립하지 않음을 나타냅니다.",
+    "grammarPoint": "~あっての (~이 있기에)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 65
+  },
+  {
+    "koreanSentence": "젊음이기에 실수도 할 수 있다",
+    "japaneseSentence": "わかさゆえにしっぱいもすることがある",
+    "tokens": [
+      { "text": "わかさ", "type": "noun", "meaning": "젊음", "order": 0 },
+      { "text": "ゆえに", "type": "particle", "meaning": "이기에", "order": 1 },
+      { "text": "しっぱい", "type": "noun", "meaning": "실수", "order": 2 },
+      { "text": "も", "type": "particle", "meaning": "도", "order": 3 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 4 },
+      { "text": "ことがある", "type": "suffix", "meaning": "할 수 있다", "order": 5 }
+    ],
+    "explanation": "~ゆえに는 '~이기에, ~때문에'라는 문어체 표현으로, 원인이나 이유를 격식 있게 나타냅니다.",
+    "grammarPoint": "~ゆえに (~이기에)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 66
+  },
+  {
+    "koreanSentence": "이것은 이 가게만의 특별한 메뉴입니다",
+    "japaneseSentence": "これはこのみせならではのとくべつなメニューです",
+    "tokens": [
+      { "text": "これ", "type": "noun", "meaning": "이것", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "このみせ", "type": "noun", "meaning": "이 가게", "order": 2 },
+      { "text": "ならでは", "type": "particle", "meaning": "만의", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 4 },
+      { "text": "とくべつな", "type": "adjective", "meaning": "특별한", "order": 5 },
+      { "text": "メニューです", "type": "noun", "meaning": "메뉴입니다", "order": 6 }
+    ],
+    "explanation": "~ならでは는 '~만의, ~이 아니면 불가능한'이라는 의미로, 특정 대상만의 독특함을 강조합니다.",
+    "grammarPoint": "~ならでは (~만의)",
+    "jlptLevel": "N1",
+    "difficulty": 1,
+    "order": 67
+  },
+  {
+    "koreanSentence": "옛날의 번영과는 대조적으로 지금은 쇠퇴했다",
+    "japaneseSentence": "むかしのはんえいにひきかえいまはすいたいした",
+    "tokens": [
+      { "text": "むかし", "type": "noun", "meaning": "옛날", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "はんえい", "type": "noun", "meaning": "번영", "order": 2 },
+      { "text": "にひきかえ", "type": "particle", "meaning": "와는 대조적으로", "order": 3 },
+      { "text": "いま", "type": "noun", "meaning": "지금", "order": 4 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 5 },
+      { "text": "すいたいした", "type": "verb", "meaning": "쇠퇴했다", "order": 6 }
+    ],
+    "explanation": "~にひきかえ는 '~와는 대조적으로'라는 의미로, 과거와 현재의 대비에도 사용됩니다.",
+    "grammarPoint": "~にひきかえ (~와는 대조적으로)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 68
+  },
+  {
+    "koreanSentence": "거절당하면 다른 방법을 찾으면 그뿐이다",
+    "japaneseSentence": "ことわられたらべつのほうほうをさがすまでのことだ",
+    "tokens": [
+      { "text": "ことわられたら", "type": "verb", "meaning": "거절당하면", "order": 0 },
+      { "text": "べつ", "type": "noun", "meaning": "다른", "order": 1 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 2 },
+      { "text": "ほうほう", "type": "noun", "meaning": "방법", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "さがす", "type": "verb", "meaning": "찾다", "order": 5 },
+      { "text": "までのことだ", "type": "suffix", "meaning": "면 그뿐이다", "order": 6 }
+    ],
+    "explanation": "~まで(のこと)だ는 '~하면 그뿐이다'라는 의미로, 간단하게 해결할 수 있다는 가벼운 각오를 나타냅니다.",
+    "grammarPoint": "~までのことだ (~면 그뿐이다)",
+    "jlptLevel": "N1",
+    "difficulty": 2,
+    "order": 69
+  },
+  {
+    "koreanSentence": "법을 어긴 이상 벌을 받지 않고는 끝나지 않는다",
+    "japaneseSentence": "ほうをおかしたいじょうばつをうけずにはすまない",
+    "tokens": [
+      { "text": "ほう", "type": "noun", "meaning": "법", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "おかした", "type": "verb", "meaning": "어긴", "order": 2 },
+      { "text": "いじょう", "type": "particle", "meaning": "이상", "order": 3 },
+      { "text": "ばつ", "type": "noun", "meaning": "벌", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "うけずにはすまない", "type": "verb", "meaning": "받지 않고는 끝나지 않는다", "order": 6 }
+    ],
+    "explanation": "~ずにはすまない는 '~하지 않고는 끝나지 않는다'라는 의미로, 사회적으로 반드시 해야 하는 의무를 나타냅니다.",
+    "grammarPoint": "~ずにはすまない (~하지 않고는 끝나지 않는다)",
+    "jlptLevel": "N1",
+    "difficulty": 3,
+    "order": 70
   }
 ]

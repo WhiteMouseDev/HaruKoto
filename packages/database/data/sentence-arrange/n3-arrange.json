@@ -864,5 +864,369 @@
     "jlptLevel": "N3",
     "difficulty": 2,
     "order": 50
+  },
+  {
+    "id": "n3-arrange-51",
+    "koreanSentence": "학생으로서 책임을 다해야 합니다",
+    "japaneseSentence": "がくせいとしてせきにんをはたすべきです",
+    "tokens": [
+      { "text": "がくせい", "type": "noun", "meaning": "학생", "order": 0 },
+      { "text": "として", "type": "particle", "meaning": "으로서", "order": 1 },
+      { "text": "せきにん", "type": "noun", "meaning": "책임", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "はたす", "type": "verb", "meaning": "다하다", "order": 4 },
+      { "text": "べきです", "type": "suffix", "meaning": "~해야 합니다", "order": 5 }
+    ],
+    "explanation": "~として는 '~으로서' 자격이나 입장을 나타냅니다.",
+    "grammarPoint": "~として (~으로서)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 51
+  },
+  {
+    "id": "n3-arrange-52",
+    "koreanSentence": "이 문제에 대해서 의견을 말해 주세요",
+    "japaneseSentence": "このもんだいにたいしていけんをいってください",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "もんだい", "type": "noun", "meaning": "문제", "order": 1 },
+      { "text": "にたいして", "type": "particle", "meaning": "에 대해서", "order": 2 },
+      { "text": "いけん", "type": "noun", "meaning": "의견", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "いってください", "type": "verb", "meaning": "말해 주세요", "order": 5 }
+    ],
+    "explanation": "~に対して는 '~에 대해서' 대상을 나타냅니다.",
+    "grammarPoint": "~に対して (~에 대해서)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 52
+  },
+  {
+    "id": "n3-arrange-53",
+    "koreanSentence": "국제 회의에서 환경 문제가 논의되었다",
+    "japaneseSentence": "こくさいかいぎにおいてかんきょうもんだいがぎろんされた",
+    "tokens": [
+      { "text": "こくさいかいぎ", "type": "noun", "meaning": "국제 회의", "order": 0 },
+      { "text": "において", "type": "particle", "meaning": "에서", "order": 1 },
+      { "text": "かんきょうもんだい", "type": "noun", "meaning": "환경 문제", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "ぎろんされた", "type": "verb", "meaning": "논의되었다", "order": 4 }
+    ],
+    "explanation": "~において는 '~에서' 장소나 장면을 격식체로 나타냅니다.",
+    "grammarPoint": "~において (~에서)",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 53
+  },
+  {
+    "id": "n3-arrange-54",
+    "koreanSentence": "경제 발전에 따라 생활이 편리해졌다",
+    "japaneseSentence": "けいざいはってんにともなってせいかつがべんりになった",
+    "tokens": [
+      { "text": "けいざいはってん", "type": "noun", "meaning": "경제 발전", "order": 0 },
+      { "text": "にともなって", "type": "particle", "meaning": "에 따라", "order": 1 },
+      { "text": "せいかつ", "type": "noun", "meaning": "생활", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "べんりに", "type": "adjective", "meaning": "편리하게", "order": 4 },
+      { "text": "なった", "type": "verb", "meaning": "되었다", "order": 5 }
+    ],
+    "explanation": "~に伴って는 '~에 따라' 동시 변화를 나타냅니다.",
+    "grammarPoint": "~に伴って (~에 따라)",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 54
+  },
+  {
+    "id": "n3-arrange-55",
+    "koreanSentence": "실화를 바탕으로 영화가 만들어졌다",
+    "japaneseSentence": "じつわをもとにえいががつくられた",
+    "tokens": [
+      { "text": "じつわ", "type": "noun", "meaning": "실화", "order": 0 },
+      { "text": "をもとに", "type": "particle", "meaning": "을 바탕으로", "order": 1 },
+      { "text": "えいが", "type": "noun", "meaning": "영화", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "つくられた", "type": "verb", "meaning": "만들어졌다", "order": 4 }
+    ],
+    "explanation": "~をもとに는 '~을 바탕으로/근거로' 기초를 나타냅니다.",
+    "grammarPoint": "~をもとに (~을 바탕으로)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 55
+  },
+  {
+    "id": "n3-arrange-56",
+    "koreanSentence": "인터넷을 통해 세계의 정보를 얻을 수 있다",
+    "japaneseSentence": "インターネットをつうじてせかいのじょうほうをえられる",
+    "tokens": [
+      { "text": "インターネット", "type": "noun", "meaning": "인터넷", "order": 0 },
+      { "text": "をつうじて", "type": "particle", "meaning": "을 통해", "order": 1 },
+      { "text": "せかい", "type": "noun", "meaning": "세계", "order": 2 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 3 },
+      { "text": "じょうほう", "type": "noun", "meaning": "정보", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "えられる", "type": "verb", "meaning": "얻을 수 있다", "order": 6 }
+    ],
+    "explanation": "~を通じて는 '~을 통해' 수단이나 매개를 나타냅니다.",
+    "grammarPoint": "~を通じて (~을 통해)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 56
+  },
+  {
+    "id": "n3-arrange-57",
+    "koreanSentence": "이 건에 관해서 자세히 조사하겠습니다",
+    "japaneseSentence": "このけんにかんしてくわしくちょうさします",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "けん", "type": "noun", "meaning": "건", "order": 1 },
+      { "text": "にかんして", "type": "particle", "meaning": "에 관해서", "order": 2 },
+      { "text": "くわしく", "type": "adverb", "meaning": "자세히", "order": 3 },
+      { "text": "ちょうさします", "type": "verb", "meaning": "조사하겠습니다", "order": 4 }
+    ],
+    "explanation": "~に関して는 '~에 관해서' 주제나 관련 사항을 나타냅니다.",
+    "grammarPoint": "~に関して (~에 관해서)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 57
+  },
+  {
+    "id": "n3-arrange-58",
+    "koreanSentence": "뉴스에 의하면 내일 태풍이 온다고 합니다",
+    "japaneseSentence": "ニュースによるとあしたたいふうがくるそうです",
+    "tokens": [
+      { "text": "ニュース", "type": "noun", "meaning": "뉴스", "order": 0 },
+      { "text": "によると", "type": "particle", "meaning": "에 의하면", "order": 1 },
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 2 },
+      { "text": "たいふう", "type": "noun", "meaning": "태풍", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "くる", "type": "verb", "meaning": "오다", "order": 5 },
+      { "text": "そうです", "type": "suffix", "meaning": "~라고 합니다", "order": 6 }
+    ],
+    "explanation": "~によると는 '~에 의하면' 정보 출처를 밝힐 때 사용합니다.",
+    "grammarPoint": "~によると (~에 의하면)",
+    "jlptLevel": "N3",
+    "difficulty": 1,
+    "order": 58
+  },
+  {
+    "id": "n3-arrange-59",
+    "koreanSentence": "이 지역은 벚꽃이 아름다운 것으로 유명하다",
+    "japaneseSentence": "このちいきはさくらがうつくしいことからゆうめいだ",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "ちいき", "type": "noun", "meaning": "지역", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "さくら", "type": "noun", "meaning": "벚꽃", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "うつくしいことから", "type": "expression", "meaning": "아름다운 것으로", "order": 5 },
+      { "text": "ゆうめいだ", "type": "adjective", "meaning": "유명하다", "order": 6 }
+    ],
+    "explanation": "~ことから는 '~것으로/~이유로' 이유나 근거를 나타냅니다.",
+    "grammarPoint": "~ことから (~것으로/~이유로)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 59
+  },
+  {
+    "id": "n3-arrange-60",
+    "koreanSentence": "일본어를 안다고 해서 다 번역할 수 있는 것은 아니다",
+    "japaneseSentence": "にほんごをしっているからといってぜんぶほんやくできるわけではない",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "しっている", "type": "verb", "meaning": "알고 있다", "order": 2 },
+      { "text": "からといって", "type": "particle", "meaning": "~라고 해서", "order": 3 },
+      { "text": "ぜんぶ", "type": "adverb", "meaning": "전부", "order": 4 },
+      { "text": "ほんやくできる", "type": "verb", "meaning": "번역할 수 있는", "order": 5 },
+      { "text": "わけではない", "type": "expression", "meaning": "것은 아니다", "order": 6 }
+    ],
+    "explanation": "~わけではない는 '~것은 아니다'로 부분 부정을 나타냅니다.",
+    "grammarPoint": "~わけではない (~것은 아니다)",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 60
+  },
+  {
+    "id": "n3-arrange-61",
+    "koreanSentence": "사원은 매일 넥타이를 하게 되어 있다",
+    "japaneseSentence": "しゃいんはまいにちネクタイをすることになっている",
+    "tokens": [
+      { "text": "しゃいん", "type": "noun", "meaning": "사원", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 2 },
+      { "text": "ネクタイ", "type": "noun", "meaning": "넥타이", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 5 },
+      { "text": "ことになっている", "type": "expression", "meaning": "~하게 되어 있다", "order": 6 }
+    ],
+    "explanation": "~ことになっている는 규칙이나 예정을 나타냅니다.",
+    "grammarPoint": "~ことになっている (~하게 되어 있다)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 61
+  },
+  {
+    "id": "n3-arrange-62",
+    "koreanSentence": "상사의 명령이라 따르지 않을 수 없다",
+    "japaneseSentence": "じょうしのめいれいだからしたがわざるをえない",
+    "tokens": [
+      { "text": "じょうし", "type": "noun", "meaning": "상사", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "めいれい", "type": "noun", "meaning": "명령", "order": 2 },
+      { "text": "だから", "type": "particle", "meaning": "이니까", "order": 3 },
+      { "text": "したがわ", "type": "verb", "meaning": "따르", "order": 4 },
+      { "text": "ざるをえない", "type": "expression", "meaning": "지 않을 수 없다", "order": 5 }
+    ],
+    "explanation": "~ざるを得ない는 '~하지 않을 수 없다' 불가피함을 나타냅니다.",
+    "grammarPoint": "~ざるを得ない (~하지 않을 수 없다)",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 62
+  },
+  {
+    "id": "n3-arrange-63",
+    "koreanSentence": "문을 열어 놓은 채로 나가 버렸다",
+    "japaneseSentence": "ドアをあけっぱなしででかけてしまった",
+    "tokens": [
+      { "text": "ドア", "type": "noun", "meaning": "문", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "あけっぱなし", "type": "noun", "meaning": "열어 놓은 채", "order": 2 },
+      { "text": "で", "type": "particle", "meaning": "로", "order": 3 },
+      { "text": "でかけて", "type": "verb", "meaning": "나가", "order": 4 },
+      { "text": "しまった", "type": "verb", "meaning": "버렸다", "order": 5 }
+    ],
+    "explanation": "~っぱなし는 '~한 채로 방치' 상태가 계속됨을 나타냅니다.",
+    "grammarPoint": "~っぱなし (~한 채로)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 63
+  },
+  {
+    "id": "n3-arrange-64",
+    "koreanSentence": "그 제안은 받아들이기 어렵습니다",
+    "japaneseSentence": "そのていあんはうけいれかねます",
+    "tokens": [
+      { "text": "その", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "ていあん", "type": "noun", "meaning": "제안", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "うけいれ", "type": "verb", "meaning": "받아들이", "order": 3 },
+      { "text": "かねます", "type": "verb", "meaning": "기 어렵습니다", "order": 4 }
+    ],
+    "explanation": "~かねる는 '~하기 어렵다' 정중한 거절 표현입니다.",
+    "grammarPoint": "~かねる (~하기 어렵다)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 64
+  },
+  {
+    "id": "n3-arrange-65",
+    "koreanSentence": "이 책은 초보자용으로 쓰여져 있다",
+    "japaneseSentence": "このほんはしょしんしゃむけにかかれている",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "ほん", "type": "noun", "meaning": "책", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "しょしんしゃ", "type": "noun", "meaning": "초보자", "order": 3 },
+      { "text": "むけに", "type": "particle", "meaning": "용으로", "order": 4 },
+      { "text": "かかれている", "type": "verb", "meaning": "쓰여져 있다", "order": 5 }
+    ],
+    "explanation": "~向け는 '~용/~대상' 타겟을 나타냅니다.",
+    "grammarPoint": "~向け (~용)",
+    "jlptLevel": "N3",
+    "difficulty": 1,
+    "order": 65
+  },
+  {
+    "id": "n3-arrange-66",
+    "koreanSentence": "결과가 나오는 대로 연락 드리겠습니다",
+    "japaneseSentence": "けっかがでしだいれんらくいたします",
+    "tokens": [
+      { "text": "けっか", "type": "noun", "meaning": "결과", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "でしだい", "type": "expression", "meaning": "나오는 대로", "order": 2 },
+      { "text": "れんらく", "type": "noun", "meaning": "연락", "order": 3 },
+      { "text": "いたします", "type": "verb", "meaning": "드리겠습니다", "order": 4 }
+    ],
+    "explanation": "~次第는 '~하는 대로 즉시'를 나타냅니다.",
+    "grammarPoint": "~次第 (~하는 대로)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 66
+  },
+  {
+    "id": "n3-arrange-67",
+    "koreanSentence": "집을 나서자마자 비가 내리기 시작했다",
+    "japaneseSentence": "いえをでたとたんあめがふりだした",
+    "tokens": [
+      { "text": "いえ", "type": "noun", "meaning": "집", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "でた", "type": "verb", "meaning": "나선", "order": 2 },
+      { "text": "とたん", "type": "noun", "meaning": "~자마자", "order": 3 },
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "ふりだした", "type": "verb", "meaning": "내리기 시작했다", "order": 6 }
+    ],
+    "explanation": "~たとたん는 '~하자마자' 예상 밖의 일이 일어남을 나타냅니다.",
+    "grammarPoint": "~たとたん (~하자마자)",
+    "jlptLevel": "N3",
+    "difficulty": 2,
+    "order": 67
+  },
+  {
+    "id": "n3-arrange-68",
+    "koreanSentence": "우체국에 가는 김에 편지를 부쳐 주세요",
+    "japaneseSentence": "ゆうびんきょくにいくついでにてがみをだしてください",
+    "tokens": [
+      { "text": "ゆうびんきょく", "type": "noun", "meaning": "우체국", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "いく", "type": "verb", "meaning": "가는", "order": 2 },
+      { "text": "ついでに", "type": "particle", "meaning": "김에", "order": 3 },
+      { "text": "てがみ", "type": "noun", "meaning": "편지", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "だしてください", "type": "verb", "meaning": "부쳐 주세요", "order": 6 }
+    ],
+    "explanation": "~ついでに는 '~하는 김에' 부수적 행동을 나타냅니다.",
+    "grammarPoint": "~ついでに (~하는 김에)",
+    "jlptLevel": "N3",
+    "difficulty": 1,
+    "order": 68
+  },
+  {
+    "id": "n3-arrange-69",
+    "koreanSentence": "일본어가 유창하다고 해서 반드시 통역을 잘하는 것은 아니다",
+    "japaneseSentence": "にほんごがぺらぺらだからといってかならずしもつうやくがうまいとはかぎらない",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ぺらぺらだ", "type": "adjective", "meaning": "유창하다", "order": 2 },
+      { "text": "からといって", "type": "particle", "meaning": "~라고 해서", "order": 3 },
+      { "text": "かならずしも", "type": "adverb", "meaning": "반드시", "order": 4 },
+      { "text": "つうやくがうまい", "type": "expression", "meaning": "통역을 잘하는", "order": 5 },
+      { "text": "とはかぎらない", "type": "expression", "meaning": "것은 아니다", "order": 6 }
+    ],
+    "explanation": "~からといって~とは限らない는 '~라고 해서 반드시 ~인 것은 아니다'입니다.",
+    "grammarPoint": "~からといって~とは限らない",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 69
+  },
+  {
+    "id": "n3-arrange-70",
+    "koreanSentence": "교통사고의 증가에 따라 안전 교육이 강화되었다",
+    "japaneseSentence": "こうつうじこのぞうかにつれてあんぜんきょういくがきょうかされた",
+    "tokens": [
+      { "text": "こうつうじこ", "type": "noun", "meaning": "교통사고", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ぞうか", "type": "noun", "meaning": "증가", "order": 2 },
+      { "text": "につれて", "type": "particle", "meaning": "에 따라", "order": 3 },
+      { "text": "あんぜんきょういく", "type": "noun", "meaning": "안전 교육", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "きょうかされた", "type": "verb", "meaning": "강화되었다", "order": 6 }
+    ],
+    "explanation": "~につれて는 '~에 따라/~할수록' 변화의 비례 관계를 나타냅니다.",
+    "grammarPoint": "~につれて (~에 따라)",
+    "jlptLevel": "N3",
+    "difficulty": 3,
+    "order": 70
   }
 ]

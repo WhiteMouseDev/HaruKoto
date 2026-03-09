@@ -672,5 +672,355 @@
     "jlptLevel": "N4",
     "difficulty": 3,
     "order": 40
+  },
+  {
+    "id": "n4-arrange-41",
+    "koreanSentence": "지갑을 잃어버렸습니다",
+    "japaneseSentence": "さいふをなくしてしまいました",
+    "tokens": [
+      { "text": "さいふ", "type": "noun", "meaning": "지갑", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "なくして", "type": "verb", "meaning": "잃어", "order": 2 },
+      { "text": "しまいました", "type": "verb", "meaning": "버렸습니다", "order": 3 }
+    ],
+    "explanation": "~てしまう는 '~해 버리다'로 유감스러운 결과를 나타냅니다.",
+    "grammarPoint": "~てしまう (유감)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 41
+  },
+  {
+    "id": "n4-arrange-42",
+    "koreanSentence": "매일 운동하도록 하고 있습니다",
+    "japaneseSentence": "まいにちうんどうするようにしています",
+    "tokens": [
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 0 },
+      { "text": "うんどう", "type": "noun", "meaning": "운동", "order": 1 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 2 },
+      { "text": "ように", "type": "particle", "meaning": "~하도록", "order": 3 },
+      { "text": "しています", "type": "verb", "meaning": "하고 있습니다", "order": 4 }
+    ],
+    "explanation": "~ようにする는 의식적으로 노력하는 습관을 나타냅니다.",
+    "grammarPoint": "~ようにする (노력 습관)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 42
+  },
+  {
+    "id": "n4-arrange-43",
+    "koreanSentence": "내일부터 일찍 일어나기로 했습니다",
+    "japaneseSentence": "あしたからはやくおきることにしました",
+    "tokens": [
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 0 },
+      { "text": "から", "type": "particle", "meaning": "부터", "order": 1 },
+      { "text": "はやく", "type": "adverb", "meaning": "일찍", "order": 2 },
+      { "text": "おきる", "type": "verb", "meaning": "일어나다", "order": 3 },
+      { "text": "ことにしました", "type": "expression", "meaning": "~기로 했습니다", "order": 4 }
+    ],
+    "explanation": "~ことにする는 자신의 의지로 결정했음을 나타냅니다.",
+    "grammarPoint": "~ことにする (결정)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 43
+  },
+  {
+    "id": "n4-arrange-44",
+    "koreanSentence": "그 가게는 이미 닫혀 있을 것입니다",
+    "japaneseSentence": "そのみせはもうしまっているはずです",
+    "tokens": [
+      { "text": "その", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "みせ", "type": "noun", "meaning": "가게", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "もう", "type": "adverb", "meaning": "이미", "order": 3 },
+      { "text": "しまっている", "type": "verb", "meaning": "닫혀 있는", "order": 4 },
+      { "text": "はずです", "type": "expression", "meaning": "것입니다", "order": 5 }
+    ],
+    "explanation": "~はずです는 당연히 그럴 것이라는 확신을 나타냅니다.",
+    "grammarPoint": "~はずだ (확신 추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 44
+  },
+  {
+    "id": "n4-arrange-45",
+    "koreanSentence": "지금 막 밥을 먹은 참입니다",
+    "japaneseSentence": "いまちょうどごはんをたべたところです",
+    "tokens": [
+      { "text": "いま", "type": "noun", "meaning": "지금", "order": 0 },
+      { "text": "ちょうど", "type": "adverb", "meaning": "막/방금", "order": 1 },
+      { "text": "ごはん", "type": "noun", "meaning": "밥", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "たべた", "type": "verb", "meaning": "먹은", "order": 4 },
+      { "text": "ところです", "type": "expression", "meaning": "참입니다", "order": 5 }
+    ],
+    "explanation": "~たところです는 동작이 막 완료된 직후를 나타냅니다.",
+    "grammarPoint": "~ところだ (직후)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 45
+  },
+  {
+    "id": "n4-arrange-46",
+    "koreanSentence": "아이가 야채를 먹을 수 있게 되었습니다",
+    "japaneseSentence": "こどもがやさいをたべられるようになりました",
+    "tokens": [
+      { "text": "こども", "type": "noun", "meaning": "아이", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "やさい", "type": "noun", "meaning": "야채", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "たべられる", "type": "verb", "meaning": "먹을 수 있는", "order": 4 },
+      { "text": "ようになりました", "type": "verb", "meaning": "~하게 되었습니다", "order": 5 }
+    ],
+    "explanation": "~ようになる는 능력이나 상태가 변화하는 것을 나타냅니다.",
+    "grammarPoint": "~ようになる (상태 변화)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 46
+  },
+  {
+    "id": "n4-arrange-47",
+    "koreanSentence": "친구가 짐을 들어 주었습니다",
+    "japaneseSentence": "ともだちがにもつをもってくれました",
+    "tokens": [
+      { "text": "ともだち", "type": "noun", "meaning": "친구", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "にもつ", "type": "noun", "meaning": "짐", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "もって", "type": "verb", "meaning": "들어", "order": 4 },
+      { "text": "くれました", "type": "verb", "meaning": "주었습니다", "order": 5 }
+    ],
+    "explanation": "~てくれる는 다른 사람이 나를 위해 행위를 해 준 것을 나타냅니다.",
+    "grammarPoint": "~てくれる (수혜)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 47
+  },
+  {
+    "id": "n4-arrange-48",
+    "koreanSentence": "동생에게 숙제를 도와주었습니다",
+    "japaneseSentence": "おとうとにしゅくだいをてつだってあげました",
+    "tokens": [
+      { "text": "おとうと", "type": "noun", "meaning": "동생", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "しゅくだい", "type": "noun", "meaning": "숙제", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "てつだって", "type": "verb", "meaning": "도와", "order": 4 },
+      { "text": "あげました", "type": "verb", "meaning": "주었습니다", "order": 5 }
+    ],
+    "explanation": "~てあげる는 다른 사람을 위해 행위를 해 주는 것을 나타냅니다.",
+    "grammarPoint": "~てあげる (호의)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 48
+  },
+  {
+    "id": "n4-arrange-49",
+    "koreanSentence": "의사에게 약을 처방받았습니다",
+    "japaneseSentence": "いしゃにくすりをだしてもらいました",
+    "tokens": [
+      { "text": "いしゃ", "type": "noun", "meaning": "의사", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "くすり", "type": "noun", "meaning": "약", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "だして", "type": "verb", "meaning": "처방해", "order": 4 },
+      { "text": "もらいました", "type": "verb", "meaning": "받았습니다", "order": 5 }
+    ],
+    "explanation": "~てもらう는 다른 사람에게 행위를 받는 것을 나타냅니다.",
+    "grammarPoint": "~てもらう (수혜 받기)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 49
+  },
+  {
+    "id": "n4-arrange-50",
+    "koreanSentence": "어머니가 아이에게 야채를 먹게 했습니다",
+    "japaneseSentence": "おかあさんがこどもにやさいをたべさせました",
+    "tokens": [
+      { "text": "おかあさん", "type": "noun", "meaning": "어머니", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "こども", "type": "noun", "meaning": "아이", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 3 },
+      { "text": "やさい", "type": "noun", "meaning": "야채", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "たべさせました", "type": "verb", "meaning": "먹게 했습니다", "order": 6 }
+    ],
+    "explanation": "~させる는 사역형으로 '~하게 하다/시키다'입니다.",
+    "grammarPoint": "~させる (사역)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 50
+  },
+  {
+    "id": "n4-arrange-51",
+    "koreanSentence": "이 영화는 많은 사람에게 사랑받고 있습니다",
+    "japaneseSentence": "このえいがはおおくのひとにあいされています",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "えいが", "type": "noun", "meaning": "영화", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "おおくのひと", "type": "noun", "meaning": "많은 사람", "order": 3 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 4 },
+      { "text": "あいされています", "type": "verb", "meaning": "사랑받고 있습니다", "order": 5 }
+    ],
+    "explanation": "~られる는 수동형으로 '~받다/~되다'를 나타냅니다.",
+    "grammarPoint": "~られる (수동)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 51
+  },
+  {
+    "id": "n4-arrange-52",
+    "koreanSentence": "이 케이크는 맛있을 것 같습니다",
+    "japaneseSentence": "このケーキはおいしそうです",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "ケーキ", "type": "noun", "meaning": "케이크", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "おいし", "type": "adjective", "meaning": "맛있(을 것)", "order": 3 },
+      { "text": "そうです", "type": "suffix", "meaning": "같습니다", "order": 4 }
+    ],
+    "explanation": "~そうです(양태)는 い형용사의 い를 빼고 そう를 붙여 외관상 추측을 나타냅니다.",
+    "grammarPoint": "~そうだ (양태)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 52
+  },
+  {
+    "id": "n4-arrange-53",
+    "koreanSentence": "그녀는 학생인 것 같습니다",
+    "japaneseSentence": "かのじょはがくせいのようです",
+    "tokens": [
+      { "text": "かのじょ", "type": "noun", "meaning": "그녀", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "がくせい", "type": "noun", "meaning": "학생", "order": 2 },
+      { "text": "の", "type": "particle", "meaning": "인", "order": 3 },
+      { "text": "ようです", "type": "suffix", "meaning": "것 같습니다", "order": 4 }
+    ],
+    "explanation": "~ようだ는 관찰에 기반한 추측을 나타냅니다.",
+    "grammarPoint": "~ようだ (추측)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 53
+  },
+  {
+    "id": "n4-arrange-54",
+    "koreanSentence": "내일은 비가 올 것 같습니다",
+    "japaneseSentence": "あしたはあめがふるらしいです",
+    "tokens": [
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "ふる", "type": "verb", "meaning": "오다(내리다)", "order": 4 },
+      { "text": "らしいです", "type": "suffix", "meaning": "것 같습니다", "order": 5 }
+    ],
+    "explanation": "~らしい는 전해 들은 정보나 근거에 기반한 추측입니다.",
+    "grammarPoint": "~らしい (추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 54
+  },
+  {
+    "id": "n4-arrange-55",
+    "koreanSentence": "건강을 위해 매일 걷고 있습니다",
+    "japaneseSentence": "けんこうのためにまいにちあるいています",
+    "tokens": [
+      { "text": "けんこう", "type": "noun", "meaning": "건강", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ために", "type": "particle", "meaning": "위해", "order": 2 },
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 3 },
+      { "text": "あるいています", "type": "verb", "meaning": "걷고 있습니다", "order": 4 }
+    ],
+    "explanation": "~ために는 목적을 나타냅니다. 명사+のために로 '~을 위해'입니다.",
+    "grammarPoint": "~ために (목적)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 55
+  },
+  {
+    "id": "n4-arrange-56",
+    "koreanSentence": "열심히 연습했는데 시합에서 졌습니다",
+    "japaneseSentence": "いっしょうけんめいれんしゅうしたのにしあいでまけました",
+    "tokens": [
+      { "text": "いっしょうけんめい", "type": "adverb", "meaning": "열심히", "order": 0 },
+      { "text": "れんしゅうした", "type": "verb", "meaning": "연습한", "order": 1 },
+      { "text": "のに", "type": "particle", "meaning": "~했는데", "order": 2 },
+      { "text": "しあい", "type": "noun", "meaning": "시합", "order": 3 },
+      { "text": "で", "type": "particle", "meaning": "에서", "order": 4 },
+      { "text": "まけました", "type": "verb", "meaning": "졌습니다", "order": 5 }
+    ],
+    "explanation": "~のに는 기대와 다른 결과에 대한 유감을 나타냅니다.",
+    "grammarPoint": "~のに (역접/유감)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 56
+  },
+  {
+    "id": "n4-arrange-57",
+    "koreanSentence": "비가 와도 운동회는 합니다",
+    "japaneseSentence": "あめがふってもうんどうかいはします",
+    "tokens": [
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ふっても", "type": "verb", "meaning": "와도", "order": 2 },
+      { "text": "うんどうかい", "type": "noun", "meaning": "운동회", "order": 3 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 4 },
+      { "text": "します", "type": "verb", "meaning": "합니다", "order": 5 }
+    ],
+    "explanation": "~ても는 양보 표현으로 '~해도/~하더라도'를 나타냅니다.",
+    "grammarPoint": "~ても (양보)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 57
+  },
+  {
+    "id": "n4-arrange-58",
+    "koreanSentence": "생각하면 할수록 모르겠습니다",
+    "japaneseSentence": "かんがえればかんがえるほどわかりません",
+    "tokens": [
+      { "text": "かんがえれば", "type": "verb", "meaning": "생각하면", "order": 0 },
+      { "text": "かんがえる", "type": "verb", "meaning": "생각할", "order": 1 },
+      { "text": "ほど", "type": "particle", "meaning": "수록", "order": 2 },
+      { "text": "わかりません", "type": "verb", "meaning": "모르겠습니다", "order": 3 }
+    ],
+    "explanation": "~ば~ほど는 '~하면 할수록'을 나타내는 표현입니다.",
+    "grammarPoint": "~ば~ほど (~할수록)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 58
+  },
+  {
+    "id": "n4-arrange-59",
+    "koreanSentence": "지금 막 출발하려는 참입니다",
+    "japaneseSentence": "いまちょうどしゅっぱつするところです",
+    "tokens": [
+      { "text": "いま", "type": "noun", "meaning": "지금", "order": 0 },
+      { "text": "ちょうど", "type": "adverb", "meaning": "막", "order": 1 },
+      { "text": "しゅっぱつ", "type": "noun", "meaning": "출발", "order": 2 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 3 },
+      { "text": "ところです", "type": "expression", "meaning": "참입니다", "order": 4 }
+    ],
+    "explanation": "~するところです는 동작이 막 시작되려는 직전을 나타냅니다.",
+    "grammarPoint": "~ところだ (직전)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 59
+  },
+  {
+    "id": "n4-arrange-60",
+    "koreanSentence": "전화 중에 갑자기 끊어져 버렸습니다",
+    "japaneseSentence": "でんわちゅうにきゅうにきれてしまいました",
+    "tokens": [
+      { "text": "でんわちゅう", "type": "noun", "meaning": "전화 중", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "きゅうに", "type": "adverb", "meaning": "갑자기", "order": 2 },
+      { "text": "きれて", "type": "verb", "meaning": "끊어져", "order": 3 },
+      { "text": "しまいました", "type": "verb", "meaning": "버렸습니다", "order": 4 }
+    ],
+    "explanation": "~てしまう는 의도치 않은 결과에 대한 유감을 나타냅니다.",
+    "grammarPoint": "~てしまう (유감)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 60
   }
 ]

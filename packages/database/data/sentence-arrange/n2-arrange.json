@@ -841,5 +841,333 @@
     "jlptLevel": "N2",
     "difficulty": 2,
     "order": 50
+  },
+  {
+    "koreanSentence": "이 규칙은 법률에 기초하여 만들어졌다",
+    "japaneseSentence": "このきそくはほうりつにもとづいてつくられた",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "きそく", "type": "noun", "meaning": "규칙", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "는", "order": 2 },
+      { "text": "ほうりつ", "type": "noun", "meaning": "법률", "order": 3 },
+      { "text": "にもとづいて", "type": "verb", "meaning": "에 기초하여", "order": 4 },
+      { "text": "つくられた", "type": "verb", "meaning": "만들어졌다", "order": 5 }
+    ],
+    "explanation": "~にもとづいて는 '~에 기초하여'로 근거가 되는 것을 나타냅니다.",
+    "grammarPoint": "~にもとづいて (~에 기초하여)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 51
+  },
+  {
+    "koreanSentence": "조사한 결과 원인이 밝혀졌다",
+    "japaneseSentence": "ちょうさしたけっかげんいんがあきらかになった",
+    "tokens": [
+      { "text": "ちょうさした", "type": "verb", "meaning": "조사한", "order": 0 },
+      { "text": "けっか", "type": "noun", "meaning": "결과", "order": 1 },
+      { "text": "げんいん", "type": "noun", "meaning": "원인", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "あきらかになった", "type": "verb", "meaning": "밝혀졌다", "order": 4 }
+    ],
+    "explanation": "~けっか는 '~한 결과'로 행동 후의 결과를 나타냅니다.",
+    "grammarPoint": "~結果 (~한 결과)",
+    "jlptLevel": "N2",
+    "difficulty": 1,
+    "order": 52
+  },
+  {
+    "koreanSentence": "졸업과 동시에 취직이 결정되었다",
+    "japaneseSentence": "そつぎょうとどうじにしゅうしょくがきまった",
+    "tokens": [
+      { "text": "そつぎょう", "type": "noun", "meaning": "졸업", "order": 0 },
+      { "text": "とどうじに", "type": "suffix", "meaning": "과 동시에", "order": 1 },
+      { "text": "しゅうしょく", "type": "noun", "meaning": "취직", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "きまった", "type": "verb", "meaning": "결정되었다", "order": 4 }
+    ],
+    "explanation": "~とどうじに는 '~와 동시에'로 두 가지 일이 동시에 일어남을 나타냅니다.",
+    "grammarPoint": "~とどうじに (~와 동시에)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 53
+  },
+  {
+    "koreanSentence": "수입에 따라 세금이 달라진다",
+    "japaneseSentence": "しゅうにゅうにおうじてぜいきんがかわる",
+    "tokens": [
+      { "text": "しゅうにゅう", "type": "noun", "meaning": "수입", "order": 0 },
+      { "text": "におうじて", "type": "particle", "meaning": "에 따라", "order": 1 },
+      { "text": "ぜいきん", "type": "noun", "meaning": "세금", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "かわる", "type": "verb", "meaning": "달라진다", "order": 4 }
+    ],
+    "explanation": "~におうじて는 '~에 따라, ~에 맞추어'로 상황에 맞게 변함을 나타냅니다.",
+    "grammarPoint": "~におうじて (~에 따라)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 54
+  },
+  {
+    "koreanSentence": "성별을 불문하고 누구나 응모할 수 있다",
+    "japaneseSentence": "せいべつをとわずだれでもおうぼできる",
+    "tokens": [
+      { "text": "せいべつ", "type": "noun", "meaning": "성별", "order": 0 },
+      { "text": "をとわず", "type": "particle", "meaning": "을 불문하고", "order": 1 },
+      { "text": "だれでも", "type": "noun", "meaning": "누구나", "order": 2 },
+      { "text": "おうぼ", "type": "noun", "meaning": "응모", "order": 3 },
+      { "text": "できる", "type": "verb", "meaning": "할 수 있다", "order": 4 }
+    ],
+    "explanation": "~をとわず는 '~을 불문하고'로 조건에 관계없음을 나타냅니다.",
+    "grammarPoint": "~をとわず (~을 불문하고)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 55
+  },
+  {
+    "koreanSentence": "농담은 빼고 진지하게 이야기하자",
+    "japaneseSentence": "じょうだんぬきにしてまじめにはなそう",
+    "tokens": [
+      { "text": "じょうだん", "type": "noun", "meaning": "농담", "order": 0 },
+      { "text": "ぬきにして", "type": "particle", "meaning": "은 빼고", "order": 1 },
+      { "text": "まじめに", "type": "adverb", "meaning": "진지하게", "order": 2 },
+      { "text": "はなそう", "type": "verb", "meaning": "이야기하자", "order": 3 }
+    ],
+    "explanation": "~ぬきにして는 '~을 빼고, ~을 제외하고'로 어떤 요소를 배제함을 나타냅니다.",
+    "grammarPoint": "~ぬきにして (~을 빼고)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 56
+  },
+  {
+    "koreanSentence": "출발에 앞서 안전 확인을 합시다",
+    "japaneseSentence": "しゅっぱつにさきだってあんぜんかくにんをしましょう",
+    "tokens": [
+      { "text": "しゅっぱつ", "type": "noun", "meaning": "출발", "order": 0 },
+      { "text": "にさきだって", "type": "particle", "meaning": "에 앞서", "order": 1 },
+      { "text": "あんぜんかくにん", "type": "noun", "meaning": "안전 확인", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "しましょう", "type": "verb", "meaning": "합시다", "order": 4 }
+    ],
+    "explanation": "~にさきだって는 '~에 앞서'로 어떤 일 전에 먼저 하는 행동을 나타냅니다.",
+    "grammarPoint": "~にさきだって (~에 앞서)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 57
+  },
+  {
+    "koreanSentence": "전화해 보았더니 아무도 없었다",
+    "japaneseSentence": "でんわしてみたところだれもいなかった",
+    "tokens": [
+      { "text": "でんわしてみた", "type": "verb", "meaning": "전화해 보았다", "order": 0 },
+      { "text": "ところ", "type": "suffix", "meaning": "~더니", "order": 1 },
+      { "text": "だれも", "type": "noun", "meaning": "아무도", "order": 2 },
+      { "text": "いなかった", "type": "verb", "meaning": "없었다", "order": 3 }
+    ],
+    "explanation": "~たところ는 '~해 보았더니'로 행동한 결과를 나타냅니다.",
+    "grammarPoint": "~たところ (~해 보았더니)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 58
+  },
+  {
+    "koreanSentence": "은행에 가는 김에 우체국에도 들렀다",
+    "japaneseSentence": "ぎんこうにいくついでにゆうびんきょくにもよった",
+    "tokens": [
+      { "text": "ぎんこう", "type": "noun", "meaning": "은행", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "いく", "type": "verb", "meaning": "가다", "order": 2 },
+      { "text": "ついでに", "type": "suffix", "meaning": "김에", "order": 3 },
+      { "text": "ゆうびんきょく", "type": "noun", "meaning": "우체국", "order": 4 },
+      { "text": "にも", "type": "particle", "meaning": "에도", "order": 5 },
+      { "text": "よった", "type": "verb", "meaning": "들렀다", "order": 6 }
+    ],
+    "explanation": "~ついでに는 '~하는 김에'로 기회를 이용해 다른 일도 함을 나타냅니다.",
+    "grammarPoint": "~ついでに (~하는 김에)",
+    "jlptLevel": "N2",
+    "difficulty": 1,
+    "order": 59
+  },
+  {
+    "koreanSentence": "매운 것을 먹고 싶어서 견딜 수 없다",
+    "japaneseSentence": "からいものがたべたくてたまらない",
+    "tokens": [
+      { "text": "からい", "type": "adjective", "meaning": "매운", "order": 0 },
+      { "text": "もの", "type": "noun", "meaning": "것", "order": 1 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 2 },
+      { "text": "たべたくて", "type": "verb", "meaning": "먹고 싶어서", "order": 3 },
+      { "text": "たまらない", "type": "suffix", "meaning": "견딜 수 없다", "order": 4 }
+    ],
+    "explanation": "~てたまらない는 '~해서 견딜 수 없다'로 감정이나 욕구가 강함을 나타냅니다.",
+    "grammarPoint": "~てたまらない (~해서 견딜 수 없다)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 60
+  },
+  {
+    "koreanSentence": "합격이 기뻐서 어쩔 수 없다",
+    "japaneseSentence": "ごうかくがうれしくてならない",
+    "tokens": [
+      { "text": "ごうかく", "type": "noun", "meaning": "합격", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "うれしくて", "type": "adjective", "meaning": "기뻐서", "order": 2 },
+      { "text": "ならない", "type": "suffix", "meaning": "어쩔 수 없다", "order": 3 }
+    ],
+    "explanation": "~てならない는 '~해서 어쩔 수 없다'로 자연스럽게 그런 감정이 듦을 나타냅니다.",
+    "grammarPoint": "~てならない (~해서 어쩔 수 없다)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 61
+  },
+  {
+    "koreanSentence": "내일 발표가 걱정되어 어쩔 수 없다",
+    "japaneseSentence": "あしたのはっぴょうがしんぱいでしょうがない",
+    "tokens": [
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "はっぴょう", "type": "noun", "meaning": "발표", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "しんぱいで", "type": "adjective", "meaning": "걱정되어", "order": 4 },
+      { "text": "しょうがない", "type": "suffix", "meaning": "어쩔 수 없다", "order": 5 }
+    ],
+    "explanation": "~てしょうがない는 '~해서 어쩔 수 없다'로 감정이 억제 불가능함을 나타냅니다.",
+    "grammarPoint": "~てしょうがない (~해서 어쩔 수 없다)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 62
+  },
+  {
+    "koreanSentence": "증거가 있으므로 인정하지 않을 수 없다",
+    "japaneseSentence": "しょうこがあるのでみとめざるをえない",
+    "tokens": [
+      { "text": "しょうこ", "type": "noun", "meaning": "증거", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ある", "type": "verb", "meaning": "있다", "order": 2 },
+      { "text": "ので", "type": "particle", "meaning": "~이므로", "order": 3 },
+      { "text": "みとめざるをえない", "type": "verb", "meaning": "인정하지 않을 수 없다", "order": 4 }
+    ],
+    "explanation": "~ざるをえない는 '~하지 않을 수 없다'로 어쩔 수 없이 해야 함을 나타냅니다.",
+    "grammarPoint": "~ざるをえない (~하지 않을 수 없다)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 63
+  },
+  {
+    "koreanSentence": "그 사람 이름이 뭐였더라",
+    "japaneseSentence": "あのひとのなまえはなんだったっけ",
+    "tokens": [
+      { "text": "あのひと", "type": "noun", "meaning": "그 사람", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "なまえ", "type": "noun", "meaning": "이름", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "なんだった", "type": "noun", "meaning": "뭐였다", "order": 4 },
+      { "text": "っけ", "type": "suffix", "meaning": "~더라", "order": 5 }
+    ],
+    "explanation": "~っけ는 '~이었더라?'로 기억을 떠올리거나 확인할 때 사용합니다.",
+    "grammarPoint": "~っけ (~이었더라?)",
+    "jlptLevel": "N2",
+    "difficulty": 1,
+    "order": 64
+  },
+  {
+    "koreanSentence": "아이가 울고 있나 하면 갑자기 웃기 시작했다",
+    "japaneseSentence": "こどもがないているかとおもったらきゅうにわらいだした",
+    "tokens": [
+      { "text": "こども", "type": "noun", "meaning": "아이", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ないている", "type": "verb", "meaning": "울고 있다", "order": 2 },
+      { "text": "かとおもったら", "type": "suffix", "meaning": "인가 하면", "order": 3 },
+      { "text": "きゅうに", "type": "adverb", "meaning": "갑자기", "order": 4 },
+      { "text": "わらいだした", "type": "verb", "meaning": "웃기 시작했다", "order": 5 }
+    ],
+    "explanation": "~かとおもったら는 '~인가 하면'으로 상황이 갑자기 변함을 나타냅니다.",
+    "grammarPoint": "~かとおもったら (~인가 하면)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 65
+  },
+  {
+    "koreanSentence": "문을 연 순간 고양이가 뛰어나왔다",
+    "japaneseSentence": "ドアをあけたとたんねこがとびだしてきた",
+    "tokens": [
+      { "text": "ドア", "type": "noun", "meaning": "문", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "あけた", "type": "verb", "meaning": "연", "order": 2 },
+      { "text": "とたん", "type": "suffix", "meaning": "순간", "order": 3 },
+      { "text": "ねこ", "type": "noun", "meaning": "고양이", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "とびだしてきた", "type": "verb", "meaning": "뛰어나왔다", "order": 6 }
+    ],
+    "explanation": "~たとたん는 '~한 순간'으로 직후에 예상치 못한 일이 일어남을 나타냅니다.",
+    "grammarPoint": "~たとたん (~한 순간)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 66
+  },
+  {
+    "koreanSentence": "이름을 모르면 조사할 방법이 없다",
+    "japaneseSentence": "なまえがわからなければしらべようがない",
+    "tokens": [
+      { "text": "なまえ", "type": "noun", "meaning": "이름", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "わからなければ", "type": "verb", "meaning": "모르면", "order": 2 },
+      { "text": "しらべ", "type": "verb", "meaning": "조사하다", "order": 3 },
+      { "text": "ようがない", "type": "suffix", "meaning": "방법이 없다", "order": 4 }
+    ],
+    "explanation": "~ようがない는 '~할 방법이 없다'로 방법 자체가 없음을 나타냅니다.",
+    "grammarPoint": "~ようがない (~할 방법이 없다)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 67
+  },
+  {
+    "koreanSentence": "고민한 끝에 유학을 결심했다",
+    "japaneseSentence": "なやんだすえにりゅうがくをけっしんした",
+    "tokens": [
+      { "text": "なやんだ", "type": "verb", "meaning": "고민한", "order": 0 },
+      { "text": "すえに", "type": "suffix", "meaning": "끝에", "order": 1 },
+      { "text": "りゅうがく", "type": "noun", "meaning": "유학", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "けっしんした", "type": "verb", "meaning": "결심했다", "order": 4 }
+    ],
+    "explanation": "~すえに는 '~한 끝에'로 오랜 과정 후의 결과를 나타냅니다.",
+    "grammarPoint": "~すえに (~한 끝에)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 68
+  },
+  {
+    "koreanSentence": "싸운 끝에 결국 이혼하고 말았다",
+    "japaneseSentence": "けんかしたあげくけっきょくりこんしてしまった",
+    "tokens": [
+      { "text": "けんかした", "type": "verb", "meaning": "싸운", "order": 0 },
+      { "text": "あげく", "type": "suffix", "meaning": "끝에", "order": 1 },
+      { "text": "けっきょく", "type": "adverb", "meaning": "결국", "order": 2 },
+      { "text": "りこんして", "type": "verb", "meaning": "이혼하고", "order": 3 },
+      { "text": "しまった", "type": "verb", "meaning": "말았다", "order": 4 }
+    ],
+    "explanation": "~あげく는 '~한 끝에'로 오랜 과정 끝에 좋지 않은 결과가 나옴을 나타냅니다.",
+    "grammarPoint": "~あげく (~한 끝에)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 69
+  },
+  {
+    "koreanSentence": "이 문제는 학생에 한하지 않고 사회인에게도 관계가 있다",
+    "japaneseSentence": "このもんだいはがくせいにかぎらずしゃかいじんにもかんけいがある",
+    "tokens": [
+      { "text": "この", "type": "adjective", "meaning": "이", "order": 0 },
+      { "text": "もんだい", "type": "noun", "meaning": "문제", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "는", "order": 2 },
+      { "text": "がくせい", "type": "noun", "meaning": "학생", "order": 3 },
+      { "text": "にかぎらず", "type": "particle", "meaning": "에 한하지 않고", "order": 4 },
+      { "text": "しゃかいじん", "type": "noun", "meaning": "사회인", "order": 5 },
+      { "text": "にも", "type": "particle", "meaning": "에게도", "order": 6 },
+      { "text": "かんけいがある", "type": "verb", "meaning": "관계가 있다", "order": 7 }
+    ],
+    "explanation": "~にかぎらず는 '~에 한하지 않고'로 범위가 그것만이 아님을 나타냅니다.",
+    "grammarPoint": "~にかぎらず (~에 한하지 않고)",
+    "jlptLevel": "N2",
+    "difficulty": 2,
+    "order": 70
   }
 ]
