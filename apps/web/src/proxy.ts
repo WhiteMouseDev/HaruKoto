@@ -53,12 +53,28 @@ export async function proxy(request: NextRequest) {
     if (onboardingCookie?.value === 'true') {
       // Cookie confirms onboarding done, skip DB query
     } else {
-      const dbUser = await prisma.user.findUnique({
+      let dbUser = await prisma.user.findUnique({
         where: { id: user.id },
         select: { onboardingCompleted: true },
       });
 
-      if (!dbUser || !dbUser.onboardingCompleted) {
+      // Supabase Auth에 유저가 있지만 Prisma DB에 없는 경우 자동 생성
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            id: user.id,
+            email: user.email || '',
+            nickname:
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
+              '',
+            avatarUrl: user.user_metadata?.avatar_url || null,
+          },
+          select: { onboardingCompleted: true },
+        });
+      }
+
+      if (!dbUser.onboardingCompleted) {
         const url = request.nextUrl.clone();
         url.pathname = '/onboarding';
         return NextResponse.redirect(url);
