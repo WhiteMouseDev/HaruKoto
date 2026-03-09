@@ -211,7 +211,10 @@ export default function OnboardingPage() {
                           ? 'border-primary bg-primary/10'
                           : 'border-border hover:border-primary/50'
                       }`}
-                      onClick={() => setJlptLevel(level.value)}
+                      onClick={() => {
+                        setJlptLevel(level.value);
+                        setShowKana(level.value === 'N5');
+                      }}
                     >
                       <span className="flex size-10 items-center justify-center rounded-full bg-primary/10">
                         <level.Icon className="size-5 text-primary" />
