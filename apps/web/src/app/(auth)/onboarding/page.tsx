@@ -8,47 +8,63 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { FoxMascot } from '@/components/brand/fox-mascot';
+import {
+  Sprout,
+  Leaf,
+  TreeDeciduous,
+  BookOpen,
+  Crown,
+  Target,
+  Plane,
+  Briefcase,
+  Heart,
+  type LucideIcon,
+} from 'lucide-react';
 
-const LEVELS = [
+const LEVELS: { value: 'N5' | 'N4' | 'N3' | 'N2' | 'N1'; Icon: LucideIcon; label: string; desc: string }[] = [
   {
-    value: 'N5' as const,
-    emoji: '🌱',
+    value: 'N5',
+    Icon: Sprout,
     label: 'N5 — 완전 초보',
     desc: '히라가나부터 시작',
   },
   {
-    value: 'N4' as const,
-    emoji: '🌿',
+    value: 'N4',
+    Icon: Leaf,
     label: 'N4 — 기초',
     desc: '기본 문법과 단어를 알아요',
   },
   {
-    value: 'N3' as const,
-    emoji: '🌳',
+    value: 'N3',
+    Icon: TreeDeciduous,
     label: 'N3 — 중급',
     desc: '일상 회화가 가능해요 · 콘텐츠 준비 중',
   },
   {
-    value: 'N2' as const,
-    emoji: '🌲',
+    value: 'N2',
+    Icon: BookOpen,
     label: 'N2 — 중상급',
     desc: '뉴스/소설을 읽을 수 있어요 · 콘텐츠 준비 중',
   },
   {
-    value: 'N1' as const,
-    emoji: '🗻',
+    value: 'N1',
+    Icon: Crown,
     label: 'N1 — 상급',
     desc: '네이티브에 가까워요 · 콘텐츠 준비 중',
   },
 ];
 
-const GOALS = [
-  { value: 'JLPT_N5' as const, emoji: '🎯', label: 'JLPT N5 합격' },
-  { value: 'JLPT_N4' as const, emoji: '🎯', label: 'JLPT N4 합격' },
-  { value: 'JLPT_N3' as const, emoji: '🎯', label: 'JLPT N3 합격' },
-  { value: 'TRAVEL' as const, emoji: '✈️', label: '여행 일본어' },
-  { value: 'BUSINESS' as const, emoji: '💼', label: '비즈니스 일본어' },
-  { value: 'HOBBY' as const, emoji: '🎌', label: '취미/문화' },
+type UserGoal = 'JLPT_N5' | 'JLPT_N4' | 'JLPT_N3' | 'JLPT_N2' | 'JLPT_N1' | 'TRAVEL' | 'BUSINESS' | 'HOBBY';
+
+const GOALS: { value: UserGoal; Icon: LucideIcon; label: string }[] = [
+  { value: 'JLPT_N5', Icon: Target, label: 'JLPT N5 합격' },
+  { value: 'JLPT_N4', Icon: Target, label: 'JLPT N4 합격' },
+  { value: 'JLPT_N3', Icon: Target, label: 'JLPT N3 합격' },
+  { value: 'JLPT_N2', Icon: Target, label: 'JLPT N2 합격' },
+  { value: 'JLPT_N1', Icon: Target, label: 'JLPT N1 합격' },
+  { value: 'TRAVEL', Icon: Plane, label: '여행 일본어' },
+  { value: 'BUSINESS', Icon: Briefcase, label: '비즈니스 일본어' },
+  { value: 'HOBBY', Icon: Heart, label: '취미/문화' },
 ];
 
 export default function OnboardingPage() {
@@ -197,7 +213,9 @@ export default function OnboardingPage() {
                       }`}
                       onClick={() => setJlptLevel(level.value)}
                     >
-                      <span className="text-2xl">{level.emoji}</span>
+                      <span className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                        <level.Icon className="size-5 text-primary" />
+                      </span>
                       <div className="flex-1">
                         <p className="font-semibold">{level.label}</p>
                         <p className="text-muted-foreground text-sm">
@@ -328,7 +346,9 @@ export default function OnboardingPage() {
                       }`}
                       onClick={() => setGoal(g.value)}
                     >
-                      <span className="text-2xl">{g.emoji}</span>
+                      <span className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                        <g.Icon className="size-5 text-primary" />
+                      </span>
                       <span className="text-sm font-medium">{g.label}</span>
                     </button>
                   ))}
@@ -351,7 +371,7 @@ export default function OnboardingPage() {
                     disabled={!goal || loading}
                     onClick={handleComplete}
                   >
-                    {loading ? '설정 중...' : '시작하기 🌸'}
+                    {loading ? '설정 중...' : '시작하기'}
                   </Button>
                 </div>
               </CardContent>
