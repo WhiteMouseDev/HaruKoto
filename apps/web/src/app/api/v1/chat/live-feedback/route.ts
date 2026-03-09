@@ -13,6 +13,7 @@ import {
   type GameEvent,
 } from '@/lib/gamification';
 import { REWARDS } from '@/lib/constants';
+import { trackAiUsage } from '@/lib/subscription-service';
 
 const feedbackSchema = z.object({
   overallScore: z.number().min(0).max(100).describe('총합 점수 (0~100)'),
@@ -185,6 +186,9 @@ export async function POST(request: Request) {
       });
       resolvedScenarioId = freeScenario?.id;
     }
+
+    // AI 통화 사용량 기록
+    await trackAiUsage(user.id, 'call', durationSeconds || 0);
 
     // Create conversation record
     const now = new Date();

@@ -10,7 +10,7 @@ const quizAnswerSchema = z.object({
   questionId: z.string().min(1),
   selectedOptionId: z.string().min(1),
   timeSpentSeconds: z.number().int().min(0).default(0),
-  questionType: z.enum(['VOCABULARY', 'GRAMMAR']).default('VOCABULARY'),
+  questionType: z.enum(['VOCABULARY', 'GRAMMAR', 'CLOZE', 'SENTENCE_ARRANGE']).default('VOCABULARY'),
 });
 
 export async function POST(request: Request) {

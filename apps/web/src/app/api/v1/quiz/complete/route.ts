@@ -30,6 +30,35 @@ export async function POST(request: Request) {
       );
     }
 
+    // 멱등성: 이미 완료된 세션이면 기존 결과 반환
+    const existingSession = await prisma.quizSession.findUnique({
+      where: { id: sessionId, userId: user.id },
+    });
+    if (!existingSession) {
+      return NextResponse.json(
+        { error: '세션을 찾을 수 없습니다' },
+        { status: 404 }
+      );
+    }
+    if (existingSession.completedAt) {
+      const levelInfo = calculateLevel(
+        (await prisma.user.findUnique({ where: { id: user.id }, select: { experiencePoints: true } }))!.experiencePoints
+      );
+      return NextResponse.json({
+        sessionId: existingSession.id,
+        totalQuestions: existingSession.totalQuestions,
+        correctCount: existingSession.correctCount,
+        accuracy: Math.round(
+          (existingSession.correctCount / existingSession.totalQuestions) * 100
+        ),
+        xpEarned: existingSession.correctCount * REWARDS.QUIZ_XP_PER_CORRECT,
+        currentXp: levelInfo.currentXp,
+        xpForNext: levelInfo.xpForNext,
+        level: levelInfo.level,
+        events: [],
+      });
+    }
+
     // Complete session
     const session = await prisma.quizSession.update({
       where: { id: sessionId, userId: user.id },
