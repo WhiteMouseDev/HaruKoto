@@ -38,9 +38,9 @@ import {
 const JLPT_LEVELS = [
   { value: 'N5', available: true },
   { value: 'N4', available: true },
-  { value: 'N3', available: false },
-  { value: 'N2', available: false },
-  { value: 'N1', available: false },
+  { value: 'N3', available: true },
+  { value: 'N2', available: true },
+  { value: 'N1', available: true },
 ] as const;
 
 const QUIZ_TYPES = [

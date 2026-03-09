@@ -38,19 +38,19 @@ const LEVELS: { value: 'N5' | 'N4' | 'N3' | 'N2' | 'N1'; Icon: LucideIcon; label
     value: 'N3',
     Icon: TreeDeciduous,
     label: 'N3 — 중급',
-    desc: '일상 회화가 가능해요 · 콘텐츠 준비 중',
+    desc: '일상 회화가 가능해요',
   },
   {
     value: 'N2',
     Icon: BookOpen,
     label: 'N2 — 중상급',
-    desc: '뉴스/소설을 읽을 수 있어요 · 콘텐츠 준비 중',
+    desc: '뉴스/소설을 읽을 수 있어요',
   },
   {
     value: 'N1',
     Icon: Crown,
     label: 'N1 — 상급',
-    desc: '네이티브에 가까워요 · 콘텐츠 준비 중',
+    desc: '네이티브에 가까워요',
   },
 ];
 
