@@ -50,8 +50,8 @@ export async function proxy(request: NextRequest) {
   if (user && isProtectedPath) {
     const onboardingCookie = request.cookies.get('onboarding_completed');
 
-    if (onboardingCookie?.value === 'true') {
-      // Cookie confirms onboarding done, skip DB query
+    if (onboardingCookie?.value === user.id) {
+      // Cookie matches current user, skip DB query
     } else {
       let dbUser = await prisma.user.findUnique({
         where: { id: user.id },
@@ -80,7 +80,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
       }
 
-      supabaseResponse.cookies.set('onboarding_completed', 'true', {
+      supabaseResponse.cookies.set('onboarding_completed', user.id, {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
@@ -92,7 +92,7 @@ export async function proxy(request: NextRequest) {
   // Redirect onboarded users away from /onboarding
   if (user && request.nextUrl.pathname === '/onboarding') {
     const onboardingCookie = request.cookies.get('onboarding_completed');
-    if (onboardingCookie?.value === 'true') {
+    if (onboardingCookie?.value === user.id) {
       const url = request.nextUrl.clone();
       url.pathname = '/home';
       return NextResponse.redirect(url);
@@ -106,7 +106,7 @@ export async function proxy(request: NextRequest) {
       url.pathname = '/home';
       const redirectResponse = NextResponse.redirect(url);
       // Set cookie so future checks skip DB query
-      redirectResponse.cookies.set('onboarding_completed', 'true', {
+      redirectResponse.cookies.set('onboarding_completed', user.id, {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
