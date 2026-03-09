@@ -162,7 +162,7 @@ function QuizContent() {
     };
   }, [currentIndex, loading, answerState]);
 
-  // Warn before leaving during quiz
+  // Warn before leaving during quiz (browser tab close + back navigation)
   useEffect(() => {
     if (loading || questions.length === 0) return;
 
@@ -170,9 +170,25 @@ function QuizContent() {
       e.preventDefault();
     }
 
+    // Push a dummy history entry so back button triggers popstate
+    history.pushState({ quiz: true }, '');
+
+    function handlePopState() {
+      if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+        router.push('/study');
+      } else {
+        // User cancelled — re-push dummy entry to catch next back press
+        history.pushState({ quiz: true }, '');
+      }
+    }
+
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [loading, questions.length]);
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [loading, questions.length, router]);
 
   const handleAnswer = useCallback(
     async (optionId: string) => {
