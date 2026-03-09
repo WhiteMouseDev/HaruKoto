@@ -423,11 +423,11 @@ async function main() {
   await seedVocabulary();
   await seedGrammar();
   await seedScenarios();
-  await seedCharacters();
-  await seedKana();
-  await seedKanaStages();
   await seedCloze();
   await seedSentenceArrange();
+  await seedKana();
+  await seedKanaStages();
+  await seedCharacters();
 
   console.log('\n🌸 Seeding complete!');
 }

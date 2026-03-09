@@ -130,5 +130,203 @@
     "jlptLevel": "N5",
     "difficulty": 2,
     "order": 12
+  },
+  {
+    "sentence": "きのうどこ{blank}いきましたか。",
+    "translation": "어제 어디에 갔습니까?",
+    "correctAnswer": "に",
+    "options": ["に", "を", "で", "が"],
+    "explanation": "どこに는 '어디에'라는 의미로, 이동 목적지를 물을 때 사용해요. 의문사 + に + 이동동사 패턴이에요.",
+    "grammarPoint": "どこに (이동 목적지 의문)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 13
+  },
+  {
+    "sentence": "にちようび{blank}なにをしますか。",
+    "translation": "일요일에 무엇을 합니까?",
+    "correctAnswer": "に",
+    "options": ["に", "は", "で", "を"],
+    "explanation": "요일 뒤에 に를 붙이면 '~에'라는 시간을 나타내요. 특정 날짜나 요일에는 に를 사용합니다.",
+    "grammarPoint": "시간 + に (요일)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 14
+  },
+  {
+    "sentence": "あさごはんを{blank}。",
+    "translation": "아침밥을 먹지 않습니다.",
+    "correctAnswer": "たべません",
+    "options": ["たべません", "たべます", "たべました", "たべましょう"],
+    "explanation": "ます의 부정형은 ません이에요. '~하지 않습니다'에 해당합니다.",
+    "grammarPoint": "~ません (정중 부정)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 15
+  },
+  {
+    "sentence": "きのうテレビを{blank}。",
+    "translation": "어제 TV를 봤습니다.",
+    "correctAnswer": "みました",
+    "options": ["みました", "みます", "みません", "みましょう"],
+    "explanation": "ます의 과거형은 ました예요. '~했습니다'에 해당합니다.",
+    "grammarPoint": "~ました (정중 과거)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 16
+  },
+  {
+    "sentence": "いっしょにひるごはんを{blank}。",
+    "translation": "같이 점심을 먹을까요.",
+    "correctAnswer": "たべましょう",
+    "options": ["たべましょう", "たべます", "たべません", "たべました"],
+    "explanation": "ましょう는 '~합시다/~할까요'라는 권유의 표현이에요.",
+    "grammarPoint": "~ましょう (권유)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 17
+  },
+  {
+    "sentence": "この りんご{blank}おいしいです。",
+    "translation": "이 사과는 맛있습니다.",
+    "correctAnswer": "は",
+    "options": ["は", "が", "を", "も"],
+    "explanation": "は는 이미 알고 있는 대상에 대해 설명할 때 사용해요. 'この りんご'를 주제로 세우는 역할이에요.",
+    "grammarPoint": "この + 명사 + は (주제 제시)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 18
+  },
+  {
+    "sentence": "あの ひとは{blank}ですか。",
+    "translation": "저 사람은 누구입니까?",
+    "correctAnswer": "だれ",
+    "options": ["だれ", "なに", "どこ", "いつ"],
+    "explanation": "だれ는 '누구'라는 의문사예요. 사람을 물을 때 사용합니다.",
+    "grammarPoint": "だれ (의문사 - 누구)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 19
+  },
+  {
+    "sentence": "えきは{blank}ですか。",
+    "translation": "역은 어디입니까?",
+    "correctAnswer": "どこ",
+    "options": ["どこ", "だれ", "なに", "いつ"],
+    "explanation": "どこ는 '어디'라는 의문사예요. 장소를 물을 때 사용합니다.",
+    "grammarPoint": "どこ (의문사 - 어디)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 20
+  },
+  {
+    "sentence": "ここ{blank}ここ{blank}とおいです。",
+    "translation": "여기에서 거기까지 멉니다.",
+    "correctAnswer": "から",
+    "options": ["から", "まで", "に", "で"],
+    "explanation": "から는 '~에서/~부터'를 나타내요. まで(~까지)와 함께 자주 사용됩니다.",
+    "grammarPoint": "~から~まで (시작점~끝점)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 21
+  },
+  {
+    "sentence": "くじ{blank}ごじ{blank}はたらきます。",
+    "translation": "9시부터 5시까지 일합니다.",
+    "correctAnswer": "から",
+    "options": ["から", "に", "は", "で"],
+    "explanation": "시간 + から + 시간 + まで로 '~부터 ~까지'를 나타내요. 시간의 범위를 말할 때 사용합니다.",
+    "grammarPoint": "시간 + から + まで",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 22
+  },
+  {
+    "sentence": "にほんごは{blank}です。",
+    "translation": "일본어는 재미있습니다.",
+    "correctAnswer": "おもしろい",
+    "options": ["おもしろい", "おもしろく", "おもしろな", "おもしろ"],
+    "explanation": "い형용사는 そのまま + です로 정중하게 만들어요. い를 빼지 않고 그대로 사용합니다.",
+    "grammarPoint": "い형용사 + です",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 23
+  },
+  {
+    "sentence": "この まちは{blank}です。",
+    "translation": "이 마을은 조용합니다.",
+    "correctAnswer": "しずか",
+    "options": ["しずか", "しずかな", "しずかに", "しずかい"],
+    "explanation": "な형용사는 です 앞에서는 な를 붙이지 않아요. 명사를 수식할 때만 な를 붙입니다.",
+    "grammarPoint": "な형용사 + です",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 24
+  },
+  {
+    "sentence": "あめ{blank}ふっています。",
+    "translation": "비가 내리고 있습니다.",
+    "correctAnswer": "が",
+    "options": ["が", "を", "は", "に"],
+    "explanation": "자연 현상의 주어에는 が를 사용해요. 비, 눈 등 날씨 표현에서 자주 나옵니다.",
+    "grammarPoint": "자연 현상 + が",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 25
+  },
+  {
+    "sentence": "にほんに{blank}いきたいです。",
+    "translation": "일본에 가고 싶습니다.",
+    "correctAnswer": "いき",
+    "options": ["いき", "いく", "いって", "いか"],
+    "explanation": "~たいです는 '~하고 싶습니다'예요. 동사의 ます형(ます를 뺀 부분) + たいです로 만들어요.",
+    "grammarPoint": "~たいです (희망)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 26
+  },
+  {
+    "sentence": "この ケーキはおいしい{blank}ね。",
+    "translation": "이 케이크 맛있지요, 그죠?",
+    "correctAnswer": "です",
+    "options": ["です", "ます", "だ", "な"],
+    "explanation": "です + ね로 동의를 구하는 표현이에요. '~이지요?'에 해당합니다.",
+    "grammarPoint": "~ですね (동의 구하기)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 27
+  },
+  {
+    "sentence": "あしたは{blank}ですか。",
+    "translation": "내일은 무슨 요일입니까?",
+    "correctAnswer": "なんようび",
+    "options": ["なんようび", "なんにち", "なんじ", "いつ"],
+    "explanation": "なんようび는 '무슨 요일'이라는 의문사예요. 요일을 물을 때 사용합니다.",
+    "grammarPoint": "なんようび (의문사 - 무슨 요일)",
+    "jlptLevel": "N5",
+    "difficulty": 1,
+    "order": 28
+  },
+  {
+    "sentence": "りんご{blank}みっつください。",
+    "translation": "사과를 세 개 주세요.",
+    "correctAnswer": "を",
+    "options": ["を", "が", "の", "に"],
+    "explanation": "~をください는 '~을 주세요'라는 요청 표현이에요. 수량사와 함께 쓸 수 있어요.",
+    "grammarPoint": "~をください (요청)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 29
+  },
+  {
+    "sentence": "この へやには つくえ{blank}いす{blank}あります。",
+    "translation": "이 방에는 책상과 의자가 있습니다.",
+    "correctAnswer": "と",
+    "options": ["と", "も", "や", "の"],
+    "explanation": "と는 명사를 빠짐없이 나열할 때 사용해요. 'A と B'는 'A와 B(전부)'라는 뜻이에요.",
+    "grammarPoint": "AとB (전부 나열)",
+    "jlptLevel": "N5",
+    "difficulty": 2,
+    "order": 30
   }
 ]

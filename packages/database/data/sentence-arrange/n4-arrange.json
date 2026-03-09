@@ -1,0 +1,676 @@
+[
+  {
+    "koreanSentence": "숙제를 잊어버렸습니다",
+    "japaneseSentence": "しゅくだいをわすれてしまいました",
+    "tokens": [
+      { "text": "しゅくだい", "type": "noun", "meaning": "숙제", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "わすれて", "type": "verb", "meaning": "잊어", "order": 2 },
+      { "text": "しまいました", "type": "verb", "meaning": "버렸습니다", "order": 3 }
+    ],
+    "explanation": "~てしまう는 '~해 버리다'로 유감이나 완료를 나타냅니다.",
+    "grammarPoint": "~てしまう (완료/유감)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 1
+  },
+  {
+    "koreanSentence": "벽에 달력이 붙여져 있습니다",
+    "japaneseSentence": "かべにカレンダーがはってあります",
+    "tokens": [
+      { "text": "かべ", "type": "noun", "meaning": "벽", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "カレンダー", "type": "noun", "meaning": "달력", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "はって", "type": "verb", "meaning": "붙여", "order": 4 },
+      { "text": "あります", "type": "verb", "meaning": "있습니다", "order": 5 }
+    ],
+    "explanation": "~てある는 의도적 행위의 결과 상태를 나타냅니다. 장소+に+대상+が+てある 패턴입니다.",
+    "grammarPoint": "~てある (결과 상태)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 2
+  },
+  {
+    "koreanSentence": "내일을 위해 자료를 읽어 두었습니다",
+    "japaneseSentence": "あしたのためにしりょうをよんでおきました",
+    "tokens": [
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ために", "type": "particle", "meaning": "위해", "order": 2 },
+      { "text": "しりょう", "type": "noun", "meaning": "자료", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "よんで", "type": "verb", "meaning": "읽어", "order": 5 },
+      { "text": "おきました", "type": "verb", "meaning": "두었습니다", "order": 6 }
+    ],
+    "explanation": "~ておく는 준비를 위해 미리 해 두는 것을 나타냅니다.",
+    "grammarPoint": "~ておく (사전 준비)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 3
+  },
+  {
+    "koreanSentence": "여기서 사진을 찍어도 됩니까",
+    "japaneseSentence": "ここでしゃしんをとってもいいですか",
+    "tokens": [
+      { "text": "ここ", "type": "noun", "meaning": "여기", "order": 0 },
+      { "text": "で", "type": "particle", "meaning": "에서", "order": 1 },
+      { "text": "しゃしん", "type": "noun", "meaning": "사진", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "とっても", "type": "verb", "meaning": "찍어도", "order": 4 },
+      { "text": "いいですか", "type": "adjective", "meaning": "되나요", "order": 5 }
+    ],
+    "explanation": "~てもいいですか는 허가를 구하는 표현입니다.",
+    "grammarPoint": "~てもいいですか (허가 요청)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 4
+  },
+  {
+    "koreanSentence": "여기서 담배를 피우면 안 됩니다",
+    "japaneseSentence": "ここでたばこをすってはいけません",
+    "tokens": [
+      { "text": "ここ", "type": "noun", "meaning": "여기", "order": 0 },
+      { "text": "で", "type": "particle", "meaning": "에서", "order": 1 },
+      { "text": "たばこ", "type": "noun", "meaning": "담배", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "すっては", "type": "verb", "meaning": "피우면", "order": 4 },
+      { "text": "いけません", "type": "verb", "meaning": "안 됩니다", "order": 5 }
+    ],
+    "explanation": "~てはいけません는 금지를 나타냅니다.",
+    "grammarPoint": "~てはいけません (금지)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 5
+  },
+  {
+    "koreanSentence": "내년에 일본에 유학할 예정입니다",
+    "japaneseSentence": "らいねんにほんにりゅうがくするつもりです",
+    "tokens": [
+      { "text": "らいねん", "type": "noun", "meaning": "내년", "order": 0 },
+      { "text": "にほん", "type": "noun", "meaning": "일본", "order": 1 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 2 },
+      { "text": "りゅうがくする", "type": "verb", "meaning": "유학할", "order": 3 },
+      { "text": "つもりです", "type": "noun", "meaning": "예정입니다", "order": 4 }
+    ],
+    "explanation": "~つもりです는 의지나 계획을 나타냅니다.",
+    "grammarPoint": "~つもりです (의지/계획)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 6
+  },
+  {
+    "koreanSentence": "그는 이미 돌아갔을 것입니다",
+    "japaneseSentence": "かれはもうかえったはずです",
+    "tokens": [
+      { "text": "かれ", "type": "noun", "meaning": "그", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "もう", "type": "adverb", "meaning": "이미", "order": 2 },
+      { "text": "かえった", "type": "verb", "meaning": "돌아간", "order": 3 },
+      { "text": "はずです", "type": "noun", "meaning": "것입니다", "order": 4 }
+    ],
+    "explanation": "~はずです는 당연히 그럴 것이라는 확신을 나타냅니다.",
+    "grammarPoint": "~はずです (당연한 추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 7
+  },
+  {
+    "koreanSentence": "비가 올 것 같습니다",
+    "japaneseSentence": "あめがふりそうです",
+    "tokens": [
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ふり", "type": "verb", "meaning": "올(내릴)", "order": 2 },
+      { "text": "そうです", "type": "suffix", "meaning": "것 같습니다", "order": 3 }
+    ],
+    "explanation": "~そうです(양태)는 동사 ます형+そう로 '~할 것 같다'는 추측입니다.",
+    "grammarPoint": "~そうです (양태 추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 8
+  },
+  {
+    "koreanSentence": "이 문제는 너무 어렵습니다",
+    "japaneseSentence": "このもんだいはむずかしすぎます",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "もんだい", "type": "noun", "meaning": "문제", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "むずかし", "type": "adjective", "meaning": "어렵(너무)", "order": 3 },
+      { "text": "すぎます", "type": "verb", "meaning": "너무~합니다", "order": 4 }
+    ],
+    "explanation": "~すぎる는 '너무 ~하다'입니다. い형용사는 い를 빼고 すぎる를 붙입니다.",
+    "grammarPoint": "~すぎる (과도)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 9
+  },
+  {
+    "koreanSentence": "이 책은 읽기 쉽습니다",
+    "japaneseSentence": "このほんはよみやすいです",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "ほん", "type": "noun", "meaning": "책", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "よみ", "type": "verb", "meaning": "읽기", "order": 3 },
+      { "text": "やすいです", "type": "adjective", "meaning": "쉽습니다", "order": 4 }
+    ],
+    "explanation": "~やすい는 동사 ます형+やすい로 '~하기 쉽다'입니다.",
+    "grammarPoint": "~やすい (용이함)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 10
+  },
+  {
+    "koreanSentence": "전철을 타기 전에 표를 삽니다",
+    "japaneseSentence": "でんしゃにのるまえにきっぷをかいます",
+    "tokens": [
+      { "text": "でんしゃ", "type": "noun", "meaning": "전철", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "のる", "type": "verb", "meaning": "타다", "order": 2 },
+      { "text": "まえに", "type": "noun", "meaning": "전에", "order": 3 },
+      { "text": "きっぷ", "type": "noun", "meaning": "표", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "かいます", "type": "verb", "meaning": "삽니다", "order": 6 }
+    ],
+    "explanation": "~まえに는 동사 사전형+まえに로 '~하기 전에'입니다.",
+    "grammarPoint": "~まえに (~하기 전에)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 11
+  },
+  {
+    "koreanSentence": "밥을 먹은 후에 이를 닦습니다",
+    "japaneseSentence": "ごはんをたべたあとではをみがきます",
+    "tokens": [
+      { "text": "ごはん", "type": "noun", "meaning": "밥", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "たべた", "type": "verb", "meaning": "먹은", "order": 2 },
+      { "text": "あとで", "type": "noun", "meaning": "후에", "order": 3 },
+      { "text": "は", "type": "noun", "meaning": "이", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "みがきます", "type": "verb", "meaning": "닦습니다", "order": 6 }
+    ],
+    "explanation": "~たあとで는 동사 た형+あとで로 '~한 후에'입니다.",
+    "grammarPoint": "~たあとで (~한 후에)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 12
+  },
+  {
+    "koreanSentence": "음악을 들으면서 공부합니다",
+    "japaneseSentence": "おんがくをききながらべんきょうします",
+    "tokens": [
+      { "text": "おんがく", "type": "noun", "meaning": "음악", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "きき", "type": "verb", "meaning": "들으", "order": 2 },
+      { "text": "ながら", "type": "particle", "meaning": "면서", "order": 3 },
+      { "text": "べんきょうします", "type": "verb", "meaning": "공부합니다", "order": 4 }
+    ],
+    "explanation": "~ながら는 두 동작을 동시에 함을 나타냅니다. 동사 ます형+ながら입니다.",
+    "grammarPoint": "~ながら (동시 동작)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 13
+  },
+  {
+    "koreanSentence": "비가 오면 피크닉에 가지 않겠습니다",
+    "japaneseSentence": "あめがふったらピクニックにいきません",
+    "tokens": [
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "ふったら", "type": "verb", "meaning": "오면", "order": 2 },
+      { "text": "ピクニック", "type": "noun", "meaning": "피크닉", "order": 3 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 4 },
+      { "text": "いきません", "type": "verb", "meaning": "가지 않겠습니다", "order": 5 }
+    ],
+    "explanation": "~たら는 조건 '~하면'을 나타냅니다. 동사 た형+ら입니다.",
+    "grammarPoint": "~たら (조건)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 14
+  },
+  {
+    "koreanSentence": "봄이 되면 벚꽃이 핍니다",
+    "japaneseSentence": "はるになればさくらがさきます",
+    "tokens": [
+      { "text": "はる", "type": "noun", "meaning": "봄", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "이", "order": 1 },
+      { "text": "なれば", "type": "verb", "meaning": "되면", "order": 2 },
+      { "text": "さくら", "type": "noun", "meaning": "벚꽃", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "さきます", "type": "verb", "meaning": "핍니다", "order": 5 }
+    ],
+    "explanation": "~ば는 일반적·필연적 조건을 나타냅니다. 동사의 가정형입니다.",
+    "grammarPoint": "~ば (가정 조건)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 15
+  },
+  {
+    "koreanSentence": "선생님에게 칭찬받아서 기뻤습니다",
+    "japaneseSentence": "せんせいにほめられてうれしかったです",
+    "tokens": [
+      { "text": "せんせい", "type": "noun", "meaning": "선생님", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "ほめられて", "type": "verb", "meaning": "칭찬받아서", "order": 2 },
+      { "text": "うれしかった", "type": "adjective", "meaning": "기뻤다", "order": 3 },
+      { "text": "です", "type": "copula", "meaning": "입니다", "order": 4 }
+    ],
+    "explanation": "~られる는 수동형(~받다)입니다. に는 행위자를 나타냅니다.",
+    "grammarPoint": "~られる (수동)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 16
+  },
+  {
+    "koreanSentence": "일본에 간 적이 있습니다",
+    "japaneseSentence": "にほんにいったことがあります",
+    "tokens": [
+      { "text": "にほん", "type": "noun", "meaning": "일본", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 1 },
+      { "text": "いった", "type": "verb", "meaning": "간", "order": 2 },
+      { "text": "こと", "type": "noun", "meaning": "것(적)", "order": 3 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 4 },
+      { "text": "あります", "type": "verb", "meaning": "있습니다", "order": 5 }
+    ],
+    "explanation": "~たことがある는 경험 '~한 적이 있다'를 나타냅니다.",
+    "grammarPoint": "~たことがある (경험)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 17
+  },
+  {
+    "koreanSentence": "일본어를 말할 수 있게 되었습니다",
+    "japaneseSentence": "にほんごがはなせるようになりました",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "はなせる", "type": "verb", "meaning": "말할 수 있는", "order": 2 },
+      { "text": "ように", "type": "particle", "meaning": "~하게", "order": 3 },
+      { "text": "なりました", "type": "verb", "meaning": "되었습니다", "order": 4 }
+    ],
+    "explanation": "~ようになる는 능력이나 상태의 변화를 나타냅니다. 가능형+ようになる입니다.",
+    "grammarPoint": "~ようになる (능력 변화)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 18
+  },
+  {
+    "koreanSentence": "감기 때문에 학교를 쉬었습니다",
+    "japaneseSentence": "かぜのためがっこうをやすみました",
+    "tokens": [
+      { "text": "かぜ", "type": "noun", "meaning": "감기", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "ため", "type": "noun", "meaning": "때문에", "order": 2 },
+      { "text": "がっこう", "type": "noun", "meaning": "학교", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "やすみました", "type": "verb", "meaning": "쉬었습니다", "order": 5 }
+    ],
+    "explanation": "~ため(に)는 원인이나 목적을 나타냅니다. 명사+のため입니다.",
+    "grammarPoint": "~ため(に) (원인)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 19
+  },
+  {
+    "koreanSentence": "어머니에게 케이크를 만들어 받았습니다",
+    "japaneseSentence": "おかあさんにケーキをつくってもらいました",
+    "tokens": [
+      { "text": "おかあさん", "type": "noun", "meaning": "어머니", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "ケーキ", "type": "noun", "meaning": "케이크", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "つくって", "type": "verb", "meaning": "만들어", "order": 4 },
+      { "text": "もらいました", "type": "verb", "meaning": "받았습니다", "order": 5 }
+    ],
+    "explanation": "~てもらう는 '~해 받다'로 다른 사람의 행위에 대한 감사를 나타냅니다.",
+    "grammarPoint": "~てもらう (수혜)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 20
+  },
+  {
+    "koreanSentence": "친구에게 길을 가르쳐 주었습니다",
+    "japaneseSentence": "ともだちにみちをおしえてあげました",
+    "tokens": [
+      { "text": "ともだち", "type": "noun", "meaning": "친구", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "みち", "type": "noun", "meaning": "길", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "おしえて", "type": "verb", "meaning": "가르쳐", "order": 4 },
+      { "text": "あげました", "type": "verb", "meaning": "주었습니다", "order": 5 }
+    ],
+    "explanation": "~てあげる는 '~해 주다'로 다른 사람을 위해 해 주는 행위입니다.",
+    "grammarPoint": "~てあげる (호의 제공)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 21
+  },
+  {
+    "koreanSentence": "열심히 공부했는데 시험에 떨어졌습니다",
+    "japaneseSentence": "いっしょうけんめいべんきょうしたのにしけんにおちました",
+    "tokens": [
+      { "text": "いっしょうけんめい", "type": "adverb", "meaning": "열심히", "order": 0 },
+      { "text": "べんきょうした", "type": "verb", "meaning": "공부한", "order": 1 },
+      { "text": "のに", "type": "particle", "meaning": "~했는데", "order": 2 },
+      { "text": "しけん", "type": "noun", "meaning": "시험", "order": 3 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 4 },
+      { "text": "おちました", "type": "verb", "meaning": "떨어졌습니다", "order": 5 }
+    ],
+    "explanation": "~のに는 역접으로 기대와 다른 결과에 대한 유감을 나타냅니다.",
+    "grammarPoint": "~のに (역접/유감)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 22
+  },
+  {
+    "koreanSentence": "전기를 켠 채로 자버렸습니다",
+    "japaneseSentence": "でんきをつけたままねてしまいました",
+    "tokens": [
+      { "text": "でんき", "type": "noun", "meaning": "전기", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "つけた", "type": "verb", "meaning": "켠", "order": 2 },
+      { "text": "まま", "type": "noun", "meaning": "채로", "order": 3 },
+      { "text": "ねて", "type": "verb", "meaning": "자", "order": 4 },
+      { "text": "しまいました", "type": "verb", "meaning": "버렸습니다", "order": 5 }
+    ],
+    "explanation": "~たまま는 '~한 채로'를 나타냅니다. ~てしまう와 결합하여 유감을 표현합니다.",
+    "grammarPoint": "~たまま + ~てしまう",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 23
+  },
+  {
+    "koreanSentence": "감기에 걸려서 머리가 아픕니다",
+    "japaneseSentence": "かぜをひいたのであたまがいたいです",
+    "tokens": [
+      { "text": "かぜ", "type": "noun", "meaning": "감기", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "ひいた", "type": "verb", "meaning": "걸린", "order": 2 },
+      { "text": "ので", "type": "particle", "meaning": "~해서", "order": 3 },
+      { "text": "あたま", "type": "noun", "meaning": "머리", "order": 4 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 5 },
+      { "text": "いたいです", "type": "adjective", "meaning": "아픕니다", "order": 6 }
+    ],
+    "explanation": "~ので는 이유를 나타냅니다. ~から보다 객관적이고 정중한 표현입니다.",
+    "grammarPoint": "~ので (이유)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 24
+  },
+  {
+    "koreanSentence": "일기예보에 따르면 내일은 비라고 합니다",
+    "japaneseSentence": "てんきよほうによるとあしたはあめだそうです",
+    "tokens": [
+      { "text": "てんきよほう", "type": "noun", "meaning": "일기예보", "order": 0 },
+      { "text": "によると", "type": "particle", "meaning": "에 따르면", "order": 1 },
+      { "text": "あした", "type": "noun", "meaning": "내일", "order": 2 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 3 },
+      { "text": "あめ", "type": "noun", "meaning": "비", "order": 4 },
+      { "text": "だそうです", "type": "suffix", "meaning": "라고 합니다", "order": 5 }
+    ],
+    "explanation": "~によると~そうです는 전해 들은 정보를 전달하는 표현입니다.",
+    "grammarPoint": "~によると~そうです (전문)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 25
+  },
+  {
+    "koreanSentence": "선생님은 학생에게 책을 읽게 했습니다",
+    "japaneseSentence": "せんせいはがくせいにほんをよませました",
+    "tokens": [
+      { "text": "せんせい", "type": "noun", "meaning": "선생님", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "がくせい", "type": "noun", "meaning": "학생", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 3 },
+      { "text": "ほん", "type": "noun", "meaning": "책", "order": 4 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 5 },
+      { "text": "よませました", "type": "verb", "meaning": "읽게 했습니다", "order": 6 }
+    ],
+    "explanation": "~させる는 사역형으로 '~하게 하다/시키다'입니다.",
+    "grammarPoint": "~させる (사역)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 26
+  },
+  {
+    "koreanSentence": "매일 조깅을 하기로 하고 있습니다",
+    "japaneseSentence": "まいにちジョギングをすることにしています",
+    "tokens": [
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 0 },
+      { "text": "ジョギング", "type": "noun", "meaning": "조깅", "order": 1 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 2 },
+      { "text": "する", "type": "verb", "meaning": "하다", "order": 3 },
+      { "text": "ことにしています", "type": "verb", "meaning": "~로 하고 있습니다", "order": 4 }
+    ],
+    "explanation": "~ことにしている는 스스로 결정한 습관을 나타냅니다.",
+    "grammarPoint": "~ことにしている (결정된 습관)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 27
+  },
+  {
+    "koreanSentence": "저 레스토랑은 맛있다고 합니다",
+    "japaneseSentence": "あのレストランはおいしいらしいです",
+    "tokens": [
+      { "text": "あの", "type": "noun", "meaning": "저", "order": 0 },
+      { "text": "レストラン", "type": "noun", "meaning": "레스토랑", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "おいしい", "type": "adjective", "meaning": "맛있는", "order": 3 },
+      { "text": "らしいです", "type": "suffix", "meaning": "~라고 합니다", "order": 4 }
+    ],
+    "explanation": "~らしいです는 전해 들은 정보에 기반한 추측입니다.",
+    "grammarPoint": "~らしいです (전문 추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 28
+  },
+  {
+    "koreanSentence": "사전을 사용하지 않고 읽어 주세요",
+    "japaneseSentence": "じしょをつかわないでよんでください",
+    "tokens": [
+      { "text": "じしょ", "type": "noun", "meaning": "사전", "order": 0 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 1 },
+      { "text": "つかわないで", "type": "verb", "meaning": "사용하지 않고", "order": 2 },
+      { "text": "よんで", "type": "verb", "meaning": "읽어", "order": 3 },
+      { "text": "ください", "type": "verb", "meaning": "주세요", "order": 4 }
+    ],
+    "explanation": "~ないで는 '~하지 않고'를 나타냅니다. ~てください와 결합하여 요청합니다.",
+    "grammarPoint": "~ないで~てください",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 29
+  },
+  {
+    "koreanSentence": "시간이 있으면 전화해 주세요",
+    "japaneseSentence": "じかんがあったらでんわしてください",
+    "tokens": [
+      { "text": "じかん", "type": "noun", "meaning": "시간", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "あったら", "type": "verb", "meaning": "있으면", "order": 2 },
+      { "text": "でんわして", "type": "verb", "meaning": "전화해", "order": 3 },
+      { "text": "ください", "type": "verb", "meaning": "주세요", "order": 4 }
+    ],
+    "explanation": "~たら는 가정 조건 '~하면'입니다. ~てください와 결합하여 부탁을 표현합니다.",
+    "grammarPoint": "~たら~てください (조건 + 요청)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 30
+  },
+  {
+    "koreanSentence": "이 한자는 외우기 어렵습니다",
+    "japaneseSentence": "このかんじはおぼえにくいです",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "かんじ", "type": "noun", "meaning": "한자", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "おぼえ", "type": "verb", "meaning": "외우기", "order": 3 },
+      { "text": "にくいです", "type": "adjective", "meaning": "어렵습니다", "order": 4 }
+    ],
+    "explanation": "~にくい는 동사 ます형+にくい로 '~하기 어렵다'입니다.",
+    "grammarPoint": "~にくい (곤란함)",
+    "jlptLevel": "N4",
+    "difficulty": 1,
+    "order": 31
+  },
+  {
+    "koreanSentence": "선생님이 교실에 들어오자 모두 조용해졌습니다",
+    "japaneseSentence": "せんせいがきょうしつにはいるとみんなしずかになりました",
+    "tokens": [
+      { "text": "せんせい", "type": "noun", "meaning": "선생님", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "きょうしつ", "type": "noun", "meaning": "교실", "order": 2 },
+      { "text": "に", "type": "particle", "meaning": "에", "order": 3 },
+      { "text": "はいると", "type": "verb", "meaning": "들어오자", "order": 4 },
+      { "text": "みんな", "type": "noun", "meaning": "모두", "order": 5 },
+      { "text": "しずかに", "type": "adjective", "meaning": "조용하게", "order": 6 },
+      { "text": "なりました", "type": "verb", "meaning": "되었습니다", "order": 7 }
+    ],
+    "explanation": "~と는 필연적 조건/자연스러운 인과관계를 나타냅니다.",
+    "grammarPoint": "~と (필연적 조건)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 32
+  },
+  {
+    "koreanSentence": "선생님이 사진을 찍어 주셨습니다",
+    "japaneseSentence": "せんせいがしゃしんをとってくださいました",
+    "tokens": [
+      { "text": "せんせい", "type": "noun", "meaning": "선생님", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "しゃしん", "type": "noun", "meaning": "사진", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "とって", "type": "verb", "meaning": "찍어", "order": 4 },
+      { "text": "くださいました", "type": "verb", "meaning": "주셨습니다", "order": 5 }
+    ],
+    "explanation": "~てくださる는 ~てくれる의 존경 표현으로 '~해 주시다'입니다.",
+    "grammarPoint": "~てくださる (존경 수혜)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 33
+  },
+  {
+    "koreanSentence": "이 그림은 진품 같습니다",
+    "japaneseSentence": "このえはほんもののみたいです",
+    "tokens": [
+      { "text": "この", "type": "noun", "meaning": "이", "order": 0 },
+      { "text": "え", "type": "noun", "meaning": "그림", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "ほんもの", "type": "noun", "meaning": "진품", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 4 },
+      { "text": "みたいです", "type": "suffix", "meaning": "같습니다", "order": 5 }
+    ],
+    "explanation": "~みたいです는 '~같다/~처럼 보이다'를 나타내는 구어체 추측입니다.",
+    "grammarPoint": "~みたいです (유사/추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 34
+  },
+  {
+    "koreanSentence": "공부한다면 도서관이 좋아요",
+    "japaneseSentence": "べんきょうするならとしょかんがいいですよ",
+    "tokens": [
+      { "text": "べんきょうする", "type": "verb", "meaning": "공부하다", "order": 0 },
+      { "text": "なら", "type": "particle", "meaning": "~한다면", "order": 1 },
+      { "text": "としょかん", "type": "noun", "meaning": "도서관", "order": 2 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 3 },
+      { "text": "いいですよ", "type": "adjective", "meaning": "좋아요", "order": 4 }
+    ],
+    "explanation": "~なら는 상대의 말을 받아 조건을 제시합니다. '~한다면'입니다.",
+    "grammarPoint": "~なら (조건 제시)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 35
+  },
+  {
+    "koreanSentence": "저 사람은 일본인인 것 같습니다",
+    "japaneseSentence": "あのひとはにほんじんのようです",
+    "tokens": [
+      { "text": "あの", "type": "noun", "meaning": "저", "order": 0 },
+      { "text": "ひと", "type": "noun", "meaning": "사람", "order": 1 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 2 },
+      { "text": "にほんじん", "type": "noun", "meaning": "일본인", "order": 3 },
+      { "text": "の", "type": "particle", "meaning": "인", "order": 4 },
+      { "text": "ようです", "type": "suffix", "meaning": "것 같습니다", "order": 5 }
+    ],
+    "explanation": "~ようです는 관찰에 기반한 추측입니다. 명사+の+ようです 형태입니다.",
+    "grammarPoint": "~ようです (추측)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 36
+  },
+  {
+    "koreanSentence": "일본어를 잘하도록 매일 연습합니다",
+    "japaneseSentence": "にほんごがじょうずになるようにまいにちれんしゅうします",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 1 },
+      { "text": "じょうずになる", "type": "verb", "meaning": "잘하게 되다", "order": 2 },
+      { "text": "ように", "type": "particle", "meaning": "~하도록", "order": 3 },
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 4 },
+      { "text": "れんしゅうします", "type": "verb", "meaning": "연습합니다", "order": 5 }
+    ],
+    "explanation": "~ように는 목표를 나타냅니다. '~하도록/~하게'에 해당합니다.",
+    "grammarPoint": "~ように (목표)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 37
+  },
+  {
+    "koreanSentence": "일본어 공부를 계속하기 위해 연습합니다",
+    "japaneseSentence": "にほんごのべんきょうをつづけるためにれんしゅうします",
+    "tokens": [
+      { "text": "にほんご", "type": "noun", "meaning": "일본어", "order": 0 },
+      { "text": "の", "type": "particle", "meaning": "의", "order": 1 },
+      { "text": "べんきょう", "type": "noun", "meaning": "공부", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "つづける", "type": "verb", "meaning": "계속하다", "order": 4 },
+      { "text": "ために", "type": "particle", "meaning": "위해", "order": 5 },
+      { "text": "れんしゅうします", "type": "verb", "meaning": "연습합니다", "order": 6 }
+    ],
+    "explanation": "~ために는 목적을 나타냅니다. 동사 사전형+ために로 '~하기 위해'입니다.",
+    "grammarPoint": "~ために (목적)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 38
+  },
+  {
+    "koreanSentence": "아버지는 매일 신문을 읽는 습관이 있습니다",
+    "japaneseSentence": "ちちはまいにちしんぶんをよむしゅうかんがあります",
+    "tokens": [
+      { "text": "ちち", "type": "noun", "meaning": "아버지", "order": 0 },
+      { "text": "は", "type": "particle", "meaning": "은/는", "order": 1 },
+      { "text": "まいにち", "type": "adverb", "meaning": "매일", "order": 2 },
+      { "text": "しんぶん", "type": "noun", "meaning": "신문", "order": 3 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 4 },
+      { "text": "よむ", "type": "verb", "meaning": "읽는", "order": 5 },
+      { "text": "しゅうかん", "type": "noun", "meaning": "습관", "order": 6 },
+      { "text": "が", "type": "particle", "meaning": "이/가", "order": 7 },
+      { "text": "あります", "type": "verb", "meaning": "있습니다", "order": 8 }
+    ],
+    "explanation": "동사 사전형+しゅうかんがある로 '~하는 습관이 있다'를 나타냅니다.",
+    "grammarPoint": "~しゅうかんがある (습관)",
+    "jlptLevel": "N4",
+    "difficulty": 2,
+    "order": 39
+  },
+  {
+    "koreanSentence": "어머니에게 방을 청소하게 시킴을 당했습니다",
+    "japaneseSentence": "ははにへやをそうじさせられました",
+    "tokens": [
+      { "text": "はは", "type": "noun", "meaning": "어머니", "order": 0 },
+      { "text": "に", "type": "particle", "meaning": "에게", "order": 1 },
+      { "text": "へや", "type": "noun", "meaning": "방", "order": 2 },
+      { "text": "を", "type": "particle", "meaning": "을/를", "order": 3 },
+      { "text": "そうじ", "type": "noun", "meaning": "청소", "order": 4 },
+      { "text": "させられました", "type": "verb", "meaning": "시킴을 당했습니다", "order": 5 }
+    ],
+    "explanation": "~させられる는 사역수동으로 '~시킴을 당하다'입니다. 강제로 시킴을 당한 상황입니다.",
+    "grammarPoint": "~させられる (사역수동)",
+    "jlptLevel": "N4",
+    "difficulty": 3,
+    "order": 40
+  }
+]
