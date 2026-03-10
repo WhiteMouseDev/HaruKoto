@@ -23,7 +23,6 @@ import {
   Flame,
   Library,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { KanaProgressBanner } from '@/components/features/kana/kana-progress-banner';
@@ -35,13 +34,7 @@ import {
   useRecommendations,
 } from '@/hooks/use-quiz';
 
-const JLPT_LEVELS = [
-  { value: 'N5', available: true },
-  { value: 'N4', available: true },
-  { value: 'N3', available: true },
-  { value: 'N2', available: true },
-  { value: 'N1', available: true },
-] as const;
+const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 
 const QUIZ_TYPES = [
   { value: 'VOCABULARY', label: '단어' },
@@ -356,35 +349,19 @@ export default function StudyPage() {
           {/* Level Selector */}
           <div className="flex gap-2">
             {JLPT_LEVELS.map((level) => {
-              const isActive = selectedLevel === level.value;
-              const isAvailable = level.available;
+              const isActive = selectedLevel === level;
 
               return (
                 <button
-                  key={level.value}
-                  className={`relative flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
+                  key={level}
+                  className={`flex-1 rounded-2xl border-2 py-2.5 text-sm font-bold transition-all ${
                     isActive
                       ? 'border-primary bg-primary/10 text-primary'
-                      : isAvailable
-                        ? 'border-border text-muted-foreground'
-                        : 'border-border/50 text-muted-foreground/40'
+                      : 'border-border text-muted-foreground'
                   }`}
-                  onClick={() => {
-                    if (isAvailable) {
-                      setSelectedLevel(level.value);
-                    } else {
-                      toast('곧 추가 예정이에요!', {
-                        description: `${level.value} 콘텐츠를 열심히 준비하고 있어요`,
-                      });
-                    }
-                  }}
+                  onClick={() => setSelectedLevel(level)}
                 >
-                  {level.value}
-                  {!isAvailable && (
-                    <span className="absolute -top-2 -right-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                      곧 추가
-                    </span>
-                  )}
+                  {level}
                 </button>
               );
             })}
