@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, ChevronDown } from 'lucide-react';
+import { ChevronDown, Volume2, Loader2, Pause } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useVocabTTS } from '@/hooks/use-vocab-tts';
 import type { LearnedWord } from '@/hooks/use-learned-words';
 
 type LearnedWordCardProps = LearnedWord;
 
 export function LearnedWordCard({
+  vocabularyId,
   word,
   reading,
   meaningKo,
@@ -22,6 +24,7 @@ export function LearnedWordCard({
   lastReviewedAt,
 }: LearnedWordCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const { playVocab, isPlaying, isLoading } = useVocabTTS();
   const total = correctCount + incorrectCount;
   const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
@@ -45,11 +48,24 @@ export function LearnedWordCard({
       >
         <CardContent className="flex flex-col gap-0 px-4 py-3">
           <div className="flex items-center gap-3">
-            {mastered ? (
-              <CheckCircle2 className="text-primary size-4 shrink-0" />
-            ) : (
-              <Circle className="text-muted-foreground size-4 shrink-0" />
-            )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                playVocab(vocabularyId);
+              }}
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-primary shrink-0 transition-colors"
+              title="발음 듣기"
+            >
+              {isLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : isPlaying ? (
+                <Pause className="size-4" />
+              ) : (
+                <Volume2 className="size-4" />
+              )}
+            </button>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="font-jp truncate text-lg font-bold">

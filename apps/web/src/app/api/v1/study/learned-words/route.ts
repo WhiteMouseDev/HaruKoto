@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       entries: entries.map((e) => ({
         id: e.id,
+        vocabularyId: e.vocabularyId,
         word: e.vocabulary.word,
         reading: e.vocabulary.reading,
         meaningKo: e.vocabulary.meaningKo,

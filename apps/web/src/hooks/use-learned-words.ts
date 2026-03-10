@@ -5,6 +5,7 @@ import { PAGINATION } from '@/lib/constants';
 
 export type LearnedWord = {
   id: string;
+  vocabularyId: string;
   word: string;
   reading: string;
   meaningKo: string;
