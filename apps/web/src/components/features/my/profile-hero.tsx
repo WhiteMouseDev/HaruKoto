@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   User as UserIcon,
   Pencil,
+  Camera,
   Calendar,
   BookOpen,
   Zap,
   Flame,
+  Loader2,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +38,8 @@ type ProfileHeroProps = {
   totalWordsStudied: number;
   longestStreak: number;
   onNicknameUpdate?: (nickname: string) => Promise<void>;
+  onAvatarUpload?: (file: File) => Promise<void>;
+  avatarUploading?: boolean;
 };
 
 export function ProfileHero({
@@ -49,10 +53,13 @@ export function ProfileHero({
   totalWordsStudied,
   longestStreak,
   onNicknameUpdate,
+  onAvatarUpload,
+  avatarUploading,
 }: ProfileHeroProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [newNickname, setNewNickname] = useState(nickname);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = async () => {
     if (!onNicknameUpdate || newNickname.trim().length < 1) return;
@@ -63,6 +70,14 @@ export function ProfileHero({
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !onAvatarUpload) return;
+    await onAvatarUpload(file);
+    // Reset input so the same file can be re-selected
+    e.target.value = '';
   };
 
   const stats = [
@@ -83,12 +98,33 @@ export function ProfileHero({
           <CardContent className="p-4">
             {/* Profile Row */}
             <div className="flex items-center gap-3">
-              <Avatar className="size-12" size="lg">
-                {avatarUrl ? <AvatarImage src={avatarUrl} alt={nickname} /> : null}
-                <AvatarFallback className="size-12 text-base">
-                  <UserIcon className="size-6" />
-                </AvatarFallback>
-              </Avatar>
+              <button
+                type="button"
+                className="relative"
+                disabled={avatarUploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Avatar className="size-12" size="lg">
+                  {avatarUrl ? <AvatarImage src={avatarUrl} alt={nickname} /> : null}
+                  <AvatarFallback className="size-12 text-base">
+                    <UserIcon className="size-6" />
+                  </AvatarFallback>
+                </Avatar>
+                <span className="bg-primary absolute -right-0.5 -bottom-0.5 flex size-5 items-center justify-center rounded-full text-white shadow-sm">
+                  {avatarUploading ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Camera className="size-3" />
+                  )}
+                </span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </button>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold">{nickname}</h2>
                 {onNicknameUpdate && (

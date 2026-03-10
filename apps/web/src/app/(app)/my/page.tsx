@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { createClient } from '@/lib/supabase/client';
 import { useProfile } from '@/hooks/use-dashboard';
 import { useUpdateProfile } from '@/hooks/use-update-profile';
+import { useUploadAvatar } from '@/hooks/use-upload-avatar';
 
 type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
@@ -62,6 +63,7 @@ export default function MyPage() {
     refetch: () => void;
   };
   const updateProfile = useUpdateProfile();
+  const uploadAvatar = useUploadAvatar();
   const [loggingOut, setLoggingOut] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -72,6 +74,13 @@ export default function MyPage() {
       await updateProfile.mutateAsync({ nickname });
     },
     [updateProfile]
+  );
+
+  const handleAvatarUpload = useCallback(
+    async (file: File) => {
+      await uploadAvatar.mutateAsync(file);
+    },
+    [uploadAvatar]
   );
 
   const handleUpdate = useCallback(
@@ -168,6 +177,8 @@ export default function MyPage() {
         totalWordsStudied={summary.totalWordsStudied}
         longestStreak={profile.longestStreak}
         onNicknameUpdate={handleNicknameUpdate}
+        onAvatarUpload={handleAvatarUpload}
+        avatarUploading={uploadAvatar.isPending}
       />
 
       <AchievementsSection achievements={achievements} />

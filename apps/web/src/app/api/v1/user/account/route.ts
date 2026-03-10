@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { prisma } from '@harukoto/database';
+import { deleteFromGCS, getAvatarPath } from '@/lib/gcs';
 
 export async function DELETE() {
   try {
@@ -13,6 +14,11 @@ export async function DELETE() {
     if (!user) {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
+
+    // Delete avatar from GCS (non-blocking, best-effort)
+    deleteFromGCS(getAvatarPath(user.id)).catch((err) =>
+      console.error('GCS avatar cleanup failed:', err)
+    );
 
     // Prisma first — CASCADE deletes all related records
     await prisma.user.delete({ where: { id: user.id } });
