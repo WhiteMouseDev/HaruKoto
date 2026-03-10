@@ -1,243 +1,654 @@
-# Flutter 네이티브 앱 전환 로드맵
+# 하루코토 Flutter 네이티브 전환 로드맵
 
-> 현재 Next.js 웹앱 → Flutter 네이티브 앱으로의 전환 전략 및 타이밍 가이드.
-> 지금 당장 실행하는 문서가 아니라, 시점별 의사결정을 위한 참조 문서.
-
----
-
-## 1. 전환 전략: 업계는 어떻게 하는가?
-
-### Big Bang (전체 재작성)
-
-한번에 Flutter로 전부 새로 만들고, 완성되면 기존 앱을 교체하는 방식.
-
-| 사례 | 설명 |
-|------|------|
-| **BMW** | 45개국 앱 변형을 Flutter 단일 코드베이스로 전면 재작성. 수백 명의 엔지니어 투입. |
-
-**장점:** 깔끔한 아키텍처, 레거시 부채 없음
-**단점:** 수개월 기능 개발 중단, 실패 리스크 높음, 대규모 팀/예산 필요
-
-→ **소규모 팀에는 비현실적.** BMW처럼 대기업 수준의 인력/예산이 있어야 가능.
-
-### Incremental (점진적 전환) — 업계 표준
-
-기존 앱을 유지하면서, 새 기능이나 핵심 화면부터 Flutter로 하나씩 교체.
-
-| 사례 | 설명 |
-|------|------|
-| **알리바바 (Xianyu)** | 5억+ 유저. Flutter Boost 오픈소스를 만들어 기존 네이티브 앱에 Flutter 화면을 WebView처럼 삽입. 고우선순위 화면부터 점진 교체. |
-| **Nubank** | 1억+ 유저. 신규 기능은 전부 Flutter, 기존 React Native 기능은 여력 될 때 마이그레이션. 12~18개월 예상 → 수년째 진행 중. |
-| **Google Pay** | 결제 플로우를 Flutter로 먼저 전환, 부가 화면은 이후 순차 교체. |
-
-**장점:** 제품 개발 멈추지 않음, 리스크 분산, 팀이 Flutter를 실전에서 학습 가능
-**단점:** 2~3개 기술 스택 동시 유지, 네비게이션 복잡도 증가, 완전 전환까지 오래 걸림
-
-→ **하루코토에 적합한 전략.** 아래 상세 설명.
+> **작성일**: 2026-03-10
+> **현재 상태**: Next.js 웹앱 + Flutter WebView 래퍼
+> **목표**: Flutter 네이티브 앱으로 점진적 전환
 
 ---
 
-## 2. 전환 패턴 3가지
+## 1. 아키텍처 개요
 
-### 패턴 A: WebView 하이브리드 (가장 빠름)
-
-Flutter 앱 껍데기 안에 기존 Next.js 웹앱을 `webview_flutter`로 감싸는 방식.
+### 1.1 현재 구조
 
 ```
-Flutter Shell (bottom nav, push 알림, 앱스토어)
-  └── WebView → 기존 Next.js 웹앱
-       └── 점진적으로 WebView 화면을 Flutter 네이티브 화면으로 교체
+[Flutter Shell]  ←WebView→  [Next.js 웹앱]  ←API→  [Supabase]
+   얇은 래퍼                    모든 로직           DB/Auth
 ```
 
-- **장점:** 앱스토어 출시까지 1~2주, 기능 손실 없음
-- **단점:** 성능 떨어짐 (애니메이션, 스크롤), 유저가 "웹뷰"임을 느낌, 앱스토어 리젝 위험
-- **판단:** 학습 앱은 부드러운 인터랙션이 중요하므로 **장기 전략으로는 부적합.** 단, 앱스토어 빠른 진입이 필요할 때 브릿지 전략으로는 유효.
-
-### 패턴 B: 별도 Flutter 앱 + 공유 백엔드 (추천)
-
-Flutter 앱을 완전히 별도 프로젝트로 만들되, 백엔드(Supabase)를 공유.
+### 1.2 전환 후 구조
 
 ```
-[Next.js 웹앱] ──┐
-                  ├── Supabase (동일 프로젝트, 동일 테이블, 동일 RLS)
-[Flutter 앱]   ──┘    └── API Routes (Next.js) — Flutter에서 HTTP 호출
+[Flutter 네이티브 앱]  ←HTTP→  [Next.js API Routes]  ←Prisma→  [Supabase PostgreSQL]
+   UI + 로컬 캐시               비즈니스 로직                     DB/Auth
+        │
+        ├── FCM (푸시 알림)
+        ├── Drift/SQLite (오프라인 캐시)
+        └── Supabase Auth (인증)
+
+[Next.js 웹앱]  ← 기존 유저용, 기능 동결 상태로 유지
 ```
 
-- **장점:** 아키텍처가 깔끔, 양쪽 독립적으로 개발/배포 가능
-- **단점:** UI 코드는 100% 새로 작성, 기능 패리티 달성까지 시간 소요
-- **판단:** **하루코토에 가장 적합.** Supabase가 Flutter를 1등 시민으로 지원하므로 백엔드 변경 불필요.
+### 1.3 핵심 원칙
 
-### 패턴 C: Add-to-App (알리바바 방식)
-
-기존 네이티브 앱 안에 Flutter 모듈을 하나씩 삽입. → 우리는 네이티브 앱이 없으므로 해당 없음.
+- **백엔드는 건드리지 않는다** — 기존 52개 API Routes를 Flutter에서 HTTP로 호출
+- **점진적 전환** — 한 화면씩 네이티브로 교체, 미완성 화면은 WebView 폴백
+- **오프라인 퍼스트** — 학습 데이터는 로컬 캐시 우선, 온라인 시 동기화
 
 ---
 
-## 3. 언제 전환해야 하는가?
+## 2. 기술 스택
 
-"바텀 네비부터 Flutter로 옮기고, 그 다음 로그인..." 이런 식의 점진 교체는 **웹 → Flutter에서는 불가능**하다. (Flutter를 Next.js 페이지 안에 삽입할 수 없음.) 따라서 Flutter 앱은 별도로 만들고, 기능 패리티가 충분해지면 유저를 이동시키는 방식.
+### 2.1 코어
 
-### 유저 규모별 전략
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **Framework** | Flutter | 3.41.x (latest stable) | 2026.02 릴리즈, Dart 3.8+ |
+| **언어** | Dart | 3.8+ | null safety, pattern matching, sealed class |
 
-| 단계 | 유저 수 | 전략 |
-|------|---------|------|
-| **PMF 검증** | 0 ~ 1K | 웹앱에 집중. Flutter 시작하지 않음. |
-| **초기 성장** | 1K ~ 10K | PWA 강화 (오프라인 캐시, 홈화면 추가). Flutter 프로토타이핑/학습 시작. |
-| **성장 궤도** | 10K ~ 50K | Flutter MVP 착수 (인증 + 핵심 학습 플로우). 앱스토어 출시. |
-| **스케일업** | 50K ~ 100K | Flutter 기능 패리티 확보. 웹은 SEO/유입용으로 유지. |
-| **안정기** | 100K+ | 네이티브 앱이 메인. 웹은 랜딩/SEO 전용. |
+### 2.2 상태 관리
 
-### 전환 시점을 알려주는 신호
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **서버 상태 + 클라이언트 상태** | `flutter_riverpod` | ^3.3.0 | 2026 기준 Flutter 상태관리 1위. 자동 재시도, 오프라인 캐시 내장, 컴파일 타임 안전성. 웹앱의 TanStack Query + Zustand를 하나로 대체 |
+| **코드 생성** | `riverpod_generator` | ^3.x | `@riverpod` 어노테이션으로 보일러플레이트 제거 |
+| **Lint** | `riverpod_lint` | ^3.x | Riverpod 전용 린트 규칙 |
 
-- 유저가 "앱 없나요?" 질문을 반복
-- 모바일 웹 세션이 전체의 50% 이상
-- PWA 설치율이 5% 이상
-- 경쟁 앱이 네이티브이고, UX에서 밀리고 있음
-- 푸시 알림이 리텐션에 결정적 영향을 줄 것으로 예상
-- 웹 모바일 성능 최적화에 시간을 과도하게 쓰고 있음
+**Riverpod 3.0 선정 이유 (vs BLoC):**
+- 웹앱의 TanStack Query(서버 상태) + Zustand(클라이언트 상태)와 개념이 1:1 매핑
+- 자동 재시도(네트워크 실패 시) — 모바일 환경 필수
+- 오프라인 캐시 실험적 지원 내장
+- BLoC 대비 보일러플레이트 적음 — 1인 개발자에게 유리
+- 스타트업/컨슈머 앱에 적합 (BLoC은 엔터프라이즈/금융 앱에 적합)
+
+### 2.3 네트워킹
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **HTTP 클라이언트** | `dio` | ^5.x | 인터셉터, 재시도, 토큰 갱신, 요청 취소 |
+| **Supabase 클라이언트** | `supabase_flutter` | ^2.x | Auth + Realtime + Storage |
+| **연결 상태 감지** | `connectivity_plus` | ^6.x | 온/오프라인 상태 감지 |
+
+### 2.4 로컬 저장소 / 오프라인 캐시
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **로컬 DB** | `drift` + `drift_flutter` | ^2.32.x | 타입 세이프 SQLite ORM, 리액티브 쿼리, 오프라인 학습 데이터 캐시 |
+| **Key-Value 저장소** | `shared_preferences` | ^2.x | 설정, 토큰, 간단한 상태 |
+| **보안 저장소** | `flutter_secure_storage` | ^9.x | 인증 토큰, 민감 정보 |
+
+**Drift 선정 이유 (vs Hive, Isar):**
+- PostgreSQL(Supabase)과 동일한 SQL 기반 — 스키마 매핑이 자연스러움
+- 타입 세이프 쿼리 (Prisma와 유사한 개발 경험)
+- 리액티브 스트림 지원 (데이터 변경 시 UI 자동 업데이트)
+- 마이그레이션 시스템 내장
+
+### 2.5 라우팅
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **라우터** | `go_router` | ^14.x | Flutter 공식 추천, 딥링크, 네비게이션 가드 |
+
+### 2.6 UI / 디자인
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **아이콘** | `lucide_icons` | ^0.x | 웹앱과 동일한 아이콘 세트 유지 |
+| **폰트** | `google_fonts` | ^6.x | Noto Sans JP/KR (웹앱과 동일) |
+| **테마** | `flex_color_scheme` | ^8.x | Light/Dark 테마 시스템 |
+| **애니메이션** | Flutter 내장 (`AnimationController`, `Hero`, `PageTransition`) | — | Framer Motion 대체, 추가 패키지 불필요 |
+| **Shimmer/Skeleton** | `shimmer` | ^3.x | 로딩 상태 표시 |
+| **Toast/Snackbar** | `fluttertoast` | ^8.x | 웹앱의 sonner 대체 |
+| **Pull to Refresh** | Flutter 내장 (`RefreshIndicator`) | — | |
+
+### 2.7 푸시 알림
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **FCM** | `firebase_messaging` | ^15.x | 푸시 알림 수신 |
+| **Firebase Core** | `firebase_core` | ^3.x | FCM 의존성 |
+| **로컬 알림** | `flutter_local_notifications` | ^18.x | 포그라운드 알림 표시, 예약 알림 |
+
+### 2.8 오디오 (AI 회화용)
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **오디오 녹음** | `record` | ^5.x | PCM 녹음 (음성 통화) |
+| **오디오 재생** | `just_audio` | ^0.9.x | TTS 재생, 단어 발음 |
+| **WebSocket** | `web_socket_channel` | ^3.x | Gemini Live 스트리밍 |
+
+### 2.9 결제
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **인앱 결제** | `in_app_purchase` | ^3.x | Apple IAP / Google Play Billing (스토어 정책상 필수) |
+| **PortOne 폴백** | WebView 내 처리 | — | 웹 결제 플로우 재사용 가능 |
+
+> Apple/Google 스토어 정책상 디지털 콘텐츠 결제는 인앱 결제를 사용해야 합니다.
+> 기존 PortOne(카드/카카오페이) 결제는 웹에서만 유지하고, 앱에서는 IAP로 전환 검토가 필요합니다.
+
+### 2.10 유틸리티
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **코드 생성** | `build_runner` | ^2.4.x | Drift, Riverpod, JSON 직렬화 코드 생성 |
+| **JSON 직렬화** | `freezed` + `json_serializable` | ^2.x | 불변 모델 + 자동 JSON 변환 |
+| **날짜/시간** | `intl` | ^0.19.x | 한국어/일본어 날짜 포맷 |
+| **에러 모니터링** | `sentry_flutter` | ^8.x | 웹앱의 Sentry와 같은 프로젝트로 통합 |
+| **환경 변수** | `envied` | ^1.x | .env 파일 관리, 난독화 지원 |
+| **이미지** | `cached_network_image` | ^3.x | 아바타, 캐릭터 이미지 캐시 |
+
+### 2.11 개발/테스트
+
+| 카테고리 | 패키지 | 버전 | 선정 이유 |
+|----------|--------|------|-----------|
+| **테스트** | `flutter_test` (내장) | — | 위젯/유닛 테스트 |
+| **목킹** | `mocktail` | ^1.x | 테스트용 목 객체 |
+| **린트** | `very_good_analysis` | ^7.x | 엄격한 린트 규칙 세트 |
 
 ---
 
-## 4. 기술 매핑: Next.js → Flutter
+## 3. 프로젝트 구조
 
-### 그대로 재사용 가능 (변경 없음)
+```
+apps/mobile/lib/
+├── main.dart                  # 앱 진입점, Supabase/Firebase 초기화
+├── app.dart                   # MaterialApp.router 설정
+│
+├── core/                      # 앱 전역 설정
+│   ├── constants/             # 색상, 사이즈, URL 상수
+│   ├── theme/                 # Light/Dark ThemeData
+│   ├── router/                # GoRouter 설정 + 인증 가드
+│   └── network/               # Dio 인스턴스, 인터셉터, 에러 핸들링
+│
+├── features/                  # 기능별 모듈 (Feature-first 구조)
+│   ├── auth/
+│   │   ├── data/              # API 호출, 모델
+│   │   ├── providers/         # Riverpod 프로바이더
+│   │   └── presentation/      # 로그인, 온보딩 화면
+│   │
+│   ├── home/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │
+│   ├── study/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │       ├── study_page.dart
+│   │       ├── quiz_page.dart
+│   │       └── result_page.dart
+│   │
+│   ├── kana/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │
+│   ├── chat/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │       ├── chat_list_page.dart
+│   │       ├── chat_room_page.dart
+│   │       └── voice_call_page.dart
+│   │
+│   ├── stats/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │
+│   ├── my/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   └── presentation/
+│   │
+│   └── subscription/
+│       ├── data/
+│       ├── providers/
+│       └── presentation/
+│
+├── shared/                    # 공유 컴포넌트
+│   ├── widgets/               # 재사용 위젯 (버튼, 카드, 바텀네비 등)
+│   ├── models/                # 공유 데이터 모델 (User, Vocabulary 등)
+│   └── providers/             # 전역 프로바이더 (인증 상태, 테마 등)
+│
+└── local_db/                  # Drift 로컬 DB
+    ├── database.dart          # DB 인스턴스
+    ├── tables/                # 테이블 정의 (캐시용)
+    └── daos/                  # Data Access Objects
+```
 
-| 항목 | 설명 |
-|------|------|
-| **Supabase** | `supabase_flutter` 패키지로 동일 프로젝트 연결. Auth, DB, RLS, Realtime 전부 동일. |
-| **Next.js API Routes** | Flutter에서 `dio`/`http` 패키지로 동일 엔드포인트 호출. |
-| **DB 스키마/RLS** | 변경 불필요. |
+---
 
-### 새로 구현해야 하는 것
+## 4. 핵심 설계
 
-| Next.js (Web) | Flutter 대응 | 비고 |
-|---------------|-------------|------|
-| React 컴포넌트 (JSX) | Flutter Widget (Dart) | UI 전체 재작성 |
-| Tailwind CSS | Flutter ThemeData + 커스텀 스타일 | 멘탈 모델은 유사 |
-| shadcn/ui | Flutter 패키지 or 커스텀 위젯 | 직접 대응 없음 |
-| Zustand | **Riverpod 3** (추천) | 가장 유사한 철학 |
-| TanStack Query | Riverpod AsyncNotifier | 캐싱/로딩/에러 패턴 유사 |
-| React Hook Form + Zod | `flutter_form_builder` + `formz` | 패러다임 다르지만 동등 |
-| next-themes | Flutter ThemeMode | Flutter에서 더 간단 |
-| Framer Motion | Flutter AnimationController / `flutter_animate` | Flutter 애니메이션이 더 강력 |
-| App Router | `go_router` | Flutter 표준 라우팅 |
+### 4.1 서버 상태 관리
 
-### 상태 관리 매핑: Zustand → Riverpod
+웹앱의 TanStack Query → Riverpod 3.0으로 대체합니다.
 
-```typescript
-// Zustand (현재)
-const useUserStore = create((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-}));
+```dart
+// 웹: TanStack Query
+// const { data } = useQuery({ queryKey: ['dashboard'], queryFn: fetchDashboard });
 
-// 컴포넌트에서
-const user = useUserStore((s) => s.user);
+// Flutter: Riverpod
+@riverpod
+Future<DashboardData> dashboard(Ref ref) async {
+  final dio = ref.watch(dioProvider);
+  final response = await dio.get('/api/v1/stats/dashboard');
+  return DashboardData.fromJson(response.data);
+}
+
+// UI에서 사용
+final dashboard = ref.watch(dashboardProvider);
+dashboard.when(
+  data: (data) => DashboardView(data: data),
+  loading: () => const DashboardSkeleton(),
+  error: (e, st) => ErrorView(error: e, onRetry: () => ref.invalidate(dashboardProvider)),
+);
+```
+
+**자동 재시도**: Riverpod 3.0은 네트워크 실패 시 자동 재시도를 내장하고 있어 모바일 환경에 적합합니다.
+
+### 4.2 클라이언트 상태 관리
+
+웹앱의 Zustand → Riverpod `Notifier`로 대체합니다.
+
+```dart
+// 웹: Zustand store (onboarding)
+// const { step, setStep } = useOnboardingStore();
+
+// Flutter: Riverpod Notifier
+@riverpod
+class OnboardingState extends _$OnboardingState {
+  @override
+  OnboardingData build() => OnboardingData.initial();
+
+  void setStep(int step) => state = state.copyWith(step: step);
+  void setNickname(String name) => state = state.copyWith(nickname: name);
+  void setJlptLevel(JlptLevel level) => state = state.copyWith(jlptLevel: level);
+}
+```
+
+### 4.3 오프라인 캐시 설계
+
+```
+[네트워크 요청]
+     │
+     ├── 온라인 → API 호출 → 응답을 Drift 로컬 DB에 캐시 → UI 표시
+     │
+     └── 오프라인 → Drift 로컬 DB에서 캐시 데이터 읽기 → UI 표시
+                     → 쓰기 작업은 큐에 저장 → 온라인 복귀 시 동기화
+```
+
+**캐시 대상:**
+
+| 데이터 | 캐시 전략 | 이유 |
+|--------|-----------|------|
+| 단어/문법 데이터 | 적극 캐시 (1일 TTL) | 오프라인 학습 핵심 |
+| 퀴즈 문제 | 세션 단위 캐시 | 퀴즈 중 네트워크 끊김 대응 |
+| 가나 문자 데이터 | 영구 캐시 | 변경 없는 정적 데이터 |
+| 학습 진도/통계 | 캐시 + 백그라운드 동기화 | 빠른 홈 화면 로딩 |
+| AI 회화 | 캐시 안 함 | 온라인 필수 (AI API) |
+| 유저 프로필 | 캐시 (로그인 시 갱신) | 기본 정보 오프라인 표시 |
+
+**오프라인 쓰기 큐:**
+
+```dart
+// 퀴즈 답안 제출 — 오프라인이면 큐에 저장
+Future<void> submitAnswer(QuizAnswer answer) async {
+  if (await isOnline()) {
+    await dio.post('/api/v1/quiz/answer', data: answer.toJson());
+  } else {
+    await localDb.pendingActions.insert(PendingAction(
+      type: 'quiz_answer',
+      payload: jsonEncode(answer.toJson()),
+      createdAt: DateTime.now(),
+    ));
+  }
+}
+
+// 온라인 복귀 시 큐 처리
+void onConnectivityRestored() async {
+  final pending = await localDb.pendingActions.all();
+  for (final action in pending) {
+    await _processAction(action);
+    await localDb.pendingActions.delete(action);
+  }
+}
+```
+
+### 4.4 인증 플로우
+
+```
+[앱 시작]
+  → Supabase 세션 확인 (flutter_secure_storage에 저장됨)
+  → 유효 → 홈 화면
+  → 만료 → 자동 토큰 갱신 시도
+  → 실패 → 로그인 화면
+
+[API 호출]
+  → Dio 인터셉터가 모든 요청에 Bearer 토큰 자동 첨부
+  → 401 응답 → 토큰 갱신 → 재요청 (자동)
 ```
 
 ```dart
-// Riverpod (Flutter)
-@riverpod
-class UserNotifier extends _$UserNotifier {
+// Dio Auth 인터셉터
+class AuthInterceptor extends Interceptor {
   @override
-  User? build() => null;
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session != null) {
+      options.headers['Authorization'] = 'Bearer ${session.accessToken}';
+    }
+    handler.next(options);
+  }
 
-  void setUser(User user) => state = user;
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode == 401) {
+      await Supabase.instance.client.auth.refreshSession();
+      final retryResponse = await dio.fetch(err.requestOptions);
+      handler.resolve(retryResponse);
+      return;
+    }
+    handler.next(err);
+  }
 }
-
-// 위젯에서
-final user = ref.watch(userNotifierProvider);
 ```
 
-### Flutter에서 어려운 것
+### 4.5 푸시 알림 설계
 
-- **SEO:** Flutter Web은 SEO가 약함 → 웹(Next.js)은 SEO/유입용으로 계속 유지
-- **SSR/Server Components:** Flutter에는 없음 → 전부 클라이언트 렌더링
-- **리치 텍스트/마크다운:** Flutter 지원이 웹보다 미성숙
+```
+[서버] Next.js Cron (/api/cron/daily-reminder)
+  → FCM 서버 SDK로 푸시 전송
+
+[Flutter 앱]
+  → firebase_messaging으로 FCM 토큰 수신
+  → 토큰을 API에 등록 (POST /api/v1/push/subscribe)
+  → 알림 수신 → flutter_local_notifications로 표시
+  → 알림 탭 → GoRouter 딥링크로 해당 화면 이동
+```
+
+**기존 Web Push(VAPID) → FCM 전환:**
+- `PushSubscription` 테이블에 `fcmToken` 필드 추가 (또는 별도 테이블)
+- 서버 cron에서 Web Push + FCM 둘 다 발송 (웹 유저 + 앱 유저)
+
+### 4.6 네비게이션 구조
+
+```dart
+GoRouter(
+  initialLocation: '/home',
+  redirect: (context, state) {
+    final isLoggedIn = ref.read(authProvider).isLoggedIn;
+    if (!isLoggedIn && !state.matchedLocation.startsWith('/login')) {
+      return '/login';
+    }
+    return null;
+  },
+  routes: [
+    GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+    GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingPage()),
+
+    // 메인 (바텀 네비게이션)
+    ShellRoute(
+      builder: (_, __, child) => MainShell(child: child),
+      routes: [
+        GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+        GoRoute(path: '/study', builder: (_, __) => const StudyPage()),
+        GoRoute(path: '/chat', builder: (_, __) => const ChatListPage()),
+        GoRoute(path: '/stats', builder: (_, __) => const StatsPage()),
+        GoRoute(path: '/my', builder: (_, __) => const MyPage()),
+      ],
+    ),
+
+    // 서브 화면
+    GoRoute(path: '/study/quiz', builder: (_, __) => const QuizPage()),
+    GoRoute(path: '/study/result', builder: (_, __) => const ResultPage()),
+    GoRoute(path: '/chat/:id', builder: (_, state) =>
+      ChatRoomPage(id: state.pathParameters['id']!)),
+  ],
+);
+```
+
+### 4.7 테마 시스템
+
+웹앱의 CSS Custom Properties → Flutter `ThemeData`로 매핑합니다.
+
+```dart
+class AppTheme {
+  // 디자이너 확정 후 색상값 업데이트
+  static ThemeData light() => ThemeData(
+    colorScheme: const ColorScheme.light(
+      primary: Color(0xFFF6A5B3),
+      onPrimary: Colors.white,
+      secondary: Color(0xFFFFF0F3),
+      surface: Colors.white,
+    ),
+    scaffoldBackgroundColor: const Color(0xFFFCF6F5),
+  );
+
+  static ThemeData dark() => ThemeData(
+    colorScheme: const ColorScheme.dark(
+      primary: Color(0xFFF6A5B3),
+      onPrimary: Colors.white,
+      secondary: Color(0xFF2A2A4A),
+      surface: Color(0xFF242442),
+    ),
+    scaffoldBackgroundColor: const Color(0xFF1A1A2E),
+  );
+}
+```
 
 ---
 
-## 5. 마이그레이션 로드맵 (하루코토 기준)
+## 5. 점진적 전환 순서
 
-### Phase 0: 준비 (2~4주)
+### Phase 0: 기반 세팅 (1~2주)
 
-- [ ] Flutter 프로젝트 셋업 (모노레포 내 `apps/mobile/` 또는 별도 레포)
-- [ ] Supabase Flutter 클라이언트 연동 (동일 프로젝트)
-- [ ] CI/CD 파이프라인 구축 (GitHub Actions → App Store/Play Store)
-- [ ] 디자인 토큰 정의 (현재 Tailwind 테마를 Flutter ThemeData로 변환)
-- [ ] 상태 관리 결정 (Riverpod 3 추천)
-- [ ] `go_router` 라우팅 구조 설계
+- [ ] Flutter 프로젝트 구조 재구성 (기존 WebView 코드 보존)
+- [ ] 핵심 패키지 설치 및 설정 (Riverpod, Dio, Drift, GoRouter)
+- [ ] Supabase Auth 연동 (로그인/회원가입)
+- [ ] Dio 인터셉터 (인증 토큰, 에러 핸들링, 재시도)
+- [ ] 테마 시스템 (Light/Dark)
+- [ ] 바텀 네비게이션 셸
+- [ ] FCM 푸시 알림 연동
 
-### Phase 1: 인증 + 네비게이션 쉘 (2~4주)
+### Phase 1: 핵심 학습 플로우 (2~4주)
 
-- [ ] 로그인/회원가입 (Supabase Auth → 카카오, 구글 OAuth)
-- [ ] 온보딩 플로우
-- [ ] 바텀 네비게이션 쉘
-- [ ] 기본 라우팅 (홈, 학습, 회화, 마이)
-- [ ] 라이트/다크 테마
+안정적이고 잘 안 바뀌는 화면부터 네이티브로 구현합니다.
 
-→ 앱이 설치 가능하지만 실제 기능은 없는 "뼈대" 상태.
+- [ ] 홈 화면 (대시보드, 스트릭, 오늘의 진도)
+- [ ] 학습 탭 (레벨 선택, 학습 유형 카드)
+- [ ] 퀴즈 (4지선다, 프로그레스 바, 결과 화면)
+- [ ] 퀴즈 오프라인 캐시 (문제 로컬 저장, 답안 큐)
+- [ ] 마이페이지 (프로필, 설정)
 
-### Phase 2: 핵심 학습 플로우 (4~8주)
+### Phase 2: 보조 기능 (2~3주)
 
-- [ ] 퀴즈 (4지선다, 매칭, 빈칸, 어순, 쓰기)
-- [ ] 가나 학습
-- [ ] 학습 결과 화면
-- [ ] 데일리 프로그래스
-
-→ **유저가 Flutter 앱에서 핵심 가치(학습)를 경험할 수 있는 최소 단위.** 이 단계에서 앱스토어 출시.
-
-### Phase 3: 부가 기능 (4~12주)
-
-- [ ] 홈 대시보드 (스트릭, 주간 차트, 퀵스타트)
-- [ ] AI 회화 (채팅 + 음성통화)
-- [ ] 마이페이지 (프로필, 설정, 업적)
-- [ ] 푸시 알림 (네이티브 — 웹보다 훨씬 강력)
+- [ ] 가나 학습 (플래시카드, 매칭, 받아쓰기)
 - [ ] 단어장
+- [ ] 복습/통계
+- [ ] 일일 미션
+- [ ] 알림 센터
 
-### Phase 4: 네이티브 고유 기능 (지속)
+### Phase 3: AI 회화 (3~4주)
 
-- [ ] 오프라인 모드 (SQLite via `drift` 패키지)
-- [ ] 햅틱 피드백
-- [ ] 홈 화면 위젯 (오늘의 단어 등)
-- [ ] App Store Optimization (ASO)
-- [ ] 딥링크
+가장 복잡하고 실험적인 기능입니다.
 
-### Phase 5: 안정화 + 역할 분리
+- [ ] 채팅 목록/시나리오 선택
+- [ ] 텍스트 채팅 (SSE 스트리밍)
+- [ ] TTS 재생
+- [ ] 음성 통화 (PCM 녹음 + WebSocket + Gemini Live)
+- [ ] 피드백 화면
 
-- 웹 (Next.js): SEO, 랜딩, 신규 유저 유입 채널
-- 앱 (Flutter): 리텐션, 핵심 학습 경험, 푸시 알림
+### Phase 4: 결제 + 마무리 (1~2주)
 
----
-
-## 6. 예상 소요 기간
-
-| 범위 | 1인 개발 | 2~3인 팀 |
-|------|----------|----------|
-| Phase 0~1 (뼈대) | 4~6주 | 2~4주 |
-| Phase 2 (핵심 플로우) | 6~10주 | 4~6주 |
-| Phase 3 (부가 기능) | 8~16주 | 4~8주 |
-| 전체 기능 패리티 | 6~9개월 | 3~5개월 |
-
-> **Nubank의 교훈:** 12~18개월로 예상했으나 수년째 진행 중. "꼬리가 긴 작은 기능들"이 예상보다 많다. 100% 패리티보다는 80% 패리티에서 출시하고 나머지는 점진적으로.
+- [ ] 인앱 결제 (Apple IAP / Google Play Billing)
+- [ ] 구독 상태 관리
+- [ ] 웹 결제(PortOne)와의 구독 통합
+- [ ] 스토어 업데이트 제출
 
 ---
 
-## 7. 하루코토 현재 상황 기준 권장 사항
+## 6. 웹 ↔ Flutter 공존 전략
 
-1. **지금은 Flutter 전환하지 않는다.** PMF 검증과 유저 확보에 집중.
-2. **PWA를 먼저 강화한다.** `manifest.json`, 서비스 워커, 오프라인 단어 캐시 — 1~2주 투자로 앱 수준 경험 제공 가능.
-3. **Flutter 학습은 지금부터 시작해도 좋다.** Dart 문법, Riverpod, Widget 시스템 익히기.
-4. **전환 트리거:** 모바일 웹 세션 50%+ & 유저 5K~10K & "앱 어디서 다운받아요?" 질문 반복 시.
-5. **전환 시 Supabase가 최대 자산.** 백엔드 변경 없이 Flutter 클라이언트만 추가하면 됨.
+전환 기간 동안 미완성 화면은 WebView로 폴백합니다.
+
+```dart
+final nativeScreens = {'/home', '/study', '/study/quiz', '/my'};
+
+GoRoute(
+  path: '/:path(.*)',  // catch-all
+  builder: (_, state) {
+    if (nativeScreens.contains(state.matchedLocation)) {
+      return getNativeScreen(state.matchedLocation);
+    }
+    return WebViewFallback(
+      url: 'https://app.harukoto.co.kr${state.matchedLocation}',
+    );
+  },
+);
+```
+
+---
+
+## 7. API 호출 목록 (총 52개)
+
+Flutter에서 호출해야 하는 기존 API 엔드포인트입니다. 백엔드 변경 없음.
+
+### 인증 (2개)
+- `POST /api/auth/ensure-user`
+- `POST /api/v1/auth/onboarding`
+
+### 퀴즈 (8개)
+- `POST /api/v1/quiz/start` · `POST /api/v1/quiz/answer` · `POST /api/v1/quiz/complete`
+- `GET /api/v1/quiz/resume` · `GET /api/v1/quiz/incomplete`
+- `GET /api/v1/quiz/stats` · `GET /api/v1/quiz/wrong-answers` · `GET /api/v1/quiz/recommendations`
+
+### 가나 학습 (7개)
+- `GET /api/v1/kana/characters` · `GET /api/v1/kana/stages` · `GET /api/v1/kana/progress`
+- `POST /api/v1/kana/quiz/start` · `POST /api/v1/kana/quiz/answer` · `POST /api/v1/kana/quiz/complete`
+- `POST /api/v1/kana/stage-complete`
+
+### AI 회화 (13개)
+- `GET /api/v1/chat/characters` · `GET/POST /api/v1/chat/characters/favorites` · `GET /api/v1/chat/characters/stats`
+- `GET /api/v1/chat/scenarios` · `POST /api/v1/chat/start` · `POST /api/v1/chat/message`
+- `GET/DELETE /api/v1/chat/[conversationId]` · `GET /api/v1/chat/history` · `POST /api/v1/chat/end`
+- `POST /api/v1/chat/tts` · `POST /api/v1/chat/live-feedback` · `POST /api/v1/chat/live-token`
+- `POST /api/v1/chat/voice/transcribe`
+
+### 대시보드/통계 (2개)
+- `GET /api/v1/stats/dashboard` · `GET /api/v1/stats/history`
+
+### 학습 (2개)
+- `GET /api/v1/study/learned-words` · `GET /api/v1/study/wrong-answers`
+
+### 미션 (2개)
+- `GET /api/v1/missions/today` · `POST /api/v1/missions/claim`
+
+### 단어장 (3개)
+- `GET/POST /api/v1/wordbook` · `GET/DELETE /api/v1/wordbook/[id]`
+
+### 알림/푸시 (2개)
+- `GET /api/v1/notifications` · `POST /api/v1/push/subscribe`
+
+### 유저 (3개)
+- `GET/PATCH /api/v1/user/profile` · `POST /api/v1/user/avatar` · `DELETE /api/v1/user/account`
+
+### 구독/결제 (6개)
+- `GET /api/v1/subscription/status` · `POST /api/v1/subscription/checkout`
+- `POST /api/v1/subscription/activate` · `POST /api/v1/subscription/cancel`
+- `POST /api/v1/subscription/resume` · `POST /api/v1/payments`
+
+### TTS (1개)
+- `POST /api/v1/vocab/tts`
+
+---
+
+## 8. 데이터 모델 (Freezed)
+
+웹앱의 TypeScript 타입 → Dart Freezed 클래스로 변환합니다.
+
+```dart
+@freezed
+class User with _$User {
+  const factory User({
+    required String id,
+    required String email,
+    String? nickname,
+    String? avatarUrl,
+    required JlptLevel jlptLevel,
+    required int dailyGoal,
+    required int experiencePoints,
+    required int level,
+    required int streakCount,
+    required bool isPremium,
+    required bool onboardingCompleted,
+  }) = _User;
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+
+enum JlptLevel { N5, N4, N3, N2, N1 }
+enum QuizType { VOCABULARY, GRAMMAR, KANJI, LISTENING, KANA, CLOZE, SENTENCE_ARRANGE }
+enum KanaType { HIRAGANA, KATAKANA }
+enum ConversationType { VOICE, TEXT }
+```
+
+---
+
+## 9. 주의사항 및 리스크
+
+### 9.1 결제 전환
+- Apple/Google 스토어 정책상 **디지털 콘텐츠 구독은 인앱 결제 필수**
+- 기존 PortOne 결제(카드/카카오페이)는 웹에서만 유지
+- 앱에서는 IAP로 전환 → 수수료 30% 고려 필요
+- 웹 구독과 앱 IAP 구독을 서버에서 통합 관리하는 로직 필요
+
+### 9.2 Gemini Live 음성 통화
+- 웹에서는 WebRTC/WebSocket + PCM 스트리밍으로 구현
+- Flutter에서는 `record` + `web_socket_channel`로 대체
+- 가장 복잡한 기능이므로 Phase 3에서 별도 시간 확보
+
+### 9.3 딥링크
+- 푸시 알림 탭 → 특정 화면으로 이동
+- GoRouter의 딥링크 지원으로 처리
+- Android App Links / iOS Universal Links 설정 필요
+
+### 9.4 디자인 리뉴얼과의 타이밍
+- Phase 0(기반 세팅)은 디자인 없이 진행 가능
+- Phase 1부터는 디자이너 시안이 필요
+- 디자이너 피드백 → 컬러/테마 확정 → Flutter ThemeData 반영
+
+### 9.5 Supabase 모바일 약점 보완
+- Supabase Flutter SDK는 오프라인 캐시를 내장하지 않음
+- Drift(SQLite)로 로컬 캐시 계층을 직접 구현
+- `connectivity_plus`로 온/오프라인 감지 → 자동 동기화
+- Riverpod 3.0 자동 재시도로 네트워크 불안정 대응
+
+---
+
+## 10. 예상 일정
+
+| Phase | 내용 | 예상 기간 | 디자인 의존성 |
+|-------|------|-----------|---------------|
+| Phase 0 | 기반 세팅 | 1~2주 | 없음 |
+| Phase 1 | 핵심 학습 플로우 | 2~4주 | 디자이너 시안 필요 |
+| Phase 2 | 보조 기능 | 2~3주 | Phase 1 시안 기반 확장 |
+| Phase 3 | AI 회화 | 3~4주 | 보통 (실험적 UI) |
+| Phase 4 | 결제 + 마무리 | 1~2주 | 없음 |
+| **합계** | | **9~15주** | |
+
+> AI(Claude) 활용 시 실제 개발 속도는 이보다 빠를 수 있습니다.
 
 ---
 
 ## 참고 자료
 
-- [BMW Flutter 사례](https://flutter.dev/showcase/bmw)
-- [Nubank Flutter 전환 블로그](https://building.nubank.com/scaling-with-flutter/)
-- [알리바바 Flutter Boost](https://github.com/alibaba/flutter_boost)
-- [Flutter Add-to-App 공식 문서](https://docs.flutter.dev/add-to-app)
-- [Supabase Flutter 클라이언트](https://supabase.com/docs/guides/getting-started/quickstarts/flutter)
-- [Riverpod 공식 문서](https://riverpod.dev/)
+- [Flutter 3.41 Release](https://blog.flutter.dev/whats-new-in-flutter-3-41-302ec140e632)
+- [Riverpod 3.0 공식 문서](https://riverpod.dev/)
+- [Riverpod 3.0 What's New](https://riverpod.dev/docs/whats_new)
+- [Supabase Flutter 문서](https://supabase.com/docs/reference/dart/upgrade-guide)
+- [Drift 공식 문서](https://drift.simonbinder.eu/)
+- [Supabase + Brick 오프라인 튜토리얼](https://supabase.com/blog/offline-first-flutter-apps)
+- [Flutter State Management 2026](https://foresightmobile.com/blog/best-flutter-state-management)
