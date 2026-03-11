@@ -1,0 +1,68 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker asia-northeast3-docker.pkg.dev
+
+      - name: Build and Push
+        run: |
+          IMAGE=asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api:${{ github.sha }}
+          docker build -t $IMAGE apps/api/
+          docker push $IMAGE
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: harukoto-api
+          region: asia-northeast3
+          image: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api:${{ github.sha }}
+          flags: |
+            --min-instances=1
+            --max-instances=10
+            --memory=512Mi
+            --cpu=1
+            --port=8000
+            --allow-unauthenticated
+          env_vars: |
+            ENVIRONMENT=production
+          secrets: |
+            DATABASE_URL=DATABASE_URL:latest
+            SUPABASE_URL=SUPABASE_URL:latest
+            GOOGLE_API_KEY=GOOGLE_API_KEY:latest
+            GCS_BUCKET_NAME=GCS_BUCKET_NAME:latest
+            GCS_CDN_BASE_URL=GCS_CDN_BASE_URL:latest
+            PORTONE_API_SECRET=PORTONE_API_SECRET:latest
+            PORTONE_STORE_ID=PORTONE_STORE_ID:latest
+            PORTONE_CHANNEL_KEY=PORTONE_CHANNEL_KEY:latest
+            PORTONE_WEBHOOK_SECRET=PORTONE_WEBHOOK_SECRET:latest
+            REDIS_URL=REDIS_URL:latest
+            VAPID_PRIVATE_KEY=VAPID_PRIVATE_KEY:latest
+            VAPID_PUBLIC_KEY=VAPID_PUBLIC_KEY:latest
+            VAPID_EMAIL=VAPID_EMAIL:latest
+            CORS_ORIGINS=CORS_ORIGINS:latest
+            CRON_SECRET=CRON_SECRET:latest
+            SENTRY_DSN=SENTRY_DSN:latest
