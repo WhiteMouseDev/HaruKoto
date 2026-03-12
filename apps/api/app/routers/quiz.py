@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import contextlib
 import random
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,6 +32,7 @@ from app.schemas.quiz import (
     QuizCompleteResponse,
     QuizOption,
     QuizQuestion,
+    QuizResumeRequest,
     QuizStartRequest,
     QuizStartResponse,
 )
@@ -327,15 +329,17 @@ async def start_quiz(
     await db.commit()
     await db.refresh(session)
 
-    # Strip correctOptionId from response
+    # Include correctOptionId for mobile client-side validation
     response_questions = []
     for q in questions:
         response_questions.append(
             QuizQuestion(
-                id=uuid.UUID(q["id"]),
-                type=q["type"],
-                question=q["question"],
+                question_id=q["id"],
+                question_text=q["question"],
+                question_sub_text=q.get("questionSubText"),
+                hint=q.get("hint"),
                 options=[QuizOption(**o) for o in q["options"]],
+                correct_option_id=q.get("correctOptionId"),
             )
         )
 
@@ -584,11 +588,12 @@ async def complete_quiz(
     )
 
 
-@router.get("/resume")
-async def resume_quiz(
+@router.get("/incomplete")
+async def get_incomplete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
+    """미완료 퀴즈 세션 조회 (배너용)."""
     result = await db.execute(
         select(QuizSession)
         .where(
@@ -602,6 +607,37 @@ async def resume_quiz(
     if not session:
         return {"session": None}
 
+    # Count answered questions
+    answered_result = await db.execute(
+        select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id)
+    )
+    answered_count = answered_result.scalar() or 0
+
+    return {
+        "session": {
+            "id": str(session.id),
+            "quizType": session.quiz_type.value if hasattr(session.quiz_type, "value") else session.quiz_type,
+            "jlptLevel": session.jlpt_level.value if hasattr(session.jlpt_level, "value") else session.jlpt_level,
+            "totalQuestions": session.total_questions,
+            "answeredCount": answered_count,
+            "correctCount": session.correct_count,
+            "startedAt": session.started_at.isoformat() if session.started_at else "",
+        }
+    }
+
+
+@router.post("/resume")
+async def resume_quiz(
+    body: QuizResumeRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    session = await db.get(QuizSession, body.session_id)
+    if not session or session.user_id != user.id:
+        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
+    if session.completed_at:
+        raise HTTPException(status_code=400, detail="이미 완료된 세션입니다")
+
     answered_result = await db.execute(select(QuizAnswer.question_id).where(QuizAnswer.session_id == session.id))
     answered_ids = [str(qid) for qid in answered_result.scalars().all()]
 
@@ -609,22 +645,25 @@ async def resume_quiz(
     response_questions = []
     for q in questions:
         response_questions.append(
-            {
-                "id": q["id"],
-                "type": q["type"],
-                "question": q["question"],
-                "options": q["options"],
-            }
+            QuizQuestion(
+                question_id=q["id"],
+                question_text=q["question"],
+                question_sub_text=q.get("questionSubText"),
+                hint=q.get("hint"),
+                options=[QuizOption(**o) for o in q["options"]],
+                correct_option_id=q.get("correctOptionId"),
+            )
         )
 
+    quiz_type = session.quiz_type.value if hasattr(session.quiz_type, "value") else session.quiz_type
+
     return {
-        "session": {
-            "sessionId": str(session.id),
-            "questions": response_questions,
-            "totalQuestions": session.total_questions,
-            "correctCount": session.correct_count,
-            "answeredIds": answered_ids,
-        }
+        "sessionId": str(session.id),
+        "questions": [q.model_dump(by_alias=True) for q in response_questions],
+        "answeredQuestionIds": answered_ids,
+        "totalQuestions": session.total_questions,
+        "correctCount": session.correct_count,
+        "quizType": quiz_type,
     }
 
 
@@ -632,7 +671,51 @@ async def resume_quiz(
 async def get_quiz_stats(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
+    level: str | None = None,
+    quiz_type: Annotated[str | None, Query(alias="type")] = None,
 ):
+    # If level and type provided, return content-level stats
+    if level and quiz_type:
+        if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
+            total_result = await db.execute(
+                select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == level)
+            )
+            total_count = total_result.scalar() or 0
+
+            studied_result = await db.execute(
+                select(func.count(UserVocabProgress.id))
+                .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
+                .where(
+                    UserVocabProgress.user_id == user.id,
+                    Vocabulary.jlpt_level == level,
+                )
+            )
+            studied_count = studied_result.scalar() or 0
+        else:
+            # GRAMMAR
+            total_result = await db.execute(
+                select(func.count(Grammar.id)).where(Grammar.jlpt_level == level)
+            )
+            total_count = total_result.scalar() or 0
+
+            studied_result = await db.execute(
+                select(func.count(UserGrammarProgress.id))
+                .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
+                .where(
+                    UserGrammarProgress.user_id == user.id,
+                    Grammar.jlpt_level == level,
+                )
+            )
+            studied_count = studied_result.scalar() or 0
+
+        progress = round(studied_count / total_count * 100) if total_count > 0 else 0
+        return {
+            "totalCount": total_count,
+            "studiedCount": studied_count,
+            "progress": progress,
+        }
+
+    # Default: overall quiz stats
     total_result = await db.execute(
         select(func.count(QuizSession.id)).where(
             QuizSession.user_id == user.id,
@@ -681,18 +764,35 @@ async def get_wrong_answers(
     questions_data = session.questions_data or []
     q_map = {q["id"]: q for q in questions_data}
 
+    # Collect vocabulary IDs from wrong answers for example sentences
+    wrong_vocab_ids = []
+    for wa in wrong_answers:
+        q = q_map.get(str(wa.question_id))
+        if q and q.get("type") in ("VOCABULARY", "KANJI", "LISTENING"):
+            with contextlib.suppress(ValueError):
+                wrong_vocab_ids.append(uuid.UUID(str(wa.question_id)))
+
+    # Fetch vocabulary details for example sentences
+    vocab_map: dict[str, Vocabulary] = {}
+    if wrong_vocab_ids:
+        vocab_result = await db.execute(
+            select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids))
+        )
+        for v in vocab_result.scalars().all():
+            vocab_map[str(v.id)] = v
+
     result_list = []
     for wa in wrong_answers:
         q = q_map.get(str(wa.question_id), {})
+        vocab = vocab_map.get(str(wa.question_id))
         result_list.append(
             {
                 "questionId": str(wa.question_id),
                 "word": q.get("word"),
-                "reading": q.get("reading"),
+                "reading": q.get("reading") or (vocab.reading if vocab else None),
                 "meaningKo": q.get("meaningKo"),
-                "pattern": q.get("pattern"),
-                "selectedOption": wa.selected_option_id,
-                "correctOption": q.get("correctOptionId", ""),
+                "exampleSentence": vocab.example_sentence if vocab else None,
+                "exampleTranslation": vocab.example_translation if vocab else None,
             }
         )
 
@@ -704,50 +804,53 @@ async def get_recommendations(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Count due review items
-    due_vocab = await db.execute(
+    now = datetime.now(UTC)
+
+    # Count due review items (vocab + grammar)
+    due_vocab_result = await db.execute(
         select(func.count(UserVocabProgress.id)).where(
             UserVocabProgress.user_id == user.id,
-            UserVocabProgress.next_review_at <= datetime.now(UTC),
+            UserVocabProgress.next_review_at <= now,
         )
     )
-    due_grammar = await db.execute(
+    due_grammar_result = await db.execute(
         select(func.count(UserGrammarProgress.id)).where(
             UserGrammarProgress.user_id == user.id,
-            UserGrammarProgress.next_review_at <= datetime.now(UTC),
+            UserGrammarProgress.next_review_at <= now,
         )
     )
+    vocab_due = due_vocab_result.scalar() or 0
+    grammar_due = due_grammar_result.scalar() or 0
 
-    recommendations = []
-    vocab_due = due_vocab.scalar() or 0
-    grammar_due = due_grammar.scalar() or 0
-
-    if vocab_due > 0:
-        recommendations.append(
-            {
-                "type": "review",
-                "quizType": "VOCABULARY",
-                "count": min(vocab_due, 10),
-                "reason": f"복습할 단어가 {vocab_due}개 있어요",
-            }
-        )
-    if grammar_due > 0:
-        recommendations.append(
-            {
-                "type": "review",
-                "quizType": "GRAMMAR",
-                "count": min(grammar_due, 10),
-                "reason": f"복습할 문법이 {grammar_due}개 있어요",
-            }
-        )
-
-    recommendations.append(
-        {
-            "type": "normal",
-            "quizType": "VOCABULARY",
-            "count": 10,
-            "reason": "새로운 단어를 학습해보세요",
-        }
+    # Count new words (vocab not yet studied by user)
+    studied_count_result = await db.execute(
+        select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id)
     )
+    studied_count = studied_count_result.scalar() or 0
+    total_vocab_result = await db.execute(select(func.count(Vocabulary.id)))
+    total_vocab = total_vocab_result.scalar() or 0
+    new_words_count = max(0, total_vocab - studied_count)
 
-    return {"recommendations": recommendations}
+    # Count wrong answers
+    wrong_count_result = await db.execute(
+        select(func.count(UserVocabProgress.id)).where(
+            UserVocabProgress.user_id == user.id,
+            UserVocabProgress.incorrect_count > 0,
+        )
+    )
+    wrong_count = wrong_count_result.scalar() or 0
+
+    # Last reviewed at
+    last_reviewed_result = await db.execute(
+        select(func.max(UserVocabProgress.last_reviewed_at)).where(
+            UserVocabProgress.user_id == user.id,
+        )
+    )
+    last_reviewed = last_reviewed_result.scalar()
+
+    return {
+        "reviewDueCount": vocab_due + grammar_due,
+        "newWordsCount": new_words_count,
+        "wrongCount": wrong_count,
+        "lastReviewedAt": last_reviewed.isoformat() if last_reviewed else None,
+    }

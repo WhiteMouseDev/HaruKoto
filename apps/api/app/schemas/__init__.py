@@ -55,21 +55,24 @@ from app.schemas.stats import (
     HistoryResponse,
     LevelProgress,
     ProgressStat,
+    StreakInfo,
     TodayStats,
-    WeeklyStats,
+    WeeklyStatItem,
 )
 from app.schemas.subscription import (
     ActivateRequest,
     AiLimits,
     AiUsage,
+    AiUsageInfo,
     CancelRequest,
     CheckoutRequest,
     CheckoutResponse,
     PaymentHistoryItem,
     PaymentHistoryResponse,
+    SubscriptionInfo,
     SubscriptionStatusResponse,
 )
-from app.schemas.user import UserProfile, UserProfileUpdate, UserStats
+from app.schemas.user import AchievementItem, UserProfile, UserProfileUpdate, UserStats, UserSummary
 from app.schemas.wordbook import (
     WordbookCreateRequest,
     WordbookEntryResponse,
@@ -88,9 +91,11 @@ __all__ = [
     "OnboardingRequest",
     "OnboardingResponse",
     # user
+    "AchievementItem",
     "UserProfile",
     "UserProfileUpdate",
     "UserStats",
+    "UserSummary",
     # quiz
     "QuizOption",
     "QuizQuestion",
@@ -131,7 +136,8 @@ __all__ = [
     "MissionClaimResponse",
     # stats
     "TodayStats",
-    "WeeklyStats",
+    "StreakInfo",
+    "WeeklyStatItem",
     "LevelProgress",
     "ProgressStat",
     "DashboardResponse",
@@ -144,7 +150,9 @@ __all__ = [
     "WordbookListResponse",
     # subscription
     "AiUsage",
+    "AiUsageInfo",
     "AiLimits",
+    "SubscriptionInfo",
     "SubscriptionStatusResponse",
     "CheckoutRequest",
     "CheckoutResponse",

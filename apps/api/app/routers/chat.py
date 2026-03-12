@@ -368,7 +368,7 @@ async def submit_live_feedback(
     )
 
     # Track voice usage
-    await track_ai_usage(db, str(user.id), "call", body.duration)
+    await track_ai_usage(db, str(user.id), "call", body.duration_seconds)
 
     # Achievements
     conv_count = (

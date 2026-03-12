@@ -14,11 +14,11 @@ from app.models import Payment
 from app.models.user import User
 from app.schemas.subscription import (
     ActivateRequest,
-    AiLimits,
-    AiUsage,
+    AiUsageInfo,
     CancelRequest,
     CheckoutRequest,
     CheckoutResponse,
+    SubscriptionInfo,
     SubscriptionStatusResponse,
 )
 from app.services.portone import verify_payment_amount
@@ -39,21 +39,26 @@ async def get_status(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    status = await get_subscription_status(db, str(user.id))
+    sub_status = await get_subscription_status(db, str(user.id))
     usage = await get_daily_ai_usage(db, str(user.id))
-    limits = AI_LIMITS.PREMIUM if status["is_premium"] else AI_LIMITS.FREE
+    limits = AI_LIMITS.PREMIUM if sub_status["is_premium"] else AI_LIMITS.FREE
 
     return SubscriptionStatusResponse(
-        is_premium=status["is_premium"],
-        plan=status["plan"],
-        expires_at=status["expires_at"],
-        cancelled_at=status["cancelled_at"],
-        usage=AiUsage(**usage),
-        limits=AiLimits(
-            chat_count=limits.CHAT_COUNT,
-            chat_seconds=limits.CHAT_SECONDS,
-            call_count=limits.CALL_COUNT,
-            call_seconds=limits.CALL_SECONDS,
+        subscription=SubscriptionInfo(
+            is_premium=sub_status["is_premium"],
+            plan=sub_status["plan"],
+            expires_at=sub_status["expires_at"],
+            cancelled_at=sub_status["cancelled_at"],
+        ),
+        ai_usage=AiUsageInfo(
+            chat_count=usage["chat_count"],
+            call_count=usage["call_count"],
+            chat_seconds=usage["chat_seconds"],
+            call_seconds=usage["call_seconds"],
+            chat_limit=limits.CHAT_COUNT,
+            call_limit=limits.CALL_COUNT,
+            chat_seconds_limit=limits.CHAT_SECONDS,
+            call_seconds_limit=limits.CALL_SECONDS,
         ),
     )
 

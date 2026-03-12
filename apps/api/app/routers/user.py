@@ -1,26 +1,38 @@
 from __future__ import annotations
 
+import logging
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends
+import httpx
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import DailyProgress, QuizSession, UserAchievement, UserVocabProgress
 from app.models.user import User
 from app.schemas.common import CamelModel
-from app.schemas.user import UserProfile, UserProfileUpdate, UserStats
-from app.services.gamification import get_achievement
+from app.schemas.user import (
+    AchievementItem,
+    LevelProgressInfo,
+    UserProfile,
+    UserProfileUpdate,
+    UserSummary,
+)
+from app.services.gamification import calculate_level
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/user", tags=["user"])
 
 
-class UserProfileWithStats(CamelModel):
+class UserProfileResponse(CamelModel):
     profile: UserProfile
-    stats: UserStats
+    summary: UserSummary
+    achievements: list[AchievementItem]
 
 
 class AvatarUpdateRequest(BaseModel):
@@ -32,7 +44,7 @@ class AccountUpdateRequest(CamelModel):
     email: str | None = None
 
 
-@router.get("/profile", response_model=UserProfileWithStats)
+@router.get("/profile", response_model=UserProfileResponse)
 async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -58,27 +70,30 @@ async def get_profile(
 
     achievement_rows = (await db.execute(select(UserAchievement).where(UserAchievement.user_id == user.id))).scalars().all()
 
-    achievements: list[dict[str, Any]] = []
-    for a in achievement_rows:
-        definition = get_achievement(a.achievement_type)
-        achievements.append(
-            {
-                "type": a.achievement_type,
-                "title": definition["title"] if definition else a.achievement_type,
-                "description": definition["description"] if definition else "",
-                "emoji": definition.get("emoji", "") if definition else "",
-                "achievedAt": a.achieved_at.isoformat() if a.achieved_at else None,
-            }
+    achievements = [
+        AchievementItem(
+            achievement_type=a.achievement_type,
+            achieved_at=a.achieved_at,
         )
+        for a in achievement_rows
+    ]
 
-    return UserProfileWithStats(
-        profile=UserProfile.model_validate(user),
-        stats=UserStats(
+    level_info = calculate_level(user.experience_points)
+    profile = UserProfile.model_validate(user)
+    profile.level_progress = LevelProgressInfo(
+        current_xp=level_info["current_xp"],
+        xp_for_next=level_info["xp_for_next"],
+    )
+
+    return UserProfileResponse(
+        profile=profile,
+        summary=UserSummary(
             total_words_studied=total_words,
             total_quizzes_completed=total_quizzes,
             total_study_days=total_study_days,
-            achievements=achievements,
+            total_xp_earned=user.experience_points,
         ),
+        achievements=achievements,
     )
 
 
@@ -101,7 +116,54 @@ async def update_profile(
 
     await db.commit()
     await db.refresh(user)
-    return UserProfile.model_validate(user)
+
+    level_info = calculate_level(user.experience_points)
+    profile = UserProfile.model_validate(user)
+    profile.level_progress = LevelProgressInfo(
+        current_xp=level_info["current_xp"],
+        xp_for_next=level_info["xp_for_next"],
+    )
+    return profile
+
+
+@router.post("/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload avatar image to GCS and update user profile."""
+    if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
+        raise HTTPException(status_code=400, detail="지원하지 않는 이미지 형식입니다. JPEG, PNG, WEBP만 가능합니다.")
+
+    content = await file.read()
+    max_size = 5 * 1024 * 1024  # 5MB
+    if len(content) > max_size:
+        raise HTTPException(status_code=400, detail="파일 크기는 5MB 이하여야 합니다.")
+
+    ext = file.content_type.split("/")[-1]
+    if ext == "jpeg":
+        ext = "jpg"
+    file_path = f"avatars/{user.id}.{ext}"
+
+    try:
+        from google.cloud import storage
+
+        client = storage.Client()
+        bucket = client.bucket(settings.GCS_BUCKET_NAME)
+        blob = bucket.blob(file_path)
+        blob.upload_from_string(content, content_type=file.content_type)
+        blob.make_public()
+        avatar_url = f"{settings.GCS_CDN_BASE_URL}/{file_path}"
+    except Exception:
+        logger.exception("Failed to upload avatar to GCS for user %s", user.id)
+        raise HTTPException(status_code=500, detail="아바타 업로드에 실패했습니다") from None
+
+    user.avatar_url = avatar_url
+    await db.commit()
+    await db.refresh(user)
+
+    return {"avatarUrl": avatar_url}
 
 
 @router.patch("/avatar", response_model=dict)
@@ -114,6 +176,49 @@ async def update_avatar(
     await db.commit()
     await db.refresh(user)
     return {"avatarUrl": user.avatar_url}
+
+
+@router.delete("/account")
+async def delete_account(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Delete user account: GCS avatar, DB cascade, Supabase Auth."""
+    # 1. Delete GCS avatar (best-effort)
+    if user.avatar_url:
+        try:
+            from google.cloud import storage
+
+            client = storage.Client()
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+            # Extract blob path from URL
+            prefix = f"{settings.GCS_CDN_BASE_URL}/"
+            if user.avatar_url.startswith(prefix):
+                blob_path = user.avatar_url[len(prefix):]
+                blob = bucket.blob(blob_path)
+                blob.delete()
+        except Exception:
+            logger.warning("Failed to delete GCS avatar for user %s", user.id, exc_info=True)
+
+    # 2. Delete user from DB (CASCADE will remove related records)
+    await db.delete(user)
+    await db.commit()
+
+    # 3. Delete from Supabase Auth (best-effort)
+    if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.delete(
+                    f"{settings.SUPABASE_URL}/auth/v1/admin/users/{user.id}",
+                    headers={
+                        "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+                        "apikey": settings.SUPABASE_SERVICE_ROLE_KEY,
+                    },
+                )
+        except Exception:
+            logger.warning("Failed to delete Supabase auth user %s", user.id, exc_info=True)
+
+    return {"ok": True}
 
 
 @router.patch("/account", response_model=dict)

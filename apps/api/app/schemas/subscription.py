@@ -7,6 +7,29 @@ from app.models.enums import PaymentStatus, SubscriptionPlan
 from app.schemas.common import CamelModel
 
 
+class SubscriptionInfo(CamelModel):
+    is_premium: bool
+    plan: SubscriptionPlan
+    expires_at: datetime | None = None
+    cancelled_at: datetime | None = None
+
+
+class AiUsageInfo(CamelModel):
+    chat_count: int
+    call_count: int
+    chat_seconds: int
+    call_seconds: int
+    chat_limit: int
+    call_limit: int
+    chat_seconds_limit: int
+    call_seconds_limit: int
+
+
+class SubscriptionStatusResponse(CamelModel):
+    subscription: SubscriptionInfo
+    ai_usage: AiUsageInfo
+
+
 class AiUsage(CamelModel):
     chat_count: int
     chat_seconds: int
@@ -19,15 +42,6 @@ class AiLimits(CamelModel):
     chat_seconds: int
     call_count: int
     call_seconds: int
-
-
-class SubscriptionStatusResponse(CamelModel):
-    is_premium: bool
-    plan: SubscriptionPlan
-    expires_at: datetime | None = None
-    cancelled_at: datetime | None = None
-    usage: AiUsage
-    limits: AiLimits
 
 
 class CheckoutRequest(CamelModel):

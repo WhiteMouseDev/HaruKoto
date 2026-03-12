@@ -56,7 +56,7 @@ async def get_subscription_status(db: AsyncSession, user_id: uuid.UUID) -> dict:
         and subscription.current_period_end > now
     )
 
-    plan = subscription.plan.value.lower() if subscription else "free"
+    plan = subscription.plan if subscription else SubscriptionPlan.FREE
 
     return {
         "is_premium": is_premium,
