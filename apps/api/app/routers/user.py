@@ -194,7 +194,7 @@ async def delete_account(
             # Extract blob path from URL
             prefix = f"{settings.GCS_CDN_BASE_URL}/"
             if user.avatar_url.startswith(prefix):
-                blob_path = user.avatar_url[len(prefix):]
+                blob_path = user.avatar_url[len(prefix) :]
                 blob = bucket.blob(blob_path)
                 blob.delete()
         except Exception:

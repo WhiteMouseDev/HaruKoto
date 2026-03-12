@@ -150,12 +150,9 @@ async def get_study_wrong_answers(
     rows = result.all()
 
     # Summary
-    summary_base = (
-        select(UserVocabProgress)
-        .where(
-            UserVocabProgress.user_id == user.id,
-            UserVocabProgress.incorrect_count > 0,
-        )
+    summary_base = select(UserVocabProgress).where(
+        UserVocabProgress.user_id == user.id,
+        UserVocabProgress.incorrect_count > 0,
     )
     total_wrong_result = await db.execute(select(func.count()).select_from(summary_base.subquery()))
     total_wrong = total_wrong_result.scalar() or 0

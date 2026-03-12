@@ -20,7 +20,7 @@ void main() {
     test('fromJson handles missing fields with defaults', () {
       final model = SubscriptionInfo.fromJson({});
       expect(model.isPremium, false);
-      expect(model.plan, 'free');
+      expect(model.plan, 'FREE');
       expect(model.expiresAt, isNull);
       expect(model.cancelledAt, isNull);
     });
@@ -63,17 +63,19 @@ void main() {
   });
 
   group('SubscriptionStatus', () {
-    test('fromJson parses flat backend response', () {
+    test('fromJson parses wrapped backend response', () {
       final json = {
-        'isPremium': true,
-        'plan': 'yearly',
-        'expiresAt': '2026-01-01T00:00:00Z',
-        'cancelledAt': null,
-        'usage': {
+        'subscription': {
+          'isPremium': true,
+          'plan': 'yearly',
+          'expiresAt': '2026-01-01T00:00:00Z',
+          'cancelledAt': null,
+        },
+        'aiUsage': {
           'chatCount': 10,
-          'chatSeconds': 999,
+          'chatLimit': 999,
           'callCount': 5,
-          'callSeconds': 999,
+          'callLimit': 999,
         },
       };
       final model = SubscriptionStatus.fromJson(json);
@@ -86,7 +88,7 @@ void main() {
     test('fromJson handles missing fields', () {
       final model = SubscriptionStatus.fromJson({});
       expect(model.subscription.isPremium, false);
-      expect(model.subscription.plan, 'free');
+      expect(model.subscription.plan, 'FREE');
       expect(model.aiUsage, isNull);
     });
   });

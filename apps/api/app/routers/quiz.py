@@ -608,9 +608,7 @@ async def get_incomplete_quiz(
         return {"session": None}
 
     # Count answered questions
-    answered_result = await db.execute(
-        select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id)
-    )
+    answered_result = await db.execute(select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id))
     answered_count = answered_result.scalar() or 0
 
     return {
@@ -677,9 +675,7 @@ async def get_quiz_stats(
     # If level and type provided, return content-level stats
     if level and quiz_type:
         if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            total_result = await db.execute(
-                select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == level)
-            )
+            total_result = await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == level))
             total_count = total_result.scalar() or 0
 
             studied_result = await db.execute(
@@ -693,9 +689,7 @@ async def get_quiz_stats(
             studied_count = studied_result.scalar() or 0
         else:
             # GRAMMAR
-            total_result = await db.execute(
-                select(func.count(Grammar.id)).where(Grammar.jlpt_level == level)
-            )
+            total_result = await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == level))
             total_count = total_result.scalar() or 0
 
             studied_result = await db.execute(
@@ -775,9 +769,7 @@ async def get_wrong_answers(
     # Fetch vocabulary details for example sentences
     vocab_map: dict[str, Vocabulary] = {}
     if wrong_vocab_ids:
-        vocab_result = await db.execute(
-            select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids))
-        )
+        vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids)))
         for v in vocab_result.scalars().all():
             vocab_map[str(v.id)] = v
 
@@ -823,9 +815,7 @@ async def get_recommendations(
     grammar_due = due_grammar_result.scalar() or 0
 
     # Count new words (vocab not yet studied by user)
-    studied_count_result = await db.execute(
-        select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id)
-    )
+    studied_count_result = await db.execute(select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id))
     studied_count = studied_count_result.scalar() or 0
     total_vocab_result = await db.execute(select(func.count(Vocabulary.id)))
     total_vocab = total_vocab_result.scalar() or 0
