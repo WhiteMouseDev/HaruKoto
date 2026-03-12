@@ -38,6 +38,7 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           service: harukoto-api
           region: asia-northeast3
           image: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api:${{ github.sha }}
