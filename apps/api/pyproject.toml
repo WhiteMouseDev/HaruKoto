@@ -48,6 +48,7 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "A", "SIM"]
 ignore = [
     "B008",   # Depends() in function defaults — FastAPI 패턴
     "E402",   # module level import not at top — main.py 구조상 필요
+    "UP042",  # str + Enum → StrEnum 마이그레이션은 별도 PR로 진행
 ]
 
 [tool.ruff.lint.per-file-ignores]
