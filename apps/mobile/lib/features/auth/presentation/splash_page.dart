@@ -90,7 +90,7 @@ class _SplashPageState extends State<SplashPage>
                     '매일 한 단어, 봄처럼 피어나는 나의 일본어',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black.withValues(alpha: 0.5),
+                      color: AppColors.overlay(0.5),
                     ),
                   ),
                 ],

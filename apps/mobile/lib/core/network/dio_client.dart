@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../constants/app_config.dart';
 import 'api_exception.dart';
 import 'auth_interceptor.dart';
@@ -28,8 +29,12 @@ class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response != null) {
+      final statusCode = err.response?.statusCode;
+      if (statusCode != null && statusCode >= 500) {
+        Sentry.captureException(err, stackTrace: err.stackTrace);
+      }
       final exception = ApiException.fromResponse(
-        err.response?.statusCode,
+        statusCode,
         err.response?.data,
       );
       handler.reject(
@@ -43,6 +48,7 @@ class _ErrorInterceptor extends Interceptor {
       return;
     }
 
+    Sentry.captureException(err, stackTrace: err.stackTrace);
     handler.reject(
       DioException(
         requestOptions: err.requestOptions,

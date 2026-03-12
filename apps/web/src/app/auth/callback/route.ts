@@ -16,29 +16,14 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // Check if user exists in Prisma DB
+        // DB trigger(handle_new_user)가 public.users에 자동 생성하므로
+        // 여기서는 온보딩 완료 여부만 확인한다.
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { id: true, onboardingCompleted: true },
+          select: { onboardingCompleted: true },
         });
 
-        if (!dbUser) {
-          // New OAuth user — create a basic record and redirect to onboarding
-          await prisma.user.create({
-            data: {
-              id: user.id,
-              email: user.email ?? '',
-              nickname:
-                user.user_metadata?.full_name ??
-                user.user_metadata?.name ??
-                '',
-              avatarUrl: user.user_metadata?.avatar_url ?? null,
-            },
-          });
-          return NextResponse.redirect(`${origin}/onboarding`);
-        }
-
-        if (!dbUser.onboardingCompleted) {
+        if (!dbUser || !dbUser.onboardingCompleted) {
           return NextResponse.redirect(`${origin}/onboarding`);
         }
       }

@@ -1,0 +1,127 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class CallWaveformWidget extends StatefulWidget {
+  final String mode; // 'idle' | 'speaking' | 'listening'
+  final String? avatarUrl;
+
+  const CallWaveformWidget({
+    super.key,
+    this.mode = 'idle',
+    this.avatarUrl,
+  });
+
+  @override
+  State<CallWaveformWidget> createState() => _CallWaveformWidgetState();
+}
+
+class _CallWaveformWidgetState extends State<CallWaveformWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 200,
+      height: 200,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _WaveformPainter(
+              progress: _controller.value,
+              mode: widget.mode,
+            ),
+            child: child,
+          );
+        },
+        child: Center(
+          child: Container(
+            width: 128,
+            height: 128,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  blurRadius: 24,
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 64,
+              backgroundColor: const Color(0xFF1E293B),
+              backgroundImage: widget.avatarUrl != null
+                  ? NetworkImage(widget.avatarUrl!)
+                  : null,
+              child: widget.avatarUrl == null
+                  ? const Text('🦊', style: TextStyle(fontSize: 48))
+                  : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WaveformPainter extends CustomPainter {
+  final double progress;
+  final String mode;
+
+  static const _ringCount = 4;
+  static const _baseScale = [1.3, 1.55, 1.8, 2.05];
+  static const _baseOpacity = [0.25, 0.18, 0.12, 0.06];
+
+  _WaveformPainter({required this.progress, required this.mode});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final baseRadius = 64.0; // half of avatar size
+
+    for (var i = 0; i < _ringCount; i++) {
+      double scale;
+      double opacity;
+
+      if (mode == 'speaking') {
+        final wave = sin((progress + i * 0.3) * 2 * pi);
+        scale = _baseScale[i] + wave * 0.08;
+        opacity = _baseOpacity[i] + wave * 0.04;
+      } else if (mode == 'listening') {
+        scale = _baseScale[i];
+        opacity = _baseOpacity[i];
+      } else {
+        // idle
+        scale = _baseScale[i];
+        opacity = _baseOpacity[i] * 0.5;
+      }
+
+      final paint = Paint()
+        ..color = const Color(0xFF34D399).withValues(alpha: opacity.clamp(0.0, 1.0))
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0;
+
+      canvas.drawCircle(center, baseRadius * scale, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_WaveformPainter old) =>
+      old.progress != progress || old.mode != mode;
+}

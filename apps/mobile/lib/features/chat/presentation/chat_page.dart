@@ -1,15 +1,8 @@
-import 'package:flutter/material.dart';
+// Re-export ChatHubPage as ChatPage for router compatibility
+export 'chat_hub_page.dart' show ChatHubPage;
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+// Alias: the router currently uses `const ChatPage()`, so keep the name
+import 'chat_hub_page.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('회화')),
-      body: const Center(
-        child: Text('회화 페이지 (Phase 1에서 구현)'),
-      ),
-    );
-  }
-}
+/// Chat hub page — alias for [ChatHubPage] to match existing router usage.
+typedef ChatPage = ChatHubPage;

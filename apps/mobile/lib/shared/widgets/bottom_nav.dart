@@ -48,13 +48,18 @@ class BottomNav extends StatelessWidget {
                   final tab = _tabs[i];
                   final isActive = i == currentIndex;
                   return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => onTap(i),
-                      child: _TabItem(
-                        tab: tab,
-                        isActive: isActive,
-                        inactiveColor: inactiveColor,
+                    child: Semantics(
+                      label: '${tab.label} 탭',
+                      button: true,
+                      selected: isActive,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => onTap(i),
+                        child: _TabItem(
+                          tab: tab,
+                          isActive: isActive,
+                          inactiveColor: inactiveColor,
+                        ),
                       ),
                     ),
                   );

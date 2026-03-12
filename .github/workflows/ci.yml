@@ -85,3 +85,46 @@ jobs:
         env:
           DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
           SUPABASE_URL: https://test.supabase.co
+
+  # ============================
+  # Mobile (Flutter)
+  # ============================
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            apps/mobile/.dart_tool
+          key: flutter-pub-${{ runner.os }}-${{ hashFiles('apps/mobile/pubspec.lock') }}
+          restore-keys: |
+            flutter-pub-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Android debug APK
+        run: |
+          flutter build apk --debug \
+            --dart-define=SUPABASE_URL=https://placeholder.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=placeholder \
+            --dart-define=API_BASE_URL=https://placeholder.api.com \
+            --dart-define=SENTRY_DSN=

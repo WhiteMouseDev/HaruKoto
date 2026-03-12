@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/constants/app_config.dart';
@@ -20,9 +21,23 @@ void main() async {
     anonKey: AppConfig.supabaseAnonKey,
   );
 
-  runApp(
-    const ProviderScope(
-      child: HarukotoApp(),
-    ),
-  );
+  if (AppConfig.sentryDsn.isNotEmpty) {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = AppConfig.sentryDsn;
+        options.tracesSampleRate = 0.2;
+      },
+      appRunner: () => runApp(
+        const ProviderScope(
+          child: HarukotoApp(),
+        ),
+      ),
+    );
+  } else {
+    runApp(
+      const ProviderScope(
+        child: HarukotoApp(),
+      ),
+    );
+  }
 }
