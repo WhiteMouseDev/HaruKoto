@@ -46,10 +46,10 @@ async def test_get_profile(client, mock_user):
     data = response.json()
     assert data["profile"]["nickname"] == mock_user.nickname
     assert data["profile"]["email"] == mock_user.email
-    assert data["stats"]["totalWordsStudied"] == 5
-    assert data["stats"]["totalQuizzesCompleted"] == 3
-    assert data["stats"]["totalStudyDays"] == 7
-    assert data["stats"]["achievements"] == []
+    assert data["summary"]["totalWordsStudied"] == 5
+    assert data["summary"]["totalQuizzesCompleted"] == 3
+    assert data["summary"]["totalStudyDays"] == 7
+    assert data["achievements"] == []
 
 
 @pytest.mark.asyncio

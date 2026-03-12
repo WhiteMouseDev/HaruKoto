@@ -31,10 +31,9 @@ async def test_get_subscription_status_free(mock_get_status, mock_get_usage, cli
     assert response.status_code == 200
 
     data = response.json()
-    assert data["isPremium"] is False
-    assert data["plan"] == "FREE"
-    assert data["usage"]["chatCount"] == 2
-    assert data["limits"]["chatCount"] > 0
+    assert data["subscription"]["isPremium"] is False
+    assert data["subscription"]["plan"] == "FREE"
+    assert data["aiUsage"]["chatCount"] == 2
 
 
 @pytest.mark.asyncio

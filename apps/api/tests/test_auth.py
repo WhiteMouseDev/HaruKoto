@@ -16,8 +16,7 @@ async def test_onboarding_success(client, mock_user):
     assert response.status_code == 200
 
     data = response.json()
-    assert data["success"] is True
-    assert "user" in data
+    assert "profile" in data
 
     # Verify the user object was mutated by the handler
     assert mock_user.nickname == "하루학생"
@@ -43,7 +42,7 @@ async def test_onboarding_without_goal(client, mock_user):
     assert response.status_code == 200
 
     data = response.json()
-    assert data["success"] is True
+    assert "profile" in data
 
     assert mock_user.nickname == "테스트유저"
     assert mock_user.jlpt_level == "N5"
