@@ -18,8 +18,8 @@
 ### 1.2 전환 후 구조
 
 ```
-[Flutter 네이티브 앱]  ←HTTP→  [Next.js API Routes]  ←Prisma→  [Supabase PostgreSQL]
-   UI + 로컬 캐시               비즈니스 로직                     DB/Auth
+[Flutter 네이티브 앱]  ←HTTP→  [FastAPI (Cloud Run)]  ←SQLAlchemy→  [Supabase PostgreSQL]
+   UI + 로컬 캐시               비즈니스 로직                        DB/Auth
         │
         ├── FCM (푸시 알림)
         ├── Drift/SQLite (오프라인 캐시)
@@ -30,7 +30,7 @@
 
 ### 1.3 핵심 원칙
 
-- **백엔드는 건드리지 않는다** — 기존 52개 API Routes를 Flutter에서 HTTP로 호출
+- **FastAPI 백엔드 활용** — Cloud Run에 배포된 57개 API 엔드포인트를 Flutter에서 HTTP로 호출
 - **점진적 전환** — 한 화면씩 네이티브로 교체, 미완성 화면은 WebView 폴백
 - **오프라인 퍼스트** — 학습 데이터는 로컬 캐시 우선, 온라인 시 동기화
 
@@ -359,7 +359,7 @@ class AuthInterceptor extends Interceptor {
 ### 4.5 푸시 알림 설계
 
 ```
-[서버] Next.js Cron (/api/cron/daily-reminder)
+[서버] FastAPI Cron (/api/v1/cron/subscription-renewal 등)
   → FCM 서버 SDK로 푸시 전송
 
 [Flutter 앱]
@@ -512,13 +512,18 @@ GoRoute(
 
 ---
 
-## 7. API 호출 목록 (총 52개)
+## 7. API 엔드포인트 (총 57개)
 
-Flutter에서 호출해야 하는 기존 API 엔드포인트입니다. 백엔드 변경 없음.
+Flutter에서 호출하는 FastAPI 백엔드 엔드포인트입니다. 상세 명세는 `docs/FLUTTER_API_INTEGRATION.md` 참조.
 
-### 인증 (2개)
-- `POST /api/auth/ensure-user`
+> **Base URL**: `https://harukoto-api-842843944454.asia-northeast3.run.app`
+> **API 문서**: `{Base URL}/docs` (자동 생성 OpenAPI)
+
+### 인증 (1개)
 - `POST /api/v1/auth/onboarding`
+
+### 유저 (4개)
+- `GET/PATCH /api/v1/user/profile` · `POST /api/v1/user/avatar` · `DELETE /api/v1/user/account`
 
 ### 퀴즈 (8개)
 - `POST /api/v1/quiz/start` · `POST /api/v1/quiz/answer` · `POST /api/v1/quiz/complete`
@@ -530,15 +535,20 @@ Flutter에서 호출해야 하는 기존 API 엔드포인트입니다. 백엔드
 - `POST /api/v1/kana/quiz/start` · `POST /api/v1/kana/quiz/answer` · `POST /api/v1/kana/quiz/complete`
 - `POST /api/v1/kana/stage-complete`
 
-### AI 회화 (13개)
-- `GET /api/v1/chat/characters` · `GET/POST /api/v1/chat/characters/favorites` · `GET /api/v1/chat/characters/stats`
-- `GET /api/v1/chat/scenarios` · `POST /api/v1/chat/start` · `POST /api/v1/chat/message`
-- `GET/DELETE /api/v1/chat/[conversationId]` · `GET /api/v1/chat/history` · `POST /api/v1/chat/end`
-- `POST /api/v1/chat/tts` · `POST /api/v1/chat/live-feedback` · `POST /api/v1/chat/live-token`
-- `POST /api/v1/chat/voice/transcribe`
+### AI 회화 (7개)
+- `POST /api/v1/chat/start` · `POST /api/v1/chat/message` · `POST /api/v1/chat/end`
+- `POST /api/v1/chat/tts` · `POST /api/v1/chat/voice/transcribe`
+- `POST /api/v1/chat/live-token` · `POST /api/v1/chat/live-feedback`
 
-### 대시보드/통계 (2개)
+### 채팅 데이터 (8개)
+- `GET /api/v1/chat/scenarios` · `GET /api/v1/chat/history`
+- `GET/DELETE /api/v1/chat/{conversationId}`
+- `GET /api/v1/chat/characters` · `GET /api/v1/chat/characters/stats`
+- `GET/POST /api/v1/chat/characters/favorites`
+
+### 대시보드/통계 (4개)
 - `GET /api/v1/stats/dashboard` · `GET /api/v1/stats/history`
+- `GET /api/v1/stats/learned-words` · `GET /api/v1/stats/wrong-answers`
 
 ### 학습 (2개)
 - `GET /api/v1/study/learned-words` · `GET /api/v1/study/wrong-answers`
@@ -546,22 +556,19 @@ Flutter에서 호출해야 하는 기존 API 엔드포인트입니다. 백엔드
 ### 미션 (2개)
 - `GET /api/v1/missions/today` · `POST /api/v1/missions/claim`
 
-### 단어장 (3개)
-- `GET/POST /api/v1/wordbook` · `GET/DELETE /api/v1/wordbook/[id]`
+### 단어장 (4개)
+- `GET/POST /api/v1/wordbook` · `GET/DELETE /api/v1/wordbook/{id}`
 
-### 알림/푸시 (2개)
-- `GET /api/v1/notifications` · `POST /api/v1/push/subscribe`
-
-### 유저 (3개)
-- `GET/PATCH /api/v1/user/profile` · `POST /api/v1/user/avatar` · `DELETE /api/v1/user/account`
+### 알림/푸시 (3개)
+- `GET /api/v1/notifications` · `POST /api/v1/push/subscribe` · `POST /api/v1/push/unsubscribe`
 
 ### 구독/결제 (6개)
 - `GET /api/v1/subscription/status` · `POST /api/v1/subscription/checkout`
 - `POST /api/v1/subscription/activate` · `POST /api/v1/subscription/cancel`
-- `POST /api/v1/subscription/resume` · `POST /api/v1/payments`
+- `POST /api/v1/subscription/resume` · `GET /api/v1/payments/history`
 
 ### TTS (1개)
-- `POST /api/v1/vocab/tts`
+- `POST /api/v1/tts/vocab`
 
 ---
 

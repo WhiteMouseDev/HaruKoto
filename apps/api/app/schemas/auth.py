@@ -13,5 +13,4 @@ class OnboardingRequest(CamelModel):
 
 
 class OnboardingResponse(CamelModel):
-    success: bool
-    user: UserProfile
+    profile: UserProfile

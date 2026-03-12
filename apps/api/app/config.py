@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # Supabase Auth
     SUPABASE_URL: str = ""
     SUPABASE_JWT_SECRET: str = ""  # Legacy HS256 — 비워두면 JWKS(ES256) 사용
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
 
     @property
     def supabase_jwks_url(self) -> str:

@@ -7,27 +7,31 @@ from app.models.enums import JlptLevel, QuizType
 from app.schemas.common import CamelModel
 
 
+class QuizResumeRequest(CamelModel):
+    session_id: UUID
+
+
 class QuizOption(CamelModel):
     id: str
     text: str
 
 
 class QuizQuestion(CamelModel):
-    id: UUID
-    type: QuizType
-    question: str
+    question_id: str
+    question_text: str
+    question_sub_text: str | None = None
+    hint: str | None = None
     options: list[QuizOption]
     correct_option_id: str | None = None
 
 
 class WrongAnswer(CamelModel):
-    question_id: UUID
+    question_id: str
     word: str | None = None
     reading: str | None = None
     meaning_ko: str | None = None
-    pattern: str | None = None
-    selected_option: str
-    correct_option: str
+    example_sentence: str | None = None
+    example_translation: str | None = None
 
 
 class QuizStartRequest(CamelModel):

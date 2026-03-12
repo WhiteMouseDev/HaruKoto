@@ -42,11 +42,29 @@ class ChatEndRequest(CamelModel):
     conversation_id: UUID
 
 
+class GameEvent(CamelModel):
+    type: str
+    title: str
+    body: str
+    emoji: str = ""
+
+
+class FeedbackSummary(CamelModel):
+    overall_score: float | None = None
+    fluency: float | None = None
+    accuracy: float | None = None
+    vocabulary_diversity: float | None = None
+    naturalness: float | None = None
+    strengths: list[str] = []
+    improvements: list[str] = []
+    recommended_expressions: list[Any] = []
+
+
 class ChatEndResponse(CamelModel):
     success: bool
-    feedback_summary: dict[str, Any] | None = None
+    feedback_summary: FeedbackSummary | dict[str, Any] | None = None
     xp_earned: int
-    events: list[dict[str, Any]]
+    events: list[GameEvent | dict[str, Any]]
 
 
 class ChatHistoryItem(CamelModel):
@@ -77,4 +95,4 @@ class LiveTokenRequest(CamelModel):
 
 class LiveFeedbackRequest(CamelModel):
     conversation_id: UUID
-    duration: int
+    duration_seconds: int

@@ -8,6 +8,11 @@ from app.models.enums import JlptLevel, UserGoal
 from app.schemas.common import CamelModel
 
 
+class LevelProgressInfo(CamelModel):
+    current_xp: int
+    xp_for_next: int
+
+
 class UserProfile(CamelModel):
     id: UUID
     email: str
@@ -26,6 +31,7 @@ class UserProfile(CamelModel):
     onboarding_completed: bool
     call_settings: dict[str, Any] | None = None
     created_at: datetime
+    level_progress: LevelProgressInfo | None = None
 
 
 class UserProfileUpdate(CamelModel):
@@ -35,6 +41,18 @@ class UserProfileUpdate(CamelModel):
     goal: UserGoal | None = None
     show_kana: bool | None = None
     call_settings: dict[str, Any] | None = None
+
+
+class UserSummary(CamelModel):
+    total_words_studied: int
+    total_quizzes_completed: int
+    total_study_days: int
+    total_xp_earned: int
+
+
+class AchievementItem(CamelModel):
+    achievement_type: str
+    achieved_at: datetime | None = None
 
 
 class UserStats(CamelModel):

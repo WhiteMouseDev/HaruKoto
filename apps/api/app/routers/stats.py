@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from datetime import timedelta
+import calendar
+from datetime import date, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -28,8 +29,9 @@ from app.schemas.stats import (
     KanaProgressResponse,
     LevelProgress,
     ProgressStat,
+    StreakInfo,
     TodayStats,
-    WeeklyStats,
+    WeeklyStatItem,
 )
 from app.utils.date import get_today_kst
 
@@ -54,26 +56,33 @@ async def get_dashboard(
     today_stats = TodayStats(
         words_studied=dp.words_studied if dp else 0,
         quizzes_completed=dp.quizzes_completed if dp else 0,
+        correct_answers=dp.correct_answers if dp else 0,
+        total_answers=dp.total_answers if dp else 0,
         xp_earned=dp.xp_earned if dp else 0,
         goal_progress=goal_progress,
     )
 
-    # Weekly stats (last 7 days)
+    # Streak as object
+    streak = StreakInfo(current=user.streak_count, longest=user.longest_streak)
+
+    # Weekly stats (last 7 days) as array of objects
     week_start = today - timedelta(days=6)
     weekly_result = await db.execute(
         select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date >= week_start).order_by(DailyProgress.date)
     )
-    weekly_data = {str(dp.date): dp for dp in weekly_result.scalars().all()}
+    weekly_data = {str(dp_row.date): dp_row for dp_row in weekly_result.scalars().all()}
 
-    dates, words_list, xp_list = [], [], []
+    weekly_stats: list[WeeklyStatItem] = []
     for i in range(7):
         d = week_start + timedelta(days=i)
-        dates.append(str(d))
         dp_day = weekly_data.get(str(d))
-        words_list.append(dp_day.words_studied if dp_day else 0)
-        xp_list.append(dp_day.xp_earned if dp_day else 0)
-
-    weekly = WeeklyStats(dates=dates, words_studied=words_list, xp_earned=xp_list)
+        weekly_stats.append(
+            WeeklyStatItem(
+                date=str(d),
+                words_studied=dp_day.words_studied if dp_day else 0,
+                xp_earned=dp_day.xp_earned if dp_day else 0,
+            )
+        )
 
     # Level progress
     vocab_total = (await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == user.jlpt_level))).scalar() or 0
@@ -128,9 +137,10 @@ async def get_dashboard(
         return KanaStat(learned=learned, mastered=m, total=t)
 
     return DashboardResponse(
+        show_kana=user.show_kana,
         today=today_stats,
-        streak=user.streak_count,
-        weekly=weekly,
+        streak=streak,
+        weekly_stats=weekly_stats,
         level_progress=LevelProgress(
             vocabulary=ProgressStat(total=vocab_total, mastered=vocab_mastered, in_progress=vocab_in_progress),
             grammar=ProgressStat(total=grammar_total, mastered=grammar_mastered, in_progress=grammar_in_progress),
@@ -144,26 +154,47 @@ async def get_dashboard(
 
 @router.get("/history", response_model=HistoryResponse)
 async def get_history(
-    days: int = Query(default=30, le=90),
-    user: Annotated[User, Depends(get_current_user)] = None,
-    db: AsyncSession = Depends(get_db),
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    year: int | None = Query(default=None),
+    month: int | None = Query(default=None),
 ):
     today = get_today_kst()
-    start_date = today - timedelta(days=days - 1)
+
+    if year is None:
+        year = today.year
+    if month is None:
+        month = today.month
+
+    start_date = date(year, month, 1)
+    _, last_day = calendar.monthrange(year, month)
+    end_date = date(year, month, last_day)
 
     result = await db.execute(
-        select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date >= start_date).order_by(DailyProgress.date.desc())
+        select(DailyProgress)
+        .where(
+            DailyProgress.user_id == user.id,
+            DailyProgress.date >= start_date,
+            DailyProgress.date <= end_date,
+        )
+        .order_by(DailyProgress.date)
     )
     progress_list = result.scalars().all()
 
     return HistoryResponse(
-        days=[
+        year=year,
+        month=month,
+        records=[
             DailyProgressItem(
                 date=str(dp.date),
                 words_studied=dp.words_studied,
                 quizzes_completed=dp.quizzes_completed,
+                correct_answers=dp.correct_answers,
+                total_answers=dp.total_answers,
+                conversation_count=dp.conversation_count,
+                study_time_seconds=dp.study_time_seconds,
                 xp_earned=dp.xp_earned,
             )
             for dp in progress_list
-        ]
+        ],
     )
