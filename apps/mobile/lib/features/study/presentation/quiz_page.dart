@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/quiz_settings_provider.dart';
 import '../data/models/quiz_question_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_result_page.dart';
@@ -220,9 +221,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         _questions.sublist(_currentIndex);
 
     if (_resolvedMode == 'matching') {
+      final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
       return _buildSpecialMode(
         MatchingQuiz(
           questions: unanswered,
+          showFurigana: showFurigana,
           onMatchResult: (qId, isCorrect) {
             _submitSpecialAnswer(
                 qId, isCorrect, widget.quizType);
@@ -442,6 +445,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                         _selectedOptionId,
                     answered: _answered,
                     isCorrect: _isCorrect,
+                    showFurigana: ref.watch(quizSettingsProvider).showFurigana,
                     onSelect: _handleAnswer,
                   ),
                 ),

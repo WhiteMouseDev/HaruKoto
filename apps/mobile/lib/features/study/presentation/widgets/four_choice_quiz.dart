@@ -8,6 +8,7 @@ class FourChoiceQuiz extends StatelessWidget {
   final String? selectedOptionId;
   final bool answered;
   final bool isCorrect;
+  final bool showFurigana;
   final ValueChanged<String> onSelect;
 
   const FourChoiceQuiz({
@@ -16,6 +17,7 @@ class FourChoiceQuiz extends StatelessWidget {
     this.selectedOptionId,
     this.answered = false,
     this.isCorrect = false,
+    this.showFurigana = true,
     required this.onSelect,
   });
 
@@ -39,7 +41,9 @@ class FourChoiceQuiz extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                if (question.questionSubText != null) ...[
+                if (showFurigana &&
+                    question.questionSubText != null &&
+                    question.questionSubText != question.questionText) ...[
                   const SizedBox(height: 8),
                   Text(
                     question.questionSubText!,

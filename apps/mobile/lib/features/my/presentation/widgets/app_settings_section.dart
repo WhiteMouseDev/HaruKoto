@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../data/models/profile_detail_model.dart';
 
@@ -54,6 +55,20 @@ class AppSettingsSection extends ConsumerWidget {
                   style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                 ),
                 onTap: () => _showThemeSheet(context, ref, themeMode),
+              ),
+              const Divider(height: 1),
+
+              // Furigana
+              SwitchListTile(
+                secondary: Icon(LucideIcons.languages, size: 20, color: theme.colorScheme.primary),
+                title: const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
+                subtitle: Text(
+                  '퀴즈에서 한자 위에 히라가나 표시',
+                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                ),
+                value: ref.watch(quizSettingsProvider).showFurigana,
+                onChanged: (value) =>
+                    ref.read(quizSettingsProvider.notifier).setShowFurigana(value),
               ),
               const Divider(height: 1),
 
