@@ -34,17 +34,25 @@ class WrongAnswer(CamelModel):
     example_translation: str | None = None
 
 
+class MatchingPair(CamelModel):
+    id: str
+    word: str
+    meaning: str
+
+
 class QuizStartRequest(CamelModel):
     quiz_type: QuizType
     jlpt_level: JlptLevel
     count: int = 10
     mode: str = "normal"
+    stage_id: UUID | None = None
 
 
 class QuizStartResponse(CamelModel):
     session_id: UUID
     questions: list[QuizQuestion]
     total_questions: int
+    matching_pairs: list[MatchingPair] | None = None
 
 
 class QuizAnswerRequest(CamelModel):
@@ -61,6 +69,7 @@ class QuizAnswerResponse(CamelModel):
 
 class QuizCompleteRequest(CamelModel):
     session_id: UUID
+    stage_id: UUID | None = None
 
 
 class QuizCompleteResponse(CamelModel):

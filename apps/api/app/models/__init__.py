@@ -20,6 +20,7 @@ from app.models.notification import Notification, PushSubscription
 from app.models.progress import UserGrammarProgress, UserVocabProgress
 from app.models.quiz import QuizAnswer, QuizSession
 from app.models.social import UserCharacterUnlock, UserFavoriteCharacter, WordbookEntry
+from app.models.stage import StudyStage, UserStudyStageProgress
 from app.models.subscription import DailyAiUsage, Payment, Subscription
 from app.models.user import User
 
@@ -48,6 +49,7 @@ __all__ = [
     "QuizType",
     "ScenarioCategory",
     "SentenceArrangeQuestion",
+    "StudyStage",
     "Subscription",
     "SubscriptionPlan",
     "SubscriptionStatus",
@@ -59,6 +61,7 @@ __all__ = [
     "UserGrammarProgress",
     "UserKanaProgress",
     "UserKanaStage",
+    "UserStudyStageProgress",
     "UserVocabProgress",
     "Vocabulary",
     "WordbookEntry",

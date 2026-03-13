@@ -111,6 +111,19 @@ async def update_profile(
         existing.update(update_data["call_settings"])
         update_data["call_settings"] = existing
 
+    # Validate and merge app_settings (flat dict only, no nested objects)
+    if "app_settings" in update_data and update_data["app_settings"] is not None:
+        new_settings = update_data["app_settings"]
+        for key, value in new_settings.items():
+            if isinstance(value, (dict, list)):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"app_settings must be a flat dict. Nested value found for key '{key}'.",
+                )
+        existing_settings = user.app_settings or {}
+        existing_settings.update(new_settings)
+        update_data["app_settings"] = existing_settings
+
     for field, value in update_data.items():
         setattr(user, field, value)
 

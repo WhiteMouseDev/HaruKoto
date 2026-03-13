@@ -10,6 +10,7 @@ class OnboardingRequest(CamelModel):
     jlpt_level: JlptLevel
     goal: UserGoal | None = None
     daily_goal: int = 10
+    show_kana: bool | None = None
 
 
 class OnboardingResponse(CamelModel):

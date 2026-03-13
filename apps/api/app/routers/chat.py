@@ -202,17 +202,21 @@ async def end_chat(
 
     # Daily progress
     today = get_today_kst()
+    duration = int((now - conversation.created_at).total_seconds()) if conversation.created_at else 0
+    chat_study_minutes = max(0, duration // 60)
     await db.execute(
         insert(DailyProgress)
-        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0)
+        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=chat_study_minutes)
         .on_conflict_do_update(
             index_elements=["user_id", "date"],
-            set_={"xp_earned": DailyProgress.xp_earned + xp},
+            set_={
+                "xp_earned": DailyProgress.xp_earned + xp,
+                "study_minutes": DailyProgress.study_minutes + chat_study_minutes,
+            },
         )
     )
 
     # Track AI usage
-    duration = int((now - conversation.created_at).total_seconds()) if conversation.created_at else 0
     await track_ai_usage(db, str(user.id), "chat", duration)
 
     # Achievements
@@ -361,10 +365,17 @@ async def submit_live_feedback(
     user.last_study_date = now
 
     today = get_today_kst()
+    live_study_minutes = max(0, body.duration_seconds // 60)
     await db.execute(
         insert(DailyProgress)
-        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0)
-        .on_conflict_do_update(index_elements=["user_id", "date"], set_={"xp_earned": DailyProgress.xp_earned + xp})
+        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=live_study_minutes)
+        .on_conflict_do_update(
+            index_elements=["user_id", "date"],
+            set_={
+                "xp_earned": DailyProgress.xp_earned + xp,
+                "study_minutes": DailyProgress.study_minutes + live_study_minutes,
+            },
+        )
     )
 
     # Track voice usage

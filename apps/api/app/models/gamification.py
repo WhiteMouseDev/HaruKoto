@@ -55,6 +55,9 @@ class DailyProgress(Base):
     study_time_seconds: Mapped[int] = mapped_column(Integer, default=0)
     xp_earned: Mapped[int] = mapped_column(Integer, default=0)
     kana_learned: Mapped[int] = mapped_column(Integer, default=0)
+    grammar_studied: Mapped[int] = mapped_column(Integer, default=0)
+    sentences_studied: Mapped[int] = mapped_column(Integer, default=0)
+    study_minutes: Mapped[int] = mapped_column(Integer, default=0)
 
     user: Mapped[User] = relationship(back_populates="daily_progress")  # noqa: F821
 

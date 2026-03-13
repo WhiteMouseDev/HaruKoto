@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models import UserVocabProgress, Vocabulary
+from app.models import StudyStage, UserStudyStageProgress, UserVocabProgress, Vocabulary
 from app.models.user import User
 
 router = APIRouter(prefix="/api/v1/study", tags=["study"])
@@ -198,3 +198,79 @@ async def get_study_wrong_answers(
             "remaining": total_wrong - mastered_wrong,
         },
     }
+
+
+@router.get("/stages")
+async def get_stages(
+    category: str = Query(..., description="VOCABULARY, GRAMMAR, or SENTENCE"),
+    jlpt_level: str | None = Query(default=None, alias="jlptLevel"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """카테고리별 스테이지 목록과 유저 진행 상황 조회."""
+    level = jlpt_level or (user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level)
+
+    # Fetch stages
+    stages_result = await db.execute(
+        select(StudyStage)
+        .where(
+            StudyStage.category == category.upper(),
+            StudyStage.jlpt_level == level,
+        )
+        .order_by(StudyStage.order, StudyStage.stage_number)
+    )
+    stages = stages_result.scalars().all()
+
+    if not stages:
+        return []
+
+    # Fetch user progress for all stages in one query
+    stage_ids = [s.id for s in stages]
+    progress_result = await db.execute(
+        select(UserStudyStageProgress).where(
+            UserStudyStageProgress.user_id == user.id,
+            UserStudyStageProgress.stage_id.in_(stage_ids),
+        )
+    )
+    progress_map = {str(p.stage_id): p for p in progress_result.scalars().all()}
+
+    # Build completed stage IDs set for unlock logic
+    completed_stage_ids = {
+        str(p.stage_id)
+        for p in progress_map.values()
+        if p.completed
+    }
+
+    response = []
+    for stage in stages:
+        progress = progress_map.get(str(stage.id))
+        content_ids = stage.content_ids if isinstance(stage.content_ids, list) else []
+
+        # Determine if locked: first stage is always unlocked,
+        # otherwise unlock_after stage must be completed
+        if stage.unlock_after is None:
+            is_locked = False
+        else:
+            is_locked = str(stage.unlock_after) not in completed_stage_ids
+
+        response.append(
+            {
+                "id": str(stage.id),
+                "category": stage.category,
+                "jlptLevel": stage.jlpt_level.value if hasattr(stage.jlpt_level, "value") else stage.jlpt_level,
+                "stageNumber": stage.stage_number,
+                "title": stage.title,
+                "description": stage.description,
+                "contentCount": len(content_ids),
+                "isLocked": is_locked,
+                "userProgress": {
+                    "bestScore": progress.best_score if progress else 0,
+                    "attempts": progress.attempts if progress else 0,
+                    "completed": progress.completed if progress else False,
+                    "completedAt": progress.completed_at.isoformat() if progress and progress.completed_at else None,
+                    "lastAttemptedAt": progress.last_attempted_at.isoformat() if progress and progress.last_attempted_at else None,
+                } if progress else None,
+            }
+        )
+
+    return response

@@ -30,6 +30,7 @@ class UserProfile(CamelModel):
     show_kana: bool
     onboarding_completed: bool
     call_settings: dict[str, Any] | None = None
+    app_settings: dict[str, Any] | None = None
     created_at: datetime
     level_progress: LevelProgressInfo | None = None
 
@@ -41,6 +42,7 @@ class UserProfileUpdate(CamelModel):
     goal: UserGoal | None = None
     show_kana: bool | None = None
     call_settings: dict[str, Any] | None = None
+    app_settings: dict[str, Any] | None = None
 
 
 class UserSummary(CamelModel):

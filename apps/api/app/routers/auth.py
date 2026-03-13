@@ -79,6 +79,8 @@ async def onboarding(
     user.onboarding_completed = True
     if body.goal is not None:
         user.goal = body.goal
+    if body.show_kana is not None:
+        user.show_kana = body.show_kana
 
     await db.commit()
     await db.refresh(user)

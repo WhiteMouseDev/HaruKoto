@@ -30,6 +30,7 @@ class User(Base):
     subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     call_settings: Mapped[dict | None] = mapped_column(JSON, default=dict)
     show_kana: Mapped[bool] = mapped_column(Boolean, default=False)
+    app_settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -52,3 +53,4 @@ class User(Base):
     subscriptions: Mapped[list[Subscription]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
     payments: Mapped[list[Payment]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
     daily_ai_usage: Mapped[list[DailyAiUsage]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
+    study_stage_progress: Mapped[list[UserStudyStageProgress]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
