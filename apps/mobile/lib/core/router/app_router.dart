@@ -28,6 +28,7 @@ import '../../features/subscription/presentation/checkout_page.dart';
 import '../../features/subscription/presentation/subscription_success_page.dart';
 import '../../features/legal/presentation/privacy_page.dart';
 import '../../features/legal/presentation/terms_page.dart';
+import '../../features/notifications/presentation/notification_page.dart';
 import '../../legacy/webview_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
@@ -284,6 +285,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // === Full-screen routes (outside shell) ===
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          state: state,
+          child: const NotificationPage(),
+        ),
+      ),
       GoRoute(
         path: '/pricing',
         parentNavigatorKey: _rootNavigatorKey,
