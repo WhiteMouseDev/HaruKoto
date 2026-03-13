@@ -289,7 +289,6 @@ class _MyPageState extends ConsumerState<MyPage> {
                         .read(myRepositoryProvider)
                         .updateProfile({'nickname': nickname});
                     ref.invalidate(profileDetailProvider);
-                    controller.dispose();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -303,7 +302,7 @@ class _MyPageState extends ConsumerState<MyPage> {
           ),
         );
       },
-    );
+    ).whenComplete(controller.dispose);
   }
 
   Future<void> _handleLogout() async {

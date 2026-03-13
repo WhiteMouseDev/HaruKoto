@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../data/models/recommendation_model.dart';
 import '../quiz_page.dart';
 import '../wrong_answers_page.dart';
 import 'recommendation_card.dart';
 
 class RecommendTab extends ConsumerWidget {
-  final AsyncValue recs;
+  final AsyncValue<RecommendationModel> recs;
   final VoidCallback onInvalidate;
 
   const RecommendTab({
@@ -46,7 +47,7 @@ class RecommendTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, dynamic data) {
+  Widget _buildContent(BuildContext context, RecommendationModel data) {
     final theme = Theme.of(context);
 
     final hasContent = data.reviewDueCount > 0 ||

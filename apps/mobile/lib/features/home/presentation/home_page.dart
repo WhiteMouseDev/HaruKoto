@@ -48,26 +48,9 @@ class HomePage extends ConsumerWidget {
         missionsAsync.hasValue;
 
     if (hasAnyError && !hasAnyValue) {
-      final errors = [
-        if (dashboardAsync.hasError) 'Dashboard: ${dashboardAsync.error}',
-        if (profileAsync.hasError) 'Profile: ${profileAsync.error}',
-        if (missionsAsync.hasError) 'Missions: ${missionsAsync.error}',
-      ];
       return Scaffold(
         body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(child: AppErrorRetry(onRetry: () => _refresh(ref))),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  errors.join('\n'),
-                  style: const TextStyle(fontSize: 10, color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
+          child: AppErrorRetry(onRetry: () => _refresh(ref)),
         ),
       );
     }
