@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import uuid
-from datetime import UTC, date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Literal
 
 from dateutil.relativedelta import relativedelta
@@ -18,7 +18,7 @@ from app.utils.constants import AI_LIMITS
 def _ensure_aware(dt: datetime) -> datetime:
     """offset-naive datetime을 UTC로 간주하여 aware로 변환."""
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
+        return dt.replace(tzinfo=UTC)
     return dt
 
 

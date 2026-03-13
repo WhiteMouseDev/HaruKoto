@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import select, update, func
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
