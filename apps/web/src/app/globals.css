@@ -55,7 +55,7 @@
   --color-hk-info: var(--hk-info);
 
   /* Font families */
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: var(--font-noto-sans-kr), "Noto Sans KR", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-jp: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
 
   /* Border radius */

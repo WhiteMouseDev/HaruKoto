@@ -1,11 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Noto_Sans_JP } from 'next/font/google';
+import { Noto_Sans_JP, Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { PWARegister } from '@/components/pwa-register';
 import { GoogleAnalytics } from '@/components/providers/google-analytics';
 import { Toaster } from 'sonner';
+
+const notoSansKR = Noto_Sans_KR({
+  variable: '--font-noto-sans-kr',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
 
 const notoSansJP = Noto_Sans_JP({
   variable: '--font-noto-sans-jp',
@@ -62,7 +69,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${notoSansJP.variable} bg-background antialiased`}
+        className={`${notoSansKR.variable} ${notoSansJP.variable} bg-background antialiased`}
       >
         <ThemeProvider
           attribute="class"
