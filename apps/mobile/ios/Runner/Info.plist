@@ -12,6 +12,14 @@
 				<string>com.googleusercontent.apps.842843944454-210h6ekugn1uckr7ej4i3dp0butgh69d</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.supabase.harukoto</string>
+			</array>
+		</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
