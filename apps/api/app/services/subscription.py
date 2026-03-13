@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timezone
 from typing import Literal
 
 from dateutil.relativedelta import relativedelta
@@ -13,6 +13,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import DailyAiUsage, Payment, Subscription, User
 from app.models.enums import PaymentStatus, SubscriptionPlan, SubscriptionStatus
 from app.utils.constants import AI_LIMITS
+
+
+def _ensure_aware(dt: datetime) -> datetime:
+    """offset-naive datetime을 UTC로 간주하여 aware로 변환."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
 
 # ==========================================
 # 구독 기간 계산
@@ -53,7 +61,7 @@ async def get_subscription_status(db: AsyncSession, user_id: uuid.UUID) -> dict:
         subscription is not None
         and subscription.plan != SubscriptionPlan.FREE
         and subscription.status in (SubscriptionStatus.ACTIVE, SubscriptionStatus.CANCELLED)
-        and subscription.current_period_end > now
+        and _ensure_aware(subscription.current_period_end) > now
     )
 
     plan = subscription.plan if subscription else SubscriptionPlan.FREE
