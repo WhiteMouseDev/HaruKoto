@@ -5,6 +5,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/constants/app_config.dart';
+import 'core/services/local_notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,9 @@ void main() async {
     url: AppConfig.supabaseUrl,
     anonKey: AppConfig.supabaseAnonKey,
   );
+
+  await LocalNotificationService.initialize();
+  await LocalNotificationService.requestPermission();
 
   if (AppConfig.sentryDsn.isNotEmpty) {
     await SentryFlutter.init(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../data/models/profile_detail_model.dart';
@@ -72,12 +73,47 @@ class AppSettingsSection extends ConsumerWidget {
               ),
               const Divider(height: 1),
 
-              // Notification
+              // Study Reminder
               SwitchListTile(
                 secondary: Icon(LucideIcons.bell, size: 20, color: theme.colorScheme.primary),
-                title: const Text('알림 설정', style: TextStyle(fontSize: 14)),
-                value: notificationEnabled,
-                onChanged: (value) => onUpdate('notificationEnabled', value),
+                title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
+                subtitle: Text(
+                  '매일 설정한 시간에 알림',
+                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                ),
+                value: ref.watch(notificationSettingsProvider).reminderEnabled,
+                onChanged: (value) =>
+                    ref.read(notificationSettingsProvider.notifier).setReminderEnabled(value),
+              ),
+              if (ref.watch(notificationSettingsProvider).reminderEnabled) ...[
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(LucideIcons.clock, size: 20, color: theme.colorScheme.primary),
+                  title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
+                  trailing: Text(
+                    ref.watch(notificationSettingsProvider).reminderTimeLabel,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  onTap: () => _showTimePicker(context, ref),
+                ),
+              ],
+              const Divider(height: 1),
+
+              // Streak Defense
+              SwitchListTile(
+                secondary: Icon(LucideIcons.flame, size: 20, color: theme.colorScheme.primary),
+                title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
+                subtitle: Text(
+                  '오늘 학습 미완료 시 22:00에 알림',
+                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                ),
+                value: ref.watch(notificationSettingsProvider).streakDefenseEnabled,
+                onChanged: (value) =>
+                    ref.read(notificationSettingsProvider.notifier).setStreakDefenseEnabled(value),
               ),
               const Divider(height: 1),
 
@@ -103,6 +139,17 @@ class AppSettingsSection extends ConsumerWidget {
         return '다크';
       case ThemeMode.system:
         return '시스템';
+    }
+  }
+
+  void _showTimePicker(BuildContext context, WidgetRef ref) async {
+    final settings = ref.read(notificationSettingsProvider);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: settings.reminderHour, minute: settings.reminderMinute),
+    );
+    if (picked != null) {
+      ref.read(notificationSettingsProvider.notifier).setReminderTime(picked.hour, picked.minute);
     }
   }
 
