@@ -501,9 +501,13 @@ async def start_quiz(
         total_questions=len(questions),
         questions_data={**session_meta, "questions": questions} if session_meta else questions,
     )
-    db.add(session)
-    await db.commit()
-    await db.refresh(session)
+    try:
+        db.add(session)
+        await db.commit()
+        await db.refresh(session)
+    except Exception:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다")
 
     # Include correctOptionId for mobile client-side validation
     response_questions = []

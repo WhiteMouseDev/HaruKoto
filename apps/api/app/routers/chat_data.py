@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
@@ -21,7 +22,10 @@ router = APIRouter(prefix="/api/v1/chat", tags=["chat-data"])
 
 
 @router.get("/scenarios")
-async def get_scenarios(db: AsyncSession = Depends(get_db)):
+async def get_scenarios(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     result = await db.execute(
         select(ConversationScenario).where(ConversationScenario.is_active.is_(True)).order_by(ConversationScenario.order)
     )
@@ -52,7 +56,13 @@ async def get_history(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Conversation).where(Conversation.user_id == user.id).order_by(Conversation.created_at.desc()).limit(limit + 1)
+    query = (
+        select(Conversation)
+        .options(selectinload(Conversation.scenario), selectinload(Conversation.character))
+        .where(Conversation.user_id == user.id)
+        .order_by(Conversation.created_at.desc())
+        .limit(limit + 1)
+    )
     if cursor:
         from datetime import datetime
 
@@ -67,8 +77,8 @@ async def get_history(
 
     history = []
     for c in conversations:
-        scenario = await db.get(ConversationScenario, c.scenario_id) if c.scenario_id else None
-        character = await db.get(AiCharacter, c.character_id) if c.character_id else None
+        scenario = c.scenario if c.scenario_id else None
+        character = c.character if c.character_id else None
 
         feedback = c.feedback_summary or {}
         history.append(

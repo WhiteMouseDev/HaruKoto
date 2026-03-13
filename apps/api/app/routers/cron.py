@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.session import get_db
+from app.enums import SubscriptionStatus
 from app.models import Subscription, User
 
 router = APIRouter(prefix="/api/v1/cron", tags=["cron"])
@@ -24,14 +25,14 @@ async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_
     # Expire subscriptions past their period end
     result = await db.execute(
         select(Subscription).where(
-            Subscription.status.in_(["ACTIVE", "CANCELLED"]),
+            Subscription.status.in_([SubscriptionStatus.ACTIVE, SubscriptionStatus.CANCELLED]),
             Subscription.current_period_end <= now,
         )
     )
     expired = result.scalars().all()
 
     for sub in expired:
-        sub.status = "EXPIRED"
+        sub.status = SubscriptionStatus.EXPIRED
         await db.execute(
             update(User)
             .where(User.id == sub.user_id)

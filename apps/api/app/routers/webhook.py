@@ -32,10 +32,10 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)):
         if not hmac.compare_digest(signature, expected):
             raise HTTPException(status_code=401, detail="Invalid signature")
 
-        # Check timestamp tolerance (5 minutes)
+        # Check timestamp tolerance (60 seconds)
         try:
             ts = int(timestamp)
-            if abs(time.time() - ts) > 300:
+            if abs(time.time() - ts) > 60:
                 raise HTTPException(status_code=401, detail="Timestamp expired")
         except ValueError as err:
             raise HTTPException(status_code=401, detail="Invalid timestamp") from err
