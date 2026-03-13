@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../constants/app_config.dart';
@@ -8,6 +9,7 @@ import '../constants/app_config.dart';
 class AuthInterceptor extends Interceptor {
   bool _isRefreshing = false;
   Completer<String?>? _refreshCompleter;
+  DateTime? _lastRefreshAttempt;
 
   Dio _createRetryClient() {
     return Dio(
@@ -39,6 +41,14 @@ class AuthInterceptor extends Interceptor {
       return;
     }
 
+    final now = DateTime.now();
+    if (_lastRefreshAttempt != null &&
+        now.difference(_lastRefreshAttempt!).inSeconds < 10) {
+      handler.next(err);
+      return;
+    }
+    _lastRefreshAttempt = now;
+
     try {
       final newToken = await _refreshToken();
       if (newToken != null) {
@@ -47,8 +57,8 @@ class AuthInterceptor extends Interceptor {
         final retryResponse = await _createRetryClient().fetch(opts);
         return handler.resolve(retryResponse);
       }
-    } catch (_) {
-      // Refresh failed — let the error propagate
+    } catch (e) {
+      debugPrint('[AuthInterceptor] Token refresh failed: $e');
     }
     handler.next(err);
   }

@@ -301,7 +301,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       } else {
         setState(() => _phase = _Phase.complete);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[KanaStagePage] Failed to start quiz: $e');
       setState(() => _phase = _Phase.complete);
     }
   }
@@ -365,7 +366,9 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
             .read(kanaRepositoryProvider)
             .completeQuiz(sessionId: _quizSessionId!);
         setState(() => _xpEarned = res.xpEarned);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[KanaStagePage] Failed to complete quiz: $e');
+      }
     }
 
     final stagesAsync =

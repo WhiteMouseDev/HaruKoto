@@ -19,8 +19,9 @@ class RecommendTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    if (recs.hasError) {
-      return Center(
+    return recs.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => Center(
         child: Column(
           children: [
             const SizedBox(height: 32),
@@ -40,11 +41,13 @@ class RecommendTab extends ConsumerWidget {
             ),
           ],
         ),
-      );
-    }
+      ),
+      data: (data) => _buildContent(context, data),
+    );
+  }
 
-    final data = recs.hasValue ? recs.value : null;
-    if (data == null) return const SizedBox.shrink();
+  Widget _buildContent(BuildContext context, dynamic data) {
+    final theme = Theme.of(context);
 
     final hasContent = data.reviewDueCount > 0 ||
         data.newWordsCount > 0 ||

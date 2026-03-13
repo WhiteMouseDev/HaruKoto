@@ -84,9 +84,13 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
         if (detail.messages.isNotEmpty) _messages.addAll(detail.messages);
         _initialized = true;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[ConversationPage] Failed to fetch conversation: $e');
       if (!mounted) return;
-      setState(() => _initialized = true);
+      setState(() {
+        _error = '대화를 불러올 수 없습니다.';
+        _initialized = true;
+      });
     }
   }
 

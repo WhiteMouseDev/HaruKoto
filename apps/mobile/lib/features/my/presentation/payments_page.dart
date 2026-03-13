@@ -4,6 +4,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_error_retry.dart';
+import '../../../shared/widgets/pagination_footer.dart';
+import '../data/models/payment_model.dart';
 import '../providers/my_provider.dart';
 
 class PaymentsPage extends ConsumerStatefulWidget {
@@ -16,7 +19,8 @@ class PaymentsPage extends ConsumerStatefulWidget {
 class _PaymentsPageState extends ConsumerState<PaymentsPage> {
   int _page = 1;
   bool _loading = true;
-  List<Map<String, dynamic>> _payments = [];
+  bool _hasError = false;
+  List<PaymentModel> _payments = [];
   int _totalPages = 1;
 
   @override
@@ -26,21 +30,29 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
   }
 
   Future<void> _fetchPayments() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
     try {
       final data = await ref.read(myRepositoryProvider).fetchPayments(_page);
       if (!mounted) return;
+      final rawPayments = (data['payments'] as List<dynamic>?) ?? [];
       setState(() {
-        _payments = (data['payments'] as List<dynamic>?)
-                ?.cast<Map<String, dynamic>>() ??
-            [];
+        _payments = rawPayments
+            .cast<Map<String, dynamic>>()
+            .map(PaymentModel.fromJson)
+            .toList();
         _totalPages = data['totalPages'] as int? ?? 1;
         _loading = false;
       });
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
       if (!mounted) return;
-      setState(() => _loading = false);
+      setState(() {
+        _loading = false;
+        _hasError = true;
+      });
     }
   }
 
@@ -112,142 +124,117 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
                 );
               }),
             )
-          : _payments.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        LucideIcons.creditCard,
-                        size: 40,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '결제 내역이 없습니다',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView(
-                  padding: const EdgeInsets.all(AppSizes.md),
-                  children: [
-                    ..._payments.map((p) {
-                      final status = _statusInfo(p['status'] as String? ?? '', brightness);
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.cardRadius),
-                        ),
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _planLabel(p['plan'] as String? ?? ''),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _formatDate(
-                                      (p['paidAt'] ?? p['createdAt'])
-                                          as String?,
-                                    ),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '${_formatPrice(p['amount'] as int? ?? 0)}원',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: status.$2.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      status.$1,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        color: status.$2,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+          : _hasError
+              ? AppErrorRetry(onRetry: _fetchPayments)
+              : _payments.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            LucideIcons.creditCard,
+                            size: 40,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                           ),
-                        ),
-                      );
-                    }),
-
-                    // Pagination
-                    if (_totalPages > 1)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: _page > 1
-                                  ? () {
-                                      setState(() => _page--);
-                                      _fetchPayments();
-                                    }
-                                  : null,
-                              icon: const Icon(LucideIcons.chevronLeft, size: 16),
+                          const SizedBox(height: 12),
+                          Text(
+                            '결제 내역이 없습니다',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
-                            Text(
-                              '$_page / $_totalPages',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.all(AppSizes.md),
+                      children: [
+                        ..._payments.map((p) {
+                          final status = _statusInfo(p.status, brightness);
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.cardRadius),
+                            ),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _planLabel(p.plan),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _formatDate(p.displayDate),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${_formatPrice(p.amount)}원',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: status.$2.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          status.$1,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                            color: status.$2,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            IconButton(
-                              onPressed: _page < _totalPages
-                                  ? () {
-                                      setState(() => _page++);
-                                      _fetchPayments();
-                                    }
-                                  : null,
-                              icon: const Icon(LucideIcons.chevronRight, size: 16),
-                            ),
-                          ],
+                          );
+                        }),
+
+                        PaginationFooter(
+                          page: _page,
+                          totalPages: _totalPages,
+                          onPagePrev: () {
+                            setState(() => _page--);
+                            _fetchPayments();
+                          },
+                          onPageNext: () {
+                            setState(() => _page++);
+                            _fetchPayments();
+                          },
                         ),
-                      ),
-                  ],
-                ),
+                      ],
+                    ),
     );
   }
 }

@@ -83,7 +83,8 @@ class _KanaQuizPageState
           _loading = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[KanaQuizPage] Failed to start quiz: $e');
       setState(() {
         _error = '퀴즈를 시작할 수 없습니다';
         _loading = false;
@@ -178,7 +179,8 @@ class _KanaQuizPageState
             ),
           );
         }
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[KanaQuizPage] Failed to complete quiz: $e');
         if (mounted) context.go('/study/kana');
       }
     }

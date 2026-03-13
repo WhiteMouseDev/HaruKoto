@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/pagination_footer.dart';
 import '../data/models/wordbook_entry_model.dart';
 import '../providers/study_provider.dart';
+import 'widgets/add_word_dialog.dart';
 import 'widgets/wordbook_entry_card.dart';
 
 class WordbookPage extends ConsumerStatefulWidget {
@@ -91,7 +93,8 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
           const SnackBar(content: Text('삭제되었습니다')),
         );
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[WordbookPage] Failed to delete word: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('삭제에 실패했습니다')),
@@ -101,92 +104,7 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
   }
 
   void _showAddDialog() {
-    final wordCtrl = TextEditingController();
-    final readingCtrl = TextEditingController();
-    final meaningCtrl = TextEditingController();
-    final noteCtrl = TextEditingController();
-
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text('단어 추가'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: wordCtrl,
-                  decoration: const InputDecoration(
-                    labelText: '단어',
-                    hintText: '例: 食べる',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: readingCtrl,
-                  decoration: const InputDecoration(
-                    labelText: '읽기',
-                    hintText: '例: たべる',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: meaningCtrl,
-                  decoration: const InputDecoration(
-                    labelText: '뜻',
-                    hintText: '例: 먹다',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: noteCtrl,
-                  decoration: const InputDecoration(
-                    labelText: '메모 (선택)',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-              },
-              child: const Text('취소'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                if (wordCtrl.text.isEmpty || meaningCtrl.text.isEmpty) return;
-                final repo = ref.read(studyRepositoryProvider);
-                try {
-                  await repo.addWord(
-                    word: wordCtrl.text.trim(),
-                    reading: readingCtrl.text.trim().isEmpty
-                        ? wordCtrl.text.trim()
-                        : readingCtrl.text.trim(),
-                    meaningKo: meaningCtrl.text.trim(),
-                    note: noteCtrl.text.trim().isEmpty
-                        ? null
-                        : noteCtrl.text.trim(),
-                  );
-                  if (ctx.mounted) Navigator.of(ctx).pop();
-                  _fetchData();
-                } catch (e, stackTrace) {
-                  Sentry.captureException(e, stackTrace: stackTrace);
-                }
-              },
-              child: const Text('추가'),
-            ),
-          ],
-        );
-      },
-    ).then((_) {
-      wordCtrl.dispose();
-      readingCtrl.dispose();
-      meaningCtrl.dispose();
-      noteCtrl.dispose();
-    });
+    showAddWordDialog(context, ref, onAdded: _fetchData);
   }
 
   static const _filterOptions = [
@@ -456,27 +374,12 @@ class _WordbookContent extends StatelessWidget {
             },
           ),
         ),
-        if (totalPages > 1)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: page > 1 ? onPagePrev : null,
-                  child: const Text('이전'),
-                ),
-                const SizedBox(width: 12),
-                Text('$page / $totalPages',
-                    style: theme.textTheme.bodySmall),
-                const SizedBox(width: 12),
-                OutlinedButton(
-                  onPressed: page < totalPages ? onPageNext : null,
-                  child: const Text('다음'),
-                ),
-              ],
-            ),
-          ),
+        PaginationFooter(
+          page: page,
+          totalPages: totalPages,
+          onPagePrev: onPagePrev,
+          onPageNext: onPageNext,
+        ),
       ],
     );
   }

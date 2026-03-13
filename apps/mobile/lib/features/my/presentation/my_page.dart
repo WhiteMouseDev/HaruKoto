@@ -311,8 +311,14 @@ class _MyPageState extends ConsumerState<MyPage> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signOut();
-    } catch (_) {
-      if (mounted) setState(() => _loggingOut = false);
+    } catch (e) {
+      debugPrint('[MyPage] Logout failed: $e');
+      if (mounted) {
+        setState(() => _loggingOut = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('로그아웃에 실패했습니다')),
+        );
+      }
     }
   }
 
@@ -321,8 +327,13 @@ class _MyPageState extends ConsumerState<MyPage> {
       await ref.read(myRepositoryProvider).deleteAccount();
       final repo = ref.read(authRepositoryProvider);
       await repo.signOut();
-    } catch (_) {
-      // Error handled silently
+    } catch (e) {
+      debugPrint('[MyPage] Delete account failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('계정 삭제에 실패했습니다')),
+        );
+      }
     }
   }
 }

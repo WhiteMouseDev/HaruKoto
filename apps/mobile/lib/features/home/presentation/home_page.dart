@@ -27,7 +27,8 @@ class HomePage extends ConsumerWidget {
     final profileAsync = ref.watch(profileProvider);
     final missionsAsync = ref.watch(missionsProvider);
 
-    // Show skeleton only when ALL providers are still loading (first load)
+    // Multi-provider composition: manual AsyncValue handling is used instead
+    // of .when() because loading/error states are combined across 3 providers.
     final allLoading = dashboardAsync.isLoading &&
         profileAsync.isLoading &&
         missionsAsync.isLoading;
@@ -47,9 +48,26 @@ class HomePage extends ConsumerWidget {
         missionsAsync.hasValue;
 
     if (hasAnyError && !hasAnyValue) {
+      final errors = [
+        if (dashboardAsync.hasError) 'Dashboard: ${dashboardAsync.error}',
+        if (profileAsync.hasError) 'Profile: ${profileAsync.error}',
+        if (missionsAsync.hasError) 'Missions: ${missionsAsync.error}',
+      ];
       return Scaffold(
         body: SafeArea(
-          child: AppErrorRetry(onRetry: () => _refresh(ref)),
+          child: Column(
+            children: [
+              Expanded(child: AppErrorRetry(onRetry: () => _refresh(ref))),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  errors.join('\n'),
+                  style: const TextStyle(fontSize: 10, color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }

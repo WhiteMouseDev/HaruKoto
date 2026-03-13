@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../shared/widgets/pagination_footer.dart';
 import '../../data/models/word_entry_model.dart';
 import 'wrong_answers_mini_stat.dart';
 
@@ -145,28 +146,12 @@ class WrongAnswersContent extends StatelessWidget {
             },
           ),
         ),
-        if (totalPages > 1)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: page > 1 ? onPagePrev : null,
-                  child: const Text('이전'),
-                ),
-                const SizedBox(width: 12),
-                Text('$page / $totalPages',
-                    style: theme.textTheme.bodySmall),
-                const SizedBox(width: 12),
-                OutlinedButton(
-                  onPressed:
-                      page < totalPages ? onPageNext : null,
-                  child: const Text('다음'),
-                ),
-              ],
-            ),
-          ),
+        PaginationFooter(
+          page: page,
+          totalPages: totalPages,
+          onPagePrev: onPagePrev,
+          onPageNext: onPageNext,
+        ),
       ],
     );
   }

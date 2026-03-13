@@ -6,7 +6,6 @@ import 'core/theme/app_theme.dart';
 import 'features/home/presentation/widgets/home_header.dart';
 import 'features/study/presentation/widgets/quiz_progress_bar.dart';
 import 'features/study/presentation/widgets/tab_switcher.dart';
-import 'shared/widgets/app_card.dart';
 import 'shared/widgets/app_error_retry.dart';
 import 'shared/widgets/app_skeleton.dart';
 import 'shared/widgets/bottom_nav.dart';
@@ -33,31 +32,7 @@ class HarukotoWidgetbook extends StatelessWidget {
         WidgetbookFolder(
           name: 'Shared',
           children: [
-            WidgetbookComponent(
-              name: 'AppCard',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Default',
-                  builder: (context) {
-                    final text = context.knobs.string(
-                      label: 'Text',
-                      initialValue: '카드 콘텐츠 미리보기',
-                    );
-                    return Scaffold(
-                      body: Center(
-                        child: AppCard(
-                          child: Text(
-                            text,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            WidgetbookComponent(
+WidgetbookComponent(
               name: 'AppErrorRetry',
               useCases: [
                 WidgetbookUseCase(

@@ -27,6 +27,8 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
     final katakanaAsync = ref.watch(kanaBasicCharactersProvider('KATAKANA'));
     final theme = Theme.of(context);
 
+    // Multi-provider composition: manual handling since loading state
+    // combines two independent kana providers.
     final isLoading = hiraganaAsync.isLoading || katakanaAsync.isLoading;
     final activeData = _selectedType == 'HIRAGANA'
         ? hiraganaAsync.value

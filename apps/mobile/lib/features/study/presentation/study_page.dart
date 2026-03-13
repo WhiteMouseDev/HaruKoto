@@ -69,6 +69,8 @@ class _StudyPageState extends ConsumerState<StudyPage> {
           (level: _selectedLevel, type: _selectedType)),
     );
 
+    // Multi-provider composition: manual handling since loading state
+    // depends on recsAsync having no prior value.
     final isLoading =
         recsAsync.isLoading && !recsAsync.hasValue;
 

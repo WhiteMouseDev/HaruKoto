@@ -51,7 +51,8 @@ class _WrongAnswersPageState
         _totalPages = data.totalPages;
         _loading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[WrongAnswersPage] Failed to fetch data: $e');
       setState(() {
         _error = '데이터를 불러올 수 없습니다';
         _loading = false;
@@ -70,7 +71,14 @@ class _WrongAnswersPageState
         source: 'QUIZ',
       );
       setState(() => _savedWords.add(entry.vocabularyId));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[WrongAnswersPage] Failed to save word: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('단어장에 저장하지 못했습니다')),
+        );
+      }
+    }
   }
 
   static const _sortOptions = [

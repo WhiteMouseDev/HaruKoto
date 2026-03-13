@@ -19,30 +19,19 @@ class StatsPage extends ConsumerStatefulWidget {
   ConsumerState<StatsPage> createState() => _StatsPageState();
 }
 
-class _StatsPageState extends ConsumerState<StatsPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _StatsPageState extends ConsumerState<StatsPage> {
+  int _selectedTab = 0;
   int _heatmapYear = DateTime.now().year;
 
   @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
     final historyAsync = ref.watch(statsHistoryProvider(_heatmapYear));
 
-    // Show skeleton only when all are still in initial loading
+    // Multi-provider composition: manual AsyncValue handling is used instead
+    // of .when() because loading/error states are combined across 3 providers.
     final allLoading = dashboardAsync.isLoading &&
         profileAsync.isLoading &&
         historyAsync.isLoading;
@@ -84,57 +73,106 @@ class _StatsPageState extends ConsumerState<StatsPage>
       grammar: stats.ProgressCategory(total: 0, mastered: 0, inProgress: 0),
     );
 
+    const tabLabels = ['기간별', '학습별', 'JLPT 진도'];
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('학습 통계'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: '기간별'),
-            Tab(text: '학습별'),
-            Tab(text: 'JLPT 진도'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
+      appBar: AppBar(title: const Text('학습 통계')),
+      body: Column(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: PeriodTab(
-              today: dashboard?.today ??
-                  const TodayStats(
-                    wordsStudied: 0,
-                    quizzesCompleted: 0,
-                    correctAnswers: 0,
-                    totalAnswers: 0,
-                    xpEarned: 0,
-                    goalProgress: 0.0,
+          // Fixed pill-style segmented tab
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSizes.md, 0, AppSizes.md, AppSizes.sm),
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: List.generate(tabLabels.length, (i) {
+                  final isSelected = _selectedTab == i;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedTab = i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? theme.colorScheme.surface
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(13),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color:
+                                        Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Text(
+                          tabLabels[i],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected
+                                ? theme.colorScheme.onSurface
+                                : theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.45),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+
+          // Scrollable tab content
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              children: [
+                if (_selectedTab == 0)
+                  PeriodTab(
+                    today: dashboard?.today ??
+                        const TodayStats(
+                          wordsStudied: 0,
+                          quizzesCompleted: 0,
+                          correctAnswers: 0,
+                          totalAnswers: 0,
+                          xpEarned: 0,
+                          goalProgress: 0.0,
+                        ),
+                    historyRecords: historyRecords,
+                    heatmapYear: _heatmapYear,
+                    onHeatmapYearChange: (year) {
+                      setState(() => _heatmapYear = year);
+                    },
                   ),
-              historyRecords: historyRecords,
-              heatmapYear: _heatmapYear,
-              onHeatmapYearChange: (year) {
-                setState(() => _heatmapYear = year);
-              },
-            ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: StudyTab(
-              levelProgress: levelProgress,
-              historyRecords: historyRecords,
-            ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: JlptTab(
-              levelProgress: levelProgress,
-              currentLevel: jlptLevel,
+                if (_selectedTab == 1)
+                  StudyTab(
+                    levelProgress: levelProgress,
+                    historyRecords: historyRecords,
+                  ),
+                if (_selectedTab == 2)
+                  JlptTab(
+                    levelProgress: levelProgress,
+                    currentLevel: jlptLevel,
+                  ),
+                const SizedBox(height: 32),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-
 }

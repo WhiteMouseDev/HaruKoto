@@ -52,7 +52,8 @@ class _ConversationFeedbackPageState
         _feedback = detail.feedbackSummary;
         _loading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[ConversationFeedbackPage] Failed to fetch feedback: $e');
       if (!mounted) return;
       setState(() => _loading = false);
     }
