@@ -368,6 +368,11 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
         setState(() => _xpEarned = res.xpEarned);
       } catch (e) {
         debugPrint('[KanaStagePage] Failed to complete quiz: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
+          );
+        }
       }
     }
 

@@ -172,6 +172,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       );
     } catch (e) {
       debugPrint('Failed to complete quiz: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
+        );
+      }
     }
   }
 

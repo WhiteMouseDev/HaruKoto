@@ -59,7 +59,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
       } else if (type == 'googleSignIn') {
         _handleGoogleSignIn();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[WebView] Failed to handle message: $e');
+    }
   }
 
   Future<void> _handleGoogleSignIn() async {

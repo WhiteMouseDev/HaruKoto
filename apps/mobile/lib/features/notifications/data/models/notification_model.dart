@@ -19,13 +19,15 @@ class NotificationModel {
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      id: json['id'] as String,
-      type: json['type'] as String,
-      title: json['title'] as String,
-      body: json['body'] as String,
+      id: json['id'] as String? ?? '',
+      type: json['type'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      body: json['body'] as String? ?? '',
       emoji: json['emoji'] as String?,
-      isRead: json['isRead'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      isRead: json['isRead'] as bool? ?? true,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
     );
   }
 }
@@ -41,10 +43,11 @@ class NotificationsResponse {
 
   factory NotificationsResponse.fromJson(Map<String, dynamic> json) {
     return NotificationsResponse(
-      notifications: (json['notifications'] as List<dynamic>)
-          .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      unreadCount: json['unreadCount'] as int,
+      notifications: (json['notifications'] as List<dynamic>?)
+              ?.map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      unreadCount: json['unreadCount'] as int? ?? 0,
     );
   }
 }
