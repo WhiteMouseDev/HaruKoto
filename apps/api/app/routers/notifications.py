@@ -41,9 +41,7 @@ async def get_notifications(
     notifications = [NotificationResponse.model_validate(n) for n in result.scalars().all()]
 
     unread_result = await db.execute(
-        select(func.count())
-        .select_from(Notification)
-        .where(Notification.user_id == user.id, Notification.is_read == False)  # noqa: E712
+        select(func.count()).select_from(Notification).where(Notification.user_id == user.id, Notification.is_read == False)  # noqa: E712
     )
     unread_count = unread_result.scalar() or 0
 
@@ -57,11 +55,7 @@ async def mark_notifications_read(
     db: AsyncSession = Depends(get_db),
 ):
     if body and body.id:
-        await db.execute(
-            update(Notification)
-            .where(Notification.id == body.id, Notification.user_id == user.id)
-            .values(is_read=True)
-        )
+        await db.execute(update(Notification).where(Notification.id == body.id, Notification.user_id == user.id).values(is_read=True))
     else:
         await db.execute(
             update(Notification)
