@@ -164,7 +164,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
-                    Navigator.of(context).pushReplacement(
+                    Navigator.of(context, rootNavigator: true).pushReplacement(
                       MaterialPageRoute(
                         builder: (_) => QuizPage(
                           quizType: widget.quizType,

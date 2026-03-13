@@ -177,6 +177,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         routes: [
                           GoRoute(
                             path: 'stage/:number',
+                            parentNavigatorKey: _rootNavigatorKey,
                             pageBuilder: (context, state) {
                               final type = state.pathParameters['type']!;
                               final number =
@@ -190,6 +191,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           ),
                           GoRoute(
                             path: 'quiz',
+                            parentNavigatorKey: _rootNavigatorKey,
                             pageBuilder: (context, state) {
                               final type = state.pathParameters['type']!;
                               final mode =

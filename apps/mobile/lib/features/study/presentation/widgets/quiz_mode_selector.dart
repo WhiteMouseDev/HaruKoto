@@ -5,28 +5,37 @@ class QuizModeSelector extends StatelessWidget {
   final String selectedMode;
   final ValueChanged<String> onChanged;
 
+  /// If provided, only these modes will be shown.
+  /// If null, all modes except typing are shown.
+  final List<String>? availableModes;
+
   const QuizModeSelector({
     super.key,
     required this.selectedMode,
     required this.onChanged,
+    this.availableModes,
   });
 
-  static const _modes = [
+  static const _allModes = [
     ('normal', LucideIcons.bookOpen, '4지선다'),
     ('matching', LucideIcons.link2, '매칭'),
     ('cloze', LucideIcons.textCursorInput, '빈칸'),
     ('arrange', LucideIcons.arrowUpDown, '어순'),
-    ('typing', LucideIcons.keyboard, '쓰기'),
+    // typing mode removed (task 1-11)
   ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final modes = availableModes != null
+        ? _allModes.where((m) => availableModes!.contains(m.$1)).toList()
+        : _allModes;
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: _modes.map((m) {
+      children: modes.map((m) {
         final isActive = selectedMode == m.$1;
         return GestureDetector(
           onTap: () => onChanged(m.$1),

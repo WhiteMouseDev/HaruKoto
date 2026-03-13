@@ -77,7 +77,7 @@ class ResumeBanner extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.of(context, rootNavigator: true).push(
                       MaterialPageRoute(
                         builder: (_) => QuizPage(
                           quizType: s.quizType,
@@ -96,7 +96,7 @@ class ResumeBanner extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.of(context, rootNavigator: true).push(
                       MaterialPageRoute(
                         builder: (_) => QuizPage(
                           resumeSessionId: s.id,

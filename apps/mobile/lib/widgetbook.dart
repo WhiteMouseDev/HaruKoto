@@ -5,7 +5,6 @@ import 'package:widgetbook/widgetbook.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/presentation/widgets/home_header.dart';
 import 'features/study/presentation/widgets/quiz_progress_bar.dart';
-import 'features/study/presentation/widgets/tab_switcher.dart';
 import 'shared/widgets/app_error_retry.dart';
 import 'shared/widgets/app_skeleton.dart';
 import 'shared/widgets/bottom_nav.dart';
@@ -124,22 +123,6 @@ WidgetbookComponent(
           name: 'Study',
           children: [
             WidgetbookComponent(
-              name: 'TabSwitcher',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Interactive',
-                  builder: (context) => const Scaffold(
-                    body: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: _TabSwitcherPreview(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            WidgetbookComponent(
               name: 'QuizProgressBar',
               useCases: [
                 WidgetbookUseCase(
@@ -187,21 +170,3 @@ WidgetbookComponent(
   }
 }
 
-class _TabSwitcherPreview extends StatefulWidget {
-  const _TabSwitcherPreview();
-
-  @override
-  State<_TabSwitcherPreview> createState() => _TabSwitcherPreviewState();
-}
-
-class _TabSwitcherPreviewState extends State<_TabSwitcherPreview> {
-  int _activeTab = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return TabSwitcher(
-      activeTab: _activeTab,
-      onTabChanged: (tab) => setState(() => _activeTab = tab),
-    );
-  }
-}

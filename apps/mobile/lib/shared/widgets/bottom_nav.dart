@@ -17,7 +17,7 @@ class BottomNav extends StatelessWidget {
     _TabData(icon: LucideIcons.home, label: '홈'),
     _TabData(icon: LucideIcons.barChart3, label: '학습통계'),
     _TabData(icon: LucideIcons.bookOpen, label: '학습'),
-    _TabData(icon: LucideIcons.messageCircle, label: '회화', isBeta: true),
+    _TabData(icon: LucideIcons.messageCircle, label: '실전회화', isBeta: true),
     _TabData(icon: LucideIcons.user, label: 'MY'),
   ];
 

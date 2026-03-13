@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/constants/sizes.dart';
+import '../../home/providers/home_provider.dart';
+import '../../kana/presentation/kana_hub_page.dart';
 import '../providers/study_provider.dart';
 import 'quiz_page.dart';
 import 'widgets/resume_banner.dart';
-import 'widgets/tab_switcher.dart';
-import 'widgets/recommend_tab.dart';
-import 'widgets/free_tab.dart';
-import 'widgets/my_study_data.dart';
+import 'widgets/study_tab_content.dart';
 import 'widgets/study_skeleton.dart';
+
+/// Represents a study category tab.
+enum StudyCategory {
+  vocabulary('단어', 'VOCABULARY'),
+  grammar('문법', 'GRAMMAR'),
+  sentenceArrange('문장배열', 'SENTENCE'),
+  kana('가나', 'KANA');
+
+  final String label;
+  final String apiType;
+  const StudyCategory(this.label, this.apiType);
+}
 
 class StudyPage extends ConsumerStatefulWidget {
   const StudyPage({super.key});
@@ -16,67 +30,123 @@ class StudyPage extends ConsumerStatefulWidget {
   ConsumerState<StudyPage> createState() => _StudyPageState();
 }
 
-class _StudyPageState extends ConsumerState<StudyPage> {
-  int _studyTab = 0; // 0 = recommend, 1 = free
-  String _selectedLevel = 'N5';
-  String _selectedType = 'VOCABULARY';
-  String _quizMode = 'normal';
+class _StudyPageState extends ConsumerState<StudyPage>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  List<StudyCategory> _tabs = [];
 
-  static const _jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-  static const _quizTypes = [
-    ('VOCABULARY', '단어'),
-    ('GRAMMAR', '문법'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _tabs = [StudyCategory.vocabulary, StudyCategory.grammar, StudyCategory.sentenceArrange];
+    _tabController = TabController(length: _tabs.length, vsync: this);
+  }
 
-  void _startQuiz({String? mode, String? resumeId}) {
-    Navigator.of(context).push(
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  /// Rebuild tab list based on kana state from dashboard.
+  void _updateTabs({
+    required bool showKana,
+    required bool kanaCompleted,
+    required bool kanaManuallyReEnabled,
+  }) {
+    final newTabs = <StudyCategory>[];
+
+    // If showKana is true AND kana not completed -> kana FIRST
+    if (showKana && !kanaCompleted && !kanaManuallyReEnabled) {
+      newTabs.add(StudyCategory.kana);
+    }
+
+    newTabs.addAll([
+      StudyCategory.vocabulary,
+      StudyCategory.grammar,
+      StudyCategory.sentenceArrange,
+    ]);
+
+    // If manually re-enabled in settings -> kana LAST
+    if (kanaManuallyReEnabled) {
+      newTabs.add(StudyCategory.kana);
+    }
+
+    if (_tabs.length != newTabs.length ||
+        !_listsEqual(_tabs, newTabs)) {
+      setState(() {
+        final oldIndex = _tabController.index;
+        _tabs = newTabs;
+        _tabController.dispose();
+        _tabController = TabController(
+          length: _tabs.length,
+          vsync: this,
+          initialIndex: oldIndex.clamp(0, _tabs.length - 1),
+        );
+      });
+    }
+  }
+
+  bool _listsEqual(List<StudyCategory> a, List<StudyCategory> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  void _startQuiz({
+    required String quizType,
+    required String jlptLevel,
+    required String mode,
+    String? resumeId,
+  }) {
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => QuizPage(
-          quizType: _selectedType,
-          jlptLevel: _selectedLevel,
+          quizType: quizType,
+          jlptLevel: jlptLevel,
           count: 10,
-          mode: mode ??
-              (_quizMode != 'normal' ? _quizMode : null),
+          mode: mode != 'normal' ? mode : null,
           resumeSessionId: resumeId,
         ),
       ),
     );
   }
 
-  String get _modeLabel {
-    switch (_quizMode) {
-      case 'matching':
-        return '매칭';
-      case 'cloze':
-        return '빈칸 채우기';
-      case 'arrange':
-        return '어순 배열';
-      case 'typing':
-        return '단어 쓰기';
-      default:
-        return '4지선다';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final incompleteAsync =
-        ref.watch(incompleteQuizProvider);
-    final recsAsync = ref.watch(recommendationsProvider);
-    final statsAsync = ref.watch(
-      quizStatsProvider(
-          (level: _selectedLevel, type: _selectedType)),
-    );
+    final incompleteAsync = ref.watch(incompleteQuizProvider);
+    final dashboardAsync = ref.watch(dashboardProvider);
+    final profileAsync = ref.watch(profileProvider);
 
-    // Multi-provider composition: manual handling since loading state
-    // depends on recsAsync having no prior value.
-    final isLoading =
-        recsAsync.isLoading && !recsAsync.hasValue;
+    // Determine kana tab visibility from dashboard data
+    final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
+    final profile = profileAsync.hasValue ? profileAsync.value : null;
 
+    if (dashboard != null && profile != null) {
+      final showKana = dashboard.showKana;
+      final kanaCompleted = dashboard.kanaProgress?.completed ?? false;
+      // "Manually re-enabled" means showKana is true but kana is already completed
+      final kanaManuallyReEnabled = showKana && kanaCompleted;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _updateTabs(
+            showKana: showKana,
+            kanaCompleted: kanaCompleted,
+            kanaManuallyReEnabled: kanaManuallyReEnabled,
+          );
+        }
+      });
+    }
+
+    final jlptLevel = profile != null ? profile.jlptLevel : 'N5';
+
+    final isLoading = dashboardAsync.isLoading && !dashboardAsync.hasValue;
     if (isLoading) {
-      return const Scaffold(
-          body: SafeArea(child: StudySkeleton()));
+      return const Scaffold(body: SafeArea(child: StudySkeleton()));
     }
 
     final incompleteSession =
@@ -88,63 +158,166 @@ class _StudyPageState extends ConsumerState<StudyPage> {
           color: theme.colorScheme.primary,
           onRefresh: () async {
             ref.invalidate(incompleteQuizProvider);
-            ref.invalidate(recommendationsProvider);
-            ref.invalidate(quizStatsProvider((
-              level: _selectedLevel,
-              type: _selectedType
-            )));
+            ref.invalidate(dashboardProvider);
+            ref.invalidate(profileProvider);
           },
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              if (incompleteSession != null)
-                ResumeBanner(session: incompleteSession),
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 8, bottom: 16),
-                child: Text(
-                  'JLPT 학습',
-                  style: theme.textTheme.headlineSmall
-                      ?.copyWith(
-                    fontWeight: FontWeight.bold,
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (incompleteSession != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: ResumeBanner(session: incompleteSession),
+                          ),
+                        Text(
+                          'JLPT 학습',
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Current JLPT level display (task 1-10)
+                        _JlptLevelBadge(
+                          level: jlptLevel,
+                          onTap: () => context.push('/my'),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              TabSwitcher(
-                activeTab: _studyTab,
-                onTabChanged: (tab) =>
-                    setState(() => _studyTab = tab),
-              ),
-              const SizedBox(height: 16),
-              if (_studyTab == 0)
-                RecommendTab(
-                  recs: recsAsync,
-                  onInvalidate: () =>
-                      ref.invalidate(recommendationsProvider),
-                )
-              else
-                FreeTab(
-                  selectedLevel: _selectedLevel,
-                  selectedType: _selectedType,
-                  quizMode: _quizMode,
-                  modeLabel: _modeLabel,
-                  jlptLevels: _jlptLevels,
-                  quizTypes: _quizTypes,
-                  statsAsync: statsAsync,
-                  onLevelChanged: (level) =>
-                      setState(() => _selectedLevel = level),
-                  onTypeChanged: (type) => setState(
-                      () => _selectedType = type),
-                  onModeChanged: (mode) =>
-                      setState(() => _quizMode = mode),
-                  onStartQuiz: () => _startQuiz(),
+                // Tab bar
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _TabBarDelegate(
+                    tabBar: TabBar(
+                      controller: _tabController,
+                      tabs: _tabs.map((t) => Tab(text: t.label)).toList(),
+                      isScrollable: false,
+                      labelStyle: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: theme.textTheme.bodySmall,
+                      labelColor: theme.colorScheme.primary,
+                      unselectedLabelColor:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      indicatorColor: theme.colorScheme.primary,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      dividerColor: theme.colorScheme.outline.withValues(alpha: 0.3),
+                    ),
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                  ),
                 ),
-              const SizedBox(height: 24),
-              const MyStudyData(),
-            ],
+              ];
+            },
+            body: TabBarView(
+              controller: _tabController,
+              children: _tabs.map((tab) {
+                if (tab == StudyCategory.kana) {
+                  return const KanaHubPage();
+                }
+                return StudyTabContent(
+                  category: tab,
+                  jlptLevel: jlptLevel,
+                  onStartQuiz: (mode) => _startQuiz(
+                    quizType: tab.apiType,
+                    jlptLevel: jlptLevel,
+                    mode: mode,
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+/// Shows the current JLPT level with a tap-to-change action.
+class _JlptLevelBadge extends StatelessWidget {
+  final String level;
+  final VoidCallback onTap;
+
+  const _JlptLevelBadge({required this.level, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              LucideIcons.graduationCap,
+              size: 16,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '현재 레벨: $level',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '(변경 →)',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Delegate for pinning the tab bar during scroll.
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  _TabBarDelegate({required this.tabBar, required this.backgroundColor});
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_TabBarDelegate oldDelegate) {
+    return tabBar != oldDelegate.tabBar ||
+        backgroundColor != oldDelegate.backgroundColor;
   }
 }

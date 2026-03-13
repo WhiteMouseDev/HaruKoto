@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../stats/providers/stats_provider.dart';
 import '../../data/models/dashboard_model.dart';
 
-class StreakDailyCard extends StatelessWidget {
+class StreakDailyCard extends ConsumerWidget {
   final StreakData streak;
   final TodayStats today;
   final List<WeeklyStatEntry> weeklyStats;
@@ -19,112 +21,330 @@ class StreakDailyCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final brightness = theme.brightness;
 
     return Semantics(
       label:
           '${streak.current}일 연속 학습, 오늘 ${today.wordsStudied}개 단어 학습',
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
-        child: Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-            border: Border.all(color: const Color(0xFFFCE7EC)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        child: GestureDetector(
+          onTap: () => _showCalendarSheet(context, ref),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              border: Border.all(color: const Color(0xFFFCE7EC)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top row: Streak info + chevron
+                Row(
+                  children: [
+                    _StreakHeader(streak: streak.current),
+                    const Spacer(),
+                    Icon(
+                      LucideIcons.chevronRight,
+                      size: 18,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // 7-day circles
+                _StreakWeek(weeklyStats: weeklyStats),
+              ],
+            ),
           ),
-          padding: const EdgeInsets.all(24),
+        ),
+      ),
+    );
+  }
+
+  void _showCalendarSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (context, scrollController) {
+            return _CalendarSheetContent(
+              scrollController: scrollController,
+              streak: streak,
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CalendarSheetContent extends ConsumerStatefulWidget {
+  final ScrollController scrollController;
+  final StreakData streak;
+
+  const _CalendarSheetContent({
+    required this.scrollController,
+    required this.streak,
+  });
+
+  @override
+  ConsumerState<_CalendarSheetContent> createState() =>
+      _CalendarSheetContentState();
+}
+
+class _CalendarSheetContentState
+    extends ConsumerState<_CalendarSheetContent> {
+  late DateTime _displayedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final historyAsync =
+        ref.watch(statsHistoryProvider(_displayedMonth.year));
+
+    // Build a set of dates that have study activity
+    final studiedDates = <String>{};
+    if (historyAsync.hasValue) {
+      for (final record in historyAsync.value!) {
+        if (record.wordsStudied > 0 ||
+            record.quizzesCompleted > 0 ||
+            record.conversationCount > 0) {
+          studiedDates.add(record.date);
+        }
+      }
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top: Streak header
-              _StreakHeader(streak: streak.current),
-              const SizedBox(height: 16),
-
-              // 7-day circles
-              _StreakWeek(weeklyStats: weeklyStats),
-              const SizedBox(height: 20),
-
-              // Divider
               Container(
-                height: 1,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-              ),
-              const SizedBox(height: 20),
-
-              // Bottom: Daily progress header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '오늘의 학습',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    '${today.wordsStudied}/$dailyGoal',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Progress bar
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: SizedBox(
-                  height: 8,
-                  child: LinearProgressIndicator(
-                    value: today.goalProgress.clamp(0.0, 1.0),
-                    backgroundColor: theme.colorScheme.secondary,
-                    valueColor:
-                        AlwaysStoppedAnimation(theme.colorScheme.primary),
-                  ),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
-
-              // 3-column stats grid
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _StatBox(
-                    icon: LucideIcons.target,
-                    iconColor: theme.colorScheme.primary,
-                    label: '목표',
-                    value: '${(today.goalProgress * 100).round()}%',
-                  ),
-                  const SizedBox(width: 12),
-                  _StatBox(
-                    icon: LucideIcons.bookOpen,
-                    iconColor: AppColors.hkBlue(brightness),
-                    label: '단어',
-                    value: '${today.wordsStudied}개',
-                  ),
-                  const SizedBox(width: 12),
-                  _StatBox(
-                    icon: LucideIcons.trophy,
-                    iconColor: AppColors.hkYellow(brightness),
-                    label: '정답률',
-                    value: today.quizzesCompleted > 0 ? '--%' : '--%',
+                  Icon(LucideIcons.flame,
+                      size: 20, color: AppColors.hkRed(theme.brightness)),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${widget.streak.current}일 연속 학습',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '최장 기록: ${widget.streak.longest}일',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
               ),
             ],
           ),
         ),
-      ),
+        // Month navigation
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(LucideIcons.chevronLeft, size: 20),
+                onPressed: () {
+                  setState(() {
+                    _displayedMonth = DateTime(
+                      _displayedMonth.year,
+                      _displayedMonth.month - 1,
+                    );
+                  });
+                },
+              ),
+              Text(
+                '${_displayedMonth.year}년 ${_displayedMonth.month}월',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(LucideIcons.chevronRight, size: 20),
+                onPressed: _displayedMonth.year == DateTime.now().year &&
+                        _displayedMonth.month == DateTime.now().month
+                    ? null
+                    : () {
+                        setState(() {
+                          _displayedMonth = DateTime(
+                            _displayedMonth.year,
+                            _displayedMonth.month + 1,
+                          );
+                        });
+                      },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Calendar grid
+        Expanded(
+          child: SingleChildScrollView(
+            controller: widget.scrollController,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildCalendarGrid(context, studiedDates, historyAsync.isLoading),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCalendarGrid(
+      BuildContext context, Set<String> studiedDates, bool isLoading) {
+    final theme = Theme.of(context);
+    const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+    final year = _displayedMonth.year;
+    final month = _displayedMonth.month;
+    final firstDay = DateTime(year, month, 1);
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    final startWeekday = firstDay.weekday % 7; // Sunday = 0
+    final today = DateTime.now();
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    return Column(
+      children: [
+        // Day labels
+        Row(
+          children: dayLabels
+              .map((label) => Expanded(
+                    child: Center(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                  ))
+              .toList(),
+        ),
+        const SizedBox(height: 8),
+        if (isLoading)
+          const Padding(
+            padding: EdgeInsets.all(32),
+            child: CircularProgressIndicator(),
+          )
+        else
+          // Calendar weeks
+          ...List.generate(
+            ((startWeekday + daysInMonth + 6) / 7).ceil(),
+            (week) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: List.generate(7, (dayOfWeek) {
+                    final dayNum =
+                        week * 7 + dayOfWeek - startWeekday + 1;
+                    if (dayNum < 1 || dayNum > daysInMonth) {
+                      return const Expanded(child: SizedBox(height: 40));
+                    }
+
+                    final dateStr =
+                        '$year-${month.toString().padLeft(2, '0')}-${dayNum.toString().padLeft(2, '0')}';
+                    final hasStudied = studiedDates.contains(dateStr);
+                    final isToday = dateStr == todayStr;
+
+                    return Expanded(
+                      child: Container(
+                        height: 40,
+                        margin: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: hasStudied
+                              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                              : null,
+                          borderRadius: BorderRadius.circular(8),
+                          border: isToday
+                              ? Border.all(
+                                  color: theme.colorScheme.primary, width: 1.5)
+                              : null,
+                        ),
+                        child: Center(
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Text(
+                                '$dayNum',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: isToday
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: hasStudied
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              if (hasStudied)
+                                Positioned(
+                                  bottom: 2,
+                                  child: Container(
+                                    width: 4,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              );
+            },
+          ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
@@ -171,21 +391,21 @@ class _StreakHeaderState extends State<_StreakHeader>
         : '오늘 첫 학습을 시작해보세요!';
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         ScaleTransition(
           scale: _scaleAnimation,
           child: Icon(
             LucideIcons.flame,
             color: AppColors.hkRed(brightness),
-            size: 22,
+            size: 20,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Text(
           text,
-          style: theme.textTheme.titleSmall?.copyWith(
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 16,
           ),
         ),
       ],
@@ -219,14 +439,14 @@ class _StreakWeek extends StatelessWidget {
         if (studied > 0) {
           bgColor = theme.colorScheme.primary;
           child = const Icon(LucideIcons.check,
-              color: AppColors.onGradient, size: 16);
+              color: AppColors.onGradient, size: 14);
         } else if (isToday) {
           bgColor = theme.colorScheme.secondary;
           child = Text(
             '-',
             style: TextStyle(
               color: theme.colorScheme.primary,
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           );
@@ -236,7 +456,7 @@ class _StreakWeek extends StatelessWidget {
             '-',
             style: TextStyle(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-              fontSize: 14,
+              fontSize: 12,
             ),
           );
         } else {
@@ -250,13 +470,13 @@ class _StreakWeek extends StatelessWidget {
               dayLabels[i],
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                fontSize: 12,
+                fontSize: 11,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Container(
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
                 color: bgColor,
                 shape: BoxShape.circle,
@@ -271,53 +491,5 @@ class _StreakWeek extends StatelessWidget {
 
   String _formatDate(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-  }
-}
-
-class _StatBox extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String value;
-
-  const _StatBox({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondary,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: iconColor, size: 20),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -100,7 +100,7 @@ class RecommendTab extends ConsumerWidget {
             actionText: '지금 복습하기 →',
             isPrimary: true,
             onTap: () {
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => const QuizPage(
                     quizType: 'VOCABULARY',
@@ -121,7 +121,7 @@ class RecommendTab extends ConsumerWidget {
                 '아직 안 본 단어 ${data.newWordsCount}개',
             actionText: '학습 시작 →',
             onTap: () {
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => const QuizPage(
                     quizType: 'VOCABULARY',

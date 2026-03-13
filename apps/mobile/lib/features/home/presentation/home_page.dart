@@ -7,9 +7,10 @@ import '../providers/home_provider.dart';
 import 'widgets/daily_missions_card.dart';
 import 'widgets/home_header.dart';
 import 'widgets/kana_cta_card.dart';
-import 'widgets/phone_call_cta.dart';
+// import 'widgets/phone_call_cta.dart'; // 주석 처리 — 추후 다시 활성화 가능
 import 'widgets/quick_start_card.dart';
 import 'widgets/streak_daily_card.dart';
+import 'widgets/shortcut_grid.dart';
 import 'widgets/weekly_chart.dart';
 
 class HomePage extends ConsumerWidget {
@@ -71,9 +72,9 @@ class HomePage extends ConsumerWidget {
               HomeHeader(nickname: profile?.nickname ?? '학습자'),
               const SizedBox(height: AppSizes.md),
 
-              // 2. AI Phone Call CTA
-              const PhoneCallCta(),
-              const SizedBox(height: AppSizes.md),
+              // 2. AI Phone Call CTA (주석 처리 — 추후 다시 활성화 가능)
+              // const PhoneCallCta(),
+              // const SizedBox(height: AppSizes.md),
 
               // 3. Kana CTA (conditional)
               if (profile?.showKana == true &&
@@ -100,8 +101,12 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // 6. Quick Start CTA
-              const QuickStartCard(),
+              // 6. Study Card with category tabs
+              QuickStartCard(
+                levelProgress: dashboard?.levelProgress,
+                today: dashboard?.today,
+                dailyGoal: profile?.dailyGoal ?? 10,
+              ),
               const SizedBox(height: AppSizes.md),
 
               // 7. Weekly Chart
@@ -110,6 +115,10 @@ class HomePage extends ConsumerWidget {
                   weeklyStats: dashboard.weeklyStats,
                   dailyGoal: profile?.dailyGoal ?? 10,
                 ),
+              const SizedBox(height: AppSizes.md),
+
+              // 8. Shortcut Grid
+              const ShortcutGrid(),
             ],
           ),
         ),

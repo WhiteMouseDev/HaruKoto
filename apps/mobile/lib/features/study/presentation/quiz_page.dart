@@ -160,7 +160,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       final result =
           await repo.completeQuiz(_sessionId!);
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context, rootNavigator: true).pushReplacement(
         MaterialPageRoute(
           builder: (_) => QuizResultPage(
             result: result,
@@ -184,8 +184,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('나가시겠어요?'),
-        content: const Text('나가면 진행 상황이 저장돼요.'),
+        title: const Text('퀴즈를 종료할까요?'),
+        content: const Text('진행 상황은 저장돼요.'),
         actions: [
           TextButton(
             onPressed: () =>
@@ -195,7 +195,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           FilledButton(
             onPressed: () =>
                 Navigator.of(context).pop(true),
-            child: const Text('나가기'),
+            child: const Text('종료'),
           ),
         ],
       ),

@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/call_settings_sheet.dart';
+import '../../my/data/models/profile_detail_model.dart';
+import '../../my/providers/my_provider.dart';
 import '../providers/chat_provider.dart';
 import '../data/models/scenario_model.dart';
 import 'widgets/chat_loading_overlay.dart';
@@ -87,6 +90,33 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     }
   }
 
+  void _showCallSettings(BuildContext context) {
+    final profileAsync = ref.read(profileDetailProvider);
+    final callSettings = profileAsync.hasValue
+        ? profileAsync.value!.profile.callSettings
+        : const CallSettings();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return CallSettingsSheet(
+          settings: callSettings,
+          onChanged: (updated) async {
+            await ref
+                .read(myRepositoryProvider)
+                .updateProfile({'callSettings': updated.toJson()});
+            ref.invalidate(profileDetailProvider);
+            if (context.mounted) Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -163,6 +193,18 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                               ),
                             ],
                           ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            LucideIcons.settings,
+                            size: 20,
+                            color: colorScheme.onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                          tooltip: '통화 설정',
+                          onPressed: () =>
+                              _showCallSettings(context),
                         ),
                       ],
                     ),

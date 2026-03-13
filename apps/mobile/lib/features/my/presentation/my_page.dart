@@ -6,7 +6,6 @@ import '../../../core/constants/sizes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
-import 'widgets/achievements_section.dart';
 import 'widgets/subscription_section.dart';
 import 'widgets/settings_menu.dart';
 import 'widgets/app_settings_section.dart';
@@ -51,10 +50,6 @@ class _MyPageState extends ConsumerState<MyPage> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
-                // Achievements
-                AchievementsSection(achievements: data.achievements),
-                const SizedBox(height: AppSizes.md),
-
                 // Subscription
                 SubscriptionSection(
                   onNavigateToPricing: () => context.push('/pricing'),
@@ -65,7 +60,6 @@ class _MyPageState extends ConsumerState<MyPage> {
                 // Settings
                 SettingsMenu(
                   jlptLevel: data.profile.jlptLevel,
-                  dailyGoal: data.profile.dailyGoal,
                   showKana: data.profile.showKana,
                   onUpdate: (field, value) async {
                     await ref
@@ -79,17 +73,10 @@ class _MyPageState extends ConsumerState<MyPage> {
                 // App Settings
                 AppSettingsSection(
                   notificationEnabled: data.profile.notificationEnabled,
-                  callSettings: data.profile.callSettings,
                   onUpdate: (field, value) async {
                     await ref
                         .read(myRepositoryProvider)
                         .updateProfile({field: value});
-                    ref.invalidate(profileDetailProvider);
-                  },
-                  onCallSettingsChanged: (settings) async {
-                    await ref
-                        .read(myRepositoryProvider)
-                        .updateProfile({'callSettings': settings.toJson()});
                     ref.invalidate(profileDetailProvider);
                   },
                 ),

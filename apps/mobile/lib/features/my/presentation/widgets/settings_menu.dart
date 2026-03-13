@@ -4,20 +4,17 @@ import '../../../../core/constants/sizes.dart';
 
 class SettingsMenu extends StatelessWidget {
   final String jlptLevel;
-  final int dailyGoal;
   final bool showKana;
   final Future<void> Function(String field, Object value) onUpdate;
 
   const SettingsMenu({
     super.key,
     required this.jlptLevel,
-    required this.dailyGoal,
     required this.showKana,
     required this.onUpdate,
   });
 
   static const _jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-  static const _goalOptions = [5, 10, 15, 20, 30];
 
   @override
   Widget build(BuildContext context) {
@@ -58,24 +55,6 @@ class SettingsMenu extends StatelessWidget {
                       .toList(),
                   onChanged: (value) {
                     if (value != null) onUpdate('jlptLevel', value);
-                  },
-                ),
-              ),
-              const Divider(height: 1),
-
-              // Daily Goal
-              ListTile(
-                leading: Icon(LucideIcons.target, size: 20, color: theme.colorScheme.primary),
-                title: const Text('일일 목표', style: TextStyle(fontSize: 14)),
-                trailing: DropdownButton<int>(
-                  value: _goalOptions.contains(dailyGoal) ? dailyGoal : 10,
-                  underline: const SizedBox.shrink(),
-                  style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
-                  items: _goalOptions
-                      .map((g) => DropdownMenuItem(value: g, child: Text('$g개')))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) onUpdate('dailyGoal', value);
                   },
                 ),
               ),

@@ -156,7 +156,7 @@ class _WrongAnswersPageState
                   height: 44,
                   child: FilledButton.icon(
                     onPressed: () {
-                      Navigator.of(context).push(
+                      Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           builder: (_) => const QuizPage(
                             quizType: 'VOCABULARY',
