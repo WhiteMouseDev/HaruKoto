@@ -46,6 +46,7 @@ from app.services.gamification import (
 )
 from app.utils.constants import QUIZ_CONFIG, REWARDS, SRS_CONFIG
 from app.utils.date import get_today_kst
+from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
 
@@ -272,7 +273,7 @@ async def _generate_matching_pairs(
     return questions, matching_pairs
 
 
-@router.post("/start", response_model=QuizStartResponse)
+@router.post("/start", response_model=QuizStartResponse, status_code=200)
 async def start_quiz(
     body: QuizStartRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -531,7 +532,7 @@ async def start_quiz(
     )
 
 
-@router.post("/answer", response_model=QuizAnswerResponse)
+@router.post("/answer", response_model=QuizAnswerResponse, status_code=200)
 async def answer_quiz(
     body: QuizAnswerRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -663,7 +664,7 @@ async def answer_quiz(
     return QuizAnswerResponse(success=True)
 
 
-@router.post("/complete", response_model=QuizCompleteResponse)
+@router.post("/complete", response_model=QuizCompleteResponse, status_code=200)
 async def complete_quiz(
     body: QuizCompleteRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -710,7 +711,7 @@ async def complete_quiz(
         study_duration_minutes = max(0, int(delta.total_seconds() / 60))
 
     # Determine per-category counters based on quiz_type
-    quiz_type_val = session.quiz_type.value if hasattr(session.quiz_type, "value") else session.quiz_type
+    quiz_type_val = enum_value(session.quiz_type)
     words_increment = session.correct_count if quiz_type_val in ("VOCABULARY", "KANJI", "LISTENING") else 0
     grammar_increment = session.correct_count if quiz_type_val == "GRAMMAR" else 0
     sentences_increment = session.total_questions if quiz_type_val in ("CLOZE", "SENTENCE_ARRANGE") else 0
@@ -828,7 +829,7 @@ async def complete_quiz(
     )
 
 
-@router.get("/incomplete")
+@router.get("/incomplete", status_code=200)
 async def get_incomplete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -854,8 +855,8 @@ async def get_incomplete_quiz(
     return {
         "session": {
             "id": str(session.id),
-            "quizType": session.quiz_type.value if hasattr(session.quiz_type, "value") else session.quiz_type,
-            "jlptLevel": session.jlpt_level.value if hasattr(session.jlpt_level, "value") else session.jlpt_level,
+            "quizType": enum_value(session.quiz_type),
+            "jlptLevel": enum_value(session.jlpt_level),
             "totalQuestions": session.total_questions,
             "answeredCount": answered_count,
             "correctCount": session.correct_count,
@@ -864,7 +865,7 @@ async def get_incomplete_quiz(
     }
 
 
-@router.post("/resume")
+@router.post("/resume", status_code=200)
 async def resume_quiz(
     body: QuizResumeRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -893,7 +894,7 @@ async def resume_quiz(
             )
         )
 
-    quiz_type = session.quiz_type.value if hasattr(session.quiz_type, "value") else session.quiz_type
+    quiz_type = enum_value(session.quiz_type)
 
     return {
         "sessionId": str(session.id),
@@ -905,7 +906,7 @@ async def resume_quiz(
     }
 
 
-@router.get("/stats")
+@router.get("/stats", status_code=200)
 async def get_quiz_stats(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -977,7 +978,7 @@ async def get_quiz_stats(
     }
 
 
-@router.get("/wrong-answers")
+@router.get("/wrong-answers", status_code=200)
 async def get_wrong_answers(
     session_id: str,
     user: Annotated[User, Depends(get_current_user)],
@@ -1031,7 +1032,7 @@ async def get_wrong_answers(
     return {"wrongAnswers": result_list}
 
 
-@router.get("/recommendations")
+@router.get("/recommendations", status_code=200)
 async def get_recommendations(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],

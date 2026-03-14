@@ -28,7 +28,7 @@ class VocabTTSRequest(BaseModel):
     id: str
 
 
-@router.post("/tts")
+@router.post("/tts", status_code=200)
 async def vocab_tts(
     body: VocabTTSRequest,
     user: User = Depends(get_current_user),

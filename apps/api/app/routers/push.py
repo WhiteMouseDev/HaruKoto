@@ -13,7 +13,7 @@ from app.schemas.notification import PushSubscribeRequest
 router = APIRouter(prefix="/api/v1/push", tags=["push"])
 
 
-@router.post("/subscribe")
+@router.post("/subscribe", status_code=200)
 async def subscribe_push(
     body: PushSubscribeRequest,
     user: User = Depends(get_current_user),
@@ -31,4 +31,4 @@ async def subscribe_push(
     )
     await db.execute(stmt)
     await db.commit()
-    return {"success": True}
+    return {"ok": True}

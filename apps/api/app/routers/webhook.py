@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import time
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -12,11 +13,14 @@ from app.config import settings
 from app.db.session import get_db
 from app.models import Payment
 from app.services.subscription import activate_subscription
+from app.utils.helpers import enum_value
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/webhook", tags=["webhook"])
 
 
-@router.post("/portone")
+@router.post("/portone", status_code=200)
 async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     body = await request.body()
     signature = request.headers.get("x-portone-signature", "")
@@ -43,15 +47,27 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     data = await request.json()
     payment_id = data.get("data", {}).get("paymentId")
     if not payment_id:
+        logger.info("Webhook received without paymentId, skipping")
         return {"ok": True}
+
+    logger.info("Webhook received", extra={"payment_id": payment_id})
 
     # Find payment
     result = await db.execute(select(Payment).where(Payment.portone_payment_id == payment_id))
     payment = result.scalar_one_or_none()
     if not payment or payment.status.value != "PENDING":
+        logger.info("Webhook skipped (idempotent)", extra={
+            "payment_id": payment_id,
+            "status": payment.status.value if payment else "not_found",
+        })
         return {"ok": True}  # Idempotent
 
-    plan = payment.plan.value.lower() if hasattr(payment.plan, "value") else payment.plan.lower()
+    plan = enum_value(payment.plan).lower()
+    logger.info("Webhook activating subscription", extra={
+        "payment_id": payment_id, "user_id": str(payment.user_id),
+        "plan": plan, "amount": payment.amount,
+    })
     await activate_subscription(db, str(payment.user_id), plan, payment_id, payment.amount)
     await db.commit()
+    logger.info("Webhook subscription activated", extra={"payment_id": payment_id, "user_id": str(payment.user_id)})
     return {"ok": True}

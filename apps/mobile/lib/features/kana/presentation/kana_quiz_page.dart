@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_error_retry.dart';
 import '../../study/data/models/quiz_result_model.dart';
 import '../../study/presentation/quiz_result_page.dart';
 import '../data/models/kana_stage_model.dart';
@@ -229,27 +230,15 @@ class _KanaQuizPageState
 
     if (_error != null) {
       return Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _error!,
-                  style: theme.textTheme.bodyLarge
-                      ?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.5),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                OutlinedButton(
-                  onPressed: () => context.pop(),
-                  child: const Text('돌아가기'),
-                ),
-              ],
-            ),
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.arrow_back),
           ),
+        ),
+        body: AppErrorRetry(
+          onRetry: _startQuiz,
+          message: _error,
         ),
       );
     }

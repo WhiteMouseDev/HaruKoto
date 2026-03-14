@@ -37,5 +37,9 @@ class PaginatedResponse[T](BaseModel):
     total_pages: int
 
 
-class SuccessResponse(BaseModel):
-    success: bool = True
+class OkResponse(BaseModel):
+    ok: bool = True
+
+
+# Keep SuccessResponse as alias for backward compatibility
+SuccessResponse = OkResponse

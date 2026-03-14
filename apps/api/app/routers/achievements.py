@@ -16,7 +16,7 @@ from app.services.gamification import ACHIEVEMENTS
 router = APIRouter(prefix="/api/v1/achievements", tags=["achievements"])
 
 
-@router.get("", response_model=AchievementsResponse)
+@router.get("", response_model=AchievementsResponse, status_code=200)
 async def get_achievements(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],

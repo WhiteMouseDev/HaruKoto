@@ -50,7 +50,7 @@ router = APIRouter(prefix="/api/v1/chat", tags=["chat"])
 # ==========================================
 
 
-@router.post("/start", response_model=ChatStartResponse)
+@router.post("/start", response_model=ChatStartResponse, status_code=200)
 async def start_chat(
     body: ChatStartRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -77,7 +77,13 @@ async def start_chat(
     system_prompt = build_system_prompt(user.jlpt_level or "N5", scenario=scenario)
 
     # Generate first AI message
+    logger.info("AI chat start", extra={
+        "user_id": str(user.id), "scenario_id": str(body.scenario_id), "type": str(body.type),
+    })
     ai_response = await generate_chat_response(system_prompt, [], SYSTEM_PROMPTS["first_message_prompt"])
+    logger.info("AI chat start response received", extra={
+        "user_id": str(user.id), "response_length": len(ai_response.get("messageJa", "")),
+    })
 
     # Store conversation
     initial_messages = [
@@ -110,7 +116,7 @@ async def start_chat(
 # ==========================================
 
 
-@router.post("/message", response_model=ChatMessageResponse)
+@router.post("/message", response_model=ChatMessageResponse, status_code=200)
 async def send_message(
     body: ChatMessageRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -135,7 +141,15 @@ async def send_message(
             history.append(msg)
 
     # Generate AI response
+    logger.info("AI chat message", extra={
+        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
+        "history_length": len(history),
+    })
     ai_response = await generate_chat_response(system_prompt, history, body.message)
+    logger.info("AI chat message response", extra={
+        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
+        "response_length": len(ai_response.get("messageJa", "")),
+    })
 
     # Append messages atomically
     new_messages = messages + [
@@ -160,7 +174,7 @@ async def send_message(
 # ==========================================
 
 
-@router.post("/end", response_model=ChatEndResponse)
+@router.post("/end", response_model=ChatEndResponse, status_code=200)
 async def end_chat(
     body: ChatEndRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -175,6 +189,10 @@ async def end_chat(
 
     # Generate feedback summary
     messages = [m for m in (conversation.messages or []) if m.get("role") in ("user", "assistant")]
+    logger.info("AI chat end - generating feedback", extra={
+        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
+        "message_count": len(messages),
+    })
     feedback = await generate_feedback_summary(messages)
 
     # Update conversation
@@ -184,6 +202,7 @@ async def end_chat(
 
     # Gamification — award XP
     xp = REWARDS.CONVERSATION_COMPLETE_XP
+    logger.info("AI chat end - awarding XP", extra={"user_id": str(user.id), "xp": xp})
     old_level = calculate_level(user.experience_points)["level"]
 
     await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
@@ -257,7 +276,7 @@ async def end_chat(
 # ==========================================
 
 
-@router.post("/tts")
+@router.post("/tts", status_code=200)
 async def text_to_speech(
     body: ChatTTSRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -279,7 +298,7 @@ ALLOWED_AUDIO_TYPES = {"audio/webm", "audio/mp3", "audio/mpeg", "audio/wav", "au
 MAX_AUDIO_SIZE = 4_500_000  # 4.5MB
 
 
-@router.post("/voice/transcribe")
+@router.post("/voice/transcribe", status_code=200)
 async def transcribe_voice(
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
@@ -302,7 +321,7 @@ async def transcribe_voice(
 # ==========================================
 
 
-@router.post("/live-token")
+@router.post("/live-token", status_code=200)
 async def get_live_token_endpoint(
     body: LiveTokenRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -325,7 +344,7 @@ async def get_live_token_endpoint(
 # ==========================================
 
 
-@router.post("/live-feedback")
+@router.post("/live-feedback", status_code=200)
 async def submit_live_feedback(
     body: LiveFeedbackRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -406,7 +425,7 @@ async def submit_live_feedback(
     await db.commit()
 
     return {
-        "success": True,
+        "ok": True,
         "conversationId": str(conversation.id),
         "feedbackSummary": feedback,
         "xpEarned": xp,

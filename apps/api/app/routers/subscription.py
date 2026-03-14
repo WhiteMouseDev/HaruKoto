@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 import time
 import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 from app.config import settings
 from app.db.session import get_db
@@ -30,11 +33,12 @@ from app.services.subscription import (
     resume_subscription,
 )
 from app.utils.constants import AI_LIMITS, PRICES
+from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
 
 
-@router.get("/status", response_model=SubscriptionStatusResponse)
+@router.get("/status", response_model=SubscriptionStatusResponse, status_code=200)
 async def get_status(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -63,7 +67,7 @@ async def get_status(
     )
 
 
-@router.post("/checkout", response_model=CheckoutResponse)
+@router.post("/checkout", response_model=CheckoutResponse, status_code=200)
 async def create_checkout(
     body: CheckoutRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -86,6 +90,7 @@ async def create_checkout(
     )
     db.add(payment)
     await db.commit()
+    logger.info("Subscription checkout created", extra={"user_id": str(user.id), "payment_id": payment_id, "plan": plan, "amount": amount})
 
     return CheckoutResponse(
         payment_id=payment_id,
@@ -98,7 +103,7 @@ async def create_checkout(
     )
 
 
-@router.post("/activate")
+@router.post("/activate", status_code=200)
 async def activate(
     body: ActivateRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -121,7 +126,11 @@ async def activate(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
 
-    plan = payment.plan.value.lower() if hasattr(payment.plan, "value") else payment.plan.lower()
+    plan = enum_value(payment.plan).lower()
+    logger.info("Subscription activation started", extra={
+        "user_id": str(user.id), "payment_id": body.payment_id,
+        "plan": plan, "amount": payment.amount,
+    })
     subscription = await activate_subscription(
         db,
         str(user.id),
@@ -130,15 +139,19 @@ async def activate(
         payment.amount,
     )
     await db.commit()
+    logger.info("Subscription activated", extra={
+        "user_id": str(user.id), "subscription_id": str(subscription.id),
+        "period_end": subscription.current_period_end.isoformat(),
+    })
 
     return {
-        "success": True,
+        "ok": True,
         "subscriptionId": str(subscription.id),
         "currentPeriodEnd": subscription.current_period_end.isoformat(),
     }
 
 
-@router.post("/cancel")
+@router.post("/cancel", status_code=200)
 async def cancel(
     body: CancelRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -147,12 +160,13 @@ async def cancel(
     try:
         await cancel_subscription(db, str(user.id), body.reason)
         await db.commit()
-        return {"success": True}
+        logger.info("Subscription cancelled", extra={"user_id": str(user.id), "reason": body.reason})
+        return {"ok": True}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
 
 
-@router.post("/resume")
+@router.post("/resume", status_code=200)
 async def resume(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -160,6 +174,7 @@ async def resume(
     try:
         await resume_subscription(db, str(user.id))
         await db.commit()
-        return {"success": True}
+        logger.info("Subscription resumed", extra={"user_id": str(user.id)})
+        return {"ok": True}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e

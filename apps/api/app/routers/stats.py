@@ -46,10 +46,16 @@ from app.schemas.stats import (
 )
 from app.utils.date import get_today_kst
 
+# ---------------------------------------------------------------------------
+# Heatmap level thresholds
+# ---------------------------------------------------------------------------
+HEATMAP_LEVEL_LOW = 10
+HEATMAP_LEVEL_MID = 20
+
 router = APIRouter(prefix="/api/v1/stats", tags=["stats"])
 
 
-@router.get("/dashboard", response_model=DashboardResponse)
+@router.get("/dashboard", response_model=DashboardResponse, status_code=200)
 async def get_dashboard(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -95,57 +101,66 @@ async def get_dashboard(
             )
         )
 
-    # Level progress
+    # Level progress — single aggregate query for vocab
     vocab_total = (await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == user.jlpt_level))).scalar() or 0
-    vocab_mastered = (
-        await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary)
-            .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == user.jlpt_level, UserVocabProgress.mastered.is_(True))
+    vocab_agg_result = await db.execute(
+        select(
+            UserVocabProgress.mastered,
+            func.count(UserVocabProgress.id),
         )
-    ).scalar() or 0
-    vocab_in_progress = (
-        await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary)
-            .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == user.jlpt_level, UserVocabProgress.mastered.is_(False))
-        )
-    ).scalar() or 0
+        .join(Vocabulary)
+        .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == user.jlpt_level)
+        .group_by(UserVocabProgress.mastered)
+    )
+    vocab_counts = {row[0]: row[1] for row in vocab_agg_result.all()}
+    vocab_mastered = vocab_counts.get(True, 0)
+    vocab_in_progress = vocab_counts.get(False, 0)
 
+    # Level progress — single aggregate query for grammar
     grammar_total = (await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == user.jlpt_level))).scalar() or 0
-    grammar_mastered = (
-        await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar)
-            .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == user.jlpt_level, UserGrammarProgress.mastered.is_(True))
+    grammar_agg_result = await db.execute(
+        select(
+            UserGrammarProgress.mastered,
+            func.count(UserGrammarProgress.id),
         )
-    ).scalar() or 0
-    grammar_in_progress = (
-        await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar)
-            .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == user.jlpt_level, UserGrammarProgress.mastered.is_(False))
-        )
-    ).scalar() or 0
+        .join(Grammar)
+        .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == user.jlpt_level)
+        .group_by(UserGrammarProgress.mastered)
+    )
+    grammar_counts = {row[0]: row[1] for row in grammar_agg_result.all()}
+    grammar_mastered = grammar_counts.get(True, 0)
+    grammar_in_progress = grammar_counts.get(False, 0)
 
-    # Kana progress
-    async def kana_stat(kt: KanaType) -> KanaStat:
-        t = (await db.execute(select(func.count(KanaCharacter.id)).where(KanaCharacter.kana_type == kt))).scalar() or 0
-        learned = (
-            await db.execute(
-                select(func.count(UserKanaProgress.id))
-                .join(KanaCharacter)
-                .where(UserKanaProgress.user_id == user.id, KanaCharacter.kana_type == kt)
-            )
-        ).scalar() or 0
-        m = (
-            await db.execute(
-                select(func.count(UserKanaProgress.id))
-                .join(KanaCharacter)
-                .where(UserKanaProgress.user_id == user.id, KanaCharacter.kana_type == kt, UserKanaProgress.mastered.is_(True))
-            )
-        ).scalar() or 0
-        return KanaStat(learned=learned, mastered=m, total=t)
+    # Kana progress — single batch query for totals per kana_type
+    kana_total_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
+    )
+    kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
+
+    # Kana mastered — single query across all types
+    kana_mastered_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
+        .join(KanaCharacter)
+        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
+        .group_by(KanaCharacter.kana_type)
+    )
+    kana_mastered_map = {row[0]: row[1] for row in kana_mastered_result.all()}
+
+    # Kana learned — single query across all types
+    kana_learned_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
+        .join(KanaCharacter)
+        .where(UserKanaProgress.user_id == user.id)
+        .group_by(KanaCharacter.kana_type)
+    )
+    kana_learned_map = {row[0]: row[1] for row in kana_learned_result.all()}
+
+    def _kana_stat(kt: KanaType) -> KanaStat:
+        return KanaStat(
+            learned=kana_learned_map.get(kt, 0),
+            mastered=kana_mastered_map.get(kt, 0),
+            total=kana_totals.get(kt, 0),
+        )
 
     return DashboardResponse(
         show_kana=user.show_kana,
@@ -157,13 +172,13 @@ async def get_dashboard(
             grammar=ProgressStat(total=grammar_total, mastered=grammar_mastered, in_progress=grammar_in_progress),
         ),
         kana_progress=KanaProgressResponse(
-            hiragana=await kana_stat(KanaType.HIRAGANA),
-            katakana=await kana_stat(KanaType.KATAKANA),
+            hiragana=_kana_stat(KanaType.HIRAGANA),
+            katakana=_kana_stat(KanaType.KATAKANA),
         ),
     )
 
 
-@router.get("/history", response_model=HistoryResponse)
+@router.get("/history", response_model=HistoryResponse, status_code=200)
 async def get_history(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -215,14 +230,14 @@ def _heatmap_level(words_studied: int) -> int:
     """Calculate heatmap level: 0 (none), 1 (1-9), 2 (10-19), 3 (20+)."""
     if words_studied == 0:
         return 0
-    if words_studied < 10:
+    if words_studied < HEATMAP_LEVEL_LOW:
         return 1
-    if words_studied < 20:
+    if words_studied < HEATMAP_LEVEL_MID:
         return 2
     return 3
 
 
-@router.get("/heatmap", response_model=HeatmapResponse)
+@router.get("/heatmap", response_model=HeatmapResponse, status_code=200)
 async def get_heatmap(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -268,101 +283,72 @@ async def get_heatmap(
     return HeatmapResponse(data=data)
 
 
-@router.get("/jlpt-progress", response_model=JlptProgressResponse)
+@router.get("/jlpt-progress", response_model=JlptProgressResponse, status_code=200)
 async def get_jlpt_progress(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """3-7: JLPT level progress across all levels the user has studied."""
+
+    # Batch: total vocab/grammar counts per JLPT level (2 queries instead of N*6)
+    vocab_total_result = await db.execute(
+        select(Vocabulary.jlpt_level, func.count(Vocabulary.id)).group_by(Vocabulary.jlpt_level)
+    )
+    vocab_totals = {row[0]: row[1] for row in vocab_total_result.all()}
+
+    grammar_total_result = await db.execute(
+        select(Grammar.jlpt_level, func.count(Grammar.id)).group_by(Grammar.jlpt_level)
+    )
+    grammar_totals = {row[0]: row[1] for row in grammar_total_result.all()}
+
+    # Batch: user vocab progress per (jlpt_level, mastered) — single query
+    vocab_progress_result = await db.execute(
+        select(Vocabulary.jlpt_level, UserVocabProgress.mastered, func.count(UserVocabProgress.id))
+        .join(Vocabulary)
+        .where(UserVocabProgress.user_id == user.id)
+        .group_by(Vocabulary.jlpt_level, UserVocabProgress.mastered)
+    )
+    vocab_progress: dict[tuple, int] = {}
+    for row in vocab_progress_result.all():
+        vocab_progress[(row[0], row[1])] = row[2]
+
+    # Batch: user grammar progress per (jlpt_level, mastered) — single query
+    grammar_progress_result = await db.execute(
+        select(Grammar.jlpt_level, UserGrammarProgress.mastered, func.count(UserGrammarProgress.id))
+        .join(Grammar)
+        .where(UserGrammarProgress.user_id == user.id)
+        .group_by(Grammar.jlpt_level, UserGrammarProgress.mastered)
+    )
+    grammar_progress: dict[tuple, int] = {}
+    for row in grammar_progress_result.all():
+        grammar_progress[(row[0], row[1])] = row[2]
+
     levels: list[JlptLevelProgress] = []
-
     for jlpt in JlptLevel:
-        vocab_total = (
-            await db.execute(
-                select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == jlpt)
-            )
-        ).scalar() or 0
+        v_total = vocab_totals.get(jlpt, 0)
+        g_total = grammar_totals.get(jlpt, 0)
 
-        grammar_total = (
-            await db.execute(
-                select(func.count(Grammar.id)).where(Grammar.jlpt_level == jlpt)
-            )
-        ).scalar() or 0
-
-        # Skip levels with no content
-        if vocab_total == 0 and grammar_total == 0:
+        if v_total == 0 and g_total == 0:
             continue
 
-        vocab_mastered = (
-            await db.execute(
-                select(func.count(UserVocabProgress.id))
-                .join(Vocabulary)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt,
-                    UserVocabProgress.mastered.is_(True),
-                )
-            )
-        ).scalar() or 0
+        v_mastered = vocab_progress.get((jlpt, True), 0)
+        v_in_progress = vocab_progress.get((jlpt, False), 0)
+        g_mastered = grammar_progress.get((jlpt, True), 0)
+        g_in_progress = grammar_progress.get((jlpt, False), 0)
 
-        vocab_in_progress = (
-            await db.execute(
-                select(func.count(UserVocabProgress.id))
-                .join(Vocabulary)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt,
-                    UserVocabProgress.mastered.is_(False),
-                )
-            )
-        ).scalar() or 0
-
-        grammar_mastered = (
-            await db.execute(
-                select(func.count(UserGrammarProgress.id))
-                .join(Grammar)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt,
-                    UserGrammarProgress.mastered.is_(True),
-                )
-            )
-        ).scalar() or 0
-
-        grammar_in_progress = (
-            await db.execute(
-                select(func.count(UserGrammarProgress.id))
-                .join(Grammar)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt,
-                    UserGrammarProgress.mastered.is_(False),
-                )
-            )
-        ).scalar() or 0
-
-        # Only include levels the user has studied or that have content
-        if vocab_mastered + vocab_in_progress + grammar_mastered + grammar_in_progress > 0 or jlpt == user.jlpt_level:
+        if v_mastered + v_in_progress + g_mastered + g_in_progress > 0 or jlpt == user.jlpt_level:
             levels.append(
                 JlptLevelProgress(
                     level=jlpt.value,
-                    vocabulary=JlptProgressStat(
-                        total=vocab_total,
-                        mastered=vocab_mastered,
-                        in_progress=vocab_in_progress,
-                    ),
-                    grammar=JlptProgressStat(
-                        total=grammar_total,
-                        mastered=grammar_mastered,
-                        in_progress=grammar_in_progress,
-                    ),
+                    vocabulary=JlptProgressStat(total=v_total, mastered=v_mastered, in_progress=v_in_progress),
+                    grammar=JlptProgressStat(total=g_total, mastered=g_mastered, in_progress=g_in_progress),
                 )
             )
 
     return JlptProgressResponse(levels=levels)
 
 
-@router.get("/time-chart", response_model=TimeChartResponse)
+@router.get("/time-chart", response_model=TimeChartResponse, status_code=200)
 async def get_time_chart(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -398,7 +384,7 @@ async def get_time_chart(
     return TimeChartResponse(data=data)
 
 
-@router.get("/volume-chart", response_model=VolumeChartResponse)
+@router.get("/volume-chart", response_model=VolumeChartResponse, status_code=200)
 async def get_volume_chart(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -436,7 +422,7 @@ async def get_volume_chart(
     return VolumeChartResponse(data=data)
 
 
-@router.get("/by-category", response_model=ByCategoryResponse)
+@router.get("/by-category", response_model=ByCategoryResponse, status_code=200)
 async def get_by_category(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],

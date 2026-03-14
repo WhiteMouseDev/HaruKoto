@@ -26,7 +26,7 @@ class MarkReadRequest(BaseModel):
     id: UUID | None = None
 
 
-@router.get("/", response_model=NotificationsListResponse)
+@router.get("/", response_model=NotificationsListResponse, status_code=200)
 async def get_notifications(
     limit: int = Query(default=20, le=50),
     user: User = Depends(get_current_user),
@@ -48,7 +48,7 @@ async def get_notifications(
     return NotificationsListResponse(notifications=notifications, unread_count=unread_count)
 
 
-@router.patch("/")
+@router.patch("/", status_code=200)
 async def mark_notifications_read(
     body: MarkReadRequest | None = None,
     user: User = Depends(get_current_user),
@@ -63,4 +63,4 @@ async def mark_notifications_read(
             .values(is_read=True)
         )
     await db.commit()
-    return {"success": True}
+    return {"ok": True}

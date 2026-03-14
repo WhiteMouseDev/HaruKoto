@@ -46,6 +46,8 @@ class ApiException implements Exception {
         return '요청한 데이터를 찾을 수 없습니다.';
       case 409:
         return '이미 처리된 요청입니다.';
+      case 422:
+        return '입력값을 확인해주세요.';
       case 429:
         return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
       case final code? when code >= 500:

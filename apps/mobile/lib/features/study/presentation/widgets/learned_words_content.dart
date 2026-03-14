@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../shared/widgets/app_error_retry.dart';
 import '../../../../shared/widgets/pagination_footer.dart';
 import '../../data/models/word_entry_model.dart';
 import 'word_card.dart';
@@ -59,20 +60,9 @@ class LearnedWordsContent extends StatelessWidget {
     }
 
     if (error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(error!, style: theme.textTheme.bodyMedium),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: onRetry,
-              icon:
-                  const Icon(LucideIcons.refreshCw, size: 16),
-              label: const Text('다시 시도'),
-            ),
-          ],
-        ),
+      return AppErrorRetry(
+        onRetry: onRetry,
+        message: error,
       );
     }
 

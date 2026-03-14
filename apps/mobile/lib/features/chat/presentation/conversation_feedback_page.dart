@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_skeleton.dart';
 import '../data/models/feedback_model.dart';
 import '../data/models/chat_message_model.dart';
@@ -31,6 +32,7 @@ class _ConversationFeedbackPageState
     extends ConsumerState<ConversationFeedbackPage> {
   FeedbackSummary? _feedback;
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -44,6 +46,10 @@ class _ConversationFeedbackPageState
   }
 
   Future<void> _fetchFromServer() async {
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
     try {
       final repo = ref.read(chatRepositoryProvider);
       final detail = await repo.fetchConversation(widget.conversationId);
@@ -55,7 +61,10 @@ class _ConversationFeedbackPageState
     } catch (e) {
       debugPrint('[ConversationFeedbackPage] Failed to fetch feedback: $e');
       if (!mounted) return;
-      setState(() => _loading = false);
+      setState(() {
+        _loading = false;
+        _hasError = true;
+      });
     }
   }
 
@@ -80,12 +89,14 @@ class _ConversationFeedbackPageState
               itemCount: 3,
               itemHeights: [160, 120, 96],
             )
-          : _feedback == null
-              ? const _FeedbackNoData()
-              : _FeedbackContent(
-                  feedback: _feedback!,
-                  vocabulary: widget.vocabulary,
-                ),
+          : _hasError
+              ? AppErrorRetry(onRetry: _fetchFromServer)
+              : _feedback == null
+                  ? const _FeedbackNoData()
+                  : _FeedbackContent(
+                      feedback: _feedback!,
+                      vocabulary: widget.vocabulary,
+                    ),
     );
   }
 }

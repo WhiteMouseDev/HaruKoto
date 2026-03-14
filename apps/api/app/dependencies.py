@@ -8,7 +8,7 @@ from uuid import UUID
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jwt import PyJWKClient
+from jwt import PyJWKClient, PyJWKClientError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -62,8 +62,8 @@ def _decode_token(token: str) -> dict:
                 algorithms=["ES256"],
                 audience="authenticated",
             )
-        except Exception:
-            logger.debug("JWKS verification failed, trying HS256 fallback")
+        except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidKeyError, PyJWKClientError) as exc:
+            logger.debug("JWKS verification failed (%s), trying HS256 fallback", type(exc).__name__)
 
     # 2) Legacy HS256 폴백
     if settings.SUPABASE_JWT_SECRET:
@@ -88,7 +88,7 @@ async def get_current_user(
 ) -> User:
     try:
         payload = _decode_token(credentials.credentials)
-    except (jwt.InvalidTokenError, Exception) as err:
+    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
@@ -130,7 +130,7 @@ async def get_optional_user(
 
     try:
         payload = _decode_token(credentials.credentials)
-    except Exception:
+    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError):
         return None
 
     sub = payload.get("sub")

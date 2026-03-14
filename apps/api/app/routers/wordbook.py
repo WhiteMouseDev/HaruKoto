@@ -22,7 +22,7 @@ from app.schemas.wordbook import (
 router = APIRouter(prefix="/api/v1/wordbook", tags=["wordbook"])
 
 
-@router.get("/", response_model=WordbookListResponse)
+@router.get("/", response_model=WordbookListResponse, status_code=200)
 async def list_wordbook(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, le=100),
@@ -91,7 +91,7 @@ async def create_wordbook_entry(
     return WordbookEntryResponse.model_validate(entry)
 
 
-@router.get("/{entry_id}", response_model=WordbookEntryResponse)
+@router.get("/{entry_id}", response_model=WordbookEntryResponse, status_code=200)
 async def get_wordbook_entry(
     entry_id: uuid.UUID,
     user: User = Depends(get_current_user),
@@ -103,7 +103,7 @@ async def get_wordbook_entry(
     return WordbookEntryResponse.model_validate(entry)
 
 
-@router.patch("/{entry_id}", response_model=WordbookEntryResponse)
+@router.patch("/{entry_id}", response_model=WordbookEntryResponse, status_code=200)
 async def update_wordbook_entry(
     entry_id: uuid.UUID,
     body: WordbookUpdateRequest,
@@ -122,7 +122,7 @@ async def update_wordbook_entry(
     return WordbookEntryResponse.model_validate(entry)
 
 
-@router.delete("/{entry_id}")
+@router.delete("/{entry_id}", status_code=200)
 async def delete_wordbook_entry(
     entry_id: uuid.UUID,
     user: User = Depends(get_current_user),
@@ -134,4 +134,4 @@ async def delete_wordbook_entry(
 
     await db.delete(entry)
     await db.commit()
-    return {"success": True}
+    return {"ok": True}

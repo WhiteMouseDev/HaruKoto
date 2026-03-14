@@ -70,6 +70,11 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
       setState(() => _savedWords.add(item.questionId));
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('단어장에 저장하지 못했습니다')),
+        );
+      }
     }
   }
 

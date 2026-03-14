@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
+from pydantic import Field
+
 from app.models.enums import KanaType
 from app.schemas.common import CamelModel
 
@@ -39,6 +41,11 @@ class KanaStageResponse(CamelModel):
 class KanaProgressResponse(CamelModel):
     hiragana: KanaStat
     katakana: KanaStat
+
+
+class KanaProgressRecord(CamelModel):
+    """Request body for recording kana learning progress."""
+    kana_id: UUID = Field(..., description="ID of the kana character learned")
 
 
 class KanaQuizStartRequest(CamelModel):

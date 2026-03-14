@@ -14,7 +14,7 @@ from app.models import Subscription, User
 router = APIRouter(prefix="/api/v1/cron", tags=["cron"])
 
 
-@router.post("/subscription-renewal")
+@router.post("/subscription-renewal", status_code=200)
 async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_db)):
     # Verify cron secret
     auth = request.headers.get("authorization", "")

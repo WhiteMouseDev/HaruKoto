@@ -53,7 +53,7 @@ def _select_missions(user_id: str, date_str: str) -> list[dict]:
     return selected
 
 
-@router.get("/today", response_model=list[MissionResponse])
+@router.get("/today", response_model=list[MissionResponse], status_code=200)
 async def get_today_missions(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -129,7 +129,7 @@ async def get_today_missions(
     return missions_response
 
 
-@router.post("/claim", response_model=MissionClaimResponse)
+@router.post("/claim", response_model=MissionClaimResponse, status_code=200)
 async def claim_mission(
     body: MissionClaimRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -162,6 +162,7 @@ async def claim_mission(
     )
 
     await db.commit()
+    await db.refresh(user)
 
     return MissionClaimResponse(
         xp_reward=xp_reward,

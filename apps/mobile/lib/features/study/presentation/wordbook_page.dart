@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/pagination_footer.dart';
 import '../data/models/wordbook_entry_model.dart';
 import '../providers/study_provider.dart';
@@ -308,19 +309,9 @@ class _WordbookContent extends StatelessWidget {
     }
 
     if (error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(error!, style: theme.textTheme.bodyMedium),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(LucideIcons.refreshCw, size: 16),
-              label: const Text('다시 시도'),
-            ),
-          ],
-        ),
+      return AppErrorRetry(
+        onRetry: onRetry,
+        message: error,
       );
     }
 

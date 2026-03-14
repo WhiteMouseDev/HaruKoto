@@ -23,6 +23,7 @@ from app.models import (
 from app.models.enums import KanaType, QuizType
 from app.models.user import User
 from app.schemas.kana import (
+    KanaProgressRecord,
     KanaProgressResponse,
     KanaQuizAnswerRequest,
     KanaQuizAnswerResponse,
@@ -36,10 +37,16 @@ from app.services.gamification import calculate_level, check_and_grant_achieveme
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
 
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+FIRST_STAGE_NUMBER = 1
+KANA_MASTERY_STREAK = 3
+
 router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 
 
-@router.get("/characters")
+@router.get("/characters", status_code=200)
 async def get_characters(
     kana_type: KanaType | None = None,
     db: AsyncSession = Depends(get_db),
@@ -72,7 +79,7 @@ async def get_characters(
     ]
 
 
-@router.get("/stages")
+@router.get("/stages", status_code=200)
 async def get_stages(
     kana_type: KanaType | None = None,
     user: User = Depends(get_current_user),
@@ -99,7 +106,7 @@ async def get_stages(
                 "title": stage.title,
                 "description": stage.description,
                 "characters": stage.characters,
-                "isUnlocked": us.is_unlocked if us else (stage.stage_number == 1),
+                "isUnlocked": us.is_unlocked if us else (stage.stage_number == FIRST_STAGE_NUMBER),
                 "isCompleted": us.is_completed if us else False,
                 "quizScore": us.quiz_score if us else None,
             }
@@ -108,54 +115,57 @@ async def get_stages(
     return response
 
 
-@router.get("/progress", response_model=KanaProgressResponse)
+@router.get("/progress", response_model=KanaProgressResponse, status_code=200)
 async def get_progress(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    async def get_stat(kt: KanaType) -> KanaStat:
-        total_result = await db.execute(select(func.count(KanaCharacter.id)).where(KanaCharacter.kana_type == kt))
-        total = total_result.scalar() or 0
+    # Batch: totals per kana_type (1 query instead of 2)
+    total_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
+    )
+    totals = {row[0]: row[1] for row in total_result.all()}
 
-        learned_result = await db.execute(
-            select(func.count(UserKanaProgress.id))
-            .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-            .where(UserKanaProgress.user_id == user.id, KanaCharacter.kana_type == kt)
+    # Batch: learned per kana_type (1 query instead of 2)
+    learned_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
+        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
+        .where(UserKanaProgress.user_id == user.id)
+        .group_by(KanaCharacter.kana_type)
+    )
+    learned_map = {row[0]: row[1] for row in learned_result.all()}
+
+    # Batch: mastered per kana_type (1 query instead of 2)
+    mastered_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
+        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
+        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
+        .group_by(KanaCharacter.kana_type)
+    )
+    mastered_map = {row[0]: row[1] for row in mastered_result.all()}
+
+    def _stat(kt: KanaType) -> KanaStat:
+        return KanaStat(
+            learned=learned_map.get(kt, 0),
+            mastered=mastered_map.get(kt, 0),
+            total=totals.get(kt, 0),
         )
-        learned = learned_result.scalar() or 0
-
-        mastered_result = await db.execute(
-            select(func.count(UserKanaProgress.id))
-            .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-            .where(
-                UserKanaProgress.user_id == user.id,
-                KanaCharacter.kana_type == kt,
-                UserKanaProgress.mastered.is_(True),
-            )
-        )
-        mastered = mastered_result.scalar() or 0
-
-        return KanaStat(learned=learned, mastered=mastered, total=total)
 
     return KanaProgressResponse(
-        hiragana=await get_stat(KanaType.HIRAGANA),
-        katakana=await get_stat(KanaType.KATAKANA),
+        hiragana=_stat(KanaType.HIRAGANA),
+        katakana=_stat(KanaType.KATAKANA),
     )
 
 
-@router.post("/progress")
+@router.post("/progress", status_code=200)
 async def record_kana_learning(
-    body: dict[str, Any],
+    body: KanaProgressRecord,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    kana_id = body.get("kanaId")
-    if not kana_id:
-        raise HTTPException(status_code=400, detail="kanaId가 필요합니다")
-
     stmt = pg_insert(UserKanaProgress).values(
         user_id=user.id,
-        kana_id=uuid.UUID(kana_id),
+        kana_id=body.kana_id,
         correct_count=1,
         streak=1,
     )
@@ -182,10 +192,10 @@ async def record_kana_learning(
     await db.execute(dp_stmt)
     await db.commit()
 
-    return {"success": True}
+    return {"ok": True}
 
 
-@router.post("/quiz/start", response_model=KanaQuizStartResponse)
+@router.post("/quiz/start", response_model=KanaQuizStartResponse, status_code=200)
 async def start_kana_quiz(
     body: KanaQuizStartRequest,
     user: User = Depends(get_current_user),
@@ -289,7 +299,7 @@ async def start_kana_quiz(
     )
 
 
-@router.post("/quiz/answer", response_model=KanaQuizAnswerResponse)
+@router.post("/quiz/answer", response_model=KanaQuizAnswerResponse, status_code=200)
 async def answer_kana_quiz(
     body: KanaQuizAnswerRequest,
     user: User = Depends(get_current_user),
@@ -329,7 +339,7 @@ async def answer_kana_quiz(
             set_={
                 "correct_count": UserKanaProgress.correct_count + 1,
                 "streak": UserKanaProgress.streak + 1,
-                "mastered": UserKanaProgress.streak + 1 >= 3,
+                "mastered": UserKanaProgress.streak + 1 >= KANA_MASTERY_STREAK,
                 "last_reviewed_at": now,
             },
         )
@@ -352,7 +362,7 @@ async def answer_kana_quiz(
     return KanaQuizAnswerResponse(is_correct=is_correct, correct_option_id=correct_option_id)
 
 
-@router.post("/stage-complete", response_model=KanaStageCompleteResponse)
+@router.post("/stage-complete", response_model=KanaStageCompleteResponse, status_code=200)
 async def complete_stage(
     body: KanaStageCompleteRequest,
     user: User = Depends(get_current_user),
@@ -433,27 +443,23 @@ async def complete_stage(
     )
     await db.execute(dp_stmt)
 
-    # Check kana achievements
-    hiragana_total = (
-        await db.execute(select(func.count(KanaCharacter.id)).where(KanaCharacter.kana_type == KanaType.HIRAGANA))
-    ).scalar() or 0
-    katakana_total = (
-        await db.execute(select(func.count(KanaCharacter.id)).where(KanaCharacter.kana_type == KanaType.KATAKANA))
-    ).scalar() or 0
-    hiragana_mastered = (
-        await db.execute(
-            select(func.count(UserKanaProgress.id))
-            .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-            .where(UserKanaProgress.user_id == user.id, KanaCharacter.kana_type == KanaType.HIRAGANA, UserKanaProgress.mastered.is_(True))
-        )
-    ).scalar() or 0
-    katakana_mastered = (
-        await db.execute(
-            select(func.count(UserKanaProgress.id))
-            .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-            .where(UserKanaProgress.user_id == user.id, KanaCharacter.kana_type == KanaType.KATAKANA, UserKanaProgress.mastered.is_(True))
-        )
-    ).scalar() or 0
+    # Check kana achievements — batch queries
+    kana_total_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
+    )
+    kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
+    hiragana_total = kana_totals.get(KanaType.HIRAGANA, 0)
+    katakana_total = kana_totals.get(KanaType.KATAKANA, 0)
+
+    kana_mastered_result = await db.execute(
+        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
+        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
+        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
+        .group_by(KanaCharacter.kana_type)
+    )
+    kana_mastered_counts = {row[0]: row[1] for row in kana_mastered_result.all()}
+    hiragana_mastered = kana_mastered_counts.get(KanaType.HIRAGANA, 0)
+    katakana_mastered = kana_mastered_counts.get(KanaType.KATAKANA, 0)
 
     events = await check_and_grant_achievements(
         db,

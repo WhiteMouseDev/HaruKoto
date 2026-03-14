@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/user", tags=["user"])
 
+MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
 
 class UserProfileResponse(CamelModel):
     profile: UserProfile
@@ -44,7 +46,7 @@ class AccountUpdateRequest(CamelModel):
     email: str | None = None
 
 
-@router.get("/profile", response_model=UserProfileResponse)
+@router.get("/profile", response_model=UserProfileResponse, status_code=200)
 async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -88,7 +90,7 @@ async def get_profile(
     )
 
 
-@router.patch("/profile", response_model=UserProfile)
+@router.patch("/profile", response_model=UserProfile, status_code=200)
 async def update_profile(
     body: UserProfileUpdate,
     user: Annotated[User, Depends(get_current_user)],
@@ -130,7 +132,7 @@ async def update_profile(
     return profile
 
 
-@router.post("/avatar")
+@router.post("/avatar", status_code=200)
 async def upload_avatar(
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
@@ -140,9 +142,12 @@ async def upload_avatar(
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
         raise HTTPException(status_code=400, detail="지원하지 않는 이미지 형식입니다. JPEG, PNG, WEBP만 가능합니다.")
 
+    # Check Content-Length header first to reject early without reading
+    if file.size and file.size > MAX_AVATAR_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="파일 크기는 5MB 이하여야 합니다.")
+
     content = await file.read()
-    max_size = 5 * 1024 * 1024  # 5MB
-    if len(content) > max_size:
+    if len(content) > MAX_AVATAR_FILE_SIZE:
         raise HTTPException(status_code=400, detail="파일 크기는 5MB 이하여야 합니다.")
 
     ext = file.content_type.split("/")[-1]
@@ -170,7 +175,7 @@ async def upload_avatar(
     return {"avatarUrl": avatar_url}
 
 
-@router.patch("/avatar", response_model=dict)
+@router.patch("/avatar", response_model=dict, status_code=200)
 async def update_avatar(
     body: AvatarUpdateRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -182,7 +187,7 @@ async def update_avatar(
     return {"avatarUrl": user.avatar_url}
 
 
-@router.delete("/account")
+@router.delete("/account", status_code=200)
 async def delete_account(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -225,7 +230,7 @@ async def delete_account(
     return {"ok": True}
 
 
-@router.patch("/account", response_model=dict)
+@router.patch("/account", response_model=dict, status_code=200)
 async def update_account(
     body: AccountUpdateRequest,
     user: Annotated[User, Depends(get_current_user)],

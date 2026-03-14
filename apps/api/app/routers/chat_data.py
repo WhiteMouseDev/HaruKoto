@@ -21,7 +21,7 @@ from app.models.user import User
 router = APIRouter(prefix="/api/v1/chat", tags=["chat-data"])
 
 
-@router.get("/scenarios")
+@router.get("/scenarios", status_code=200)
 async def get_scenarios(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -49,7 +49,7 @@ async def get_scenarios(
     ]
 
 
-@router.get("/history")
+@router.get("/history", status_code=200)
 async def get_history(
     cursor: str | None = None,
     limit: int = Query(default=20, le=30),
@@ -113,7 +113,7 @@ async def get_history(
     return {"history": history, "nextCursor": next_cursor}
 
 
-@router.get("/characters")
+@router.get("/characters", status_code=200)
 async def get_characters(
     character_id: str | None = Query(default=None, alias="id"),
     user: User = Depends(get_current_user),
@@ -184,7 +184,7 @@ async def get_characters(
     }
 
 
-@router.get("/characters/stats")
+@router.get("/characters/stats", status_code=200)
 async def get_character_stats(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -198,7 +198,7 @@ async def get_character_stats(
     return {"characterStats": stats}
 
 
-@router.get("/characters/favorites")
+@router.get("/characters/favorites", status_code=200)
 async def get_favorite_characters(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -207,7 +207,7 @@ async def get_favorite_characters(
     return {"favoriteIds": [str(cid) for cid in result.scalars().all()]}
 
 
-@router.post("/characters/favorites")
+@router.post("/characters/favorites", status_code=200)
 async def toggle_favorite(
     body: dict,
     user: User = Depends(get_current_user),
@@ -232,7 +232,7 @@ async def toggle_favorite(
         return {"favorited": True}
 
 
-@router.get("/{conversation_id}")
+@router.get("/{conversation_id}", status_code=200)
 async def get_conversation(
     conversation_id: uuid.UUID,
     user: User = Depends(get_current_user),
@@ -253,7 +253,7 @@ async def get_conversation(
     }
 
 
-@router.delete("/{conversation_id}")
+@router.delete("/{conversation_id}", status_code=200)
 async def delete_conversation(
     conversation_id: uuid.UUID,
     user: User = Depends(get_current_user),
@@ -265,4 +265,4 @@ async def delete_conversation(
 
     await db.delete(conv)
     await db.commit()
-    return {"success": True}
+    return {"ok": True}

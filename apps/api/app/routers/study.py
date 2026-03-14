@@ -11,11 +11,12 @@ from app.dependencies import get_current_user
 from app.models import StudyStage, UserStudyStageProgress, UserVocabProgress, Vocabulary
 from app.models.user import User
 from app.schemas.stats import DailyGoalRequest, DailyGoalResponse
+from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/study", tags=["study"])
 
 
-@router.get("/learned-words")
+@router.get("/learned-words", status_code=200)
 async def get_learned_words(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=10, le=50),
@@ -88,7 +89,7 @@ async def get_learned_words(
                 "word": vocab.word,
                 "reading": vocab.reading,
                 "meaningKo": vocab.meaning_ko,
-                "jlptLevel": vocab.jlpt_level.value if hasattr(vocab.jlpt_level, "value") else vocab.jlpt_level,
+                "jlptLevel": enum_value(vocab.jlpt_level),
                 "exampleSentence": vocab.example_sentence,
                 "exampleTranslation": vocab.example_translation,
                 "correctCount": progress.correct_count,
@@ -112,7 +113,7 @@ async def get_learned_words(
     }
 
 
-@router.get("/wrong-answers")
+@router.get("/wrong-answers", status_code=200)
 async def get_study_wrong_answers(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=10, le=50),
@@ -178,7 +179,7 @@ async def get_study_wrong_answers(
                 "word": vocab.word,
                 "reading": vocab.reading,
                 "meaningKo": vocab.meaning_ko,
-                "jlptLevel": vocab.jlpt_level.value if hasattr(vocab.jlpt_level, "value") else vocab.jlpt_level,
+                "jlptLevel": enum_value(vocab.jlpt_level),
                 "exampleSentence": vocab.example_sentence,
                 "exampleTranslation": vocab.example_translation,
                 "correctCount": progress.correct_count,
@@ -201,7 +202,7 @@ async def get_study_wrong_answers(
     }
 
 
-@router.get("/stages")
+@router.get("/stages", status_code=200)
 async def get_stages(
     category: str = Query(..., description="VOCABULARY, GRAMMAR, or SENTENCE"),
     jlpt_level: str | None = Query(default=None, alias="jlptLevel"),
@@ -209,7 +210,7 @@ async def get_stages(
     db: AsyncSession = Depends(get_db),
 ):
     """카테고리별 스테이지 목록과 유저 진행 상황 조회."""
-    level = jlpt_level or (user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level)
+    level = jlpt_level or enum_value(user.jlpt_level)
 
     # Fetch stages
     stages_result = await db.execute(
@@ -258,7 +259,7 @@ async def get_stages(
             {
                 "id": str(stage.id),
                 "category": stage.category,
-                "jlptLevel": stage.jlpt_level.value if hasattr(stage.jlpt_level, "value") else stage.jlpt_level,
+                "jlptLevel": enum_value(stage.jlpt_level),
                 "stageNumber": stage.stage_number,
                 "title": stage.title,
                 "description": stage.description,
@@ -277,7 +278,7 @@ async def get_stages(
     return response
 
 
-@router.patch("/daily-goal", response_model=DailyGoalResponse)
+@router.patch("/daily-goal", response_model=DailyGoalResponse, status_code=200)
 async def update_daily_goal(
     body: DailyGoalRequest,
     user: User = Depends(get_current_user),

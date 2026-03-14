@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 bearer_scheme = HTTPBearer()
 
 
-@router.post("/ensure-user")
+@router.post("/ensure-user", status_code=200)
 async def ensure_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -32,7 +32,7 @@ async def ensure_user(
     """Supabase JWT에서 유저 ID/email 추출, DB에 없으면 자동 생성."""
     try:
         payload = _decode_token(credentials.credentials)
-    except (jwt.InvalidTokenError, Exception) as err:
+    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
@@ -67,7 +67,7 @@ async def ensure_user(
     return {"user": profile.model_dump(by_alias=True)}
 
 
-@router.post("/onboarding", response_model=OnboardingResponse)
+@router.post("/onboarding", response_model=OnboardingResponse, status_code=200)
 async def onboarding(
     body: OnboardingRequest,
     user: Annotated[User, Depends(get_current_user)],

@@ -11,7 +11,7 @@ from app.services.subscription import get_payment_history
 router = APIRouter(prefix="/api/v1/payments", tags=["payments"])
 
 
-@router.get("/")
+@router.get("/", status_code=200)
 async def list_payments(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=10, le=50),
