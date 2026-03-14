@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     def supabase_jwks_url(self) -> str:
         return f"{self.SUPABASE_URL}/auth/v1/.well-known/jwks.json"
 
+    # Kakao OAuth
+    KAKAO_REST_API_KEY: str = ""
+    KAKAO_CLIENT_SECRET: str = ""
+
     # Google AI
     GOOGLE_API_KEY: str = ""
 

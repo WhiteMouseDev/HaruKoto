@@ -5,6 +5,9 @@ abstract final class AppConfig {
 
   static const sentryDsn = String.fromEnvironment('SENTRY_DSN', defaultValue: '');
 
+  static const kakaoNativeAppKey =
+      String.fromEnvironment('KAKAO_NATIVE_APP_KEY');
+
   static const googleServerClientId =
       '842843944454-stgesdh75b31fs28bi8qnkrqftv1ergv.apps.googleusercontent.com';
 }

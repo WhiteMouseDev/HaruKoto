@@ -20,6 +20,15 @@
 				<string>io.supabase.harukoto</string>
 			</array>
 		</dict>
+		<!-- Kakao SDK: kakao{NATIVE_APP_KEY} 형식으로 아래 값 교체 필요 -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaoaa29997dff5db7d7c769ad6d07e51ae3</string>
+			</array>
+		</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

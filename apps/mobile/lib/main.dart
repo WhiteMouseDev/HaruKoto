@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
@@ -16,6 +17,9 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+
+  // Kakao SDK 초기화
+  KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);
 
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,

@@ -4,12 +4,15 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
+import httpx
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.db.session import get_db
 from app.dependencies import _decode_token, get_current_user
 from app.models.user import User
@@ -22,6 +25,44 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 bearer_scheme = HTTPBearer()
+
+
+class KakaoTokenExchangeRequest(BaseModel):
+    code: str
+    redirect_uri: str
+
+
+@router.post("/kakao/exchange", status_code=200)
+async def kakao_token_exchange(body: KakaoTokenExchangeRequest):
+    """카카오 인가 코드를 id_token으로 교환 (모바일 네이티브 SDK용)."""
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://kauth.kakao.com/oauth/token",
+            data={
+                "grant_type": "authorization_code",
+                "client_id": settings.KAKAO_REST_API_KEY,
+                "client_secret": settings.KAKAO_CLIENT_SECRET,
+                "code": body.code,
+                "redirect_uri": body.redirect_uri,
+            },
+        )
+
+    if response.status_code != 200:
+        logger.warning("Kakao token exchange failed: %s", response.text)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="카카오 토큰 교환에 실패했습니다.",
+        )
+
+    data = response.json()
+    id_token = data.get("id_token")
+    if not id_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="id_token이 없습니다. OpenID Connect가 활성화되어 있는지 확인하세요.",
+        )
+
+    return {"id_token": id_token}
 
 
 @router.post("/ensure-user", status_code=200)

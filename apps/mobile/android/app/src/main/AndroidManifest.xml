@@ -45,5 +45,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Kakao SDK: 카카오톡 설치 여부 확인용 -->
+        <package android:name="com.kakao.talk" />
     </queries>
 </manifest>

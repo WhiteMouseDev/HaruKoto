@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_config.dart';
 
@@ -41,12 +43,39 @@ class AuthRepository {
     );
   }
 
-  // --- Kakao Sign-In (via Supabase OAuth) ---
-  Future<void> signInWithKakao() async {
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.kakao,
-      redirectTo: 'io.supabase.harukoto://login-callback/',
-      authScreenLaunchMode: LaunchMode.inAppBrowserView,
+  // --- Kakao Sign-In (Native SDK + 백엔드 토큰 교환) ---
+  Future<AuthResponse> signInWithKakao() async {
+    // 1. 네이티브 SDK로 인가 코드 획득 (카카오톡 앱 전환 or 웹 로그인)
+    final redirectUri =
+        'kakao${AppConfig.kakaoNativeAppKey}://oauth';
+    String authCode;
+    if (await isKakaoTalkInstalled()) {
+      authCode = await AuthCodeClient.instance
+          .authorizeWithTalk(redirectUri: redirectUri);
+    } else {
+      authCode = await AuthCodeClient.instance
+          .authorize(redirectUri: redirectUri);
+    }
+
+    // 2. 백엔드에서 REST API 키로 토큰 교환 → aud가 Supabase 설정과 일치
+    final dio = Dio();
+    final response = await dio.post(
+      '${AppConfig.apiBaseUrl}/api/v1/auth/kakao/exchange',
+      data: {
+        'code': authCode,
+        'redirect_uri': redirectUri,
+      },
+    );
+
+    final idToken = response.data['id_token'] as String?;
+    if (idToken == null) {
+      throw const AuthException('카카오 ID 토큰을 가져올 수 없습니다.');
+    }
+
+    // 3. Supabase 인증
+    return _client.auth.signInWithIdToken(
+      provider: OAuthProvider.kakao,
+      idToken: idToken,
     );
   }
 
