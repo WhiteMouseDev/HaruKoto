@@ -20,6 +20,7 @@ class QuizPage extends ConsumerStatefulWidget {
   final int count;
   final String? mode;
   final String? resumeSessionId;
+  final String? stageId;
 
   const QuizPage({
     super.key,
@@ -28,6 +29,7 @@ class QuizPage extends ConsumerStatefulWidget {
     this.count = 10,
     this.mode,
     this.resumeSessionId,
+    this.stageId,
   });
 
   @override
@@ -89,6 +91,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           jlptLevel: widget.jlptLevel,
           count: widget.count,
           mode: widget.mode,
+          stageId: widget.stageId,
         );
         setState(() {
           _sessionId = data.sessionId;
@@ -158,7 +161,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final repo = ref.read(studyRepositoryProvider);
     try {
       final result =
-          await repo.completeQuiz(_sessionId!);
+          await repo.completeQuiz(_sessionId!, stageId: widget.stageId);
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pushReplacement(
         MaterialPageRoute(

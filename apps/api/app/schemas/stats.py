@@ -59,3 +59,117 @@ class HistoryResponse(CamelModel):
     year: int
     month: int
     records: list[DailyProgressItem]
+
+
+# ==========================================
+# 3-6: Heatmap
+# ==========================================
+
+
+class HeatmapItem(CamelModel):
+    date: str
+    words_studied: int
+    study_minutes: int
+    level: int
+
+
+class HeatmapResponse(CamelModel):
+    data: list[HeatmapItem]
+
+
+# ==========================================
+# 3-7: JLPT Progress
+# ==========================================
+
+
+class JlptProgressStat(CamelModel):
+    total: int
+    mastered: int
+    in_progress: int
+
+
+class JlptLevelProgress(CamelModel):
+    level: str
+    vocabulary: JlptProgressStat
+    grammar: JlptProgressStat
+
+
+class JlptProgressResponse(CamelModel):
+    levels: list[JlptLevelProgress]
+
+
+# ==========================================
+# 3-8: Time Chart
+# ==========================================
+
+
+class TimeChartItem(CamelModel):
+    date: str
+    minutes: int
+
+
+class TimeChartResponse(CamelModel):
+    data: list[TimeChartItem]
+
+
+# ==========================================
+# 3-9: Volume Chart
+# ==========================================
+
+
+class VolumeChartItem(CamelModel):
+    date: str
+    words_studied: int
+    grammar_studied: int
+    sentences_studied: int
+
+
+class VolumeChartResponse(CamelModel):
+    data: list[VolumeChartItem]
+
+
+# ==========================================
+# 3-10: By Category
+# ==========================================
+
+
+class CategoryStat(CamelModel):
+    total: int
+    daily: list[int]
+
+
+class ByCategoryResponse(CamelModel):
+    vocabulary: CategoryStat
+    grammar: CategoryStat
+    sentences: CategoryStat
+
+
+# ==========================================
+# 3-11: Achievements
+# ==========================================
+
+
+class AchievementItem(CamelModel):
+    type: str
+    title: str
+    description: str
+    emoji: str
+    achieved: bool
+    achieved_at: str | None
+
+
+class AchievementsResponse(CamelModel):
+    achievements: list[AchievementItem]
+
+
+# ==========================================
+# 3-12: Daily Goal
+# ==========================================
+
+
+class DailyGoalRequest(CamelModel):
+    daily_goal: int
+
+
+class DailyGoalResponse(CamelModel):
+    daily_goal: int

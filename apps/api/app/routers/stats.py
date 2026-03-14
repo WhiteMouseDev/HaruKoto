@@ -19,18 +19,29 @@ from app.models import (
     UserVocabProgress,
     Vocabulary,
 )
-from app.models.enums import KanaType
+from app.models.enums import JlptLevel, KanaType
 from app.models.user import User
 from app.schemas.kana import KanaStat
 from app.schemas.stats import (
+    ByCategoryResponse,
+    CategoryStat,
     DailyProgressItem,
     DashboardResponse,
+    HeatmapItem,
+    HeatmapResponse,
     HistoryResponse,
+    JlptLevelProgress,
+    JlptProgressResponse,
+    JlptProgressStat,
     KanaProgressResponse,
     LevelProgress,
     ProgressStat,
     StreakInfo,
+    TimeChartItem,
+    TimeChartResponse,
     TodayStats,
+    VolumeChartItem,
+    VolumeChartResponse,
     WeeklyStatItem,
 )
 from app.utils.date import get_today_kst
@@ -197,4 +208,267 @@ async def get_history(
             )
             for dp in progress_list
         ],
+    )
+
+
+def _heatmap_level(words_studied: int) -> int:
+    """Calculate heatmap level: 0 (none), 1 (1-9), 2 (10-19), 3 (20+)."""
+    if words_studied == 0:
+        return 0
+    if words_studied < 10:
+        return 1
+    if words_studied < 20:
+        return 2
+    return 3
+
+
+@router.get("/heatmap", response_model=HeatmapResponse)
+async def get_heatmap(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    year: int = Query(...),
+    month: int | None = Query(default=None),
+):
+    """3-6: Daily study data for heatmap visualization."""
+    if month is not None:
+        start_date = date(year, month, 1)
+        _, last_day = calendar.monthrange(year, month)
+        end_date = date(year, month, last_day)
+    else:
+        start_date = date(year, 1, 1)
+        end_date = date(year, 12, 31)
+
+    result = await db.execute(
+        select(DailyProgress)
+        .where(
+            DailyProgress.user_id == user.id,
+            DailyProgress.date >= start_date,
+            DailyProgress.date <= end_date,
+        )
+        .order_by(DailyProgress.date)
+    )
+    progress_map = {dp.date: dp for dp in result.scalars().all()}
+
+    data: list[HeatmapItem] = []
+    current = start_date
+    while current <= end_date:
+        dp = progress_map.get(current)
+        words = dp.words_studied if dp else 0
+        minutes = dp.study_minutes if dp else 0
+        data.append(
+            HeatmapItem(
+                date=str(current),
+                words_studied=words,
+                study_minutes=minutes,
+                level=_heatmap_level(words),
+            )
+        )
+        current += timedelta(days=1)
+
+    return HeatmapResponse(data=data)
+
+
+@router.get("/jlpt-progress", response_model=JlptProgressResponse)
+async def get_jlpt_progress(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """3-7: JLPT level progress across all levels the user has studied."""
+    levels: list[JlptLevelProgress] = []
+
+    for jlpt in JlptLevel:
+        vocab_total = (
+            await db.execute(
+                select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == jlpt)
+            )
+        ).scalar() or 0
+
+        grammar_total = (
+            await db.execute(
+                select(func.count(Grammar.id)).where(Grammar.jlpt_level == jlpt)
+            )
+        ).scalar() or 0
+
+        # Skip levels with no content
+        if vocab_total == 0 and grammar_total == 0:
+            continue
+
+        vocab_mastered = (
+            await db.execute(
+                select(func.count(UserVocabProgress.id))
+                .join(Vocabulary)
+                .where(
+                    UserVocabProgress.user_id == user.id,
+                    Vocabulary.jlpt_level == jlpt,
+                    UserVocabProgress.mastered.is_(True),
+                )
+            )
+        ).scalar() or 0
+
+        vocab_in_progress = (
+            await db.execute(
+                select(func.count(UserVocabProgress.id))
+                .join(Vocabulary)
+                .where(
+                    UserVocabProgress.user_id == user.id,
+                    Vocabulary.jlpt_level == jlpt,
+                    UserVocabProgress.mastered.is_(False),
+                )
+            )
+        ).scalar() or 0
+
+        grammar_mastered = (
+            await db.execute(
+                select(func.count(UserGrammarProgress.id))
+                .join(Grammar)
+                .where(
+                    UserGrammarProgress.user_id == user.id,
+                    Grammar.jlpt_level == jlpt,
+                    UserGrammarProgress.mastered.is_(True),
+                )
+            )
+        ).scalar() or 0
+
+        grammar_in_progress = (
+            await db.execute(
+                select(func.count(UserGrammarProgress.id))
+                .join(Grammar)
+                .where(
+                    UserGrammarProgress.user_id == user.id,
+                    Grammar.jlpt_level == jlpt,
+                    UserGrammarProgress.mastered.is_(False),
+                )
+            )
+        ).scalar() or 0
+
+        # Only include levels the user has studied or that have content
+        if vocab_mastered + vocab_in_progress + grammar_mastered + grammar_in_progress > 0 or jlpt == user.jlpt_level:
+            levels.append(
+                JlptLevelProgress(
+                    level=jlpt.value,
+                    vocabulary=JlptProgressStat(
+                        total=vocab_total,
+                        mastered=vocab_mastered,
+                        in_progress=vocab_in_progress,
+                    ),
+                    grammar=JlptProgressStat(
+                        total=grammar_total,
+                        mastered=grammar_mastered,
+                        in_progress=grammar_in_progress,
+                    ),
+                )
+            )
+
+    return JlptProgressResponse(levels=levels)
+
+
+@router.get("/time-chart", response_model=TimeChartResponse)
+async def get_time_chart(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    days: int = Query(default=7, ge=1, le=90),
+):
+    """3-8: Daily study time for chart."""
+    today = get_today_kst()
+    start_date = today - timedelta(days=days - 1)
+
+    result = await db.execute(
+        select(DailyProgress)
+        .where(
+            DailyProgress.user_id == user.id,
+            DailyProgress.date >= start_date,
+            DailyProgress.date <= today,
+        )
+        .order_by(DailyProgress.date)
+    )
+    progress_map = {dp.date: dp for dp in result.scalars().all()}
+
+    data: list[TimeChartItem] = []
+    current = start_date
+    while current <= today:
+        dp = progress_map.get(current)
+        data.append(
+            TimeChartItem(
+                date=str(current),
+                minutes=dp.study_minutes if dp else 0,
+            )
+        )
+        current += timedelta(days=1)
+
+    return TimeChartResponse(data=data)
+
+
+@router.get("/volume-chart", response_model=VolumeChartResponse)
+async def get_volume_chart(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    days: int = Query(default=7, ge=1, le=90),
+):
+    """3-9: Daily study volume (items studied)."""
+    today = get_today_kst()
+    start_date = today - timedelta(days=days - 1)
+
+    result = await db.execute(
+        select(DailyProgress)
+        .where(
+            DailyProgress.user_id == user.id,
+            DailyProgress.date >= start_date,
+            DailyProgress.date <= today,
+        )
+        .order_by(DailyProgress.date)
+    )
+    progress_map = {dp.date: dp for dp in result.scalars().all()}
+
+    data: list[VolumeChartItem] = []
+    current = start_date
+    while current <= today:
+        dp = progress_map.get(current)
+        data.append(
+            VolumeChartItem(
+                date=str(current),
+                words_studied=dp.words_studied if dp else 0,
+                grammar_studied=dp.grammar_studied if dp else 0,
+                sentences_studied=dp.sentences_studied if dp else 0,
+            )
+        )
+        current += timedelta(days=1)
+
+    return VolumeChartResponse(data=data)
+
+
+@router.get("/by-category", response_model=ByCategoryResponse)
+async def get_by_category(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """3-10: 7-day breakdown per category."""
+    today = get_today_kst()
+    start_date = today - timedelta(days=6)
+
+    result = await db.execute(
+        select(DailyProgress)
+        .where(
+            DailyProgress.user_id == user.id,
+            DailyProgress.date >= start_date,
+            DailyProgress.date <= today,
+        )
+        .order_by(DailyProgress.date)
+    )
+    progress_map = {dp.date: dp for dp in result.scalars().all()}
+
+    vocab_daily: list[int] = []
+    grammar_daily: list[int] = []
+    sentences_daily: list[int] = []
+
+    for i in range(7):
+        d = start_date + timedelta(days=i)
+        dp = progress_map.get(d)
+        vocab_daily.append(dp.words_studied if dp else 0)
+        grammar_daily.append(dp.grammar_studied if dp else 0)
+        sentences_daily.append(dp.sentences_studied if dp else 0)
+
+    return ByCategoryResponse(
+        vocabulary=CategoryStat(total=sum(vocab_daily), daily=vocab_daily),
+        grammar=CategoryStat(total=sum(grammar_daily), daily=grammar_daily),
+        sentences=CategoryStat(total=sum(sentences_daily), daily=sentences_daily),
     )

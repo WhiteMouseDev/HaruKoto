@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +10,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import StudyStage, UserStudyStageProgress, UserVocabProgress, Vocabulary
 from app.models.user import User
+from app.schemas.stats import DailyGoalRequest, DailyGoalResponse
 
 router = APIRouter(prefix="/api/v1/study", tags=["study"])
 
@@ -274,3 +275,23 @@ async def get_stages(
         )
 
     return response
+
+
+@router.patch("/daily-goal", response_model=DailyGoalResponse)
+async def update_daily_goal(
+    body: DailyGoalRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """3-12: Update user's daily goal."""
+    if body.daily_goal < 5 or body.daily_goal > 50:
+        raise HTTPException(
+            status_code=422,
+            detail="dailyGoal must be between 5 and 50",
+        )
+
+    user.daily_goal = body.daily_goal
+    await db.commit()
+    await db.refresh(user)
+
+    return DailyGoalResponse(daily_goal=user.daily_goal)

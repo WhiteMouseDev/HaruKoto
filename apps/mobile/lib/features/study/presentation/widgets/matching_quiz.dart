@@ -39,6 +39,16 @@ class _MatchingQuizState extends State<MatchingQuiz> {
   void initState() {
     super.initState();
     _allPairs = widget.questions.map((q) {
+      // Use matching-specific fields from API if available,
+      // otherwise fall back to standard question/option format
+      if (q.matchingWord != null && q.matchingMeaning != null) {
+        return _MatchPair(
+          id: q.questionId,
+          left: q.matchingWord!,
+          reading: q.questionSubText,
+          right: q.matchingMeaning!,
+        );
+      }
       final correctOption =
           q.options.firstWhere((o) => o.id == q.correctOptionId);
       return _MatchPair(

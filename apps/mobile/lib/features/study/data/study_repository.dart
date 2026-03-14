@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
 import 'models/quiz_result_model.dart';
+import 'models/stage_model.dart';
 import 'models/word_entry_model.dart';
 import 'models/wordbook_entry_model.dart';
 import 'models/recommendation_model.dart';
@@ -10,6 +11,19 @@ class StudyRepository {
   final Dio _dio;
 
   StudyRepository(this._dio);
+
+  // ── Stages ──
+
+  Future<List<StageModel>> fetchStages(
+      String category, String jlptLevel) async {
+    final response = await _dio.get<List<dynamic>>(
+      '/study/stages',
+      queryParameters: {'category': category, 'jlptLevel': jlptLevel},
+    );
+    return (response.data ?? [])
+        .map((e) => StageModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 
   // ── Quiz ──
 
@@ -41,6 +55,7 @@ class StudyRepository {
     required String jlptLevel,
     required int count,
     String? mode,
+    String? stageId,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/quiz/start',
@@ -49,14 +64,36 @@ class StudyRepository {
         'jlptLevel': jlptLevel,
         'count': count,
         if (mode != null) 'mode': mode,
+        if (stageId != null) 'stage_id': stageId,
       },
     );
     final data = response.data!;
+
+    // API may return matchingPairs for matching mode instead of questions
+    List<QuizQuestionModel> questions;
+    if (data['matchingPairs'] != null) {
+      questions = (data['matchingPairs'] as List<dynamic>).map((e) {
+        final pair = e as Map<String, dynamic>;
+        return QuizQuestionModel.fromJson({
+          'questionId': pair['id'] as String,
+          'questionText': pair['word'] as String,
+          'questionSubText': pair['reading'] as String?,
+          'word': pair['word'] as String,
+          'meaning': pair['meaning'] as String,
+          'options': <Map<String, dynamic>>[],
+          'correctOptionId': '',
+        });
+      }).toList();
+    } else {
+      questions = (data['questions'] as List<dynamic>)
+          .map(
+              (e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+
     return (
       sessionId: data['sessionId'] as String,
-      questions: (data['questions'] as List<dynamic>)
-          .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      questions: questions,
     );
   }
 
@@ -104,10 +141,16 @@ class StudyRepository {
     });
   }
 
-  Future<QuizResultModel> completeQuiz(String sessionId) async {
+  Future<QuizResultModel> completeQuiz(
+    String sessionId, {
+    String? stageId,
+  }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/quiz/complete',
-      data: {'sessionId': sessionId},
+      data: {
+        'sessionId': sessionId,
+        if (stageId != null) 'stage_id': stageId,
+      },
     );
     return QuizResultModel.fromJson(response.data!);
   }

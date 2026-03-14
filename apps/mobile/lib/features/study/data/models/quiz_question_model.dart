@@ -33,6 +33,9 @@ class QuizQuestionModel {
   final String? prompt;
   final String? answer;
   final List<String>? distractors;
+  // Matching fields (from matchingPairs API response)
+  final String? matchingWord;
+  final String? matchingMeaning;
 
   const QuizQuestionModel({
     required this.questionId,
@@ -51,6 +54,8 @@ class QuizQuestionModel {
     this.prompt,
     this.answer,
     this.distractors,
+    this.matchingWord,
+    this.matchingMeaning,
   });
 
   factory QuizQuestionModel.fromJson(Map<String, dynamic> json) {
@@ -77,6 +82,8 @@ class QuizQuestionModel {
       distractors: (json['distractors'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      matchingWord: json['word'] as String?,
+      matchingMeaning: json['meaning'] as String?,
     );
   }
 }

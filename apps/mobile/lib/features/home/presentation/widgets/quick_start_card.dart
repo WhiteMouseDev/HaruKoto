@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../study/providers/study_provider.dart';
 import '../../data/models/dashboard_model.dart';
 
 class QuickStartCard extends ConsumerStatefulWidget {
@@ -79,6 +80,9 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
     final hasProgress = progress != null && progress.total > 0;
     final progressPct =
         hasProgress ? (progress.mastered / progress.total) : 0.0;
+
+    final recAsync = ref.watch(recommendationsProvider);
+    final rec = recAsync.hasValue ? recAsync.value : null;
 
     return Container(
       decoration: BoxDecoration(
@@ -230,6 +234,33 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
               ),
             ),
           ),
+
+          // ── Recommendation stats ──
+          if (rec != null &&
+              (rec.reviewDueCount > 0 || rec.newWordsCount > 0)) ...[
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  if (rec.reviewDueCount > 0) ...[
+                    _InfoChip(
+                      icon: LucideIcons.rotateCw,
+                      label: '복습 ${rec.reviewDueCount}개',
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  if (rec.newWordsCount > 0)
+                    _InfoChip(
+                      icon: LucideIcons.sparkles,
+                      label: '새 단어 ${rec.newWordsCount}개',
+                      color: theme.colorScheme.primary,
+                    ),
+                ],
+              ),
+            ),
+          ],
 
           const SizedBox(height: 20),
 
@@ -515,6 +546,44 @@ class _CircularProgressPainter extends CustomPainter {
       old.progress != progress ||
       old.trackColor != trackColor ||
       old.progressColor != progressColor;
+}
+
+class _InfoChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _CategoryInfo {

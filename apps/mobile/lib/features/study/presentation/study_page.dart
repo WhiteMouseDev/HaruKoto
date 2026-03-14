@@ -6,7 +6,6 @@ import '../../../core/constants/sizes.dart';
 import '../../home/providers/home_provider.dart';
 import '../../kana/presentation/kana_hub_page.dart';
 import '../providers/study_provider.dart';
-import 'quiz_page.dart';
 import 'widgets/resume_banner.dart';
 import 'widgets/study_tab_content.dart';
 import 'widgets/study_skeleton.dart';
@@ -93,25 +92,6 @@ class _StudyPageState extends ConsumerState<StudyPage>
       if (a[i] != b[i]) return false;
     }
     return true;
-  }
-
-  void _startQuiz({
-    required String quizType,
-    required String jlptLevel,
-    required String mode,
-    String? resumeId,
-  }) {
-    Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(
-        builder: (_) => QuizPage(
-          quizType: quizType,
-          jlptLevel: jlptLevel,
-          count: 10,
-          mode: mode != 'normal' ? mode : null,
-          resumeSessionId: resumeId,
-        ),
-      ),
-    );
   }
 
   @override
@@ -225,11 +205,6 @@ class _StudyPageState extends ConsumerState<StudyPage>
                 return StudyTabContent(
                   category: tab,
                   jlptLevel: jlptLevel,
-                  onStartQuiz: (mode) => _startQuiz(
-                    quizType: tab.apiType,
-                    jlptLevel: jlptLevel,
-                    mode: mode,
-                  ),
                 );
               }).toList(),
             ),
