@@ -248,12 +248,11 @@ async def get_stages(
         progress = progress_map.get(str(stage.id))
         content_ids = stage.content_ids if isinstance(stage.content_ids, list) else []
 
-        # Determine if locked: first stage is always unlocked,
-        # otherwise unlock_after stage must be completed
-        if stage.unlock_after is None:
-            is_locked = False
-        else:
-            is_locked = str(stage.unlock_after) not in completed_stage_ids
+        # First stage is always unlocked; others require unlock_after completed
+        is_locked = (
+            False if stage.unlock_after is None
+            else str(stage.unlock_after) not in completed_stage_ids
+        )
 
         response.append(
             {

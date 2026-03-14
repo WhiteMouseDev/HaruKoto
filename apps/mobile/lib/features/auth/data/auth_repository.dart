@@ -46,7 +46,7 @@ class AuthRepository {
     await _client.auth.signInWithOAuth(
       OAuthProvider.kakao,
       redirectTo: 'io.supabase.harukoto://login-callback/',
-      authScreenLaunchMode: LaunchMode.externalApplication,
+      authScreenLaunchMode: LaunchMode.inAppBrowserView,
     );
   }
 

@@ -506,9 +506,9 @@ async def start_quiz(
         db.add(session)
         await db.commit()
         await db.refresh(session)
-    except Exception:
+    except Exception as exc:
         await db.rollback()
-        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다")
+        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다") from exc
 
     # Include correctOptionId for mobile client-side validation
     response_questions = []
@@ -707,7 +707,8 @@ async def complete_quiz(
     # Calculate study duration in minutes from session start
     study_duration_minutes = 0
     if session.started_at:
-        delta = datetime.now(UTC) - session.started_at.replace(tzinfo=UTC) if session.started_at.tzinfo is None else datetime.now(UTC) - session.started_at
+        started = session.started_at.replace(tzinfo=UTC) if session.started_at.tzinfo is None else session.started_at
+        delta = datetime.now(UTC) - started
         study_duration_minutes = max(0, int(delta.total_seconds() / 60))
 
     # Determine per-category counters based on quiz_type

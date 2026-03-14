@@ -51,11 +51,31 @@ async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    counts_query = select(
-        select(func.count()).select_from(UserVocabProgress).where(UserVocabProgress.user_id == user.id).correlate(None).scalar_subquery().label("total_words"),
-        select(func.count()).select_from(QuizSession).where(QuizSession.user_id == user.id, QuizSession.completed_at.isnot(None)).correlate(None).scalar_subquery().label("total_quizzes"),
-        select(func.count()).select_from(DailyProgress).where(DailyProgress.user_id == user.id).correlate(None).scalar_subquery().label("total_study_days"),
+    words_sq = (
+        select(func.count())
+        .select_from(UserVocabProgress)
+        .where(UserVocabProgress.user_id == user.id)
+        .correlate(None)
+        .scalar_subquery()
+        .label("total_words")
     )
+    quizzes_sq = (
+        select(func.count())
+        .select_from(QuizSession)
+        .where(QuizSession.user_id == user.id, QuizSession.completed_at.isnot(None))
+        .correlate(None)
+        .scalar_subquery()
+        .label("total_quizzes")
+    )
+    days_sq = (
+        select(func.count())
+        .select_from(DailyProgress)
+        .where(DailyProgress.user_id == user.id)
+        .correlate(None)
+        .scalar_subquery()
+        .label("total_study_days")
+    )
+    counts_query = select(words_sq, quizzes_sq, days_sq)
     counts = (await db.execute(counts_query)).one()
     total_words = counts.total_words
     total_quizzes = counts.total_quizzes
