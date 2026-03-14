@@ -40,6 +40,7 @@ class AuthRepository {
     return _client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
+      accessToken: auth.accessToken,
     );
   }
 

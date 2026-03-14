@@ -54,6 +54,9 @@ jobs:
           secrets: |
             DATABASE_URL=DATABASE_URL:latest
             SUPABASE_URL=SUPABASE_URL:latest
+            SUPABASE_SERVICE_ROLE_KEY=SUPABASE_SERVICE_ROLE_KEY:latest
+            KAKAO_REST_API_KEY=KAKAO_REST_API_KEY:latest
+            KAKAO_CLIENT_SECRET=KAKAO_CLIENT_SECRET:latest
             GOOGLE_API_KEY=GOOGLE_API_KEY:latest
             GCS_BUCKET_NAME=GCS_BUCKET_NAME:latest
             GCS_CDN_BASE_URL=GCS_CDN_BASE_URL:latest
