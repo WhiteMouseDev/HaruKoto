@@ -56,6 +56,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     final charsAsync = ref.watch(kanaCharactersProvider(kanaType));
     final theme = Theme.of(context);
 
+    // Multi-provider composition: manual AsyncValue handling is used instead
+    // of .when() because loading state combines two independent providers.
     final isLoading =
         stagesAsync.isLoading || charsAsync.isLoading;
     if (isLoading) {

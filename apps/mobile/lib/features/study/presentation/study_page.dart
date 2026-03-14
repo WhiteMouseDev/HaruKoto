@@ -101,6 +101,9 @@ class _StudyPageState extends ConsumerState<StudyPage>
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
 
+    // Multi-provider composition: manual AsyncValue handling is used instead
+    // of .when() because loading/error states are combined across 3 providers.
+
     // Determine kana tab visibility from dashboard data
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
     final profile = profileAsync.hasValue ? profileAsync.value : null;
