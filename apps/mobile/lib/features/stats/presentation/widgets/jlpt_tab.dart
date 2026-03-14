@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/level_progress_model.dart';
+import '../../providers/stats_provider.dart';
 
 const _jlptInfo = <String, (String, String)>{
   'N5': ('N5', '기초 일본어'),
@@ -20,7 +22,7 @@ const _nextLevel = <String, String?>{
   'N1': null,
 };
 
-class JlptTab extends StatelessWidget {
+class JlptTab extends ConsumerWidget {
   final LevelProgressData levelProgress;
   final String currentLevel;
 
@@ -31,12 +33,62 @@ class JlptTab extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
-    final vocab = levelProgress.vocabulary;
-    final grammar = levelProgress.grammar;
 
+    // Use the jlpt-progress API
+    final jlptAsync = ref.watch(jlptProgressProvider);
+
+    return jlptAsync.when(
+      data: (response) {
+        // Find the progress for the user's current level
+        final currentLevelProgress = response.levels.cast<JlptLevelProgress?>().firstWhere(
+          (l) => l?.level == currentLevel,
+          orElse: () => null,
+        );
+
+        final vocab = currentLevelProgress?.vocabulary ??
+            levelProgress.vocabulary;
+        final grammar = currentLevelProgress?.grammar ??
+            levelProgress.grammar;
+
+        return _buildContent(
+          context: context,
+          theme: theme,
+          brightness: brightness,
+          vocab: vocab,
+          grammar: grammar,
+          allLevels: response.levels,
+        );
+      },
+      loading: () => _buildContent(
+        context: context,
+        theme: theme,
+        brightness: brightness,
+        vocab: levelProgress.vocabulary,
+        grammar: levelProgress.grammar,
+        allLevels: [],
+      ),
+      error: (_, __) => _buildContent(
+        context: context,
+        theme: theme,
+        brightness: brightness,
+        vocab: levelProgress.vocabulary,
+        grammar: levelProgress.grammar,
+        allLevels: [],
+      ),
+    );
+  }
+
+  Widget _buildContent({
+    required BuildContext context,
+    required ThemeData theme,
+    required Brightness brightness,
+    required ProgressCategory vocab,
+    required ProgressCategory grammar,
+    required List<JlptLevelProgress> allLevels,
+  }) {
     final vocabPct =
         vocab.total > 0 ? (vocab.mastered / vocab.total * 100).round() : 0;
     final grammarPct =
@@ -178,7 +230,8 @@ class JlptTab extends StatelessWidget {
                         text: '$currentLevel 마스터까지 ',
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                         children: [
                           if (vocabRemaining > 0)
@@ -212,7 +265,8 @@ class JlptTab extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.success(brightness).withValues(alpha: 0.1),
+                      color:
+                          AppColors.success(brightness).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -230,6 +284,15 @@ class JlptTab extends StatelessWidget {
             ),
           ),
         ),
+
+        // Per-level progress from API
+        if (allLevels.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _AllLevelsCard(
+            levels: allLevels,
+            currentLevel: currentLevel,
+          ),
+        ],
 
         // Next Level Teaser
         if (nextLevel != null) ...[
@@ -255,7 +318,8 @@ class JlptTab extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -275,7 +339,8 @@ class JlptTab extends StatelessWidget {
                           '학습 탭에서 $nextLevel 콘텐츠를 바로 시작할 수 있어요',
                           style: TextStyle(
                             fontSize: 11,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.5),
                           ),
                         ),
                       ],
@@ -284,7 +349,8 @@ class JlptTab extends StatelessWidget {
                   Icon(
                     LucideIcons.arrowRight,
                     size: 16,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    color:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ],
               ),
@@ -292,6 +358,194 @@ class JlptTab extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Shows per-level vocab/grammar progress bars for all JLPT levels
+class _AllLevelsCard extends StatelessWidget {
+  final List<JlptLevelProgress> levels;
+  final String currentLevel;
+
+  const _AllLevelsCard({
+    required this.levels,
+    required this.currentLevel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+
+    // Sort levels N5 -> N1
+    final sorted = [...levels];
+    sorted.sort((a, b) {
+      final order = ['N5', 'N4', 'N3', 'N2', 'N1'];
+      return order.indexOf(a.level).compareTo(order.indexOf(b.level));
+    });
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '전체 레벨 진도',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...sorted.map((level) {
+              final isCurrent = level.level == currentLevel;
+              final vocabPct = level.vocabulary.total > 0
+                  ? (level.vocabulary.mastered / level.vocabulary.total * 100)
+                      .round()
+                  : 0;
+              final grammarPct = level.grammar.total > 0
+                  ? (level.grammar.mastered / level.grammar.total * 100)
+                      .round()
+                  : 0;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: isCurrent
+                                ? theme.colorScheme.primary
+                                    .withValues(alpha: 0.15)
+                                : theme.colorScheme.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            level.level,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: isCurrent
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ),
+                        if (isCurrent) ...[
+                          const SizedBox(width: 6),
+                          Text(
+                            '현재',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Vocab progress
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 32,
+                          child: Text(
+                            '단어',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: vocabPct / 100,
+                              minHeight: 6,
+                              backgroundColor: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.08),
+                              valueColor: AlwaysStoppedAnimation(
+                                theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            '$vocabPct%',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    // Grammar progress
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 32,
+                          child: Text(
+                            '문법',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: grammarPct / 100,
+                              minHeight: 6,
+                              backgroundColor: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.08),
+                              valueColor: AlwaysStoppedAnimation(
+                                AppColors.success(brightness),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            '$grammarPct%',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -363,7 +617,8 @@ class _BreakdownRow extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percentage / 100,
             minHeight: 8,
-            backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+            backgroundColor:
+                theme.colorScheme.onSurface.withValues(alpha: 0.1),
             valueColor: AlwaysStoppedAnimation(primaryColor),
           ),
         ),

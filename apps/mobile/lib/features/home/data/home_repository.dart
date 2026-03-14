@@ -18,6 +18,14 @@ class HomeRepository {
     return UserProfileModel.fromJson(response.data!);
   }
 
+  Future<int> updateDailyGoal(int goal) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/study/daily-goal',
+      data: {'dailyGoal': goal},
+    );
+    return response.data!['dailyGoal'] as int;
+  }
+
   Future<List<MissionModel>> fetchTodayMissions() async {
     final response =
         await _dio.get<Map<String, dynamic>>('/missions/today');

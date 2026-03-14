@@ -34,3 +34,33 @@ const achievementDefinitions = <AchievementDefinition>[
   AchievementDefinition(type: 'xp_1000', title: 'XP 1000', emoji: 'zap', category: 'xp'),
   AchievementDefinition(type: 'xp_5000', title: 'XP 5000', emoji: 'zap', category: 'xp'),
 ];
+
+/// Achievement data returned from GET /api/v1/achievements
+class AchievementItem {
+  final String type;
+  final String title;
+  final String description;
+  final String emoji;
+  final bool achieved;
+  final String? achievedAt;
+
+  const AchievementItem({
+    required this.type,
+    required this.title,
+    required this.description,
+    required this.emoji,
+    required this.achieved,
+    this.achievedAt,
+  });
+
+  factory AchievementItem.fromJson(Map<String, dynamic> json) {
+    return AchievementItem(
+      type: json['type'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      emoji: json['emoji'] as String? ?? '',
+      achieved: json['achieved'] as bool? ?? false,
+      achievedAt: json['achievedAt'] as String?,
+    );
+  }
+}

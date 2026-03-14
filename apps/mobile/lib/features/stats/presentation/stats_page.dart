@@ -67,7 +67,8 @@ class _StatsPageState extends ConsumerState<StatsPage> {
         historyAsync.hasValue ? historyAsync.value! : <StatsHistoryRecord>[];
     final jlptLevel = profile?.jlptLevel ?? 'N5';
 
-    // TODO: levelProgress API 연동 필요 — 현재 백엔드 미구현으로 fallback
+    // JLPT progress fallback — actual data is fetched via jlptProgressProvider
+    // inside JlptTab and StudyTab widgets directly.
     const levelProgress = stats.LevelProgressData(
       vocabulary: stats.ProgressCategory(total: 0, mastered: 0, inProgress: 0),
       grammar: stats.ProgressCategory(total: 0, mastered: 0, inProgress: 0),

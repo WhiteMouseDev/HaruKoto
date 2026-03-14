@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../../my/data/models/achievement_model.dart';
-import '../../../my/data/models/profile_detail_model.dart';
 import '../../../my/providers/my_provider.dart';
 
 class ShortcutGrid extends ConsumerWidget {
@@ -83,13 +81,7 @@ class ShortcutGrid extends ConsumerWidget {
   }
 
   void _showAchievements(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.read(profileDetailProvider);
-    final achievements = profileAsync.hasValue
-        ? profileAsync.value!.achievements
-        : <UserAchievement>[];
-
     final theme = Theme.of(context);
-    final achievedTypes = achievements.map((a) => a.achievementType).toSet();
 
     showModalBottomSheet(
       context: context,
@@ -104,107 +96,188 @@ class ShortcutGrid extends ConsumerWidget {
           maxChildSize: 0.95,
           expand: false,
           builder: (context, scrollController) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '도전과제',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        '${achievements.length}/${achievementDefinitions.length} 달성',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: GridView.builder(
-                    controller: scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.85,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: achievementDefinitions.length,
-                    itemBuilder: (context, index) {
-                      final def = achievementDefinitions[index];
-                      final isAchieved = achievedTypes.contains(def.type);
+            return Consumer(
+              builder: (context, ref, _) {
+                final asyncValue = ref.watch(achievementsProvider);
 
-                      return Opacity(
-                        opacity: isAchieved ? 1.0 : 0.4,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Stack(
+                return asyncValue.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (error, _) => Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          LucideIcons.alertCircle,
+                          size: 48,
+                          color: theme.colorScheme.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '도전과제를 불러올 수 없습니다',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () =>
+                              ref.invalidate(achievementsProvider),
+                          child: const Text('다시 시도'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  data: (achievements) {
+                    final achievedCount =
+                        achievements.where((a) => a.achieved).length;
+
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
                             children: [
-                              Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      _iconForEmoji(def.emoji),
-                                      size: 28,
-                                      color: isAchieved
-                                          ? theme.colorScheme.primary
-                                          : theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      def.title,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
+                              Container(
+                                width: 40,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
-                              if (!isAchieved)
-                                Positioned(
-                                  right: 6,
-                                  top: 6,
-                                  child: Icon(
-                                    LucideIcons.lock,
-                                    size: 12,
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                                  ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '도전과제',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              Text(
+                                '$achievedCount/${achievements.length} 달성',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                        Expanded(
+                          child: GridView.builder(
+                            controller: scrollController,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: achievements.length,
+                            itemBuilder: (context, index) {
+                              final item = achievements[index];
+
+                              return Opacity(
+                                opacity: item.achieved ? 1.0 : 0.4,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: theme
+                                        .colorScheme.surfaceContainerHigh,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                _iconForEmoji(item.emoji),
+                                                size: 28,
+                                                color: item.achieved
+                                                    ? theme
+                                                        .colorScheme.primary
+                                                    : theme
+                                                        .colorScheme.onSurface
+                                                        .withValues(
+                                                            alpha: 0.4),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                item.title,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              if (item.achieved &&
+                                                  item.achievedAt !=
+                                                      null) ...[
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  _formatDate(
+                                                      item.achievedAt!),
+                                                  style: TextStyle(
+                                                    fontSize: 9,
+                                                    color: theme.colorScheme
+                                                        .onSurface
+                                                        .withValues(
+                                                            alpha: 0.5),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      if (!item.achieved)
+                                        Positioned(
+                                          right: 6,
+                                          top: 6,
+                                          child: Icon(
+                                            LucideIcons.lock,
+                                            size: 12,
+                                            color: theme
+                                                .colorScheme.onSurface
+                                                .withValues(alpha: 0.3),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             );
           },
         );
       },
     );
+  }
+
+  String _formatDate(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr);
+      final y = date.year;
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      return '$y.$m.$d';
+    } catch (_) {
+      return '';
+    }
   }
 
   IconData _iconForEmoji(String emoji) {

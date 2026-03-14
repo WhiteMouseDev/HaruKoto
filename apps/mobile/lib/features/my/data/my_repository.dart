@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'models/achievement_model.dart';
 import 'models/profile_detail_model.dart';
 import 'models/subscription_model.dart';
 
@@ -31,6 +32,14 @@ class MyRepository {
 
   Future<void> resumeSubscription() async {
     await _dio.post<Map<String, dynamic>>('/subscription/resume');
+  }
+
+  Future<List<AchievementItem>> fetchAchievements() async {
+    final response = await _dio.get<Map<String, dynamic>>('/achievements');
+    final list = response.data!['achievements'] as List<dynamic>? ?? [];
+    return list
+        .map((e) => AchievementItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> deleteAccount() async {

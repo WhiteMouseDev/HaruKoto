@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../data/my_repository.dart';
+import '../data/models/achievement_model.dart';
 import '../data/models/profile_detail_model.dart';
 import '../data/models/subscription_model.dart';
 
@@ -11,6 +12,11 @@ final myRepositoryProvider = Provider((ref) {
 final profileDetailProvider =
     FutureProvider.autoDispose<ProfileDetailModel>((ref) {
   return ref.watch(myRepositoryProvider).fetchProfileDetail();
+});
+
+final achievementsProvider =
+    FutureProvider.autoDispose<List<AchievementItem>>((ref) {
+  return ref.watch(myRepositoryProvider).fetchAchievements();
 });
 
 final subscriptionStatusProvider =

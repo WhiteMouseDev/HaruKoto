@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../my/providers/my_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../data/models/dashboard_model.dart';
+import '../../providers/home_provider.dart';
 
 class QuickStartCard extends ConsumerStatefulWidget {
   final LevelProgressData? levelProgress;
@@ -360,60 +362,135 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2),
+        return _DailyGoalSheetContent(
+          goals: goals,
+          currentGoal: widget.dailyGoal,
+          theme: theme,
+        );
+      },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  Daily goal sheet content (stateful for loading)
+// ═══════════════════════════════════════════════
+class _DailyGoalSheetContent extends ConsumerStatefulWidget {
+  final List<int> goals;
+  final int currentGoal;
+  final ThemeData theme;
+
+  const _DailyGoalSheetContent({
+    required this.goals,
+    required this.currentGoal,
+    required this.theme,
+  });
+
+  @override
+  ConsumerState<_DailyGoalSheetContent> createState() =>
+      _DailyGoalSheetContentState();
+}
+
+class _DailyGoalSheetContentState
+    extends ConsumerState<_DailyGoalSheetContent> {
+  bool _isLoading = false;
+
+  Future<void> _onGoalSelected(int goal) async {
+    if (goal == widget.currentGoal || _isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await ref.read(homeRepositoryProvider).updateDailyGoal(goal);
+      // Invalidate providers to refresh the UI
+      ref.invalidate(profileProvider);
+      ref.invalidate(profileDetailProvider);
+      ref.invalidate(dashboardProvider);
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('하루 목표가 $goal개로 변경되었습니다'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('목표 변경에 실패했습니다. 다시 시도해주세요.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.theme;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '하루 목표 설정',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...widget.goals.map((g) {
+              final isActive = g == widget.currentGoal;
+              return ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                selected: isActive,
+                selectedTileColor:
+                    theme.colorScheme.primary.withValues(alpha: 0.08),
+                title: Text(
+                  '$g개',
+                  style: TextStyle(
+                    fontWeight:
+                        isActive ? FontWeight.bold : FontWeight.normal,
+                    color: isActive
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  '하루 목표 설정',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ...goals.map((g) {
-                  final isActive = g == widget.dailyGoal;
-                  return ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    selected: isActive,
-                    selectedTileColor:
-                        theme.colorScheme.primary.withValues(alpha: 0.08),
-                    title: Text(
-                      '$g개',
-                      style: TextStyle(
-                        fontWeight:
-                            isActive ? FontWeight.bold : FontWeight.normal,
-                        color: isActive
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    trailing: isActive
+                trailing: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : isActive
                         ? Icon(LucideIcons.check,
                             color: theme.colorScheme.primary, size: 20)
                         : null,
-                    onTap: () => Navigator.pop(ctx),
-                  );
-                }),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-        );
-      },
+                enabled: !_isLoading,
+                onTap: () => _onGoalSelected(g),
+              );
+            }),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
     );
   }
 }

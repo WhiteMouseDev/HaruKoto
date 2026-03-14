@@ -16,6 +16,45 @@ class LevelProgressData {
   }
 }
 
+class JlptLevelProgress {
+  final String level;
+  final ProgressCategory vocabulary;
+  final ProgressCategory grammar;
+
+  const JlptLevelProgress({
+    required this.level,
+    required this.vocabulary,
+    required this.grammar,
+  });
+
+  factory JlptLevelProgress.fromJson(Map<String, dynamic> json) {
+    return JlptLevelProgress(
+      level: json['level'] as String? ?? '',
+      vocabulary: ProgressCategory.fromJson(
+        json['vocabulary'] as Map<String, dynamic>? ?? {},
+      ),
+      grammar: ProgressCategory.fromJson(
+        json['grammar'] as Map<String, dynamic>? ?? {},
+      ),
+    );
+  }
+}
+
+class JlptProgressResponse {
+  final List<JlptLevelProgress> levels;
+
+  const JlptProgressResponse({required this.levels});
+
+  factory JlptProgressResponse.fromJson(Map<String, dynamic> json) {
+    final list = json['levels'] as List<dynamic>? ?? [];
+    return JlptProgressResponse(
+      levels: list
+          .map((e) => JlptLevelProgress.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
 class ProgressCategory {
   final int total;
   final int mastered;
