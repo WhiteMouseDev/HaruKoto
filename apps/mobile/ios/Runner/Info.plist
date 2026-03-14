@@ -36,6 +36,10 @@
 		<string>kakaolink</string>
 		<string>kakotalk</string>
 	</array>
+	<key>GIDClientID</key>
+	<string>842843944454-210h6ekugn1uckr7ej4i3dp0butgh69d.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>842843944454-stgesdh75b31fs28bi8qnkrqftv1ergv.apps.googleusercontent.com</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>AI 회화 통화를 위해 마이크 접근이 필요합니다.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

@@ -204,7 +204,11 @@ async def _fetch_stage_content_ids(db: AsyncSession, stage_id: uuid.UUID) -> tup
 
 
 async def _generate_matching_pairs(
-    db: AsyncSession, stage: StudyStage, content_uuids: list[uuid.UUID], jlpt_level: str, count: int,
+    db: AsyncSession,
+    stage: StudyStage,
+    content_uuids: list[uuid.UUID],
+    jlpt_level: str,
+    count: int,
 ) -> tuple[list[dict[str, Any]], list[MatchingPair]]:
     """Generate matching pairs (word + meaning) for matching quiz mode."""
     questions: list[dict[str, Any]] = []
@@ -213,9 +217,7 @@ async def _generate_matching_pairs(
     category = stage.category
 
     if category == "VOCABULARY":
-        result = await db.execute(
-            select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count)
-        )
+        result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count))
         items = result.scalars().all()
         for vocab in items:
             pair_id = str(uuid.uuid4())
@@ -233,9 +235,7 @@ async def _generate_matching_pairs(
             )
 
     elif category == "GRAMMAR":
-        result = await db.execute(
-            select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count)
-        )
+        result = await db.execute(select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count))
         items = result.scalars().all()
         for grammar in items:
             pair_id = str(uuid.uuid4())
@@ -428,9 +428,7 @@ async def start_quiz(
     else:
         # normal mode — optionally scoped to stage content
         if stage_content_uuids and quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            result = await db.execute(
-                select(Vocabulary).where(Vocabulary.id.in_(stage_content_uuids)).order_by(func.random()).limit(count)
-            )
+            result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(stage_content_uuids)).order_by(func.random()).limit(count))
             items = result.scalars().all()
             pool_result = await db.execute(
                 select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
@@ -458,9 +456,7 @@ async def start_quiz(
                     }
                 )
         elif stage_content_uuids and quiz_type == "GRAMMAR":
-            result = await db.execute(
-                select(Grammar).where(Grammar.id.in_(stage_content_uuids)).order_by(func.random()).limit(count)
-            )
+            result = await db.execute(select(Grammar).where(Grammar.id.in_(stage_content_uuids)).order_by(func.random()).limit(count))
             items = result.scalars().all()
             pool_result = await db.execute(
                 select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
@@ -1051,9 +1047,7 @@ async def get_recommendations(
         )
         review_due = due_result.scalar() or 0
 
-        studied_count_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id)
-        )
+        studied_count_result = await db.execute(select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id))
         studied_count = studied_count_result.scalar() or 0
         total_result = await db.execute(select(func.count(Vocabulary.id)))
         total = total_result.scalar() or 0
@@ -1089,9 +1083,7 @@ async def get_recommendations(
         )
         review_due = due_result.scalar() or 0
 
-        studied_count_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(UserGrammarProgress.user_id == user.id)
-        )
+        studied_count_result = await db.execute(select(func.count(UserGrammarProgress.id)).where(UserGrammarProgress.user_id == user.id))
         studied_count = studied_count_result.scalar() or 0
         total_result = await db.execute(select(func.count(Grammar.id)))
         total = total_result.scalar() or 0

@@ -4,6 +4,7 @@ Usage:
     cd apps/api
     python -m app.seeds.study_stages
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -135,21 +136,13 @@ async def seed_study_stages(db: AsyncSession) -> dict[str, int]:
     counts: dict[str, int] = {}
 
     # 1. Vocabulary stages
-    vocab_result = await db.execute(
-        select(Vocabulary)
-        .where(Vocabulary.jlpt_level == jlpt_level)
-        .order_by(Vocabulary.order, Vocabulary.id)
-    )
+    vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.jlpt_level == jlpt_level).order_by(Vocabulary.order, Vocabulary.id))
     vocabs = vocab_result.scalars().all()
     vocab_stages = await _chunk_and_create_stages(db, list(vocabs), "VOCABULARY", jlpt_level, VOCAB_STAGE_DEFS)
     counts["VOCABULARY"] = len(vocab_stages)
 
     # 2. Grammar stages
-    grammar_result = await db.execute(
-        select(Grammar)
-        .where(Grammar.jlpt_level == jlpt_level)
-        .order_by(Grammar.order, Grammar.id)
-    )
+    grammar_result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(Grammar.order, Grammar.id))
     grammars = grammar_result.scalars().all()
     grammar_stages = await _chunk_and_create_stages(db, list(grammars), "GRAMMAR", jlpt_level, GRAMMAR_STAGE_DEFS)
     counts["GRAMMAR"] = len(grammar_stages)

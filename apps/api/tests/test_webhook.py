@@ -81,9 +81,7 @@ async def test_valid_webhook_activates_subscription(
 
 @pytest.mark.asyncio
 @patch("app.routers.webhook.settings")
-async def test_expired_timestamp_rejected(
-    mock_settings, client, mock_user, webhook_secret, make_webhook_request
-):
+async def test_expired_timestamp_rejected(mock_settings, client, mock_user, webhook_secret, make_webhook_request):
     """Webhook with timestamp older than 60 seconds is rejected."""
     mock_settings.PORTONE_WEBHOOK_SECRET = webhook_secret
 
@@ -140,9 +138,7 @@ async def test_already_processed_payment_is_idempotent(
 
 @pytest.mark.asyncio
 @patch("app.routers.webhook.settings")
-async def test_invalid_signature_rejected(
-    mock_settings, client, mock_user, webhook_secret
-):
+async def test_invalid_signature_rejected(mock_settings, client, mock_user, webhook_secret):
     """Webhook with wrong HMAC signature is rejected."""
     mock_settings.PORTONE_WEBHOOK_SECRET = webhook_secret
 
@@ -164,9 +160,7 @@ async def test_invalid_signature_rejected(
 
 @pytest.mark.asyncio
 @patch("app.routers.webhook.settings")
-async def test_payment_not_found_is_idempotent(
-    mock_settings, client, mock_user, webhook_secret, make_webhook_request
-):
+async def test_payment_not_found_is_idempotent(mock_settings, client, mock_user, webhook_secret, make_webhook_request):
     """Webhook for non-existent payment returns ok (idempotent)."""
     from app.main import app
 

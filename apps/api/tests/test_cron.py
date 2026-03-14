@@ -15,9 +15,7 @@ def cron_secret():
 
 @pytest.mark.asyncio
 @patch("app.routers.cron.settings")
-async def test_subscription_expiry_processes_expired(
-    mock_settings, client, mock_user, test_user_id, cron_secret
-):
+async def test_subscription_expiry_processes_expired(mock_settings, client, mock_user, test_user_id, cron_secret):
     """Expired subscriptions are set to EXPIRED and users lose premium."""
     from app.main import app
 
@@ -58,9 +56,7 @@ async def test_subscription_expiry_processes_expired(
 
 @pytest.mark.asyncio
 @patch("app.routers.cron.settings")
-async def test_subscription_expiry_no_expired(
-    mock_settings, client, mock_user, cron_secret
-):
+async def test_subscription_expiry_no_expired(mock_settings, client, mock_user, cron_secret):
     """When no subscriptions are expired, returns processed=0."""
     from app.main import app
 
@@ -87,9 +83,7 @@ async def test_subscription_expiry_no_expired(
 
 @pytest.mark.asyncio
 @patch("app.routers.cron.settings")
-async def test_subscription_renewal_unauthorized(
-    mock_settings, client, mock_user, cron_secret
-):
+async def test_subscription_renewal_unauthorized(mock_settings, client, mock_user, cron_secret):
     """Request without valid cron secret is rejected."""
     mock_settings.CRON_SECRET = cron_secret
 
@@ -103,9 +97,7 @@ async def test_subscription_renewal_unauthorized(
 
 @pytest.mark.asyncio
 @patch("app.routers.cron.settings")
-async def test_subscription_renewal_no_auth_header(
-    mock_settings, client, mock_user, cron_secret
-):
+async def test_subscription_renewal_no_auth_header(mock_settings, client, mock_user, cron_secret):
     """Request without authorization header is rejected when secret is configured."""
     mock_settings.CRON_SECRET = cron_secret
 
@@ -115,9 +107,7 @@ async def test_subscription_renewal_no_auth_header(
 
 @pytest.mark.asyncio
 @patch("app.routers.cron.settings")
-async def test_subscription_expiry_cancelled_also_expires(
-    mock_settings, client, mock_user, test_user_id, cron_secret
-):
+async def test_subscription_expiry_cancelled_also_expires(mock_settings, client, mock_user, test_user_id, cron_secret):
     """Cancelled subscriptions past period end are also expired."""
     from app.main import app
 

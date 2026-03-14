@@ -77,13 +77,22 @@ async def start_chat(
     system_prompt = build_system_prompt(user.jlpt_level or "N5", scenario=scenario)
 
     # Generate first AI message
-    logger.info("AI chat start", extra={
-        "user_id": str(user.id), "scenario_id": str(body.scenario_id), "type": str(body.type),
-    })
+    logger.info(
+        "AI chat start",
+        extra={
+            "user_id": str(user.id),
+            "scenario_id": str(body.scenario_id),
+            "type": str(body.type),
+        },
+    )
     ai_response = await generate_chat_response(system_prompt, [], SYSTEM_PROMPTS["first_message_prompt"])
-    logger.info("AI chat start response received", extra={
-        "user_id": str(user.id), "response_length": len(ai_response.get("messageJa", "")),
-    })
+    logger.info(
+        "AI chat start response received",
+        extra={
+            "user_id": str(user.id),
+            "response_length": len(ai_response.get("messageJa", "")),
+        },
+    )
 
     # Store conversation
     initial_messages = [
@@ -141,15 +150,23 @@ async def send_message(
             history.append(msg)
 
     # Generate AI response
-    logger.info("AI chat message", extra={
-        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
-        "history_length": len(history),
-    })
+    logger.info(
+        "AI chat message",
+        extra={
+            "user_id": str(user.id),
+            "conversation_id": str(body.conversation_id),
+            "history_length": len(history),
+        },
+    )
     ai_response = await generate_chat_response(system_prompt, history, body.message)
-    logger.info("AI chat message response", extra={
-        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
-        "response_length": len(ai_response.get("messageJa", "")),
-    })
+    logger.info(
+        "AI chat message response",
+        extra={
+            "user_id": str(user.id),
+            "conversation_id": str(body.conversation_id),
+            "response_length": len(ai_response.get("messageJa", "")),
+        },
+    )
 
     # Append messages atomically
     new_messages = messages + [
@@ -189,10 +206,14 @@ async def end_chat(
 
     # Generate feedback summary
     messages = [m for m in (conversation.messages or []) if m.get("role") in ("user", "assistant")]
-    logger.info("AI chat end - generating feedback", extra={
-        "user_id": str(user.id), "conversation_id": str(body.conversation_id),
-        "message_count": len(messages),
-    })
+    logger.info(
+        "AI chat end - generating feedback",
+        extra={
+            "user_id": str(user.id),
+            "conversation_id": str(body.conversation_id),
+            "message_count": len(messages),
+        },
+    )
     feedback = await generate_feedback_summary(messages)
 
     # Update conversation

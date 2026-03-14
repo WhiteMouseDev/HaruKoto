@@ -127,10 +127,15 @@ async def activate(
         raise HTTPException(status_code=400, detail=str(e)) from e
 
     plan = enum_value(payment.plan).lower()
-    logger.info("Subscription activation started", extra={
-        "user_id": str(user.id), "payment_id": body.payment_id,
-        "plan": plan, "amount": payment.amount,
-    })
+    logger.info(
+        "Subscription activation started",
+        extra={
+            "user_id": str(user.id),
+            "payment_id": body.payment_id,
+            "plan": plan,
+            "amount": payment.amount,
+        },
+    )
     subscription = await activate_subscription(
         db,
         str(user.id),
@@ -139,10 +144,14 @@ async def activate(
         payment.amount,
     )
     await db.commit()
-    logger.info("Subscription activated", extra={
-        "user_id": str(user.id), "subscription_id": str(subscription.id),
-        "period_end": subscription.current_period_end.isoformat(),
-    })
+    logger.info(
+        "Subscription activated",
+        extra={
+            "user_id": str(user.id),
+            "subscription_id": str(subscription.id),
+            "period_end": subscription.current_period_end.isoformat(),
+        },
+    )
 
     return {
         "ok": True,

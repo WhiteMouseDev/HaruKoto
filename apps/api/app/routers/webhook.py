@@ -56,17 +56,25 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Payment).where(Payment.portone_payment_id == payment_id))
     payment = result.scalar_one_or_none()
     if not payment or payment.status.value != "PENDING":
-        logger.info("Webhook skipped (idempotent)", extra={
-            "payment_id": payment_id,
-            "status": payment.status.value if payment else "not_found",
-        })
+        logger.info(
+            "Webhook skipped (idempotent)",
+            extra={
+                "payment_id": payment_id,
+                "status": payment.status.value if payment else "not_found",
+            },
+        )
         return {"ok": True}  # Idempotent
 
     plan = enum_value(payment.plan).lower()
-    logger.info("Webhook activating subscription", extra={
-        "payment_id": payment_id, "user_id": str(payment.user_id),
-        "plan": plan, "amount": payment.amount,
-    })
+    logger.info(
+        "Webhook activating subscription",
+        extra={
+            "payment_id": payment_id,
+            "user_id": str(payment.user_id),
+            "plan": plan,
+            "amount": payment.amount,
+        },
+    )
     await activate_subscription(db, str(payment.user_id), plan, payment_id, payment.amount)
     await db.commit()
     logger.info("Webhook subscription activated", extra={"payment_id": payment_id, "user_id": str(payment.user_id)})

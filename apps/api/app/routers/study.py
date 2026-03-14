@@ -237,11 +237,7 @@ async def get_stages(
     progress_map = {str(p.stage_id): p for p in progress_result.scalars().all()}
 
     # Build completed stage IDs set for unlock logic
-    completed_stage_ids = {
-        str(p.stage_id)
-        for p in progress_map.values()
-        if p.completed
-    }
+    completed_stage_ids = {str(p.stage_id) for p in progress_map.values() if p.completed}
 
     response = []
     for stage in stages:
@@ -249,10 +245,7 @@ async def get_stages(
         content_ids = stage.content_ids if isinstance(stage.content_ids, list) else []
 
         # First stage is always unlocked; others require unlock_after completed
-        is_locked = (
-            False if stage.unlock_after is None
-            else str(stage.unlock_after) not in completed_stage_ids
-        )
+        is_locked = False if stage.unlock_after is None else str(stage.unlock_after) not in completed_stage_ids
 
         response.append(
             {
@@ -270,7 +263,9 @@ async def get_stages(
                     "completed": progress.completed if progress else False,
                     "completedAt": progress.completed_at.isoformat() if progress and progress.completed_at else None,
                     "lastAttemptedAt": progress.last_attempted_at.isoformat() if progress and progress.last_attempted_at else None,
-                } if progress else None,
+                }
+                if progress
+                else None,
             }
         )
 

@@ -132,9 +132,7 @@ async def get_dashboard(
     grammar_in_progress = grammar_counts.get(False, 0)
 
     # Kana progress — single batch query for totals per kana_type
-    kana_total_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
-    )
+    kana_total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
     kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
 
     # Kana mastered — single query across all types
@@ -291,14 +289,10 @@ async def get_jlpt_progress(
     """3-7: JLPT level progress across all levels the user has studied."""
 
     # Batch: total vocab/grammar counts per JLPT level (2 queries instead of N*6)
-    vocab_total_result = await db.execute(
-        select(Vocabulary.jlpt_level, func.count(Vocabulary.id)).group_by(Vocabulary.jlpt_level)
-    )
+    vocab_total_result = await db.execute(select(Vocabulary.jlpt_level, func.count(Vocabulary.id)).group_by(Vocabulary.jlpt_level))
     vocab_totals = {row[0]: row[1] for row in vocab_total_result.all()}
 
-    grammar_total_result = await db.execute(
-        select(Grammar.jlpt_level, func.count(Grammar.id)).group_by(Grammar.jlpt_level)
-    )
+    grammar_total_result = await db.execute(select(Grammar.jlpt_level, func.count(Grammar.id)).group_by(Grammar.jlpt_level))
     grammar_totals = {row[0]: row[1] for row in grammar_total_result.all()}
 
     # Batch: user vocab progress per (jlpt_level, mastered) — single query

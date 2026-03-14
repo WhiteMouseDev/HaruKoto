@@ -121,9 +121,7 @@ async def get_progress(
     db: AsyncSession = Depends(get_db),
 ):
     # Batch: totals per kana_type (1 query instead of 2)
-    total_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
-    )
+    total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
     totals = {row[0]: row[1] for row in total_result.all()}
 
     # Batch: learned per kana_type (1 query instead of 2)
@@ -444,9 +442,7 @@ async def complete_stage(
     await db.execute(dp_stmt)
 
     # Check kana achievements — batch queries
-    kana_total_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type)
-    )
+    kana_total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
     kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
     hiragana_total = kana_totals.get(KanaType.HIRAGANA, 0)
     katakana_total = kana_totals.get(KanaType.KATAKANA, 0)

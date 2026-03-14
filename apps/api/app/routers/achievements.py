@@ -22,9 +22,7 @@ async def get_achievements(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """3-11: All achievement definitions with user's unlocked status."""
-    result = await db.execute(
-        select(UserAchievement).where(UserAchievement.user_id == user.id)
-    )
+    result = await db.execute(select(UserAchievement).where(UserAchievement.user_id == user.id))
     user_achievements = {ua.achievement_type: ua for ua in result.scalars().all()}
 
     items: list[AchievementItem] = []

@@ -45,6 +45,7 @@ class KanaProgressResponse(CamelModel):
 
 class KanaProgressRecord(CamelModel):
     """Request body for recording kana learning progress."""
+
     kana_id: UUID = Field(..., description="ID of the kana character learned")
 
 
