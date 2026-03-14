@@ -34,7 +34,7 @@ XP_REWARDS = {m["type"]: m["xpReward"] for m in MISSION_POOL}
 
 def _select_missions(user_id: str, date_str: str) -> list[dict]:
     """Deterministic 3 missions per day using date+userId as seed."""
-    seed = hashlib.md5(f"{date_str}:{user_id}".encode()).hexdigest()
+    seed = hashlib.md5(f"{date_str}:{user_id}".encode(), usedforsecurity=False).hexdigest()
     seed_int = int(seed, 16)
 
     categories = {}
