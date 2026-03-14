@@ -80,7 +80,7 @@ async def test_activate_subscription(mock_activate, mock_verify, client, mock_us
     assert response.status_code == 200
 
     data = response.json()
-    assert data["success"] is True
+    assert data["ok"] is True
     assert "subscriptionId" in data
     assert "currentPeriodEnd" in data
 
@@ -96,7 +96,7 @@ async def test_cancel_subscription(mock_cancel, client, mock_user):
         json={"reason": "더 이상 필요하지 않습니다"},
     )
     assert response.status_code == 200
-    assert response.json()["success"] is True
+    assert response.json()["ok"] is True
 
 
 @pytest.mark.asyncio
@@ -121,7 +121,7 @@ async def test_resume_subscription(mock_resume, client, mock_user):
 
     response = await client.post("/api/v1/subscription/resume")
     assert response.status_code == 200
-    assert response.json()["success"] is True
+    assert response.json()["ok"] is True
 
 
 @pytest.mark.asyncio

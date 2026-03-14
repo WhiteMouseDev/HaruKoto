@@ -12,25 +12,23 @@ async def test_get_profile(client, mock_user):
 
     mock_session = AsyncMock()
 
-    # Mock the 4 db.execute() calls in order:
-    # 1) total_words  2) total_quizzes  3) total_study_days  4) achievement_rows
-    mock_scalar_result_5 = MagicMock()
-    mock_scalar_result_5.scalar_one.return_value = 5
+    # Router does 2 db.execute() calls:
+    # 1) select(words_sq, quizzes_sq, days_sq) → single Row with named columns
+    # 2) select(UserAchievement).where(...) → scalars().all()
+    mock_counts_row = MagicMock()
+    mock_counts_row.total_words = 5
+    mock_counts_row.total_quizzes = 3
+    mock_counts_row.total_study_days = 7
 
-    mock_scalar_result_3 = MagicMock()
-    mock_scalar_result_3.scalar_one.return_value = 3
-
-    mock_scalar_result_7 = MagicMock()
-    mock_scalar_result_7.scalar_one.return_value = 7
+    mock_counts_result = MagicMock()
+    mock_counts_result.one.return_value = mock_counts_row
 
     mock_achievement_result = MagicMock()
     mock_achievement_result.scalars.return_value.all.return_value = []
 
     mock_session.execute = AsyncMock(
         side_effect=[
-            mock_scalar_result_5,
-            mock_scalar_result_3,
-            mock_scalar_result_7,
+            mock_counts_result,
             mock_achievement_result,
         ]
     )

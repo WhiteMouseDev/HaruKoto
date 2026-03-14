@@ -144,7 +144,7 @@ async def test_delete_wordbook_entry(client, mock_user, mock_wordbook_entry, tes
         f"/api/v1/wordbook/{mock_wordbook_entry.id}",
     )
     assert response.status_code == 200
-    assert response.json()["success"] is True
+    assert response.json()["ok"] is True
 
 
 @pytest.mark.asyncio

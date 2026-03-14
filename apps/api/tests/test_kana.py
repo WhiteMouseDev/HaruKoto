@@ -220,15 +220,14 @@ async def test_update_kana_progress(client, mock_user, test_user_id):
         json={"kanaId": kana_id},
     )
     assert response.status_code == 200
-    assert response.json()["success"] is True
+    assert response.json()["ok"] is True
 
 
 @pytest.mark.asyncio
 async def test_update_kana_progress_missing_kana_id(client, mock_user):
-    """Test POST /api/v1/kana/progress returns 400 when kanaId is missing."""
+    """Test POST /api/v1/kana/progress returns 422 when kanaId is missing."""
     response = await client.post(
         "/api/v1/kana/progress",
         json={},
     )
-    assert response.status_code == 400
-    assert "kanaId" in response.json()["detail"]
+    assert response.status_code == 422
