@@ -178,8 +178,8 @@ class _BloomText extends StatelessWidget {
         // Each character starts and ends at a staggered time
         final charStart = i / (charCount + 5);
         final charEnd = (i + 6) / (charCount + 5);
-        final t = ((progress - charStart) / (charEnd - charStart))
-            .clamp(0.0, 1.0);
+        final t =
+            ((progress - charStart) / (charEnd - charStart)).clamp(0.0, 1.0);
 
         // Ease the per-character progress
         final eased = Curves.easeOut.transform(t);
