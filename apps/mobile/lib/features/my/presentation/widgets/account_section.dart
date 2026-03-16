@@ -62,7 +62,8 @@ class AccountSection extends StatelessWidget {
                 ),
                 title: Text(
                   '회원 탈퇴',
-                  style: TextStyle(fontSize: 14, color: AppColors.error(brightness)),
+                  style: TextStyle(
+                      fontSize: 14, color: AppColors.error(brightness)),
                 ),
                 onTap: () => _showDeleteDialog(context),
               ),
@@ -140,7 +141,9 @@ class AccountSection extends StatelessWidget {
                           onDeleteAccount();
                         }
                       : null,
-                  style: TextButton.styleFrom(foregroundColor: AppColors.error(Theme.of(context).brightness)),
+                  style: TextButton.styleFrom(
+                      foregroundColor:
+                          AppColors.error(Theme.of(context).brightness)),
                   child: const Text('회원 탈퇴'),
                 ),
               ],

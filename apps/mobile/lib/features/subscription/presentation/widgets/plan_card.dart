@@ -79,7 +79,8 @@ class PlanCardWidget extends StatelessWidget {
                         '${_formatPrice(plan.originalPrice!)}원',
                         style: TextStyle(
                           fontSize: 14,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.4),
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),
@@ -98,7 +99,8 @@ class PlanCardWidget extends StatelessWidget {
                         '/${plan.period}',
                         style: TextStyle(
                           fontSize: 14,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],

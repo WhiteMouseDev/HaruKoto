@@ -28,8 +28,7 @@ class LearnedWordsSummaryTile extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             Text(

@@ -44,8 +44,7 @@ class StageComplete extends StatelessWidget {
           Text(
             '$stageTitle을(를) 학습했어요!',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface
-                  .withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           if (quizTotal > 0) ...[
@@ -58,7 +57,7 @@ class StageComplete extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           LucideIcons.zap,
                           size: 20,
                           color: AppColors.hkYellowLight,
@@ -66,8 +65,7 @@ class StageComplete extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           '+$xpEarned XP',
-                          style:
-                              theme.textTheme.titleMedium?.copyWith(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -77,8 +75,8 @@ class StageComplete extends StatelessWidget {
                     Text(
                       '퀴즈 결과: $quizCorrect/$quizTotal 정답',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -95,12 +93,11 @@ class StageComplete extends StatelessWidget {
                   width: double.infinity,
                   height: 48,
                   child: FilledButton(
-                    onPressed: () =>
-                        context.go('/study/kana/$kanaType'),
+                    onPressed: () => context.go('/study/kana/$kanaType'),
                     style: FilledButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            AppSizes.buttonRadius),
+                        borderRadius:
+                            BorderRadius.circular(AppSizes.buttonRadius),
                       ),
                     ),
                     child: const Text('다음 단계로'),

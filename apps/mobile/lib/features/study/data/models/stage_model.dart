@@ -30,8 +30,7 @@ class StageModel {
       contentCount: json['contentCount'] as int? ?? 0,
       isLocked: json['isLocked'] as bool? ?? false,
       userProgress: json['userProgress'] != null
-          ? StageProgress.fromJson(
-              json['userProgress'] as Map<String, dynamic>)
+          ? StageProgress.fromJson(json['userProgress'] as Map<String, dynamic>)
           : null,
     );
   }

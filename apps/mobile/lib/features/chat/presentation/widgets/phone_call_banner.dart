@@ -68,12 +68,12 @@ class PhoneCallBanner extends StatelessWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(LucideIcons.flaskConical,
                                 size: 10, color: AppColors.primary),
-                            const SizedBox(width: 2),
+                            SizedBox(width: 2),
                             Text(
                               'Beta',
                               style: TextStyle(
@@ -97,7 +97,7 @@ class PhoneCallBanner extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(LucideIcons.phone, size: 20, color: AppColors.primary),
+            const Icon(LucideIcons.phone, size: 20, color: AppColors.primary),
           ],
         ),
       ),

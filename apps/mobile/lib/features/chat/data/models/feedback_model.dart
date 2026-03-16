@@ -54,8 +54,8 @@ class FeedbackSummary {
               .toList() ??
           [],
       translatedTranscript: (json['translatedTranscript'] as List<dynamic>?)
-              ?.map((e) =>
-                  TranslatedMessage.fromJson(e as Map<String, dynamic>))
+              ?.map(
+                  (e) => TranslatedMessage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );

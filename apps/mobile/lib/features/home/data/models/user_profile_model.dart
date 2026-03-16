@@ -17,10 +17,8 @@ class UserProfileModel {
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     // API returns nested: {profile: {...}, stats: {...}}
-    final profile =
-        json['profile'] as Map<String, dynamic>? ?? json;
-    final appSettings =
-        profile['appSettings'] as Map<String, dynamic>? ?? {};
+    final profile = json['profile'] as Map<String, dynamic>? ?? json;
+    final appSettings = profile['appSettings'] as Map<String, dynamic>? ?? {};
     return UserProfileModel(
       nickname: profile['nickname'] as String? ?? '학습자',
       dailyGoal: profile['dailyGoal'] as int? ?? 10,

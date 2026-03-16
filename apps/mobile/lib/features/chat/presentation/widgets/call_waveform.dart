@@ -94,7 +94,7 @@ class _WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final baseRadius = 64.0; // half of avatar size
+    const baseRadius = 64.0; // half of avatar size
 
     for (var i = 0; i < _ringCount; i++) {
       double scale;
@@ -114,7 +114,8 @@ class _WaveformPainter extends CustomPainter {
       }
 
       final paint = Paint()
-        ..color = AppColors.callAccentLight.withValues(alpha: opacity.clamp(0.0, 1.0))
+        ..color =
+            AppColors.callAccentLight.withValues(alpha: opacity.clamp(0.0, 1.0))
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
 

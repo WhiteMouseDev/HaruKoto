@@ -74,8 +74,7 @@ class KanaHubPage extends ConsumerWidget {
                 // 50-sound chart link
                 Card(
                   child: InkWell(
-                    borderRadius:
-                        BorderRadius.circular(AppSizes.cardRadius),
+                    borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                     onTap: () => context.push('/study/kana/chart'),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -117,5 +116,4 @@ class KanaHubPage extends ConsumerWidget {
       ),
     );
   }
-
 }

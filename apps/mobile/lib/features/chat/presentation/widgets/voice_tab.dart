@@ -17,8 +17,7 @@ class VoiceTab extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return ListView(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSizes.md),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       children: [
         PhoneCallBanner(
           onTap: () {
@@ -46,8 +45,7 @@ class VoiceTab extends StatelessWidget {
         const SizedBox(height: AppSizes.lg),
         Row(
           children: [
-            Icon(LucideIcons.clock,
-                size: 16, color: colorScheme.onSurface),
+            Icon(LucideIcons.clock, size: 16, color: colorScheme.onSurface),
             const SizedBox(width: 6),
             Text(
               '최근 통화 기록',

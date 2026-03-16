@@ -176,12 +176,11 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
   }
 
   Widget _buildMessageList(ThemeData theme, ColorScheme colorScheme) {
-    final hasScenario = _scenario?.situation != null &&
-        _scenario!.situation.isNotEmpty;
+    final hasScenario =
+        _scenario?.situation != null && _scenario!.situation.isNotEmpty;
     // header (scenario) + messages + typing indicator + error
-    final extraCount = (hasScenario ? 1 : 0) +
-        (_isTyping ? 1 : 0) +
-        (_error != null ? 1 : 0);
+    final extraCount =
+        (hasScenario ? 1 : 0) + (_isTyping ? 1 : 0) + (_error != null ? 1 : 0);
     final itemCount = _messages.length + extraCount;
 
     return ListView.builder(
@@ -210,7 +209,7 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
                   children: [
                     Row(
                       children: [
-                        Icon(LucideIcons.clipboardList,
+                        const Icon(LucideIcons.clipboardList,
                             size: 14, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Text(
@@ -339,8 +338,7 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
           IconButton(
             onPressed: () =>
                 setState(() => _showTranslation = !_showTranslation),
-            icon: Icon(
-                _showTranslation ? LucideIcons.eye : LucideIcons.eyeOff,
+            icon: Icon(_showTranslation ? LucideIcons.eye : LucideIcons.eyeOff,
                 size: 20),
             tooltip: _showTranslation ? '번역 숨기기' : '번역 보기',
           ),

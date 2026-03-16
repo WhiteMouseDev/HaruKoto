@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -75,13 +77,13 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       if (!mounted) return;
 
       // Navigate to feedback page
-      Navigator.of(context).pushReplacement(
+      unawaited(Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => ConversationFeedbackPage(
             conversationId: result.conversationId,
           ),
         ),
-      );
+      ));
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -119,8 +121,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color:
-                              AppColors.callAccent.withValues(alpha: 0.25),
+                          color: AppColors.callAccent.withValues(alpha: 0.25),
                           blurRadius: 24,
                         ),
                       ],

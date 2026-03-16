@@ -44,12 +44,14 @@ class SettingsMenu extends StatelessWidget {
             children: [
               // JLPT Level
               ListTile(
-                leading: Icon(LucideIcons.graduationCap, size: 20, color: theme.colorScheme.primary),
+                leading: Icon(LucideIcons.graduationCap,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
                 trailing: DropdownButton<String>(
                   value: jlptLevel,
                   underline: const SizedBox.shrink(),
-                  style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
+                  style: TextStyle(
+                      fontSize: 14, color: theme.colorScheme.onSurface),
                   items: _jlptLevels
                       .map((l) => DropdownMenuItem(value: l, child: Text(l)))
                       .toList(),
@@ -62,7 +64,8 @@ class SettingsMenu extends StatelessWidget {
 
               // Show Kana
               SwitchListTile(
-                secondary: Icon(LucideIcons.languages, size: 20, color: theme.colorScheme.primary),
+                secondary: Icon(LucideIcons.languages,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
                 value: showKana,
                 onChanged: (value) => onUpdate('showKana', value),

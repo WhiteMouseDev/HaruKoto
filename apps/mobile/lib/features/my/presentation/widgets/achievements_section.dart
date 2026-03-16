@@ -33,8 +33,7 @@ class AchievementsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final achievedTypes =
-        achievements.map((a) => a.achievementType).toSet();
+    final achievedTypes = achievements.map((a) => a.achievementType).toSet();
     final achievedCount = achievements.length;
     final totalCount = achievementDefinitions.length;
 
@@ -68,13 +67,15 @@ class AchievementsSection extends StatelessWidget {
                         '$achievedCount/$totalCount 달성',
                         style: TextStyle(
                           fontSize: 13,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                       Icon(
                         LucideIcons.chevronRight,
                         size: 16,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ],
                   ),
@@ -138,8 +139,7 @@ class AchievementsSection extends StatelessWidget {
 
   void _showAchievementsSheet(BuildContext context) {
     final theme = Theme.of(context);
-    final achievedTypes =
-        achievements.map((a) => a.achievementType).toSet();
+    final achievedTypes = achievements.map((a) => a.achievementType).toSet();
 
     showModalBottomSheet(
       context: context,
@@ -164,7 +164,8 @@ class AchievementsSection extends StatelessWidget {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -179,7 +180,8 @@ class AchievementsSection extends StatelessWidget {
                         '${achievements.length}/${achievementDefinitions.length} 달성',
                         style: TextStyle(
                           fontSize: 13,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],

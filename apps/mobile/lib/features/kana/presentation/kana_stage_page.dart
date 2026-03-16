@@ -47,8 +47,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   int _xpEarned = 0;
   List<KanaCharacterModel> _reviewCharacters = [];
 
-  String get kanaType =>
-      widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
+  String get kanaType => widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +57,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
 
     // Multi-provider composition: manual AsyncValue handling is used instead
     // of .when() because loading state combines two independent providers.
-    final isLoading =
-        stagesAsync.isLoading || charsAsync.isLoading;
+    final isLoading = stagesAsync.isLoading || charsAsync.isLoading;
     if (isLoading) {
       return Scaffold(
         body: SafeArea(
@@ -73,18 +71,15 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
                   height: 28,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(
-                        AppSizes.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                 ),
                 const SizedBox(height: AppSizes.md),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color:
-                          theme.colorScheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(
-                          AppSizes.cardRadius),
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                     ),
                   ),
                 ),
@@ -97,9 +92,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
 
     final stages = stagesAsync.value ?? [];
     final allChars = charsAsync.value ?? [];
-    final stage = stages
-        .where((s) => s.stageNumber == widget.stageNumber)
-        .firstOrNull;
+    final stage =
+        stages.where((s) => s.stageNumber == widget.stageNumber).firstOrNull;
 
     if (stage == null) {
       return Scaffold(
@@ -108,8 +102,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('존재하지 않는 단계입니다.',
-                    style: theme.textTheme.bodyLarge),
+                Text('존재하지 않는 단계입니다.', style: theme.textTheme.bodyLarge),
                 const SizedBox(height: 16),
                 OutlinedButton(
                   onPressed: () => context.pop(),
@@ -122,9 +115,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       );
     }
 
-    final stageChars = allChars
-        .where((c) => stage.characters.contains(c.character))
-        .toList();
+    final stageChars =
+        allChars.where((c) => stage.characters.contains(c.character)).toList();
 
     if (stageChars.isEmpty) {
       return Scaffold(
@@ -133,8 +125,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('이 단계의 문자를 불러올 수 없습니다.',
-                    style: theme.textTheme.bodyLarge),
+                Text('이 단계의 문자를 불러올 수 없습니다.', style: theme.textTheme.bodyLarge),
                 const SizedBox(height: 16),
                 OutlinedButton(
                   onPressed: () => context.pop(),
@@ -156,27 +147,23 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                        LucideIcons.arrowLeft, size: 20),
+                    icon: const Icon(LucideIcons.arrowLeft, size: 20),
                     onPressed: () => context.pop(),
                     visualDensity: VisualDensity.compact,
                   ),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Stage ${widget.stageNumber}: ${stage.title}',
-                          style: theme.textTheme.titleSmall
-                              ?.copyWith(
+                          style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           stage.description,
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface
                                 .withValues(alpha: 0.5),
                           ),
@@ -188,8 +175,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
               ),
               const SizedBox(height: AppSizes.md),
               Expanded(
-                child: _buildPhaseContent(
-                    context, stage, stageChars, theme),
+                child: _buildPhaseContent(context, stage, stageChars, theme),
               ),
             ],
           ),
@@ -249,8 +235,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
           totalCount: _quizQuestions.length,
           selectedOption: _quizSelectedOption,
           showFeedback: _quizShowFeedback,
-          onSelect: (optionId) => _handleQuizSelect(
-              optionId, _quizQuestions[_quizCurrentIndex]),
+          onSelect: (optionId) =>
+              _handleQuizSelect(optionId, _quizQuestions[_quizCurrentIndex]),
         );
       case _Phase.review:
         if (_reviewCharacters.isEmpty) {
@@ -309,8 +295,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     }
   }
 
-  void _handleQuizSelect(
-      String optionId, QuizQuestion current) {
+  void _handleQuizSelect(String optionId, QuizQuestion current) {
     if (_quizShowFeedback) return;
 
     setState(() {
@@ -349,8 +334,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   }
 
   Future<void> _handleQuizComplete() async {
-    final correct =
-        _quizAnswers.where((a) => a.isCorrect).length;
+    final correct = _quizAnswers.where((a) => a.isCorrect).length;
     final total = _quizAnswers.length;
     final wrongIds = _quizAnswers
         .where((a) => !a.isCorrect)
@@ -378,27 +362,23 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       }
     }
 
-    final stagesAsync =
-        ref.read(kanaStagesProvider(kanaType));
+    final stagesAsync = ref.read(kanaStagesProvider(kanaType));
     final stages = stagesAsync.value ?? [];
-    final stage = stages
-        .where((s) => s.stageNumber == widget.stageNumber)
-        .firstOrNull;
+    final stage =
+        stages.where((s) => s.stageNumber == widget.stageNumber).firstOrNull;
     if (stage != null) {
       final score = (correct / total * 100).round();
-      ref.read(kanaRepositoryProvider).completeStage(
+      unawaited(ref.read(kanaRepositoryProvider).completeStage(
             stageId: stage.id,
             quizScore: score,
-          );
+          ));
     }
 
     if (wrongIds.isNotEmpty) {
-      final charsAsync =
-          ref.read(kanaCharactersProvider(kanaType));
+      final charsAsync = ref.read(kanaCharactersProvider(kanaType));
       final allChars = charsAsync.value ?? [];
-      final wrongChars = allChars
-          .where((c) => wrongIds.contains(c.id))
-          .toList();
+      final wrongChars =
+          allChars.where((c) => wrongIds.contains(c.id)).toList();
       if (wrongChars.isNotEmpty) {
         setState(() {
           _reviewCharacters = wrongChars;

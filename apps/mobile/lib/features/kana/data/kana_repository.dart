@@ -37,8 +37,7 @@ class KanaRepository {
   }
 
   Future<KanaProgressModel> fetchProgress() async {
-    final response =
-        await _dio.get<Map<String, dynamic>>('/kana/progress');
+    final response = await _dio.get<Map<String, dynamic>>('/kana/progress');
     return KanaProgressModel.fromJson(response.data!);
   }
 

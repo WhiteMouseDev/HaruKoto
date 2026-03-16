@@ -62,7 +62,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
             ),
             child: Row(
               children: [
-                Icon(LucideIcons.lightbulb,
+                const Icon(LucideIcons.lightbulb,
                     size: 14, color: AppColors.hkYellowLight),
                 const SizedBox(width: 4),
                 Text(
@@ -100,7 +100,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 // Hint button
                 IconButton(
                   onPressed: widget.disabled ? null : widget.onHint,
-                  icon: Icon(LucideIcons.lightbulb,
+                  icon: const Icon(LucideIcons.lightbulb,
                       size: 20, color: AppColors.hkYellowLight),
                 ),
 
@@ -116,33 +116,27 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     decoration: InputDecoration(
                       hintText: '일본어로 입력하세요...',
                       hintStyle: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 10),
                       filled: true,
-                      fillColor: colorScheme.secondaryContainer
-                          .withValues(alpha: 0.3),
+                      fillColor:
+                          colorScheme.secondaryContainer.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSizes.radiusMd),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(
-                          color:
-                              colorScheme.outline.withValues(alpha: 0.15),
+                          color: colorScheme.outline.withValues(alpha: 0.15),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSizes.radiusMd),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(
-                          color:
-                              colorScheme.outline.withValues(alpha: 0.15),
+                          color: colorScheme.outline.withValues(alpha: 0.15),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSizes.radiusMd),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(
                           color: AppColors.primary.withValues(alpha: 0.3),
                         ),
@@ -170,7 +164,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       ),
                       icon: Icon(LucideIcons.send,
                           size: 16,
-                          color: canSend ? AppColors.onGradient : AppColors.onGradient.withValues(alpha: 0.54)),
+                          color: canSend
+                              ? AppColors.onGradient
+                              : AppColors.onGradient.withValues(alpha: 0.54)),
                     );
                   },
                 ),

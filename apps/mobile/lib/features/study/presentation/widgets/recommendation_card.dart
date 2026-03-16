@@ -63,8 +63,7 @@ class RecommendationCard extends StatelessWidget {
               Text(
                 subtitle,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               if (trailing != null) ...[
@@ -72,8 +71,7 @@ class RecommendationCard extends StatelessWidget {
                 Text(
                   trailing!,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ],

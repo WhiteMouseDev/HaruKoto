@@ -21,7 +21,8 @@ abstract final class AppSizes {
 
   // Page
   static const double pageHorizontal = 20.0;
-  static const pageHorizontalEdge = EdgeInsets.symmetric(horizontal: pageHorizontal);
+  static const pageHorizontalEdge =
+      EdgeInsets.symmetric(horizontal: pageHorizontal);
 
   // Icon sizes
   static const double iconSm = 16.0;

@@ -80,8 +80,8 @@ class _ConversationFeedbackPageState
         ),
         title: Text(
           '회화 리포트',
-          style: theme.textTheme.titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style:
+              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       body: _loading
@@ -209,7 +209,7 @@ class _FeedbackContent extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(LucideIcons.bookOpen,
+                      const Icon(LucideIcons.bookOpen,
                           size: 16, color: AppColors.hkBlueLight),
                       const SizedBox(width: AppSizes.sm),
                       Text('추천 표현',
@@ -270,8 +270,7 @@ class _FeedbackContent extends StatelessWidget {
                     children: [
                       Icon(LucideIcons.edit,
                           size: 16,
-                          color:
-                              colorScheme.onSurface.withValues(alpha: 0.6)),
+                          color: colorScheme.onSurface.withValues(alpha: 0.6)),
                       const SizedBox(width: AppSizes.sm),
                       Text('새로 배운 표현',
                           style: theme.textTheme.titleSmall
@@ -295,9 +294,8 @@ class _FeedbackContent extends StatelessWidget {
                             Row(
                               children: [
                                 Text(v.word,
-                                    style: theme.textTheme.bodySmall
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.w500)),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                        fontWeight: FontWeight.w500)),
                                 const SizedBox(width: 6),
                                 Text(
                                   '(${v.reading})',

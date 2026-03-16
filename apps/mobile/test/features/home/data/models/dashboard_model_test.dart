@@ -73,17 +73,17 @@ void main() {
     });
 
     test('completed returns true when all kana learned', () {
-      final model = KanaProgressData(
-        hiragana: const KanaStat(learned: 46, total: 46, pct: 100.0),
-        katakana: const KanaStat(learned: 46, total: 46, pct: 100.0),
+      const model = KanaProgressData(
+        hiragana: KanaStat(learned: 46, total: 46, pct: 100.0),
+        katakana: KanaStat(learned: 46, total: 46, pct: 100.0),
       );
       expect(model.completed, true);
     });
 
     test('completed returns false when not all learned', () {
-      final model = KanaProgressData(
-        hiragana: const KanaStat(learned: 30, total: 46, pct: 65.2),
-        katakana: const KanaStat(learned: 46, total: 46, pct: 100.0),
+      const model = KanaProgressData(
+        hiragana: KanaStat(learned: 30, total: 46, pct: 65.2),
+        katakana: KanaStat(learned: 46, total: 46, pct: 100.0),
       );
       expect(model.completed, false);
     });

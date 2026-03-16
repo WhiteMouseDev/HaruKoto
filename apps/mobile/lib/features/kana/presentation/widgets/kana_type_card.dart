@@ -75,8 +75,7 @@ class KanaTypeCard extends StatelessWidget {
                   Icon(
                     LucideIcons.chevronRight,
                     size: 20,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ],
               ),

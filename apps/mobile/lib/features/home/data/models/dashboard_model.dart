@@ -18,13 +18,11 @@ class DashboardModel {
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
     return DashboardModel(
       showKana: json['showKana'] as bool? ?? false,
-      today: TodayStats.fromJson(
-          json['today'] as Map<String, dynamic>? ?? {}),
-      streak: StreakData.fromJson(
-          json['streak'] as Map<String, dynamic>? ?? {}),
+      today: TodayStats.fromJson(json['today'] as Map<String, dynamic>? ?? {}),
+      streak:
+          StreakData.fromJson(json['streak'] as Map<String, dynamic>? ?? {}),
       weeklyStats: (json['weeklyStats'] as List<dynamic>?)
-              ?.map((e) =>
-                  WeeklyStatEntry.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => WeeklyStatEntry.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       kanaProgress: json['kanaProgress'] != null
@@ -119,10 +117,10 @@ class KanaProgressData {
 
   factory KanaProgressData.fromJson(Map<String, dynamic> json) {
     return KanaProgressData(
-      hiragana: KanaStat.fromJson(
-          json['hiragana'] as Map<String, dynamic>? ?? {}),
-      katakana: KanaStat.fromJson(
-          json['katakana'] as Map<String, dynamic>? ?? {}),
+      hiragana:
+          KanaStat.fromJson(json['hiragana'] as Map<String, dynamic>? ?? {}),
+      katakana:
+          KanaStat.fromJson(json['katakana'] as Map<String, dynamic>? ?? {}),
     );
   }
 }
@@ -160,8 +158,8 @@ class LevelProgressData {
     return LevelProgressData(
       vocabulary: ProgressStat.fromJson(
           json['vocabulary'] as Map<String, dynamic>? ?? {}),
-      grammar: ProgressStat.fromJson(
-          json['grammar'] as Map<String, dynamic>? ?? {}),
+      grammar:
+          ProgressStat.fromJson(json['grammar'] as Map<String, dynamic>? ?? {}),
     );
   }
 }

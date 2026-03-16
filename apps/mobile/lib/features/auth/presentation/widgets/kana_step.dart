@@ -24,8 +24,7 @@ class KanaStep extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(AppSizes.cardRadius),
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -44,8 +43,7 @@ class KanaStep extends StatelessWidget {
                 '일본어의 기초 문자를 먼저 학습할 수 있어요',
                 style: TextStyle(
                   fontSize: 14,
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
               const SizedBox(height: 16),
@@ -72,8 +70,7 @@ class KanaStep extends StatelessWidget {
                         onPressed: onBack,
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text('이전'),
@@ -88,8 +85,7 @@ class KanaStep extends StatelessWidget {
                         onPressed: onNext,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text('다음'),

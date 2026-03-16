@@ -5,9 +5,9 @@ import '../../../../core/constants/sizes.dart';
 import '../../data/models/scenario_model.dart';
 
 final _difficultyStyles = {
-  'BEGINNER': _DiffStyle('초급', AppColors.difficultyBeginner),
-  'INTERMEDIATE': _DiffStyle('중급', AppColors.difficultyIntermediate),
-  'ADVANCED': _DiffStyle('고급', AppColors.difficultyAdvanced),
+  'BEGINNER': const _DiffStyle('초급', AppColors.difficultyBeginner),
+  'INTERMEDIATE': const _DiffStyle('중급', AppColors.difficultyIntermediate),
+  'ADVANCED': const _DiffStyle('고급', AppColors.difficultyAdvanced),
 };
 
 class _DiffStyle {
@@ -86,14 +86,12 @@ class ScenarioCard extends StatelessWidget {
                     children: [
                       Icon(LucideIcons.clock,
                           size: 12,
-                          color:
-                              colorScheme.onSurface.withValues(alpha: 0.5)),
+                          color: colorScheme.onSurface.withValues(alpha: 0.5)),
                       const SizedBox(width: 4),
                       Text(
                         '예상 ${scenario.estimatedMinutes}분',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color:
-                              colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -103,8 +101,7 @@ class ScenarioCard extends StatelessWidget {
                     Text(
                       '핵심표현: ${scenario.keyExpressions.take(2).join(', ')}',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color:
-                            colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -130,8 +127,7 @@ class ScenarioCard extends StatelessWidget {
             ],
             const SizedBox(width: 4),
             Icon(LucideIcons.chevronRight,
-                size: 16,
-                color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                size: 16, color: colorScheme.onSurface.withValues(alpha: 0.4)),
           ],
         ),
       ),

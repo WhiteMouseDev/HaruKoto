@@ -18,8 +18,7 @@ class ChatHubPage extends ConsumerStatefulWidget {
   const ChatHubPage({super.key});
 
   @override
-  ConsumerState<ChatHubPage> createState() =>
-      _ChatHubPageState();
+  ConsumerState<ChatHubPage> createState() => _ChatHubPageState();
 }
 
 class _ChatHubPageState extends ConsumerState<ChatHubPage>
@@ -33,8 +32,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -43,16 +41,14 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     super.dispose();
   }
 
-  Future<void> _handleStartConversation(
-      ScenarioModel scenario) async {
+  Future<void> _handleStartConversation(ScenarioModel scenario) async {
     setState(() {
       _starting = true;
       _error = null;
     });
     try {
       final repo = ref.read(chatRepositoryProvider);
-      final result =
-          await repo.startConversation(scenario.id);
+      final result = await repo.startConversation(scenario.id);
       if (!mounted) return;
       context.go('/chat/${result.conversationId}');
     } catch (e) {
@@ -71,8 +67,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     });
     try {
       final repo = ref.read(chatRepositoryProvider);
-      final scenarios =
-          await repo.fetchScenarios(category: 'FREE');
+      final scenarios = await repo.fetchScenarios(category: 'FREE');
       if (scenarios.isNotEmpty) {
         await _handleStartConversation(scenarios.first);
       } else {
@@ -127,8 +122,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
         category: _selectedCategory!,
         categorySource: _categorySource,
         starting: _starting,
-        onBack: () =>
-            setState(() => _selectedCategory = null),
+        onBack: () => setState(() => _selectedCategory = null),
         onStartConversation: _handleStartConversation,
       );
     }
@@ -142,53 +136,33 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
-                        AppSizes.md,
-                        AppSizes.md,
-                        AppSizes.md,
-                        AppSizes.sm),
+                        AppSizes.md, AppSizes.md, AppSizes.md, AppSizes.sm),
                     child: Row(
                       children: [
                         Text(
                           'AI 회화',
-                          style: theme
-                              .textTheme.headlineSmall
-                              ?.copyWith(
-                                  fontWeight:
-                                      FontWeight.bold),
+                          style: theme.textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(
-                            width: AppSizes.sm),
+                        const SizedBox(width: AppSizes.sm),
                         Container(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.primary
-                                .withValues(alpha: 0.1),
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
-                            mainAxisSize:
-                                MainAxisSize.min,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                  LucideIcons
-                                      .flaskConical,
-                                  size: 12,
-                                  color:
-                                      AppColors.primary),
+                              const Icon(LucideIcons.flaskConical,
+                                  size: 12, color: AppColors.primary),
                               const SizedBox(width: 2),
                               Text(
                                 'Beta',
-                                style: theme
-                                    .textTheme.labelSmall
-                                    ?.copyWith(
-                                  color:
-                                      AppColors.primary,
-                                  fontWeight:
-                                      FontWeight.w600,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -199,12 +173,10 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                           icon: Icon(
                             LucideIcons.settings,
                             size: 20,
-                            color: colorScheme.onSurface
-                                .withValues(alpha: 0.6),
+                            color: colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           tooltip: '통화 설정',
-                          onPressed: () =>
-                              _showCallSettings(context),
+                          onPressed: () => _showCallSettings(context),
                         ),
                       ],
                     ),
@@ -213,16 +185,12 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                 SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                        const EdgeInsets.symmetric(
-                            horizontal: AppSizes.md),
+                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: colorScheme
-                            .secondaryContainer
+                        color: colorScheme.secondaryContainer
                             .withValues(alpha: 0.5),
-                        borderRadius:
-                            BorderRadius.circular(
-                                AppSizes.radiusLg),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       ),
                       padding: const EdgeInsets.all(4),
                       child: TabBar(
@@ -230,41 +198,28 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                         indicator: BoxDecoration(
                           color: colorScheme.surface,
                           borderRadius:
-                              BorderRadius.circular(
-                                  AppSizes.radiusMd),
+                              BorderRadius.circular(AppSizes.radiusMd),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  AppColors.overlay(0.05),
+                              color: AppColors.overlay(0.05),
                               blurRadius: 4,
-                              offset:
-                                  const Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
-                        indicatorSize:
-                            TabBarIndicatorSize.tab,
-                        dividerColor:
-                            Colors.transparent,
-                        labelColor:
-                            colorScheme.onSurface,
-                        unselectedLabelColor: colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.5),
-                        labelStyle: theme
-                            .textTheme.bodySmall
-                            ?.copyWith(
-                                fontWeight:
-                                    FontWeight.w600),
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        labelColor: colorScheme.onSurface,
+                        unselectedLabelColor:
+                            colorScheme.onSurface.withValues(alpha: 0.5),
+                        labelStyle: theme.textTheme.bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
                         tabs: const [
                           Tab(
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(LucideIcons.phone,
-                                    size: 16),
+                                Icon(LucideIcons.phone, size: 16),
                                 SizedBox(width: 6),
                                 Text('음성통화'),
                               ],
@@ -272,14 +227,9 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                           ),
                           Tab(
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                    LucideIcons
-                                        .messageCircle,
-                                    size: 16),
+                                Icon(LucideIcons.messageCircle, size: 16),
                                 SizedBox(width: 6),
                                 Text('텍스트 회화'),
                               ],
@@ -290,9 +240,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(
-                    child:
-                        SizedBox(height: AppSizes.md)),
+                const SliverToBoxAdapter(child: SizedBox(height: AppSizes.md)),
                 SliverFillRemaining(
                   hasScrollBody: true,
                   child: TabBarView(
@@ -320,32 +268,25 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                 ),
               ],
             ),
-            if (_starting)
-              const ChatLoadingOverlay(),
+            if (_starting) const ChatLoadingOverlay(),
             if (_error != null)
               Positioned(
                 bottom: AppSizes.md,
                 left: AppSizes.md,
                 right: AppSizes.md,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(
-                          horizontal: AppSizes.md,
-                          vertical: AppSizes.sm),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.md, vertical: AppSizes.sm),
                   decoration: BoxDecoration(
-                    color: AppColors.hkRedLight
-                        .withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                        AppSizes.radiusSm),
+                    color: AppColors.hkRedLight.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                   child: Text(
                     _error!,
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall
-                        ?.copyWith(
-                            color:
-                                AppColors.hkRedLight),
+                        ?.copyWith(color: AppColors.hkRedLight),
                     textAlign: TextAlign.center,
                   ),
                 ),

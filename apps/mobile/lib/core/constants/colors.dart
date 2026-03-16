@@ -38,23 +38,19 @@ abstract final class AppColors {
 
   // ─── Functional semantic colors (brightness-aware) ───────
   // Soft teal green – complements pink theme without clashing
-  static Color success(Brightness brightness) =>
-      brightness == Brightness.light
-          ? const Color(0xFF2DB08A)
-          : const Color(0xFF26997A);
+  static Color success(Brightness brightness) => brightness == Brightness.light
+      ? const Color(0xFF2DB08A)
+      : const Color(0xFF26997A);
   // Warm rose – harmonises with brandPink rather than harsh red
-  static Color error(Brightness brightness) =>
-      brightness == Brightness.light
-          ? const Color(0xFFE8577D)
-          : const Color(0xFFD14468);
-  static Color warning(Brightness brightness) =>
-      brightness == Brightness.light
-          ? const Color(0xFFF59E0B)
-          : const Color(0xFFD97706);
-  static Color info(Brightness brightness) =>
-      brightness == Brightness.light
-          ? const Color(0xFF3B82F6)
-          : const Color(0xFF2563EB);
+  static Color error(Brightness brightness) => brightness == Brightness.light
+      ? const Color(0xFFE8577D)
+      : const Color(0xFFD14468);
+  static Color warning(Brightness brightness) => brightness == Brightness.light
+      ? const Color(0xFFF59E0B)
+      : const Color(0xFFD97706);
+  static Color info(Brightness brightness) => brightness == Brightness.light
+      ? const Color(0xFF3B82F6)
+      : const Color(0xFF2563EB);
 
   // ─── Auth gradient ───────────────────────────────────────
   static const authGradientTop = Color(0xFFFCF6F5);

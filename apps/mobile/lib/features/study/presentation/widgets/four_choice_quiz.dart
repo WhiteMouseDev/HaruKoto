@@ -48,8 +48,7 @@ class FourChoiceQuiz extends StatelessWidget {
                   Text(
                     question.questionSubText!,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -57,8 +56,7 @@ class FourChoiceQuiz extends StatelessWidget {
                 Icon(
                   LucideIcons.volume2,
                   size: 20,
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ],
             ),
@@ -98,8 +96,8 @@ class FourChoiceQuiz extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 onTap: answered ? null : () => onSelect(option.id),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
                     border: Border.all(color: borderColor, width: 2),
                     borderRadius: BorderRadius.circular(12),

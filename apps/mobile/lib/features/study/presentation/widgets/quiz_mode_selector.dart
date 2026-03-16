@@ -71,8 +71,7 @@ class QuizModeSelector extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: isActive
                         ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ],

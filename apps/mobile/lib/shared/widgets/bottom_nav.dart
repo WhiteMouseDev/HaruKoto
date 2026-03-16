@@ -131,7 +131,7 @@ class _TabItem extends StatelessWidget {
               ),
             ),
             if (tab.isBeta)
-              Positioned(
+              const Positioned(
                 top: -4,
                 right: -8,
                 child: Icon(

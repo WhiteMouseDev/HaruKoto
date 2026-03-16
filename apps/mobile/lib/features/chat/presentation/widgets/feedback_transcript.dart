@@ -52,7 +52,7 @@ class _FeedbackTranscriptWidgetState extends State<FeedbackTranscriptWidget> {
               children: [
                 Row(
                   children: [
-                    Icon(LucideIcons.messageSquare,
+                    const Icon(LucideIcons.messageSquare,
                         size: 16, color: AppColors.hkBlueLight),
                     const SizedBox(width: AppSizes.sm),
                     Text(
@@ -65,8 +65,8 @@ class _FeedbackTranscriptWidgetState extends State<FeedbackTranscriptWidget> {
                 TextButton.icon(
                   onPressed: () =>
                       setState(() => _showTranslation = !_showTranslation),
-                  icon: Icon(LucideIcons.languages, size: 14,
-                      color: colorScheme.onSurface),
+                  icon: Icon(LucideIcons.languages,
+                      size: 14, color: colorScheme.onSurface),
                   label: Text(
                     _showTranslation ? '원문만' : '번역 보기',
                     style: theme.textTheme.labelSmall,
@@ -84,8 +84,7 @@ class _FeedbackTranscriptWidgetState extends State<FeedbackTranscriptWidget> {
             // Messages
             ...widget.translatedTranscript.map((msg) {
               final isUser = msg.role == 'user';
-              final correction =
-                  isUser ? _findCorrection(msg.ja) : null;
+              final correction = isUser ? _findCorrection(msg.ja) : null;
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -123,10 +122,8 @@ class _FeedbackTranscriptWidgetState extends State<FeedbackTranscriptWidget> {
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(16),
                               topRight: const Radius.circular(16),
-                              bottomLeft:
-                                  Radius.circular(isUser ? 16 : 4),
-                              bottomRight:
-                                  Radius.circular(isUser ? 4 : 16),
+                              bottomLeft: Radius.circular(isUser ? 16 : 4),
+                              bottomRight: Radius.circular(isUser ? 4 : 16),
                             ),
                             border: isUser
                                 ? null
@@ -146,15 +143,14 @@ class _FeedbackTranscriptWidgetState extends State<FeedbackTranscriptWidget> {
                                   height: 1.5,
                                 ),
                               ),
-                              if (_showTranslation &&
-                                  msg.ko.isNotEmpty) ...[
+                              if (_showTranslation && msg.ko.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
                                   msg.ko,
-                                  style:
-                                      theme.textTheme.labelSmall?.copyWith(
+                                  style: theme.textTheme.labelSmall?.copyWith(
                                     color: isUser
-                                        ? AppColors.onGradient.withValues(alpha: 0.6)
+                                        ? AppColors.onGradient
+                                            .withValues(alpha: 0.6)
                                         : colorScheme.onSurface
                                             .withValues(alpha: 0.5),
                                   ),
@@ -206,7 +202,8 @@ class _CorrectionToggleState extends State<_CorrectionToggle> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(LucideIcons.edit,
-                    size: 12, color: AppColors.warning(Theme.of(context).brightness)),
+                    size: 12,
+                    color: AppColors.warning(Theme.of(context).brightness)),
                 const SizedBox(width: 4),
                 Text(
                   '교정 있음',

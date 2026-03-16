@@ -89,18 +89,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       final repo = ref.read(authRepositoryProvider);
       if (_isSignUp) {
-        final response = await repo.signUpWithEmail(
-            email: email, password: password);
+        final response =
+            await repo.signUpWithEmail(email: email, password: password);
         if (response.user != null &&
             (response.user!.identities?.isEmpty ?? false)) {
-          _showError(
-              '이미 가입된 이메일입니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.');
+          _showError('이미 가입된 이메일입니다. 소셜 로그인으로 가입하셨다면 해당 방법으로 로그인해주세요.');
         } else {
           _showInfo('확인 이메일을 발송했습니다. 이메일을 확인해주세요.');
         }
       } else {
-        await repo.signInWithEmail(
-            email: email, password: password);
+        await repo.signInWithEmail(email: email, password: password);
       }
     } on AuthException catch (e) {
       if (mounted) {
@@ -108,10 +106,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             e.message.contains('invalid_credentials')) {
           _showError(
               '이메일 또는 비밀번호가 올바르지 않습니다. 소셜 로그인(Google/Kakao)으로 가입하셨다면 해당 방법으로 로그인해주세요.');
-        } else if (e.message
-            .contains('Email not confirmed')) {
-          _showError(
-              '이메일 인증이 완료되지 않았습니다. 가입 시 발송된 이메일을 확인해주세요.');
+        } else if (e.message.contains('Email not confirmed')) {
+          _showError('이메일 인증이 완료되지 않았습니다. 가입 시 발송된 이메일을 확인해주세요.');
         } else {
           _showError(e.message);
         }
@@ -131,8 +127,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.resetPassword(email);
-      setState(() => _resetMessage =
-          '비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.');
+      setState(() => _resetMessage = '비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.');
     } on AuthException catch (e) {
       setState(() => _resetMessage = e.message);
     } catch (_) {
@@ -176,8 +171,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         });
       },
       onForgotPassword: () {
-        _resetEmailController.text =
-            _emailController.text;
+        _resetEmailController.text = _emailController.text;
         setState(() {
           _showResetPassword = true;
           _resetMessage = null;

@@ -32,8 +32,7 @@ class KanaTypePage extends ConsumerWidget {
             onRetry: () => ref.invalidate(kanaStagesProvider(kanaType)),
           ),
           data: (stages) {
-            final completedCount =
-                stages.where((s) => s.isCompleted).length;
+            final completedCount = stages.where((s) => s.isCompleted).length;
             final totalCount = stages.length;
             final progressPct = totalCount > 0
                 ? (completedCount / totalCount * 100).round()
@@ -83,8 +82,7 @@ class KanaTypePage extends ConsumerWidget {
                   // Stage cards
                   ...stages.map((stage) {
                     return Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: AppSizes.sm + 4),
+                      padding: const EdgeInsets.only(bottom: AppSizes.sm + 4),
                       child: KanaStageCard(
                         stageNumber: stage.stageNumber,
                         title: stage.title,
@@ -105,8 +103,8 @@ class KanaTypePage extends ConsumerWidget {
                   if (hasCompleted) ...[
                     const SizedBox(height: AppSizes.sm),
                     OutlinedButton(
-                      onPressed: () => context.push(
-                          '/study/kana/$type/quiz?mode=recognition'),
+                      onPressed: () => context
+                          .push('/study/kana/$type/quiz?mode=recognition'),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(48),
                         shape: RoundedRectangleBorder(
@@ -122,8 +120,8 @@ class KanaTypePage extends ConsumerWidget {
                     Text(
                       '퀴즈 모드',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                     const SizedBox(height: AppSizes.sm),
@@ -152,8 +150,8 @@ class KanaTypePage extends ConsumerWidget {
                     _quizModeButton(
                       context,
                       '히라↔가타 매칭',
-                      () => context.push(
-                          '/study/kana/$type/quiz?mode=kana_matching'),
+                      () => context
+                          .push('/study/kana/$type/quiz?mode=kana_matching'),
                     ),
                   ],
 
@@ -166,8 +164,7 @@ class KanaTypePage extends ConsumerWidget {
                             BorderRadius.circular(AppSizes.cardRadius),
                         side: BorderSide(color: theme.colorScheme.primary),
                       ),
-                      color:
-                          theme.colorScheme.primary.withValues(alpha: 0.05),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.05),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
@@ -194,8 +191,8 @@ class KanaTypePage extends ConsumerWidget {
                                       ),
                                       Text(
                                         '전체 출제 · 90% 이상 통과',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
+                                        style:
+                                            theme.textTheme.bodySmall?.copyWith(
                                           color: theme.colorScheme.onSurface
                                               .withValues(alpha: 0.5),
                                         ),
@@ -311,4 +308,3 @@ class _KanaProgressBar extends StatelessWidget {
     );
   }
 }
-

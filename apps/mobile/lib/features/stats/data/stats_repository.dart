@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'models/by_category_model.dart';
@@ -29,7 +31,7 @@ class StatsRepository {
             .map((e) => StatsHistoryRecord.fromJson(e as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        Sentry.captureException(e, stackTrace: StackTrace.current);
+        unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
         return <StatsHistoryRecord>[];
       }
     });
@@ -48,7 +50,7 @@ class StatsRepository {
       );
       return HeatmapResponse.fromJson(response.data ?? {});
     } catch (e) {
-      Sentry.captureException(e, stackTrace: StackTrace.current);
+      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
       return const HeatmapResponse(data: []);
     }
   }
@@ -60,7 +62,7 @@ class StatsRepository {
       );
       return JlptProgressResponse.fromJson(response.data ?? {});
     } catch (e) {
-      Sentry.captureException(e, stackTrace: StackTrace.current);
+      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
       return const JlptProgressResponse(levels: []);
     }
   }
@@ -73,7 +75,7 @@ class StatsRepository {
       );
       return TimeChartResponse.fromJson(response.data ?? {});
     } catch (e) {
-      Sentry.captureException(e, stackTrace: StackTrace.current);
+      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
       return const TimeChartResponse(data: []);
     }
   }
@@ -86,7 +88,7 @@ class StatsRepository {
       );
       return VolumeChartResponse.fromJson(response.data ?? {});
     } catch (e) {
-      Sentry.captureException(e, stackTrace: StackTrace.current);
+      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
       return const VolumeChartResponse(data: []);
     }
   }
@@ -98,7 +100,7 @@ class StatsRepository {
       );
       return ByCategoryResponse.fromJson(response.data ?? {});
     } catch (e) {
-      Sentry.captureException(e, stackTrace: StackTrace.current);
+      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
       return const ByCategoryResponse(
         vocabulary: CategoryStats(total: 0, daily: []),
         grammar: CategoryStats(total: 0, daily: []),

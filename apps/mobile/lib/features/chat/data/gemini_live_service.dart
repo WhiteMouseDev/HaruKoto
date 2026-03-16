@@ -86,7 +86,7 @@ class GeminiLiveService {
     _setState(GeminiLiveState.ending);
     _flushTranscripts();
     await _stopRecording();
-    _channel?.sink.close();
+    unawaited(_channel?.sink.close());
     _channel = null;
     _setState(GeminiLiveState.ended);
   }
@@ -95,10 +95,10 @@ class GeminiLiveService {
   Future<void> dispose() async {
     _disposed = true;
     await _stopRecording();
-    _channel?.sink.close();
+    unawaited(_channel?.sink.close());
     _channel = null;
-    _recorder.dispose();
-    FlutterPcmSound.release();
+    unawaited(_recorder.dispose());
+    unawaited(FlutterPcmSound.release());
   }
 
   // ──────── Connection ────────
@@ -242,8 +242,8 @@ class GeminiLiveService {
 
   void _sendGreeting() {
     final name = characterName ?? 'ハル';
-    final greeting = scenarioGreeting ??
-        '[システム] $nameから電話がかかってきました。電話に出て「もしもし」から始めてください。';
+    final greeting =
+        scenarioGreeting ?? '[システム] $nameから電話がかかってきました。電話に出て「もしもし」から始めてください。';
 
     final msg = {
       'clientContent': {
@@ -272,7 +272,7 @@ class GeminiLiveService {
 
     // Initialize PCM player for output
     await FlutterPcmSound.setup(sampleRate: 24000, channelCount: 1);
-    FlutterPcmSound.setFeedThreshold(8000);
+    unawaited(FlutterPcmSound.setFeedThreshold(8000));
 
     final stream = await _recorder.startStream(
       const RecordConfig(
@@ -333,7 +333,8 @@ class GeminiLiveService {
 
   void _flushUserTranscript() {
     if (_currentUserText.isEmpty) return;
-    final entry = TranscriptEntry(role: 'user', text: _currentUserText.toString().trim());
+    final entry =
+        TranscriptEntry(role: 'user', text: _currentUserText.toString().trim());
     if (entry.text.isNotEmpty) {
       _transcript.add(entry);
       onTranscriptEntry?.call(entry);
@@ -343,7 +344,8 @@ class GeminiLiveService {
 
   void _flushAiTranscript() {
     if (_currentAiText.isEmpty) return;
-    final entry = TranscriptEntry(role: 'assistant', text: _currentAiText.toString().trim());
+    final entry = TranscriptEntry(
+        role: 'assistant', text: _currentAiText.toString().trim());
     if (entry.text.isNotEmpty) {
       _transcript.add(entry);
       onTranscriptEntry?.call(entry);
@@ -367,8 +369,10 @@ class GeminiLiveService {
     }
 
     _reconnectAttempts++;
-    final delay = Duration(milliseconds: 1000 * (1 << (_reconnectAttempts - 1)));
-    debugPrint('[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $_reconnectAttempts)');
+    final delay =
+        Duration(milliseconds: 1000 * (1 << (_reconnectAttempts - 1)));
+    debugPrint(
+        '[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $_reconnectAttempts)');
 
     Future<void>.delayed(delay, () {
       if (_disposed) return;

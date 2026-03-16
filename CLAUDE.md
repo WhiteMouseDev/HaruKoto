@@ -120,7 +120,7 @@ chore: 빌드, 설정 변경
 
 - **Backend** (`apps/api/` 변경 시): `cd apps/api && uv run ruff check app/ tests/ && uv run ruff format --check app/ tests/`
 - **Frontend** (`apps/web/` 또는 `packages/` 변경 시): `pnpm lint`
-- **Mobile** (`apps/mobile/` 변경 시): `cd apps/mobile && flutter analyze`
+- **Mobile** (`apps/mobile/` 변경 시): `cd apps/mobile && dart format --set-exit-if-changed lib/ test/ && flutter analyze`
 
 ## 코딩 컨벤션
 

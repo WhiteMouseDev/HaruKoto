@@ -55,10 +55,11 @@ class _StatsBarChartState extends State<StatsBarChart> {
       final dateStr =
           '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       final record = widget.records.cast<StatsHistoryRecord?>().firstWhere(
-        (r) => r?.date == dateStr,
-        orElse: () => null,
-      );
-      return _BarData(label: dayLabels[i], value: record?.studyTimeSeconds ?? 0);
+            (r) => r?.date == dateStr,
+            orElse: () => null,
+          );
+      return _BarData(
+          label: dayLabels[i], value: record?.studyTimeSeconds ?? 0);
     });
   }
 
@@ -90,8 +91,18 @@ class _StatsBarChartState extends State<StatsBarChart> {
 
   List<_BarData> _getYearBars() {
     const monthLabels = [
-      '1월', '2월', '3월', '4월', '5월', '6월',
-      '7월', '8월', '9월', '10월', '11월', '12월',
+      '1월',
+      '2월',
+      '3월',
+      '4월',
+      '5월',
+      '6월',
+      '7월',
+      '8월',
+      '9월',
+      '10월',
+      '11월',
+      '12월',
     ];
     final monthTotals = List<int>.filled(12, 0);
     for (final r in widget.records) {
@@ -176,7 +187,8 @@ class _StatsBarChartState extends State<StatsBarChart> {
                               fontWeight: FontWeight.w500,
                               color: isSelected
                                   ? theme.colorScheme.onPrimary
-                                  : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                  : theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
                             ),
                           ),
                         ),
@@ -220,7 +232,8 @@ class _StatsBarChartState extends State<StatsBarChart> {
                             decoration: BoxDecoration(
                               color: bar.value > 0
                                   ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                  : theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.1),
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(4),
                               ),

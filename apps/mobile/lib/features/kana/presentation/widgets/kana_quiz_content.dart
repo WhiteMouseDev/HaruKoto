@@ -26,12 +26,10 @@ class KanaQuizContent extends StatelessWidget {
     if (question == null) return const SizedBox.shrink();
     final current = question!;
     final theme = Theme.of(context);
-    final progressPct = totalCount > 0
-        ? (currentIndex / totalCount * 100).round()
-        : 0;
-    final isKanaText =
-        RegExp(r'^[\u3040-\u309F\u30A0-\u30FF]$')
-            .hasMatch(current.questionText);
+    final progressPct =
+        totalCount > 0 ? (currentIndex / totalCount * 100).round() : 0;
+    final isKanaText = RegExp(r'^[\u3040-\u309F\u30A0-\u30FF]$')
+        .hasMatch(current.questionText);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,8 +40,7 @@ class KanaQuizContent extends StatelessWidget {
             Text(
               '문제 풀기',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             Text(
@@ -60,8 +57,7 @@ class KanaQuizContent extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progressPct / 100,
             minHeight: 6,
-            backgroundColor:
-                theme.colorScheme.surfaceContainerHigh,
+            backgroundColor: theme.colorScheme.surfaceContainerHigh,
             color: theme.colorScheme.primary,
           ),
         ),
@@ -80,10 +76,8 @@ class KanaQuizContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   current.questionSubText!,
-                  style:
-                      theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.5),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -95,37 +89,30 @@ class KanaQuizContent extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: current.options.map((option) {
-            final isSelected =
-                selectedOption == option.id;
-            final isCorrect =
-                option.id == current.correctOptionId;
+            final isSelected = selectedOption == option.id;
+            final isCorrect = option.id == current.correctOptionId;
 
             Color bgColor = theme.colorScheme.surface;
-            Color borderColor = theme.colorScheme.outline
-                .withValues(alpha: 0.3);
+            Color borderColor =
+                theme.colorScheme.outline.withValues(alpha: 0.3);
             Color textColor = theme.colorScheme.onSurface;
 
             if (showFeedback) {
               if (isCorrect) {
-                bgColor = AppColors.quizCorrect
-                    .withValues(alpha: 0.1);
+                bgColor = AppColors.quizCorrect.withValues(alpha: 0.1);
                 borderColor = AppColors.quizCorrect;
                 textColor = AppColors.quizCorrect;
               } else if (isSelected && !isCorrect) {
-                bgColor = theme.colorScheme.error
-                    .withValues(alpha: 0.1);
+                bgColor = theme.colorScheme.error.withValues(alpha: 0.1);
                 borderColor = theme.colorScheme.error;
                 textColor = theme.colorScheme.error;
               } else {
-                bgColor = theme.colorScheme.surface
-                    .withValues(alpha: 0.5);
+                bgColor = theme.colorScheme.surface.withValues(alpha: 0.5);
               }
             }
 
             return SizedBox(
-              width:
-                  (MediaQuery.of(context).size.width - 60) /
-                      2,
+              width: (MediaQuery.of(context).size.width - 60) / 2,
               child: Material(
                 color: bgColor,
                 shape: RoundedRectangleBorder(
@@ -134,9 +121,7 @@ class KanaQuizContent extends StatelessWidget {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: showFeedback
-                      ? null
-                      : () => onSelect(option.id),
+                  onTap: showFeedback ? null : () => onSelect(option.id),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 16, horizontal: 16),

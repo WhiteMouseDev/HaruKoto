@@ -12,7 +12,6 @@ class QuizOption {
   }
 }
 
-
 class QuizQuestionModel {
   final String questionId;
   final String questionText;
@@ -74,9 +73,8 @@ class QuizQuestionModel {
       grammarPoint: json['grammarPoint'] as String?,
       koreanSentence: json['koreanSentence'] as String?,
       japaneseSentence: json['japaneseSentence'] as String?,
-      tokens: (json['tokens'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      tokens:
+          (json['tokens'] as List<dynamic>?)?.map((e) => e as String).toList(),
       prompt: json['prompt'] as String?,
       answer: json['answer'] as String?,
       distractors: (json['distractors'] as List<dynamic>?)

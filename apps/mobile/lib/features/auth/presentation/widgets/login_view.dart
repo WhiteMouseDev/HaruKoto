@@ -46,8 +46,7 @@ class LoginView extends StatelessWidget {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.lg),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -58,18 +57,15 @@ class LoginView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.brandPink
-                              .withValues(alpha: 0.3),
+                          color: AppColors.brandPink.withValues(alpha: 0.3),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(24),
-                      child:
-                          Image.asset('assets/icon.png'),
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset('assets/icon.png'),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -92,12 +88,10 @@ class LoginView extends StatelessWidget {
                   const SizedBox(height: 32),
                   Container(
                     width: double.infinity,
-                    padding:
-                        const EdgeInsets.all(AppSizes.lg),
+                    padding: const EdgeInsets.all(AppSizes.lg),
                     decoration: BoxDecoration(
                       color: AppColors.onGradient,
-                      borderRadius: BorderRadius.circular(
-                          AppSizes.cardRadius),
+                      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.overlay(0.05),
@@ -109,51 +103,38 @@ class LoginView extends StatelessWidget {
                     child: Column(
                       children: [
                         SocialButton(
-                          onPressed: loading
-                              ? null
-                              : onGoogleSignIn,
+                          onPressed: loading ? null : onGoogleSignIn,
                           icon: googleIcon(),
                           label: 'Google로 계속하기',
                         ),
                         const SizedBox(height: 10),
                         SocialButton(
-                          onPressed: loading
-                              ? null
-                              : onKakaoSignIn,
+                          onPressed: loading ? null : onKakaoSignIn,
                           icon: kakaoIcon(),
                           label: 'Kakao로 계속하기',
-                          backgroundColor:
-                              AppColors.kakaoBg,
-                          foregroundColor:
-                              AppColors.kakaoText,
+                          backgroundColor: AppColors.kakaoBg,
+                          foregroundColor: AppColors.kakaoText,
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
                             Expanded(
                                 child: Divider(
-                                    color: AppColors
-                                        .overlay(0.2),
-                                    height: 1)),
+                                    color: AppColors.overlay(0.2), height: 1)),
                             Padding(
                               padding:
-                                  const EdgeInsets
-                                      .symmetric(
-                                      horizontal: 12),
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
                                 '또는',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors
-                                      .overlay(0.5),
+                                  color: AppColors.overlay(0.5),
                                 ),
                               ),
                             ),
                             Expanded(
                                 child: Divider(
-                                    color: AppColors
-                                        .overlay(0.2),
-                                    height: 1)),
+                                    color: AppColors.overlay(0.2), height: 1)),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -161,10 +142,8 @@ class LoginView extends StatelessWidget {
                         const SizedBox(height: 6),
                         TextField(
                           controller: emailController,
-                          keyboardType:
-                              TextInputType.emailAddress,
-                          decoration: loginInputDecoration(
-                              'hello@example.com'),
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: loginInputDecoration('hello@example.com'),
                         ),
                         const SizedBox(height: 12),
                         const FieldLabel(text: '비밀번호'),
@@ -172,16 +151,12 @@ class LoginView extends StatelessWidget {
                         TextField(
                           controller: passwordController,
                           obscureText: true,
-                          decoration:
-                              loginInputDecoration(
-                                  '6자 이상 입력'),
+                          decoration: loginInputDecoration('6자 이상 입력'),
                         ),
                         const SizedBox(height: 16),
                         if (error != null)
                           Padding(
-                            padding:
-                                const EdgeInsets.only(
-                                    bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 12),
                             child: Text(
                               error!,
                               textAlign: TextAlign.center,
@@ -193,9 +168,7 @@ class LoginView extends StatelessWidget {
                           ),
                         if (info != null)
                           Padding(
-                            padding:
-                                const EdgeInsets.only(
-                                    bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 12),
                             child: Text(
                               info!,
                               textAlign: TextAlign.center,
@@ -210,27 +183,19 @@ class LoginView extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: loading
-                                ? null
-                                : onEmailAuth,
+                            onPressed: loading ? null : onEmailAuth,
                             child: loading
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child:
-                                        CircularProgressIndicator(
+                                    child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: AppColors
-                                          .onGradient,
+                                      color: AppColors.onGradient,
                                     ),
                                   )
                                 : Text(
-                                    isSignUp
-                                        ? '회원가입'
-                                        : '로그인',
-                                    style:
-                                        const TextStyle(
-                                            fontSize: 16),
+                                    isSignUp ? '회원가입' : '로그인',
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                           ),
                         ),
@@ -242,38 +207,29 @@ class LoginView extends StatelessWidget {
                               '비밀번호를 잊으셨나요?',
                               style: TextStyle(
                                 fontSize: 13,
-                                color:
-                                    AppColors.overlay(0.6),
+                                color: AppColors.overlay(0.6),
                               ),
                             ),
                           ),
-                        if (!isSignUp)
-                          const SizedBox(height: 12),
+                        if (!isSignUp) const SizedBox(height: 12),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              isSignUp
-                                  ? '이미 계정이 있나요? '
-                                  : '계정이 없나요? ',
+                              isSignUp ? '이미 계정이 있나요? ' : '계정이 없나요? ',
                               style: TextStyle(
                                 fontSize: 13,
-                                color:
-                                    AppColors.overlay(0.6),
+                                color: AppColors.overlay(0.6),
                               ),
                             ),
                             GestureDetector(
                               onTap: onToggleSignUp,
                               child: Text(
-                                isSignUp
-                                    ? '로그인'
-                                    : '회원가입',
+                                isSignUp ? '로그인' : '회원가입',
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.primary,
-                                  fontWeight:
-                                      FontWeight.w600,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),

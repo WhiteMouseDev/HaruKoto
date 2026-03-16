@@ -40,7 +40,9 @@ class QuizProgressBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(LucideIcons.flame, size: 14, color: AppColors.warning(Theme.of(context).brightness)),
+              Icon(LucideIcons.flame,
+                  size: 14,
+                  color: AppColors.warning(Theme.of(context).brightness)),
               const SizedBox(width: 4),
               Text(
                 '$streak연속 정답!',

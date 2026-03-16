@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -77,7 +79,7 @@ Future<void> showAddWordDialog(BuildContext context, WidgetRef ref,
                 if (ctx.mounted) Navigator.of(ctx).pop();
                 onAdded?.call();
               } catch (e, stackTrace) {
-                Sentry.captureException(e, stackTrace: stackTrace);
+                unawaited(Sentry.captureException(e, stackTrace: stackTrace));
               }
             },
             child: const Text('추가'),

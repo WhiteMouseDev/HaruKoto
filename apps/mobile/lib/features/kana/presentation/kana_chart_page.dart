@@ -20,7 +20,6 @@ class KanaChartPage extends ConsumerStatefulWidget {
 class _KanaChartPageState extends ConsumerState<KanaChartPage> {
   String _selectedType = 'HIRAGANA';
 
-
   @override
   Widget build(BuildContext context) {
     final hiraganaAsync = ref.watch(kanaBasicCharactersProvider('HIRAGANA'));
@@ -30,9 +29,8 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
     // Multi-provider composition: manual handling since loading state
     // combines two independent kana providers.
     final isLoading = hiraganaAsync.isLoading || katakanaAsync.isLoading;
-    final activeData = _selectedType == 'HIRAGANA'
-        ? hiraganaAsync.value
-        : katakanaAsync.value;
+    final activeData =
+        _selectedType == 'HIRAGANA' ? hiraganaAsync.value : katakanaAsync.value;
 
     return Scaffold(
       body: SafeArea(
@@ -80,7 +78,19 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
                 child: isLoading
                     ? const AppSkeleton(
                         itemCount: 11,
-                        itemHeights: [48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48],
+                        itemHeights: [
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48,
+                          48
+                        ],
                       )
                     : SingleChildScrollView(
                         child: KanaChartGrid(
@@ -160,4 +170,3 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
     );
   }
 }
-

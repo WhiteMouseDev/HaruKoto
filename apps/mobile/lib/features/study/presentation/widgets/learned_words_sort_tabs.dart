@@ -29,24 +29,20 @@ class LearnedWordsSortTabs extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onSortChanged(s.$1),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? theme.colorScheme.surface
-                      : Colors.transparent,
+                  color:
+                      isActive ? theme.colorScheme.surface : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
                     s.$2,
-                    style:
-                        theme.textTheme.labelSmall?.copyWith(
+                    style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isActive
                           ? theme.colorScheme.onSurface
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

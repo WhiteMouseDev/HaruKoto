@@ -19,13 +19,10 @@ class ResumeBanner extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.warning(theme.brightness)
-            .withValues(alpha: 0.1),
+        color: AppColors.warning(theme.brightness).withValues(alpha: 0.1),
         border: Border.all(
-            color: AppColors.warning(theme.brightness)
-                .withValues(alpha: 0.3)),
-        borderRadius:
-            BorderRadius.circular(AppSizes.cardRadius),
+            color: AppColors.warning(theme.brightness).withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,29 +38,24 @@ class ResumeBanner extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(LucideIcons.pencil,
-                    size: 20,
-                    color:
-                        AppColors.warning(theme.brightness)),
+                    size: 20, color: AppColors.warning(theme.brightness)),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '진행 중인 퀴즈가 있어요',
-                      style:
-                          theme.textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       '${s.jlptLevel} ${s.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${s.answeredCount}/${s.totalQuestions} 문제',
-                      style:
-                          theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -85,8 +77,7 @@ class ResumeBanner extends StatelessWidget {
                       )),
                     );
                   },
-                  icon: const Icon(
-                      LucideIcons.rotateCcw, size: 14),
+                  icon: const Icon(LucideIcons.rotateCcw, size: 14),
                   label: const Text('새로 시작'),
                 ),
               ),
@@ -100,8 +91,7 @@ class ResumeBanner extends StatelessWidget {
                       )),
                     );
                   },
-                  icon: const Icon(
-                      LucideIcons.playCircle, size: 14),
+                  icon: const Icon(LucideIcons.playCircle, size: 14),
                   label: const Text('이어서 풀기'),
                 ),
               ),

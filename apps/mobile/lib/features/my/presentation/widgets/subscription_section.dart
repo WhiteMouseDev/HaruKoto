@@ -72,11 +72,17 @@ class SubscriptionSection extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Icon(LucideIcons.wifiOff, size: 24, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                  Icon(LucideIcons.wifiOff,
+                      size: 24,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                   const SizedBox(height: 8),
                   Text(
                     '구독 정보를 불러올 수 없습니다',
-                    style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                    style: TextStyle(
+                        fontSize: 13,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                   ),
                 ],
               ),
@@ -96,7 +102,8 @@ class SubscriptionSection extends ConsumerWidget {
                       ),
                       title: const Text(
                         '프리미엄으로 업그레이드',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                       subtitle: const Text(
                         'AI 회화 무제한 · 모든 퀴즈 모드',
@@ -105,7 +112,8 @@ class SubscriptionSection extends ConsumerWidget {
                       trailing: Icon(
                         LucideIcons.chevronRight,
                         size: 16,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     )
                   else
@@ -163,7 +171,8 @@ class SubscriptionSection extends ConsumerWidget {
                         trailing: Icon(
                           LucideIcons.chevronRight,
                           size: 16,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.4),
                         ),
                       )
                     else
@@ -174,13 +183,15 @@ class SubscriptionSection extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.5),
                           ),
                         ),
                         trailing: Icon(
                           LucideIcons.chevronRight,
                           size: 16,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.4),
                         ),
                       ),
                   ],
@@ -197,7 +208,8 @@ class SubscriptionSection extends ConsumerWidget {
                     ),
                     title: const Text(
                       '결제 내역',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     trailing: Icon(
                       LucideIcons.chevronRight,

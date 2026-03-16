@@ -129,8 +129,7 @@ class KanaStageCard extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: isCompleted
                                     ? successColor.withValues(alpha: 0.1)
-                                    : theme
-                                        .colorScheme.surfaceContainerHigh,
+                                    : theme.colorScheme.surfaceContainerHigh,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -151,8 +150,7 @@ class KanaStageCard extends StatelessWidget {
                               height: 28,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color:
-                                    theme.colorScheme.surfaceContainerHigh,
+                                color: theme.colorScheme.surfaceContainerHigh,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -175,8 +173,7 @@ class KanaStageCard extends StatelessWidget {
                   Icon(
                     LucideIcons.chevronRight,
                     size: 16,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
               ],
             ),
@@ -185,7 +182,6 @@ class KanaStageCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _StageBadge extends StatelessWidget {
@@ -212,7 +208,8 @@ class _StageBadge extends StatelessWidget {
           color: successColor,
           shape: BoxShape.circle,
         ),
-        child: const Icon(LucideIcons.check, size: 20, color: AppColors.onGradient),
+        child: const Icon(LucideIcons.check,
+            size: 20, color: AppColors.onGradient),
       );
     }
 

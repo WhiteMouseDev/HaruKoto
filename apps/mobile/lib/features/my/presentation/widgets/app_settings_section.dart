@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -44,11 +46,15 @@ class AppSettingsSection extends ConsumerWidget {
             children: [
               // Theme
               ListTile(
-                leading: Icon(LucideIcons.palette, size: 20, color: theme.colorScheme.primary),
+                leading: Icon(LucideIcons.palette,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
                 trailing: Text(
                   _themeModeLabel(themeMode),
-                  style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                 ),
                 onTap: () => _showThemeSheet(context, ref, themeMode),
               ),
@@ -56,15 +62,22 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Furigana
               SwitchListTile(
-                secondary: Icon(LucideIcons.languages, size: 20, color: theme.colorScheme.primary),
-                title: const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
+                secondary: Icon(LucideIcons.languages,
+                    size: 20, color: theme.colorScheme.primary),
+                title:
+                    const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
                   '퀴즈에서 한자 위에 히라가나 표시',
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 value: ref.watch(quizSettingsProvider).showFurigana,
                 onChanged: (value) {
-                  ref.read(quizSettingsProvider.notifier).setShowFurigana(value);
+                  ref
+                      .read(quizSettingsProvider.notifier)
+                      .setShowFurigana(value);
                   onUpdate('app_settings', {'showFurigana': value});
                 },
               ),
@@ -72,20 +85,26 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Study Reminder
               SwitchListTile(
-                secondary: Icon(LucideIcons.bell, size: 20, color: theme.colorScheme.primary),
+                secondary: Icon(LucideIcons.bell,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
                   '매일 설정한 시간에 알림',
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 value: ref.watch(notificationSettingsProvider).reminderEnabled,
-                onChanged: (value) =>
-                    ref.read(notificationSettingsProvider.notifier).setReminderEnabled(value),
+                onChanged: (value) => ref
+                    .read(notificationSettingsProvider.notifier)
+                    .setReminderEnabled(value),
               ),
               if (ref.watch(notificationSettingsProvider).reminderEnabled) ...[
                 const Divider(height: 1),
                 ListTile(
-                  leading: Icon(LucideIcons.clock, size: 20, color: theme.colorScheme.primary),
+                  leading: Icon(LucideIcons.clock,
+                      size: 20, color: theme.colorScheme.primary),
                   title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
                   trailing: Text(
                     ref.watch(notificationSettingsProvider).reminderTimeLabel,
@@ -102,15 +121,22 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Streak Defense
               SwitchListTile(
-                secondary: Icon(LucideIcons.flame, size: 20, color: theme.colorScheme.primary),
+                secondary: Icon(LucideIcons.flame,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
                   '오늘 학습 미완료 시 22:00에 알림',
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
-                value: ref.watch(notificationSettingsProvider).streakDefenseEnabled,
-                onChanged: (value) =>
-                    ref.read(notificationSettingsProvider.notifier).setStreakDefenseEnabled(value),
+                value: ref
+                    .watch(notificationSettingsProvider)
+                    .streakDefenseEnabled,
+                onChanged: (value) => ref
+                    .read(notificationSettingsProvider.notifier)
+                    .setStreakDefenseEnabled(value),
               ),
             ],
           ),
@@ -134,10 +160,13 @@ class AppSettingsSection extends ConsumerWidget {
     final settings = ref.read(notificationSettingsProvider);
     final picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: settings.reminderHour, minute: settings.reminderMinute),
+      initialTime: TimeOfDay(
+          hour: settings.reminderHour, minute: settings.reminderMinute),
     );
     if (picked != null) {
-      ref.read(notificationSettingsProvider.notifier).setReminderTime(picked.hour, picked.minute);
+      unawaited(ref
+          .read(notificationSettingsProvider.notifier)
+          .setReminderTime(picked.hour, picked.minute));
     }
   }
 
@@ -172,7 +201,8 @@ class AppSettingsSection extends ConsumerWidget {
                     leading: Icon(entry.$3, size: 20),
                     title: Text(entry.$2),
                     trailing: current == entry.$1
-                        ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                        ? Icon(Icons.check,
+                            color: Theme.of(context).colorScheme.primary)
                         : null,
                     onTap: () {
                       ref.read(themeProvider.notifier).setThemeMode(entry.$1);
@@ -186,5 +216,4 @@ class AppSettingsSection extends ConsumerWidget {
       },
     );
   }
-
 }

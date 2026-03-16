@@ -10,9 +10,11 @@ abstract final class AppTheme {
   static ThemeData _build(Brightness brightness) {
     final isLight = brightness == Brightness.light;
 
-    final background = isLight ? AppColors.lightBackground : AppColors.darkBackground;
+    final background =
+        isLight ? AppColors.lightBackground : AppColors.darkBackground;
     final card = isLight ? AppColors.lightCard : AppColors.darkCard;
-    final surface = isLight ? AppColors.lightSecondary : AppColors.darkSecondary;
+    final surface =
+        isLight ? AppColors.lightSecondary : AppColors.darkSecondary;
     final border = isLight ? AppColors.lightBorder : AppColors.darkBorder;
     final text = isLight ? AppColors.lightText : AppColors.darkText;
     final subtext = isLight ? AppColors.lightSubtext : AppColors.darkSubtext;
@@ -76,7 +78,8 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(AppSizes.inputRadius),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: card,

@@ -122,9 +122,7 @@ class _StageCard extends ConsumerWidget {
       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        onTap: stage.isLocked
-            ? null
-            : () => _showModeSheet(context, ref),
+        onTap: stage.isLocked ? null : () => _showModeSheet(context, ref),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -223,8 +221,7 @@ class _StageCard extends ConsumerWidget {
                 Icon(
                   LucideIcons.lock,
                   size: 18,
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.25),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.25),
                 )
               else if (stage.isCompleted)
                 Container(
@@ -274,7 +271,8 @@ class _StageCard extends ConsumerWidget {
   }
 
   void _startStageQuiz(BuildContext context, WidgetRef ref, String mode) {
-    Navigator.of(context, rootNavigator: true).push(
+    Navigator.of(context, rootNavigator: true)
+        .push(
       quizRoute(QuizPage(
         quizType: category.apiType,
         jlptLevel: jlptLevel,
@@ -282,7 +280,8 @@ class _StageCard extends ConsumerWidget {
         mode: mode != 'normal' ? mode : null,
         stageId: stage.id,
       )),
-    ).then((_) {
+    )
+        .then((_) {
       // Refresh stages after quiz completion
       ref.invalidate(
         stagesProvider((category: category.apiType, jlptLevel: jlptLevel)),
@@ -368,13 +367,13 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
     switch (widget.category) {
       case StudyCategory.vocabulary:
         return [
-          _ModeInfo(
+          const _ModeInfo(
             id: 'normal',
             label: '4지선다',
             icon: LucideIcons.bookOpen,
             description: '4개 보기 중 정답을 고르세요',
           ),
-          _ModeInfo(
+          const _ModeInfo(
             id: 'matching',
             label: '매칭',
             icon: LucideIcons.link2,
@@ -383,13 +382,13 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
         ];
       case StudyCategory.grammar:
         return [
-          _ModeInfo(
+          const _ModeInfo(
             id: 'normal',
             label: '4지선다',
             icon: LucideIcons.bookOpen,
             description: '4개 보기 중 정답을 고르세요',
           ),
-          _ModeInfo(
+          const _ModeInfo(
             id: 'cloze',
             label: '빈칸',
             icon: LucideIcons.textCursorInput,
@@ -398,7 +397,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
         ];
       case StudyCategory.sentenceArrange:
         return [
-          _ModeInfo(
+          const _ModeInfo(
             id: 'arrange',
             label: '어순배열',
             icon: LucideIcons.arrowUpDown,
@@ -407,7 +406,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
         ];
       case StudyCategory.kana:
         return [
-          _ModeInfo(
+          const _ModeInfo(
             id: 'normal',
             label: '4지선다',
             icon: LucideIcons.bookOpen,
@@ -442,8 +441,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -469,8 +467,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                 Text(
                   widget.stage.description!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -478,8 +475,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
               Text(
                 '${widget.stage.contentCount}개 항목',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
               const SizedBox(height: 20),
@@ -504,8 +500,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () =>
-                          setState(() => _selectedMode = mode.id),
+                      onTap: () => setState(() => _selectedMode = mode.id),
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
@@ -530,13 +525,11 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     mode.label,
-                                    style: theme.textTheme.bodyMedium
-                                        ?.copyWith(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: isSelected
                                           ? theme.colorScheme.primary
@@ -545,8 +538,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                                   ),
                                   Text(
                                     mode.description,
-                                    style: theme.textTheme.bodySmall
-                                        ?.copyWith(
+                                    style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
                                           .withValues(alpha: 0.5),
                                     ),
@@ -579,8 +571,8 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                     children: [
                       const Text(
                         '학습 시작',
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(width: 6),
                       Icon(

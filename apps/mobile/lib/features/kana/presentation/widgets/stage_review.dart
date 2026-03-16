@@ -28,14 +28,12 @@ class StageReview extends StatelessWidget {
           children: [
             Icon(LucideIcons.rotateCcw,
                 size: 14,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5)),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
             const SizedBox(width: 6),
             Text(
               '복습',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(width: 12),
@@ -45,8 +43,7 @@ class StageReview extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: (currentIndex + 1) / totalCount,
                   minHeight: 6,
-                  backgroundColor:
-                      theme.colorScheme.surfaceContainerHigh,
+                  backgroundColor: theme.colorScheme.surfaceContainerHigh,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -55,8 +52,7 @@ class StageReview extends StatelessWidget {
             Text(
               '${currentIndex + 1}/$totalCount',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w500,
               ),
             ),

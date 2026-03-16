@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../data/models/quiz_session_model.dart';
 import 'jlpt_level_selector.dart';
 import 'quiz_mode_selector.dart';
 import 'quiz_type_selector.dart';
@@ -13,7 +14,7 @@ class FreeTab extends StatelessWidget {
   final String modeLabel;
   final List<String> jlptLevels;
   final List<(String, String)> quizTypes;
-  final AsyncValue statsAsync;
+  final AsyncValue<StudyStatsModel> statsAsync;
   final ValueChanged<String> onLevelChanged;
   final ValueChanged<String> onTypeChanged;
   final ValueChanged<String> onModeChanged;
@@ -57,10 +58,8 @@ class FreeTab extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            border: Border.all(
-                color: theme.colorScheme.outline),
-            borderRadius:
-                BorderRadius.circular(AppSizes.cardRadius),
+            border: Border.all(color: theme.colorScheme.outline),
+            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
           ),
           child: Column(
             children: [
@@ -70,8 +69,7 @@ class FreeTab extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -85,13 +83,11 @@ class FreeTab extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '$selectedLevel ${selectedType == 'VOCABULARY' ? '단어' : '문법'} 학습',
-                          style: theme.textTheme.bodyLarge
-                              ?.copyWith(
+                          style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -99,10 +95,8 @@ class FreeTab extends StatelessWidget {
                           stats != null
                               ? '${stats.totalCount}개 ${selectedType == 'VOCABULARY' ? '단어' : '문법'} · $modeLabel'
                               : '${selectedType == 'VOCABULARY' ? '단어' : '문법'} · $modeLabel',
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(
-                            color: theme
-                                .colorScheme.onSurface
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface
                                 .withValues(alpha: 0.5),
                           ),
                         ),
@@ -110,11 +104,10 @@ class FreeTab extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: theme
-                          .colorScheme.surfaceContainerHigh,
+                      color: theme.colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -133,21 +126,18 @@ class FreeTab extends StatelessWidget {
               Column(
                 children: [
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         '학습 진행률',
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(
+                        style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.5),
                         ),
                       ),
                       Text(
                         '${stats?.progress ?? 0}%',
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(
+                        style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.5),
                         ),
@@ -160,8 +150,7 @@ class FreeTab extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: (stats?.progress ?? 0) / 100,
                       minHeight: 8,
-                      backgroundColor: theme
-                          .colorScheme.surfaceContainerHigh,
+                      backgroundColor: theme.colorScheme.surfaceContainerHigh,
                       color: theme.colorScheme.primary,
                     ),
                   ),
@@ -174,16 +163,12 @@ class FreeTab extends StatelessWidget {
                 child: FilledButton(
                   onPressed: onStartQuiz,
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('학습 시작하기',
-                          style: TextStyle(fontSize: 16)),
+                      const Text('학습 시작하기', style: TextStyle(fontSize: 16)),
                       const SizedBox(width: 6),
                       Icon(LucideIcons.flower2,
-                          size: 16,
-                          color:
-                              theme.colorScheme.onPrimary),
+                          size: 16, color: theme.colorScheme.onPrimary),
                     ],
                   ),
                 ),

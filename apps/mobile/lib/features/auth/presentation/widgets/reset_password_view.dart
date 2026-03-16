@@ -30,8 +30,7 @@ class ResetPasswordView extends StatelessWidget {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.lg),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -42,29 +41,24 @@ class ResetPasswordView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.brandPink
-                              .withValues(alpha: 0.3),
+                          color: AppColors.brandPink.withValues(alpha: 0.3),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(20),
-                      child:
-                          Image.asset('assets/icon.png'),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset('assets/icon.png'),
                     ),
                   ),
                   const SizedBox(height: 32),
                   Container(
                     width: double.infinity,
-                    padding:
-                        const EdgeInsets.all(AppSizes.lg),
+                    padding: const EdgeInsets.all(AppSizes.lg),
                     decoration: BoxDecoration(
                       color: AppColors.onGradient,
-                      borderRadius: BorderRadius.circular(
-                          AppSizes.cardRadius),
+                      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.overlay(0.05),
@@ -95,27 +89,20 @@ class ResetPasswordView extends StatelessWidget {
                         const FieldLabel(text: '이메일'),
                         const SizedBox(height: 6),
                         TextField(
-                          controller:
-                              resetEmailController,
-                          keyboardType:
-                              TextInputType.emailAddress,
-                          decoration:
-                              loginInputDecoration(
-                                  'hello@example.com'),
+                          controller: resetEmailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: loginInputDecoration('hello@example.com'),
                         ),
                         const SizedBox(height: 16),
                         if (resetMessage != null)
                           Padding(
-                            padding:
-                                const EdgeInsets.only(
-                                    bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 12),
                             child: Text(
                               resetMessage!,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 13,
-                                color:
-                                    AppColors.overlay(0.6),
+                                color: AppColors.overlay(0.6),
                               ),
                             ),
                           ),
@@ -123,15 +110,10 @@ class ResetPasswordView extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: loading
-                                ? null
-                                : onResetPassword,
+                            onPressed: loading ? null : onResetPassword,
                             child: Text(
-                              loading
-                                  ? '발송 중...'
-                                  : '재설정 링크 보내기',
-                              style: const TextStyle(
-                                  fontSize: 16),
+                              loading ? '발송 중...' : '재설정 링크 보내기',
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                         ),

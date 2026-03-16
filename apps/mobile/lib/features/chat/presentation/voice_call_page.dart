@@ -156,18 +156,16 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
     if (!mounted) return;
 
-    Navigator.of(context).pushReplacement(
+    unawaited(Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CallAnalyzingPage(
-          transcript: transcript
-              .map((e) => e.toJson())
-              .toList(),
+          transcript: transcript.map((e) => e.toJson()).toList(),
           durationSeconds: duration,
           characterId: characterId,
           scenarioId: scenarioId,
         ),
       ),
-    );
+    ));
   }
 
   @override
@@ -212,9 +210,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                           _formattedDuration,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.onGradientMuted,
-                            fontFeatures: const [
-                              FontFeature.tabularFigures()
-                            ],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ),
@@ -262,8 +258,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                   _state == 'connected' &&
                   _currentAiText.isNotEmpty)
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                  margin: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                   padding: const EdgeInsets.all(AppSizes.md),
                   decoration: BoxDecoration(
                     color: AppColors.overlay(0.54),
@@ -281,8 +276,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
               // Error
               if (_error != null)
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                   child: Column(
                     children: [
                       Text(
@@ -323,14 +317,10 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                     // Mute button
                     if (_state == 'connected')
                       _ControlButton(
-                        icon: _isMuted
-                            ? LucideIcons.micOff
-                            : LucideIcons.mic,
+                        icon: _isMuted ? LucideIcons.micOff : LucideIcons.mic,
                         label: _isMuted ? '음소거 해제' : '음소거',
-                        onTap: () =>
-                            setState(() => _isMuted = !_isMuted),
-                        color:
-                            AppColors.onGradient.withValues(alpha: 0.24),
+                        onTap: () => setState(() => _isMuted = !_isMuted),
+                        color: AppColors.onGradient.withValues(alpha: 0.24),
                       ),
 
                     // End call button
@@ -338,8 +328,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                       icon: LucideIcons.phoneOff,
                       label: '통화 종료',
                       onTap: _endCall,
-                      color:
-                          AppColors.error(Theme.of(context).brightness),
+                      color: AppColors.error(Theme.of(context).brightness),
                       size: 64,
                     ),
 
@@ -348,12 +337,11 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                       _ControlButton(
                         icon: LucideIcons.messageSquare,
                         label: '자막',
-                        onTap: () => setState(
-                            () => _showSubtitle = !_showSubtitle),
+                        onTap: () =>
+                            setState(() => _showSubtitle = !_showSubtitle),
                         color: _showSubtitle
                             ? AppColors.callAccent
-                            : AppColors.onGradient
-                                .withValues(alpha: 0.24),
+                            : AppColors.onGradient.withValues(alpha: 0.24),
                       ),
                   ],
                 ),
@@ -396,16 +384,14 @@ class _ControlButton extends StatelessWidget {
               color: color,
               shape: BoxShape.circle,
             ),
-            child:
-                Icon(icon, color: AppColors.onGradient, size: size * 0.4),
+            child: Icon(icon, color: AppColors.onGradient, size: size * 0.4),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           label,
           style: TextStyle(
-              color: AppColors.onGradient.withValues(alpha: 0.6),
-              fontSize: 11),
+              color: AppColors.onGradient.withValues(alpha: 0.6), fontSize: 11),
         ),
       ],
     );

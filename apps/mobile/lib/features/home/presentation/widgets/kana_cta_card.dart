@@ -12,8 +12,10 @@ class KanaCtaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final totalLearned = kanaProgress.hiragana.learned + kanaProgress.katakana.learned;
-    final totalChars = kanaProgress.hiragana.total + kanaProgress.katakana.total;
+    final totalLearned =
+        kanaProgress.hiragana.learned + kanaProgress.katakana.learned;
+    final totalChars =
+        kanaProgress.hiragana.total + kanaProgress.katakana.total;
     final progress = totalChars > 0 ? totalLearned / totalChars : 0.0;
 
     return Padding(

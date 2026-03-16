@@ -145,8 +145,7 @@ class _MatchingQuizState extends State<MatchingQuiz> {
             Text(
               '$_totalCorrect/${_allPairs.length} 맞춤',
               style: theme.textTheme.bodySmall?.copyWith(
-                color:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             if (_totalRounds > 1) ...[
@@ -249,8 +248,7 @@ class _MatchTile extends StatelessWidget {
                   Text(
                     subText!,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     textAlign: TextAlign.center,
                   ),

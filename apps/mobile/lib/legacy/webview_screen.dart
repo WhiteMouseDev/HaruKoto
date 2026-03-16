@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,8 +54,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         });
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness:
-              isLight ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: isLight ? Brightness.light : Brightness.dark,
         ));
       } else if (type == 'googleSignIn') {
         _handleGoogleSignIn();
@@ -73,9 +73,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
       final idToken = auth.idToken;
 
       if (idToken != null) {
-        _controller.runJavaScript(
+        unawaited(_controller.runJavaScript(
           'window.handleGoogleIdToken && window.handleGoogleIdToken("$idToken");',
-        );
+        ));
       }
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
@@ -99,7 +99,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           RegExp(r'S\.browser_fallback_url=([^;]+)').firstMatch(url);
       if (fallback != null) {
         final fallbackUrl = Uri.decodeFull(fallback.group(1)!);
-        _controller.loadRequest(Uri.parse(fallbackUrl));
+        unawaited(_controller.loadRequest(Uri.parse(fallbackUrl)));
       }
       return;
     }
@@ -176,7 +176,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
             }
             if (url.contains('kbcard.com')) return NavigationDecision.navigate;
             if (url.contains('bccard.com')) return NavigationDecision.navigate;
-            if (url.contains('nhcard.co.kr')) return NavigationDecision.navigate;
+            if (url.contains('nhcard.co.kr'))
+              return NavigationDecision.navigate;
             if (url.contains('citibank.co.kr')) {
               return NavigationDecision.navigate;
             }

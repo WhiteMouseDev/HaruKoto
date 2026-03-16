@@ -68,9 +68,7 @@ class ConversationHistoryList extends ConsumerWidget {
         }
 
         return Column(
-          children: filtered
-              .map((item) => _HistoryItem(item: item))
-              .toList(),
+          children: filtered.map((item) => _HistoryItem(item: item)).toList(),
         );
       },
     );
@@ -118,9 +116,10 @@ class _HistoryItem extends StatelessWidget {
                             width: 40,
                             height: 40,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                Icon(LucideIcons.phone,
-                                    size: 16, color: AppColors.primary),
+                            errorBuilder: (_, __, ___) => const Icon(
+                                LucideIcons.phone,
+                                size: 16,
+                                color: AppColors.primary),
                           ),
                         )
                       : Icon(
@@ -152,22 +151,20 @@ class _HistoryItem extends StatelessWidget {
                       children: [
                         Icon(LucideIcons.clock,
                             size: 12,
-                            color: colorScheme.onSurface
-                                .withValues(alpha: 0.5)),
+                            color:
+                                colorScheme.onSurface.withValues(alpha: 0.5)),
                         const SizedBox(width: 4),
                         Text(
                           _formatDate(item.createdAt),
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurface
-                                .withValues(alpha: 0.5),
+                            color: colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '${item.messageCount}턴',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurface
-                                .withValues(alpha: 0.5),
+                            color: colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
                       ],

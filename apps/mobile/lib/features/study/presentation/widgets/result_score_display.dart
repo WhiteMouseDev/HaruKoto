@@ -177,8 +177,7 @@ class _StatTile extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
-                color:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 10,
               ),
             ),
@@ -197,8 +196,7 @@ class _StatTile extends StatelessWidget {
               Text(
                 '다음 레벨까지 ${xpRemaining ?? 0} XP',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 9,
                 ),
               ),
@@ -252,6 +250,5 @@ class _AccuracyCirclePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_AccuracyCirclePainter old) =>
-      old.progress != progress;
+  bool shouldRepaint(_AccuracyCirclePainter old) => old.progress != progress;
 }

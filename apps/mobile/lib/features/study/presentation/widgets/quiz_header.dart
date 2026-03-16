@@ -23,8 +23,7 @@ class QuizHeader extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: onBack,
-            child:
-                const Icon(LucideIcons.arrowLeft, size: 20),
+            child: const Icon(LucideIcons.arrowLeft, size: 20),
           ),
           Expanded(
             child: Text(
@@ -38,8 +37,7 @@ class QuizHeader extends StatelessWidget {
           Text(
             count,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface
-                  .withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],

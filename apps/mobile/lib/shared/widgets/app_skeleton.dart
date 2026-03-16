@@ -59,8 +59,7 @@ class _AppSkeletonState extends State<AppSkeleton>
                   borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                   gradient: LinearGradient(
                     begin: Alignment(-1.0 + 2.0 * _animation.value, 0),
-                    end: Alignment(
-                        -1.0 + 2.0 * _animation.value + 1.0, 0),
+                    end: Alignment(-1.0 + 2.0 * _animation.value + 1.0, 0),
                     colors: [
                       theme.colorScheme.surfaceContainerHigh,
                       theme.colorScheme.surfaceContainerHigh

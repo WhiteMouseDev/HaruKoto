@@ -65,8 +65,7 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
               return Container(
                 width: 7,
                 height: 7,
-                margin: EdgeInsets.only(
-                    right: index < 2 ? AppSizes.xs : 0),
+                margin: EdgeInsets.only(right: index < 2 ? AppSizes.xs : 0),
                 decoration: BoxDecoration(
                   color: colorScheme.onSurface.withValues(alpha: opacity),
                   shape: BoxShape.circle,

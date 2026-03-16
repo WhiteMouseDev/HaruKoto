@@ -54,8 +54,7 @@ class _RetryInterceptor extends Interceptor {
       return;
     }
 
-    final retryCount =
-        (err.requestOptions.extra['_retryCount'] as int?) ?? 0;
+    final retryCount = (err.requestOptions.extra['_retryCount'] as int?) ?? 0;
     if (retryCount >= _maxRetries) {
       handler.next(err);
       return;

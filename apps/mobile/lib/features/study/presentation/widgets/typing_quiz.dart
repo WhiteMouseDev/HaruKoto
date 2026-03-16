@@ -36,8 +36,7 @@ class _TypingQuizState extends State<TypingQuiz> {
     if (_answered) return;
     final userAnswer = _controller.text.trim();
     final correctAnswer = _question.answer ?? '';
-    final isCorrect =
-        userAnswer.toLowerCase() == correctAnswer.toLowerCase();
+    final isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
 
     setState(() {
       _answered = true;
@@ -109,8 +108,8 @@ class _TypingQuizState extends State<TypingQuiz> {
                     Text(
                       _question.hint!,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -139,8 +138,8 @@ class _TypingQuizState extends State<TypingQuiz> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                    color: theme.colorScheme.primary, width: 2),
+                borderSide:
+                    BorderSide(color: theme.colorScheme.primary, width: 2),
               ),
             ),
             onSubmitted: (_) => _submit(),
@@ -166,7 +165,9 @@ class _TypingQuizState extends State<TypingQuiz> {
                     _isCorrect ? '정답이에요!' : '아쉬워요!',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: _isCorrect ? AppColors.success(brightness) : AppColors.error(brightness),
+                      color: _isCorrect
+                          ? AppColors.success(brightness)
+                          : AppColors.error(brightness),
                     ),
                   ),
                   if (!_isCorrect) ...[
@@ -174,8 +175,8 @@ class _TypingQuizState extends State<TypingQuiz> {
                     Text(
                       '정답: ${_question.answer}',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.7),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -200,9 +201,8 @@ class _TypingQuizState extends State<TypingQuiz> {
                     ),
                   )
                 : FilledButton(
-                    onPressed: _controller.text.trim().isNotEmpty
-                        ? _submit
-                        : null,
+                    onPressed:
+                        _controller.text.trim().isNotEmpty ? _submit : null,
                     child: const Text('확인'),
                   ),
           ),

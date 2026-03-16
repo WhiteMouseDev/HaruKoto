@@ -21,8 +21,7 @@ class TextTab extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return ListView(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSizes.md),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       children: [
         GestureDetector(
           onTap: onFreeChat,
@@ -34,11 +33,9 @@ class TextTab extends StatelessWidget {
                   AppColors.primary.withValues(alpha: 0.05),
                 ],
               ),
-              borderRadius:
-                  BorderRadius.circular(AppSizes.cardRadius),
-              border: Border.all(
-                  color: AppColors.primary
-                      .withValues(alpha: 0.3)),
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              border:
+                  Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
             ),
             padding: const EdgeInsets.all(AppSizes.md),
             child: Row(
@@ -47,39 +44,33 @@ class TextTab extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.primary
-                        .withValues(alpha: 0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
-                    child: Text('🦊',
-                        style: TextStyle(fontSize: 24)),
+                    child: Text('🦊', style: TextStyle(fontSize: 24)),
                   ),
                 ),
                 const SizedBox(width: AppSizes.md),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '하루와 자유롭게 대화',
                         style: theme.textTheme.titleSmall
-                            ?.copyWith(
-                                fontWeight: FontWeight.w600),
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       Text(
                         '어떤 주제든 일본어로!',
-                        style:
-                            theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface
-                              .withValues(alpha: 0.6),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Icon(LucideIcons.messageCircle,
+                const Icon(LucideIcons.messageCircle,
                     size: 20, color: AppColors.primary),
               ],
             ),
@@ -105,8 +96,7 @@ class TextTab extends StatelessWidget {
         const SizedBox(height: AppSizes.lg),
         Row(
           children: [
-            Icon(LucideIcons.clock,
-                size: 16, color: colorScheme.onSurface),
+            Icon(LucideIcons.clock, size: 16, color: colorScheme.onSurface),
             const SizedBox(width: 6),
             Text(
               '지난 회화 기록',

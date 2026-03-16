@@ -35,74 +35,76 @@ class PhoneCallCta extends StatelessWidget {
               onTap: () {
                 context.go('/chat');
               },
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.onGradient.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.onGradient.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        LucideIcons.phone,
+                        color: AppColors.onGradient,
+                        size: 24,
+                      ),
                     ),
-                    child: const Icon(
-                      LucideIcons.phone,
-                      color: AppColors.onGradient,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'AI 전화 통화',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: AppColors.onGradient,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.onGradient.withValues(alpha: 0.25),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'Beta',
-                                style: theme.textTheme.labelSmall?.copyWith(
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'AI 전화 통화',
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   color: AppColors.onGradient,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '일본어로 자유롭게 대화해보세요',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.onGradient.withValues(alpha: 0.85),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.onGradient
+                                      .withValues(alpha: 0.25),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'Beta',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: AppColors.onGradient,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            '일본어로 자유롭게 대화해보세요',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  AppColors.onGradient.withValues(alpha: 0.85),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    color: AppColors.onGradientMuted,
-                  ),
-                ],
+                    const Icon(
+                      LucideIcons.chevronRight,
+                      color: AppColors.onGradientMuted,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
         ),
       ),
     );

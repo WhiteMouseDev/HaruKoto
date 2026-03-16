@@ -66,8 +66,7 @@ class CharacterCardWidget extends StatelessWidget {
                   child: !unlocked
                       ? Icon(LucideIcons.lock,
                           size: 20,
-                          color:
-                              colorScheme.onSurface.withValues(alpha: 0.5))
+                          color: colorScheme.onSurface.withValues(alpha: 0.5))
                       : character.avatarUrl != null
                           ? ClipOval(
                               child: Image.network(
@@ -105,8 +104,7 @@ class CharacterCardWidget extends StatelessWidget {
                         Text(
                           '(${character.nameJa})',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurface
-                                .withValues(alpha: 0.5),
+                            color: colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
                       ],
@@ -115,8 +113,7 @@ class CharacterCardWidget extends StatelessWidget {
                     Text(
                       character.description,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -126,8 +123,7 @@ class CharacterCardWidget extends StatelessWidget {
                           ? '${character.speechStyle} · ${character.targetLevel}${callCount > 0 ? ' · $callCount회 통화' : ''}'
                           : '레벨 ${character.unlockCondition} 이상 필요',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color:
-                            colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],

@@ -21,8 +21,7 @@ class TabSwitcher extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius:
-            BorderRadius.circular(AppSizes.radiusMd),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Row(
         children: [
@@ -68,9 +67,7 @@ class _TabButton extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive
-                ? theme.colorScheme.surface
-                : Colors.transparent,
+            color: isActive ? theme.colorScheme.surface : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             boxShadow: isActive
                 ? [
@@ -89,8 +86,7 @@ class _TabButton extends StatelessWidget {
                 size: 14,
                 color: isActive
                     ? theme.colorScheme.onSurface
-                    : theme.colorScheme.onSurface
-                        .withValues(alpha: 0.5),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               const SizedBox(width: 6),
               Text(
@@ -99,8 +95,7 @@ class _TabButton extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: isActive
                       ? theme.colorScheme.onSurface
-                      : theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],

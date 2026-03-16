@@ -98,11 +98,10 @@ class FeedbackScoreCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Icon(item.icon, size: 16,
-                                color: colorScheme.onSurface),
+                            Icon(item.icon,
+                                size: 16, color: colorScheme.onSurface),
                             const SizedBox(width: 6),
-                            Text(item.label,
-                                style: theme.textTheme.bodySmall),
+                            Text(item.label, style: theme.textTheme.bodySmall),
                           ],
                         ),
                         Row(
@@ -130,9 +129,9 @@ class FeedbackScoreCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: item.score / 100,
                         minHeight: 10,
-                        backgroundColor:
-                            colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                        valueColor: AlwaysStoppedAnimation<Color>(
+                        backgroundColor: colorScheme.secondaryContainer
+                            .withValues(alpha: 0.5),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
                           AppColors.primary,
                         ),
                       ),

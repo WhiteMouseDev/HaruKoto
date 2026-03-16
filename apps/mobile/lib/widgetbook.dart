@@ -31,7 +31,7 @@ class HarukotoWidgetbook extends StatelessWidget {
         WidgetbookFolder(
           name: 'Shared',
           children: [
-WidgetbookComponent(
+            WidgetbookComponent(
               name: 'AppErrorRetry',
               useCases: [
                 WidgetbookUseCase(
@@ -169,4 +169,3 @@ WidgetbookComponent(
     );
   }
 }
-

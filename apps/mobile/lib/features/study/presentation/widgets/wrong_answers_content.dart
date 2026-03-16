@@ -77,8 +77,7 @@ class WrongAnswersContent extends StatelessWidget {
             Text(
               '틀린 단어가 없어요! 완벽해요!',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 16),
@@ -100,11 +99,9 @@ class WrongAnswersContent extends StatelessWidget {
             itemBuilder: (context, index) {
               final entry = entries[index];
               final isExpanded = expandedId == entry.id;
-              final total =
-                  entry.correctCount + entry.incorrectCount;
-              final accuracy = total > 0
-                  ? (entry.correctCount * 100 ~/ total)
-                  : 0;
+              final total = entry.correctCount + entry.incorrectCount;
+              final accuracy =
+                  total > 0 ? (entry.correctCount * 100 ~/ total) : 0;
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -117,17 +114,14 @@ class WrongAnswersContent extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        border: Border.all(
-                            color: theme.colorScheme.outline),
+                        border: Border.all(color: theme.colorScheme.outline),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
                         children: [
-                          _buildHeader(
-                              theme, entry, isExpanded),
+                          _buildHeader(theme, entry, isExpanded),
                           if (isExpanded)
-                            _buildExpandedDetail(
-                                theme, entry, accuracy, total),
+                            _buildExpandedDetail(theme, entry, accuracy, total),
                         ],
                       ),
                     ),
@@ -158,8 +152,7 @@ class WrongAnswersContent extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: AppColors.error(theme.brightness)
-                .withValues(alpha: 0.1),
+            color: AppColors.error(theme.brightness).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -189,8 +182,7 @@ class WrongAnswersContent extends StatelessWidget {
                   Text(
                     entry.reading,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -198,8 +190,7 @@ class WrongAnswersContent extends StatelessWidget {
               Text(
                 entry.meaningKo,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -208,14 +199,11 @@ class WrongAnswersContent extends StatelessWidget {
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: entry.mastered
-                ? theme.colorScheme.primary
-                    .withValues(alpha: 0.1)
-                : AppColors.error(theme.brightness)
-                    .withValues(alpha: 0.1),
+                ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                : AppColors.error(theme.brightness).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -235,8 +223,7 @@ class WrongAnswersContent extends StatelessWidget {
           child: Icon(
             LucideIcons.chevronDown,
             size: 16,
-            color: theme.colorScheme.onSurface
-                .withValues(alpha: 0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ],
@@ -257,15 +244,11 @@ class WrongAnswersContent extends StatelessWidget {
         Row(
           children: [
             WrongAnswersMiniStat(
-                label: '오답',
-                value: '${entry.incorrectCount}회',
-                isError: true),
+                label: '오답', value: '${entry.incorrectCount}회', isError: true),
             const SizedBox(width: 8),
-            WrongAnswersMiniStat(
-                label: '정답률', value: '$accuracy%'),
+            WrongAnswersMiniStat(label: '정답률', value: '$accuracy%'),
             const SizedBox(width: 8),
-            WrongAnswersMiniStat(
-                label: '총 풀이', value: '$total회'),
+            WrongAnswersMiniStat(label: '총 풀이', value: '$total회'),
           ],
         ),
         if (entry.exampleSentence != null) ...[
@@ -280,16 +263,13 @@ class WrongAnswersContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.exampleSentence!,
-                    style: theme.textTheme.bodySmall),
+                Text(entry.exampleSentence!, style: theme.textTheme.bodySmall),
                 if (entry.exampleTranslation != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     entry.exampleTranslation!,
-                    style:
-                        theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -301,54 +281,43 @@ class WrongAnswersContent extends StatelessWidget {
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                border: Border.all(
-                    color: theme.colorScheme.outline),
+                border: Border.all(color: theme.colorScheme.outline),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Text(entry.jlptLevel,
-                  style: theme.textTheme.labelSmall),
+              child: Text(entry.jlptLevel, style: theme.textTheme.labelSmall),
             ),
             const Spacer(),
             GestureDetector(
               onTap: () => onSaveToWordbook(entry),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color:
-                      savedWords.contains(entry.vocabularyId)
-                          ? theme.colorScheme.primary
-                              .withValues(alpha: 0.1)
-                          : theme.colorScheme
-                              .surfaceContainerHigh,
+                  color: savedWords.contains(entry.vocabularyId)
+                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                      : theme.colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      savedWords
-                              .contains(entry.vocabularyId)
+                      savedWords.contains(entry.vocabularyId)
                           ? LucideIcons.check
                           : LucideIcons.bookmarkPlus,
                       size: 12,
-                      color: savedWords
-                              .contains(entry.vocabularyId)
+                      color: savedWords.contains(entry.vocabularyId)
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      savedWords
-                              .contains(entry.vocabularyId)
+                      savedWords.contains(entry.vocabularyId)
                           ? '저장됨'
                           : '단어장에 추가',
-                      style: theme.textTheme.labelSmall
-                          ?.copyWith(
+                      style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),

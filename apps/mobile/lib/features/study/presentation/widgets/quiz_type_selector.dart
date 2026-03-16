@@ -22,8 +22,7 @@ class QuizTypeSelector extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius:
-            BorderRadius.circular(AppSizes.radiusMd),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Row(
         children: quizTypes.map((t) {
@@ -32,14 +31,11 @@ class QuizTypeSelector extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onTypeChanged(t.$1),
               child: AnimatedContainer(
-                duration:
-                    const Duration(milliseconds: 200),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8),
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? theme.colorScheme.surface
-                      : Colors.transparent,
+                  color:
+                      isActive ? theme.colorScheme.surface : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: isActive
                       ? [
@@ -53,13 +49,11 @@ class QuizTypeSelector extends StatelessWidget {
                 child: Center(
                   child: Text(
                     t.$2,
-                    style:
-                        theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isActive
                           ? theme.colorScheme.onSurface
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

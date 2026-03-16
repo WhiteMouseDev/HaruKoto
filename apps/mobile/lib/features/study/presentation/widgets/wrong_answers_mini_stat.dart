@@ -29,17 +29,14 @@ class WrongAnswersMiniStat extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             Text(
               value,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isError
-                    ? AppColors.error(theme.brightness)
-                    : null,
+                color: isError ? AppColors.error(theme.brightness) : null,
               ),
             ),
           ],

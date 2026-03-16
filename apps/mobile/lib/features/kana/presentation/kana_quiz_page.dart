@@ -25,12 +25,10 @@ class KanaQuizPage extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<KanaQuizPage> createState() =>
-      _KanaQuizPageState();
+  ConsumerState<KanaQuizPage> createState() => _KanaQuizPageState();
 }
 
-class _KanaQuizPageState
-    extends ConsumerState<KanaQuizPage> {
+class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
   bool _loading = true;
   String? _error;
   String? _sessionId;
@@ -41,10 +39,8 @@ class _KanaQuizPageState
   final List<_Answer> _answers = [];
   KanaMasterResult? _masterResult;
 
-  String get kanaType =>
-      widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
-  String get label =>
-      kanaType == 'HIRAGANA' ? '히라가나' : '가타카나';
+  String get kanaType => widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
+  String get label => kanaType == 'HIRAGANA' ? '히라가나' : '가타카나';
 
   @override
   void initState() {
@@ -66,11 +62,9 @@ class _KanaQuizPageState
         count: widget.isMaster ? 46 : 10,
       );
 
-      if (res.sessionId == null ||
-          res.questions.isEmpty) {
+      if (res.sessionId == null || res.questions.isEmpty) {
         setState(() {
-          _error =
-              res.message ?? '출제할 문제가 없습니다';
+          _error = res.message ?? '출제할 문제가 없습니다';
           _loading = false;
         });
       } else {
@@ -102,8 +96,7 @@ class _KanaQuizPageState
       _showFeedback = true;
     });
 
-    final isCorrect =
-        optionId == current.correctOptionId;
+    final isCorrect = optionId == current.correctOptionId;
     _answers.add(_Answer(
       questionId: current.questionId,
       selectedOptionId: optionId,
@@ -134,8 +127,7 @@ class _KanaQuizPageState
   }
 
   Future<void> _handleComplete() async {
-    final correct =
-        _answers.where((a) => a.isCorrect).length;
+    final correct = _answers.where((a) => a.isCorrect).length;
     final total = _answers.length;
 
     if (_sessionId != null) {
@@ -145,8 +137,7 @@ class _KanaQuizPageState
             .completeQuiz(sessionId: _sessionId!);
 
         if (widget.isMaster) {
-          final accuracy =
-              (correct / total * 100).round();
+          final accuracy = (correct / total * 100).round();
           setState(() {
             _masterResult = KanaMasterResult(
               correct: correct,
@@ -160,7 +151,7 @@ class _KanaQuizPageState
         }
 
         if (mounted) {
-          Navigator.of(context).pushReplacement(
+          unawaited(Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (_) => QuizResultPage(
                 result: QuizResultModel(
@@ -178,7 +169,7 @@ class _KanaQuizPageState
                 sessionId: _sessionId!,
               ),
             ),
-          );
+          ));
         }
       } catch (e) {
         debugPrint('[KanaQuizPage] Failed to complete quiz: $e');
@@ -202,23 +193,17 @@ class _KanaQuizPageState
                   width: 180,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme
-                        .surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(
-                        AppSizes.radiusSm),
+                    color: theme.colorScheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                 ),
                 const SizedBox(height: AppSizes.md),
                 Container(
-                  width: MediaQuery.sizeOf(context)
-                          .width *
-                      0.75,
+                  width: MediaQuery.sizeOf(context).width * 0.75,
                   height: 200,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme
-                        .surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(
-                        AppSizes.cardRadius),
+                    color: theme.colorScheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                   ),
                 ),
               ],
@@ -267,19 +252,13 @@ class _KanaQuizPageState
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                        LucideIcons.arrowLeft,
-                        size: 20),
+                    icon: const Icon(LucideIcons.arrowLeft, size: 20),
                     onPressed: () => context.pop(),
-                    visualDensity:
-                        VisualDensity.compact,
+                    visualDensity: VisualDensity.compact,
                   ),
                   Text(
-                    widget.isMaster
-                        ? '$label 마스터 퀴즈'
-                        : '$label 퀴즈',
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(
+                    widget.isMaster ? '$label 마스터 퀴즈' : '$label 퀴즈',
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -288,9 +267,8 @@ class _KanaQuizPageState
               const SizedBox(height: AppSizes.md),
               Expanded(
                 child: KanaQuizContent(
-                  question: _questions.isNotEmpty
-                      ? _questions[_currentIndex]
-                      : null,
+                  question:
+                      _questions.isNotEmpty ? _questions[_currentIndex] : null,
                   currentIndex: _currentIndex,
                   totalCount: _questions.length,
                   selectedOption: _selectedOption,

@@ -65,8 +65,8 @@ class HomePage extends ConsumerWidget {
     if (profile != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(quizSettingsProvider.notifier).setShowFurigana(
-          profile.showFurigana,
-        );
+              profile.showFurigana,
+            );
       });
     }
 

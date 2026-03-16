@@ -43,15 +43,15 @@ class JlptTab extends ConsumerWidget {
     return jlptAsync.when(
       data: (response) {
         // Find the progress for the user's current level
-        final currentLevelProgress = response.levels.cast<JlptLevelProgress?>().firstWhere(
-          (l) => l?.level == currentLevel,
-          orElse: () => null,
-        );
+        final currentLevelProgress =
+            response.levels.cast<JlptLevelProgress?>().firstWhere(
+                  (l) => l?.level == currentLevel,
+                  orElse: () => null,
+                );
 
-        final vocab = currentLevelProgress?.vocabulary ??
-            levelProgress.vocabulary;
-        final grammar = currentLevelProgress?.grammar ??
-            levelProgress.grammar;
+        final vocab =
+            currentLevelProgress?.vocabulary ?? levelProgress.vocabulary;
+        final grammar = currentLevelProgress?.grammar ?? levelProgress.grammar;
 
         return _buildContent(
           context: context,
@@ -91,8 +91,9 @@ class JlptTab extends ConsumerWidget {
   }) {
     final vocabPct =
         vocab.total > 0 ? (vocab.mastered / vocab.total * 100).round() : 0;
-    final grammarPct =
-        grammar.total > 0 ? (grammar.mastered / grammar.total * 100).round() : 0;
+    final grammarPct = grammar.total > 0
+        ? (grammar.mastered / grammar.total * 100).round()
+        : 0;
 
     final totalItems = vocab.total + grammar.total;
     final totalMastered = vocab.mastered + grammar.mastered;
@@ -349,8 +350,7 @@ class JlptTab extends ConsumerWidget {
                   Icon(
                     LucideIcons.arrowRight,
                     size: 16,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ],
               ),
@@ -407,8 +407,7 @@ class _AllLevelsCard extends StatelessWidget {
                       .round()
                   : 0;
               final grammarPct = level.grammar.total > 0
-                  ? (level.grammar.mastered / level.grammar.total * 100)
-                      .round()
+                  ? (level.grammar.mastered / level.grammar.total * 100).round()
                   : 0;
 
               return Padding(
@@ -617,8 +616,7 @@ class _BreakdownRow extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percentage / 100,
             minHeight: 8,
-            backgroundColor:
-                theme.colorScheme.onSurface.withValues(alpha: 0.1),
+            backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
             valueColor: AlwaysStoppedAnimation(primaryColor),
           ),
         ),

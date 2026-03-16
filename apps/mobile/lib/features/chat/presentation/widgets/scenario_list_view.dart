@@ -30,8 +30,7 @@ class ScenarioListView extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final categoryMeta = _getCategoryMeta(category);
-    final scenariosAsync =
-        ref.watch(scenariosProvider(category));
+    final scenariosAsync = ref.watch(scenariosProvider(category));
 
     return Scaffold(
       body: SafeArea(
@@ -45,18 +44,15 @@ class ScenarioListView extends ConsumerWidget {
                     children: [
                       IconButton(
                         onPressed: onBack,
-                        icon: const Icon(
-                            LucideIcons.arrowLeft),
+                        icon: const Icon(LucideIcons.arrowLeft),
                       ),
                       Icon(categoryMeta.icon,
-                          size: 20,
-                          color: AppColors.primary),
+                          size: 20, color: AppColors.primary),
                       const SizedBox(width: AppSizes.sm),
                       Text(
                         categoryMeta.label,
                         style: theme.textTheme.titleLarge
-                            ?.copyWith(
-                                fontWeight: FontWeight.bold),
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -65,21 +61,17 @@ class ScenarioListView extends ConsumerWidget {
                   child: scenariosAsync.when(
                     loading: () => ListView.builder(
                       padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: AppSizes.md),
+                          const EdgeInsets.symmetric(horizontal: AppSizes.md),
                       itemCount: 3,
                       itemBuilder: (_, __) => Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppSizes.sm),
+                        padding: const EdgeInsets.only(bottom: AppSizes.sm),
                         child: Container(
                           height: 80,
                           decoration: BoxDecoration(
-                            color: colorScheme
-                                .secondaryContainer
+                            color: colorScheme.secondaryContainer
                                 .withValues(alpha: 0.5),
                             borderRadius:
-                                BorderRadius.circular(
-                                    AppSizes.radiusMd),
+                                BorderRadius.circular(AppSizes.radiusMd),
                           ),
                         ),
                       ),
@@ -90,22 +82,16 @@ class ScenarioListView extends ConsumerWidget {
                         children: [
                           Text(
                             '시나리오를 불러올 수 없습니다.',
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(
-                              color: colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
-                          const SizedBox(
-                              height: AppSizes.sm),
+                          const SizedBox(height: AppSizes.sm),
                           OutlinedButton.icon(
                             onPressed: () =>
-                                ref.invalidate(
-                                    scenariosProvider(
-                                        category)),
-                            icon: const Icon(
-                                LucideIcons.refreshCw,
-                                size: 14),
+                                ref.invalidate(scenariosProvider(category)),
+                            icon: const Icon(LucideIcons.refreshCw, size: 14),
                             label: const Text('다시 시도'),
                           ),
                         ],
@@ -116,62 +102,45 @@ class ScenarioListView extends ConsumerWidget {
                         return Center(
                           child: Text(
                             '아직 시나리오가 없습니다.',
-                            style: theme
-                                .textTheme.bodySmall
-                                ?.copyWith(
-                              color: colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         );
                       }
                       return ListView.builder(
                         padding:
-                            const EdgeInsets.symmetric(
-                                horizontal: AppSizes.md),
+                            const EdgeInsets.symmetric(horizontal: AppSizes.md),
                         itemCount: scenarios.length,
                         itemBuilder: (_, index) {
-                          final scenario =
-                              scenarios[index];
+                          final scenario = scenarios[index];
                           return Padding(
-                            padding:
-                                const EdgeInsets.only(
-                                    bottom: AppSizes.sm),
+                            padding: const EdgeInsets.only(bottom: AppSizes.sm),
                             child: ScenarioCard(
                               scenario: scenario,
                               onSelect: () {
-                                if (categorySource ==
-                                    'voice') {
+                                if (categorySource == 'voice') {
                                   Navigator.of(context, rootNavigator: true)
                                       .push(
                                     MaterialPageRoute(
-                                      builder: (_) =>
-                                          VoiceCallPage(
-                                        scenarioId:
-                                            scenario.id,
+                                      builder: (_) => VoiceCallPage(
+                                        scenarioId: scenario.id,
                                       ),
                                     ),
                                   );
                                 } else {
-                                  onStartConversation(
-                                      scenario);
+                                  onStartConversation(scenario);
                                 }
                               },
-                              showCallButton:
-                                  categorySource ==
-                                      'voice',
-                              onCall: categorySource ==
-                                      'voice'
+                              showCallButton: categorySource == 'voice',
+                              onCall: categorySource == 'voice'
                                   ? () {
-                                      Navigator.of(
-                                              context, rootNavigator: true)
+                                      Navigator.of(context, rootNavigator: true)
                                           .push(
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              VoiceCallPage(
-                                            scenarioId:
-                                                scenario
-                                                    .id,
+                                          builder: (_) => VoiceCallPage(
+                                            scenarioId: scenario.id,
                                           ),
                                         ),
                                       );
@@ -186,8 +155,7 @@ class ScenarioListView extends ConsumerWidget {
                 ),
               ],
             ),
-            if (starting)
-              const ChatLoadingOverlay(),
+            if (starting) const ChatLoadingOverlay(),
           ],
         ),
       ),
@@ -197,20 +165,15 @@ class ScenarioListView extends ConsumerWidget {
   static _CategoryMeta _getCategoryMeta(String category) {
     switch (category) {
       case 'TRAVEL':
-        return _CategoryMeta(
-            LucideIcons.plane, '여행 시나리오');
+        return const _CategoryMeta(LucideIcons.plane, '여행 시나리오');
       case 'DAILY':
-        return _CategoryMeta(
-            LucideIcons.store, '일상 시나리오');
+        return const _CategoryMeta(LucideIcons.store, '일상 시나리오');
       case 'BUSINESS':
-        return _CategoryMeta(
-            LucideIcons.briefcase, '비즈니스 시나리오');
+        return const _CategoryMeta(LucideIcons.briefcase, '비즈니스 시나리오');
       case 'FREE':
-        return _CategoryMeta(
-            LucideIcons.messageSquare, '자유주제 시나리오');
+        return const _CategoryMeta(LucideIcons.messageSquare, '자유주제 시나리오');
       default:
-        return _CategoryMeta(
-            LucideIcons.messageSquare, category);
+        return _CategoryMeta(LucideIcons.messageSquare, category);
     }
   }
 }

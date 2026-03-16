@@ -21,10 +21,30 @@ class ProfileHero extends StatelessWidget {
     final theme = Theme.of(context);
 
     final stats = [
-      (LucideIcons.calendar, '총 학습일', '${summary.totalStudyDays}일', AppColors.hkBlue(theme.brightness)),
-      (LucideIcons.bookOpen, '학습 단어', '${summary.totalWordsStudied}개', theme.colorScheme.primary),
-      (LucideIcons.zap, '총 XP', '${profile.experiencePoints}', AppColors.hkYellow(theme.brightness)),
-      (LucideIcons.flame, '최장 연속', '${profile.longestStreak}일', AppColors.hkRed(theme.brightness)),
+      (
+        LucideIcons.calendar,
+        '총 학습일',
+        '${summary.totalStudyDays}일',
+        AppColors.hkBlue(theme.brightness)
+      ),
+      (
+        LucideIcons.bookOpen,
+        '학습 단어',
+        '${summary.totalWordsStudied}개',
+        theme.colorScheme.primary
+      ),
+      (
+        LucideIcons.zap,
+        '총 XP',
+        '${profile.experiencePoints}',
+        AppColors.hkYellow(theme.brightness)
+      ),
+      (
+        LucideIcons.flame,
+        '최장 연속',
+        '${profile.longestStreak}일',
+        AppColors.hkRed(theme.brightness)
+      ),
     ];
 
     final xpProgress = profile.levelProgress.xpForNext > 0
@@ -54,7 +74,8 @@ class ProfileHero extends StatelessWidget {
                       ? Icon(
                           LucideIcons.user,
                           size: 24,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         )
                       : null,
                 ),
@@ -75,7 +96,8 @@ class ProfileHero extends StatelessWidget {
                         child: Icon(
                           LucideIcons.pencil,
                           size: 14,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.4),
                         ),
                       ),
                     ],
@@ -94,7 +116,8 @@ class ProfileHero extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                     ),
@@ -164,7 +187,8 @@ class ProfileHero extends StatelessWidget {
                         stat.$2,
                         style: TextStyle(
                           fontSize: 10,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],

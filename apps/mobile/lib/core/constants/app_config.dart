@@ -3,7 +3,8 @@ abstract final class AppConfig {
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
   static const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 
-  static const sentryDsn = String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+  static const sentryDsn =
+      String.fromEnvironment('SENTRY_DSN', defaultValue: '');
 
   static const kakaoNativeAppKey =
       String.fromEnvironment('KAKAO_NATIVE_APP_KEY');

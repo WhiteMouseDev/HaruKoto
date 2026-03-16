@@ -27,13 +27,11 @@ class OptionButton extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface
-                    .withValues(alpha: 0.15),
+                : theme.colorScheme.onSurface.withValues(alpha: 0.15),
             width: 2,
           ),
           color: selected
-              ? theme.colorScheme.primary
-                  .withValues(alpha: 0.1)
+              ? theme.colorScheme.primary.withValues(alpha: 0.1)
               : null,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -42,15 +40,13 @@ class OptionButton extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             Text(
               subtitle,
               style: TextStyle(
                 fontSize: 13,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],

@@ -26,9 +26,8 @@ class QuizFeedbackBar extends StatelessWidget {
     final scaffoldBg = theme.scaffoldBackgroundColor;
 
     // 정답: 브랜드 핑크 톤, 오답: error 톤
-    final accentColor = isCorrect
-        ? AppColors.primary
-        : AppColors.error(brightness);
+    final accentColor =
+        isCorrect ? AppColors.primary : AppColors.error(brightness);
 
     return Container(
       width: double.infinity,
@@ -66,9 +65,7 @@ class QuizFeedbackBar extends StatelessWidget {
           Row(
             children: [
               Icon(
-                isCorrect
-                    ? LucideIcons.checkCircle2
-                    : LucideIcons.xCircle,
+                isCorrect ? LucideIcons.checkCircle2 : LucideIcons.xCircle,
                 size: 24,
                 color: accentColor,
               ),
@@ -88,8 +85,7 @@ class QuizFeedbackBar extends StatelessWidget {
               if (isCorrect && streak >= 3) ...[
                 const Spacer(),
                 Icon(LucideIcons.flame,
-                    size: 16,
-                    color: AppColors.warning(brightness)),
+                    size: 16, color: AppColors.warning(brightness)),
                 const SizedBox(width: 4),
                 Text(
                   '$streak',
@@ -106,8 +102,7 @@ class QuizFeedbackBar extends StatelessWidget {
             Text(
               '정답: ${question.options.firstWhere((o) => o.id == question.correctOptionId).text}',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],

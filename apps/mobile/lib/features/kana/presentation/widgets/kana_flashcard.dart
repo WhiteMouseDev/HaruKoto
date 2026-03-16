@@ -105,7 +105,10 @@ class _KanaFlashcardState extends State<KanaFlashcard>
                         width: cardWidth,
                         height: cardHeight,
                       )
-                    : _FlashcardFront(character: widget.character, width: cardWidth, height: cardHeight),
+                    : _FlashcardFront(
+                        character: widget.character,
+                        width: cardWidth,
+                        height: cardHeight),
               );
             },
           ),
@@ -152,7 +155,6 @@ class _KanaFlashcardState extends State<KanaFlashcard>
       ],
     );
   }
-
 }
 
 class _FlashcardFront extends StatelessWidget {
@@ -160,7 +162,8 @@ class _FlashcardFront extends StatelessWidget {
   final double width;
   final double height;
 
-  const _FlashcardFront({required this.character, required this.width, required this.height});
+  const _FlashcardFront(
+      {required this.character, required this.width, required this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -223,8 +226,7 @@ class _FlashcardFront extends StatelessWidget {
               Text(
                 '탭하여 뒤집기',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
               ),
             ],
@@ -306,8 +308,8 @@ class _FlashcardBack extends StatelessWidget {
             if (exampleWord != null) ...[
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHigh
                       .withValues(alpha: 0.8),
@@ -349,15 +351,13 @@ class _FlashcardBack extends StatelessWidget {
                 Icon(
                   LucideIcons.rotateCw,
                   size: 14,
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   '탭하여 뒤집기',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.4),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ),
               ],

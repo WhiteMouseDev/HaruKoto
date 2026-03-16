@@ -14,9 +14,8 @@ final kanaProgressProvider =
   return ref.watch(kanaRepositoryProvider).fetchProgress();
 });
 
-final kanaStagesProvider =
-    FutureProvider.autoDispose.family<List<KanaStageModel>, String>(
-        (ref, type) {
+final kanaStagesProvider = FutureProvider.autoDispose
+    .family<List<KanaStageModel>, String>((ref, type) {
   return ref.watch(kanaRepositoryProvider).fetchStages(type);
 });
 

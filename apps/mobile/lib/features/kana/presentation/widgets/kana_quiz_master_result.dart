@@ -44,16 +44,14 @@ class KanaQuizMasterResultView extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                        LucideIcons.arrowLeft, size: 20),
+                    icon: const Icon(LucideIcons.arrowLeft, size: 20),
                     onPressed: () => context.pop(),
                     visualDensity: VisualDensity.compact,
                   ),
                   Text(
                     '$label 마스터 퀴즈 결과',
                     style: theme.textTheme.titleSmall
-                        ?.copyWith(
-                            fontWeight: FontWeight.w600),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -72,24 +70,17 @@ class KanaQuizMasterResultView extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSizes.md),
                       Text(
-                        result.passed
-                            ? '$label 마스터!'
-                            : '아쉽게 불합격...',
-                        style: theme
-                            .textTheme.headlineSmall
-                            ?.copyWith(
-                                fontWeight:
-                                    FontWeight.bold),
+                        result.passed ? '$label 마스터!' : '아쉽게 불합격...',
+                        style: theme.textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         result.passed
                             ? '축하해요! $label 46자를 완벽하게 마스터했어요!'
                             : '90% 이상 정답이면 통과예요. 다시 도전해보세요!',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(
-                          color: theme
-                              .colorScheme.onSurface
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.5),
                         ),
                         textAlign: TextAlign.center,
@@ -99,39 +90,27 @@ class KanaQuizMasterResultView extends StatelessWidget {
                         shape: result.passed
                             ? RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.circular(
-                                        AppSizes
-                                            .cardRadius),
+                                    BorderRadius.circular(AppSizes.cardRadius),
                                 side: BorderSide(
-                                    color: theme
-                                        .colorScheme
-                                        .primary),
+                                    color: theme.colorScheme.primary),
                               )
                             : null,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                             children: [
                               Text(
                                 '${result.accuracy}%',
-                                style: theme.textTheme
-                                    .headlineMedium
-                                    ?.copyWith(
-                                  fontWeight:
-                                      FontWeight.bold,
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 '${result.correct}/${result.total} 정답 · +${result.xpEarned} XP',
-                                style: theme
-                                    .textTheme.bodySmall
-                                    ?.copyWith(
-                                  color: theme.colorScheme
-                                      .onSurface
-                                      .withValues(
-                                          alpha: 0.5),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
                                 ),
                               ),
                             ],
@@ -149,51 +128,35 @@ class KanaQuizMasterResultView extends StatelessWidget {
                                 height: 48,
                                 child: FilledButton(
                                   onPressed: onRetry,
-                                  style: FilledButton
-                                      .styleFrom(
-                                    shape:
-                                        RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                        AppSizes
-                                            .buttonRadius,
+                                  style: FilledButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        AppSizes.buttonRadius,
                                       ),
                                     ),
                                   ),
-                                  child: const Text(
-                                      '다시 도전하기'),
+                                  child: const Text('다시 도전하기'),
                                 ),
                               ),
-                            if (!result.passed)
-                              const SizedBox(height: 8),
+                            if (!result.passed) const SizedBox(height: 8),
                             SizedBox(
                               width: double.infinity,
                               height: 48,
                               child: result.passed
                                   ? FilledButton(
-                                      onPressed: () =>
-                                          context.pop(),
-                                      style: FilledButton
-                                          .styleFrom(
-                                        shape:
-                                            RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius
-                                                  .circular(
-                                            AppSizes
-                                                .buttonRadius,
+                                      onPressed: () => context.pop(),
+                                      style: FilledButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            AppSizes.buttonRadius,
                                           ),
                                         ),
                                       ),
-                                      child: const Text(
-                                          '돌아가기'),
+                                      child: const Text('돌아가기'),
                                     )
                                   : TextButton(
-                                      onPressed: () =>
-                                          context.pop(),
-                                      child: const Text(
-                                          '돌아가기'),
+                                      onPressed: () => context.pop(),
+                                      child: const Text('돌아가기'),
                                     ),
                             ),
                           ],

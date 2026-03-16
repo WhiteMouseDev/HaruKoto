@@ -66,8 +66,7 @@ class LevelStep extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(AppSizes.cardRadius),
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -82,32 +81,25 @@ class LevelStep extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ...levels.map((level) {
-                final isSelected =
-                    selectedLevel == level.value;
+                final isSelected = selectedLevel == level.value;
                 return Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: GestureDetector(
-                    onTap: () =>
-                        onLevelSelected(level.value),
+                    onTap: () => onLevelSelected(level.value),
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isSelected
                               ? theme.colorScheme.primary
-                              : theme
-                                  .colorScheme.onSurface
-                                  .withValues(
-                                      alpha: 0.15),
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.15),
                           width: 2,
                         ),
                         color: isSelected
-                            ? theme.colorScheme.primary
-                                .withValues(alpha: 0.1)
+                            ? theme.colorScheme.primary.withValues(alpha: 0.1)
                             : null,
-                        borderRadius:
-                            BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         children: [
@@ -115,42 +107,33 @@ class LevelStep extends StatelessWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: theme
-                                  .colorScheme.primary
-                                  .withValues(
-                                      alpha: 0.1),
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               level.icon,
                               size: 20,
-                              color: theme
-                                  .colorScheme.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment
-                                      .start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   level.label,
                                   style: const TextStyle(
-                                    fontWeight:
-                                        FontWeight.w600,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
                                   level.desc,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: theme
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(
-                                            alpha: 0.5),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
                                   ),
                                 ),
                               ],
@@ -172,8 +155,7 @@ class LevelStep extends StatelessWidget {
                         onPressed: onBack,
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text('이전'),
@@ -185,13 +167,10 @@ class LevelStep extends StatelessWidget {
                     child: SizedBox(
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: selectedLevel != null
-                            ? onNext
-                            : null,
+                        onPressed: selectedLevel != null ? onNext : null,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text('다음'),

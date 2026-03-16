@@ -55,8 +55,7 @@ class KanaChartGrid extends StatelessWidget {
                   child: Text(
                     col,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -80,8 +79,8 @@ class KanaChartGrid extends StatelessWidget {
                     child: Text(
                       row.label,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
@@ -120,8 +119,8 @@ class KanaChartGrid extends StatelessWidget {
                       textColor = theme.colorScheme.onSurface;
                     case _CellStatus.locked:
                       bgColor = theme.colorScheme.surfaceContainerHigh;
-                      textColor = theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5);
+                      textColor =
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5);
                       opacity = 0.4;
                   }
 

@@ -309,8 +309,7 @@ class _CategoryComparisonCard extends StatelessWidget {
                     '데이터를 불러오는 중...',
                     style: TextStyle(
                       fontSize: 13,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -480,8 +479,7 @@ class _VolumeChartCard extends StatelessWidget {
                     '데이터를 불러오는 중...',
                     style: TextStyle(
                       fontSize: 13,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -525,8 +523,8 @@ class _VolumeChartCard extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   );

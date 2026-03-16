@@ -27,8 +27,8 @@ class ChatRepository {
   Future<HistoryPage> fetchHistory({int limit = 5, String? cursor}) async {
     final params = <String, dynamic>{'limit': limit};
     if (cursor != null) params['cursor'] = cursor;
-    final response =
-        await _dio.get<Map<String, dynamic>>('/chat/history', queryParameters: params);
+    final response = await _dio.get<Map<String, dynamic>>('/chat/history',
+        queryParameters: params);
     return HistoryPage.fromJson(response.data!);
   }
 
@@ -38,8 +38,7 @@ class ChatRepository {
 
   // ---------- Conversation ----------
 
-  Future<StartConversationResponse> startConversation(
-      String scenarioId) async {
+  Future<StartConversationResponse> startConversation(String scenarioId) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/chat/start',
       data: {'scenarioId': scenarioId},
@@ -64,8 +63,7 @@ class ChatRepository {
     return MessageResponse.fromJson(response.data!);
   }
 
-  Future<EndConversationResponse> endConversation(
-      String conversationId) async {
+  Future<EndConversationResponse> endConversation(String conversationId) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/chat/end',
       data: {'conversationId': conversationId},
@@ -76,8 +74,7 @@ class ChatRepository {
   // ---------- Characters ----------
 
   Future<List<CharacterListItem>> fetchCharacters() async {
-    final response =
-        await _dio.get<Map<String, dynamic>>('/chat/characters');
+    final response = await _dio.get<Map<String, dynamic>>('/chat/characters');
     final list = response.data!['characters'] as List<dynamic>? ?? [];
     return list
         .map((e) => CharacterListItem.fromJson(e as Map<String, dynamic>))
@@ -217,8 +214,7 @@ class EndConversationResponse {
           : null,
       xpEarned: json['xpEarned'] as int? ?? 0,
       events: (json['events'] as List<dynamic>?)
-              ?.map(
-                  (e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -247,8 +243,7 @@ class LiveFeedbackResponse {
           : null,
       xpEarned: json['xpEarned'] as int? ?? 0,
       events: (json['events'] as List<dynamic>?)
-              ?.map(
-                  (e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );

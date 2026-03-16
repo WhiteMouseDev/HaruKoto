@@ -37,16 +37,14 @@ class StageIntro extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: theme.colorScheme.outline
-                        .withValues(alpha: 0.2),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.2),
                   ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
                       theme.colorScheme.surface,
-                      theme.colorScheme.primary
-                          .withValues(alpha: 0.05),
+                      theme.colorScheme.primary.withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -73,15 +71,14 @@ class StageIntro extends StatelessWidget {
               Text(
                 character.pronunciation,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
               if (character.exampleWord != null) ...[
                 const SizedBox(height: AppSizes.md),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHigh
                         .withValues(alpha: 0.8),
@@ -121,28 +118,27 @@ class StageIntro extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: FilledButton(
-            onPressed: onNext,
-            style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(AppSizes.buttonRadius),
+              onPressed: onNext,
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    isLast ? '연습하기' : '다음',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  if (!isLast) ...[
+                    const SizedBox(width: 4),
+                    const Icon(LucideIcons.arrowRight, size: 16),
+                  ],
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  isLast ? '연습하기' : '다음',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                if (!isLast) ...[
-                  const SizedBox(width: 4),
-                  const Icon(LucideIcons.arrowRight, size: 16),
-                ],
-              ],
-            ),
-          ),
           ),
         ),
       ],

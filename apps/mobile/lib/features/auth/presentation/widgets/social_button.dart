@@ -25,10 +25,8 @@ class SocialButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor:
-              backgroundColor ?? AppColors.onGradient,
-          foregroundColor:
-              foregroundColor ?? AppColors.overlay(0.87),
+          backgroundColor: backgroundColor ?? AppColors.onGradient,
+          foregroundColor: foregroundColor ?? AppColors.overlay(0.87),
           side: BorderSide(
             color: backgroundColor != null
                 ? backgroundColor!
@@ -45,9 +43,7 @@ class SocialButton extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ],
         ),

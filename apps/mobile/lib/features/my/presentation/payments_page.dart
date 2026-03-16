@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -47,7 +49,7 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
         _loading = false;
       });
     } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
       if (!mounted) return;
       setState(() {
         _loading = false;
@@ -134,14 +136,16 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
                           Icon(
                             LucideIcons.creditCard,
                             size: 40,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.3),
                           ),
                           const SizedBox(height: 12),
                           Text(
                             '결제 내역이 없습니다',
                             style: TextStyle(
                               fontSize: 14,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
                             ),
                           ),
                         ],
@@ -161,10 +165,12 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _planLabel(p.plan),
@@ -201,8 +207,10 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: status.$2.withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color:
+                                              status.$2.withValues(alpha: 0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                         child: Text(
                                           status.$1,
@@ -220,7 +228,6 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
                             ),
                           );
                         }),
-
                         PaginationFooter(
                           page: _page,
                           totalPages: _totalPages,

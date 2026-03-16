@@ -85,14 +85,12 @@ class MessageResponse {
       messageJa: json['messageJa'] as String? ?? '',
       messageKo: json['messageKo'] as String? ?? '',
       feedback: (json['feedback'] as List<dynamic>?)
-              ?.map(
-                  (e) => MessageFeedback.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => MessageFeedback.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       hint: json['hint'] as String?,
       newVocabulary: (json['newVocabulary'] as List<dynamic>?)
-              ?.map(
-                  (e) => VocabularyItem.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => VocabularyItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -131,8 +129,8 @@ class StartConversationResponse {
   factory StartConversationResponse.fromJson(Map<String, dynamic> json) {
     return StartConversationResponse(
       conversationId: json['conversationId'] as String,
-      firstMessage: FirstMessage.fromJson(
-          json['firstMessage'] as Map<String, dynamic>),
+      firstMessage:
+          FirstMessage.fromJson(json['firstMessage'] as Map<String, dynamic>),
     );
   }
 }

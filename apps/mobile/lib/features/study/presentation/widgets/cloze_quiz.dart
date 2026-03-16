@@ -4,8 +4,8 @@ import '../../data/models/quiz_question_model.dart';
 
 class ClozeQuiz extends StatefulWidget {
   final List<QuizQuestionModel> questions;
-  final void Function(String questionId, String selectedOptionId, bool isCorrect)
-      onAnswer;
+  final void Function(
+      String questionId, String selectedOptionId, bool isCorrect) onAnswer;
   final VoidCallback onComplete;
 
   const ClozeQuiz({
@@ -111,9 +111,8 @@ class _ClozeQuizState extends State<ClozeQuiz> {
                                 color: _answered
                                     ? AppColors.success(brightness)
                                     : theme.colorScheme.primary,
-                                decoration: _answered
-                                    ? null
-                                    : TextDecoration.underline,
+                                decoration:
+                                    _answered ? null : TextDecoration.underline,
                               ),
                             ),
                         ],
@@ -125,8 +124,8 @@ class _ClozeQuizState extends State<ClozeQuiz> {
                     Text(
                       _question.translation!,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -143,8 +142,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
           child: Column(
             children: _question.options.map((option) {
               final isSelected = _selectedId == option.id;
-              final isCorrectOption =
-                  option.id == _question.correctOptionId;
+              final isCorrectOption = option.id == _question.correctOptionId;
 
               Color borderColor = theme.colorScheme.outline;
               Color? bgColor;
@@ -152,7 +150,8 @@ class _ClozeQuizState extends State<ClozeQuiz> {
               if (_answered) {
                 if (isCorrectOption) {
                   borderColor = AppColors.success(brightness);
-                  bgColor = AppColors.success(brightness).withValues(alpha: 0.1);
+                  bgColor =
+                      AppColors.success(brightness).withValues(alpha: 0.1);
                 } else if (isSelected) {
                   borderColor = AppColors.error(brightness);
                   bgColor = AppColors.error(brightness).withValues(alpha: 0.1);

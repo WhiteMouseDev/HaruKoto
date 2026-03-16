@@ -19,15 +19,13 @@ final statsHistoryProvider =
   },
 );
 
-final heatmapProvider =
-    FutureProvider.autoDispose.family<HeatmapResponse, int>(
+final heatmapProvider = FutureProvider.autoDispose.family<HeatmapResponse, int>(
   (ref, year) {
     return ref.watch(statsRepositoryProvider).fetchHeatmap(year);
   },
 );
 
-final jlptProgressProvider =
-    FutureProvider.autoDispose<JlptProgressResponse>(
+final jlptProgressProvider = FutureProvider.autoDispose<JlptProgressResponse>(
   (ref) {
     return ref.watch(statsRepositoryProvider).fetchJlptProgress();
   },
@@ -47,8 +45,7 @@ final volumeChartProvider =
   },
 );
 
-final byCategoryProvider =
-    FutureProvider.autoDispose<ByCategoryResponse>(
+final byCategoryProvider = FutureProvider.autoDispose<ByCategoryResponse>(
   (ref) {
     return ref.watch(statsRepositoryProvider).fetchByCategory();
   },

@@ -39,11 +39,9 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
   void setStep(int step) => state = state.copyWith(step: step);
   void setNickname(String nickname) =>
       state = state.copyWith(nickname: nickname);
-  void setJlptLevel(String level) =>
-      state = state.copyWith(jlptLevel: level);
+  void setJlptLevel(String level) => state = state.copyWith(jlptLevel: level);
   void setGoal(String goal) => state = state.copyWith(goal: goal);
-  void setShowKana(bool showKana) =>
-      state = state.copyWith(showKana: showKana);
+  void setShowKana(bool showKana) => state = state.copyWith(showKana: showKana);
   void reset() => state = const OnboardingState();
 }
 

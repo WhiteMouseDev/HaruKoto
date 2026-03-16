@@ -11,7 +11,8 @@ import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 
 void main() {
   group('HomePage', () {
-    testWidgets('shows skeleton when all providers are loading', (tester) async {
+    testWidgets('shows skeleton when all providers are loading',
+        (tester) async {
       // Use completers that never complete to simulate loading
       final dashboardCompleter = Completer<DashboardModel>();
       final profileCompleter = Completer<UserProfileModel>();
@@ -59,8 +60,7 @@ void main() {
               (ref) => Future<UserProfileModel>.error(Exception('API down')),
             ),
             missionsProvider.overrideWith(
-              (ref) =>
-                  Future<List<MissionModel>>.error(Exception('API down')),
+              (ref) => Future<List<MissionModel>>.error(Exception('API down')),
             ),
           ],
           child: const MaterialApp(home: HomePage()),
@@ -82,7 +82,7 @@ void main() {
         streak: StreakData.fromJson({}),
         weeklyStats: [],
       );
-      final profile = UserProfileModel(
+      const profile = UserProfileModel(
         nickname: 'TestUser',
         dailyGoal: 10,
         showKana: false,

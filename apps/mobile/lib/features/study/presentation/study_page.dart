@@ -35,7 +35,11 @@ class _StudyPageState extends ConsumerState<StudyPage>
   @override
   void initState() {
     super.initState();
-    _tabs = [StudyCategory.vocabulary, StudyCategory.grammar, StudyCategory.sentenceArrange];
+    _tabs = [
+      StudyCategory.vocabulary,
+      StudyCategory.grammar,
+      StudyCategory.sentenceArrange
+    ];
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
 
@@ -69,8 +73,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
       newTabs.add(StudyCategory.kana);
     }
 
-    if (_tabs.length != newTabs.length ||
-        !_listsEqual(_tabs, newTabs)) {
+    if (_tabs.length != newTabs.length || !_listsEqual(_tabs, newTabs)) {
       setState(() {
         final oldIndex = _tabController.index;
         _tabs = newTabs;
@@ -180,7 +183,8 @@ class _StudyPageState extends ConsumerState<StudyPage>
                           theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       indicatorColor: theme.colorScheme.primary,
                       indicatorSize: TabBarIndicatorSize.label,
-                      dividerColor: theme.colorScheme.outline.withValues(alpha: 0.3),
+                      dividerColor:
+                          theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
                     backgroundColor: theme.scaffoldBackgroundColor,
                   ),

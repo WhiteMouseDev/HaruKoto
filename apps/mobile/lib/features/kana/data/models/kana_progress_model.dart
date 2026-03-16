@@ -9,10 +9,10 @@ class KanaProgressModel {
 
   factory KanaProgressModel.fromJson(Map<String, dynamic> json) {
     return KanaProgressModel(
-      hiragana: KanaTypeProgress.fromJson(
-          json['hiragana'] as Map<String, dynamic>),
-      katakana: KanaTypeProgress.fromJson(
-          json['katakana'] as Map<String, dynamic>),
+      hiragana:
+          KanaTypeProgress.fromJson(json['hiragana'] as Map<String, dynamic>),
+      katakana:
+          KanaTypeProgress.fromJson(json['katakana'] as Map<String, dynamic>),
     );
   }
 }

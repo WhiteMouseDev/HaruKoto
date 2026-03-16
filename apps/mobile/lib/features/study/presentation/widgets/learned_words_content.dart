@@ -49,8 +49,7 @@ class LearnedWordsContent extends StatelessWidget {
             child: Container(
               height: 64,
               decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.surfaceContainerHigh,
+                color: theme.colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
@@ -73,16 +72,14 @@ class LearnedWordsContent extends StatelessWidget {
           children: [
             Icon(LucideIcons.bookOpen,
                 size: 48,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.3)),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
             const SizedBox(height: 12),
             Text(
               search.isNotEmpty || filter != 'ALL'
                   ? '검색 결과가 없어요'
                   : '아직 학습한 단어가 없어요',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -94,8 +91,7 @@ class LearnedWordsContent extends StatelessWidget {
       children: [
         Expanded(
           child: ListView.builder(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: entries.length,
             itemBuilder: (context, index) {
               final entry = entries[index];

@@ -24,8 +24,7 @@ class StudySkeleton extends StatelessWidget {
           height: 48,
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHigh,
-            borderRadius:
-                BorderRadius.circular(AppSizes.radiusMd),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
         ),
         const SizedBox(height: 16),
@@ -36,10 +35,8 @@ class StudySkeleton extends StatelessWidget {
             child: Container(
               height: 112,
               decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(
-                    AppSizes.cardRadius),
+                color: theme.colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(AppSizes.cardRadius),
               ),
             ),
           ),

@@ -138,7 +138,9 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: _answered
-                          ? (_isCorrect ? AppColors.success(brightness) : AppColors.error(brightness))
+                          ? (_isCorrect
+                              ? AppColors.success(brightness)
+                              : AppColors.error(brightness))
                           : theme.colorScheme.outline,
                     ),
                     borderRadius: BorderRadius.circular(16),
@@ -187,11 +189,13 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
             width: double.infinity,
             height: 48,
             child: _answered
-                ? FilledButton(onPressed: _next, child: Text(
-                    _currentIndex + 1 >= widget.questions.length
-                        ? '결과 보기'
-                        : '다음 문제 →',
-                  ))
+                ? FilledButton(
+                    onPressed: _next,
+                    child: Text(
+                      _currentIndex + 1 >= widget.questions.length
+                          ? '결과 보기'
+                          : '다음 문제 →',
+                    ))
                 : FilledButton(
                     onPressed: _selectedTokens.isNotEmpty ? _checkAnswer : null,
                     child: const Text('확인'),

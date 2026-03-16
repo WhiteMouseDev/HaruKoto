@@ -14,12 +14,10 @@ class LearnedWordsPage extends ConsumerStatefulWidget {
   const LearnedWordsPage({super.key});
 
   @override
-  ConsumerState<LearnedWordsPage> createState() =>
-      _LearnedWordsPageState();
+  ConsumerState<LearnedWordsPage> createState() => _LearnedWordsPageState();
 }
 
-class _LearnedWordsPageState
-    extends ConsumerState<LearnedWordsPage> {
+class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
   final _searchController = TextEditingController();
   Timer? _debounce;
   String _search = '';
@@ -49,8 +47,7 @@ class _LearnedWordsPageState
 
   void _onSearchChanged(String value) {
     _debounce?.cancel();
-    _debounce =
-        Timer(const Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 300), () {
       setState(() {
         _search = value;
         _page = 1;
@@ -109,23 +106,17 @@ class _LearnedWordsPageState
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  16, 16, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        Navigator.of(context).pop(),
-                    child: const Icon(
-                        LucideIcons.arrowLeft,
-                        size: 20),
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(LucideIcons.arrowLeft, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Text(
                     '내가 학습한 단어',
-                    style: theme
-                        .textTheme.headlineSmall
-                        ?.copyWith(
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -135,60 +126,47 @@ class _LearnedWordsPageState
             const SizedBox(height: 16),
             if (_summary != null)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     LearnedWordsSummaryTile(
                         label: '전체',
-                        value:
-                            '${_summary!.totalLearned}',
+                        value: '${_summary!.totalLearned}',
                         theme: theme),
                     const SizedBox(width: 8),
                     LearnedWordsSummaryTile(
                         label: '마스터',
-                        value:
-                            '${_summary!.mastered}',
+                        value: '${_summary!.mastered}',
                         theme: theme,
-                        valueColor: theme
-                            .colorScheme.primary),
+                        valueColor: theme.colorScheme.primary),
                     const SizedBox(width: 8),
                     LearnedWordsSummaryTile(
                         label: '학습중',
-                        value:
-                            '${_summary!.learning}',
+                        value: '${_summary!.learning}',
                         theme: theme,
-                        valueColor: AppColors.info(
-                            theme.brightness)),
+                        valueColor: AppColors.info(theme.brightness)),
                   ],
                 ),
               ),
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
                   hintText: '단어 검색...',
-                  prefixIcon: const Icon(
-                      LucideIcons.search, size: 16),
+                  prefixIcon: const Icon(LucideIcons.search, size: 16),
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(
-                            AppSizes.inputRadius),
+                    borderRadius: BorderRadius.circular(AppSizes.inputRadius),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(
-                          horizontal: 12),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
             ),
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LearnedWordsSortTabs(
                 sortOptions: _sortOptions,
                 activeSort: _sort,
@@ -203,15 +181,12 @@ class _LearnedWordsPageState
             ),
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                children:
-                    _filterOptions.map((f) {
+                children: _filterOptions.map((f) {
                   final isActive = _filter == f.$1;
                   return Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8),
+                    padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -221,43 +196,27 @@ class _LearnedWordsPageState
                         _fetchData();
                       },
                       child: Container(
-                        padding:
-                            const EdgeInsets
-                                .symmetric(
-                                horizontal: 12,
-                                vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: isActive
-                              ? theme
-                                  .colorScheme.primary
-                                  .withValues(
-                                      alpha: 0.1)
+                              ? theme.colorScheme.primary.withValues(alpha: 0.1)
                               : Colors.transparent,
                           border: Border.all(
                             color: isActive
-                                ? theme.colorScheme
-                                    .primary
-                                : theme.colorScheme
-                                    .outline,
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.outline,
                           ),
-                          borderRadius:
-                              BorderRadius.circular(
-                                  20),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           f.$2,
-                          style: theme
-                              .textTheme.labelSmall
-                              ?.copyWith(
+                          style: theme.textTheme.labelSmall?.copyWith(
                             color: isActive
-                                ? theme.colorScheme
-                                    .primary
-                                : theme.colorScheme
-                                    .onSurface
-                                    .withValues(
-                                        alpha: 0.5),
-                            fontWeight:
-                                FontWeight.w600,
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.5),
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -280,8 +239,7 @@ class _LearnedWordsPageState
                 onRetry: _fetchData,
                 onToggleExpand: (id) {
                   setState(() {
-                    _expandedId =
-                        _expandedId == id ? null : id;
+                    _expandedId = _expandedId == id ? null : id;
                   });
                 },
                 onPagePrev: () {

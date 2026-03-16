@@ -13,12 +13,10 @@ class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
   @override
-  ConsumerState<OnboardingPage> createState() =>
-      _OnboardingPageState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState
-    extends ConsumerState<OnboardingPage> {
+class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   bool _loading = false;
   String? _error;
 
@@ -56,10 +54,8 @@ class _OnboardingPageState
       }
     } on DioException catch (e) {
       final data = e.response?.data;
-      final msg =
-          data is Map ? data['error'] as String? : null;
-      setState(
-          () => _error = msg ?? '오류가 발생했습니다');
+      final msg = data is Map ? data['error'] as String? : null;
+      setState(() => _error = msg ?? '오류가 발생했습니다');
     } catch (_) {
       setState(() => _error = '오류가 발생했습니다');
     } finally {
@@ -75,8 +71,7 @@ class _OnboardingPageState
 
     final totalSteps = state.jlptLevel == 'N5' ? 4 : 3;
     final isGoalStep =
-        (state.step == 3 && state.jlptLevel != 'N5') ||
-            state.step == 4;
+        (state.step == 3 && state.jlptLevel != 'N5') || state.step == 4;
 
     return Scaffold(
       body: SafeArea(
@@ -95,22 +90,18 @@ class _OnboardingPageState
             children: [
               const SizedBox(height: 40),
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(totalSteps, (i) {
                   final stepNum = i + 1;
                   return Container(
                     width: 48,
                     height: 6,
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 4),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
                       color: stepNum <= state.step
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.15),
-                      borderRadius:
-                          BorderRadius.circular(3),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   );
                 }),
@@ -118,10 +109,8 @@ class _OnboardingPageState
               const SizedBox(height: 32),
               Expanded(
                 child: AnimatedSwitcher(
-                  duration:
-                      const Duration(milliseconds: 250),
-                  child: _buildStep(
-                      state, notifier, isGoalStep),
+                  duration: const Duration(milliseconds: 250),
+                  child: _buildStep(state, notifier, isGoalStep),
                 ),
               ),
             ],
@@ -173,8 +162,7 @@ class _OnboardingPageState
         key: const ValueKey('step-goal'),
         selectedGoal: state.goal,
         onGoalSelected: notifier.setGoal,
-        onBack: () => notifier
-            .setStep(state.jlptLevel == 'N5' ? 3 : 2),
+        onBack: () => notifier.setStep(state.jlptLevel == 'N5' ? 3 : 2),
         onComplete: _handleComplete,
         loading: _loading,
         error: _error,

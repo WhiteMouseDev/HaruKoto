@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -45,14 +47,13 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     }
     final repo = ref.read(studyRepositoryProvider);
     try {
-      final answers =
-          await repo.fetchWrongAnswersBySession(widget.sessionId);
+      final answers = await repo.fetchWrongAnswersBySession(widget.sessionId);
       setState(() {
         _wrongAnswers = answers;
         _loadingWrong = false;
       });
     } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
       setState(() => _loadingWrong = false);
     }
   }
@@ -69,7 +70,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
       );
       setState(() => _savedWords.add(item.questionId));
     } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('단어장에 저장하지 못했습니다')),
@@ -164,7 +165,8 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
               ),
               const SizedBox(height: 8),
               Material(
-                color: AppColors.error(theme.brightness).withValues(alpha: 0.05),
+                color:
+                    AppColors.error(theme.brightness).withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(16),
@@ -182,7 +184,8 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.error(theme.brightness).withValues(alpha: 0.3),
+                        color: AppColors.error(theme.brightness)
+                            .withValues(alpha: 0.3),
                       ),
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -192,7 +195,8 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                         Row(
                           children: [
                             Icon(LucideIcons.fileX,
-                                size: 16, color: AppColors.error(theme.brightness)),
+                                size: 16,
+                                color: AppColors.error(theme.brightness)),
                             const SizedBox(width: 8),
                             Text(
                               '이번에 틀린 단어 복습',

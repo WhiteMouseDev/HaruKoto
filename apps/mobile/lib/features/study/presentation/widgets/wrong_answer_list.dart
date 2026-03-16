@@ -50,7 +50,8 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(LucideIcons.trophy, size: 16, color: AppColors.error(theme.brightness)),
+                  Icon(LucideIcons.trophy,
+                      size: 16, color: AppColors.error(theme.brightness)),
                   const SizedBox(width: 8),
                   Text(
                     '틀린 ${widget.quizType == 'VOCABULARY' ? '단어' : '문법'} ${widget.wrongAnswers.length}개',
@@ -65,8 +66,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                     child: Icon(
                       LucideIcons.chevronDown,
                       size: 16,
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -97,8 +97,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                               children: [
                                 Text(
                                   item.word,
-                                  style:
-                                      theme.textTheme.bodyLarge?.copyWith(
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -106,8 +105,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                                   const SizedBox(width: 8),
                                   Text(
                                     item.reading!,
-                                    style:
-                                        theme.textTheme.bodySmall?.copyWith(
+                                    style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
                                           .withValues(alpha: 0.5),
                                     ),
@@ -132,8 +130,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                               padding: const EdgeInsets.all(4),
                               onPressed: isSaved
                                   ? null
-                                  : () =>
-                                      widget.onSaveToWordbook?.call(item),
+                                  : () => widget.onSaveToWordbook?.call(item),
                             ),
                         ],
                       ),
@@ -163,8 +160,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                                 const SizedBox(height: 4),
                                 Text(
                                   item.exampleTranslation!,
-                                  style:
-                                      theme.textTheme.labelSmall?.copyWith(
+                                  style: theme.textTheme.labelSmall?.copyWith(
                                     color: theme.colorScheme.onSurface
                                         .withValues(alpha: 0.5),
                                   ),

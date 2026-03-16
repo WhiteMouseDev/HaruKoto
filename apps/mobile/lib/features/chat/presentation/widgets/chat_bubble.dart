@@ -59,9 +59,7 @@ class _ChatBubbleState extends State<ChatBubble> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: _isAI
-                    ? colorScheme.surface
-                    : AppColors.primary,
+                color: _isAI ? colorScheme.surface : AppColors.primary,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -88,9 +86,8 @@ class _ChatBubbleState extends State<ChatBubble> {
                   Text(
                     widget.messageJa,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: _isAI
-                          ? colorScheme.onSurface
-                          : AppColors.onGradient,
+                      color:
+                          _isAI ? colorScheme.onSurface : AppColors.onGradient,
                       height: 1.5,
                     ),
                   ),
@@ -128,12 +125,11 @@ class _ChatBubbleState extends State<ChatBubble> {
             if (!_isAI && _hasFeedback) ...[
               const SizedBox(height: 6),
               GestureDetector(
-                onTap: () =>
-                    setState(() => _showFeedback = !_showFeedback),
+                onTap: () => setState(() => _showFeedback = !_showFeedback),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(LucideIcons.alertCircle,
+                    const Icon(LucideIcons.alertCircle,
                         size: 12, color: AppColors.hkBlueLight),
                     const SizedBox(width: 4),
                     Text(
@@ -158,8 +154,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColors.hkBlueLight.withValues(alpha: 0.1),
-                    borderRadius:
-                        BorderRadius.circular(AppSizes.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,22 +162,18 @@ class _ChatBubbleState extends State<ChatBubble> {
                         .map((fb) => Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     fb.original,
-                                    style: theme.textTheme.labelSmall
-                                        ?.copyWith(
+                                    style: theme.textTheme.labelSmall?.copyWith(
                                       color: AppColors.hkRedLight,
-                                      decoration:
-                                          TextDecoration.lineThrough,
+                                      decoration: TextDecoration.lineThrough,
                                     ),
                                   ),
                                   Text(
                                     '-> ${fb.correction}',
-                                    style: theme.textTheme.labelSmall
-                                        ?.copyWith(
+                                    style: theme.textTheme.labelSmall?.copyWith(
                                       color: AppColors.success(brightness),
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -190,8 +181,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                   const SizedBox(height: 2),
                                   Text(
                                     fb.explanationKo,
-                                    style:
-                                        theme.textTheme.labelSmall?.copyWith(
+                                    style: theme.textTheme.labelSmall?.copyWith(
                                       color: colorScheme.onSurface
                                           .withValues(alpha: 0.6),
                                     ),

@@ -38,15 +38,16 @@ class _CallSettingsSheetState extends State<CallSettingsSheet> {
             Text(
               '통화 설정',
               style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 20),
 
             // Silence timeout slider
             Row(
               children: [
-                Icon(LucideIcons.timer, size: 20, color: theme.colorScheme.primary),
+                Icon(LucideIcons.timer,
+                    size: 20, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 const Expanded(
                   child: Text('침묵 대기 시간', style: TextStyle(fontSize: 14)),
@@ -66,10 +67,12 @@ class _CallSettingsSheetState extends State<CallSettingsSheet> {
               min: 0,
               max: 5000,
               divisions: 50,
-              label: '${(_current.silenceDurationMs / 1000).toStringAsFixed(1)}초',
+              label:
+                  '${(_current.silenceDurationMs / 1000).toStringAsFixed(1)}초',
               onChanged: (value) {
                 setState(() {
-                  _current = _current.copyWith(silenceDurationMs: value.round());
+                  _current =
+                      _current.copyWith(silenceDurationMs: value.round());
                 });
               },
             ),
@@ -77,7 +80,8 @@ class _CallSettingsSheetState extends State<CallSettingsSheet> {
 
             // Show subtitles
             SwitchListTile(
-              secondary: Icon(LucideIcons.subtitles, size: 20, color: theme.colorScheme.primary),
+              secondary: Icon(LucideIcons.subtitles,
+                  size: 20, color: theme.colorScheme.primary),
               title: const Text('자막 표시', style: TextStyle(fontSize: 14)),
               value: _current.subtitleEnabled,
               onChanged: (value) {
@@ -90,7 +94,8 @@ class _CallSettingsSheetState extends State<CallSettingsSheet> {
 
             // Auto analyze
             SwitchListTile(
-              secondary: Icon(LucideIcons.barChart3, size: 20, color: theme.colorScheme.primary),
+              secondary: Icon(LucideIcons.barChart3,
+                  size: 20, color: theme.colorScheme.primary),
               title: const Text('통화 후 자동 분석', style: TextStyle(fontSize: 14)),
               value: _current.autoAnalysis,
               onChanged: (value) {

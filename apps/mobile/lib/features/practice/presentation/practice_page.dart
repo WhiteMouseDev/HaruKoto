@@ -80,8 +80,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ref.invalidate(incompleteQuizProvider);
             ref.invalidate(recommendationsProvider);
             ref.invalidate(
-              quizStatsProvider(
-                  (level: _selectedLevel, type: _selectedType)),
+              quizStatsProvider((level: _selectedLevel, type: _selectedType)),
             );
           },
           child: NestedScrollView(
@@ -96,8 +95,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         if (incompleteSession != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12),
-                            child:
-                                ResumeBanner(session: incompleteSession),
+                            child: ResumeBanner(session: incompleteSession),
                           ),
                         Text(
                           '연습',
@@ -112,20 +110,17 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             _Shortcut(
                               icon: LucideIcons.fileX,
                               label: '오답노트',
-                              onTap: () =>
-                                  context.push('/study/wrong-answers'),
+                              onTap: () => context.push('/study/wrong-answers'),
                             ),
                             _Shortcut(
                               icon: LucideIcons.bookOpen,
                               label: '학습한 단어',
-                              onTap: () =>
-                                  context.push('/study/learned-words'),
+                              onTap: () => context.push('/study/learned-words'),
                             ),
                             _Shortcut(
                               icon: LucideIcons.bookmark,
                               label: '단어장',
-                              onTap: () =>
-                                  context.push('/study/wordbook'),
+                              onTap: () => context.push('/study/wordbook'),
                             ),
                           ],
                         ),
@@ -150,12 +145,12 @@ class _PracticePageState extends ConsumerState<PracticePage>
                       ),
                       unselectedLabelStyle: theme.textTheme.bodySmall,
                       labelColor: theme.colorScheme.primary,
-                      unselectedLabelColor: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      unselectedLabelColor:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       indicatorColor: theme.colorScheme.primary,
                       indicatorSize: TabBarIndicatorSize.label,
-                      dividerColor: theme.colorScheme.outline
-                          .withValues(alpha: 0.3),
+                      dividerColor:
+                          theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
                     backgroundColor: theme.scaffoldBackgroundColor,
                   ),
@@ -170,8 +165,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                   padding: const EdgeInsets.all(20),
                   child: RecommendTab(
                     recs: recsAsync,
-                    onInvalidate: () =>
-                        ref.invalidate(recommendationsProvider),
+                    onInvalidate: () => ref.invalidate(recommendationsProvider),
                   ),
                 ),
                 // Tab 2: 자유 연습
@@ -189,8 +183,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                         setState(() => _selectedLevel = level),
                     onTypeChanged: (type) =>
                         setState(() => _selectedType = type),
-                    onModeChanged: (mode) =>
-                        setState(() => _quizMode = mode),
+                    onModeChanged: (mode) => setState(() => _quizMode = mode),
                     onStartQuiz: _startFreeQuiz,
                   ),
                 ),
@@ -253,24 +246,21 @@ class _ShortcutChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         onTap: shortcut.onTap,
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 shortcut.icon,
                 size: 14,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 6),
               Text(
                 shortcut.label,
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],

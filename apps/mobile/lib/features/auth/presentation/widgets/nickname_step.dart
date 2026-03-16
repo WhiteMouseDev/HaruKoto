@@ -21,8 +21,7 @@ class NicknameStep extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(AppSizes.cardRadius),
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -40,28 +39,23 @@ class NicknameStep extends StatelessWidget {
                 '어떻게 불러드릴까요?',
                 style: TextStyle(
                   fontSize: 14,
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
               const SizedBox(height: 24),
               TextField(
                 onChanged: onNicknameChanged,
-                controller:
-                    TextEditingController(text: nickname)
-                      ..selection =
-                          TextSelection.fromPosition(
-                        TextPosition(
-                            offset: nickname.length),
-                      ),
+                controller: TextEditingController(text: nickname)
+                  ..selection = TextSelection.fromPosition(
+                    TextPosition(offset: nickname.length),
+                  ),
                 maxLength: 20,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18),
                 decoration: InputDecoration(
                   hintText: '닉네임을 입력해주세요',
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),
@@ -70,13 +64,10 @@ class NicknameStep extends StatelessWidget {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: nickname.trim().isNotEmpty
-                      ? onNext
-                      : null,
+                  onPressed: nickname.trim().isNotEmpty ? onNext : null,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text('다음'),

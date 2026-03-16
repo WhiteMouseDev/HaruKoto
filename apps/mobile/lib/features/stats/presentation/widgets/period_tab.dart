@@ -32,9 +32,9 @@ class PeriodTab extends ConsumerWidget {
 
     final todayStr = DateTime.now().toIso8601String().split('T')[0];
     final todayRecord = historyRecords.cast<StatsHistoryRecord?>().firstWhere(
-      (r) => r?.date == todayStr,
-      orElse: () => null,
-    );
+          (r) => r?.date == todayStr,
+          orElse: () => null,
+        );
     final studyMinutes =
         todayRecord != null ? (todayRecord.studyTimeSeconds / 60).round() : 0;
     final totalQuizzes = today.quizzesCompleted;

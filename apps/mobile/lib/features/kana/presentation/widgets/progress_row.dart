@@ -26,8 +26,7 @@ class ProgressRow extends StatelessWidget {
         Text(
           '$current/$total',
           style: theme.textTheme.labelSmall?.copyWith(
-            color:
-                theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             fontWeight: FontWeight.w500,
           ),
         ),

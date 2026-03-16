@@ -75,7 +75,7 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
         _loading = false;
       });
     } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
       if (!mounted) return;
       setState(() {
         _error = '단어장을 불러올 수 없습니다.';
@@ -88,7 +88,7 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
     final repo = ref.read(studyRepositoryProvider);
     try {
       await repo.deleteWord(id);
-      _fetchData();
+      unawaited(_fetchData());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('삭제되었습니다')),
@@ -165,11 +165,9 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
                   hintText: '단어 검색...',
                   prefixIcon: const Icon(LucideIcons.search, size: 16),
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppSizes.inputRadius),
+                    borderRadius: BorderRadius.circular(AppSizes.inputRadius),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
             ),
@@ -198,8 +196,7 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: isActive
-                              ? theme.colorScheme.primary
-                                  .withValues(alpha: 0.1)
+                              ? theme.colorScheme.primary.withValues(alpha: 0.1)
                               : Colors.transparent,
                           border: Border.all(
                             color: isActive
@@ -322,16 +319,14 @@ class _WordbookContent extends StatelessWidget {
           children: [
             Icon(LucideIcons.bookMarked,
                 size: 48,
-                color:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
             const SizedBox(height: 12),
             Text(
               search.isNotEmpty || filter != 'ALL'
                   ? '검색 결과가 없어요'
                   : '단어장이 비어있어요',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             if (search.isEmpty && filter == 'ALL') ...[

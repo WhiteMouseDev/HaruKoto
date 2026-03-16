@@ -52,7 +52,8 @@ class ShortcutGrid extends ConsumerWidget {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
@@ -120,8 +121,7 @@ class ShortcutGrid extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         TextButton(
-                          onPressed: () =>
-                              ref.invalidate(achievementsProvider),
+                          onPressed: () => ref.invalidate(achievementsProvider),
                           child: const Text('다시 시도'),
                         ),
                       ],
@@ -167,8 +167,7 @@ class ShortcutGrid extends ConsumerWidget {
                         Expanded(
                           child: GridView.builder(
                             controller: scrollController,
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
@@ -184,8 +183,8 @@ class ShortcutGrid extends ConsumerWidget {
                                 opacity: item.achieved ? 1.0 : 0.4,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: theme
-                                        .colorScheme.surfaceContainerHigh,
+                                    color:
+                                        theme.colorScheme.surfaceContainerHigh,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Stack(
@@ -201,12 +200,10 @@ class ShortcutGrid extends ConsumerWidget {
                                                 _iconForEmoji(item.emoji),
                                                 size: 28,
                                                 color: item.achieved
-                                                    ? theme
-                                                        .colorScheme.primary
+                                                    ? theme.colorScheme.primary
                                                     : theme
                                                         .colorScheme.onSurface
-                                                        .withValues(
-                                                            alpha: 0.4),
+                                                        .withValues(alpha: 0.4),
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
@@ -218,18 +215,15 @@ class ShortcutGrid extends ConsumerWidget {
                                                 ),
                                               ),
                                               if (item.achieved &&
-                                                  item.achievedAt !=
-                                                      null) ...[
+                                                  item.achievedAt != null) ...[
                                                 const SizedBox(height: 2),
                                                 Text(
-                                                  _formatDate(
-                                                      item.achievedAt!),
+                                                  _formatDate(item.achievedAt!),
                                                   style: TextStyle(
                                                     fontSize: 9,
-                                                    color: theme.colorScheme
-                                                        .onSurface
-                                                        .withValues(
-                                                            alpha: 0.5),
+                                                    color: theme
+                                                        .colorScheme.onSurface
+                                                        .withValues(alpha: 0.5),
                                                   ),
                                                 ),
                                               ],
@@ -244,8 +238,7 @@ class ShortcutGrid extends ConsumerWidget {
                                           child: Icon(
                                             LucideIcons.lock,
                                             size: 12,
-                                            color: theme
-                                                .colorScheme.onSurface
+                                            color: theme.colorScheme.onSurface
                                                 .withValues(alpha: 0.3),
                                           ),
                                         ),

@@ -1,28 +1,64 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
-
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
-linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
-  rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+analyzer:
+  errors:
+    # 미사용 import/변수는 warning → CI에서 잡힘
+    unused_import: warning
+    unused_local_variable: warning
+    dead_code: warning
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    # ─── 에러 방지 ───────────────────────────────────────────
+    avoid_print: true                       # debugPrint 사용 강제
+    cancel_subscriptions: true              # StreamSubscription 누수 방지
+    close_sinks: true                       # Sink 누수 방지
+    no_duplicate_case_values: true          # switch 중복 case 방지
+    valid_regexps: true                     # 잘못된 정규식 방지
+    use_key_in_widget_constructors: true    # Widget에 key 파라미터 강제
+    avoid_web_libraries_in_flutter: true    # dart:html 등 웹 전용 라이브러리 방지
+
+    # ─── 비동기 안전 ────────────────────────────────────────
+    unawaited_futures: true                 # await 누락 감지
+    # discarded_futures는 initState/dispose에서 오탐이 너무 많아 비활성화
+    # discarded_futures: true
+
+    # ─── Null 안전 ──────────────────────────────────────────
+    avoid_null_checks_in_equality_operators: true
+    unnecessary_null_checks: true
+    unnecessary_nullable_for_final_variable_declarations: true
+
+    # ─── 코드 품질 ──────────────────────────────────────────
+    prefer_const_constructors: true         # const 최적화
+    prefer_const_declarations: true         # const 변수 선언
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_fields: true               # _private 필드 final 강제
+    prefer_final_locals: true               # 로컬 변수 재할당 방지
+    prefer_single_quotes: true              # 따옴표 통일
+    avoid_unnecessary_containers: true      # 불필요한 Container 제거
+    sized_box_for_whitespace: true          # SizedBox 사용 권장
+    sort_child_properties_last: true        # child를 마지막에 배치
+    use_build_context_synchronously: true   # async gap 후 context 사용 감지
+    avoid_empty_else: true                  # 빈 else 블록 방지
+    unnecessary_overrides: true             # 불필요한 override 방지
+    unnecessary_this: true                  # 불필요한 this 방지
+    unnecessary_string_escapes: true        # 불필요한 이스케이프 방지
+    unnecessary_brace_in_string_interps: true  # 불필요한 ${} 방지
+    prefer_is_empty: true                   # .length == 0 대신 .isEmpty
+    prefer_is_not_empty: true               # .length != 0 대신 .isNotEmpty
+    prefer_contains: true                   # indexOf != -1 대신 contains
+
+    # ─── 타입 안전 ──────────────────────────────────────────
+    always_declare_return_types: true       # 반환 타입 명시
+    avoid_dynamic_calls: true               # dynamic 호출 방지
+    prefer_typing_uninitialized_variables: true  # var 대신 타입 명시
+
+    # ─── 컬렉션 ─────────────────────────────────────────────
+    prefer_collection_literals: true        # [] 대신 <Type>[] 방지
+    prefer_for_elements_to_map_fromIterable: true
+    prefer_if_elements_to_conditional_expressions: true
+    prefer_spread_collections: true         # addAll 대신 spread
+    avoid_function_literals_in_foreach_calls: true  # forEach 대신 for-in

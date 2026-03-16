@@ -28,8 +28,7 @@ class StudyRepository {
   // ── Quiz ──
 
   Future<IncompleteSessionModel?> fetchIncompleteQuiz() async {
-    final response =
-        await _dio.get<Map<String, dynamic>>('/quiz/incomplete');
+    final response = await _dio.get<Map<String, dynamic>>('/quiz/incomplete');
     final session = response.data!['session'];
     if (session == null) return null;
     return IncompleteSessionModel.fromJson(session as Map<String, dynamic>);
@@ -49,8 +48,7 @@ class StudyRepository {
     return RecommendationModel.fromJson(response.data!);
   }
 
-  Future<({String sessionId, List<QuizQuestionModel> questions})>
-      startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,
@@ -86,8 +84,7 @@ class StudyRepository {
       }).toList();
     } else {
       questions = (data['questions'] as List<dynamic>)
-          .map(
-              (e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
+          .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
           .toList();
     }
 
@@ -191,8 +188,8 @@ class StudyRepository {
           .toList(),
       total: data['total'] as int? ?? 0,
       totalPages: data['totalPages'] as int? ?? 1,
-      summary: WrongAnswersSummary.fromJson(
-          data['summary'] as Map<String, dynamic>),
+      summary:
+          WrongAnswersSummary.fromJson(data['summary'] as Map<String, dynamic>),
     );
   }
 
@@ -230,8 +227,8 @@ class StudyRepository {
           .toList(),
       total: data['total'] as int? ?? 0,
       totalPages: data['totalPages'] as int? ?? 1,
-      summary: LearnedWordsSummary.fromJson(
-          data['summary'] as Map<String, dynamic>),
+      summary:
+          LearnedWordsSummary.fromJson(data['summary'] as Map<String, dynamic>),
     );
   }
 
@@ -264,8 +261,7 @@ class StudyRepository {
     final data = response.data!;
     return (
       entries: (data['entries'] as List<dynamic>)
-          .map(
-              (e) => WordbookEntryModel.fromJson(e as Map<String, dynamic>))
+          .map((e) => WordbookEntryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: data['total'] as int? ?? 0,
       totalPages: data['totalPages'] as int? ?? 1,

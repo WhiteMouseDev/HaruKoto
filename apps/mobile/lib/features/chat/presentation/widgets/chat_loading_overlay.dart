@@ -13,12 +13,10 @@ class ChatLoadingOverlay extends StatelessWidget {
       color: AppColors.overlay(0.3),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            borderRadius:
-                BorderRadius.circular(AppSizes.radiusLg),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             boxShadow: [
               BoxShadow(
                 color: AppColors.overlay(0.1),
@@ -29,7 +27,7 @@ class ChatLoadingOverlay extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(

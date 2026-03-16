@@ -157,15 +157,13 @@ class KanaCharacterCard extends StatelessWidget {
                   Icon(
                     LucideIcons.bookOpen,
                     size: 16,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     '대응 ${character.kanaType == 'HIRAGANA' ? '가타카나' : '히라가나'}: ${character.romaji}',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -187,8 +185,8 @@ class KanaCharacterCard extends StatelessWidget {
                     Text(
                       '예시 단어',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -231,14 +229,12 @@ class KanaCharacterCard extends StatelessWidget {
               const SizedBox(height: AppSizes.md),
               Row(
                 children: [
-                  _statBox(theme, '정답',
-                      '${character.progress!.correctCount}'),
-                  const SizedBox(width: 8),
-                  _statBox(theme, '오답',
-                      '${character.progress!.incorrectCount}'),
+                  _statBox(theme, '정답', '${character.progress!.correctCount}'),
                   const SizedBox(width: 8),
                   _statBox(
-                      theme, '연속', '${character.progress!.streak}회'),
+                      theme, '오답', '${character.progress!.incorrectCount}'),
+                  const SizedBox(width: 8),
+                  _statBox(theme, '연속', '${character.progress!.streak}회'),
                 ],
               ),
             ],

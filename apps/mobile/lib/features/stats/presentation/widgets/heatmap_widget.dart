@@ -87,7 +87,8 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
     if (cells.isEmpty) return const SizedBox.shrink();
 
     final maxCount = cells.fold<int>(1, (m, c) => c.count > m ? c.count : m);
-    final totalWeeks = cells.fold<int>(0, (m, c) => c.weekIndex > m ? c.weekIndex : m) + 1;
+    final totalWeeks =
+        cells.fold<int>(0, (m, c) => c.weekIndex > m ? c.weekIndex : m) + 1;
     final totalStudied = cells.fold<int>(0, (s, c) => s + c.count);
     final activeDays = cells.where((c) => c.count > 0).length;
     final currentYear = DateTime.now().year;
@@ -98,9 +99,9 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
       final column = <DayCell?>[];
       for (var di = 0; di < 7; di++) {
         final match = cells.cast<DayCell?>().firstWhere(
-          (c) => c != null && c.weekIndex == wi && c.dayIndex == di,
-          orElse: () => null,
-        );
+              (c) => c != null && c.weekIndex == wi && c.dayIndex == di,
+              orElse: () => null,
+            );
         column.add(match);
       }
       weekColumns.add(column);
@@ -108,9 +109,9 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
 
     final hoveredCell = _hoveredDate != null
         ? cells.cast<DayCell?>().firstWhere(
-            (c) => c?.date == _hoveredDate,
-            orElse: () => null,
-          )
+              (c) => c?.date == _hoveredDate,
+              orElse: () => null,
+            )
         : null;
 
     return Card(
@@ -139,7 +140,8 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                       child: Icon(
                         LucideIcons.chevronLeft,
                         size: 16,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                     Padding(
@@ -159,8 +161,10 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                         LucideIcons.chevronRight,
                         size: 16,
                         color: widget.year >= currentYear
-                            ? theme.colorScheme.onSurface.withValues(alpha: 0.15)
-                            : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            ? theme.colorScheme.onSurface
+                                .withValues(alpha: 0.15)
+                            : theme.colorScheme.onSurface
+                                .withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -187,7 +191,8 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                             label,
                             style: TextStyle(
                               fontSize: 10,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.4),
                             ),
                           ),
                         ),
@@ -201,7 +206,7 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                       child: Column(
                         children: column.map((cell) {
                           if (cell == null) {
-                            return SizedBox(
+                            return const SizedBox(
                               width: _cellSize,
                               height: _cellSize + _gap,
                             );
@@ -265,7 +270,8 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                       'Less',
                       style: TextStyle(
                         fontSize: 10,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -285,7 +291,8 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                       'More',
                       style: TextStyle(
                         fontSize: 10,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ],

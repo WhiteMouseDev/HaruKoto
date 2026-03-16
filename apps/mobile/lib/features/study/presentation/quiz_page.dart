@@ -73,13 +73,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final repo = ref.read(studyRepositoryProvider);
     try {
       if (widget.resumeSessionId != null) {
-        final data = await repo
-            .resumeQuiz(widget.resumeSessionId!);
+        final data = await repo.resumeQuiz(widget.resumeSessionId!);
         setState(() {
           _sessionId = data.sessionId;
           _questions = data.questions;
-          _currentIndex =
-              data.answeredQuestionIds.length;
+          _currentIndex = data.answeredQuestionIds.length;
           if (data.quizType != null) {
             final modeMap = {
               'CLOZE': 'cloze',
@@ -116,8 +114,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   void _startTimer() {
     _timer?.cancel();
     _timeSpent = 0;
-    _timer = Timer.periodic(
-        const Duration(seconds: 1), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _timeSpent++;
     });
   }
@@ -127,8 +124,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     _timer?.cancel();
 
     final question = _questions[_currentIndex];
-    final isCorrect =
-        optionId == question.correctOptionId;
+    final isCorrect = optionId == question.correctOptionId;
 
     setState(() {
       _selectedOptionId = optionId;
@@ -138,14 +134,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
 
     final repo = ref.read(studyRepositoryProvider);
-    repo.answerQuestion(
+    unawaited(repo.answerQuestion(
       sessionId: _sessionId!,
       questionId: question.questionId,
       selectedOptionId: optionId,
       isCorrect: isCorrect,
       timeSpentSeconds: _timeSpent,
       questionType: widget.quizType,
-    );
+    ));
   }
 
   Future<void> _handleNext() async {
@@ -170,14 +166,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       final result =
           await repo.completeQuiz(_sessionId!, stageId: widget.stageId);
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pushReplacement(
+      unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
         quizRoute(QuizResultPage(
           result: result,
           quizType: widget.quizType,
           jlptLevel: widget.jlptLevel,
           sessionId: _sessionId!,
         )),
-      );
+      ));
     } catch (e) {
       debugPrint('Failed to complete quiz: $e');
       if (mounted) {
@@ -196,13 +192,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         content: const Text('진행 상황은 저장돼요.'),
         actions: [
           TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('취소'),
           ),
           FilledButton(
-            onPressed: () =>
-                Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('종료'),
           ),
         ],
@@ -215,8 +209,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       ? '오답 복습'
       : '${widget.jlptLevel} ${widget.quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
 
-  String get _headerCount =>
-      '${_currentIndex + 1}/${_questions.length}';
+  String get _headerCount => '${_currentIndex + 1}/${_questions.length}';
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +223,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       return _buildEmptyState(theme);
     }
 
-    final unanswered =
-        _questions.sublist(_currentIndex);
+    final unanswered = _questions.sublist(_currentIndex);
 
     if (_resolvedMode == 'matching') {
       final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
@@ -240,8 +232,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           questions: unanswered,
           showFurigana: showFurigana,
           onMatchResult: (qId, isCorrect) {
-            _submitSpecialAnswer(
-                qId, isCorrect, widget.quizType);
+            _submitSpecialAnswer(qId, isCorrect, widget.quizType);
           },
           onComplete: _completeQuiz,
         ),
@@ -253,9 +244,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         ClozeQuiz(
           questions: unanswered,
           onAnswer: (qId, optionId, isCorrect) {
-            _submitSpecialAnswer(
-                qId, isCorrect, 'CLOZE',
-                optionId: optionId);
+            _submitSpecialAnswer(qId, isCorrect, 'CLOZE', optionId: optionId);
           },
           onComplete: _completeQuiz,
         ),
@@ -267,8 +256,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         SentenceArrangeQuiz(
           questions: unanswered,
           onAnswer: (qId, isCorrect) {
-            _submitSpecialAnswer(
-                qId, isCorrect, 'SENTENCE_ARRANGE');
+            _submitSpecialAnswer(qId, isCorrect, 'SENTENCE_ARRANGE');
           },
           onComplete: _completeQuiz,
         ),
@@ -280,8 +268,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         TypingQuiz(
           questions: unanswered,
           onAnswer: (qId, isCorrect) {
-            _submitSpecialAnswer(
-                qId, isCorrect, 'VOCABULARY');
+            _submitSpecialAnswer(qId, isCorrect, 'VOCABULARY');
           },
           onComplete: _completeQuiz,
         ),
@@ -299,13 +286,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }) {
     if (_sessionId == null) return;
     final repo = ref.read(studyRepositoryProvider);
-    final q = _questions
-        .firstWhere((q) => q.questionId == qId);
+    final q = _questions.firstWhere((q) => q.questionId == qId);
     repo.answerQuestion(
       sessionId: _sessionId!,
       questionId: qId,
-      selectedOptionId: optionId ??
-          (isCorrect ? q.correctOptionId : 'wrong'),
+      selectedOptionId: optionId ?? (isCorrect ? q.correctOptionId : 'wrong'),
       isCorrect: isCorrect,
       timeSpentSeconds: 0,
       questionType: questionType,
@@ -337,8 +322,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 title: _headerTitle,
                 count: _headerCount,
                 onBack: () async {
-                  final shouldPop =
-                      await _onWillPop();
+                  final shouldPop = await _onWillPop();
                   if (shouldPop && mounted) {
                     Navigator.of(context).pop();
                   }
@@ -363,15 +347,12 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(
-                color: theme.colorScheme.primary),
+            CircularProgressIndicator(color: theme.colorScheme.primary),
             const SizedBox(height: 16),
             Text(
               '퀴즈를 준비하고 있어요...',
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -398,16 +379,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
               _resolvedMode == 'review'
                   ? '복습할 문제가 없어요!'
                   : '이 레벨의 콘텐츠를 준비하고 있어요',
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.6),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () =>
-                  Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text('학습으로 돌아가기'),
             ),
           ],
@@ -418,8 +396,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   Widget _buildDefaultQuiz(ThemeData theme) {
     final question = _questions[_currentIndex];
-    final progress =
-        (_currentIndex + 1) / _questions.length;
+    final progress = (_currentIndex + 1) / _questions.length;
 
     return _buildPopScope(
       child: Scaffold(
@@ -432,16 +409,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                     title: _headerTitle,
                     count: _headerCount,
                     onBack: () async {
-                      final shouldPop =
-                          await _onWillPop();
+                      final shouldPop = await _onWillPop();
                       if (shouldPop && mounted) {
                         Navigator.of(context).pop();
                       }
                     },
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: QuizProgressBar(
                       progress: progress,
                       streak: _streak,
@@ -451,16 +426,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   const SizedBox(height: 8),
                   Expanded(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: FourChoiceQuiz(
                         question: question,
-                        selectedOptionId:
-                            _selectedOptionId,
+                        selectedOptionId: _selectedOptionId,
                         answered: _answered,
                         isCorrect: _isCorrect,
-                        showFurigana: ref.watch(quizSettingsProvider).showFurigana,
+                        showFurigana:
+                            ref.watch(quizSettingsProvider).showFurigana,
                         onSelect: _handleAnswer,
                       ),
                     ),
@@ -476,9 +449,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                     question: question,
                     isCorrect: _isCorrect,
                     streak: _streak,
-                    isLastQuestion:
-                        _currentIndex + 1 >=
-                            _questions.length,
+                    isLastQuestion: _currentIndex + 1 >= _questions.length,
                     onNext: _handleNext,
                   ),
                 ),

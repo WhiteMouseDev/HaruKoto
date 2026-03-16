@@ -17,9 +17,8 @@ void main() {
     });
 
     test('contains streak achievements', () {
-      final streakAchievements = achievementDefinitions
-          .where((a) => a.category == 'streak')
-          .toList();
+      final streakAchievements =
+          achievementDefinitions.where((a) => a.category == 'streak').toList();
       expect(streakAchievements.length, 4);
     });
   });

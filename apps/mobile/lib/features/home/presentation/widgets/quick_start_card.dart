@@ -29,21 +29,21 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
   int _selectedIndex = 0;
 
   static final _categories = [
-    _CategoryInfo(
+    const _CategoryInfo(
       label: '단어',
       icon: LucideIcons.bookOpen,
       quizType: 'vocabulary',
       ctaLabel: '오늘의 단어',
       title: '단어 학습',
     ),
-    _CategoryInfo(
+    const _CategoryInfo(
       label: '문법',
       icon: LucideIcons.languages,
       quizType: 'grammar',
       ctaLabel: '오늘의 문법',
       title: '문법 학습',
     ),
-    _CategoryInfo(
+    const _CategoryInfo(
       label: '문장',
       icon: LucideIcons.arrowUpDown,
       quizType: 'sentence',
@@ -56,7 +56,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // Use pure white so card + selected tab are identical
-    final cardBg = Colors.white;
+    const cardBg = Colors.white;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
@@ -142,9 +142,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                       size: 14, color: theme.colorScheme.primary),
                   const SizedBox(width: 4),
                   Text(
-                    hasProgress
-                        ? '복습 정답률 ${_getAccuracy()}%'
-                        : '복습 정답률 -%',
+                    hasProgress ? '복습 정답률 ${_getAccuracy()}%' : '복습 정답률 -%',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w500,
@@ -466,8 +464,7 @@ class _DailyGoalSheetContentState
                 title: Text(
                   '$g개',
                   style: TextStyle(
-                    fontWeight:
-                        isActive ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                     color: isActive
                         ? theme.colorScheme.primary
                         : theme.colorScheme.onSurface,
@@ -559,8 +556,7 @@ class _TabItem extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 10,
-                  fontWeight:
-                      isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   color: isSelected
                       ? theme.colorScheme.primary
                       : theme.colorScheme.onSurface.withValues(alpha: 0.45),

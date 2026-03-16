@@ -48,8 +48,7 @@ class JlptLevelSelector extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: isActive
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

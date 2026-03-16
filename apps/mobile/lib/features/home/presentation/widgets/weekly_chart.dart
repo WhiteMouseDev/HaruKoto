@@ -8,7 +8,8 @@ class WeeklyChart extends StatelessWidget {
   final List<WeeklyStatEntry> weeklyStats;
   final int dailyGoal;
 
-  const WeeklyChart({super.key, required this.weeklyStats, required this.dailyGoal});
+  const WeeklyChart(
+      {super.key, required this.weeklyStats, required this.dailyGoal});
 
   static const _dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -127,8 +128,7 @@ class WeeklyChart extends StatelessWidget {
                                 children: [
                                   if (metGoal)
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 2),
+                                      padding: const EdgeInsets.only(bottom: 2),
                                       child: Icon(
                                         Icons.check,
                                         size: 12,
@@ -174,8 +174,8 @@ class WeeklyChart extends StatelessWidget {
                       _dayOfWeek(weeklyStats[i].date),
                       style: TextStyle(
                         fontSize: 10,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -190,8 +190,7 @@ class WeeklyChart extends StatelessWidget {
                 TextSpan(
                   style: TextStyle(
                     fontSize: 13,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   children: [
                     const TextSpan(text: '단어 '),

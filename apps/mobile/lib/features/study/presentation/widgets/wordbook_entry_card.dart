@@ -38,7 +38,8 @@ class WordbookEntryCard extends StatelessWidget {
           color: AppColors.error(Theme.of(context).brightness),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(LucideIcons.trash2, color: AppColors.onGradient, size: 20),
+        child: const Icon(LucideIcons.trash2,
+            color: AppColors.onGradient, size: 20),
       ),
       onDismissed: (_) => onDelete(),
       child: Container(
@@ -76,16 +77,14 @@ class WordbookEntryCard extends StatelessWidget {
                   Text(
                     entry.meaningKo,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
               ),
             ),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(6),

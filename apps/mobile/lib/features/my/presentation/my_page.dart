@@ -37,8 +37,8 @@ class _MyPageState extends ConsumerState<MyPage> {
           // Sync furigana setting from server
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ref.read(quizSettingsProvider.notifier).setShowFurigana(
-              data.profile.showFurigana,
-            );
+                  data.profile.showFurigana,
+                );
           });
           return RefreshIndicator(
             color: theme.colorScheme.primary,
@@ -53,7 +53,8 @@ class _MyPageState extends ConsumerState<MyPage> {
                 ProfileHero(
                   profile: data.profile,
                   summary: data.summary,
-                  onEditNickname: () => _showNicknameSheet(context, data.profile.nickname),
+                  onEditNickname: () =>
+                      _showNicknameSheet(context, data.profile.nickname),
                 ),
                 const SizedBox(height: AppSizes.md),
 
@@ -71,9 +72,13 @@ class _MyPageState extends ConsumerState<MyPage> {
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
-                    leading: Icon(LucideIcons.barChart3, size: 20, color: theme.colorScheme.primary),
+                    leading: Icon(LucideIcons.barChart3,
+                        size: 20, color: theme.colorScheme.primary),
                     title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
-                    trailing: Icon(LucideIcons.chevronRight, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                    trailing: Icon(LucideIcons.chevronRight,
+                        size: 18,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4)),
                     onTap: () => context.push('/stats'),
                   ),
                 ),
@@ -126,7 +131,8 @@ class _MyPageState extends ConsumerState<MyPage> {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.35),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -134,35 +140,40 @@ class _MyPageState extends ConsumerState<MyPage> {
                         '대표: 김건우',
                         style: TextStyle(
                           fontSize: 11,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       Text(
                         '사업자등록번호: 634-26-01985',
                         style: TextStyle(
                           fontSize: 11,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       Text(
                         '통신판매업신고번호: 2026-서울송파-0749',
                         style: TextStyle(
                           fontSize: 11,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       Text(
                         '주소: 서울특별시 송파구 양재대로 1218',
                         style: TextStyle(
                           fontSize: 11,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       Text(
                         'whitemousedev@whitemouse.dev',
                         style: TextStyle(
                           fontSize: 11,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                     ],
@@ -227,7 +238,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             onPressed: () {
               ref.invalidate(profileDetailProvider);
             },
-            icon: Icon(LucideIcons.rotateCw, size: 18),
+            icon: const Icon(LucideIcons.rotateCw, size: 18),
             label: const Text('다시 시도'),
           ),
         ],

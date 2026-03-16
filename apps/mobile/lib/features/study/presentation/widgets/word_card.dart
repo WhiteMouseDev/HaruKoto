@@ -73,7 +73,8 @@ class WordCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: word.mastered
                           ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                          : AppColors.info(theme.brightness).withValues(alpha: 0.1),
+                          : AppColors.info(theme.brightness)
+                              .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -202,8 +203,7 @@ class _MiniStat extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
-                color:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             Text(

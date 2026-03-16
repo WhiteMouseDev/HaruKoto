@@ -9,7 +9,8 @@ final homeRepositoryProvider = Provider((ref) {
   return HomeRepository(ref.watch(dioProvider));
 });
 
-final dashboardProvider = FutureProvider.autoDispose<DashboardModel>((ref) async {
+final dashboardProvider =
+    FutureProvider.autoDispose<DashboardModel>((ref) async {
   return await ref.watch(homeRepositoryProvider).fetchDashboard();
 });
 
@@ -17,7 +18,6 @@ final profileProvider = FutureProvider.autoDispose<UserProfileModel>((ref) {
   return ref.watch(homeRepositoryProvider).fetchProfile();
 });
 
-final missionsProvider =
-    FutureProvider.autoDispose<List<MissionModel>>((ref) {
+final missionsProvider = FutureProvider.autoDispose<List<MissionModel>>((ref) {
   return ref.watch(homeRepositoryProvider).fetchTodayMissions();
 });

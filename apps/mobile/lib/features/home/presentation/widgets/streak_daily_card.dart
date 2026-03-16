@@ -25,10 +25,10 @@ class StreakDailyCard extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label:
-          '${streak.current}일 연속 학습, 오늘 ${today.wordsStudied}개 단어 학습',
+      label: '${streak.current}일 연속 학습, 오늘 ${today.wordsStudied}개 단어 학습',
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
         child: GestureDetector(
           onTap: () => _showCalendarSheet(context, ref),
           child: Container(
@@ -111,8 +111,7 @@ class _CalendarSheetContent extends ConsumerStatefulWidget {
       _CalendarSheetContentState();
 }
 
-class _CalendarSheetContentState
-    extends ConsumerState<_CalendarSheetContent> {
+class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
   late DateTime _displayedMonth;
 
   @override
@@ -124,8 +123,7 @@ class _CalendarSheetContentState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final historyAsync =
-        ref.watch(statsHistoryProvider(_displayedMonth.year));
+    final historyAsync = ref.watch(statsHistoryProvider(_displayedMonth.year));
 
     // Build a set of dates that have study activity
     final studiedDates = <String>{};
@@ -225,7 +223,8 @@ class _CalendarSheetContentState
           child: SingleChildScrollView(
             controller: widget.scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildCalendarGrid(context, studiedDates, historyAsync.isLoading),
+            child: _buildCalendarGrid(
+                context, studiedDates, historyAsync.isLoading),
           ),
         ),
       ],
@@ -280,8 +279,7 @@ class _CalendarSheetContentState
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
                   children: List.generate(7, (dayOfWeek) {
-                    final dayNum =
-                        week * 7 + dayOfWeek - startWeekday + 1;
+                    final dayNum = week * 7 + dayOfWeek - startWeekday + 1;
                     if (dayNum < 1 || dayNum > daysInMonth) {
                       return const Expanded(child: SizedBox(height: 40));
                     }
@@ -297,7 +295,8 @@ class _CalendarSheetContentState
                         margin: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           color: hasStudied
-                              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                              ? theme.colorScheme.primary
+                                  .withValues(alpha: 0.15)
                               : null,
                           borderRadius: BorderRadius.circular(8),
                           border: isToday
@@ -386,9 +385,8 @@ class _StreakHeaderState extends State<_StreakHeader>
     final theme = Theme.of(context);
     final brightness = theme.brightness;
 
-    final text = widget.streak > 0
-        ? '${widget.streak}일째 연속 학습 중!'
-        : '오늘 첫 학습을 시작해보세요!';
+    final text =
+        widget.streak > 0 ? '${widget.streak}일째 연속 학습 중!' : '오늘 첫 학습을 시작해보세요!';
 
     return Row(
       mainAxisSize: MainAxisSize.min,

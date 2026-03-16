@@ -16,38 +16,14 @@ class GoalOption {
 }
 
 const goals = [
-  GoalOption(
-      value: 'JLPT_N5',
-      icon: LucideIcons.target,
-      label: 'JLPT N5 합격'),
-  GoalOption(
-      value: 'JLPT_N4',
-      icon: LucideIcons.target,
-      label: 'JLPT N4 합격'),
-  GoalOption(
-      value: 'JLPT_N3',
-      icon: LucideIcons.target,
-      label: 'JLPT N3 합격'),
-  GoalOption(
-      value: 'JLPT_N2',
-      icon: LucideIcons.target,
-      label: 'JLPT N2 합격'),
-  GoalOption(
-      value: 'JLPT_N1',
-      icon: LucideIcons.target,
-      label: 'JLPT N1 합격'),
-  GoalOption(
-      value: 'TRAVEL',
-      icon: LucideIcons.plane,
-      label: '여행 일본어'),
-  GoalOption(
-      value: 'BUSINESS',
-      icon: LucideIcons.briefcase,
-      label: '비즈니스 일본어'),
-  GoalOption(
-      value: 'HOBBY',
-      icon: LucideIcons.heart,
-      label: '취미/문화'),
+  GoalOption(value: 'JLPT_N5', icon: LucideIcons.target, label: 'JLPT N5 합격'),
+  GoalOption(value: 'JLPT_N4', icon: LucideIcons.target, label: 'JLPT N4 합격'),
+  GoalOption(value: 'JLPT_N3', icon: LucideIcons.target, label: 'JLPT N3 합격'),
+  GoalOption(value: 'JLPT_N2', icon: LucideIcons.target, label: 'JLPT N2 합격'),
+  GoalOption(value: 'JLPT_N1', icon: LucideIcons.target, label: 'JLPT N1 합격'),
+  GoalOption(value: 'TRAVEL', icon: LucideIcons.plane, label: '여행 일본어'),
+  GoalOption(value: 'BUSINESS', icon: LucideIcons.briefcase, label: '비즈니스 일본어'),
+  GoalOption(value: 'HOBBY', icon: LucideIcons.heart, label: '취미/문화'),
 ];
 
 class GoalStep extends StatelessWidget {
@@ -76,8 +52,7 @@ class GoalStep extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(AppSizes.cardRadius),
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -93,55 +68,44 @@ class GoalStep extends StatelessWidget {
               const SizedBox(height: 16),
               GridView.count(
                 shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.5,
                 children: goals.map((goal) {
-                  final isSelected =
-                      selectedGoal == goal.value;
+                  final isSelected = selectedGoal == goal.value;
                   return GestureDetector(
-                    onTap: () =>
-                        onGoalSelected(goal.value),
+                    onTap: () => onGoalSelected(goal.value),
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isSelected
                               ? theme.colorScheme.primary
-                              : theme
-                                  .colorScheme.onSurface
-                                  .withValues(
-                                      alpha: 0.15),
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.15),
                           width: 2,
                         ),
                         color: isSelected
-                            ? theme.colorScheme.primary
-                                .withValues(alpha: 0.1)
+                            ? theme.colorScheme.primary.withValues(alpha: 0.1)
                             : null,
-                        borderRadius:
-                            BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: theme
-                                  .colorScheme.primary
-                                  .withValues(
-                                      alpha: 0.1),
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               goal.icon,
                               size: 20,
-                              color: theme
-                                  .colorScheme.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -164,8 +128,7 @@ class GoalStep extends StatelessWidget {
                   error!,
                   style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.error(
-                          Theme.of(context).brightness)),
+                      color: AppColors.error(Theme.of(context).brightness)),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -176,12 +139,10 @@ class GoalStep extends StatelessWidget {
                     child: SizedBox(
                       height: 48,
                       child: OutlinedButton(
-                        onPressed:
-                            loading ? null : onBack,
+                        onPressed: loading ? null : onBack,
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text('이전'),
@@ -193,20 +154,15 @@ class GoalStep extends StatelessWidget {
                     child: SizedBox(
                       height: 48,
                       child: ElevatedButton(
-                        onPressed:
-                            selectedGoal != null &&
-                                    !loading
-                                ? onComplete
-                                : null,
+                        onPressed: selectedGoal != null && !loading
+                            ? onComplete
+                            : null,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: Text(loading
-                            ? '설정 중...'
-                            : '시작하기'),
+                        child: Text(loading ? '설정 중...' : '시작하기'),
                       ),
                     ),
                   ),

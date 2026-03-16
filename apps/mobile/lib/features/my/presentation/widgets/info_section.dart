@@ -33,23 +33,32 @@ class InfoSection extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                leading: Icon(LucideIcons.fileText, size: 20, color: theme.colorScheme.primary),
+                leading: Icon(LucideIcons.fileText,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('이용약관', style: TextStyle(fontSize: 14)),
-                trailing: Icon(LucideIcons.chevronRight, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                trailing: Icon(LucideIcons.chevronRight,
+                    size: 18,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                 onTap: () => context.push('/legal/terms'),
               ),
               const Divider(height: 1),
               ListTile(
-                leading: Icon(LucideIcons.shield, size: 20, color: theme.colorScheme.primary),
+                leading: Icon(LucideIcons.shield,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('개인정보처리방침', style: TextStyle(fontSize: 14)),
-                trailing: Icon(LucideIcons.chevronRight, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                trailing: Icon(LucideIcons.chevronRight,
+                    size: 18,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                 onTap: () => context.push('/legal/privacy'),
               ),
               const Divider(height: 1),
               ListTile(
-                leading: Icon(LucideIcons.mail, size: 20, color: theme.colorScheme.primary),
+                leading: Icon(LucideIcons.mail,
+                    size: 20, color: theme.colorScheme.primary),
                 title: const Text('문의하기', style: TextStyle(fontSize: 14)),
-                trailing: Icon(LucideIcons.chevronRight, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                trailing: Icon(LucideIcons.chevronRight,
+                    size: 18,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                 onTap: () => launchUrl(
                   Uri.parse('mailto:whitemousedev@whitemouse.dev'),
                 ),

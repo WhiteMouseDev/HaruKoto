@@ -29,15 +29,13 @@ class RecommendTab extends ConsumerWidget {
             Text(
               '추천을 불러올 수 없습니다',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: onInvalidate,
-              icon:
-                  const Icon(LucideIcons.refreshCw, size: 16),
+              icon: const Icon(LucideIcons.refreshCw, size: 16),
               label: const Text('다시 시도'),
             ),
           ],
@@ -76,8 +74,7 @@ class RecommendTab extends ConsumerWidget {
               Text(
                 '자율 탭에서 원하는 학습을 시작해보세요',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -92,8 +89,7 @@ class RecommendTab extends ConsumerWidget {
           RecommendationCard(
             icon: LucideIcons.refreshCw,
             title: '복습할 단어',
-            subtitle:
-                '오늘 복습이 필요한 단어 ${data.reviewDueCount}개가 있어요',
+            subtitle: '오늘 복습이 필요한 단어 ${data.reviewDueCount}개가 있어요',
             trailing: data.lastReviewText != null
                 ? '마지막 복습: ${data.lastReviewText}'
                 : null,
@@ -115,8 +111,7 @@ class RecommendTab extends ConsumerWidget {
           RecommendationCard(
             icon: LucideIcons.bookOpen,
             title: '새로운 N5 단어',
-            subtitle:
-                '아직 안 본 단어 ${data.newWordsCount}개',
+            subtitle: '아직 안 본 단어 ${data.newWordsCount}개',
             actionText: '학습 시작 →',
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -134,8 +129,7 @@ class RecommendTab extends ConsumerWidget {
           RecommendationCard(
             icon: LucideIcons.fileX,
             title: '오답 노트',
-            subtitle:
-                '최근 틀린 단어 ${data.wrongCount}개',
+            subtitle: '최근 틀린 단어 ${data.wrongCount}개',
             actionText: '오답 복습 →',
             onTap: () {
               Navigator.of(context).push(

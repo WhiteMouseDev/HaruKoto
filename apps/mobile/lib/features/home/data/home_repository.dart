@@ -27,8 +27,7 @@ class HomeRepository {
   }
 
   Future<List<MissionModel>> fetchTodayMissions() async {
-    final response =
-        await _dio.get<Map<String, dynamic>>('/missions/today');
+    final response = await _dio.get<Map<String, dynamic>>('/missions/today');
     final list = response.data!['missions'] as List<dynamic>? ?? [];
     return list
         .map((e) => MissionModel.fromJson(e as Map<String, dynamic>))

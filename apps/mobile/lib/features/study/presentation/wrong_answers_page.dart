@@ -12,12 +12,10 @@ class WrongAnswersPage extends ConsumerStatefulWidget {
   const WrongAnswersPage({super.key});
 
   @override
-  ConsumerState<WrongAnswersPage> createState() =>
-      _WrongAnswersPageState();
+  ConsumerState<WrongAnswersPage> createState() => _WrongAnswersPageState();
 }
 
-class _WrongAnswersPageState
-    extends ConsumerState<WrongAnswersPage> {
+class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
   List<WrongEntryModel> _entries = [];
   WrongAnswersSummary? _summary;
   int _totalPages = 1;
@@ -100,16 +98,13 @@ class _WrongAnswersPageState
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        Navigator.of(context).pop(),
-                    child: const Icon(
-                        LucideIcons.arrowLeft, size: 20),
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(LucideIcons.arrowLeft, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Text(
                     '오답 노트',
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -118,39 +113,31 @@ class _WrongAnswersPageState
             ),
             if (_summary != null)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     WrongAnswersSummaryCard(
                         label: '전체',
-                        value:
-                            '${_summary!.totalWrong}',
+                        value: '${_summary!.totalWrong}',
                         theme: theme),
                     const SizedBox(width: 8),
                     WrongAnswersSummaryCard(
                         label: '아직 학습중',
-                        value:
-                            '${_summary!.remaining}',
+                        value: '${_summary!.remaining}',
                         theme: theme,
-                        valueColor: AppColors.error(
-                            theme.brightness)),
+                        valueColor: AppColors.error(theme.brightness)),
                     const SizedBox(width: 8),
                     WrongAnswersSummaryCard(
                         label: '극복 완료',
-                        value:
-                            '${_summary!.mastered}',
+                        value: '${_summary!.mastered}',
                         theme: theme,
-                        valueColor:
-                            theme.colorScheme.primary),
+                        valueColor: theme.colorScheme.primary),
                   ],
                 ),
               ),
-            if (_summary != null &&
-                _summary!.remaining > 0)
+            if (_summary != null && _summary!.remaining > 0)
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    16, 12, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: SizedBox(
                   width: double.infinity,
                   height: 44,
@@ -165,21 +152,18 @@ class _WrongAnswersPageState
                         )),
                       );
                     },
-                    icon: const Icon(
-                        LucideIcons.rotateCcw, size: 16),
+                    icon: const Icon(LucideIcons.rotateCcw, size: 16),
                     label: const Text('오답 복습 퀴즈 시작'),
                   ),
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 children: _sortOptions.map((opt) {
                   final isActive = _sort == opt.$1;
                   return Padding(
-                    padding:
-                        const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.only(right: 6),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -189,30 +173,21 @@ class _WrongAnswersPageState
                         _fetchData();
                       },
                       child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: isActive
                               ? theme.colorScheme.primary
-                              : theme.colorScheme
-                                  .surfaceContainerHigh,
-                          borderRadius:
-                              BorderRadius.circular(20),
+                              : theme.colorScheme.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           opt.$2,
-                          style: theme
-                              .textTheme.labelSmall
-                              ?.copyWith(
+                          style: theme.textTheme.labelSmall?.copyWith(
                             color: isActive
-                                ? theme.colorScheme
-                                    .onPrimary
-                                : theme.colorScheme
-                                    .onSurface
-                                    .withValues(
-                                        alpha: 0.5),
+                                ? theme.colorScheme.onPrimary
+                                : theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.5),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -234,8 +209,7 @@ class _WrongAnswersPageState
                 onRetry: _fetchData,
                 onToggleExpand: (id) {
                   setState(() {
-                    _expandedId =
-                        _expandedId == id ? null : id;
+                    _expandedId = _expandedId == id ? null : id;
                   });
                 },
                 onSaveToWordbook: _saveToWordbook,
