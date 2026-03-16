@@ -92,7 +92,12 @@ async def get_profile(
     ]
 
     level_info = calculate_level(user.experience_points)
-    profile = UserProfile.model_validate(user)
+    try:
+        profile = UserProfile.model_validate(user)
+    except Exception:
+        logger.exception("UserProfile validation failed for user %s. Fields: nickname=%r, email=%r, jlpt_level=%r, goal=%r, daily_goal=%r, show_kana=%r, onboarding_completed=%r, is_premium=%r, call_settings=%r, app_settings=%r",
+            user.id, user.nickname, user.email, user.jlpt_level, user.goal, user.daily_goal, user.show_kana, user.onboarding_completed, user.is_premium, user.call_settings, user.app_settings)
+        raise
     profile.level_progress = LevelProgressInfo(
         current_xp=level_info["current_xp"],
         xp_for_next=level_info["xp_for_next"],

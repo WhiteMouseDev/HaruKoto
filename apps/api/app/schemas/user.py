@@ -15,7 +15,7 @@ class LevelProgressInfo(CamelModel):
 
 class UserProfile(CamelModel):
     id: UUID
-    email: str
+    email: str | None = None
     nickname: str | None = "학습자"
     avatar_url: str | None = None
     jlpt_level: JlptLevel
