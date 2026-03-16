@@ -90,6 +90,16 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             }
           }
         });
+      } else if (widget.mode == 'smart') {
+        final data = await repo.startSmartQuiz(
+          category: widget.quizType,
+          jlptLevel: widget.jlptLevel,
+          count: widget.count,
+        );
+        setState(() {
+          _sessionId = data.sessionId;
+          _questions = data.questions;
+        });
       } else {
         final data = await repo.startQuiz(
           quizType: widget.quizType,

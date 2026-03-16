@@ -3,6 +3,7 @@ import '../../../core/providers/dio_provider.dart';
 import '../data/study_repository.dart';
 import '../data/models/quiz_session_model.dart';
 import '../data/models/recommendation_model.dart';
+import '../data/models/smart_preview_model.dart';
 import '../data/models/stage_model.dart';
 
 final studyRepositoryProvider = Provider((ref) {
@@ -24,6 +25,15 @@ final quizStatsProvider = FutureProvider.autoDispose
 final recommendationsProvider =
     FutureProvider.autoDispose<RecommendationModel>((ref) {
   return ref.watch(studyRepositoryProvider).fetchRecommendations();
+});
+
+final smartPreviewProvider = FutureProvider.autoDispose
+    .family<SmartPreviewModel, ({String category, String jlptLevel})>(
+        (ref, params) {
+  return ref.watch(studyRepositoryProvider).fetchSmartPreview(
+        category: params.category,
+        jlptLevel: params.jlptLevel,
+      );
 });
 
 final stagesProvider = FutureProvider.autoDispose

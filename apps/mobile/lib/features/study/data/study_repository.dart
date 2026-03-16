@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
 import 'models/quiz_result_model.dart';
+import 'models/smart_preview_model.dart';
 import 'models/stage_model.dart';
 import 'models/word_entry_model.dart';
 import 'models/wordbook_entry_model.dart';
@@ -46,6 +47,42 @@ class StudyRepository {
     final response =
         await _dio.get<Map<String, dynamic>>('/quiz/recommendations');
     return RecommendationModel.fromJson(response.data!);
+  }
+
+  // ── Smart Quiz ──
+
+  Future<SmartPreviewModel> fetchSmartPreview({
+    String category = 'VOCABULARY',
+    String jlptLevel = 'N5',
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/quiz/smart-preview',
+      queryParameters: {'category': category, 'jlptLevel': jlptLevel},
+    );
+    return SmartPreviewModel.fromJson(response.data!);
+  }
+
+  Future<({String sessionId, List<QuizQuestionModel> questions})>
+      startSmartQuiz({
+    String category = 'VOCABULARY',
+    String jlptLevel = 'N5',
+    int count = 20,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/quiz/smart-start',
+      data: {
+        'category': category,
+        'jlptLevel': jlptLevel,
+        'count': count,
+      },
+    );
+    final data = response.data!;
+    return (
+      sessionId: data['sessionId'] as String,
+      questions: (data['questions'] as List<dynamic>)
+          .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
   }
 
   Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({

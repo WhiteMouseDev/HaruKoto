@@ -82,3 +82,40 @@ class QuizCompleteResponse(CamelModel):
     current_xp: int
     xp_for_next: int
     events: list[dict[str, Any]]
+
+
+# ── Smart Quiz ──
+
+
+class PoolSize(CamelModel):
+    new_ready: int
+    review_due: int
+    retry_due: int
+
+
+class SessionDistribution(CamelModel):
+    new: int
+    review: int
+    retry: int
+    total: int
+
+
+class OverallProgress(CamelModel):
+    total: int
+    studied: int
+    mastered: int
+    percentage: int
+
+
+class SmartPreviewResponse(CamelModel):
+    pool_size: PoolSize
+    session_distribution: SessionDistribution
+    daily_goal: int
+    today_completed: int
+    overall_progress: OverallProgress
+
+
+class SmartStartRequest(CamelModel):
+    category: str = "VOCABULARY"
+    jlpt_level: JlptLevel = JlptLevel.N5
+    count: int = 20

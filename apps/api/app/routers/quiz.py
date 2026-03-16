@@ -29,6 +29,8 @@ from app.models import (
 from app.models.user import User
 from app.schemas.quiz import (
     MatchingPair,
+    OverallProgress,
+    PoolSize,
     QuizAnswerRequest,
     QuizAnswerResponse,
     QuizCompleteRequest,
@@ -38,13 +40,16 @@ from app.schemas.quiz import (
     QuizResumeRequest,
     QuizStartRequest,
     QuizStartResponse,
+    SessionDistribution,
+    SmartPreviewResponse,
+    SmartStartRequest,
 )
 from app.services.gamification import (
     calculate_level,
     check_and_grant_achievements,
     update_streak,
 )
-from app.utils.constants import QUIZ_CONFIG, REWARDS, SRS_CONFIG
+from app.utils.constants import QUIZ_CONFIG, REWARDS, SMART_QUIZ, SRS_CONFIG
 from app.utils.date import get_today_kst
 from app.utils.helpers import enum_value
 
@@ -55,6 +60,90 @@ def _shuffle(items: list) -> list:
     result = items.copy()
     random.shuffle(result)
     return result
+
+
+def _apply_srs_update(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    time_spent_seconds: int,
+    now: datetime,
+) -> None:
+    """SM-2 v2 algorithm with speed-based quality and Lapse Multiplier."""
+    # Calculate quality rating
+    if is_correct:
+        if time_spent_seconds <= SRS_CONFIG.SPEED_THRESHOLDS.INSTANT:
+            quality = 5
+        elif time_spent_seconds <= SRS_CONFIG.SPEED_THRESHOLDS.QUICK:
+            quality = 4
+        else:
+            quality = 3
+    else:
+        quality = 1 if progress.streak > 0 else 0
+
+    # SM-2 EF update: EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02))
+    ef = progress.ease_factor
+    ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+    ef = max(SRS_CONFIG.MIN_EASE_FACTOR, ef)
+    progress.ease_factor = round(ef, 2)
+
+    if quality < 3:  # Incorrect
+        progress.incorrect_count += 1
+        # Lapse Multiplier: preserve 10% of interval instead of full reset
+        if progress.interval > 0:
+            progress.interval = min(
+                SRS_CONFIG.LAPSE_MAX_INTERVAL,
+                max(1, round(progress.interval * SRS_CONFIG.LAPSE_MULTIPLIER)),
+            )
+        else:
+            progress.interval = 0
+        progress.streak = 0
+    else:  # Correct
+        progress.correct_count += 1
+        progress.streak += 1
+        if progress.streak == 1:
+            progress.interval = SRS_CONFIG.INITIAL_INTERVALS[0]
+        elif progress.streak == 2:
+            progress.interval = SRS_CONFIG.INITIAL_INTERVALS[1]
+        else:
+            progress.interval = round(progress.interval * ef)
+        # Instant response bonus
+        if quality == 5 and progress.interval > 3:
+            progress.interval = round(progress.interval * SRS_CONFIG.INSTANT_BONUS)
+
+    progress.next_review_at = (
+        now + timedelta(days=progress.interval) if progress.interval > 0 else now + timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES)
+    )
+    progress.last_reviewed_at = now
+    progress.mastered = progress.interval >= SRS_CONFIG.MASTERY_INTERVAL
+
+
+def _calculate_smart_distribution(daily_goal: int, review_due: int, retry_due: int) -> dict[str, int]:
+    """Calculate optimal new/review/retry distribution for smart quiz."""
+    goal = daily_goal
+    min_new = max(2, goal // 10)
+
+    # 1. Retry: max 20% of goal
+    retry = min(retry_due, goal // 5)
+    remaining = goal - retry
+
+    # 2. Review: max 75% of remaining
+    review = min(review_due, int(remaining * SMART_QUIZ.MAX_REVIEW_RATIO))
+    remaining -= review
+
+    # 3. New: the rest
+    new = remaining
+
+    # Review debt handling
+    if review_due > review + SMART_QUIZ.DEBT_SEVERE_THRESHOLD:
+        extra = new - min_new
+        review += extra
+        new = min_new
+    elif review_due > review + SMART_QUIZ.DEBT_MILD_THRESHOLD:
+        extra_review = min(review_due - review, new // 2)
+        review += extra_review
+        new -= extra_review
+
+    return {"new": max(new, min_new), "review": review, "retry": retry}
 
 
 async def _auto_complete_sessions(db: AsyncSession, user: User) -> int:
@@ -544,8 +633,9 @@ async def answer_quiz(
     if session.completed_at:
         raise HTTPException(status_code=400, detail="이미 완료된 세션입니다")
 
-    # Verify answer from questionsData
-    questions_data = session.questions_data or []
+    # Verify answer from questionsData (handle both list and dict formats)
+    raw_data = session.questions_data or []
+    questions_data = raw_data.get("questions", raw_data) if isinstance(raw_data, dict) else raw_data
     question_data = None
     for q in questions_data:
         if q["id"] == str(body.question_id):
@@ -593,33 +683,7 @@ async def answer_quiz(
             db.add(progress)
             await db.flush()
 
-        if is_correct:
-            progress.correct_count += 1
-            progress.streak += 1
-            if progress.streak <= 1:
-                progress.interval = SRS_CONFIG.INITIAL_INTERVALS[0]
-            elif progress.streak == 2:
-                progress.interval = SRS_CONFIG.INITIAL_INTERVALS[1]
-            else:
-                progress.interval = round(progress.interval * progress.ease_factor)
-            progress.ease_factor = max(
-                SRS_CONFIG.MIN_EASE_FACTOR,
-                progress.ease_factor + 0.1,
-            )
-        else:
-            progress.incorrect_count += 1
-            progress.streak = 0
-            progress.interval = 0
-            progress.ease_factor = max(
-                SRS_CONFIG.MIN_EASE_FACTOR,
-                progress.ease_factor - SRS_CONFIG.INCORRECT_PENALTY,
-            )
-
-        progress.next_review_at = (
-            now + timedelta(days=progress.interval) if progress.interval > 0 else now + timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES)
-        )
-        progress.last_reviewed_at = now
-        progress.mastered = progress.interval >= SRS_CONFIG.MASTERY_INTERVAL
+        _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
 
     elif question_type == "GRAMMAR":
         progress_result = await db.execute(
@@ -638,27 +702,7 @@ async def answer_quiz(
             db.add(progress)
             await db.flush()
 
-        if is_correct:
-            progress.correct_count += 1
-            progress.streak += 1
-            if progress.streak <= 1:
-                progress.interval = SRS_CONFIG.INITIAL_INTERVALS[0]
-            elif progress.streak == 2:
-                progress.interval = SRS_CONFIG.INITIAL_INTERVALS[1]
-            else:
-                progress.interval = round(progress.interval * progress.ease_factor)
-            progress.ease_factor = max(SRS_CONFIG.MIN_EASE_FACTOR, progress.ease_factor + 0.1)
-        else:
-            progress.incorrect_count += 1
-            progress.streak = 0
-            progress.interval = 0
-            progress.ease_factor = max(SRS_CONFIG.MIN_EASE_FACTOR, progress.ease_factor - SRS_CONFIG.INCORRECT_PENALTY)
-
-        progress.next_review_at = (
-            now + timedelta(days=progress.interval) if progress.interval > 0 else now + timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES)
-        )
-        progress.last_reviewed_at = now
-        progress.mastered = progress.interval >= SRS_CONFIG.MASTERY_INTERVAL
+        _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
 
     await db.commit()
     return QuizAnswerResponse(success=True)
@@ -899,7 +943,8 @@ async def resume_quiz(
     answered_result = await db.execute(select(QuizAnswer.question_id).where(QuizAnswer.session_id == session.id))
     answered_ids = [str(qid) for qid in answered_result.scalars().all()]
 
-    questions = session.questions_data or []
+    raw_q = session.questions_data or []
+    questions = raw_q.get("questions", raw_q) if isinstance(raw_q, dict) else raw_q
     response_questions = []
     for q in questions:
         response_questions.append(
@@ -1015,7 +1060,8 @@ async def get_wrong_answers(
     )
     wrong_answers = wrong_result.scalars().all()
 
-    questions_data = session.questions_data or []
+    raw_data = session.questions_data or []
+    questions_data = raw_data.get("questions", raw_data) if isinstance(raw_data, dict) else raw_data
     q_map = {q["id"]: q for q in questions_data}
 
     # Collect vocabulary IDs from wrong answers for example sentences
@@ -1049,6 +1095,453 @@ async def get_wrong_answers(
         )
 
     return {"wrongAnswers": result_list}
+
+
+@router.get("/smart-preview", response_model=SmartPreviewResponse, status_code=200)
+async def smart_preview(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    category: Annotated[str, Query()] = "VOCABULARY",
+    jlpt_level: Annotated[str, Query(alias="jlptLevel")] = "N5",
+):
+    """Get smart quiz preview: pool sizes, distribution, progress."""
+    now = datetime.now(UTC)
+
+    if category == "VOCABULARY":
+        # Pool 1: New words (not yet studied)
+        studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id))
+        studied_ids = set(studied_ids_result.scalars().all())
+
+        total_result = await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == jlpt_level))
+        total = total_result.scalar() or 0
+        new_ready = max(0, total - len(studied_ids))
+
+        # Pool 2: Review due (interval > 0, next_review_at <= now)
+        review_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(
+                UserVocabProgress.user_id == user.id,
+                Vocabulary.jlpt_level == jlpt_level,
+                UserVocabProgress.next_review_at <= now,
+                UserVocabProgress.interval > 0,
+            )
+        )
+        review_due = review_result.scalar() or 0
+
+        # Pool 3: Retry (interval=0, incorrect_count > 0, delay passed)
+        retry_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(
+                UserVocabProgress.user_id == user.id,
+                Vocabulary.jlpt_level == jlpt_level,
+                UserVocabProgress.interval == 0,
+                UserVocabProgress.incorrect_count > 0,
+                UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+            )
+        )
+        retry_due = retry_result.scalar() or 0
+
+        # Studied & mastered counts
+        studied_at_level_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == jlpt_level)
+        )
+        studied = studied_at_level_result.scalar() or 0
+
+        mastered_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(
+                UserVocabProgress.user_id == user.id,
+                Vocabulary.jlpt_level == jlpt_level,
+                UserVocabProgress.mastered.is_(True),
+            )
+        )
+        mastered = mastered_result.scalar() or 0
+    else:
+        # Grammar
+        studied_ids_result = await db.execute(select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id))
+        studied_ids = set(studied_ids_result.scalars().all())
+
+        total_result = await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == jlpt_level))
+        total = total_result.scalar() or 0
+        new_ready = max(0, total - len(studied_ids))
+
+        review_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(
+                UserGrammarProgress.user_id == user.id,
+                Grammar.jlpt_level == jlpt_level,
+                UserGrammarProgress.next_review_at <= now,
+                UserGrammarProgress.interval > 0,
+            )
+        )
+        review_due = review_result.scalar() or 0
+
+        retry_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(
+                UserGrammarProgress.user_id == user.id,
+                Grammar.jlpt_level == jlpt_level,
+                UserGrammarProgress.interval == 0,
+                UserGrammarProgress.incorrect_count > 0,
+                UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+            )
+        )
+        retry_due = retry_result.scalar() or 0
+
+        studied_at_level_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == jlpt_level)
+        )
+        studied = studied_at_level_result.scalar() or 0
+
+        mastered_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(
+                UserGrammarProgress.user_id == user.id,
+                Grammar.jlpt_level == jlpt_level,
+                UserGrammarProgress.mastered.is_(True),
+            )
+        )
+        mastered = mastered_result.scalar() or 0
+
+    # Today's completed count
+    today = get_today_kst()
+    today_result = await db.execute(
+        select(func.count(QuizAnswer.id))
+        .join(QuizSession, QuizSession.id == QuizAnswer.session_id)
+        .where(
+            QuizSession.user_id == user.id,
+            QuizAnswer.answered_at >= today,
+        )
+    )
+    today_completed = today_result.scalar() or 0
+
+    dist = _calculate_smart_distribution(SMART_QUIZ.DAILY_GOAL, review_due, retry_due)
+
+    return SmartPreviewResponse(
+        pool_size=PoolSize(new_ready=new_ready, review_due=review_due, retry_due=retry_due),
+        session_distribution=SessionDistribution(
+            new=dist["new"],
+            review=dist["review"],
+            retry=dist["retry"],
+            total=dist["new"] + dist["review"] + dist["retry"],
+        ),
+        daily_goal=SMART_QUIZ.DAILY_GOAL,
+        today_completed=today_completed,
+        overall_progress=OverallProgress(
+            total=total,
+            studied=studied,
+            mastered=mastered,
+            percentage=round(studied / total * 100) if total > 0 else 0,
+        ),
+    )
+
+
+@router.post("/smart-start", response_model=QuizStartResponse, status_code=200)
+async def smart_start(
+    body: SmartStartRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Start a smart quiz session with optimal new/review/retry mix."""
+    await _auto_complete_sessions(db, user)
+
+    now = datetime.now(UTC)
+    category = body.category
+    jlpt_level = body.jlpt_level.value
+    quiz_type = "VOCABULARY" if category == "VOCABULARY" else "GRAMMAR"
+
+    # Get pool sizes for distribution
+    if category == "VOCABULARY":
+        review_due_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(
+                UserVocabProgress.user_id == user.id,
+                Vocabulary.jlpt_level == jlpt_level,
+                UserVocabProgress.next_review_at <= now,
+                UserVocabProgress.interval > 0,
+            )
+        )
+        review_due = review_due_result.scalar() or 0
+
+        retry_due_result = await db.execute(
+            select(func.count(UserVocabProgress.id))
+            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
+            .where(
+                UserVocabProgress.user_id == user.id,
+                Vocabulary.jlpt_level == jlpt_level,
+                UserVocabProgress.interval == 0,
+                UserVocabProgress.incorrect_count > 0,
+                UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+            )
+        )
+        retry_due = retry_due_result.scalar() or 0
+    else:
+        review_due_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(
+                UserGrammarProgress.user_id == user.id,
+                Grammar.jlpt_level == jlpt_level,
+                UserGrammarProgress.next_review_at <= now,
+                UserGrammarProgress.interval > 0,
+            )
+        )
+        review_due = review_due_result.scalar() or 0
+
+        retry_due_result = await db.execute(
+            select(func.count(UserGrammarProgress.id))
+            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
+            .where(
+                UserGrammarProgress.user_id == user.id,
+                Grammar.jlpt_level == jlpt_level,
+                UserGrammarProgress.interval == 0,
+                UserGrammarProgress.incorrect_count > 0,
+                UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+            )
+        )
+        retry_due = retry_due_result.scalar() or 0
+
+    dist = _calculate_smart_distribution(body.count, review_due, retry_due)
+    questions: list[dict[str, Any]] = []
+
+    if category == "VOCABULARY":
+        # Pool 2: Review items
+        if dist["review"] > 0:
+            review_result = await db.execute(
+                select(Vocabulary)
+                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
+                .where(
+                    UserVocabProgress.user_id == user.id,
+                    Vocabulary.jlpt_level == jlpt_level,
+                    UserVocabProgress.next_review_at <= now,
+                    UserVocabProgress.interval > 0,
+                )
+                .order_by(UserVocabProgress.next_review_at)
+                .limit(dist["review"])
+            )
+            review_items = list(review_result.scalars().all())
+        else:
+            review_items = []
+
+        # Pool 3: Retry items
+        if dist["retry"] > 0:
+            retry_result = await db.execute(
+                select(Vocabulary)
+                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
+                .where(
+                    UserVocabProgress.user_id == user.id,
+                    Vocabulary.jlpt_level == jlpt_level,
+                    UserVocabProgress.interval == 0,
+                    UserVocabProgress.incorrect_count > 0,
+                    UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+                )
+                .order_by(UserVocabProgress.last_reviewed_at)
+                .limit(dist["retry"])
+            )
+            retry_items = list(retry_result.scalars().all())
+        else:
+            retry_items = []
+
+        # Pool 1: New items
+        studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id))
+        studied_ids = set(studied_ids_result.scalars().all())
+        # Exclude items already in review/retry pools
+        exclude_ids = studied_ids | {v.id for v in review_items} | {v.id for v in retry_items}
+
+        new_count_needed = dist["new"]
+        # Fallback: if review/retry pools were short, add more new
+        actual_review = len(review_items)
+        actual_retry = len(retry_items)
+        shortfall = (dist["review"] - actual_review) + (dist["retry"] - actual_retry)
+        new_count_needed += shortfall
+
+        if new_count_needed > 0:
+            new_query = select(Vocabulary).where(
+                Vocabulary.jlpt_level == jlpt_level,
+                Vocabulary.id.notin_(exclude_ids) if exclude_ids else True,
+            )
+            new_result = await db.execute(new_query.order_by(Vocabulary.id).limit(new_count_needed))
+            new_items = list(new_result.scalars().all())
+        else:
+            new_items = []
+
+        all_items = list(review_items) + list(retry_items) + list(new_items)
+
+        # Get wrong options pool
+        pool_result = await db.execute(
+            select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
+        )
+        all_meanings = list(pool_result.scalars().all())
+
+        # Deduplicate by meaning
+        seen_meanings: set[str] = set()
+        for vocab in all_items:
+            if vocab.meaning_ko in seen_meanings:
+                continue
+            seen_meanings.add(vocab.meaning_ko)
+
+            wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
+            random.shuffle(wrong_options)
+            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
+
+            correct_id = str(uuid.uuid4())
+            options = [{"id": correct_id, "text": vocab.meaning_ko}]
+            for wo in wrong_options:
+                options.append({"id": str(uuid.uuid4()), "text": wo})
+            random.shuffle(options)
+
+            questions.append(
+                {
+                    "id": str(vocab.id),
+                    "type": quiz_type,
+                    "question": vocab.word,
+                    "reading": vocab.reading,
+                    "questionSubText": vocab.reading,
+                    "options": options,
+                    "correctOptionId": correct_id,
+                    "word": vocab.word,
+                    "meaningKo": vocab.meaning_ko,
+                }
+            )
+    else:
+        # Grammar pools (same logic)
+        if dist["review"] > 0:
+            review_result = await db.execute(
+                select(Grammar)
+                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
+                .where(
+                    UserGrammarProgress.user_id == user.id,
+                    Grammar.jlpt_level == jlpt_level,
+                    UserGrammarProgress.next_review_at <= now,
+                    UserGrammarProgress.interval > 0,
+                )
+                .order_by(UserGrammarProgress.next_review_at)
+                .limit(dist["review"])
+            )
+            review_items = list(review_result.scalars().all())
+        else:
+            review_items = []
+
+        if dist["retry"] > 0:
+            retry_result = await db.execute(
+                select(Grammar)
+                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
+                .where(
+                    UserGrammarProgress.user_id == user.id,
+                    Grammar.jlpt_level == jlpt_level,
+                    UserGrammarProgress.interval == 0,
+                    UserGrammarProgress.incorrect_count > 0,
+                    UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
+                )
+                .order_by(UserGrammarProgress.last_reviewed_at)
+                .limit(dist["retry"])
+            )
+            retry_items = list(retry_result.scalars().all())
+        else:
+            retry_items = []
+
+        studied_ids_result = await db.execute(select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id))
+        studied_ids = set(studied_ids_result.scalars().all())
+        exclude_ids = studied_ids | {g.id for g in review_items} | {g.id for g in retry_items}
+
+        new_count_needed = dist["new"] + (dist["review"] - len(review_items)) + (dist["retry"] - len(retry_items))
+
+        if new_count_needed > 0:
+            new_result = await db.execute(
+                select(Grammar)
+                .where(Grammar.jlpt_level == jlpt_level, Grammar.id.notin_(exclude_ids) if exclude_ids else True)
+                .order_by(Grammar.id)
+                .limit(new_count_needed)
+            )
+            new_items = list(new_result.scalars().all())
+        else:
+            new_items = []
+
+        all_items = list(review_items) + list(retry_items) + list(new_items)
+
+        pool_result = await db.execute(select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50))
+        all_meanings = list(pool_result.scalars().all())
+
+        seen_meanings: set[str] = set()
+        for grammar in all_items:
+            if grammar.meaning_ko in seen_meanings:
+                continue
+            seen_meanings.add(grammar.meaning_ko)
+
+            wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
+            random.shuffle(wrong_options)
+            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
+
+            correct_id = str(uuid.uuid4())
+            options = [{"id": correct_id, "text": grammar.meaning_ko}]
+            for wo in wrong_options:
+                options.append({"id": str(uuid.uuid4()), "text": wo})
+            random.shuffle(options)
+
+            questions.append(
+                {
+                    "id": str(grammar.id),
+                    "type": quiz_type,
+                    "question": grammar.pattern,
+                    "options": options,
+                    "correctOptionId": correct_id,
+                    "pattern": grammar.pattern,
+                    "meaningKo": grammar.meaning_ko,
+                }
+            )
+
+    # Shuffle all questions (interleaving)
+    random.shuffle(questions)
+
+    if not questions:
+        raise HTTPException(status_code=400, detail="학습할 콘텐츠가 없습니다")
+
+    # Create session with smart mode metadata
+    session = QuizSession(
+        user_id=user.id,
+        quiz_type=body.category,
+        jlpt_level=body.jlpt_level,
+        total_questions=len(questions),
+        questions_data={"mode": "smart", "questions": questions},
+    )
+    try:
+        db.add(session)
+        await db.commit()
+        await db.refresh(session)
+    except Exception as exc:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다") from exc
+
+    response_questions = []
+    for q in questions:
+        response_questions.append(
+            QuizQuestion(
+                question_id=q["id"],
+                question_text=q["question"],
+                question_sub_text=q.get("questionSubText"),
+                hint=q.get("hint"),
+                options=[QuizOption(**o) for o in q["options"]],
+                correct_option_id=q.get("correctOptionId"),
+            )
+        )
+
+    return QuizStartResponse(
+        session_id=session.id,
+        questions=response_questions,
+        total_questions=len(questions),
+        matching_pairs=None,
+    )
 
 
 @router.get("/recommendations", status_code=200)

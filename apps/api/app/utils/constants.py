@@ -35,6 +35,19 @@ class _SrsConfig:
     MIN_EASE_FACTOR: float = 1.3
     INCORRECT_PENALTY: float = 0.2
     REVIEW_DELAY_MINUTES: int = 10
+    LAPSE_MULTIPLIER: float = 0.1
+    LAPSE_MAX_INTERVAL: int = 7
+    INSTANT_BONUS: float = 1.1
+
+
+@dataclass(frozen=True)
+class _SmartQuizConfig:
+    DAILY_GOAL: int = 20
+    MAX_RETRY_RATIO: float = 0.2
+    MAX_REVIEW_RATIO: float = 0.75
+    MIN_NEW_RATIO: float = 0.1
+    DEBT_SEVERE_THRESHOLD: int = 30
+    DEBT_MILD_THRESHOLD: int = 10
 
 
 @dataclass(frozen=True)
@@ -87,6 +100,7 @@ class _RateLimits:
 REWARDS = _Rewards()
 QUIZ_CONFIG = _QuizConfig()
 SRS_CONFIG = _SrsConfig()
+SMART_QUIZ = _SmartQuizConfig()
 KANA_REWARDS = _KanaRewards()
 PAGINATION = _Pagination()
 AI_LIMITS = _AiLimits()

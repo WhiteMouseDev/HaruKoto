@@ -26,6 +26,9 @@ class _SplashPageState extends State<SplashPage>
 
   static const _tagline = '매일 한 단어, 봄처럼 피어나는 나의 일본어';
 
+  // Warm pink-gray for tagline (harmonizes with brand pink on light gradient)
+  static const _taglineColor = Color(0xFFC4899A);
+
   @override
   void initState() {
     super.initState();
@@ -78,75 +81,108 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // Responsive sizing: scale with screen width, clamped
+    final iconSize = (screenWidth * 0.28).clamp(90.0, 140.0);
+    final wordmarkWidth = (screenWidth * 0.35).clamp(110.0, 170.0);
+    final iconRadius = iconSize * 0.23;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: AppColors.authGradient,
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Phase 1: App icon
-              FadeTransition(
-                opacity: _iconFade,
-                child: ScaleTransition(
-                  scale: _iconScale,
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.brandPink.withValues(alpha: 0.3),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Phase 1: App icon
+                FadeTransition(
+                  opacity: _iconFade,
+                  child: ScaleTransition(
+                    scale: _iconScale,
+                    child: Container(
+                      width: iconSize,
+                      height: iconSize,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(iconRadius),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                AppColors.brandPink.withValues(alpha: 0.3),
+                            blurRadius: 30,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(iconRadius),
+                        child: Image.asset('assets/icon.png'),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 36),
+
+                // Phase 2: Logo wordmark (with subtle glow)
+                FadeTransition(
+                  opacity: _logoFade,
+                  child: SlideTransition(
+                    position: _logoSlide,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                AppColors.brandPink.withValues(alpha: 0.15),
+                            blurRadius: 20,
+                          ),
+                        ],
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/logo-wordmark.svg',
+                        width: wordmarkWidth,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.brandPink,
+                          BlendMode.srcIn,
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: Image.asset('assets/icon.png'),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 22),
 
-              // Phase 2: Logo wordmark
-              FadeTransition(
-                opacity: _logoFade,
-                child: SlideTransition(
-                  position: _logoSlide,
-                  child: SvgPicture.asset(
-                    'assets/logo-wordmark.svg',
-                    width: 140,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.brandPink,
-                      BlendMode.srcIn,
-                    ),
-                  ),
+                // Phase 3: Tagline — per-character bloom → single Text
+                AnimatedBuilder(
+                  animation: _taglineProgress,
+                  builder: (context, _) {
+                    final progress = _taglineProgress.value;
+                    // Once animation completes, render as single Text
+                    // to avoid kerning mismatch from per-character Row
+                    if (progress >= 1.0) {
+                      return const Text(
+                        _tagline,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: _taglineColor,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      );
+                    }
+                    return _BloomText(
+                      text: _tagline,
+                      progress: progress,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: _taglineColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 14),
-
-              // Phase 3: Tagline — per-character bloom fade
-              AnimatedBuilder(
-                animation: _taglineProgress,
-                builder: (context, _) {
-                  return _BloomText(
-                    text: _tagline,
-                    progress: _taglineProgress.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.overlay(0.6),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  );
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -175,20 +211,22 @@ class _BloomText extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(charCount, (i) {
-        // Each character starts and ends at a staggered time
-        final charStart = i / (charCount + 5);
-        final charEnd = (i + 6) / (charCount + 5);
+        // Wider stagger: charCount+10 for more visible per-character bloom
+        final charStart = i / (charCount + 10);
+        final charEnd = (i + 8) / (charCount + 10);
         final t =
             ((progress - charStart) / (charEnd - charStart)).clamp(0.0, 1.0);
 
-        // Ease the per-character progress
         final eased = Curves.easeOut.transform(t);
 
-        return Opacity(
-          opacity: eased,
-          child: Transform.scale(
-            scale: 0.7 + 0.3 * eased,
-            child: Text(chars[i], style: style),
+        return RepaintBoundary(
+          child: Opacity(
+            opacity: eased,
+            child: Transform.scale(
+              // Stronger bloom: 0.5 → 1.0 for more visible "petal opening"
+              scale: 0.5 + 0.5 * eased,
+              child: Text(chars[i], style: style),
+            ),
           ),
         );
       }),

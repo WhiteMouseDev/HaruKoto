@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../study/providers/study_provider.dart';
 import '../../study/presentation/widgets/resume_banner.dart';
+import '../../study/presentation/widgets/smart_learning_card.dart';
 import '../../study/presentation/widgets/recommend_tab.dart';
 import '../../study/presentation/widgets/free_tab.dart';
 import '../../study/presentation/quiz_page.dart';
@@ -109,6 +110,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
             ref.invalidate(incompleteQuizProvider);
             ref.invalidate(recommendationsProvider);
             ref.invalidate(
+              smartPreviewProvider(
+                  (category: 'VOCABULARY', jlptLevel: _selectedLevel)),
+            );
+            ref.invalidate(
               quizStatsProvider((level: _selectedLevel, type: _selectedType)),
             );
           },
@@ -132,6 +137,8 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        SmartLearningCard(jlptLevel: _selectedLevel),
                         const SizedBox(height: 16),
                       ],
                     ),
