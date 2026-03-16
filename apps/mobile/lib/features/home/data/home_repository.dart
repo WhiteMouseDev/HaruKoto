@@ -26,6 +26,13 @@ class HomeRepository {
     return response.data!['dailyGoal'] as int;
   }
 
+  Future<void> updateJlptLevel(String level) async {
+    await _dio.patch<Map<String, dynamic>>(
+      '/user/profile',
+      data: {'jlptLevel': level},
+    );
+  }
+
   Future<List<MissionModel>> fetchTodayMissions() async {
     final response = await _dio.get<Map<String, dynamic>>('/missions/today');
     final list = response.data!['missions'] as List<dynamic>? ?? [];

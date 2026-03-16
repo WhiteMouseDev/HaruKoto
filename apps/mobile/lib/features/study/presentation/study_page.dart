@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/constants/sizes.dart';
 import '../../home/providers/home_provider.dart';
 import '../../kana/presentation/kana_hub_page.dart';
 import 'widgets/study_tab_content.dart';
@@ -149,17 +147,27 @@ class _StudyPageState extends ConsumerState<StudyPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'JLPT 학습',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Current JLPT level display (task 1-10)
-                        _JlptLevelBadge(
-                          level: jlptLevel,
-                          onTap: () => context.push('/my'),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'JLPT 학습',
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            _JlptLevelChip(
+                              level: jlptLevel,
+                              onChanged: (newLevel) async {
+                                await ref
+                                    .read(homeRepositoryProvider)
+                                    .updateJlptLevel(newLevel);
+                                ref.invalidate(profileProvider);
+                                ref.invalidate(dashboardProvider);
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -210,56 +218,174 @@ class _StudyPageState extends ConsumerState<StudyPage>
   }
 }
 
-/// Shows the current JLPT level with a tap-to-change action.
-class _JlptLevelBadge extends StatelessWidget {
+/// Compact inline chip showing current JLPT level with dropdown.
+class _JlptLevelChip extends StatelessWidget {
   final String level;
-  final VoidCallback onTap;
+  final ValueChanged<String> onChanged;
 
-  const _JlptLevelBadge({required this.level, required this.onTap});
+  static const _levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+
+  const _JlptLevelChip({required this.level, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _showLevelPicker(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: theme.colorScheme.primary.withValues(alpha: 0.2),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              LucideIcons.graduationCap,
-              size: 16,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
             Text(
-              '현재 레벨: $level',
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
+              level,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w800,
                 color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 4),
-            Text(
-              '(변경 →)',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.primary.withValues(alpha: 0.7),
-                fontSize: 11,
-              ),
+            Icon(
+              LucideIcons.chevronDown,
+              size: 16,
+              color: theme.colorScheme.primary,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _showLevelPicker(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'JLPT 레벨 선택',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ..._levels.map((l) {
+                  final isSelected = l == level;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Material(
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                              .withValues(alpha: 0.08)
+                          : theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          if (l != level) onChanged(l);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.outline,
+                              width: isSelected ? 2 : 1,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                l,
+                                style:
+                                    theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  _levelDescription(l),
+                                  style: theme.textTheme.bodySmall
+                                      ?.copyWith(
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  LucideIcons.check,
+                                  size: 20,
+                                  color: theme.colorScheme.primary,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _levelDescription(String l) {
+    switch (l) {
+      case 'N5':
+        return '입문 · 기초 인사, 숫자, 간단한 문장';
+      case 'N4':
+        return '초급 · 일상회화, 기본 문법';
+      case 'N3':
+        return '중급 · 일상적 문맥 이해';
+      case 'N2':
+        return '중상급 · 신문, 뉴스 이해';
+      case 'N1':
+        return '고급 · 원어민 수준 이해';
+      default:
+        return '';
+    }
   }
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/constants/sizes.dart';
 import '../../study/providers/study_provider.dart';
 import '../../study/presentation/widgets/resume_banner.dart';
 import '../../study/presentation/widgets/recommend_tab.dart';
@@ -47,6 +46,36 @@ class _PracticePageState extends ConsumerState<PracticePage>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Widget _buildMenuSection(BuildContext context, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(
+          color: theme.colorScheme.outline.withValues(alpha: 0.15),
+        ),
+        const SizedBox(height: 4),
+        _MenuListTile(
+          icon: LucideIcons.fileX,
+          iconColor: theme.colorScheme.error,
+          label: '오답노트',
+          onTap: () => context.push('/study/wrong-answers'),
+        ),
+        _MenuListTile(
+          icon: LucideIcons.bookOpen,
+          iconColor: theme.colorScheme.primary,
+          label: '학습한 단어',
+          onTap: () => context.push('/study/learned-words'),
+        ),
+        _MenuListTile(
+          icon: LucideIcons.bookmark,
+          iconColor: const Color(0xFFF59E0B),
+          label: '단어장',
+          onTap: () => context.push('/study/wordbook'),
+        ),
+      ],
+    );
   }
 
   void _startFreeQuiz() {
@@ -98,31 +127,10 @@ class _PracticePageState extends ConsumerState<PracticePage>
                             child: ResumeBanner(session: incompleteSession),
                           ),
                         Text(
-                          '연습',
+                          '퀴즈',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Shortcut chips
-                        _ShortcutRow(
-                          shortcuts: [
-                            _Shortcut(
-                              icon: LucideIcons.fileX,
-                              label: '오답노트',
-                              onTap: () => context.push('/study/wrong-answers'),
-                            ),
-                            _Shortcut(
-                              icon: LucideIcons.bookOpen,
-                              label: '학습한 단어',
-                              onTap: () => context.push('/study/learned-words'),
-                            ),
-                            _Shortcut(
-                              icon: LucideIcons.bookmark,
-                              label: '단어장',
-                              onTap: () => context.push('/study/wordbook'),
-                            ),
-                          ],
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -137,7 +145,7 @@ class _PracticePageState extends ConsumerState<PracticePage>
                       controller: _tabController,
                       tabs: const [
                         Tab(text: '추천'),
-                        Tab(text: '자유 연습'),
+                        Tab(text: '자유 퀴즈'),
                       ],
                       isScrollable: false,
                       labelStyle: theme.textTheme.bodySmall?.copyWith(
@@ -163,28 +171,44 @@ class _PracticePageState extends ConsumerState<PracticePage>
                 // Tab 1: 추천
                 SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
-                  child: RecommendTab(
-                    recs: recsAsync,
-                    onInvalidate: () => ref.invalidate(recommendationsProvider),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RecommendTab(
+                        recs: recsAsync,
+                        onInvalidate: () =>
+                            ref.invalidate(recommendationsProvider),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildMenuSection(context, theme),
+                    ],
                   ),
                 ),
-                // Tab 2: 자유 연습
+                // Tab 2: 자유 퀴즈
                 SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
-                  child: FreeTab(
-                    selectedLevel: _selectedLevel,
-                    selectedType: _selectedType,
-                    quizMode: _quizMode,
-                    modeLabel: _modeLabels[_quizMode] ?? '4지선다',
-                    jlptLevels: _jlptLevels,
-                    quizTypes: _quizTypes,
-                    statsAsync: statsAsync,
-                    onLevelChanged: (level) =>
-                        setState(() => _selectedLevel = level),
-                    onTypeChanged: (type) =>
-                        setState(() => _selectedType = type),
-                    onModeChanged: (mode) => setState(() => _quizMode = mode),
-                    onStartQuiz: _startFreeQuiz,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FreeTab(
+                        selectedLevel: _selectedLevel,
+                        selectedType: _selectedType,
+                        quizMode: _quizMode,
+                        modeLabel: _modeLabels[_quizMode] ?? '4지선다',
+                        jlptLevels: _jlptLevels,
+                        quizTypes: _quizTypes,
+                        statsAsync: statsAsync,
+                        onLevelChanged: (level) =>
+                            setState(() => _selectedLevel = level),
+                        onTypeChanged: (type) =>
+                            setState(() => _selectedType = type),
+                        onModeChanged: (mode) =>
+                            setState(() => _quizMode = mode),
+                        onStartQuiz: _startFreeQuiz,
+                      ),
+                      const SizedBox(height: 24),
+                      _buildMenuSection(context, theme),
+                    ],
                   ),
                 ),
               ],
@@ -196,75 +220,55 @@ class _PracticePageState extends ConsumerState<PracticePage>
   }
 }
 
-/// Row of shortcut chips for quick access.
-class _ShortcutRow extends StatelessWidget {
-  final List<_Shortcut> shortcuts;
-
-  const _ShortcutRow({required this.shortcuts});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: shortcuts
-            .map((s) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: _ShortcutChip(shortcut: s),
-                ))
-            .toList(),
-      ),
-    );
-  }
-}
-
-class _Shortcut {
+/// Vertical menu list tile (말해보카 style).
+class _MenuListTile extends StatelessWidget {
   final IconData icon;
+  final Color iconColor;
   final String label;
   final VoidCallback onTap;
 
-  const _Shortcut({
+  const _MenuListTile({
     required this.icon,
+    required this.iconColor,
     required this.label,
     required this.onTap,
   });
-}
-
-class _ShortcutChip extends StatelessWidget {
-  final _Shortcut shortcut;
-
-  const _ShortcutChip({required this.shortcut});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Material(
-      color: theme.colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        onTap: shortcut.onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                shortcut.icon,
-                size: 14,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
               ),
-              const SizedBox(width: 6),
-              Text(
-                shortcut.label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
+            ),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 18,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+            ),
+          ],
         ),
       ),
     );
