@@ -854,9 +854,7 @@ async def get_incomplete_quiz(
     valid_session = None
     for session in sessions:
         # Count answered questions
-        answered_result = await db.execute(
-            select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id)
-        )
+        answered_result = await db.execute(select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id))
         answered_count = answered_result.scalar() or 0
 
         # Auto-complete zombie sessions (0 answers) or stale sessions (24h+)

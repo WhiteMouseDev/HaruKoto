@@ -483,8 +483,8 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                     Text(
                       '${widget.stage.contentCount}개 항목',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -553,8 +553,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                                           mode.description,
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
-                                            color: theme
-                                                .colorScheme.onSurface
+                                            color: theme.colorScheme.onSurface
                                                 .withValues(alpha: 0.5),
                                           ),
                                         ),
@@ -590,8 +589,8 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                   children: [
                     const Text(
                       '학습 시작',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(width: 6),
                     Icon(

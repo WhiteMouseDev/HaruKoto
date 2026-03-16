@@ -37,8 +37,7 @@ class QuizFeedbackBar extends StatelessWidget {
         return '$word$readingPart — $meaning';
       }
       // explanation이 있으면 (cloze, arrange)
-      if (question.explanation != null &&
-          question.explanation!.isNotEmpty) {
+      if (question.explanation != null && question.explanation!.isNotEmpty) {
         return question.explanation;
       }
       return null;
@@ -76,9 +75,7 @@ class QuizFeedbackBar extends StatelessWidget {
         ? (isLight
             ? AppColors.quizCorrectButton
             : AppColors.quizCorrectButtonDark)
-        : (isLight
-            ? AppColors.quizWrongButton
-            : AppColors.quizWrongButtonDark);
+        : (isLight ? AppColors.quizWrongButton : AppColors.quizWrongButtonDark);
 
     return Container(
       width: double.infinity,
@@ -175,8 +172,8 @@ class QuizFeedbackBar extends StatelessWidget {
               ),
               child: Text(
                 isLastQuestion ? '결과 보기' : '다음 문제 →',
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),

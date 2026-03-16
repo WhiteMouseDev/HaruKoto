@@ -366,7 +366,7 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (!mounted) return;
       final isAuth = ref.read(isAuthenticatedProvider);
       if (isAuth) {

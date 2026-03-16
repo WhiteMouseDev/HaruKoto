@@ -285,8 +285,7 @@ class _JlptLevelChip extends StatelessWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.2),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -305,8 +304,7 @@ class _JlptLevelChip extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Material(
                       color: isSelected
-                          ? theme.colorScheme.primary
-                              .withValues(alpha: 0.08)
+                          ? theme.colorScheme.primary.withValues(alpha: 0.08)
                           : theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       child: InkWell(
@@ -331,8 +329,7 @@ class _JlptLevelChip extends StatelessWidget {
                             children: [
                               Text(
                                 l,
-                                style:
-                                    theme.textTheme.bodyMedium?.copyWith(
+                                style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: isSelected
                                       ? theme.colorScheme.primary
@@ -343,8 +340,7 @@ class _JlptLevelChip extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   _levelDescription(l),
-                                  style: theme.textTheme.bodySmall
-                                      ?.copyWith(
+                                  style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurface
                                         .withValues(alpha: 0.5),
                                   ),
