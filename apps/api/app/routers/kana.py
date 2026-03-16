@@ -49,11 +49,14 @@ router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 @router.get("/characters", status_code=200)
 async def get_characters(
     kana_type: KanaType | None = None,
+    category: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     query = select(KanaCharacter).order_by(KanaCharacter.order)
     if kana_type:
         query = query.where(KanaCharacter.kana_type == kana_type)
+    if category:
+        query = query.where(KanaCharacter.category == category)
     result = await db.execute(query)
     characters = result.scalars().all()
 

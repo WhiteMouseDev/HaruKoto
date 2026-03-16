@@ -12,26 +12,24 @@ class KanaRepository {
     String type, {
     String? category,
   }) async {
-    final queryParams = <String, dynamic>{'type': type};
+    final queryParams = <String, dynamic>{'kana_type': type};
     if (category != null) queryParams['category'] = category;
 
-    final response = await _dio.get<Map<String, dynamic>>(
+    final response = await _dio.get<List<dynamic>>(
       '/kana/characters',
       queryParameters: queryParams,
     );
-    final characters = response.data!['characters'] as List<dynamic>;
-    return characters
+    return response.data!
         .map((e) => KanaCharacterModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   Future<List<KanaStageModel>> fetchStages(String type) async {
-    final response = await _dio.get<Map<String, dynamic>>(
+    final response = await _dio.get<List<dynamic>>(
       '/kana/stages',
-      queryParameters: {'type': type},
+      queryParameters: {'kana_type': type},
     );
-    final stages = response.data!['stages'] as List<dynamic>;
-    return stages
+    return response.data!
         .map((e) => KanaStageModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
