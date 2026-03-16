@@ -253,6 +253,7 @@ class _StageCard extends ConsumerWidget {
   void _showModeSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -430,162 +431,179 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Stage title
-              Text(
-                'Stage ${widget.stage.stageNumber}',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.stage.title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (widget.stage.description != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  widget.stage.description!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 8),
-              Text(
-                '${widget.stage.contentCount}개 항목',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Mode selector
-              if (modes.length > 1) ...[
-                Text(
-                  '학습 모드',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              ...modes.map((mode) {
-                final isSelected = _selectedMode == mode.id;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Material(
-                    color: isSelected
-                        ? theme.colorScheme.primary.withValues(alpha: 0.08)
-                        : theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => setState(() => _selectedMode = mode.id),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 스크롤 가능한 콘텐츠 영역
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle bar
+                    Center(
                       child: Container(
-                        padding: const EdgeInsets.all(14),
+                        width: 40,
+                        height: 4,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              mode.icon,
-                              size: 20,
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.5),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    mode.label,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: isSelected
-                                          ? theme.colorScheme.primary
-                                          : null,
-                                    ),
-                                  ),
-                                  Text(
-                                    mode.description,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (isSelected)
-                              Icon(
-                                LucideIcons.check,
-                                size: 20,
-                                color: theme.colorScheme.primary,
-                              ),
-                          ],
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 12),
-              // Start button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: FilledButton(
-                  onPressed: () => widget.onStart(_selectedMode),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        '학습 시작',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
+                    const SizedBox(height: 20),
+                    // Stage title
+                    Text(
+                      'Stage ${widget.stage.stageNumber}',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        LucideIcons.flower2,
-                        size: 16,
-                        color: theme.colorScheme.onPrimary,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.stage.title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (widget.stage.description != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.stage.description!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
+                        ),
                       ),
                     ],
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${widget.stage.contentCount}개 항목',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Mode selector
+                    if (modes.length > 1) ...[
+                      Text(
+                        '학습 모드',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    ...modes.map((mode) {
+                      final isSelected = _selectedMode == mode.id;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Material(
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                                  .withValues(alpha: 0.08)
+                              : theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () =>
+                                setState(() => _selectedMode = mode.id),
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.outline,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    mode.icon,
+                                    size: 20,
+                                    color: isSelected
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.5),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          mode.label,
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: isSelected
+                                                ? theme.colorScheme.primary
+                                                : null,
+                                          ),
+                                        ),
+                                        Text(
+                                          mode.description,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                            color: theme
+                                                .colorScheme.onSurface
+                                                .withValues(alpha: 0.5),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    Icon(
+                                      LucideIcons.check,
+                                      size: 20,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // 하단 고정 버튼
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: FilledButton(
+                onPressed: () => widget.onStart(_selectedMode),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '학습 시작',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      LucideIcons.flower2,
+                      size: 16,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

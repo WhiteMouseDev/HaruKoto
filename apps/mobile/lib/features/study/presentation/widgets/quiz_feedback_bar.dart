@@ -19,21 +19,72 @@ class QuizFeedbackBar extends StatelessWidget {
     required this.onNext,
   });
 
+  /// 피드백에 표시할 보충 정보 (정답/오답 공통)
+  String? get _feedbackDetail {
+    final correctText = question.options
+        .where((o) => o.id == question.correctOptionId)
+        .map((o) => o.text)
+        .firstOrNull;
+
+    if (isCorrect) {
+      // 정답: "鳥肉 (とりにく) — 닭고기"
+      final word = question.questionText;
+      final reading = question.questionSubText;
+      final meaning = question.meaningKo;
+      if (meaning != null && meaning.isNotEmpty) {
+        final readingPart =
+            (reading != null && reading.isNotEmpty) ? ' ($reading)' : '';
+        return '$word$readingPart — $meaning';
+      }
+      // explanation이 있으면 (cloze, arrange)
+      if (question.explanation != null &&
+          question.explanation!.isNotEmpty) {
+        return question.explanation;
+      }
+      return null;
+    } else {
+      // 오답: "정답: 닭고기"  + 원어 보충
+      final word = question.questionText;
+      final reading = question.questionSubText;
+      final meaning = question.meaningKo;
+
+      if (meaning != null && meaning.isNotEmpty) {
+        final readingPart =
+            (reading != null && reading.isNotEmpty) ? ' ($reading)' : '';
+        return '정답: ${correctText ?? meaning}  ·  $word$readingPart';
+      }
+      return correctText != null ? '정답: $correctText' : null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
-    final scaffoldBg = theme.scaffoldBackgroundColor;
+    final isLight = brightness == Brightness.light;
 
-    // 정답: 브랜드 핑크 톤, 오답: error 톤
-    final accentColor =
-        isCorrect ? AppColors.primary : AppColors.error(brightness);
+    // 듀오링고 스타일: 정답/오답 시맨틱 컬러
+    final bgColor = isCorrect
+        ? (isLight ? AppColors.quizCorrectBg : AppColors.quizCorrectBgDark)
+        : (isLight ? AppColors.quizWrongBg : AppColors.quizWrongBgDark);
+
+    final accentColor = isCorrect
+        ? (isLight ? AppColors.quizCorrectText : AppColors.quizCorrectTextDark)
+        : (isLight ? AppColors.quizWrongText : AppColors.quizWrongTextDark);
+
+    final buttonColor = isCorrect
+        ? (isLight
+            ? AppColors.quizCorrectButton
+            : AppColors.quizCorrectButtonDark)
+        : (isLight
+            ? AppColors.quizWrongButton
+            : AppColors.quizWrongButtonDark);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
       decoration: BoxDecoration(
-        color: scaffoldBg,
+        color: bgColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -57,7 +108,7 @@ class QuizFeedbackBar extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(top: 12, bottom: 16),
               decoration: BoxDecoration(
-                color: accentColor,
+                color: accentColor.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -80,6 +131,7 @@ class QuizFeedbackBar extends StatelessWidget {
                     : '아쉬워요!',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: accentColor,
                 ),
               ),
               if (isCorrect && streak >= 3) ...[
@@ -97,12 +149,14 @@ class QuizFeedbackBar extends StatelessWidget {
               ],
             ],
           ),
-          if (!isCorrect) ...[
+          // 보충 정보: 정답이든 오답이든 학습 강화용 한 줄 표시
+          if (_feedbackDetail != null) ...[
             const SizedBox(height: 8),
             Text(
-              '정답: ${question.options.firstWhere((o) => o.id == question.correctOptionId).text}',
+              _feedbackDetail!,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: accentColor.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -112,9 +166,17 @@ class QuizFeedbackBar extends StatelessWidget {
             height: 48,
             child: FilledButton(
               onPressed: onNext,
+              style: FilledButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: Text(
                 isLastQuestion ? '결과 보기' : '다음 문제 →',
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),

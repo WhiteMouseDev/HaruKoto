@@ -78,8 +78,22 @@ abstract final class AppColors {
   static const difficultyAdvanced = Color(0xFFEF4444);
   static const scenarioPurple = Color(0xFF8B5CF6);
 
-  // ─── Quiz feedback ───────────────────────────────────────
+  // ─── Quiz feedback (duolingo-style) ─────────────────────
   static const quizCorrect = Color(0xFF4CAF50);
+  // 정답: 민트 톤
+  static const quizCorrectBg = Color(0xFFE8F5EE);
+  static const quizCorrectBgDark = Color(0xFF1A3D2A);
+  static const quizCorrectButton = Color(0xFF2DB08A);
+  static const quizCorrectButtonDark = Color(0xFF26997A);
+  static const quizCorrectText = Color(0xFF1B7A53);
+  static const quizCorrectTextDark = Color(0xFF6EDAAD);
+  // 오답: 코랄/레드 톤
+  static const quizWrongBg = Color(0xFFFFF0F0);
+  static const quizWrongBgDark = Color(0xFF3D1A1A);
+  static const quizWrongButton = Color(0xFFE8577D);
+  static const quizWrongButtonDark = Color(0xFFD14468);
+  static const quizWrongText = Color(0xFFCF3A5A);
+  static const quizWrongTextDark = Color(0xFFFF8A9E);
 
   // ─── Notification icon backgrounds ───────────────────────
   static const notifLevelUp = Color(0xFFFFF3E0);

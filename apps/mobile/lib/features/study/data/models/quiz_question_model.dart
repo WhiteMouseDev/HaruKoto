@@ -32,6 +32,8 @@ class QuizQuestionModel {
   final String? prompt;
   final String? answer;
   final List<String>? distractors;
+  // Vocabulary/Grammar meta (for feedback display)
+  final String? meaningKo;
   // Matching fields (from matchingPairs API response)
   final String? matchingWord;
   final String? matchingMeaning;
@@ -53,6 +55,7 @@ class QuizQuestionModel {
     this.prompt,
     this.answer,
     this.distractors,
+    this.meaningKo,
     this.matchingWord,
     this.matchingMeaning,
   });
@@ -80,6 +83,7 @@ class QuizQuestionModel {
       distractors: (json['distractors'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      meaningKo: json['meaningKo'] as String?,
       matchingWord: json['word'] as String?,
       matchingMeaning: json['meaning'] as String?,
     );
