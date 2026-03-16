@@ -4,6 +4,7 @@ class UserProfileModel {
   final bool showKana;
   final String jlptLevel;
   final String? avatarUrl;
+  final bool showFurigana;
 
   const UserProfileModel({
     required this.nickname,
@@ -11,18 +12,22 @@ class UserProfileModel {
     required this.showKana,
     required this.jlptLevel,
     this.avatarUrl,
+    this.showFurigana = true,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     // API returns nested: {profile: {...}, stats: {...}}
     final profile =
         json['profile'] as Map<String, dynamic>? ?? json;
+    final appSettings =
+        profile['appSettings'] as Map<String, dynamic>? ?? {};
     return UserProfileModel(
       nickname: profile['nickname'] as String? ?? '학습자',
       dailyGoal: profile['dailyGoal'] as int? ?? 10,
       showKana: profile['showKana'] as bool? ?? true,
       jlptLevel: profile['jlptLevel'] as String? ?? 'N5',
       avatarUrl: profile['avatarUrl'] as String?,
+      showFurigana: appSettings['showFurigana'] as bool? ?? true,
     );
   }
 }

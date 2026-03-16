@@ -60,6 +60,11 @@ class AuthInterceptor extends Interceptor {
     } catch (e) {
       debugPrint('[AuthInterceptor] Token refresh failed: $e');
     }
+
+    // Refresh failed → sign out so user returns to login screen
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (_) {}
     handler.next(err);
   }
 

@@ -36,8 +36,8 @@ class ProfileInfo {
   final int streakCount;
   final int longestStreak;
   final bool showKana;
-  final bool notificationEnabled;
   final CallSettings callSettings;
+  final Map<String, dynamic> appSettings;
   final String createdAt;
 
   const ProfileInfo({
@@ -52,10 +52,12 @@ class ProfileInfo {
     required this.streakCount,
     required this.longestStreak,
     required this.showKana,
-    this.notificationEnabled = true,
     this.callSettings = const CallSettings(),
+    this.appSettings = const {},
     required this.createdAt,
   });
+
+  bool get showFurigana => appSettings['showFurigana'] as bool? ?? true;
 
   factory ProfileInfo.fromJson(Map<String, dynamic> json) {
     return ProfileInfo(
@@ -72,10 +74,10 @@ class ProfileInfo {
       streakCount: json['streakCount'] as int? ?? 0,
       longestStreak: json['longestStreak'] as int? ?? 0,
       showKana: json['showKana'] as bool? ?? false,
-      notificationEnabled: json['notificationEnabled'] as bool? ?? true,
       callSettings: CallSettings.fromJson(
         json['callSettings'] as Map<String, dynamic>? ?? {},
       ),
+      appSettings: json['appSettings'] as Map<String, dynamic>? ?? {},
       createdAt: json['createdAt'] as String? ?? '',
     );
   }

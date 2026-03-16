@@ -7,12 +7,12 @@ import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 
 class AppSettingsSection extends ConsumerWidget {
-  final bool notificationEnabled;
+  final bool showFurigana;
   final Future<void> Function(String field, Object value) onUpdate;
 
   const AppSettingsSection({
     super.key,
-    required this.notificationEnabled,
+    required this.showFurigana,
     required this.onUpdate,
   });
 
@@ -63,8 +63,10 @@ class AppSettingsSection extends ConsumerWidget {
                   style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 value: ref.watch(quizSettingsProvider).showFurigana,
-                onChanged: (value) =>
-                    ref.read(quizSettingsProvider.notifier).setShowFurigana(value),
+                onChanged: (value) {
+                  ref.read(quizSettingsProvider.notifier).setShowFurigana(value);
+                  onUpdate('app_settings', {'showFurigana': value});
+                },
               ),
               const Divider(height: 1),
 

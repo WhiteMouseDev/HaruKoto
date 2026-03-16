@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/quiz_settings_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_skeleton.dart';
 import '../providers/home_provider.dart';
@@ -59,6 +60,15 @@ class HomePage extends ConsumerWidget {
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
+
+    // Sync furigana setting from server on profile load
+    if (profile != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(quizSettingsProvider.notifier).setShowFurigana(
+          profile.showFurigana,
+        );
+      });
+    }
 
     return Scaffold(
       body: SafeArea(

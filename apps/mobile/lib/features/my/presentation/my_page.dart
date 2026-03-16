@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/quiz_settings_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
@@ -33,6 +34,12 @@ class _MyPageState extends ConsumerState<MyPage> {
         loading: () => _buildSkeleton(context),
         error: (error, _) => _buildError(context),
         data: (data) {
+          // Sync furigana setting from server
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(quizSettingsProvider.notifier).setShowFurigana(
+              data.profile.showFurigana,
+            );
+          });
           return RefreshIndicator(
             color: theme.colorScheme.primary,
             onRefresh: () async {
@@ -87,7 +94,7 @@ class _MyPageState extends ConsumerState<MyPage> {
 
                 // App Settings
                 AppSettingsSection(
-                  notificationEnabled: data.profile.notificationEnabled,
+                  showFurigana: data.profile.showFurigana,
                   onUpdate: (field, value) async {
                     await ref
                         .read(myRepositoryProvider)
