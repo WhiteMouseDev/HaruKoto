@@ -78,13 +78,11 @@ class ResumeBanner extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => QuizPage(
-                          quizType: s.quizType,
-                          jlptLevel: s.jlptLevel,
-                          count: s.totalQuestions,
-                        ),
-                      ),
+                      quizRoute(QuizPage(
+                        quizType: s.quizType,
+                        jlptLevel: s.jlptLevel,
+                        count: s.totalQuestions,
+                      )),
                     );
                   },
                   icon: const Icon(
@@ -97,11 +95,9 @@ class ResumeBanner extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => QuizPage(
-                          resumeSessionId: s.id,
-                        ),
-                      ),
+                      quizRoute(QuizPage(
+                        resumeSessionId: s.id,
+                      )),
                     );
                   },
                   icon: const Icon(

@@ -57,6 +57,21 @@ class _MyPageState extends ConsumerState<MyPage> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
+                // Learning Stats
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: Icon(LucideIcons.barChart3, size: 20, color: theme.colorScheme.primary),
+                    title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
+                    trailing: Icon(LucideIcons.chevronRight, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                    onTap: () => context.push('/stats'),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.md),
+
                 // Settings
                 SettingsMenu(
                   jlptLevel: data.profile.jlptLevel,

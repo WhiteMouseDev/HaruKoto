@@ -170,14 +170,12 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => QuizPage(
-                          quizType: widget.quizType,
-                          jlptLevel: widget.jlptLevel,
-                          count: 10,
-                          mode: 'review',
-                        ),
-                      ),
+                      quizRoute(QuizPage(
+                        quizType: widget.quizType,
+                        jlptLevel: widget.jlptLevel,
+                        count: 10,
+                        mode: 'review',
+                      )),
                     );
                   },
                   child: Container(
@@ -234,13 +232,11 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
               child: FilledButton.icon(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (_) => QuizPage(
-                        quizType: widget.quizType,
-                        jlptLevel: widget.jlptLevel,
-                        count: 10,
-                      ),
-                    ),
+                    quizRoute(QuizPage(
+                      quizType: widget.quizType,
+                      jlptLevel: widget.jlptLevel,
+                      count: 10,
+                    )),
                   );
                 },
                 icon: const Icon(LucideIcons.rotateCcw, size: 16),

@@ -5,8 +5,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
 import '../../home/providers/home_provider.dart';
 import '../../kana/presentation/kana_hub_page.dart';
-import '../providers/study_provider.dart';
-import 'widgets/resume_banner.dart';
 import 'widgets/study_tab_content.dart';
 import 'widgets/study_skeleton.dart';
 
@@ -97,12 +95,11 @@ class _StudyPageState extends ConsumerState<StudyPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final incompleteAsync = ref.watch(incompleteQuizProvider);
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
 
     // Multi-provider composition: manual AsyncValue handling is used instead
-    // of .when() because loading/error states are combined across 3 providers.
+    // of .when() because loading/error states are combined across 2 providers.
 
     // Determine kana tab visibility from dashboard data
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
@@ -132,15 +129,11 @@ class _StudyPageState extends ConsumerState<StudyPage>
       return const Scaffold(body: SafeArea(child: StudySkeleton()));
     }
 
-    final incompleteSession =
-        incompleteAsync.hasValue ? incompleteAsync.value : null;
-
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
           color: theme.colorScheme.primary,
           onRefresh: () async {
-            ref.invalidate(incompleteQuizProvider);
             ref.invalidate(dashboardProvider);
             ref.invalidate(profileProvider);
           },
@@ -153,11 +146,6 @@ class _StudyPageState extends ConsumerState<StudyPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (incompleteSession != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: ResumeBanner(session: incompleteSession),
-                          ),
                         Text(
                           'JLPT 학습',
                           style: theme.textTheme.headlineSmall?.copyWith(

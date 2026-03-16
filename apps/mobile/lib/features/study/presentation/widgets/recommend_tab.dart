@@ -101,14 +101,12 @@ class RecommendTab extends ConsumerWidget {
             isPrimary: true,
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => const QuizPage(
-                    quizType: 'VOCABULARY',
-                    jlptLevel: 'N5',
-                    count: 10,
-                    mode: 'review',
-                  ),
-                ),
+                quizRoute(const QuizPage(
+                  quizType: 'VOCABULARY',
+                  jlptLevel: 'N5',
+                  count: 10,
+                  mode: 'review',
+                )),
               );
             },
           ),
@@ -122,13 +120,11 @@ class RecommendTab extends ConsumerWidget {
             actionText: '학습 시작 →',
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => const QuizPage(
-                    quizType: 'VOCABULARY',
-                    jlptLevel: 'N5',
-                    count: 10,
-                  ),
-                ),
+                quizRoute(const QuizPage(
+                  quizType: 'VOCABULARY',
+                  jlptLevel: 'N5',
+                  count: 10,
+                )),
               );
             },
           ),

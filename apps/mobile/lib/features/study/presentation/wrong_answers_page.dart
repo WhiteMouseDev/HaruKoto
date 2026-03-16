@@ -157,14 +157,12 @@ class _WrongAnswersPageState
                   child: FilledButton.icon(
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder: (_) => const QuizPage(
-                            quizType: 'VOCABULARY',
-                            jlptLevel: 'N5',
-                            count: 10,
-                            mode: 'review',
-                          ),
-                        ),
+                        quizRoute(const QuizPage(
+                          quizType: 'VOCABULARY',
+                          jlptLevel: 'N5',
+                          count: 10,
+                          mode: 'review',
+                        )),
                       );
                     },
                     icon: const Icon(

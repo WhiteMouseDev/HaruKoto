@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../data/models/dashboard_model.dart';
 
 class WeeklyChart extends StatelessWidget {
@@ -209,6 +210,22 @@ class WeeklyChart extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Stats detail link
+            Center(
+              child: GestureDetector(
+                onTap: () => context.push('/stats'),
+                child: Text(
+                  '학습 통계 자세히 보기 →',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
             ),

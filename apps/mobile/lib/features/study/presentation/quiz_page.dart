@@ -14,6 +14,13 @@ import 'widgets/quiz_progress_bar.dart';
 import 'widgets/quiz_header.dart';
 import 'widgets/quiz_feedback_bar.dart';
 
+/// No-transition route for quiz pages (avoids distracting slide animation).
+Route<T> quizRoute<T>(Widget child) => PageRouteBuilder<T>(
+      pageBuilder: (_, __, ___) => child,
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
+    );
+
 class QuizPage extends ConsumerStatefulWidget {
   final String quizType;
   final String jlptLevel;
@@ -164,14 +171,12 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           await repo.completeQuiz(_sessionId!, stageId: widget.stageId);
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => QuizResultPage(
-            result: result,
-            quizType: widget.quizType,
-            jlptLevel: widget.jlptLevel,
-            sessionId: _sessionId!,
-          ),
-        ),
+        quizRoute(QuizResultPage(
+          result: result,
+          quizType: widget.quizType,
+          jlptLevel: widget.jlptLevel,
+          sessionId: _sessionId!,
+        )),
       );
     } catch (e) {
       debugPrint('Failed to complete quiz: $e');
@@ -419,54 +424,63 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     return _buildPopScope(
       child: Scaffold(
         body: SafeArea(
-          child: Column(
+          child: Stack(
             children: [
-              QuizHeader(
-                title: _headerTitle,
-                count: _headerCount,
-                onBack: () async {
-                  final shouldPop =
-                      await _onWillPop();
-                  if (shouldPop && mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16),
-                child: QuizProgressBar(
-                  progress: progress,
-                  streak: _streak,
-                  showStreak: _answered,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(
-                          horizontal: 16),
-                  child: FourChoiceQuiz(
-                    question: question,
-                    selectedOptionId:
-                        _selectedOptionId,
-                    answered: _answered,
-                    isCorrect: _isCorrect,
-                    showFurigana: ref.watch(quizSettingsProvider).showFurigana,
-                    onSelect: _handleAnswer,
+              Column(
+                children: [
+                  QuizHeader(
+                    title: _headerTitle,
+                    count: _headerCount,
+                    onBack: () async {
+                      final shouldPop =
+                          await _onWillPop();
+                      if (shouldPop && mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16),
+                    child: QuizProgressBar(
+                      progress: progress,
+                      streak: _streak,
+                      showStreak: _answered,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(
+                              horizontal: 16),
+                      child: FourChoiceQuiz(
+                        question: question,
+                        selectedOptionId:
+                            _selectedOptionId,
+                        answered: _answered,
+                        isCorrect: _isCorrect,
+                        showFurigana: ref.watch(quizSettingsProvider).showFurigana,
+                        onSelect: _handleAnswer,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               if (_answered)
-                QuizFeedbackBar(
-                  question: question,
-                  isCorrect: _isCorrect,
-                  streak: _streak,
-                  isLastQuestion:
-                      _currentIndex + 1 >=
-                          _questions.length,
-                  onNext: _handleNext,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: QuizFeedbackBar(
+                    question: question,
+                    isCorrect: _isCorrect,
+                    streak: _streak,
+                    isLastQuestion:
+                        _currentIndex + 1 >=
+                            _questions.length,
+                    onNext: _handleNext,
+                  ),
                 ),
             ],
           ),

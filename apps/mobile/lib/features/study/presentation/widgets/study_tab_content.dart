@@ -275,15 +275,13 @@ class _StageCard extends ConsumerWidget {
 
   void _startStageQuiz(BuildContext context, WidgetRef ref, String mode) {
     Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(
-        builder: (_) => QuizPage(
-          quizType: category.apiType,
-          jlptLevel: jlptLevel,
-          count: stage.contentCount > 0 ? stage.contentCount : 10,
-          mode: mode != 'normal' ? mode : null,
-          stageId: stage.id,
-        ),
-      ),
+      quizRoute(QuizPage(
+        quizType: category.apiType,
+        jlptLevel: jlptLevel,
+        count: stage.contentCount > 0 ? stage.contentCount : 10,
+        mode: mode != 'normal' ? mode : null,
+        stageId: stage.id,
+      )),
     ).then((_) {
       // Refresh stages after quiz completion
       ref.invalidate(

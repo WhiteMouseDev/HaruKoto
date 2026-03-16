@@ -274,7 +274,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
               borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
-                onTap: () => context.go('/study'),
+                onTap: () => context.go('/practice'),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 14),

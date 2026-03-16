@@ -19,6 +19,7 @@ import '../../features/kana/presentation/kana_chart_page.dart';
 import '../../features/my/presentation/my_page.dart';
 import '../../features/my/presentation/payments_page.dart';
 import '../../features/stats/presentation/stats_page.dart';
+import '../../features/practice/presentation/practice_page.dart';
 import '../../features/study/presentation/study_page.dart';
 import '../../features/study/presentation/learned_words_page.dart';
 import '../../features/study/presentation/wrong_answers_page.dart';
@@ -110,17 +111,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
-          // Tab 1: Stats
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/stats',
-                builder: (context, state) => const StatsPage(),
-              ),
-            ],
-          ),
-
-          // Tab 2: Study
+          // Tab 1: Study
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -217,6 +208,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
+          // Tab 2: Practice
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/practice',
+                builder: (context, state) => const PracticePage(),
+              ),
+            ],
+          ),
+
           // Tab 3: Chat
           StatefulShellBranch(
             routes: [
@@ -287,6 +288,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // === Full-screen routes (outside shell) ===
+      GoRoute(
+        path: '/stats',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          state: state,
+          child: const StatsPage(),
+        ),
+      ),
       GoRoute(
         path: '/notifications',
         parentNavigatorKey: _rootNavigatorKey,

@@ -37,14 +37,16 @@ abstract final class AppColors {
       brightness == Brightness.light ? hkRedLight : hkRedDark;
 
   // Semantic colors (brightness-aware)
+  // Soft teal green – complements pink theme without clashing
   static Color success(Brightness brightness) =>
       brightness == Brightness.light
-          ? const Color(0xFF22C55E)
-          : const Color(0xFF16A34A);
+          ? const Color(0xFF2DB08A)
+          : const Color(0xFF26997A);
+  // Warm rose – harmonises with brandPink rather than harsh red
   static Color error(Brightness brightness) =>
       brightness == Brightness.light
-          ? const Color(0xFFEF4444)
-          : const Color(0xFFDC2626);
+          ? const Color(0xFFE8577D)
+          : const Color(0xFFD14468);
   static Color warning(Brightness brightness) =>
       brightness == Brightness.light
           ? const Color(0xFFF59E0B)
