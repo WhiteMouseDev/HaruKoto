@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/colors.dart';
 import '../../data/models/mission_model.dart';
 
 class DailyMissionsCard extends StatelessWidget {
@@ -38,7 +39,7 @@ class DailyMissionsCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFFCE7EC)),
+          border: Border.all(color: AppColors.lightBorder),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -146,7 +147,7 @@ class _MissionItem extends StatelessWidget {
               shape: BoxShape.circle,
               color: mission.rewardClaimed
                   ? theme.colorScheme.primary
-                  : const Color(0xFFFFF0F3),
+                  : AppColors.lightSecondary,
             ),
             child: Icon(
               mission.rewardClaimed

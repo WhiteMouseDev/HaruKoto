@@ -216,7 +216,7 @@ class _ScoreBadge extends StatelessWidget {
     final color = score >= 80
         ? AppColors.hkYellowLight
         : score >= 50
-            ? const Color(0xFFFBBF24)
+            ? AppColors.scoreMid
             : AppColors.overlay(0.5);
 
     return Row(

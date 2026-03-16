@@ -23,25 +23,46 @@ class QuizFeedbackBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
+    final scaffoldBg = theme.scaffoldBackgroundColor;
+
+    // 정답: 브랜드 핑크 톤, 오답: error 톤
+    final accentColor = isCorrect
+        ? AppColors.primary
+        : AppColors.error(brightness);
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
       decoration: BoxDecoration(
-        color: isCorrect
-            ? AppColors.success(brightness)
-                .withValues(alpha: 0.1)
-            : AppColors.error(brightness)
-                .withValues(alpha: 0.1),
+        color: scaffoldBg,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.overlay(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 상단 accent 라인
+          Center(
+            child: Container(
+              width: 48,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 16),
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
           Row(
             children: [
               Icon(
@@ -49,9 +70,7 @@ class QuizFeedbackBar extends StatelessWidget {
                     ? LucideIcons.checkCircle2
                     : LucideIcons.xCircle,
                 size: 24,
-                color: isCorrect
-                    ? AppColors.success(brightness)
-                    : AppColors.error(brightness),
+                color: accentColor,
               ),
               const SizedBox(width: 8),
               Text(

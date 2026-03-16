@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/colors.dart';
 
 TextTheme appTextTheme(Brightness brightness) {
   final base = GoogleFonts.notoSansKrTextTheme();
   final jpFontFamily = GoogleFonts.notoSansJp().fontFamily;
   final fallback = [if (jpFontFamily != null) jpFontFamily];
   final color = brightness == Brightness.light
-      ? const Color(0xFF1A1A2E)
-      : const Color(0xFFFFFFFF);
+      ? AppColors.lightText
+      : AppColors.darkText;
 
   return base.copyWith(
     displayLarge: base.displayLarge?.copyWith(color: color, fontWeight: FontWeight.w700, fontFamilyFallback: fallback),

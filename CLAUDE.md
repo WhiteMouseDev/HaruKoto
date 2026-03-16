@@ -104,6 +104,16 @@ test: 테스트 추가/수정
 chore: 빌드, 설정 변경
 ```
 
+## 모바일 빌드 규칙 (apps/mobile)
+
+- iOS 빌드 시 반드시 `--dart-define-from-file=.env` 포함
+- 실기기 device ID: `00008150-000A20881E88401C` (Kun Woo's iPhone)
+- 시뮬레이터 사용 시: `iPhone 17 Pro` (ID: `16FEF8B7-DC41-49D8-9EC6-E9911468E875`) 사용
+- Release 빌드: `flutter build ios --release --dart-define-from-file=.env`
+- 실기기 설치: `flutter install --release -d 00008150-000A20881E88401C`
+- Debug 실행: `flutter run -d 00008150-000A20881E88401C --dart-define-from-file=.env`
+- 시뮬레이터 실행: `flutter run -d 16FEF8B7-DC41-49D8-9EC6-E9911468E875 --dart-define-from-file=.env`
+
 ## 코딩 컨벤션
 
 ### TypeScript

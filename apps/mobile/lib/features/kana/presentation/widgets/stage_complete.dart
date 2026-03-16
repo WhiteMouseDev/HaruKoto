@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 
 class StageComplete extends StatelessWidget {
@@ -60,7 +61,7 @@ class StageComplete extends StatelessWidget {
                         Icon(
                           LucideIcons.zap,
                           size: 20,
-                          color: const Color(0xFFFFD93D),
+                          color: AppColors.hkYellowLight,
                         ),
                         const SizedBox(width: 8),
                         Text(

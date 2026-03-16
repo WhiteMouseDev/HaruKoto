@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/kana_character_model.dart';
 
@@ -21,7 +22,7 @@ class KanaCharacterCard extends StatelessWidget {
 
   Color _statusColor(ThemeData theme) {
     if (character.progress?.mastered == true) return theme.colorScheme.primary;
-    if (character.progress != null) return const Color(0xFF87CEEB);
+    if (character.progress != null) return AppColors.hkBlueLight;
     return theme.colorScheme.onSurface.withValues(alpha: 0.4);
   }
 

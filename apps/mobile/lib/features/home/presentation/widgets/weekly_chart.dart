@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/colors.dart';
 import '../../data/models/dashboard_model.dart';
 
 class WeeklyChart extends StatelessWidget {
@@ -33,7 +34,7 @@ class WeeklyChart extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFFCE7EC)),
+          border: Border.all(color: AppColors.lightBorder),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),

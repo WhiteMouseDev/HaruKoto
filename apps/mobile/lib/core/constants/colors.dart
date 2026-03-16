@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Brand
+  // ─── Brand ───────────────────────────────────────────────
   static const primary = Color(0xFFF6A5B3);
   static const brandPink = Color(0xFFFFB7C5);
 
-  // Light theme
+  // ─── Light theme ─────────────────────────────────────────
   static const lightBackground = Color(0xFFFCF6F5);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = Color(0xFFFFF0F3);
@@ -13,7 +13,7 @@ abstract final class AppColors {
   static const lightText = Color(0xFF1A1A2E);
   static const lightSubtext = Color(0xFF666680);
 
-  // Dark theme
+  // ─── Dark theme ──────────────────────────────────────────
   static const darkBackground = Color(0xFF1A1A2E);
   static const darkCard = Color(0xFF242442);
   static const darkSecondary = Color(0xFF2A2A4A);
@@ -21,7 +21,7 @@ abstract final class AppColors {
   static const darkText = Color(0xFFFFFFFF);
   static const darkSubtext = Color(0xFFB0B0C0);
 
-  // Semantic colors (light / dark)
+  // ─── HK semantic colors (light / dark) ───────────────────
   static const hkBlueLight = Color(0xFF87CEEB);
   static const hkBlueDark = Color(0xFF5BA3C9);
   static const hkYellowLight = Color(0xFFFFD93D);
@@ -36,7 +36,7 @@ abstract final class AppColors {
   static Color hkRed(Brightness brightness) =>
       brightness == Brightness.light ? hkRedLight : hkRedDark;
 
-  // Semantic colors (brightness-aware)
+  // ─── Functional semantic colors (brightness-aware) ───────
   // Soft teal green – complements pink theme without clashing
   static Color success(Brightness brightness) =>
       brightness == Brightness.light
@@ -56,10 +56,66 @@ abstract final class AppColors {
           ? const Color(0xFF3B82F6)
           : const Color(0xFF2563EB);
 
-  // On gradient surfaces (white text/icons on colored backgrounds)
+  // ─── Auth gradient ───────────────────────────────────────
+  static const authGradientTop = Color(0xFFFCF6F5);
+  static const authGradientMid = Color(0xFFFFF0F3);
+  static const authGradientBottom = Color(0xFFFFE4EC);
+  static const authGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [authGradientTop, authGradientMid, authGradientBottom],
+  );
+
+  // ─── Kakao brand ─────────────────────────────────────────
+  static const kakaoBg = Color(0xFFFEE500);
+  static const kakaoText = Color(0xFF191919);
+
+  // ─── Voice call / dark surface ───────────────────────────
+  static const callBackground = Color(0xFF0F172A);
+  static const callSurface = Color(0xFF1E293B);
+  static const callAccent = Color(0xFF10B981);
+  static const callAccentLight = Color(0xFF34D399);
+
+  // ─── Scenario / difficulty ───────────────────────────────
+  static const difficultyBeginner = Color(0xFF22C55E);
+  static const difficultyIntermediate = Color(0xFFEAB308);
+  static const difficultyAdvanced = Color(0xFFEF4444);
+  static const scenarioPurple = Color(0xFF8B5CF6);
+
+  // ─── Quiz feedback ───────────────────────────────────────
+  static const quizCorrect = Color(0xFF4CAF50);
+
+  // ─── Notification icon backgrounds ───────────────────────
+  static const notifLevelUp = Color(0xFFFFF3E0);
+  static const notifStreak = Color(0xFFFBE9E7);
+  static const notifAchievement = Color(0xFFFFF8E1);
+
+  // ─── Score ───────────────────────────────────────────────
+  static const scoreMid = Color(0xFFFBBF24);
+
+  // ─── Heatmap intensities ─────────────────────────────────
+  static const heatmapLight = [
+    Color(0xFFF0F0F0),
+    Color(0xFFFCE7EC),
+    Color(0xFFF6A5B3),
+    Color(0xFFF494A4),
+    Color(0xFFE5607A),
+  ];
+  static const heatmapDark = [
+    Color(0xFF2A2A4A),
+    Color(0xFF3D1F2A),
+    Color(0xFF6B3040),
+    Color(0xFF994158),
+    Color(0xFFCC5570),
+  ];
+
+  static List<Color> heatmapColors(Brightness brightness) =>
+      brightness == Brightness.light ? heatmapLight : heatmapDark;
+
+  // ─── On gradient surfaces ────────────────────────────────
   static const onGradient = Colors.white;
   static const onGradientMuted = Color(0xB3FFFFFF); // white70
 
-  // Overlay colors
+  // ─── Overlay ─────────────────────────────────────────────
   static Color overlay(double alpha) => Colors.black.withValues(alpha: alpha);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/kana_stage_model.dart';
 
@@ -103,10 +104,10 @@ class StageQuiz extends StatelessWidget {
 
             if (showFeedback) {
               if (isCorrect) {
-                bgColor = const Color(0xFF4CAF50)
+                bgColor = AppColors.quizCorrect
                     .withValues(alpha: 0.1);
-                borderColor = const Color(0xFF4CAF50);
-                textColor = const Color(0xFF4CAF50);
+                borderColor = AppColors.quizCorrect;
+                textColor = AppColors.quizCorrect;
               } else if (isSelected && !isCorrect) {
                 bgColor = theme.colorScheme.error
                     .withValues(alpha: 0.1);

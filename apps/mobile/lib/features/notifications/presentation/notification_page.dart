@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/constants/colors.dart';
 import '../data/models/notification_model.dart';
 import '../providers/notification_provider.dart';
 
@@ -212,11 +213,11 @@ class _NotificationTile extends StatelessWidget {
   Color _iconBgColor(ThemeData theme) {
     switch (notification.type) {
       case 'level_up':
-        return const Color(0xFFFFF3E0);
+        return AppColors.notifLevelUp;
       case 'streak':
-        return const Color(0xFFFBE9E7);
+        return AppColors.notifStreak;
       case 'achievement':
-        return const Color(0xFFFFF8E1);
+        return AppColors.notifAchievement;
       default:
         return theme.colorScheme.surfaceContainerHigh;
     }

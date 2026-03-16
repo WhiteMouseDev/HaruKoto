@@ -154,11 +154,11 @@ class CharacterCardWidget extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                    color: AppColors.callAccent.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(LucideIcons.phone,
-                      size: 16, color: Color(0xFF10B981)),
+                      size: 16, color: AppColors.callAccent),
                 ),
               ],
             ],

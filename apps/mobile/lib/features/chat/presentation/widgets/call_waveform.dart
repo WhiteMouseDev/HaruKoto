@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/constants/colors.dart';
 
 class CallWaveformWidget extends StatefulWidget {
   final String mode; // 'idle' | 'speaking' | 'listening'
@@ -58,14 +59,14 @@ class _CallWaveformWidgetState extends State<CallWaveformWidget>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  color: AppColors.callAccent.withValues(alpha: 0.25),
                   blurRadius: 24,
                 ),
               ],
             ),
             child: CircleAvatar(
               radius: 64,
-              backgroundColor: const Color(0xFF1E293B),
+              backgroundColor: AppColors.callSurface,
               backgroundImage: widget.avatarUrl != null
                   ? NetworkImage(widget.avatarUrl!)
                   : null,
@@ -113,7 +114,7 @@ class _WaveformPainter extends CustomPainter {
       }
 
       final paint = Paint()
-        ..color = const Color(0xFF34D399).withValues(alpha: opacity.clamp(0.0, 1.0))
+        ..color = AppColors.callAccentLight.withValues(alpha: opacity.clamp(0.0, 1.0))
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
 

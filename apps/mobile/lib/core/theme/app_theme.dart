@@ -30,7 +30,7 @@ abstract final class AppTheme {
       surfaceContainer: card,
       surfaceContainerHigh: surface,
       surfaceContainerHighest: surface,
-      error: const Color(0xFFEF4444),
+      error: AppColors.difficultyAdvanced,
       onError: Colors.white,
       outline: border,
     );

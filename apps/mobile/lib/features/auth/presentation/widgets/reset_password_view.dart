@@ -25,15 +25,7 @@ class ResetPasswordView extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFCF6F5),
-              Color(0xFFFFF0F3),
-              Color(0xFFFFE4EC),
-            ],
-          ),
+          gradient: AppColors.authGradient,
         ),
         child: SafeArea(
           child: Center(

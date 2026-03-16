@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/heatmap_data_model.dart';
 
@@ -26,24 +27,7 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
   static const double _gap = 3;
 
   List<Color> _getIntensityColors(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    if (brightness == Brightness.light) {
-      return const [
-        Color(0xFFF0F0F0),
-        Color(0xFFFCE7EC),
-        Color(0xFFF6A5B3),
-        Color(0xFFF494A4),
-        Color(0xFFE5607A),
-      ];
-    } else {
-      return const [
-        Color(0xFF2A2A4A),
-        Color(0xFF3D1F2A),
-        Color(0xFF6B3040),
-        Color(0xFF994158),
-        Color(0xFFCC5570),
-      ];
-    }
+    return AppColors.heatmapColors(Theme.of(context).brightness);
   }
 
   int _getIntensity(int count, int maxCount) {

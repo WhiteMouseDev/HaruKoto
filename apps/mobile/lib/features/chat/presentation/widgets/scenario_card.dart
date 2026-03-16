@@ -4,10 +4,10 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/scenario_model.dart';
 
-const _difficultyStyles = {
-  'BEGINNER': _DiffStyle('초급', Color(0xFF22C55E)),
-  'INTERMEDIATE': _DiffStyle('중급', Color(0xFFEAB308)),
-  'ADVANCED': _DiffStyle('고급', Color(0xFFEF4444)),
+final _difficultyStyles = {
+  'BEGINNER': _DiffStyle('초급', AppColors.difficultyBeginner),
+  'INTERMEDIATE': _DiffStyle('중급', AppColors.difficultyIntermediate),
+  'ADVANCED': _DiffStyle('고급', AppColors.difficultyAdvanced),
 };
 
 class _DiffStyle {
@@ -120,11 +120,11 @@ class ScenarioCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                    color: AppColors.scenarioPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(LucideIcons.phone,
-                      size: 16, color: Color(0xFF8B5CF6)),
+                      size: 16, color: AppColors.scenarioPurple),
                 ),
               ),
             ],
