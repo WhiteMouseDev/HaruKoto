@@ -114,6 +114,14 @@ chore: 빌드, 설정 변경
 - Debug 실행: `flutter run -d 00008150-000A20881E88401C --dart-define-from-file=.env`
 - 시뮬레이터 실행: `flutter run -d 16FEF8B7-DC41-49D8-9EC6-E9911468E875 --dart-define-from-file=.env`
 
+## Push 전 필수 체크 (lint/analyze)
+
+코드를 커밋하기 전에 변경된 앱의 lint를 반드시 실행하고, 에러가 있으면 수정 후 커밋해야 합니다.
+
+- **Backend** (`apps/api/` 변경 시): `cd apps/api && uv run ruff check app/ tests/ && uv run ruff format --check app/ tests/`
+- **Frontend** (`apps/web/` 또는 `packages/` 변경 시): `pnpm lint`
+- **Mobile** (`apps/mobile/` 변경 시): `cd apps/mobile && flutter analyze`
+
 ## 코딩 컨벤션
 
 ### TypeScript

@@ -12,9 +12,37 @@ concurrency:
 
 jobs:
   # ============================
+  # Detect changes
+  # ============================
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+            backend:
+              - 'apps/api/**'
+            mobile:
+              - 'apps/mobile/**'
+
+  # ============================
   # Frontend (Next.js / Turborepo)
   # ============================
   frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,6 +83,8 @@ jobs:
   # Backend (FastAPI)
   # ============================
   backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -90,6 +120,8 @@ jobs:
   # Mobile (Flutter)
   # ============================
   mobile:
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:

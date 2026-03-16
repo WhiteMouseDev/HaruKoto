@@ -7,7 +7,6 @@ import logging
 import struct
 from datetime import UTC, datetime, timedelta
 
-import httpx
 from google import genai
 from google.genai import types
 
