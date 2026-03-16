@@ -50,6 +50,7 @@ router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 async def get_characters(
     kana_type: KanaType | None = None,
     category: str | None = None,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     query = select(KanaCharacter).order_by(KanaCharacter.order)
@@ -60,8 +61,13 @@ async def get_characters(
     result = await db.execute(query)
     characters = result.scalars().all()
 
-    return [
-        {
+    # Fetch user progress for all kana characters
+    progress_result = await db.execute(select(UserKanaProgress).where(UserKanaProgress.user_id == user.id))
+    progress_map: dict[str, UserKanaProgress] = {str(p.kana_id): p for p in progress_result.scalars().all()}
+
+    resp = []
+    for c in characters:
+        item: dict = {
             "id": str(c.id),
             "kanaType": c.kana_type.value,
             "character": c.character,
@@ -78,8 +84,19 @@ async def get_characters(
             "category": c.category,
             "order": c.order,
         }
-        for c in characters
-    ]
+        p = progress_map.get(str(c.id))
+        if p:
+            item["progress"] = {
+                "correctCount": p.correct_count,
+                "streak": p.streak,
+                "mastered": p.mastered,
+                "lastReviewedAt": p.last_reviewed_at.isoformat() if p.last_reviewed_at else None,
+            }
+        else:
+            item["progress"] = None
+        resp.append(item)
+
+    return resp
 
 
 @router.get("/stages", status_code=200)

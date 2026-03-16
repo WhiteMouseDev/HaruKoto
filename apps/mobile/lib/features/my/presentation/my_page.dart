@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/quiz_settings_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../home/providers/home_provider.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
 import 'widgets/subscription_section.dart';
@@ -93,6 +94,8 @@ class _MyPageState extends ConsumerState<MyPage> {
                         .read(myRepositoryProvider)
                         .updateProfile({field: value});
                     ref.invalidate(profileDetailProvider);
+                    ref.invalidate(dashboardProvider);
+                    ref.invalidate(profileProvider);
                   },
                 ),
                 const SizedBox(height: AppSizes.md),

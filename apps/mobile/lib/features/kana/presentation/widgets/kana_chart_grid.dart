@@ -107,7 +107,6 @@ class KanaChartGrid extends StatelessWidget {
 
                   Color bgColor;
                   Color textColor;
-                  double opacity = 1.0;
 
                   switch (status) {
                     case _CellStatus.mastered:
@@ -115,36 +114,33 @@ class KanaChartGrid extends StatelessWidget {
                           theme.colorScheme.primary.withValues(alpha: 0.2);
                       textColor = theme.colorScheme.primary;
                     case _CellStatus.learned:
-                      bgColor = theme.colorScheme.surfaceContainerHigh;
+                      bgColor =
+                          theme.colorScheme.primary.withValues(alpha: 0.08);
                       textColor = theme.colorScheme.onSurface;
                     case _CellStatus.locked:
                       bgColor = theme.colorScheme.surfaceContainerHigh;
                       textColor =
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5);
-                      opacity = 0.4;
+                          theme.colorScheme.onSurface.withValues(alpha: 0.7);
                   }
 
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Opacity(
-                        opacity: opacity,
-                        child: Material(
-                          color: bgColor,
+                      child: Material(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(8),
+                        child: InkWell(
                           borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(8),
-                            onTap: () => onCharacterTap(character),
-                            child: SizedBox(
-                              height: 44,
-                              child: Center(
-                                child: Text(
-                                  character.character,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: textColor,
-                                  ),
+                          onTap: () => onCharacterTap(character),
+                          child: SizedBox(
+                            height: 44,
+                            child: Center(
+                              child: Text(
+                                character.character,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: textColor,
                                 ),
                               ),
                             ),
