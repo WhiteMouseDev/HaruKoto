@@ -84,6 +84,14 @@ class ChatRepository {
         .toList();
   }
 
+  Future<CharacterDetail> fetchCharacterDetail(String characterId) async {
+    final response =
+        await _dio.get<Map<String, dynamic>>('/chat/characters/$characterId');
+    return CharacterDetail.fromJson(
+      response.data!['character'] as Map<String, dynamic>? ?? {},
+    );
+  }
+
   Future<Map<String, int>> fetchCharacterStats() async {
     final response =
         await _dio.get<Map<String, dynamic>>('/chat/characters/stats');
@@ -104,6 +112,18 @@ class ChatRepository {
       data: {'characterId': characterId},
     );
     return response.data!['favorited'] as bool? ?? false;
+  }
+
+  // ---------- Live token ----------
+
+  Future<LiveTokenResponse> fetchLiveToken({String? characterId}) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/chat/live-token',
+      data: {
+        if (characterId != null) 'character_id': characterId,
+      },
+    );
+    return LiveTokenResponse.fromJson(response.data!);
   }
 
   // ---------- Live feedback (voice call) ----------
@@ -231,6 +251,20 @@ class LiveFeedbackResponse {
                   (e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+    );
+  }
+}
+
+class LiveTokenResponse {
+  final String token;
+  final String wsUri;
+
+  const LiveTokenResponse({required this.token, required this.wsUri});
+
+  factory LiveTokenResponse.fromJson(Map<String, dynamic> json) {
+    return LiveTokenResponse(
+      token: json['token'] as String? ?? '',
+      wsUri: json['wsUri'] as String? ?? '',
     );
   }
 }

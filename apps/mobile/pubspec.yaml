@@ -46,6 +46,14 @@ dependencies:
   lucide_icons: ^0.257.0
   widgetbook: ^3.22.0
 
+  # Voice Call
+  record: ^5.2.1
+  web_socket_channel: ^3.0.2
+  flutter_pcm_sound: ^3.3.3
+
+dependency_overrides:
+  record_platform_interface: 1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

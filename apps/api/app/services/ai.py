@@ -183,19 +183,25 @@ async def generate_live_token() -> dict[str, str]:
     """
     _ensure_configured()
 
-    expire_time = (datetime.now(UTC) + timedelta(minutes=5)).isoformat()
+    alpha_client = genai.Client(
+        api_key=settings.GOOGLE_API_KEY,
+        http_options={"api_version": "v1alpha"},
+    )
 
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            "https://generativelanguage.googleapis.com/v1alpha/authTokens",
-            params={"key": settings.GOOGLE_API_KEY},
-            json={"config": {"expireTime": expire_time}},
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    expire_time = datetime.now(UTC) + timedelta(minutes=5)
+    new_session_expire_time = datetime.now(UTC) + timedelta(minutes=1)
+
+    token_response = alpha_client.auth_tokens.create(
+        config={
+            "uses": 1,
+            "expire_time": expire_time.isoformat(),
+            "new_session_expire_time": new_session_expire_time.isoformat(),
+            "http_options": {"api_version": "v1alpha"},
+        },
+    )
 
     return {
-        "token": data.get("token", ""),
+        "token": token_response.name or "",
         "wsUri": _LIVE_WS_URI,
     }
 

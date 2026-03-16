@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../providers/chat_provider.dart';
+import 'conversation_feedback_page.dart';
 
-class CallAnalyzingPage extends StatefulWidget {
-  const CallAnalyzingPage({super.key});
+class CallAnalyzingPage extends ConsumerStatefulWidget {
+  final List<Map<String, String>> transcript;
+  final int durationSeconds;
+  final String? characterId;
+  final String? scenarioId;
+
+  const CallAnalyzingPage({
+    super.key,
+    required this.transcript,
+    required this.durationSeconds,
+    this.characterId,
+    this.scenarioId,
+  });
 
   @override
-  State<CallAnalyzingPage> createState() => _CallAnalyzingPageState();
+  ConsumerState<CallAnalyzingPage> createState() => _CallAnalyzingPageState();
 }
 
-class _CallAnalyzingPageState extends State<CallAnalyzingPage>
+class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   String _status = '통화 내용을 분석하고 있어요...';
@@ -33,33 +47,53 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
   }
 
   Future<void> _startAnalysis() async {
-    // Phase 1: Transcription
-    await Future<void>.delayed(const Duration(seconds: 1));
+    // Phase 1: Show progress
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
     setState(() {
       _status = 'AI가 피드백을 생성하고 있어요...';
-      _progress = 0.5;
+      _progress = 0.3;
     });
 
-    // Phase 2: Feedback generation
-    await Future<void>.delayed(const Duration(seconds: 1));
-    if (!mounted) return;
-    setState(() {
-      _status = '거의 다 됐어요!';
-      _progress = 0.85;
-    });
+    try {
+      // Phase 2: Call API
+      final repo = ref.read(chatRepositoryProvider);
+      final result = await repo.sendLiveFeedback(
+        transcript: widget.transcript,
+        durationSeconds: widget.durationSeconds,
+        characterId: widget.characterId,
+        scenarioId: widget.scenarioId,
+      );
 
-    // Phase 3: Complete
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
-    setState(() {
-      _progress = 1.0;
-    });
+      if (!mounted) return;
+      setState(() {
+        _status = '분석 완료!';
+        _progress = 1.0;
+      });
 
-    // Navigate back (will be replaced with feedback page navigation later)
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    Navigator.of(context).pop();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      // Navigate to feedback page
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => ConversationFeedbackPage(
+            conversationId: result.conversationId,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '분석에 실패했습니다';
+        _progress = 0.0;
+      });
+
+      // Wait and pop back
+      await Future<void>.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -67,7 +101,7 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.callBackground,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl),
@@ -86,14 +120,14 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
                       boxShadow: [
                         BoxShadow(
                           color:
-                              const Color(0xFF10B981).withValues(alpha: 0.25),
+                              AppColors.callAccent.withValues(alpha: 0.25),
                           blurRadius: 24,
                         ),
                       ],
                     ),
                     child: const CircleAvatar(
                       radius: 56,
-                      backgroundColor: Color(0xFF1E293B),
+                      backgroundColor: AppColors.callSurface,
                       child: Text('🦊', style: TextStyle(fontSize: 48)),
                     ),
                   ),
@@ -104,7 +138,7 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
                       width: 40,
                       height: 40,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF1E293B),
+                        color: AppColors.callSurface,
                         shape: BoxShape.circle,
                       ),
                       child: AnimatedBuilder(
@@ -115,7 +149,7 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
                         ),
                         child: const Icon(
                           LucideIcons.rotateCw,
-                          color: Color(0xFF34D399),
+                          color: AppColors.callAccentLight,
                           size: 20,
                         ),
                       ),
@@ -148,39 +182,14 @@ class _CallAnalyzingPageState extends State<CallAnalyzingPage>
                   curve: Curves.easeInOut,
                   child: LinearProgressIndicator(
                     value: _progress,
-                    backgroundColor: AppColors.onGradient.withValues(alpha: 0.12),
+                    backgroundColor:
+                        AppColors.onGradient.withValues(alpha: 0.12),
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF34D399),
+                      AppColors.callAccentLight,
                     ),
                     minHeight: 4,
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSizes.lg),
-
-              // Progress dots
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(3, (i) {
-                  return TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.3, end: 1.0),
-                    duration: const Duration(milliseconds: 1200),
-                    curve: Curves.easeInOut,
-                    builder: (_, value, child) => Opacity(
-                      opacity: value,
-                      child: child,
-                    ),
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF34D399),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  );
-                }),
               ),
             ],
           ),

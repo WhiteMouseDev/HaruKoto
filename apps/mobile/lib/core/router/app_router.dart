@@ -236,7 +236,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'call/analyzing',
                     pageBuilder: (context, state) => _slideTransitionPage(
                       state: state,
-                      child: const CallAnalyzingPage(),
+                      child: const CallAnalyzingPage(
+                        transcript: [],
+                        durationSeconds: 0,
+                      ),
                     ),
                   ),
                   GoRoute(

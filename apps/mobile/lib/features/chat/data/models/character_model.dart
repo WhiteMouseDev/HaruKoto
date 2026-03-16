@@ -56,3 +56,48 @@ class CharacterListItem {
     );
   }
 }
+
+/// Character detail with voice call fields.
+class CharacterDetail {
+  final String id;
+  final String name;
+  final String nameJa;
+  final String? avatarUrl;
+  final String? personality;
+  final String? voiceName;
+  final String? voiceBackup;
+  final int silenceMs;
+  final String targetLevel;
+  final String speechStyle;
+  final String relationship;
+
+  const CharacterDetail({
+    required this.id,
+    required this.name,
+    required this.nameJa,
+    this.avatarUrl,
+    this.personality,
+    this.voiceName,
+    this.voiceBackup,
+    this.silenceMs = 1200,
+    required this.targetLevel,
+    required this.speechStyle,
+    required this.relationship,
+  });
+
+  factory CharacterDetail.fromJson(Map<String, dynamic> json) {
+    return CharacterDetail(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      nameJa: json['nameJa'] as String? ?? '',
+      avatarUrl: json['avatarUrl'] as String?,
+      personality: json['personality'] as String?,
+      voiceName: json['voiceName'] as String?,
+      voiceBackup: json['voiceBackup'] as String?,
+      silenceMs: json['silenceMs'] as int? ?? 1200,
+      targetLevel: json['targetLevel'] as String? ?? '',
+      speechStyle: json['speechStyle'] as String? ?? '',
+      relationship: json['relationship'] as String? ?? '',
+    );
+  }
+}
