@@ -835,7 +835,12 @@ async def get_incomplete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """미완료 퀴즈 세션 조회 (배너용)."""
+    """미완료 퀴즈 세션 조회 (배너용).
+
+    - 1문제도 안 푼 세션(좀비)은 자동 완료 처리
+    - 24시간 지난 세션은 자동 완료 처리
+    """
+    cutoff = datetime.now(UTC) - timedelta(hours=24)
     result = await db.execute(
         select(QuizSession)
         .where(
@@ -843,16 +848,31 @@ async def get_incomplete_quiz(
             QuizSession.completed_at.is_(None),
         )
         .order_by(QuizSession.started_at.desc())
-        .limit(1)
     )
-    session = result.scalar_one_or_none()
-    if not session:
+    sessions = result.scalars().all()
+
+    valid_session = None
+    for session in sessions:
+        # Count answered questions
+        answered_result = await db.execute(
+            select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id)
+        )
+        answered_count = answered_result.scalar() or 0
+
+        # Auto-complete zombie sessions (0 answers) or stale sessions (24h+)
+        if answered_count == 0 or (session.started_at and session.started_at < cutoff):
+            session.completed_at = datetime.now(UTC)
+            continue
+
+        if valid_session is None:
+            valid_session = (session, answered_count)
+
+    await db.commit()
+
+    if not valid_session:
         return {"session": None}
 
-    # Count answered questions
-    answered_result = await db.execute(select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id))
-    answered_count = answered_result.scalar() or 0
-
+    session, answered_count = valid_session
     return {
         "session": {
             "id": str(session.id),

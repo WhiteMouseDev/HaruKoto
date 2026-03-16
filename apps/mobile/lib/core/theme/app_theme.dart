@@ -90,6 +90,7 @@ abstract final class AppTheme {
         foregroundColor: text,
         elevation: 0,
         scrolledUnderElevation: 0,
+        centerTitle: false,
       ),
       dividerTheme: DividerThemeData(color: border, thickness: 1),
     );

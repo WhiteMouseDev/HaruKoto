@@ -118,7 +118,7 @@ class _MyPageState extends ConsumerState<MyPage> {
 
                 // Footer
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 80),
+                  padding: const EdgeInsets.only(bottom: 120),
                   child: Column(
                     children: [
                       Text(
