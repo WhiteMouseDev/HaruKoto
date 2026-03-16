@@ -25,7 +25,7 @@ class UserProfile(CamelModel):
     level: int
     streak_count: int
     longest_streak: int
-    last_study_date: date | None = None
+    last_study_date: datetime | None = None
     is_premium: bool
     show_kana: bool
     onboarding_completed: bool
