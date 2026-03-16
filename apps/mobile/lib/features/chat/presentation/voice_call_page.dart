@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
@@ -26,12 +27,18 @@ class VoiceCallPage extends StatefulWidget {
 }
 
 class _VoiceCallPageState extends State<VoiceCallPage> {
-  String _state = 'idle'; // idle, connecting, connected, ending, ended
+  String _state = 'connecting'; // connecting, connected, ending, ended
   int _callDuration = 0;
   bool _isMuted = false;
   bool _showSubtitle = false;
   String? _error;
   Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCall();
+  }
 
   String get _formattedDuration {
     final mins = (_callDuration ~/ 60).toString().padLeft(2, '0');
@@ -40,10 +47,7 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
   }
 
   void _startCall() {
-    setState(() {
-      _state = 'connecting';
-      _error = null;
-    });
+    _error = null;
 
     Future<void>.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
@@ -78,11 +82,14 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    const bgColor = Color(0xFF0F172A);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      body: SafeArea(
-        child: Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: bgColor,
+        body: SafeArea(
+          child: Column(
           children: [
             // Top bar
             Padding(
@@ -129,13 +136,11 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
             ),
             const SizedBox(height: AppSizes.sm),
             Text(
-              _state == 'idle'
-                  ? '통화 시작을 눌러주세요'
-                  : _state == 'connecting'
-                      ? '연결 중...'
-                      : _state == 'ending'
-                          ? '통화 종료 중...'
-                          : '통화 중',
+              _state == 'connecting'
+                  ? '연결 중...'
+                  : _state == 'ending'
+                      ? '통화 종료 중...'
+                      : '통화 중',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.onGradient.withValues(alpha: 0.54),
               ),
@@ -195,22 +200,14 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
                       color: AppColors.onGradient.withValues(alpha: 0.24),
                     ),
 
-                  // Call / End button
-                  _state == 'idle'
-                      ? _ControlButton(
-                          icon: LucideIcons.phone,
-                          label: '통화 시작',
-                          onTap: _startCall,
-                          color: const Color(0xFF10B981),
-                          size: 64,
-                        )
-                      : _ControlButton(
-                          icon: LucideIcons.phoneOff,
-                          label: '통화 종료',
-                          onTap: _endCall,
-                          color: AppColors.error(Theme.of(context).brightness),
-                          size: 64,
-                        ),
+                  // End call button
+                  _ControlButton(
+                    icon: LucideIcons.phoneOff,
+                    label: '통화 종료',
+                    onTap: _endCall,
+                    color: AppColors.error(Theme.of(context).brightness),
+                    size: 64,
+                  ),
 
                   // Subtitle toggle
                   if (_state == 'connected')
@@ -229,6 +226,7 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
             const SizedBox(height: AppSizes.lg),
           ],
         ),
+      ),
       ),
     );
   }

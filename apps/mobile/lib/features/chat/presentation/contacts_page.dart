@@ -91,7 +91,7 @@ class ContactsPage extends ConsumerWidget {
                       isFavorite: favorites.contains(char.id),
                       userLevel: userLevel,
                       onTap: () {
-                        Navigator.of(context).push(
+                        Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
                             builder: (_) => VoiceCallPage(
                               characterId: char.id,

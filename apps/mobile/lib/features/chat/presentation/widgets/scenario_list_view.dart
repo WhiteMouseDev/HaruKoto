@@ -142,7 +142,7 @@ class ScenarioListView extends ConsumerWidget {
                               onSelect: () {
                                 if (categorySource ==
                                     'voice') {
-                                  Navigator.of(context)
+                                  Navigator.of(context, rootNavigator: true)
                                       .push(
                                     MaterialPageRoute(
                                       builder: (_) =>
@@ -164,7 +164,7 @@ class ScenarioListView extends ConsumerWidget {
                                       'voice'
                                   ? () {
                                       Navigator.of(
-                                              context)
+                                              context, rootNavigator: true)
                                           .push(
                                         MaterialPageRoute(
                                           builder: (_) =>
