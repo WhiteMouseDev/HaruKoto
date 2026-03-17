@@ -60,7 +60,11 @@ async def vocab_tts(
         if vocab.reading and vocab.reading != vocab.word:
             text = vocab.reading  # Use reading for pronunciation
 
-        mp3_bytes = await generate_tts(text)
+        try:
+            mp3_bytes = await generate_tts(text)
+        except RuntimeError:
+            logger.exception("TTS generation failed for vocab %s, text=%r", vocab_id_str, text)
+            raise HTTPException(status_code=502, detail="TTS 음성 생성에 실패했습니다") from None
 
         # Upload to GCS
         audio_url = await _upload_to_gcs(vocab_id_str, mp3_bytes)

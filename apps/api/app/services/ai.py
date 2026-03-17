@@ -133,8 +133,27 @@ async def generate_tts(text: str, voice: str = "Kore") -> bytes:
         ),
     )
 
-    # The SDK returns raw PCM data inside inline_data
-    pcm_data: bytes = response.candidates[0].content.parts[0].inline_data.data
+    # Extract PCM audio from response
+    if not response.candidates:
+        logger.error("TTS returned no candidates for text=%r", text)
+        raise RuntimeError("TTS generation failed: no candidates returned")
+
+    candidate = response.candidates[0]
+    if candidate.content is None or not candidate.content.parts:
+        logger.error(
+            "TTS returned empty content for text=%r, finish_reason=%s, candidate=%s",
+            text,
+            getattr(candidate, "finish_reason", "unknown"),
+            candidate,
+        )
+        raise RuntimeError("TTS generation failed: empty content returned")
+
+    part = candidate.content.parts[0]
+    if not hasattr(part, "inline_data") or part.inline_data is None:
+        logger.error("TTS response part has no inline_data for text=%r, part=%s", text, part)
+        raise RuntimeError("TTS generation failed: no audio data in response")
+
+    pcm_data: bytes = part.inline_data.data
 
     return _pcm_to_mp3(pcm_data, sample_rate=24000, channels=1, bitrate=128)
 

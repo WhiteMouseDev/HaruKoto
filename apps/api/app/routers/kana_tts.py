@@ -63,13 +63,16 @@ async def kana_tts(
 
     try:
         mp3_bytes = await generate_tts(body.text)
-
-        # Upload to GCS
-        audio_url = await _upload_to_gcs(gcs_path, mp3_bytes)
-
-        return {"audioUrl": audio_url}
+    except RuntimeError:
+        logger.exception("TTS generation failed for text=%r", body.text)
+        raise HTTPException(status_code=502, detail="TTS 음성 생성에 실패했습니다") from None
     finally:
         _generating.discard(text_hash)
+
+    # Upload to GCS
+    audio_url = await _upload_to_gcs(gcs_path, mp3_bytes)
+
+    return {"audioUrl": audio_url}
 
 
 async def _check_gcs_cache(gcs_path: str) -> str | None:
