@@ -371,13 +371,13 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
           const _ModeInfo(
             id: 'normal',
             label: '4지선다',
-            icon: LucideIcons.bookOpen,
+            icon: LucideIcons.listChecks,
             description: '4개 보기 중 정답을 고르세요',
           ),
           const _ModeInfo(
             id: 'matching',
             label: '매칭',
-            icon: LucideIcons.link2,
+            icon: LucideIcons.shuffle,
             description: '단어와 뜻을 연결하세요',
           ),
         ];
@@ -386,7 +386,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
           const _ModeInfo(
             id: 'normal',
             label: '4지선다',
-            icon: LucideIcons.bookOpen,
+            icon: LucideIcons.listChecks,
             description: '4개 보기 중 정답을 고르세요',
           ),
           const _ModeInfo(
@@ -410,7 +410,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
           const _ModeInfo(
             id: 'normal',
             label: '4지선다',
-            icon: LucideIcons.bookOpen,
+            icon: LucideIcons.listChecks,
             description: '4개 보기 중 정답을 고르세요',
           ),
         ];

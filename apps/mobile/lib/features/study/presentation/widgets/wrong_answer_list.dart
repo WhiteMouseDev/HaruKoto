@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/quiz_result_model.dart';
 
 class WrongAnswerList extends StatefulWidget {
@@ -100,6 +101,11 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
+                                ),
+                                const SizedBox(width: 6),
+                                TtsPlayButton(
+                                  vocabId: item.questionId,
+                                  iconSize: 16,
                                 ),
                                 if (item.reading != null) ...[
                                   const SizedBox(width: 8),

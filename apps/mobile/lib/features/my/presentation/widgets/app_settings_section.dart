@@ -7,6 +7,8 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
+import '../../../../core/services/haptic_service.dart';
+import '../../../../core/services/sound_service.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   final bool showFurigana;
@@ -81,6 +83,14 @@ class AppSettingsSection extends ConsumerWidget {
                   onUpdate('app_settings', {'showFurigana': value});
                 },
               ),
+              const Divider(height: 1),
+
+              // Sound Effects
+              _SoundToggle(theme: theme),
+              const Divider(height: 1),
+
+              // Haptic Feedback
+              _HapticToggle(theme: theme),
               const Divider(height: 1),
 
               // Study Reminder
@@ -213,6 +223,72 @@ class AppSettingsSection extends ConsumerWidget {
             ),
           ),
         );
+      },
+    );
+  }
+}
+
+class _SoundToggle extends StatefulWidget {
+  final ThemeData theme;
+  const _SoundToggle({required this.theme});
+
+  @override
+  State<_SoundToggle> createState() => _SoundToggleState();
+}
+
+class _SoundToggleState extends State<_SoundToggle> {
+  bool _enabled = SoundService().enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: Icon(LucideIcons.volume2,
+          size: 20, color: widget.theme.colorScheme.primary),
+      title: const Text('효과음', style: TextStyle(fontSize: 14)),
+      subtitle: Text(
+        '정답/오답 시 효과음 재생',
+        style: TextStyle(
+            fontSize: 12,
+            color:
+                widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+      ),
+      value: _enabled,
+      onChanged: (value) {
+        SoundService().setEnabled(value);
+        setState(() => _enabled = value);
+      },
+    );
+  }
+}
+
+class _HapticToggle extends StatefulWidget {
+  final ThemeData theme;
+  const _HapticToggle({required this.theme});
+
+  @override
+  State<_HapticToggle> createState() => _HapticToggleState();
+}
+
+class _HapticToggleState extends State<_HapticToggle> {
+  bool _enabled = HapticService().enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: Icon(LucideIcons.vibrate,
+          size: 20, color: widget.theme.colorScheme.primary),
+      title: const Text('진동 피드백', style: TextStyle(fontSize: 14)),
+      subtitle: Text(
+        '터치 시 진동으로 반응',
+        style: TextStyle(
+            fontSize: 12,
+            color:
+                widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+      ),
+      value: _enabled,
+      onChanged: (value) {
+        HapticService().setEnabled(value);
+        setState(() => _enabled = value);
       },
     );
   }

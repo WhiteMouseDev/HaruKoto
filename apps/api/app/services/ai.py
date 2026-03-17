@@ -7,6 +7,7 @@ import logging
 import struct
 from datetime import UTC, datetime, timedelta
 
+import lameenc
 from google import genai
 from google.genai import types
 
@@ -106,19 +107,19 @@ async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict:
 
 
 async def generate_tts(text: str, voice: str = "Kore") -> bytes:
-    """Generate TTS audio using Gemini TTS preview model.
+    """Generate TTS audio using Gemini TTS model.
 
     Args:
         text: Japanese text to synthesise.
         voice: Prebuilt voice name (default ``"Kore"``).
 
     Returns:
-        WAV file bytes (24 kHz, 16-bit, mono PCM).
+        MP3 file bytes (128 kbps, 24 kHz, mono).
     """
     client = _ensure_configured()
 
     response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash-preview-tts",
+        model="gemini-2.5-flash-tts",
         contents=text,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
@@ -135,7 +136,7 @@ async def generate_tts(text: str, voice: str = "Kore") -> bytes:
     # The SDK returns raw PCM data inside inline_data
     pcm_data: bytes = response.candidates[0].content.parts[0].inline_data.data
 
-    return _create_wav(pcm_data, sample_rate=24000, bits_per_sample=16, channels=1)
+    return _pcm_to_mp3(pcm_data, sample_rate=24000, channels=1, bitrate=128)
 
 
 # ---------------------------------------------------------------------------
@@ -273,13 +274,33 @@ def _parse_json_response(text: str) -> dict:
         }
 
 
-def _create_wav(
+def _pcm_to_mp3(
+    pcm_data: bytes,
+    sample_rate: int = 24000,
+    channels: int = 1,
+    bitrate: int = 128,
+) -> bytes:
+    """Encode raw PCM data to MP3 using lameenc."""
+    encoder = lameenc.Encoder()
+    encoder.set_bit_rate(bitrate)
+    encoder.set_in_sample_rate(sample_rate)
+    encoder.set_channels(channels)
+    encoder.set_quality(2)  # 2 = high quality
+    mp3_data = encoder.encode(pcm_data)
+    mp3_data += encoder.flush()
+    return mp3_data
+
+
+def _pcm_to_wav(
     pcm_data: bytes,
     sample_rate: int = 24000,
     bits_per_sample: int = 16,
     channels: int = 1,
 ) -> bytes:
-    """Create a WAV file from raw PCM data by prepending a RIFF/WAV header."""
+    """Create a WAV file from raw PCM data by prepending a RIFF/WAV header.
+
+    .. note:: Currently unused — kept as a utility for debugging/testing.
+    """
     data_size = len(pcm_data)
     byte_rate = sample_rate * channels * bits_per_sample // 8
     block_align = channels * bits_per_sample // 8

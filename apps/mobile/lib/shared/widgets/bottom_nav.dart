@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/constants/colors.dart';
+import '../../core/services/haptic_service.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -54,7 +55,10 @@ class BottomNav extends StatelessWidget {
                       selected: isActive,
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => onTap(i),
+                        onTap: () {
+                          HapticService().selection();
+                          onTap(i);
+                        },
                         child: _TabItem(
                           tab: tab,
                           isActive: isActive,

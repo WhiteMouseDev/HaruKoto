@@ -17,8 +17,8 @@ class QuizModeSelector extends StatelessWidget {
   });
 
   static const _allModes = [
-    ('normal', LucideIcons.bookOpen, '4지선다'),
-    ('matching', LucideIcons.link2, '매칭'),
+    ('normal', LucideIcons.listChecks, '4지선다'),
+    ('matching', LucideIcons.shuffle, '매칭'),
     ('cloze', LucideIcons.textCursorInput, '빈칸'),
     ('arrange', LucideIcons.arrowUpDown, '어순'),
     // typing mode removed (task 1-11)

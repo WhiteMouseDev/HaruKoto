@@ -46,6 +46,10 @@ dependencies:
   lucide_icons: ^0.257.0
   widgetbook: ^3.22.0
 
+  # Audio & Effects
+  audioplayers: ^6.1.0
+  confetti: ^0.8.0
+
   # Voice Call
   record: ^5.2.1
   web_socket_channel: ^3.0.2
@@ -76,3 +80,4 @@ flutter:
   assets:
     - assets/icon.png
     - assets/logo-wordmark.svg
+    - assets/sounds/

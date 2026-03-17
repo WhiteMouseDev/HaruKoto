@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
   static const primary = Color(0xFFF6A5B3);
+  static const primaryStrong = Color(0xFFFA7B95);
   static const brandPink = Color(0xFFFFB7C5);
 
   // ─── Light theme ─────────────────────────────────────────

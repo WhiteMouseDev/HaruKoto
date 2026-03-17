@@ -7,6 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/constants/app_config.dart';
 import 'core/services/local_notification_service.dart';
+import 'core/services/haptic_service.dart';
+import 'core/services/sound_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +30,8 @@ void main() async {
 
   await LocalNotificationService.initialize();
   await LocalNotificationService.requestPermission();
+  await SoundService().init();
+  await HapticService().init();
 
   if (AppConfig.sentryDsn.isNotEmpty) {
     await SentryFlutter.init(

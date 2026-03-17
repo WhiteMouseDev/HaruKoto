@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/haptic_service.dart';
+import '../../../core/services/sound_service.dart';
 import '../../../core/providers/quiz_settings_provider.dart';
 import '../data/models/quiz_question_model.dart';
 import '../providers/study_provider.dart';
@@ -143,6 +145,18 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       _streak = isCorrect ? _streak + 1 : 0;
     });
 
+    // Haptic + sound feedback (fire-and-forget)
+    final haptic = HapticService();
+    final sound = SoundService();
+    if (isCorrect) {
+      unawaited(_streak >= 3 ? haptic.heavy() : haptic.medium());
+      unawaited(sound.play(
+          _streak >= 3 ? SoundType.combo : SoundType.correct));
+    } else {
+      unawaited(haptic.heavy());
+      unawaited(sound.play(SoundType.wrong));
+    }
+
     final repo = ref.read(studyRepositoryProvider);
     unawaited(repo.answerQuestion(
       sessionId: _sessionId!,
@@ -176,6 +190,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       final result =
           await repo.completeQuiz(_sessionId!, stageId: widget.stageId);
       if (!mounted) return;
+      unawaited(HapticService().heavy());
+      unawaited(SoundService().play(SoundType.complete));
       unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
         quizRoute(QuizResultPage(
           result: result,

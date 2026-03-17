@@ -30,7 +30,7 @@ class QuizProgressBar extends StatelessWidget {
                 value: value,
                 minHeight: 6,
                 backgroundColor: theme.colorScheme.surfaceContainerHigh,
-                color: theme.colorScheme.primary,
+                color: AppColors.primaryStrong,
               );
             },
           ),

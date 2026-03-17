@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/word_entry_model.dart';
 
 class WordCard extends StatelessWidget {
@@ -45,6 +46,11 @@ class WordCard extends StatelessWidget {
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
+                            ),
+                            const SizedBox(width: 6),
+                            TtsPlayButton(
+                              vocabId: word.vocabularyId,
+                              iconSize: 16,
                             ),
                             const SizedBox(width: 8),
                             Text(

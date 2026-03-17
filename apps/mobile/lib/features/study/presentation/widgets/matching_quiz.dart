@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/services/haptic_service.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../data/models/quiz_question_model.dart';
 
 /// 매칭 퀴즈: 한 라운드에 [pairsPerRound]개씩 진행
@@ -98,6 +100,11 @@ class _MatchingQuizState extends State<MatchingQuiz> {
     if (isCorrect) {
       _totalCorrect++;
       _matched.add(pair.id);
+      HapticService().light();
+      SoundService().play(SoundType.match);
+    } else {
+      HapticService().heavy();
+      SoundService().play(SoundType.wrong);
     }
 
     Future.delayed(const Duration(milliseconds: 400), () {

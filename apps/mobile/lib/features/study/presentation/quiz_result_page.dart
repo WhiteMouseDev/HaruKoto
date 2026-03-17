@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -33,11 +35,23 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   List<WrongAnswerModel> _wrongAnswers = [];
   final Set<String> _savedWords = {};
   bool _loadingWrong = true;
+  late final ConfettiController _confettiController;
 
   @override
   void initState() {
     super.initState();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
+    if (widget.result.accuracy >= 80) {
+      _confettiController.play();
+    }
     _loadWrongAnswers();
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadWrongAnswers() async {
@@ -106,14 +120,16 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     final wrongCount = r.totalQuestions - r.correctCount;
 
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            const SizedBox(height: 24),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                const SizedBox(height: 24),
 
-            // Icon & message
-            Center(
+                // Icon & message
+                Center(
               child: Column(
                 children: [
                   Icon(
@@ -258,8 +274,30 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                 label: const Text('홈으로 돌아가기', style: TextStyle(fontSize: 16)),
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirection: pi / 2,
+              blastDirectionality: BlastDirectionality.explosive,
+              maxBlastForce: 20,
+              minBlastForce: 8,
+              emissionFrequency: 0.05,
+              numberOfParticles: 25,
+              gravity: 0.1,
+              colors: const [
+                Color(0xFFFF6B6B),
+                Color(0xFFFFD93D),
+                Color(0xFF6BCB77),
+                Color(0xFF4D96FF),
+                Color(0xFFFF85B3),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

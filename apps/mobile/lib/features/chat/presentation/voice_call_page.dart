@@ -70,8 +70,8 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
           voiceName = detail.voiceName;
           personality = detail.personality;
           silenceMs = detail.silenceMs;
-        } catch (_) {
-          // Use defaults if character fetch fails
+        } catch (e) {
+          debugPrint('[VoiceCall] Character detail fetch failed: $e');
         }
       }
 

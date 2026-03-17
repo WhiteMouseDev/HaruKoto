@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/wordbook_entry_model.dart';
 
 class WordbookEntryCard extends StatelessWidget {
@@ -62,6 +63,11 @@ class WordbookEntryCard extends StatelessWidget {
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      const SizedBox(width: 6),
+                      TtsPlayButton(
+                        vocabId: entry.id,
+                        iconSize: 16,
                       ),
                       const SizedBox(width: 8),
                       Text(

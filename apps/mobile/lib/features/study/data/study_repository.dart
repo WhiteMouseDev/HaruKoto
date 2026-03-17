@@ -324,4 +324,14 @@ class StudyRepository {
   Future<void> deleteWord(String id) async {
     await _dio.delete('/wordbook/$id');
   }
+
+  // ── TTS ──
+
+  Future<String> fetchTtsUrl(String vocabId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/vocab/tts',
+      data: {'id': vocabId},
+    );
+    return response.data!['audioUrl'] as String;
+  }
 }

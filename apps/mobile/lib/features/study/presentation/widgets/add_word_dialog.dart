@@ -80,6 +80,11 @@ Future<void> showAddWordDialog(BuildContext context, WidgetRef ref,
                 onAdded?.call();
               } catch (e, stackTrace) {
                 unawaited(Sentry.captureException(e, stackTrace: stackTrace));
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    const SnackBar(content: Text('단어 추가에 실패했습니다')),
+                  );
+                }
               }
             },
             child: const Text('추가'),

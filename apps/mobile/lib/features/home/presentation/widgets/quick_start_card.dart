@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../my/providers/my_provider.dart';
 import '../../../study/providers/study_provider.dart';
@@ -268,7 +269,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Material(
-              color: theme.colorScheme.primary,
+              color: AppColors.primaryStrong,
               borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppSizes.buttonRadius),

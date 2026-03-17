@@ -70,7 +70,7 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
                   painter: _AccuracyCirclePainter(
                     progress: _controller.value * widget.accuracy / 100,
                     bgColor: theme.colorScheme.surfaceContainerHigh,
-                    fgColor: theme.colorScheme.primary,
+                    fgColor: AppColors.primaryStrong,
                   ),
                   child: Center(
                     child: Column(
@@ -103,7 +103,7 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
             children: [
               _StatTile(
                 icon: LucideIcons.target,
-                iconColor: theme.colorScheme.primary,
+                iconColor: AppColors.primaryStrong,
                 value: '${widget.correct}/${widget.total}',
                 label: '정답',
                 theme: theme,
@@ -122,8 +122,8 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
               ),
               const SizedBox(width: 12),
               _StatTile(
-                icon: LucideIcons.trophy,
-                iconColor: AppColors.hkBlue(brightness),
+                icon: LucideIcons.xCircle,
+                iconColor: AppColors.error(brightness),
                 value: '$wrongCount',
                 label: '오답',
                 theme: theme,

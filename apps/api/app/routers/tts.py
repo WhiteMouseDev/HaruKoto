@@ -60,10 +60,10 @@ async def vocab_tts(
         if vocab.reading and vocab.reading != vocab.word:
             text = vocab.reading  # Use reading for pronunciation
 
-        wav_bytes = await generate_tts(text)
+        mp3_bytes = await generate_tts(text)
 
         # Upload to GCS
-        audio_url = await _upload_to_gcs(vocab_id_str, wav_bytes)
+        audio_url = await _upload_to_gcs(vocab_id_str, mp3_bytes)
 
         # Update DB
         vocab.audio_url = audio_url
@@ -74,18 +74,17 @@ async def vocab_tts(
         _generating.discard(vocab_id_str)
 
 
-async def _upload_to_gcs(vocab_id: str, wav_bytes: bytes) -> str:
-    """Upload WAV to Google Cloud Storage and return CDN URL."""
+async def _upload_to_gcs(vocab_id: str, mp3_bytes: bytes) -> str:
+    """Upload MP3 to Google Cloud Storage and return CDN URL."""
     try:
         from google.cloud import storage
 
         client = storage.Client()
         bucket = client.bucket(settings.GCS_BUCKET_NAME)
-        blob = bucket.blob(f"tts/{vocab_id}.wav")
-        blob.upload_from_string(wav_bytes, content_type="audio/wav")
-        blob.make_public()
+        blob = bucket.blob(f"tts/vocab/{vocab_id}.mp3")
+        blob.upload_from_string(mp3_bytes, content_type="audio/mpeg")
 
-        return f"{settings.GCS_CDN_BASE_URL}/tts/{vocab_id}.wav"
+        return f"{settings.GCS_CDN_BASE_URL}/tts/vocab/{vocab_id}.mp3"
     except Exception:
         logger.exception("Failed to upload TTS to GCS for vocab %s", vocab_id)
         raise HTTPException(status_code=500, detail="TTS 파일 업로드에 실패했습니다") from None
