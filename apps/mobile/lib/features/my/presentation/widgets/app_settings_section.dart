@@ -249,8 +249,7 @@ class _SoundToggleState extends State<_SoundToggle> {
         '정답/오답 시 효과음 재생',
         style: TextStyle(
             fontSize: 12,
-            color:
-                widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+            color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       ),
       value: _enabled,
       onChanged: (value) {
@@ -282,8 +281,7 @@ class _HapticToggleState extends State<_HapticToggle> {
         '터치 시 진동으로 반응',
         style: TextStyle(
             fontSize: 12,
-            color:
-                widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+            color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       ),
       value: _enabled,
       onChanged: (value) {

@@ -150,8 +150,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final sound = SoundService();
     if (isCorrect) {
       unawaited(_streak >= 3 ? haptic.heavy() : haptic.medium());
-      unawaited(sound.play(
-          _streak >= 3 ? SoundType.combo : SoundType.correct));
+      unawaited(sound.play(_streak >= 3 ? SoundType.combo : SoundType.correct));
     } else {
       unawaited(haptic.heavy());
       unawaited(sound.play(SoundType.wrong));

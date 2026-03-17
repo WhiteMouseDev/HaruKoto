@@ -292,9 +292,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                   ),
                 ),
                 child: Text(
-                  dist.total > 0
-                      ? '학습 시작 (${dist.total}문제)'
-                      : '학습할 단어가 없습니다',
+                  dist.total > 0 ? '학습 시작 (${dist.total}문제)' : '학습할 단어가 없습니다',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

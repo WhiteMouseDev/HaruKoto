@@ -121,8 +121,7 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
                 '퀴즈 유형',
                 style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -150,8 +149,8 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
                     Text(
                       '$_level ${_type == 'VOCABULARY' ? '단어' : '문법'} · ${stats.totalCount}개',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     Text(
@@ -172,8 +171,8 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
               height: 52,
               child: FilledButton.icon(
                 onPressed: _startQuiz,
-                icon: Icon(LucideIcons.play, size: 18,
-                    color: theme.colorScheme.onPrimary),
+                icon: Icon(LucideIcons.play,
+                    size: 18, color: theme.colorScheme.onPrimary),
                 label: Text(
                   '${_modeLabels[_mode] ?? '4지선다'} 학습 시작 (10문제)',
                   style: const TextStyle(

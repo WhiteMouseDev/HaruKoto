@@ -109,8 +109,7 @@ class _SplashPageState extends State<SplashPage>
                         borderRadius: BorderRadius.circular(iconRadius),
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                AppColors.brandPink.withValues(alpha: 0.3),
+                            color: AppColors.brandPink.withValues(alpha: 0.3),
                             blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
@@ -134,8 +133,7 @@ class _SplashPageState extends State<SplashPage>
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                AppColors.brandPink.withValues(alpha: 0.15),
+                            color: AppColors.brandPink.withValues(alpha: 0.15),
                             blurRadius: 20,
                           ),
                         ],

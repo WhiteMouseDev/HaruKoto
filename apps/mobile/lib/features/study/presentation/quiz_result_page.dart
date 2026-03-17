@@ -130,150 +130,153 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
 
                 // Icon & message
                 Center(
-              child: Column(
-                children: [
-                  Icon(
-                    _resultIcon,
-                    size: 56,
-                    color: theme.colorScheme.primary,
+                  child: Column(
+                    children: [
+                      Icon(
+                        _resultIcon,
+                        size: 56,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _resultMessage,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Score display
+                ResultScoreDisplay(
+                  accuracy: r.accuracy,
+                  correct: r.correctCount,
+                  total: r.totalQuestions,
+                  xpEarned: r.xpEarned,
+                  currentXp: r.currentXp,
+                  xpForNext: r.xpForNext,
+                ),
+                const SizedBox(height: 16),
+
+                // Wrong answers
+                if (!_loadingWrong && _wrongAnswers.isNotEmpty)
+                  WrongAnswerList(
+                    wrongAnswers: _wrongAnswers,
+                    quizType: widget.quizType,
+                    savedWords: _savedWords,
+                    onSaveToWordbook: _saveToWordbook,
+                    onSaveAll: _saveAllToWordbook,
+                  ),
+                const SizedBox(height: 16),
+
+                // Next recommendations
+                if (wrongCount > 0) ...[
+                  Text(
+                    '다음에 이걸 해보세요',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    _resultMessage,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Score display
-            ResultScoreDisplay(
-              accuracy: r.accuracy,
-              correct: r.correctCount,
-              total: r.totalQuestions,
-              xpEarned: r.xpEarned,
-              currentXp: r.currentXp,
-              xpForNext: r.xpForNext,
-            ),
-            const SizedBox(height: 16),
-
-            // Wrong answers
-            if (!_loadingWrong && _wrongAnswers.isNotEmpty)
-              WrongAnswerList(
-                wrongAnswers: _wrongAnswers,
-                quizType: widget.quizType,
-                savedWords: _savedWords,
-                onSaveToWordbook: _saveToWordbook,
-                onSaveAll: _saveAllToWordbook,
-              ),
-            const SizedBox(height: 16),
-
-            // Next recommendations
-            if (wrongCount > 0) ...[
-              Text(
-                '다음에 이걸 해보세요',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Material(
-                color:
-                    AppColors.error(theme.brightness).withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(16),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    Navigator.of(context, rootNavigator: true).pushReplacement(
-                      quizRoute(QuizPage(
-                        quizType: widget.quizType,
-                        jlptLevel: widget.jlptLevel,
-                        count: 10,
-                        mode: 'review',
-                      )),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.error(theme.brightness)
-                            .withValues(alpha: 0.3),
-                      ),
+                  Material(
+                    color: AppColors.error(theme.brightness)
+                        .withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
                       borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushReplacement(
+                          quizRoute(QuizPage(
+                            quizType: widget.quizType,
+                            jlptLevel: widget.jlptLevel,
+                            count: 10,
+                            mode: 'review',
+                          )),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.error(theme.brightness)
+                                .withValues(alpha: 0.3),
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(LucideIcons.fileX,
-                                size: 16,
-                                color: AppColors.error(theme.brightness)),
-                            const SizedBox(width: 8),
+                            Row(
+                              children: [
+                                Icon(LucideIcons.fileX,
+                                    size: 16,
+                                    color: AppColors.error(theme.brightness)),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '이번에 틀린 단어 복습',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
                             Text(
-                              '이번에 틀린 단어 복습',
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              '$wrongCount개 단어',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.5),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '오답 복습 →',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.error(theme.brightness),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$wrongCount개 단어',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.5),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '오답 복습 →',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.error(theme.brightness),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
+                ],
+                const SizedBox(height: 24),
 
-            // Action buttons
-            SizedBox(
-              height: 48,
-              child: FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    quizRoute(QuizPage(
-                      quizType: widget.quizType,
-                      jlptLevel: widget.jlptLevel,
-                      count: 10,
-                    )),
-                  );
-                },
-                icon: const Icon(LucideIcons.rotateCcw, size: 16),
-                label: const Text('한 번 더 도전', style: TextStyle(fontSize: 16)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 48,
-              child: TextButton.icon(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                icon: const Icon(LucideIcons.home, size: 16),
-                label: const Text('홈으로 돌아가기', style: TextStyle(fontSize: 16)),
-              ),
-            ),
+                // Action buttons
+                SizedBox(
+                  height: 48,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        quizRoute(QuizPage(
+                          quizType: widget.quizType,
+                          jlptLevel: widget.jlptLevel,
+                          count: 10,
+                        )),
+                      );
+                    },
+                    icon: const Icon(LucideIcons.rotateCcw, size: 16),
+                    label:
+                        const Text('한 번 더 도전', style: TextStyle(fontSize: 16)),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 48,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    icon: const Icon(LucideIcons.home, size: 16),
+                    label:
+                        const Text('홈으로 돌아가기', style: TextStyle(fontSize: 16)),
+                  ),
+                ),
               ],
             ),
           ),

@@ -92,8 +92,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
                   Text(
                     widget.question.questionSubText!,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -110,8 +109,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
         ...List.generate(widget.question.options.length, (i) {
           final option = widget.question.options[i];
           final isSelected = widget.selectedOptionId == option.id;
-          final isCorrectOption =
-              option.id == widget.question.correctOptionId;
+          final isCorrectOption = option.id == widget.question.correctOptionId;
 
           Color borderColor = theme.colorScheme.outline;
           Color? bgColor;
@@ -119,19 +117,16 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
           if (widget.answered) {
             if (isCorrectOption) {
               borderColor = AppColors.success(brightness);
-              bgColor =
-                  AppColors.success(brightness).withValues(alpha: 0.1);
+              bgColor = AppColors.success(brightness).withValues(alpha: 0.1);
             } else if (isSelected && !isCorrectOption) {
               borderColor = AppColors.error(brightness);
               bgColor = AppColors.error(brightness).withValues(alpha: 0.1);
             } else {
-              borderColor =
-                  theme.colorScheme.outline.withValues(alpha: 0.4);
+              borderColor = theme.colorScheme.outline.withValues(alpha: 0.4);
             }
           } else if (isSelected) {
             borderColor = theme.colorScheme.primary;
-            bgColor =
-                theme.colorScheme.primary.withValues(alpha: 0.05);
+            bgColor = theme.colorScheme.primary.withValues(alpha: 0.05);
           }
 
           Widget tile = Padding(
@@ -144,8 +139,8 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
                 onTap:
                     widget.answered ? null : () => widget.onSelect(option.id),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
                     border: Border.all(color: borderColor, width: 2),
                     borderRadius: BorderRadius.circular(12),

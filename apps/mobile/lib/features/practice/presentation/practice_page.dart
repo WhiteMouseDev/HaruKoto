@@ -166,12 +166,10 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final theme = Theme.of(context);
     final incompleteAsync = ref.watch(incompleteQuizProvider);
     final previewAsync = ref.watch(
-      smartPreviewProvider(
-          (category: 'VOCABULARY', jlptLevel: _selectedLevel)),
+      smartPreviewProvider((category: 'VOCABULARY', jlptLevel: _selectedLevel)),
     );
 
-    final incomplete =
-        incompleteAsync.hasValue ? incompleteAsync.value : null;
+    final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
     final preview = previewAsync.hasValue ? previewAsync.value : null;
 
     return Scaffold(
@@ -304,16 +302,16 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                     Text(
                       '${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     )
                   else
                     Text(
                       '하루 목표 $dailyGoal개 · $todayCompleted/$dailyGoal',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   if (!hasIncomplete && todayCompleted > 0) ...[
@@ -409,8 +407,8 @@ class _MenuListTile extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.4),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                 ],
