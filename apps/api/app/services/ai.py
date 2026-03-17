@@ -307,7 +307,7 @@ def _pcm_to_mp3(
     encoder.set_quality(2)  # 2 = high quality
     mp3_data = encoder.encode(pcm_data)
     mp3_data += encoder.flush()
-    return mp3_data
+    return bytes(mp3_data)
 
 
 def _pcm_to_wav(
