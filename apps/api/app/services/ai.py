@@ -160,48 +160,59 @@ def _generate_tts_elevenlabs(text: str) -> bytes:
     return b"".join(audio_iter)
 
 
-async def _generate_tts_gemini(text: str, voice: str = "Kore") -> bytes:
-    """Generate TTS via Gemini. Returns MP3 bytes (PCM → MP3 conversion)."""
+async def _generate_tts_gemini(text: str, voice: str = "Kore", _max_retries: int = 2) -> bytes:
+    """Generate TTS via Gemini with retry. Returns MP3 bytes (PCM → MP3 conversion)."""
     client = _ensure_configured()
 
-    response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash-preview-tts",
-        contents=text,
-        config=types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                        voice_name=voice,
+    last_error: RuntimeError | None = None
+
+    for attempt in range(_max_retries):
+        response = await client.aio.models.generate_content(
+            model="gemini-2.5-flash-preview-tts",
+            contents=text,
+            config=types.GenerateContentConfig(
+                response_modalities=["AUDIO"],
+                speech_config=types.SpeechConfig(
+                    voice_config=types.VoiceConfig(
+                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                            voice_name=voice,
+                        ),
                     ),
                 ),
             ),
-        ),
-    )
-
-    # Extract PCM audio from response
-    if not response.candidates:
-        logger.error("TTS returned no candidates for text=%r", text)
-        raise RuntimeError("TTS generation failed: no candidates returned")
-
-    candidate = response.candidates[0]
-    if candidate.content is None or not candidate.content.parts:
-        logger.error(
-            "TTS returned empty content for text=%r, finish_reason=%s, candidate=%s",
-            text,
-            getattr(candidate, "finish_reason", "unknown"),
-            candidate,
         )
-        raise RuntimeError("TTS generation failed: empty content returned")
 
-    part = candidate.content.parts[0]
-    if not hasattr(part, "inline_data") or part.inline_data is None:
-        logger.error("TTS response part has no inline_data for text=%r, part=%s", text, part)
-        raise RuntimeError("TTS generation failed: no audio data in response")
+        # Extract PCM audio from response
+        if not response.candidates:
+            last_error = RuntimeError("TTS generation failed: no candidates returned")
+            logger.warning("TTS attempt %d/%d: no candidates for text=%r", attempt + 1, _max_retries, text)
+            continue
 
-    pcm_data: bytes = part.inline_data.data
+        candidate = response.candidates[0]
+        if candidate.content is None or not candidate.content.parts:
+            last_error = RuntimeError("TTS generation failed: empty content returned")
+            logger.warning(
+                "TTS attempt %d/%d: empty content for text=%r, finish_reason=%s",
+                attempt + 1,
+                _max_retries,
+                text,
+                getattr(candidate, "finish_reason", "unknown"),
+            )
+            continue
 
-    return _pcm_to_mp3(pcm_data, sample_rate=24000, channels=1, bitrate=128)
+        part = candidate.content.parts[0]
+        if not hasattr(part, "inline_data") or part.inline_data is None:
+            last_error = RuntimeError("TTS generation failed: no audio data in response")
+            logger.warning("TTS attempt %d/%d: no inline_data for text=%r", attempt + 1, _max_retries, text)
+            continue
+
+        # Success
+        pcm_data: bytes = part.inline_data.data
+        return _pcm_to_mp3(pcm_data, sample_rate=24000, channels=1, bitrate=128)
+
+    # All retries exhausted
+    logger.error("TTS failed after %d attempts for text=%r", _max_retries, text)
+    raise last_error or RuntimeError("TTS generation failed")
 
 
 # ---------------------------------------------------------------------------
