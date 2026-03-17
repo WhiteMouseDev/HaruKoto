@@ -51,11 +51,11 @@ class _TtsPlayButtonState extends State<TtsPlayButton> {
     final theme = Theme.of(context);
 
     if (_loading) {
-      return SizedBox(
-        width: widget.iconSize,
-        height: widget.iconSize,
-        child: Padding(
-          padding: const EdgeInsets.all(2),
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: SizedBox(
+          width: widget.iconSize,
+          height: widget.iconSize,
           child: CircularProgressIndicator(
             strokeWidth: 2,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -65,11 +65,15 @@ class _TtsPlayButtonState extends State<TtsPlayButton> {
     }
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: _onTap,
-      child: Icon(
-        LucideIcons.volume2,
-        size: widget.iconSize,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Icon(
+          LucideIcons.volume2,
+          size: widget.iconSize,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
       ),
     );
   }
