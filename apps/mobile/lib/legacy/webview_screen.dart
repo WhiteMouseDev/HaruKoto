@@ -176,8 +176,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
             }
             if (url.contains('kbcard.com')) return NavigationDecision.navigate;
             if (url.contains('bccard.com')) return NavigationDecision.navigate;
-            if (url.contains('nhcard.co.kr'))
+            if (url.contains('nhcard.co.kr')) {
               return NavigationDecision.navigate;
+            }
             if (url.contains('citibank.co.kr')) {
               return NavigationDecision.navigate;
             }

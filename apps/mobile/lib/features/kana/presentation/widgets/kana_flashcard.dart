@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 
 class KanaFlashcard extends StatefulWidget {
   final String character;
@@ -162,8 +163,11 @@ class _FlashcardFront extends StatelessWidget {
   final double width;
   final double height;
 
-  const _FlashcardFront(
-      {required this.character, required this.width, required this.height});
+  const _FlashcardFront({
+    required this.character,
+    required this.width,
+    required this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +217,9 @@ class _FlashcardFront extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          TtsPlayButton(text: character, iconSize: 24),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

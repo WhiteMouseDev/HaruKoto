@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/kana_character_model.dart';
 import 'progress_row.dart';
 
@@ -59,13 +60,23 @@ class StageIntro extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSizes.md),
-              Text(
-                character.romaji,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: theme.colorScheme.primary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    character.romaji,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  TtsPlayButton(
+                    text: character.character,
+                    iconSize: 22,
+                  ),
+                ],
               ),
               const SizedBox(height: 4),
               Text(

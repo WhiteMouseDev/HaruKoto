@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/kana_stage_model.dart';
 
 class StageQuiz extends StatelessWidget {
@@ -72,6 +73,10 @@ class StageQuiz extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (isKanaText) ...[
+                const SizedBox(height: 8),
+                TtsPlayButton(text: current.questionText, iconSize: 22),
+              ],
               if (current.questionSubText != null) ...[
                 const SizedBox(height: 8),
                 Text(

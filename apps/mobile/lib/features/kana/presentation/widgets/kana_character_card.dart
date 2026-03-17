@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/kana_character_model.dart';
 
 class KanaCharacterCard extends StatelessWidget {
@@ -96,12 +97,22 @@ class KanaCharacterCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.md),
 
-            // Romaji + pronunciation
-            Text(
-              character.romaji,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+            // Romaji + TTS button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  character.romaji,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TtsPlayButton(
+                  text: character.character,
+                  iconSize: 22,
+                ),
+              ],
             ),
             const SizedBox(height: 2),
             Text(

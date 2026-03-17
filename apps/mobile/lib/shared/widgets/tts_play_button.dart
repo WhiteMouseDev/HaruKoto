@@ -4,14 +4,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/services/tts_service.dart';
 
 class TtsPlayButton extends StatefulWidget {
-  final String vocabId;
+  final String? vocabId;
+  final String? text;
   final double iconSize;
 
   const TtsPlayButton({
     super.key,
-    required this.vocabId,
+    this.vocabId,
+    this.text,
     this.iconSize = 20,
-  });
+  }) : assert(vocabId != null || text != null,
+            'Either vocabId or text must be provided');
 
   @override
   State<TtsPlayButton> createState() => _TtsPlayButtonState();
@@ -31,7 +34,11 @@ class _TtsPlayButtonState extends State<TtsPlayButton> {
 
     setState(() => _loading = true);
     try {
-      await tts.play(widget.vocabId);
+      if (widget.vocabId != null) {
+        await tts.play(widget.vocabId!);
+      } else {
+        await tts.playText(widget.text!);
+      }
     } finally {
       if (mounted) {
         setState(() => _loading = false);

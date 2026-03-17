@@ -45,6 +45,7 @@ from app.routers.chat_data import router as chat_data_router
 from app.routers.cron import router as cron_router
 from app.routers.health import router as health_router
 from app.routers.kana import router as kana_router
+from app.routers.kana_tts import router as kana_tts_router
 from app.routers.missions import router as missions_router
 from app.routers.notifications import router as notifications_router
 from app.routers.payments import router as payments_router
@@ -64,6 +65,7 @@ app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(quiz_router)
 app.include_router(kana_router)
+app.include_router(kana_tts_router)
 app.include_router(chat_router)
 app.include_router(chat_data_router)
 app.include_router(stats_router)
