@@ -119,7 +119,7 @@ async def generate_tts(text: str, voice: str = "Kore") -> bytes:
     client = _ensure_configured()
 
     response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash-tts",
+        model="gemini-2.5-flash-preview-tts",
         contents=text,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],

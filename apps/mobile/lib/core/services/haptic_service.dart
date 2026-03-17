@@ -28,21 +28,24 @@ class HapticService {
 
   Future<void> light() async {
     if (!_enabled) return;
-    await HapticFeedback.lightImpact();
+    await HapticFeedback.mediumImpact();
   }
 
   Future<void> medium() async {
     if (!_enabled) return;
-    await HapticFeedback.mediumImpact();
+    await HapticFeedback.heavyImpact();
   }
 
   Future<void> heavy() async {
     if (!_enabled) return;
+    // Double tap for stronger feedback
+    await HapticFeedback.heavyImpact();
+    await Future.delayed(const Duration(milliseconds: 50));
     await HapticFeedback.heavyImpact();
   }
 
   Future<void> selection() async {
     if (!_enabled) return;
-    await HapticFeedback.selectionClick();
+    await HapticFeedback.mediumImpact();
   }
 }
