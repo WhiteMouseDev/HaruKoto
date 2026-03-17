@@ -1,7 +1,8 @@
-"""AI service layer using Google GenAI (Gemini) SDK."""
+"""AI service layer using Google GenAI (Gemini) SDK + ElevenLabs TTS."""
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import struct
@@ -106,16 +107,61 @@ async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict:
 # ---------------------------------------------------------------------------
 
 
-async def generate_tts(text: str, voice: str = "Kore") -> bytes:
-    """Generate TTS audio using Gemini TTS model.
+async def generate_tts(text: str) -> bytes:
+    """Generate TTS audio, trying ElevenLabs first with Gemini fallback.
 
     Args:
         text: Japanese text to synthesise.
-        voice: Prebuilt voice name (default ``"Kore"``).
 
     Returns:
-        MP3 file bytes (128 kbps, 24 kHz, mono).
+        MP3 file bytes.
     """
+    # Try ElevenLabs first if configured
+    if settings.ELEVENLABS_API_KEY and settings.ELEVENLABS_VOICE_ID:
+        try:
+            return await asyncio.to_thread(_generate_tts_elevenlabs, text)
+        except Exception:
+            logger.warning("ElevenLabs TTS failed for text=%r, falling back to Gemini", text, exc_info=True)
+
+    # Fallback to Gemini
+    return await _generate_tts_gemini(text)
+
+
+def _generate_tts_elevenlabs(text: str) -> bytes:
+    """Generate TTS via ElevenLabs SDK. Returns MP3 bytes directly.
+
+    Voice settings (일본어 단어/가나 TTS 최적화):
+    - stability=0.6: 약간 높게 → 단어 발음 일관성 확보
+    - similarity_boost=0.8: 높게 → 선택한 음성 톤 유지
+    - style=0.0: 꺼둠 → 단어 TTS에 감정 표현 불필요
+    - speed=0.9: 약간 느리게 → 학습용이므로 또렷한 발음
+    - speaker_boost=True: 화자 특성 강화
+    """
+    from elevenlabs.client import ElevenLabs
+
+    client = ElevenLabs(api_key=settings.ELEVENLABS_API_KEY)
+
+    audio_iter = client.text_to_speech.convert(
+        text=text,
+        voice_id=settings.ELEVENLABS_VOICE_ID,
+        model_id=settings.ELEVENLABS_MODEL_ID,
+        output_format="mp3_44100_128",
+        language_code="ja",
+        voice_settings={
+            "stability": 0.6,
+            "similarity_boost": 0.8,
+            "style": 0.0,
+            "speed": 0.9,
+            "use_speaker_boost": True,
+        },
+    )
+
+    # SDK returns an iterator of chunks
+    return b"".join(audio_iter)
+
+
+async def _generate_tts_gemini(text: str, voice: str = "Kore") -> bytes:
+    """Generate TTS via Gemini. Returns MP3 bytes (PCM → MP3 conversion)."""
     client = _ensure_configured()
 
     response = await client.aio.models.generate_content(

@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     # Google AI
     GOOGLE_API_KEY: str = ""
 
+    # ElevenLabs TTS
+    ELEVENLABS_API_KEY: str = ""
+    ELEVENLABS_VOICE_ID: str = ""
+    ELEVENLABS_MODEL_ID: str = "eleven_flash_v2_5"
+
     # Google Cloud Storage
     GCS_BUCKET_NAME: str = "harukoto-tts"
     GCS_CDN_BASE_URL: str = "https://storage.googleapis.com/harukoto-tts"
