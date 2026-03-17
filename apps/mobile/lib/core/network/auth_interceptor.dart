@@ -64,7 +64,9 @@ class AuthInterceptor extends Interceptor {
     // Refresh failed → sign out so user returns to login screen
     try {
       await Supabase.instance.client.auth.signOut();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[AuthInterceptor] Sign-out failed: $e');
+    }
     handler.next(err);
   }
 
