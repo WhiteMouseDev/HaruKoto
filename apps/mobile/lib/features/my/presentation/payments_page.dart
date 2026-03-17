@@ -39,13 +39,9 @@ class _PaymentsPageState extends ConsumerState<PaymentsPage> {
     try {
       final data = await ref.read(myRepositoryProvider).fetchPayments(_page);
       if (!mounted) return;
-      final rawPayments = (data['payments'] as List<dynamic>?) ?? [];
       setState(() {
-        _payments = rawPayments
-            .cast<Map<String, dynamic>>()
-            .map(PaymentModel.fromJson)
-            .toList();
-        _totalPages = data['totalPages'] as int? ?? 1;
+        _payments = data.payments;
+        _totalPages = data.totalPages;
         _loading = false;
       });
     } catch (e, stackTrace) {

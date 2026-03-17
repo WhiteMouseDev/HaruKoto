@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'models/achievement_model.dart';
+import 'models/payment_model.dart';
 import 'models/profile_detail_model.dart';
 import 'models/subscription_model.dart';
 
@@ -46,11 +47,19 @@ class MyRepository {
     await _dio.delete<Map<String, dynamic>>('/user/account');
   }
 
-  Future<Map<String, dynamic>> fetchPayments(int page) async {
+  Future<({List<PaymentModel> payments, int totalPages})> fetchPayments(
+      int page) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/payments',
       queryParameters: {'page': page},
     );
-    return response.data!;
+    final data = response.data!;
+    final rawPayments = (data['payments'] as List<dynamic>?) ?? [];
+    return (
+      payments: rawPayments
+          .map((e) => PaymentModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      totalPages: data['totalPages'] as int? ?? 1,
+    );
   }
 }

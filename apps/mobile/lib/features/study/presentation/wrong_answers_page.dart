@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
@@ -49,8 +52,9 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         _totalPages = data.totalPages;
         _loading = false;
       });
-    } catch (e) {
-      debugPrint('[WrongAnswersPage] Failed to fetch data: $e');
+    } catch (e, stackTrace) {
+      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
+      if (!mounted) return;
       setState(() {
         _error = '데이터를 불러올 수 없습니다';
         _loading = false;
