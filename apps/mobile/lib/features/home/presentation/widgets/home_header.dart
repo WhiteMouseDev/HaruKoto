@@ -2,8 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/constants/colors.dart';
+import '../../../../core/services/haptic_service.dart';
+
 import '../../../notifications/providers/notification_provider.dart';
+
+String _greetingJp() {
+  final hour = DateTime.now().hour;
+  if (hour >= 5 && hour < 12) return 'おはよう!';
+  if (hour >= 12 && hour < 18) return 'こんにちは!';
+  if (hour >= 18) return 'こんばんは!';
+  return 'まだ起きてるの?';
+}
+
+String _greetingKr(String nickname) {
+  final hour = DateTime.now().hour;
+  if (hour >= 5 && hour < 12) return '오늘도 화이팅, $nickname!';
+  if (hour >= 12 && hour < 18) return '점심은 먹었어, $nickname?';
+  if (hour >= 18) return '오늘 하루 수고했어, $nickname!';
+  return '야행성이구나, $nickname!';
+}
 
 class HomeHeader extends ConsumerWidget {
   final String nickname;
@@ -27,7 +44,7 @@ class HomeHeader extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'おはよう!',
+                  _greetingJp(),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -35,7 +52,7 @@ class HomeHeader extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '안녕, $nickname!',
+                  _greetingKr(nickname),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -43,52 +60,59 @@ class HomeHeader extends ConsumerWidget {
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () => context.push('/notifications'),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: AppColors.lightSecondary,
-                    shape: BoxShape.circle,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                HapticService().light();
+                context.push('/notifications');
+              },
+              customBorder: const CircleBorder(),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      LucideIcons.bell,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
                   ),
-                  child: Icon(
-                    LucideIcons.bell,
-                    color: theme.colorScheme.primary,
-                    size: 20,
-                  ),
-                ),
-                if (unreadCount > 0)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
-                      ),
-                      child: Center(
-                        child: Text(
-                          unreadCount > 9 ? '9+' : '$unreadCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: -2,
+                      top: -2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Center(
+                          child: Text(
+                            unreadCount > 9 ? '9+' : '$unreadCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

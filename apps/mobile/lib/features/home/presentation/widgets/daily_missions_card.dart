@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/colors.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../data/models/mission_model.dart';
 
 class DailyMissionsCard extends StatelessWidget {
@@ -10,12 +11,12 @@ class DailyMissionsCard extends StatelessWidget {
   static IconData _missionIcon(String missionType) {
     final prefix = missionType.split('_').first;
     return switch (prefix) {
-      'words' => Icons.menu_book,
-      'quiz' => Icons.gps_fixed,
-      'correct' => Icons.auto_awesome,
-      'chat' => Icons.chat_bubble_outline,
-      'kana' => Icons.menu_book,
-      _ => Icons.gps_fixed,
+      'words' => LucideIcons.bookOpen,
+      'quiz' => LucideIcons.target,
+      'correct' => LucideIcons.sparkles,
+      'chat' => LucideIcons.messageCircle,
+      'kana' => LucideIcons.bookOpen,
+      _ => LucideIcons.target,
     };
   }
 
@@ -37,9 +38,9 @@ class DailyMissionsCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.lightBorder),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -86,7 +87,7 @@ class DailyMissionsCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle,
+                    Icon(LucideIcons.checkCircle,
                         size: 16, color: theme.colorScheme.primary),
                     const SizedBox(width: 6),
                     Text(
@@ -147,11 +148,11 @@ class _MissionItem extends StatelessWidget {
               shape: BoxShape.circle,
               color: mission.rewardClaimed
                   ? theme.colorScheme.primary
-                  : AppColors.lightSecondary,
+                  : theme.colorScheme.secondary,
             ),
             child: Icon(
               mission.rewardClaimed
-                  ? Icons.check
+                  ? LucideIcons.check
                   : DailyMissionsCard._missionIcon(mission.missionType),
               size: 18,
               color: mission.rewardClaimed
@@ -183,7 +184,7 @@ class _MissionItem extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.bolt, size: 14, color: theme.colorScheme.primary),
+                Icon(LucideIcons.zap, size: 14, color: theme.colorScheme.primary),
                 const SizedBox(width: 2),
                 Text(
                   '+${mission.xpReward}',

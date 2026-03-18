@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../stats/providers/stats_provider.dart';
 import '../../data/models/dashboard_model.dart';
@@ -29,42 +30,50 @@ class StreakDailyCard extends ConsumerWidget {
       child: Padding(
         padding:
             const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
-        child: GestureDetector(
-          onTap: () => _showCalendarSheet(context, ref),
-          child: Container(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-              border: Border.all(color: AppColors.lightBorder),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top row: Streak info + chevron
-                Row(
-                  children: [
-                    _StreakHeader(streak: streak.current),
-                    const Spacer(),
-                    Icon(
-                      LucideIcons.chevronRight,
-                      size: 18,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+            onTap: () {
+              HapticService().light();
+              _showCalendarSheet(context, ref);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top row: Streak info + chevron
+                  Row(
+                    children: [
+                      _StreakHeader(streak: streak.current),
+                      const Spacer(),
+                      Icon(
+                        LucideIcons.chevronRight,
+                        size: 18,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
 
-                // 7-day circles
-                _StreakWeek(weeklyStats: weeklyStats),
-              ],
+                  // 7-day circles
+                  _StreakWeek(weeklyStats: weeklyStats),
+                ],
+              ),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../../my/providers/my_provider.dart';
 
 class ShortcutGrid extends ConsumerWidget {
@@ -16,21 +17,25 @@ class ShortcutGrid extends ConsumerWidget {
       _ShortcutItem(
         icon: LucideIcons.bookMarked,
         label: '단어장',
+        color: theme.colorScheme.primary,
         onTap: () => context.push('/study/wordbook'),
       ),
       _ShortcutItem(
         icon: LucideIcons.fileX,
         label: '오답노트',
+        color: const Color(0xFFEF8354),
         onTap: () => context.push('/study/wrong-answers'),
       ),
       _ShortcutItem(
         icon: LucideIcons.trophy,
         label: '도전과제',
+        color: const Color(0xFFEAB308),
         onTap: () => _showAchievements(context, ref),
       ),
       _ShortcutItem(
         icon: LucideIcons.grid,
         label: '가나 차트',
+        color: const Color(0xFF6DB3CE),
         onTap: () => context.push('/study/kana/chart'),
       ),
     ];
@@ -44,33 +49,39 @@ class ShortcutGrid extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: shortcuts.map((item) {
               return Expanded(
-                child: GestureDetector(
-                  onTap: item.onTap,
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      HapticService().selection();
+                      item.onTap();
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: item.color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            item.icon,
+                            size: 24,
+                            color: item.color,
+                          ),
                         ),
-                        child: Icon(
-                          item.icon,
-                          size: 24,
-                          color: theme.colorScheme.primary,
+                        const SizedBox(height: 8),
+                        Text(
+                          item.label,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item.label,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -298,11 +309,13 @@ class ShortcutGrid extends ConsumerWidget {
 class _ShortcutItem {
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback onTap;
 
   const _ShortcutItem({
     required this.icon,
     required this.label,
+    required this.color,
     required this.onTap,
   });
 }

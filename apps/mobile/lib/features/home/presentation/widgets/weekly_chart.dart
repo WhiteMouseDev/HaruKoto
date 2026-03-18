@@ -1,15 +1,25 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/colors.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../../core/services/haptic_service.dart';
 import '../../data/models/dashboard_model.dart';
 
-class WeeklyChart extends StatelessWidget {
+class WeeklyChart extends StatefulWidget {
   final List<WeeklyStatEntry> weeklyStats;
   final int dailyGoal;
 
   const WeeklyChart(
       {super.key, required this.weeklyStats, required this.dailyGoal});
+
+  @override
+  State<WeeklyChart> createState() => _WeeklyChartState();
+}
+
+class _WeeklyChartState extends State<WeeklyChart>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
 
   static const _dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -23,19 +33,39 @@ class WeeklyChart extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final totalWords = weeklyStats.fold<int>(0, (a, e) => a + e.wordsStudied);
-    final totalXp = weeklyStats.fold<int>(0, (a, e) => a + e.xpEarned);
+    final totalWords =
+        widget.weeklyStats.fold<int>(0, (a, e) => a + e.wordsStudied);
+    final totalXp =
+        widget.weeklyStats.fold<int>(0, (a, e) => a + e.xpEarned);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.lightBorder),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -63,101 +93,119 @@ class WeeklyChart extends StatelessWidget {
               height: 120,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final barCount = weeklyStats.length.clamp(0, 7);
+                  final barCount = widget.weeklyStats.length.clamp(0, 7);
                   if (barCount == 0) {
                     return const Center(child: Text('데이터 없음'));
                   }
 
                   const goalLineY = 120.0 * 0.3;
 
-                  return Stack(
-                    children: [
-                      // Goal dashed line
-                      Positioned(
-                        top: goalLineY,
-                        left: 0,
-                        right: 0,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: CustomPaint(
-                                size: const Size(double.infinity, 1),
-                                painter: _DashedLinePainter(
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.15),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '목표',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.35),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  return AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, _) {
+                      final animValue = CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.easeOutCubic,
+                      ).value;
 
-                      // Bars
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(barCount, (i) {
-                          final value = weeklyStats[i].wordsStudied;
-                          final metGoal = value >= dailyGoal && value > 0;
-
-                          double barHeight;
-                          if (value <= 0) {
-                            barHeight = 3;
-                          } else {
-                            barHeight =
-                                math.sqrt(value / dailyGoal) * 0.7 * 120;
-                            barHeight = barHeight.clamp(16, 120);
-                          }
-
-                          return Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                left: i == 0 ? 0 : 4,
-                                right: i == barCount - 1 ? 0 : 4,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  if (metGoal)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 2),
-                                      child: Icon(
-                                        Icons.check,
-                                        size: 12,
-                                        color: theme.colorScheme.primary,
-                                      ),
-                                    ),
-                                  Container(
-                                    height: barHeight,
-                                    decoration: BoxDecoration(
-                                      color: value <= 0
-                                          ? theme.colorScheme.onSurface
-                                              .withValues(alpha: 0.15)
-                                          : metGoal
-                                              ? theme.colorScheme.primary
-                                              : theme.colorScheme.primary
-                                                  .withValues(alpha: 0.5),
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(6),
-                                        topRight: Radius.circular(6),
-                                      ),
+                      return Stack(
+                        children: [
+                          // Goal dashed line
+                          Positioned(
+                            top: goalLineY,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CustomPaint(
+                                    size: const Size(double.infinity, 1),
+                                    painter: _DashedLinePainter(
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.15),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '목표',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.35),
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        }),
-                      ),
-                    ],
+                          ),
+
+                          // Bars
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: List.generate(barCount, (i) {
+                              final value =
+                                  widget.weeklyStats[i].wordsStudied;
+                              final metGoal =
+                                  value >= widget.dailyGoal && value > 0;
+
+                              double barHeight;
+                              if (value <= 0) {
+                                barHeight = 3;
+                              } else {
+                                barHeight =
+                                    math.sqrt(value / widget.dailyGoal) *
+                                        0.7 *
+                                        120;
+                                barHeight = barHeight.clamp(16, 120);
+                              }
+
+                              final animatedHeight = barHeight * animValue;
+
+                              return Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    left: i == 0 ? 0 : 4,
+                                    right: i == barCount - 1 ? 0 : 4,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (metGoal && animValue > 0.9)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 2),
+                                          child: Icon(
+                                            LucideIcons.check,
+                                            size: 12,
+                                            color: theme.colorScheme.primary,
+                                          ),
+                                        ),
+                                      Container(
+                                        height: animatedHeight,
+                                        decoration: BoxDecoration(
+                                          color: value <= 0
+                                              ? theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.15)
+                                              : metGoal
+                                                  ? theme.colorScheme.primary
+                                                  : theme.colorScheme.primary
+                                                      .withValues(alpha: 0.5),
+                                          borderRadius:
+                                              const BorderRadius.only(
+                                            topLeft: Radius.circular(6),
+                                            topRight: Radius.circular(6),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
@@ -167,11 +215,11 @@ class WeeklyChart extends StatelessWidget {
             // Day labels
             Row(
               children: List.generate(
-                weeklyStats.length.clamp(0, 7),
+                widget.weeklyStats.length.clamp(0, 7),
                 (i) => Expanded(
                   child: Center(
                     child: Text(
-                      _dayOfWeek(weeklyStats[i].date),
+                      _dayOfWeek(widget.weeklyStats[i].date),
                       style: TextStyle(
                         fontSize: 10,
                         color:
@@ -217,14 +265,21 @@ class WeeklyChart extends StatelessWidget {
 
             // Stats detail link
             Center(
-              child: GestureDetector(
-                onTap: () => context.push('/stats'),
-                child: Text(
-                  '학습 통계 자세히 보기 →',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  HapticService().selection();
+                  context.push('/stats');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Text(
+                    '학습 통계 자세히 보기 →',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ),

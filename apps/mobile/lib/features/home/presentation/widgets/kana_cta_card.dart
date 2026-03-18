@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../data/models/dashboard_model.dart';
 
 class KanaCtaCard extends StatelessWidget {
@@ -31,6 +32,7 @@ class KanaCtaCard extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(AppSizes.cardRadius),
             onTap: () {
+              HapticService().selection();
               context.go('/study/kana');
             },
             child: Padding(
