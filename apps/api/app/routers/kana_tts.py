@@ -6,10 +6,14 @@ import re
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.middleware.rate_limit import rate_limit
+from app.models.tts import TtsAudio
 from app.models.user import User
 from app.services.ai import generate_tts
 from app.utils.constants import RATE_LIMITS
@@ -43,18 +47,25 @@ class KanaTTSRequest(BaseModel):
 async def kana_tts(
     body: KanaTTSRequest,
     user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     rl = await rate_limit(f"tts:{user.id}", RATE_LIMITS.AI.max_requests, RATE_LIMITS.AI.window_seconds)
     if not rl.success:
         raise HTTPException(status_code=429, detail="요청이 너무 많습니다")
 
-    text_hash = hashlib.md5(body.text.encode()).hexdigest()
-    gcs_path = f"tts/kana/{text_hash}.mp3"
+    text_hash = hashlib.md5(body.text.encode()).hexdigest()  # noqa: S324
 
-    # Check GCS cache
-    cached_url = await _check_gcs_cache(gcs_path)
-    if cached_url:
-        return {"audioUrl": cached_url}
+    # Check tts_audio table for cached entry
+    cached = await db.execute(
+        select(TtsAudio).where(
+            TtsAudio.target_type == "kana",
+            TtsAudio.target_id == text_hash,
+            TtsAudio.speed == 1.0,
+        )
+    )
+    tts_record = cached.scalar_one_or_none()
+    if tts_record:
+        return {"audioUrl": tts_record.audio_url}
 
     # Prevent duplicate generation
     if text_hash in _generating:
@@ -62,34 +73,32 @@ async def kana_tts(
     _generating.add(text_hash)
 
     try:
-        mp3_bytes = await generate_tts(body.text)
-    except RuntimeError:
-        logger.exception("TTS generation failed for text=%r", body.text)
-        raise HTTPException(status_code=502, detail="TTS 음성 생성에 실패했습니다") from None
+        try:
+            tts_result = await generate_tts(body.text)
+        except RuntimeError:
+            logger.exception("TTS generation failed for text=%r", body.text)
+            raise HTTPException(status_code=502, detail="TTS 음성 생성에 실패했습니다") from None
+
+        # Upload to GCS
+        gcs_path = f"tts/kana/{text_hash}.mp3"
+        audio_url = await _upload_to_gcs(gcs_path, tts_result.audio)
+
+        # Save to tts_audio table
+        tts_audio = TtsAudio(
+            target_type="kana",
+            target_id=text_hash,
+            text=body.text,
+            speed=1.0,
+            provider=tts_result.provider,
+            model=tts_result.model,
+            audio_url=audio_url,
+        )
+        db.add(tts_audio)
+        await db.commit()
+
+        return {"audioUrl": audio_url}
     finally:
         _generating.discard(text_hash)
-
-    # Upload to GCS
-    audio_url = await _upload_to_gcs(gcs_path, mp3_bytes)
-
-    return {"audioUrl": audio_url}
-
-
-async def _check_gcs_cache(gcs_path: str) -> str | None:
-    """Check if TTS audio already exists in GCS cache."""
-    try:
-        from google.cloud import storage
-
-        client = storage.Client()
-        bucket = client.bucket(settings.GCS_BUCKET_NAME)
-        blob = bucket.blob(gcs_path)
-
-        if blob.exists():
-            return f"{settings.GCS_CDN_BASE_URL}/{gcs_path}"
-        return None
-    except Exception:
-        logger.exception("Failed to check GCS cache for %s", gcs_path)
-        return None
 
 
 async def _upload_to_gcs(gcs_path: str, mp3_bytes: bytes) -> str:

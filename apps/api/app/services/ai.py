@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import struct
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 import lameenc
@@ -107,24 +108,35 @@ async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict:
 # ---------------------------------------------------------------------------
 
 
-async def generate_tts(text: str) -> bytes:
+@dataclass
+class TtsResult:
+    """TTS generation result with metadata."""
+
+    audio: bytes
+    provider: str  # 'elevenlabs' | 'gemini'
+    model: str  # e.g. 'eleven_multilingual_v2', 'gemini-2.5-flash-preview-tts'
+
+
+async def generate_tts(text: str) -> TtsResult:
     """Generate TTS audio, trying ElevenLabs first with Gemini fallback.
 
     Args:
         text: Japanese text to synthesise.
 
     Returns:
-        MP3 file bytes.
+        TtsResult with MP3 bytes and provider metadata.
     """
     # Try ElevenLabs first if configured
     if settings.ELEVENLABS_API_KEY and settings.ELEVENLABS_VOICE_ID:
         try:
-            return await asyncio.to_thread(_generate_tts_elevenlabs, text)
+            audio = await asyncio.to_thread(_generate_tts_elevenlabs, text)
+            return TtsResult(audio=audio, provider="elevenlabs", model=settings.ELEVENLABS_MODEL_ID)
         except Exception:
             logger.warning("ElevenLabs TTS failed for text=%r, falling back to Gemini", text, exc_info=True)
 
     # Fallback to Gemini
-    return await _generate_tts_gemini(text)
+    audio = await _generate_tts_gemini(text)
+    return TtsResult(audio=audio, provider="gemini", model="gemini-2.5-flash-preview-tts")
 
 
 def _generate_tts_elevenlabs(text: str) -> bytes:
