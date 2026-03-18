@@ -29,6 +29,19 @@ MISSION_POOL = [
     {"type": "kana_learn_5", "category": "kana", "targetCount": 5, "xpReward": 15, "progressField": "kana_learned"},
 ]
 
+# 미션 타입별 한국어 라벨/설명 매핑
+MISSION_TEXT: dict[str, tuple[str, str]] = {
+    "words_5": ("단어 5개 학습", "오늘 단어를 5개 학습하세요"),
+    "words_10": ("단어 10개 학습", "오늘 단어를 10개 학습하세요"),
+    "quiz_1": ("퀴즈 1회 완료", "퀴즈를 1회 완료하세요"),
+    "quiz_3": ("퀴즈 3회 완료", "퀴즈를 3회 완료하세요"),
+    "correct_10": ("정답 10개 달성", "퀴즈에서 10개 정답을 맞추세요"),
+    "correct_20": ("정답 20개 달성", "퀴즈에서 20개 정답을 맞추세요"),
+    "chat_1": ("AI 회화 1회", "AI와 일본어 회화를 1회 진행하세요"),
+    "chat_2": ("AI 회화 2회", "AI와 일본어 회화를 2회 진행하세요"),
+    "kana_learn_5": ("가나 5개 학습", "히라가나/카타카나를 5개 학습하세요"),
+}
+
 XP_REWARDS = {m["type"]: m["xpReward"] for m in MISSION_POOL}
 
 
@@ -113,10 +126,13 @@ async def get_today_missions(
                 user.level = level_info["level"]
                 mission.reward_claimed = True
 
+        label, description = MISSION_TEXT.get(mission.mission_type, (mission.mission_type, ""))
         missions_response.append(
             MissionResponse(
                 id=mission.id,
                 mission_type=mission.mission_type,
+                label=label,
+                description=description,
                 target_count=mission.target_count,
                 current_count=current,
                 is_completed=mission.is_completed,

@@ -9,6 +9,8 @@ from app.schemas.common import CamelModel
 class MissionResponse(CamelModel):
     id: UUID
     mission_type: str
+    label: str
+    description: str
     target_count: int
     current_count: int
     is_completed: bool
