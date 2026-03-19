@@ -99,7 +99,7 @@ class StudyRepository {
         'jlptLevel': jlptLevel,
         'count': count,
         if (mode != null) 'mode': mode,
-        if (stageId != null) 'stage_id': stageId,
+        if (stageId != null) 'stageId': stageId,
       },
     );
     final data = response.data!;
@@ -183,7 +183,7 @@ class StudyRepository {
       '/quiz/complete',
       data: {
         'sessionId': sessionId,
-        if (stageId != null) 'stage_id': stageId,
+        if (stageId != null) 'stageId': stageId,
       },
     );
     return QuizResultModel.fromJson(response.data!);

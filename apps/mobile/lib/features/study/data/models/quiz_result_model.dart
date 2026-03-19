@@ -47,7 +47,7 @@ class QuizResultModel {
       correctCount: json['correctCount'] as int? ?? 0,
       totalQuestions: json['totalQuestions'] as int? ?? 0,
       xpEarned: json['xpEarned'] as int? ?? 0,
-      accuracy: json['accuracy'] as int? ?? 0,
+      accuracy: (json['accuracy'] as num?)?.round() ?? 0,
       currentXp: json['currentXp'] as int? ?? 0,
       xpForNext: json['xpForNext'] as int? ?? 100,
       level: json['level'] as int? ?? 1,
