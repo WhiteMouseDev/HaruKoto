@@ -34,6 +34,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   late final AnimationController _controller;
   String _status = '통화 내용을 분석하고 있어요...';
   double _progress = 0.0;
+  int _currentStep = 1;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     setState(() {
       _status = 'AI가 피드백을 생성하고 있어요...';
       _progress = 0.3;
+      _currentStep = 2;
     });
 
     try {
@@ -74,6 +76,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       setState(() {
         _status = '분석 완료!';
         _progress = 1.0;
+        _currentStep = 3;
       });
 
       await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -99,6 +102,73 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       if (!mounted) return;
       Navigator.of(context).pop();
     }
+  }
+
+  Widget _buildStepIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildStepCircle(1, '음성 분석'),
+        _buildStepLine(_currentStep >= 2),
+        _buildStepCircle(2, '피드백 생성'),
+        _buildStepLine(_currentStep >= 3),
+        _buildStepCircle(3, '완료'),
+      ],
+    );
+  }
+
+  Widget _buildStepCircle(int step, String label) {
+    final isActive = _currentStep >= step;
+    final isCompleted = _currentStep > step;
+    return Column(
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive
+                ? AppColors.callAccent
+                : Colors.white.withValues(alpha: 0.15),
+          ),
+          child: Center(
+            child: isCompleted
+                ? const Icon(LucideIcons.check, size: 14, color: Colors.white)
+                : Text(
+                    '$step',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isActive
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.4),
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: isActive
+                ? Colors.white.withValues(alpha: 0.8)
+                : Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepLine(bool active) {
+    return Container(
+      width: 40,
+      height: 2,
+      margin: const EdgeInsets.only(bottom: 20),
+      color: active
+          ? AppColors.callAccent
+          : Colors.white.withValues(alpha: 0.15),
+    );
   }
 
   Widget _buildAvatar() {
@@ -173,6 +243,10 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                   ),
                 ],
               ),
+              const SizedBox(height: AppSizes.lg),
+
+              // Step indicator
+              _buildStepIndicator(),
               const SizedBox(height: AppSizes.lg),
 
               // Status text

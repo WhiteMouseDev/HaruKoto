@@ -290,13 +290,14 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                     children: [
                       Text(
                         _error!,
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(color: Colors.redAccent),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.onGradient.withValues(alpha: 0.7),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       if (_state == 'error') ...[
                         const SizedBox(height: 12),
-                        OutlinedButton(
+                        FilledButton(
                           onPressed: () {
                             setState(() {
                               _state = 'connecting';
@@ -304,11 +305,9 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                             });
                             _startCall();
                           },
-                          style: OutlinedButton.styleFrom(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.callAccent,
                             foregroundColor: AppColors.onGradient,
-                            side: BorderSide(
-                                color: AppColors.onGradient
-                                    .withValues(alpha: 0.3)),
                           ),
                           child: const Text('다시 연결'),
                         ),
