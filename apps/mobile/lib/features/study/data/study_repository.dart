@@ -193,7 +193,7 @@ class StudyRepository {
       String sessionId) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/quiz/wrong-answers',
-      queryParameters: {'sessionId': sessionId},
+      queryParameters: {'session_id': sessionId},
     );
     final list = response.data!['wrongAnswers'] as List<dynamic>? ?? [];
     return list
