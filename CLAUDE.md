@@ -114,6 +114,38 @@ chore: 빌드, 설정 변경
 - Debug 실행: `flutter run -d 00008150-000A20881E88401C --dart-define-from-file=.env`
 - 시뮬레이터 실행: `flutter run -d 16FEF8B7-DC41-49D8-9EC6-E9911468E875 --dart-define-from-file=.env`
 
+## Flutter 바텀시트 + TextField 패턴 (필수 준수)
+
+바텀시트 안에 TextField가 있을 때, 반드시 아래 패턴을 따라야 합니다. 클로저 안에서 직접 구현하면 `_dependents.isEmpty` assertion 에러가 발생합니다.
+
+```dart
+// ✅ 올바른 패턴: 별도 StatefulWidget + async/await
+Future<void> _showSheet(BuildContext context) async {
+  final result = await showModalBottomSheet<String>(
+    context: context,
+    useRootNavigator: true,     // root navigator 사용
+    isScrollControlled: true,   // 키보드 대응
+    useSafeArea: true,          // 프레임워크 레벨 SafeArea
+    shape: AppSizes.sheetShape,
+    builder: (_) => _MySheet(),  // 별도 StatefulWidget
+  );
+  // await 이후 = 시트 완전 종료 후 실행
+  if (result != null && mounted) ref.invalidate(someProvider);
+}
+
+// 별도 StatefulWidget으로 분리
+class _MySheet extends StatefulWidget { ... }
+class _MySheetState extends State<_MySheet> {
+  late final TextEditingController _controller;
+  // AnimatedPadding + MediaQuery.viewInsetsOf(context) 사용
+}
+```
+
+**금지 사항:**
+- `showModalBottomSheet().then()` 안에서 `ref.invalidate()` 호출 금지 (exit animation 전에 실행됨)
+- 부모 클로저에서 `TextEditingController` 생성 후 `.then()`에서 dispose 금지
+- `MediaQuery.of(sheetContext)` 대신 별도 위젯의 `MediaQuery.viewInsetsOf(context)` 사용
+
 ## Push 전 필수 체크 (lint/analyze)
 
 코드를 커밋하기 전에 변경된 앱의 lint를 반드시 실행하고, 에러가 있으면 수정 후 커밋해야 합니다.

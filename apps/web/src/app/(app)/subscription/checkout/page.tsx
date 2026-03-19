@@ -96,14 +96,9 @@ export default function CheckoutPage(props: {
         /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
         window.innerWidth < 768;
 
-      // 월간: billingKey 발급 + 결제 (정기결제)
-      // 연간: 단건 결제 (billingKey 없음)
-      const isMonthly = plan === 'monthly';
-      const paymentFn = isMonthly
-        ? PortOne.requestIssueBillingKeyAndPay
-        : PortOne.requestPayment;
-
-      const response = await paymentFn({
+      // 월간/연간 모두 requestPayment 사용
+      // 월간 정기결제의 billingKey는 PG 채널 설정에 의해 자동 발급됨
+      const response = await PortOne.requestPayment({
         storeId: checkout.storeId,
         channelKey: checkout.channelKey,
         paymentId: checkout.paymentId,

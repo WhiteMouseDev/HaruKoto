@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -259,94 +257,20 @@ class _MyPageState extends ConsumerState<MyPage> {
     );
   }
 
-  void _showNicknameSheet(BuildContext context, String currentNickname) {
-    final controller = TextEditingController(text: currentNickname);
-
-    showModalBottomSheet<String>(
+  Future<void> _showNicknameSheet(
+      BuildContext context, String currentNickname) async {
+    final nickname = await showModalBottomSheet<String>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
+      useSafeArea: true,
       shape: AppSizes.sheetShape,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const AppSheetHandle(),
-                const SizedBox(height: 20),
-                Text(
-                  '닉네임 변경',
-                  style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '새로운 닉네임을 입력해주세요.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(sheetContext)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.5),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: controller,
-                  maxLength: 20,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: '닉네임을 입력해주세요',
-                    hintStyle: TextStyle(
-                      color: Theme.of(sheetContext)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.3),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final nickname = controller.text.trim();
-                      if (nickname.isEmpty) return;
-                      Navigator.pop(sheetContext, nickname);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('저장'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    ).then((nickname) async {
-      controller.dispose();
-      if (nickname == null || nickname.isEmpty || !mounted) return;
-      await ref
-          .read(myRepositoryProvider)
-          .updateProfile({'nickname': nickname});
-      if (mounted) ref.invalidate(profileDetailProvider);
-    });
+      builder: (_) => _NicknameSheet(currentNickname: currentNickname),
+    );
+
+    if (nickname == null || nickname.isEmpty || !mounted) return;
+    await ref.read(myRepositoryProvider).updateProfile({'nickname': nickname});
+    if (mounted) ref.invalidate(profileDetailProvider);
   }
 
   Future<void> _handleLogout() async {
@@ -378,5 +302,103 @@ class _MyPageState extends ConsumerState<MyPage> {
         );
       }
     }
+  }
+}
+
+class _NicknameSheet extends StatefulWidget {
+  const _NicknameSheet({required this.currentNickname});
+
+  final String currentNickname;
+
+  @override
+  State<_NicknameSheet> createState() => _NicknameSheetState();
+}
+
+class _NicknameSheetState extends State<_NicknameSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentNickname);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 24,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AppSheetHandle(),
+            const SizedBox(height: 20),
+            Text(
+              '닉네임 변경',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '새로운 닉네임을 입력해주세요.',
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _controller,
+              maxLength: 20,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18),
+              decoration: InputDecoration(
+                hintText: '닉네임을 입력해주세요',
+                hintStyle: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  final nickname = _controller.text.trim();
+                  if (nickname.isEmpty) return;
+                  Navigator.of(context).pop(nickname);
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('저장'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
