@@ -371,7 +371,9 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                               setState(() => _isMuted = !_isMuted);
                               _service?.isMuted = _isMuted;
                             },
-                            color: AppColors.onGradient.withValues(alpha: 0.24),
+                            color: _isMuted
+                                ? AppColors.warning(theme.brightness)
+                                : AppColors.callSurface,
                           ),
 
                         // End call button
@@ -392,7 +394,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                                 setState(() => _showSubtitle = !_showSubtitle),
                             color: _showSubtitle
                                 ? AppColors.callAccent
-                                : AppColors.onGradient.withValues(alpha: 0.24),
+                                : AppColors.callSurface,
                           ),
                       ],
                     ),
