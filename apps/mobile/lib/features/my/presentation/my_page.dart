@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/sizes.dart';
-import '../../../core/providers/quiz_settings_provider.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../home/providers/home_provider.dart';
+import '../data/models/profile_detail_model.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
 import 'widgets/subscription_section.dart';
@@ -32,176 +32,170 @@ class _MyPageState extends ConsumerState<MyPage> {
     final theme = Theme.of(context);
     final profileAsync = ref.watch(profileDetailProvider);
 
+    // Keep previous data during refresh to avoid full tree swap
+    final data = profileAsync.hasValue ? profileAsync.value : null;
+    final isInitialLoading = profileAsync.isLoading && data == null;
+    final hasError = profileAsync.hasError && data == null;
+
     return Scaffold(
       appBar: AppBar(title: const Text('MY')),
-      body: profileAsync.when(
-        loading: () => _buildSkeleton(context),
-        error: (error, _) => _buildError(context),
-        data: (data) {
-          // Sync furigana setting from server (only if changed)
-          final currentFurigana = ref.read(quizSettingsProvider).showFurigana;
-          if (currentFurigana != data.profile.showFurigana) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                ref.read(quizSettingsProvider.notifier).setShowFurigana(
-                      data.profile.showFurigana,
-                    );
-              }
-            });
-          }
-          return RefreshIndicator(
-            color: theme.colorScheme.primary,
-            onRefresh: () async {
+      body: isInitialLoading
+          ? _buildSkeleton(context)
+          : hasError
+              ? _buildError(context)
+              : data == null
+                  ? _buildSkeleton(context)
+                  : _buildContent(context, theme, data),
+    );
+  }
+
+  Widget _buildContent(
+      BuildContext context, ThemeData theme, ProfileDetailModel data) {
+    // Furigana is local-first (SharedPreferences).
+    // No server→local sync needed. Server is backup only.
+    {}
+    return RefreshIndicator(
+      color: theme.colorScheme.primary,
+      onRefresh: () async {
+        ref.invalidate(profileDetailProvider);
+        ref.invalidate(subscriptionStatusProvider);
+      },
+      child: ListView(
+        padding: const EdgeInsets.all(AppSizes.md),
+        children: [
+          // Profile Hero
+          ProfileHero(
+            profile: data.profile,
+            summary: data.summary,
+            onEditNickname: () =>
+                _showNicknameSheet(context, data.profile.nickname),
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // Subscription
+          SubscriptionSection(
+            onNavigateToPricing: () => context.push('/pricing'),
+            onNavigateToPayments: () => context.push('/my/payments'),
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // Learning Stats
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              leading: Icon(LucideIcons.barChart3,
+                  size: 20, color: theme.colorScheme.primary),
+              title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
+              trailing: Icon(LucideIcons.chevronRight,
+                  size: 18,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+              onTap: () => context.push('/stats'),
+            ),
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // Settings
+          SettingsMenu(
+            jlptLevel: data.profile.jlptLevel,
+            showKana: data.profile.showKana,
+            onUpdate: (field, value) async {
+              await ref
+                  .read(myRepositoryProvider)
+                  .updateProfile({field: value});
               ref.invalidate(profileDetailProvider);
-              ref.invalidate(subscriptionStatusProvider);
+              ref.invalidate(dashboardProvider);
+              ref.invalidate(profileProvider);
             },
-            child: ListView(
-              padding: const EdgeInsets.all(AppSizes.md),
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // App Settings
+          AppSettingsSection(
+            showFurigana: data.profile.showFurigana,
+            onUpdate: (field, value) async {
+              await ref
+                  .read(myRepositoryProvider)
+                  .updateProfile({field: value});
+              ref.invalidate(profileDetailProvider);
+            },
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // Info
+          const InfoSection(),
+          const SizedBox(height: AppSizes.md),
+
+          // Account
+          AccountSection(
+            onLogout: _handleLogout,
+            loggingOut: _loggingOut,
+            onDeleteAccount: _handleDeleteAccount,
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          // Footer
+          Padding(
+            padding: const EdgeInsets.only(bottom: 120),
+            child: Column(
               children: [
-                // Profile Hero
-                ProfileHero(
-                  profile: data.profile,
-                  summary: data.summary,
-                  onEditNickname: () =>
-                      _showNicknameSheet(context, data.profile.nickname),
-                ),
-                const SizedBox(height: AppSizes.md),
-
-                // Subscription
-                SubscriptionSection(
-                  onNavigateToPricing: () => context.push('/pricing'),
-                  onNavigateToPayments: () => context.push('/my/payments'),
-                ),
-                const SizedBox(height: AppSizes.md),
-
-                // Learning Stats
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    leading: Icon(LucideIcons.barChart3,
-                        size: 20, color: theme.colorScheme.primary),
-                    title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
-                    trailing: Icon(LucideIcons.chevronRight,
-                        size: 18,
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.4)),
-                    onTap: () => context.push('/stats'),
+                Text(
+                  '화이트마우스데브 (WhiteMouseDev)',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
                   ),
                 ),
-                const SizedBox(height: AppSizes.md),
-
-                // Settings
-                SettingsMenu(
-                  jlptLevel: data.profile.jlptLevel,
-                  showKana: data.profile.showKana,
-                  onUpdate: (field, value) async {
-                    await ref
-                        .read(myRepositoryProvider)
-                        .updateProfile({field: value});
-                    ref.invalidate(profileDetailProvider);
-                    ref.invalidate(dashboardProvider);
-                    ref.invalidate(profileProvider);
-                  },
+                const SizedBox(height: 4),
+                Text(
+                  '대표: 김건우',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
                 ),
-                const SizedBox(height: AppSizes.md),
-
-                // App Settings
-                AppSettingsSection(
-                  showFurigana: data.profile.showFurigana,
-                  onUpdate: (field, value) async {
-                    await ref
-                        .read(myRepositoryProvider)
-                        .updateProfile({field: value});
-                    ref.invalidate(profileDetailProvider);
-                  },
+                Text(
+                  '사업자등록번호: 634-26-01985',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
                 ),
-                const SizedBox(height: AppSizes.md),
-
-                // Info
-                const InfoSection(),
-                const SizedBox(height: AppSizes.md),
-
-                // Account
-                AccountSection(
-                  onLogout: _handleLogout,
-                  loggingOut: _loggingOut,
-                  onDeleteAccount: _handleDeleteAccount,
+                Text(
+                  '통신판매업신고번호: 2026-서울송파-0749',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
                 ),
-                const SizedBox(height: AppSizes.md),
-
-                // Footer
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 120),
-                  child: Column(
-                    children: [
-                      Text(
-                        '화이트마우스데브 (WhiteMouseDev)',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.35),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '대표: 김건우',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        '사업자등록번호: 634-26-01985',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        '통신판매업신고번호: 2026-서울송파-0749',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        '주소: 서울특별시 송파구 양재대로 1218',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        '연락처: 010-8595-9869',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        '이메일: whitemousedev@whitemouse.dev',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.3),
-                        ),
-                      ),
-                    ],
+                Text(
+                  '주소: 서울특별시 송파구 양재대로 1218',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
+                ),
+                Text(
+                  '연락처: 010-8595-9869',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
+                ),
+                Text(
+                  '이메일: whitemousedev@whitemouse.dev',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                   ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -274,7 +268,7 @@ class _MyPageState extends ConsumerState<MyPage> {
       shape: AppSizes.sheetShape,
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: EdgeInsets.only(
               left: 20,
               right: 20,
@@ -307,11 +301,16 @@ class _MyPageState extends ConsumerState<MyPage> {
                 TextField(
                   controller: controller,
                   maxLength: 20,
-                  autofocus: true,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
                     hintText: '닉네임을 입력해주세요',
+                    hintStyle: TextStyle(
+                      color: Theme.of(sheetContext)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.3),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -346,12 +345,7 @@ class _MyPageState extends ConsumerState<MyPage> {
       await ref
           .read(myRepositoryProvider)
           .updateProfile({'nickname': nickname});
-      // Defer invalidation to next frame so widget tree is fully settled
-      if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) ref.invalidate(profileDetailProvider);
-        });
-      }
+      if (mounted) ref.invalidate(profileDetailProvider);
     });
   }
 

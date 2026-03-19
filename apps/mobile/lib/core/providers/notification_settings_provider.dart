@@ -15,8 +15,15 @@ class NotificationSettings {
     this.streakDefenseEnabled = true,
   });
 
-  String get reminderTimeLabel =>
-      '${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}';
+  String get reminderTimeLabel {
+    final period = reminderHour < 12 ? '오전' : '오후';
+    final displayHour = reminderHour == 0
+        ? 12
+        : reminderHour > 12
+            ? reminderHour - 12
+            : reminderHour;
+    return '$period $displayHour:${reminderMinute.toString().padLeft(2, '0')}';
+  }
 
   NotificationSettings copyWith({
     bool? reminderEnabled,

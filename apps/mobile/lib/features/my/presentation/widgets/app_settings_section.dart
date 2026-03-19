@@ -174,11 +174,34 @@ class AppSettingsSection extends ConsumerWidget {
   }
 
   void _showTimePicker(BuildContext context, WidgetRef ref) async {
+    final theme = Theme.of(context);
     final settings = ref.read(notificationSettingsProvider);
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
           hour: settings.reminderHour, minute: settings.reminderMinute),
+      builder: (context, child) {
+        return Theme(
+          data: theme.copyWith(
+            timePickerTheme: TimePickerThemeData(
+              // AM/PM 선택 상태를 명확하게
+              dayPeriodColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return theme.colorScheme.primary;
+                }
+                return theme.colorScheme.surfaceContainerHigh;
+              }),
+              dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Colors.white;
+                }
+                return theme.colorScheme.onSurface.withValues(alpha: 0.6);
+              }),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       unawaited(ref

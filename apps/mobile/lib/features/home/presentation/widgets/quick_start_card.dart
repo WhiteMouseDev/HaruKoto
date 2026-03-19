@@ -239,8 +239,8 @@ class GooeyTabRailPainter extends CustomPainter {
         top - 4,
         w,
         bottom + 4,
-        topRight: Radius.circular(_tabR),
-        bottomRight: Radius.circular(_tabR),
+        topRight: const Radius.circular(_tabR),
+        bottomRight: const Radius.circular(_tabR),
       );
       canvas.drawRRect(rrect, Paint()..color = tabColors[i % tabColors.length]);
     }

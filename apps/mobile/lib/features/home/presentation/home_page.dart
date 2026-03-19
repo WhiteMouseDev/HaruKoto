@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/sizes.dart';
-import '../../../core/providers/quiz_settings_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import 'widgets/home_skeleton.dart';
 import '../providers/home_provider.dart';
@@ -108,19 +107,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
 
-    // Sync furigana setting from server on profile load (only if changed)
-    if (profile != null) {
-      final currentFurigana = ref.read(quizSettingsProvider).showFurigana;
-      if (currentFurigana != profile.showFurigana) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            ref.read(quizSettingsProvider.notifier).setShowFurigana(
-                  profile.showFurigana,
-                );
-          }
-        });
-      }
-    }
+    // Furigana is local-first (SharedPreferences). No server sync needed.
 
     // Trigger stagger animation on first data load
     if (!_hasAnimated && !_animationScheduled) {

@@ -42,7 +42,7 @@ class GeminiLiveService {
   final AudioRecorder _recorder = AudioRecorder();
   StreamSubscription<Uint8List>? _recorderSub;
   bool _disposed = false;
-  bool _isMuted = false;
+  bool isMuted = false;
 
   // Transcript accumulation
   final List<TranscriptEntry> _transcript = [];
@@ -64,10 +64,6 @@ class GeminiLiveService {
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
   });
-
-  /// Mute/unmute microphone — stops sending PCM data when muted.
-  set isMuted(bool value) => _isMuted = value;
-  bool get isMuted => _isMuted;
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
@@ -291,7 +287,7 @@ class GeminiLiveService {
     );
 
     _recorderSub = stream.listen((data) {
-      if (_disposed || _channel == null || _isMuted) return;
+      if (_disposed || _channel == null || isMuted) return;
       final b64 = base64Encode(data);
       final msg = {
         'realtimeInput': {
