@@ -121,13 +121,12 @@ class GeminiLiveService {
   // ──────── Connection ────────
 
   Future<void> _connect({String? handle}) async {
-    // URI를 안전하게 조합 (기존 query parameter 보존 + 토큰 인코딩)
-    final baseUri = Uri.parse(wsUri);
-    final uri = baseUri.replace(queryParameters: {
-      ...baseUri.queryParameters,
-      'access_token': token,
-    });
-    debugPrint('[GeminiLive] Connecting to: ${uri.host}${uri.path}');
+    // 토큰에 / 가 포함되어 있으므로 인코딩하지 않고 그대로 사용
+    final uri = Uri.parse('$wsUri?access_token=$token');
+    debugPrint(
+        '[GeminiLive] Connecting to: ${uri.scheme}://${uri.host}${uri.path}');
+    debugPrint(
+        '[GeminiLive] Token prefix: ${token.substring(0, token.length.clamp(0, 30))}...');
     debugPrint('[GeminiLive] Model: $model');
 
     _channelGeneration++;
@@ -195,10 +194,19 @@ class GeminiLiveService {
   void _onMessage(dynamic raw) {
     if (_disposed || _ended) return;
 
-    // 메시지 파싱을 try-catch로 보호
+    // 메시지 파싱을 try-catch로 보호 (텍스트 + 바이너리 모두 처리)
     final Map<String, dynamic> msg;
     try {
-      msg = jsonDecode(raw as String) as Map<String, dynamic>;
+      final String text;
+      if (raw is String) {
+        text = raw;
+      } else if (raw is List<int>) {
+        text = utf8.decode(raw);
+      } else {
+        debugPrint('[GeminiLive] Unknown message type: ${raw.runtimeType}');
+        return;
+      }
+      msg = jsonDecode(text) as Map<String, dynamic>;
     } catch (e) {
       debugPrint('[GeminiLive] Failed to parse message: $e');
       return;
@@ -311,41 +319,53 @@ class GeminiLiveService {
     // 기존 녹음이 진행 중이면 먼저 정리
     await _stopRecording();
 
-    if (!await _recorder.hasPermission()) {
-      onError?.call('마이크 권한이 필요합니다');
+    try {
+      if (!await _recorder.hasPermission()) {
+        onError?.call('마이크 권한이 필요합니다');
+        return;
+      }
+    } catch (e) {
+      debugPrint('[GeminiLive] Microphone permission check failed: $e');
+      // 시뮬레이터 등에서 마이크 접근 불가 시 녹음 없이 계속
       return;
     }
 
     // Initialize PCM player for output
-    await FlutterPcmSound.setup(sampleRate: 24000, channelCount: 1);
-    unawaited(FlutterPcmSound.setFeedThreshold(8000));
+    try {
+      await FlutterPcmSound.setup(sampleRate: 24000, channelCount: 1);
+      unawaited(FlutterPcmSound.setFeedThreshold(8000));
 
-    final stream = await _recorder.startStream(
-      const RecordConfig(
-        encoder: AudioEncoder.pcm16bits,
-        sampleRate: 16000,
-        numChannels: 1,
-        autoGain: true,
-        echoCancel: true,
-        noiseSuppress: true,
-      ),
-    );
+      final stream = await _recorder.startStream(
+        const RecordConfig(
+          encoder: AudioEncoder.pcm16bits,
+          sampleRate: 16000,
+          numChannels: 1,
+          autoGain: true,
+          echoCancel: true,
+          noiseSuppress: true,
+        ),
+      );
 
-    _recorderSub = stream.listen((data) {
-      if (_disposed || _channel == null || isMuted) return;
-      final b64 = base64Encode(data);
-      final msg = {
-        'realtimeInput': {
-          'mediaChunks': [
-            {
-              'mimeType': 'audio/pcm;rate=16000',
-              'data': b64,
-            },
-          ],
-        },
-      };
-      _safeSend(jsonEncode(msg));
-    });
+      _recorderSub = stream.listen((data) {
+        if (_disposed || _channel == null || isMuted) return;
+        final b64 = base64Encode(data);
+        final msg = {
+          'realtimeInput': {
+            'mediaChunks': [
+              {
+                'mimeType': 'audio/pcm;rate=16000',
+                'data': b64,
+              },
+            ],
+          },
+        };
+        _safeSend(jsonEncode(msg));
+      });
+    } catch (e) {
+      debugPrint('[GeminiLive] Recording start failed: $e');
+      onError?.call('마이크를 사용할 수 없습니다. 기기를 확인해주세요.');
+      _setState(GeminiLiveState.error);
+    }
   }
 
   Future<void> _stopRecording() async {

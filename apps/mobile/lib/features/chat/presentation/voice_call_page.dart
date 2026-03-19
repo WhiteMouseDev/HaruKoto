@@ -52,13 +52,20 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
   }
 
   Future<void> _startCall() async {
+    debugPrint('[VoiceCall] _startCall() called');
     try {
       final repo = ref.read(chatRepositoryProvider);
 
       // 1. Get ephemeral token
+      debugPrint('[VoiceCall] Fetching live token...');
       final tokenResp = await repo.fetchLiveToken(
         characterId: widget.characterId,
       );
+      debugPrint(
+          '[VoiceCall] Token received: ${tokenResp.token.substring(0, tokenResp.token.length.clamp(0, 30))}...');
+      debugPrint('[VoiceCall] Model: ${tokenResp.model}');
+      debugPrint(
+          '[VoiceCall] WS URI: ${tokenResp.wsUri.substring(0, tokenResp.wsUri.length.clamp(0, 80))}...');
 
       // 2. Get character detail for voice settings
       String? voiceName;
