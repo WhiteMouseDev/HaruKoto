@@ -118,13 +118,12 @@ async def update_profile(
 ):
     update_data = body.model_dump(exclude_unset=True)
 
-    # Merge call_settings instead of overwriting
+    # Merge call_settings — 새 dict 할당 (SQLAlchemy JSON 변경 감지용)
     if "call_settings" in update_data and update_data["call_settings"] is not None:
-        existing = user.call_settings or {}
-        existing.update(update_data["call_settings"])
-        update_data["call_settings"] = existing
+        merged = {**(user.call_settings or {}), **update_data["call_settings"]}
+        update_data["call_settings"] = merged
 
-    # Validate and merge app_settings (flat dict only, no nested objects)
+    # Validate and merge app_settings — 새 dict 할당 (SQLAlchemy JSON 변경 감지용)
     if "app_settings" in update_data and update_data["app_settings"] is not None:
         new_settings = update_data["app_settings"]
         for key, value in new_settings.items():
@@ -133,9 +132,8 @@ async def update_profile(
                     status_code=400,
                     detail=f"app_settings must be a flat dict. Nested value found for key '{key}'.",
                 )
-        existing_settings = user.app_settings or {}
-        existing_settings.update(new_settings)
-        update_data["app_settings"] = existing_settings
+        merged_settings = {**(user.app_settings or {}), **new_settings}
+        update_data["app_settings"] = merged_settings
 
     for field, value in update_data.items():
         setattr(user, field, value)
