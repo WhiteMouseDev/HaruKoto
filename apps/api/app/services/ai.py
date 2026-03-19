@@ -139,33 +139,42 @@ async def generate_tts(text: str) -> TtsResult:
     return TtsResult(audio=audio, provider="gemini", model="gemini-2.5-flash-preview-tts")
 
 
+def _is_short_text(text: str) -> bool:
+    """단어/가나 수준의 짧은 텍스트인지 판별."""
+    return len(text) <= 8
+
+
 def _generate_tts_elevenlabs(text: str) -> bytes:
     """Generate TTS via ElevenLabs SDK. Returns MP3 bytes directly.
 
-    Voice settings (일본어 단어/가나 TTS 최적화):
-    - stability=0.6: 약간 높게 → 단어 발음 일관성 확보
-    - similarity_boost=0.8: 높게 → 선택한 음성 톤 유지
-    - style=0.0: 꺼둠 → 단어 TTS에 감정 표현 불필요
-    - speed=0.9: 약간 느리게 → 학습용이므로 또렷한 발음
-    - speaker_boost=True: 화자 특성 강화
+    단어와 문장에 다른 voice_settings를 적용:
+    - 단어(≤8자): stability 높게, 마침표 추가 → 억양 안정화
+    - 문장(>8자): stability 중간 → 자연스러운 억양 유지
     """
     from elevenlabs.client import ElevenLabs
 
     client = ElevenLabs(api_key=settings.ELEVENLABS_API_KEY)
 
+    is_word = _is_short_text(text)
+
+    # 단어: 마침표 추가로 TTS가 문장으로 인식 → 억양 안정화
+    tts_text = f"{text}。" if is_word else text
+
+    voice_settings = {
+        "stability": 0.85 if is_word else 0.5,
+        "similarity_boost": 0.85 if is_word else 0.75,
+        "style": 0.0 if is_word else 0.15,
+        "speed": 1.0,
+        "use_speaker_boost": True,
+    }
+
     audio_iter = client.text_to_speech.convert(
-        text=text,
+        text=tts_text,
         voice_id=settings.ELEVENLABS_VOICE_ID,
         model_id=settings.ELEVENLABS_MODEL_ID,
         output_format="mp3_44100_128",
         language_code="ja",
-        voice_settings={
-            "stability": 0.6,
-            "similarity_boost": 0.8,
-            "style": 0.0,
-            "speed": 0.9,
-            "use_speaker_boost": True,
-        },
+        voice_settings=voice_settings,
     )
 
     # SDK returns an iterator of chunks
