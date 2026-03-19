@@ -9,6 +9,7 @@ import '../../data/models/stage_model.dart';
 import '../../providers/study_provider.dart';
 import '../study_page.dart';
 import '../quiz_page.dart';
+import 'serpentine_path_view.dart';
 
 /// Content for each study category tab (vocabulary, grammar, sentence arrange).
 /// Shows a vertical list of stage cards fetched from the API.
@@ -62,24 +63,52 @@ class StudyTabContent extends ConsumerWidget {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(20),
-          itemCount: stages.length,
-          itemBuilder: (context, index) {
-            final stage = stages[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _StageCard(
-                stage: stage,
-                category: category,
-                jlptLevel: jlptLevel,
-              ),
-            );
-          },
+        return SerpentinePathView(
+          stages: stages,
+          category: category,
+          jlptLevel: jlptLevel,
+          onStageTap: (stage) => _openModeSheet(
+            context, ref, stage, category, jlptLevel),
         );
       },
     );
   }
+}
+
+/// Opens the mode selection bottom sheet for a stage.
+void _openModeSheet(BuildContext context, WidgetRef ref, StageModel stage,
+    StudyCategory category, String jlptLevel) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: AppSizes.sheetShape,
+    builder: (ctx) {
+      return _ModeSelectionSheet(
+        stage: stage,
+        category: category,
+        jlptLevel: jlptLevel,
+        onStart: (mode) {
+          Navigator.pop(ctx);
+          Navigator.of(context, rootNavigator: true)
+              .push(
+            quizRoute(QuizPage(
+              quizType: category.apiType,
+              jlptLevel: jlptLevel,
+              count: stage.contentCount > 0 ? stage.contentCount : 10,
+              mode: mode != 'normal' ? mode : null,
+              stageId: stage.id,
+            )),
+          )
+              .then((_) {
+            ref.invalidate(
+              stagesProvider(
+                  (category: category.apiType, jlptLevel: jlptLevel)),
+            );
+          });
+        },
+      );
+    },
+  );
 }
 
 /// A single stage card showing stage number, title, progress, and lock status.

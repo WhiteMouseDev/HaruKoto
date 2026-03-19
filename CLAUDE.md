@@ -113,6 +113,7 @@ chore: 빌드, 설정 변경
 - 실기기 설치: `flutter install --release -d 00008150-000A20881E88401C`
 - Debug 실행: `flutter run -d 00008150-000A20881E88401C --dart-define-from-file=.env`
 - 시뮬레이터 실행: `flutter run -d 16FEF8B7-DC41-49D8-9EC6-E9911468E875 --dart-define-from-file=.env`
+- **시뮬레이터 캐시 주의**: 코드 변경 후 시뮬레이터에 반영이 안 될 때는 `flutter clean && flutter pub get` 후 다시 빌드해야 함. 단순 `flutter run`만으로는 이전 빌드가 캐시되어 변경사항이 적용되지 않는 경우가 있음.
 
 ## Push 전 필수 체크 (lint/analyze)
 
