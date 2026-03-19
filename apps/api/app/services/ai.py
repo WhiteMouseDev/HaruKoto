@@ -291,7 +291,7 @@ async def generate_live_token() -> dict[str, str]:
 
     token_response = alpha_client.auth_tokens.create(
         config={
-            "uses": 1,
+            "uses": 5,
             "expire_time": expire_time.isoformat(),
             "new_session_expire_time": new_session_expire_time.isoformat(),
             "http_options": {"api_version": "v1alpha"},

@@ -121,12 +121,14 @@ class GeminiLiveService {
   // ──────── Connection ────────
 
   Future<void> _connect({String? handle}) async {
-    // URI를 안전하게 조합 (기존 query parameter 보존)
+    // URI를 안전하게 조합 (기존 query parameter 보존 + 토큰 인코딩)
     final baseUri = Uri.parse(wsUri);
     final uri = baseUri.replace(queryParameters: {
       ...baseUri.queryParameters,
       'access_token': token,
     });
+    debugPrint('[GeminiLive] Connecting to: ${uri.host}${uri.path}');
+    debugPrint('[GeminiLive] Model: $model');
 
     _channelGeneration++;
     final gen = _channelGeneration;
