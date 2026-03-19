@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -402,8 +401,8 @@ async def submit_live_feedback(
         conversation = Conversation(
             user_id=user.id,
             type=ConversationType.VOICE,
-            scenario_id=uuid.UUID(body.scenario_id) if body.scenario_id else None,
-            character_id=uuid.UUID(body.character_id) if body.character_id else None,
+            scenario_id=body.scenario_id,
+            character_id=body.character_id,
             messages=[{"role": e.get("role", "user"), "content": e.get("text", "")} for e in transcript],
         )
         db.add(conversation)
