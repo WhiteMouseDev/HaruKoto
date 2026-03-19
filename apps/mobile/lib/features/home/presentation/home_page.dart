@@ -108,13 +108,18 @@ class _HomePageState extends ConsumerState<HomePage>
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
 
-    // Sync furigana setting from server on profile load
+    // Sync furigana setting from server on profile load (only if changed)
     if (profile != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(quizSettingsProvider.notifier).setShowFurigana(
-              profile.showFurigana,
-            );
-      });
+      final currentFurigana = ref.read(quizSettingsProvider).showFurigana;
+      if (currentFurigana != profile.showFurigana) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ref.read(quizSettingsProvider.notifier).setShowFurigana(
+                  profile.showFurigana,
+                );
+          }
+        });
+      }
     }
 
     // Trigger stagger animation on first data load

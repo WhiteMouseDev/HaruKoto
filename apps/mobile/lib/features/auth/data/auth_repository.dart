@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_config.dart';
 
@@ -76,6 +77,26 @@ class AuthRepository {
     // 3. Supabase 인증
     return _client.auth.signInWithIdToken(
       provider: OAuthProvider.kakao,
+      idToken: idToken,
+    );
+  }
+
+  // --- Apple Sign-In ---
+  Future<AuthResponse> signInWithApple() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    final idToken = credential.identityToken;
+    if (idToken == null) {
+      throw const AuthException('Apple ID 토큰을 가져올 수 없습니다.');
+    }
+
+    return _client.auth.signInWithIdToken(
+      provider: OAuthProvider.apple,
       idToken: idToken,
     );
   }

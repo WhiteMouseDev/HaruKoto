@@ -5,6 +5,7 @@ import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/onboarding_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/home/providers/home_provider.dart';
 import '../../features/chat/presentation/chat_page.dart';
 import '../../features/chat/presentation/contacts_page.dart';
 import '../../features/chat/presentation/conversation_page.dart';
@@ -73,7 +74,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuthenticated && path != '/login') return '/login';
-      if (isAuthenticated && path == '/login') return '/home';
+      if (isAuthenticated && path == '/login') return '/splash';
 
       return null;
     },
@@ -368,13 +369,32 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
     super.initState();
     Future.delayed(const Duration(milliseconds: 3000), () {
       if (!mounted) return;
-      final isAuth = ref.read(isAuthenticatedProvider);
-      if (isAuth) {
-        context.go('/home');
-      } else {
-        context.go('/login');
-      }
+      _redirect();
     });
+  }
+
+  Future<void> _redirect() async {
+    final isAuth = ref.read(isAuthenticatedProvider);
+    if (!isAuth) {
+      if (mounted) context.go('/login');
+      return;
+    }
+
+    // Check onboarding status
+    try {
+      final profile = await ref
+          .read(homeRepositoryProvider)
+          .fetchProfile();
+      if (!mounted) return;
+      if (!profile.onboardingCompleted) {
+        context.go('/onboarding');
+      } else {
+        context.go('/home');
+      }
+    } catch (_) {
+      // If profile fetch fails, go home anyway (existing user)
+      if (mounted) context.go('/home');
+    }
   }
 
   @override

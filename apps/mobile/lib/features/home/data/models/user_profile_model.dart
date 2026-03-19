@@ -5,6 +5,7 @@ class UserProfileModel {
   final String jlptLevel;
   final String? avatarUrl;
   final bool showFurigana;
+  final bool onboardingCompleted;
 
   const UserProfileModel({
     required this.nickname,
@@ -13,6 +14,7 @@ class UserProfileModel {
     required this.jlptLevel,
     this.avatarUrl,
     this.showFurigana = true,
+    this.onboardingCompleted = false,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserProfileModel {
       jlptLevel: profile['jlptLevel'] as String? ?? 'N5',
       avatarUrl: profile['avatarUrl'] as String?,
       showFurigana: appSettings['showFurigana'] as bool? ?? true,
+      onboardingCompleted: profile['onboardingCompleted'] as bool? ?? false,
     );
   }
 }

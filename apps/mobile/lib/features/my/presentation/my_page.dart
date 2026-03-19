@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -35,12 +37,18 @@ class _MyPageState extends ConsumerState<MyPage> {
         loading: () => _buildSkeleton(context),
         error: (error, _) => _buildError(context),
         data: (data) {
-          // Sync furigana setting from server
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            ref.read(quizSettingsProvider.notifier).setShowFurigana(
-                  data.profile.showFurigana,
-                );
-          });
+          // Sync furigana setting from server (only if changed)
+          final currentFurigana =
+              ref.read(quizSettingsProvider).showFurigana;
+          if (currentFurigana != data.profile.showFurigana) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                ref.read(quizSettingsProvider.notifier).setShowFurigana(
+                      data.profile.showFurigana,
+                    );
+              }
+            });
+          }
           return RefreshIndicator(
             color: theme.colorScheme.primary,
             onRefresh: () async {
@@ -172,7 +180,15 @@ class _MyPageState extends ConsumerState<MyPage> {
                         ),
                       ),
                       Text(
-                        'whitemousedev@whitemouse.dev',
+                        '연락처: 010-8595-9869',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3),
+                        ),
+                      ),
+                      Text(
+                        '이메일: whitemousedev@whitemouse.dev',
                         style: TextStyle(
                           fontSize: 11,
                           color: theme.colorScheme.onSurface
@@ -252,80 +268,102 @@ class _MyPageState extends ConsumerState<MyPage> {
   void _showNicknameSheet(BuildContext context, String currentNickname) {
     final controller = TextEditingController(text: currentNickname);
 
-    showModalBottomSheet(
+    showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '닉네임 변경',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '새로운 닉네임을 입력해주세요.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: controller,
-                maxLength: 20,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: '닉네임을 입력해주세요',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 24,
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(sheetContext)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final nickname = controller.text.trim();
-                    if (nickname.isEmpty) return;
-                    Navigator.pop(context);
-                    await ref
-                        .read(myRepositoryProvider)
-                        .updateProfile({'nickname': nickname});
-                    ref.invalidate(profileDetailProvider);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
+                const SizedBox(height: 20),
+                Text(
+                  '닉네임 변경',
+                  style:
+                      Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '새로운 닉네임을 입력해주세요.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Theme.of(sheetContext)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.5),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: controller,
+                  maxLength: 20,
+                  autofocus: true,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: '닉네임을 입력해주세요',
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('저장'),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final nickname = controller.text.trim();
+                      if (nickname.isEmpty) return;
+                      Navigator.pop(sheetContext, nickname);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('저장'),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
-    ).whenComplete(controller.dispose);
+    ).then((nickname) async {
+      controller.dispose();
+      if (nickname == null || nickname.isEmpty || !mounted) return;
+      await ref.read(myRepositoryProvider).updateProfile({'nickname': nickname});
+      // Defer invalidation to next frame so widget tree is fully settled
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) ref.invalidate(profileDetailProvider);
+        });
+      }
+    });
   }
 
   Future<void> _handleLogout() async {

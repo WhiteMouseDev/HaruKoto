@@ -209,7 +209,7 @@ export default function MyPage() {
         <p>대표: 김건우</p>
         <p>사업자등록번호: 634-26-01985, 통신판매업신고번호: 2026-서울송파-0749</p>
         <p>주소: 서울특별시 송파구 양재대로 1218</p>
-        <p>연락처: whitemousedev@whitemouse.dev</p>
+        <p>연락처: 010-8595-9869 | 이메일: whitemousedev@whitemouse.dev</p>
         <div className="flex gap-3 pt-1">
           <a href="/terms" className="underline underline-offset-2">
             이용약관

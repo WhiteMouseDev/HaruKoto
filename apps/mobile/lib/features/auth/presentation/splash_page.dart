@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/colors.dart';
+import 'widgets/falling_petals.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -92,8 +93,14 @@ class _SplashPageState extends State<SplashPage>
         decoration: const BoxDecoration(
           gradient: AppColors.authGradient,
         ),
-        child: SafeArea(
-          child: Center(
+        child: Stack(
+          children: [
+            // Falling cherry blossom petals
+            const Positioned.fill(
+              child: FallingPetals(petalCount: 22, duration: Duration(milliseconds: 5000)),
+            ),
+            SafeArea(
+              child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -182,6 +189,8 @@ class _SplashPageState extends State<SplashPage>
               ],
             ),
           ),
+        ),
+          ],
         ),
       ),
     );

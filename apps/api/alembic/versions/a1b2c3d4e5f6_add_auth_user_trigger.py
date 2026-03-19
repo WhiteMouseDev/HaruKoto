@@ -39,7 +39,9 @@ def upgrade() -> None:
                 NOW(),
                 NOW()
             )
-            ON CONFLICT (id) DO NOTHING;
+            ON CONFLICT (id) DO UPDATE SET
+                email = EXCLUDED.email,
+                updated_at = NOW();
             RETURN NEW;
         END;
         $$;
