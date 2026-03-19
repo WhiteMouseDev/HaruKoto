@@ -474,13 +474,24 @@ async def submit_live_feedback(
             db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
     except Exception:
         logger.exception("Live feedback gamification failed")
-        await db.rollback()
-
-    try:
-        await db.commit()
-    except Exception:
-        logger.exception("Live feedback commit failed")
-        await db.rollback()
+        # gamification 실패 시 conversation 저장만이라도 보장
+        try:
+            await db.rollback()
+            # conversation + feedback만 재저장
+            if conversation not in db:
+                db.add(conversation)
+            conversation.ended_at = now
+            conversation.feedback_summary = feedback
+            await db.commit()
+        except Exception:
+            logger.exception("Live feedback conversation save also failed")
+            await db.rollback()
+    else:
+        try:
+            await db.commit()
+        except Exception:
+            logger.exception("Live feedback commit failed")
+            await db.rollback()
 
     return {
         "conversationId": str(conversation.id),

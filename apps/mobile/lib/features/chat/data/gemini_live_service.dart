@@ -31,6 +31,7 @@ class GeminiLiveService {
   final String? voiceName;
   final String? systemInstruction;
   final String? scenarioGreeting;
+  final String userNickname;
   final int silenceDurationMs;
   final String jlptLevel;
 
@@ -66,6 +67,7 @@ class GeminiLiveService {
     this.voiceName,
     this.systemInstruction,
     this.scenarioGreeting,
+    this.userNickname = '학습자',
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
   });
@@ -172,7 +174,10 @@ class GeminiLiveService {
         },
         'systemInstruction': {
           'parts': [
-            {'text': '$instruction\n\n${_jlptSection()}'},
+            {
+              'text':
+                  '$instruction\n\n## ユーザー情報\n- 名前: $userNickname\n\n${_jlptSection()}'
+            },
           ],
         },
         'realtimeInputConfig': {

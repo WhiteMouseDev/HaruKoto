@@ -34,11 +34,11 @@ class FeedbackSummary {
     }).toList();
 
     return FeedbackSummary(
-      overallScore: json['overallScore'] as int? ?? 0,
-      fluency: json['fluency'] as int? ?? 0,
-      accuracy: json['accuracy'] as int? ?? 0,
-      vocabularyDiversity: json['vocabularyDiversity'] as int? ?? 0,
-      naturalness: json['naturalness'] as int? ?? 0,
+      overallScore: (json['overallScore'] as num?)?.round() ?? 0,
+      fluency: (json['fluency'] as num?)?.round() ?? 0,
+      accuracy: (json['accuracy'] as num?)?.round() ?? 0,
+      vocabularyDiversity: (json['vocabularyDiversity'] as num?)?.round() ?? 0,
+      naturalness: (json['naturalness'] as num?)?.round() ?? 0,
       strengths: (json['strengths'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??

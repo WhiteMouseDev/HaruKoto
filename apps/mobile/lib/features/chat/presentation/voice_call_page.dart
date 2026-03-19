@@ -79,11 +79,13 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     try {
       final repo = ref.read(chatRepositoryProvider);
 
-      // 0. Load user call settings
+      // 0. Load user profile (call settings + nickname + jlptLevel)
       final profileAsync = ref.read(profileDetailProvider);
-      final callSettings = profileAsync.hasValue
-          ? profileAsync.value!.profile.callSettings
-          : const CallSettings();
+      final profile =
+          profileAsync.hasValue ? profileAsync.value!.profile : null;
+      final callSettings = profile?.callSettings ?? const CallSettings();
+      final userNickname = profile?.nickname ?? '학습자';
+      final userJlptLevel = profile?.jlptLevel ?? 'N5';
       _showSubtitle = callSettings.subtitleEnabled;
 
       // 1. Get ephemeral token
@@ -127,8 +129,9 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
         characterName: widget.characterName,
         voiceName: voiceName,
         systemInstruction: personality,
+        userNickname: userNickname,
         silenceDurationMs: silenceMs,
-        jlptLevel: 'N5', // TODO: get from user profile
+        jlptLevel: userJlptLevel,
       );
 
       _service!.onStateChange = (state) {
