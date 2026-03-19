@@ -32,7 +32,7 @@ class KanaStageModel {
       stageNumber: json['stageNumber'] as int,
       title: json['title'] as String,
       description: json['description'] as String,
-      characters: (json['characters'] as List<dynamic>)
+      characters: (json['characters'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toList(),
       isUnlocked: json['isUnlocked'] as bool? ?? false,
@@ -63,7 +63,7 @@ class QuizQuestion {
       questionId: json['questionId'] as String,
       questionText: json['questionText'] as String,
       questionSubText: json['questionSubText'] as String?,
-      options: (json['options'] as List<dynamic>)
+      options: (json['options'] as List<dynamic>? ?? [])
           .map((e) => QuizOption.fromJson(e as Map<String, dynamic>))
           .toList(),
       correctOptionId: json['correctOptionId'] as String,
@@ -99,7 +99,7 @@ class StartQuizResponse {
   factory StartQuizResponse.fromJson(Map<String, dynamic> json) {
     return StartQuizResponse(
       sessionId: json['sessionId'] as String?,
-      questions: (json['questions'] as List<dynamic>)
+      questions: (json['questions'] as List<dynamic>? ?? [])
           .map((e) => QuizQuestion.fromJson(e as Map<String, dynamic>))
           .toList(),
       message: json['message'] as String?,

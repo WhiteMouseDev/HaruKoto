@@ -79,7 +79,7 @@ class StudyRepository {
     final data = response.data!;
     return (
       sessionId: data['sessionId'] as String,
-      questions: (data['questions'] as List<dynamic>)
+      questions: (data['questions'] as List<dynamic>? ?? [])
           .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -107,7 +107,7 @@ class StudyRepository {
     // API may return matchingPairs for matching mode instead of questions
     List<QuizQuestionModel> questions;
     if (data['matchingPairs'] != null) {
-      questions = (data['matchingPairs'] as List<dynamic>).map((e) {
+      questions = (data['matchingPairs'] as List<dynamic>? ?? []).map((e) {
         final pair = e as Map<String, dynamic>;
         return QuizQuestionModel.fromJson({
           'questionId': pair['id'] as String,
@@ -120,7 +120,7 @@ class StudyRepository {
         });
       }).toList();
     } else {
-      questions = (data['questions'] as List<dynamic>)
+      questions = (data['questions'] as List<dynamic>? ?? [])
           .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
           .toList();
     }
@@ -146,10 +146,10 @@ class StudyRepository {
     final data = response.data!;
     return (
       sessionId: data['sessionId'] as String,
-      questions: (data['questions'] as List<dynamic>)
+      questions: (data['questions'] as List<dynamic>? ?? [])
           .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      answeredQuestionIds: (data['answeredQuestionIds'] as List<dynamic>)
+      answeredQuestionIds: (data['answeredQuestionIds'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toList(),
       correctCount: data['correctCount'] as int,
@@ -195,7 +195,7 @@ class StudyRepository {
       '/quiz/wrong-answers',
       queryParameters: {'sessionId': sessionId},
     );
-    final list = response.data!['wrongAnswers'] as List<dynamic>;
+    final list = response.data!['wrongAnswers'] as List<dynamic>? ?? [];
     return list
         .map((e) => WrongAnswerModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -220,7 +220,7 @@ class StudyRepository {
     );
     final data = response.data!;
     return (
-      entries: (data['entries'] as List<dynamic>)
+      entries: (data['entries'] as List<dynamic>? ?? [])
           .map((e) => WrongEntryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: data['total'] as int? ?? 0,
@@ -259,7 +259,7 @@ class StudyRepository {
     );
     final data = response.data!;
     return (
-      entries: (data['entries'] as List<dynamic>)
+      entries: (data['entries'] as List<dynamic>? ?? [])
           .map((e) => LearnedWordModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: data['total'] as int? ?? 0,
@@ -297,7 +297,7 @@ class StudyRepository {
     );
     final data = response.data!;
     return (
-      entries: (data['entries'] as List<dynamic>)
+      entries: (data['entries'] as List<dynamic>? ?? [])
           .map((e) => WordbookEntryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: data['total'] as int? ?? 0,

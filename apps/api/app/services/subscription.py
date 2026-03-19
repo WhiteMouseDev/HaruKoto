@@ -287,7 +287,7 @@ async def resume_subscription(
 
 async def get_payment_history(
     db: AsyncSession,
-    user_id: uuid.UUID,
+    user_id: str,
     page: int = 1,
     page_size: int = 10,
 ) -> dict:
@@ -295,11 +295,11 @@ async def get_payment_history(
     offset = (page - 1) * page_size
 
     result = await db.execute(
-        select(Payment).where(Payment.user_id == user_id).order_by(Payment.created_at.desc()).offset(offset).limit(page_size)
+        select(Payment).where(Payment.user_id == uuid.UUID(user_id)).order_by(Payment.created_at.desc()).offset(offset).limit(page_size)
     )
     payments = result.scalars().all()
 
-    count_result = await db.execute(select(func.count()).select_from(Payment).where(Payment.user_id == user_id))
+    count_result = await db.execute(select(func.count()).select_from(Payment).where(Payment.user_id == uuid.UUID(user_id)))
     total = count_result.scalar_one()
 
     return {
@@ -310,13 +310,13 @@ async def get_payment_history(
                 "currency": p.currency,
                 "status": p.status.value.lower(),
                 "plan": p.plan.value.lower(),
-                "paid_at": p.paid_at.isoformat() if p.paid_at else None,
-                "created_at": p.created_at.isoformat(),
+                "paidAt": p.paid_at.isoformat() if p.paid_at else None,
+                "createdAt": p.created_at.isoformat(),
             }
             for p in payments
         ],
         "total": total,
         "page": page,
-        "page_size": page_size,
-        "total_pages": math.ceil(total / page_size) if total > 0 else 0,
+        "pageSize": page_size,
+        "totalPages": math.ceil(total / page_size) if total > 0 else 0,
     }

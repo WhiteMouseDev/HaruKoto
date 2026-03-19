@@ -86,10 +86,10 @@ class OverallProgress {
 
   factory OverallProgress.fromJson(Map<String, dynamic> json) {
     return OverallProgress(
-      total: json['total'] as int,
-      studied: json['studied'] as int,
-      mastered: json['mastered'] as int,
-      percentage: json['percentage'] as int,
+      total: (json['total'] as num?)?.toInt() ?? 0,
+      studied: (json['studied'] as num?)?.toInt() ?? 0,
+      mastered: (json['mastered'] as num?)?.toInt() ?? 0,
+      percentage: (json['percentage'] as num?)?.round() ?? 0,
     );
   }
 }

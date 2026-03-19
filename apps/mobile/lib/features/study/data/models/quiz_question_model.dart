@@ -66,7 +66,7 @@ class QuizQuestionModel {
       questionText: json['questionText'] as String,
       questionSubText: json['questionSubText'] as String?,
       hint: json['hint'] as String?,
-      options: (json['options'] as List<dynamic>)
+      options: (json['options'] as List<dynamic>? ?? [])
           .map((e) => QuizOption.fromJson(e as Map<String, dynamic>))
           .toList(),
       correctOptionId: (json['correctOptionId'] ?? '') as String,
