@@ -179,10 +179,13 @@ class GeminiLiveService {
           'automaticActivityDetection': {
             'startOfSpeechSensitivity': 'START_SENSITIVITY_HIGH',
             'endOfSpeechSensitivity': 'END_SENSITIVITY_HIGH',
-            'prefixPaddingMs': 300,
+            'prefixPaddingMs': 200,
             'silenceDurationMs': silenceDurationMs,
           },
         },
+        // 자막: setup 최상위에 배치해야 동작 (generationConfig 안 아님)
+        'inputAudioTranscription': {},
+        'outputAudioTranscription': {},
         // 세션 재개: handle 없어도 빈 객체로 명시 (웹과 동일)
         'sessionResumption': handle != null ? {'handle': handle} : {},
       },
