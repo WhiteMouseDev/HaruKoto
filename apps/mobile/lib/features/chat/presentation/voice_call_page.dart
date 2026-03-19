@@ -81,6 +81,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
       _service = GeminiLiveService(
         wsUri: tokenResp.wsUri,
         token: tokenResp.token,
+        model: tokenResp.model,
         characterName: widget.characterName,
         voiceName: voiceName,
         systemInstruction: personality,

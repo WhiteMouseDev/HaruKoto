@@ -253,13 +253,19 @@ class LiveFeedbackResponse {
 class LiveTokenResponse {
   final String token;
   final String wsUri;
+  final String model;
 
-  const LiveTokenResponse({required this.token, required this.wsUri});
+  const LiveTokenResponse({
+    required this.token,
+    required this.wsUri,
+    required this.model,
+  });
 
   factory LiveTokenResponse.fromJson(Map<String, dynamic> json) {
     return LiveTokenResponse(
       token: json['token'] as String? ?? '',
       wsUri: json['wsUri'] as String? ?? '',
+      model: json['model'] as String? ?? '',
     );
   }
 }

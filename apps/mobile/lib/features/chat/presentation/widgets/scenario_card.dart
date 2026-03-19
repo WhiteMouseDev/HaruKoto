@@ -93,7 +93,8 @@ class ScenarioCard extends StatelessWidget {
                       children: [
                         Icon(LucideIcons.clock,
                             size: 12,
-                            color: colorScheme.onSurface.withValues(alpha: 0.5)),
+                            color:
+                                colorScheme.onSurface.withValues(alpha: 0.5)),
                         const SizedBox(width: 4),
                         Text(
                           '예상 ${scenario.estimatedMinutes}분',
@@ -138,7 +139,8 @@ class ScenarioCard extends StatelessWidget {
               ],
               const SizedBox(width: 4),
               Icon(LucideIcons.chevronRight,
-                  size: 16, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                  size: 16,
+                  color: colorScheme.onSurface.withValues(alpha: 0.4)),
             ],
           ),
         ),

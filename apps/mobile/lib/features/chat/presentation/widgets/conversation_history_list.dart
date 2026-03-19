@@ -104,90 +104,92 @@ class _HistoryItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Row(
-            children: [
-              // Icon
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: item.character?.avatarUrl != null
-                      ? ClipOval(
-                          child: Image.network(
-                            item.character!.avatarUrl!,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
-                                LucideIcons.phone,
-                                size: 16,
-                                color: AppColors.primary),
+              children: [
+                // Icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: item.character?.avatarUrl != null
+                        ? ClipOval(
+                            child: Image.network(
+                              item.character!.avatarUrl!,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                  LucideIcons.phone,
+                                  size: 16,
+                                  color: AppColors.primary),
+                            ),
+                          )
+                        : Icon(
+                            isVoice
+                                ? LucideIcons.phone
+                                : LucideIcons.messageSquare,
+                            size: 16,
+                            color: AppColors.primary,
                           ),
-                        )
-                      : Icon(
-                          isVoice
-                              ? LucideIcons.phone
-                              : LucideIcons.messageSquare,
-                          size: 16,
-                          color: AppColors.primary,
-                        ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.character != null
-                          ? '${item.character!.name}와의 통화'
-                          : item.scenario?.title ?? '음성 통화',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(fontWeight: FontWeight.w500),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Icon(LucideIcons.clock,
-                            size: 12,
-                            color:
-                                colorScheme.onSurface.withValues(alpha: 0.5)),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatDate(item.createdAt),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: 0.5),
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.character != null
+                            ? '${item.character!.name}와의 통화'
+                            : item.scenario?.title ?? '음성 통화',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(LucideIcons.clock,
+                              size: 12,
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.5)),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatDate(item.createdAt),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${item.messageCount}턴',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: 0.5),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${item.messageCount}턴',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              // Score
-              if (item.overallScore != null) ...[
-                _ScoreBadge(score: item.overallScore!),
-                const SizedBox(width: 4),
+                // Score
+                if (item.overallScore != null) ...[
+                  _ScoreBadge(score: item.overallScore!),
+                  const SizedBox(width: 4),
+                ],
+                Icon(LucideIcons.chevronRight,
+                    size: 16,
+                    color: colorScheme.onSurface.withValues(alpha: 0.4)),
               ],
-              Icon(LucideIcons.chevronRight,
-                  size: 16,
-                  color: colorScheme.onSurface.withValues(alpha: 0.4)),
-            ],
-          ),
+            ),
           ),
         ),
       ),

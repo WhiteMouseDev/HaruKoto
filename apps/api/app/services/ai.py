@@ -270,6 +270,7 @@ async def transcribe_audio(audio_bytes: bytes, mime_type: str) -> str:
 _LIVE_WS_URI = (
     "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained"
 )
+_LIVE_MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025"
 
 
 async def generate_live_token() -> dict[str, str]:
@@ -300,6 +301,7 @@ async def generate_live_token() -> dict[str, str]:
     return {
         "token": token_response.name or "",
         "wsUri": _LIVE_WS_URI,
+        "model": _LIVE_MODEL,
     }
 
 

@@ -26,6 +26,7 @@ enum GeminiLiveState { connecting, connected, ending, ended, error }
 class GeminiLiveService {
   final String wsUri;
   final String token;
+  final String model;
   final String? characterName;
   final String? voiceName;
   final String? systemInstruction;
@@ -57,6 +58,7 @@ class GeminiLiveService {
   GeminiLiveService({
     required this.wsUri,
     required this.token,
+    required this.model,
     this.characterName,
     this.voiceName,
     this.systemInstruction,
@@ -128,7 +130,7 @@ class GeminiLiveService {
     final instruction = systemInstruction ?? _defaultSystemInstruction();
     final setup = <String, dynamic>{
       'setup': {
-        'model': 'models/gemini-2.5-flash-native-audio',
+        'model': model,
         'generationConfig': {
           'responseModalities': ['AUDIO'],
           'speechConfig': {
