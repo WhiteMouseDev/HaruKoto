@@ -48,25 +48,27 @@ class QuizQuestion {
   final String questionText;
   final String? questionSubText;
   final List<QuizOption> options;
-  final String correctOptionId;
+  final String? correctOptionId;
 
   const QuizQuestion({
     required this.questionId,
     required this.questionText,
     this.questionSubText,
     required this.options,
-    required this.correctOptionId,
+    this.correctOptionId,
   });
 
   factory QuizQuestion.fromJson(Map<String, dynamic> json) {
     return QuizQuestion(
-      questionId: json['questionId'] as String,
-      questionText: json['questionText'] as String,
+      // 서버는 'id'/'question' 키를 사용, 모바일 기존 키도 호환
+      questionId: (json['questionId'] ?? json['id']) as String,
+      questionText: (json['questionText'] ?? json['question']) as String,
       questionSubText: json['questionSubText'] as String?,
       options: (json['options'] as List<dynamic>? ?? [])
           .map((e) => QuizOption.fromJson(e as Map<String, dynamic>))
           .toList(),
-      correctOptionId: json['correctOptionId'] as String,
+      // 서버가 strip하므로 null 가능
+      correctOptionId: json['correctOptionId'] as String?,
     );
   }
 }

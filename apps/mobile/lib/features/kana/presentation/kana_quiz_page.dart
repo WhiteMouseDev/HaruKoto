@@ -87,7 +87,7 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
     }
   }
 
-  void _handleSelect(String optionId) {
+  Future<void> _handleSelect(String optionId) async {
     if (_showFeedback) return;
     final current = _questions[_currentIndex];
 
@@ -96,20 +96,39 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
       _showFeedback = true;
     });
 
-    final isCorrect = optionId == current.correctOptionId;
+    // 서버에서 정오답 판정 (correctOptionId가 strip되므로 API 응답 기반)
+    bool isCorrect = current.correctOptionId != null
+        ? optionId == current.correctOptionId
+        : false;
+
+    if (_sessionId != null) {
+      try {
+        final result = await ref.read(kanaRepositoryProvider).answerQuestion(
+              sessionId: _sessionId!,
+              questionId: current.questionId,
+              selectedOptionId: optionId,
+            );
+        isCorrect = result.isCorrect;
+        // 서버에서 받은 correctOptionId로 UI 업데이트
+        if (current.correctOptionId == null && mounted) {
+          _questions[_currentIndex] = QuizQuestion(
+            questionId: current.questionId,
+            questionText: current.questionText,
+            questionSubText: current.questionSubText,
+            options: current.options,
+            correctOptionId: result.correctOptionId,
+          );
+        }
+      } catch (_) {
+        // 네트워크 실패 시 로컬 판정 유지
+      }
+    }
+
     _answers.add(_Answer(
       questionId: current.questionId,
       selectedOptionId: optionId,
       isCorrect: isCorrect,
     ));
-
-    if (_sessionId != null) {
-      ref.read(kanaRepositoryProvider).answerQuestion(
-            sessionId: _sessionId!,
-            questionId: current.questionId,
-            selectedOptionId: optionId,
-          );
-    }
 
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;

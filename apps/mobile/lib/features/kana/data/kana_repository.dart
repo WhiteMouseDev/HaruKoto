@@ -77,18 +77,23 @@ class KanaRepository {
     return StartQuizResponse.fromJson(response.data!);
   }
 
-  Future<void> answerQuestion({
+  Future<({bool isCorrect, String correctOptionId})> answerQuestion({
     required String sessionId,
     required String questionId,
     required String selectedOptionId,
   }) async {
-    await _dio.post<dynamic>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/kana/quiz/answer',
       data: {
         'sessionId': sessionId,
         'questionId': questionId,
         'selectedOptionId': selectedOptionId,
       },
+    );
+    final data = response.data!;
+    return (
+      isCorrect: data['isCorrect'] as bool? ?? false,
+      correctOptionId: data['correctOptionId'] as String? ?? '',
     );
   }
 

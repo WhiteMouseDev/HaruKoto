@@ -221,27 +221,34 @@ async def start_kana_quiz(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Get characters from current stage + previous 2 stages
-    stage_numbers = [body.stage_number - 2, body.stage_number - 1, body.stage_number]
-    stage_numbers = [s for s in stage_numbers if s >= 1]
+    # Get characters: stage-specific or all (master quiz)
+    if body.stage_number is not None:
+        stage_numbers = [body.stage_number - 2, body.stage_number - 1, body.stage_number]
+        stage_numbers = [s for s in stage_numbers if s >= 1]
 
-    stages_result = await db.execute(
-        select(KanaLearningStage).where(
-            KanaLearningStage.kana_type == body.kana_type,
-            KanaLearningStage.stage_number.in_(stage_numbers),
+        stages_result = await db.execute(
+            select(KanaLearningStage).where(
+                KanaLearningStage.kana_type == body.kana_type,
+                KanaLearningStage.stage_number.in_(stage_numbers),
+            )
         )
-    )
-    stages = stages_result.scalars().all()
-    all_chars_list: list[str] = []
-    for s in stages:
-        all_chars_list.extend(s.characters)
+        stages = stages_result.scalars().all()
+        all_chars_list: list[str] = []
+        for s in stages:
+            all_chars_list.extend(s.characters)
 
-    chars_result = await db.execute(
-        select(KanaCharacter).where(
-            KanaCharacter.kana_type == body.kana_type,
-            KanaCharacter.character.in_(all_chars_list),
+        chars_result = await db.execute(
+            select(KanaCharacter).where(
+                KanaCharacter.kana_type == body.kana_type,
+                KanaCharacter.character.in_(all_chars_list),
+            )
         )
-    )
+    else:
+        # Master quiz: all characters of this kana type
+        chars_result = await db.execute(
+            select(KanaCharacter).where(KanaCharacter.kana_type == body.kana_type)
+        )
+
     characters = chars_result.scalars().all()
 
     if not characters:

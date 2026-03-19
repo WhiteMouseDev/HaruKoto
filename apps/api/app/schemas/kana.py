@@ -51,7 +51,7 @@ class KanaProgressRecord(CamelModel):
 
 class KanaQuizStartRequest(CamelModel):
     kana_type: KanaType
-    stage_number: int
+    stage_number: int | None = None
     quiz_mode: str = "recognition"
     count: int = 10
 
