@@ -295,7 +295,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     }
   }
 
-  void _handleQuizSelect(String optionId, QuizQuestion current) {
+  Future<void> _handleQuizSelect(String optionId, QuizQuestion current) async {
     if (_quizShowFeedback) return;
 
     setState(() {
@@ -303,20 +303,41 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       _quizShowFeedback = true;
     });
 
-    final isCorrect = optionId == current.correctOptionId;
+    // 서버 기반 정오답 판정
+    bool isCorrect = current.correctOptionId != null
+        ? optionId == current.correctOptionId
+        : false;
+
+    if (_quizSessionId != null) {
+      try {
+        final result = await ref.read(kanaRepositoryProvider).answerQuestion(
+              sessionId: _quizSessionId!,
+              questionId: current.questionId,
+              selectedOptionId: optionId,
+            );
+        isCorrect = result.isCorrect;
+        // correctOptionId가 없으면 서버 응답으로 채워서 UI 하이라이트
+        if (current.correctOptionId == null && mounted) {
+          setState(() {
+            _quizQuestions[_quizCurrentIndex] = QuizQuestion(
+              questionId: current.questionId,
+              questionText: current.questionText,
+              questionSubText: current.questionSubText,
+              options: current.options,
+              correctOptionId: result.correctOptionId,
+            );
+          });
+        }
+      } catch (_) {
+        // 네트워크 실패 시 로컬 판정 유지
+      }
+    }
+
     _quizAnswers.add(_QuizAnswer(
       questionId: current.questionId,
       selectedOptionId: optionId,
       isCorrect: isCorrect,
     ));
-
-    if (_quizSessionId != null) {
-      ref.read(kanaRepositoryProvider).answerQuestion(
-            sessionId: _quizSessionId!,
-            questionId: current.questionId,
-            selectedOptionId: optionId,
-          );
-    }
 
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;

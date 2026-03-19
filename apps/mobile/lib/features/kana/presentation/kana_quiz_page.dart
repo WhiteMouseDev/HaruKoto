@@ -109,15 +109,17 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
               selectedOptionId: optionId,
             );
         isCorrect = result.isCorrect;
-        // 서버에서 받은 correctOptionId로 UI 업데이트
+        // 서버에서 받은 correctOptionId로 UI 업데이트 (정답 하이라이트용)
         if (current.correctOptionId == null && mounted) {
-          _questions[_currentIndex] = QuizQuestion(
-            questionId: current.questionId,
-            questionText: current.questionText,
-            questionSubText: current.questionSubText,
-            options: current.options,
-            correctOptionId: result.correctOptionId,
-          );
+          setState(() {
+            _questions[_currentIndex] = QuizQuestion(
+              questionId: current.questionId,
+              questionText: current.questionText,
+              questionSubText: current.questionSubText,
+              options: current.options,
+              correctOptionId: result.correctOptionId,
+            );
+          });
         }
       } catch (_) {
         // 네트워크 실패 시 로컬 판정 유지
