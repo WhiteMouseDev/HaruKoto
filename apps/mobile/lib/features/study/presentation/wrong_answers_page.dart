@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/constants/sizes.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_page.dart';
@@ -98,7 +99,7 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal, AppSizes.md, AppSizes.pageHorizontal, 0),
               child: Row(
                 children: [
                   GestureDetector(
@@ -183,7 +184,7 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
                           color: isActive
                               ? theme.colorScheme.primary
                               : theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
                         ),
                         child: Text(
                           opt.$2,

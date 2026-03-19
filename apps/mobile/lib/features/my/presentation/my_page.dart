@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/quiz_settings_provider.dart';
+import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../home/providers/home_provider.dart';
 import '../providers/my_provider.dart';
@@ -270,9 +271,7 @@ class _MyPageState extends ConsumerState<MyPage> {
     showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (sheetContext) {
         return SafeArea(
           child: Padding(
@@ -285,17 +284,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(sheetContext)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+                const AppSheetHandle(),
                 const SizedBox(height: 20),
                 Text(
                   '닉네임 변경',

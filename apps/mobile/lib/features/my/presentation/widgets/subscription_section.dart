@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_section_header.dart';
 import '../../providers/my_provider.dart';
 
 class SubscriptionSection extends ConsumerWidget {
@@ -41,17 +42,7 @@ class SubscriptionSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(
-            '구독',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
+        const AppSectionHeader(label: '구독'),
         Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.cardRadius),

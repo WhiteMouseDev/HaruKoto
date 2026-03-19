@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../my/providers/my_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../../study/presentation/widgets/today_study_sheet.dart';
@@ -566,9 +567,7 @@ class _MainContent extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (_) => TodayStudySheet(
         data: previewAsync.value!,
         jlptLevel: jlptLevel,
@@ -581,9 +580,7 @@ class _MainContent extends ConsumerWidget {
     final goals = [5, 10, 15, 20, 30];
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (ctx) {
         return _DailyGoalSheetContent(
           goals: goals,
@@ -658,14 +655,7 @@ class _DailyGoalSheetContentState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
+            const AppSheetHandle(),
             const SizedBox(height: 16),
             Text('하루 목표 설정',
                 style: theme.textTheme.titleMedium

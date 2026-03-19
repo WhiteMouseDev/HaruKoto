@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../home/providers/home_provider.dart';
 import '../../kana/presentation/kana_hub_page.dart';
 import 'widgets/study_tab_content.dart';
@@ -269,9 +271,7 @@ class _JlptLevelChip extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (ctx) {
         return SafeArea(
           child: Padding(
@@ -280,16 +280,7 @@ class _JlptLevelChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const AppSheetHandle(),
                 const SizedBox(height: 16),
                 Text(
                   'JLPT 레벨 선택',

@@ -106,7 +106,7 @@ class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal, AppSizes.md, AppSizes.pageHorizontal, 0),
               child: Row(
                 children: [
                   GestureDetector(
@@ -207,7 +207,7 @@ class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
                                 ? theme.colorScheme.primary
                                 : theme.colorScheme.outline,
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
                         ),
                         child: Text(
                           f.$2,

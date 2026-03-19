@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/app_error_retry.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../data/models/stage_model.dart';
 import '../../providers/study_provider.dart';
 import '../study_page.dart';
@@ -107,8 +109,8 @@ class _StageCard extends ConsumerWidget {
       bgColor = theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.3);
       borderWidth = 1;
     } else if (stage.isCompleted) {
-      borderColor = Colors.green.withValues(alpha: 0.3);
-      bgColor = Colors.green.withValues(alpha: 0.04);
+      borderColor = AppColors.success(theme.brightness).withValues(alpha: 0.3);
+      bgColor = AppColors.success(theme.brightness).withValues(alpha: 0.04);
       borderWidth = 1;
     } else {
       // Current / active stage
@@ -195,7 +197,7 @@ class _StageCard extends ConsumerWidget {
                                 backgroundColor:
                                     theme.colorScheme.surfaceContainerHigh,
                                 color: stage.isCompleted
-                                    ? Colors.green
+                                    ? AppColors.success(theme.brightness)
                                     : theme.colorScheme.primary,
                               ),
                             ),
@@ -206,7 +208,7 @@ class _StageCard extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: stage.isCompleted
-                                  ? Colors.green
+                                  ? AppColors.success(theme.brightness)
                                   : theme.colorScheme.primary,
                             ),
                           ),
@@ -228,13 +230,13 @@ class _StageCard extends ConsumerWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
+                    color: AppColors.success(theme.brightness).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.check,
                     size: 16,
-                    color: Colors.green,
+                    color: AppColors.success(theme.brightness),
                   ),
                 )
               else
@@ -254,9 +256,7 @@ class _StageCard extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (ctx) {
         return _ModeSelectionSheet(
           stage: stage,
@@ -316,8 +316,8 @@ class _StageBadge extends StatelessWidget {
       bgColor = theme.colorScheme.surfaceContainerHigh;
       textColor = theme.colorScheme.onSurface.withValues(alpha: 0.3);
     } else if (isCompleted) {
-      bgColor = Colors.green.withValues(alpha: 0.1);
-      textColor = Colors.green;
+      bgColor = AppColors.success(theme.brightness).withValues(alpha: 0.1);
+      textColor = AppColors.success(theme.brightness);
     } else {
       bgColor = theme.colorScheme.primary.withValues(alpha: 0.1);
       textColor = theme.colorScheme.primary;
@@ -442,17 +442,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Handle bar
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
+                    const AppSheetHandle(),
                     const SizedBox(height: 20),
                     // Stage title
                     Text(
@@ -507,9 +497,9 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                               ? theme.colorScheme.primary
                                   .withValues(alpha: 0.08)
                               : theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             onTap: () =>
                                 setState(() => _selectedMode = mode.id),
                             child: Container(
@@ -521,7 +511,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                                       : theme.colorScheme.outline,
                                   width: isSelected ? 2 : 1,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               child: Row(
                                 children: [
@@ -581,7 +571,7 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
-              height: 52,
+              height: AppSizes.buttonHeight,
               child: FilledButton(
                 onPressed: () => widget.onStart(_selectedMode),
                 child: Row(

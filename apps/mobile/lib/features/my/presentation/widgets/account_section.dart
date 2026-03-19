@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_section_header.dart';
 
 class AccountSection extends StatelessWidget {
   final VoidCallback onLogout;
@@ -23,17 +24,7 @@ class AccountSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(
-            '계정',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
+        const AppSectionHeader(label: '계정'),
         Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.cardRadius),

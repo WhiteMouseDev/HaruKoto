@@ -109,9 +109,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
     final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (context) {
         return SafeArea(
           child: Padding(

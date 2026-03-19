@@ -190,9 +190,7 @@ class AppSettingsSection extends ConsumerWidget {
   void _showThemeSheet(BuildContext context, WidgetRef ref, ThemeMode current) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (context) {
         return SafeArea(
           child: Padding(
@@ -218,7 +216,7 @@ class AppSettingsSection extends ConsumerWidget {
                     leading: Icon(entry.$3, size: 20),
                     title: Text(entry.$2),
                     trailing: current == entry.$1
-                        ? Icon(Icons.check,
+                        ? Icon(LucideIcons.check,
                             color: Theme.of(context).colorScheme.primary)
                         : null,
                     onTap: () {

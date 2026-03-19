@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../stats/providers/stats_provider.dart';
 import '../../data/models/dashboard_model.dart';
 
@@ -87,9 +88,7 @@ class StreakDailyCard extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: AppSizes.sheetShape,
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.6,
@@ -154,14 +153,7 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
+              const AppSheetHandle(),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

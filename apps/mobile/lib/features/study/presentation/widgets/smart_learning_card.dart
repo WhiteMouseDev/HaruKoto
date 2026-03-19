@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../data/models/smart_preview_model.dart';
 import '../../providers/study_provider.dart';
 import '../quiz_page.dart';
@@ -105,7 +107,7 @@ class SmartLearningCard extends ConsumerWidget {
                 _PoolChip(
                   label: '복습',
                   count: dist.review,
-                  color: const Color(0xFF10B981),
+                  color: AppColors.success(theme.brightness),
                 ),
                 const SizedBox(width: 8),
                 _PoolChip(
@@ -123,24 +125,24 @@ class SmartLearningCard extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEF3C7),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.warning(theme.brightness).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       LucideIcons.alertTriangle,
                       size: 14,
-                      color: Color(0xFFF59E0B),
+                      color: AppColors.warning(theme.brightness),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '복습 ${data.poolSize.reviewDue}개 밀려있어요',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF92400E),
+                        color: AppColors.warning(theme.brightness),
                       ),
                     ),
                   ],
@@ -162,7 +164,7 @@ class SmartLearningCard extends ConsumerWidget {
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   elevation: 0,
                 ),
@@ -220,16 +222,16 @@ class SmartLearningCard extends ConsumerWidget {
               height: 16,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
             ),
             const Spacer(),
             Container(
               width: double.infinity,
-              height: 48,
+              height: AppSizes.buttonHeight,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
             ),
           ],
@@ -297,7 +299,7 @@ class _PoolChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
       ),
       child: Text(
         '$label $count',

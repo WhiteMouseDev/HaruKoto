@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../../../shared/widgets/app_progress_bar.dart';
 import '../../data/models/dashboard_model.dart';
 
 class KanaCtaCard extends StatelessWidget {
@@ -72,16 +73,9 @@ class KanaCtaCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: progress,
-                            minHeight: 6,
-                            backgroundColor: theme.colorScheme.secondary,
-                            valueColor: AlwaysStoppedAnimation(
-                              theme.colorScheme.primary,
-                            ),
-                          ),
+                        AppProgressBar(
+                          value: progress,
+                          backgroundColor: theme.colorScheme.secondary,
                         ),
                       ],
                     ),
