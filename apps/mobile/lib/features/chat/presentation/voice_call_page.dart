@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../my/data/models/profile_detail_model.dart';
+import '../../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
 import '../providers/chat_provider.dart';
 import 'call_analyzing_page.dart';
@@ -75,6 +77,13 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     try {
       final repo = ref.read(chatRepositoryProvider);
 
+      // 0. Load user call settings
+      final profileAsync = ref.read(profileDetailProvider);
+      final callSettings = profileAsync.hasValue
+          ? profileAsync.value!.profile.callSettings
+          : const CallSettings();
+      _showSubtitle = callSettings.subtitleEnabled;
+
       // 1. Get ephemeral token
       debugPrint('[VoiceCall] Fetching live token...');
       final tokenResp = await repo.fetchLiveToken(
@@ -83,23 +92,22 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
       debugPrint(
           '[VoiceCall] Token received: ${tokenResp.token.substring(0, tokenResp.token.length.clamp(0, 30))}...');
       debugPrint('[VoiceCall] Model: ${tokenResp.model}');
-      debugPrint(
-          '[VoiceCall] WS URI: ${tokenResp.wsUri.substring(0, tokenResp.wsUri.length.clamp(0, 80))}...');
 
       // 2. Get character detail for voice settings
       String? voiceName;
       String? personality;
-      int silenceMs = 1200;
       if (widget.characterId != null) {
         try {
           final detail = await repo.fetchCharacterDetail(widget.characterId!);
           voiceName = detail.voiceName;
           personality = detail.personality;
-          silenceMs = detail.silenceMs;
         } catch (e) {
           debugPrint('[VoiceCall] Character detail fetch failed: $e');
         }
       }
+
+      // silenceDurationMs: 유저 설정 우선
+      final silenceMs = callSettings.silenceDurationMs;
 
       if (!mounted) return;
 
@@ -193,7 +201,12 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     if (!mounted) return;
 
     // 최소 15초 이상 통화해야 분석 진행
-    if (duration < 15 || transcript.isEmpty) {
+    final profileAsync = ref.read(profileDetailProvider);
+    final autoAnalysis = profileAsync.hasValue
+        ? profileAsync.value!.profile.callSettings.autoAnalysis
+        : true;
+
+    if (!autoAnalysis || duration < 15 || transcript.isEmpty) {
       Navigator.of(context).pop();
       return;
     }

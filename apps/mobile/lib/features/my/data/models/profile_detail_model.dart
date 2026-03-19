@@ -90,7 +90,7 @@ class CallSettings {
   final bool autoAnalysis;
 
   const CallSettings({
-    this.silenceDurationMs = 3000,
+    this.silenceDurationMs = 1200,
     this.aiResponseSpeed = 1.0,
     this.subtitleEnabled = true,
     this.autoAnalysis = true,
