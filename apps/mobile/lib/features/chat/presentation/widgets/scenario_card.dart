@@ -38,98 +38,109 @@ class ScenarioCard extends StatelessWidget {
     final diff = _difficultyStyles[scenario.difficulty] ??
         _DiffStyle(scenario.difficulty, AppColors.overlay(0.5));
 
-    return GestureDetector(
-      onTap: onSelect,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(color: Colors.transparent),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          scenario.title,
-                          style: theme.textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: diff.color.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          diff.label,
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: diff.color,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        onTap: () {
+          HapticService().selection();
+          onSelect();
+        },
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: Colors.transparent),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            scenario.title,
+                            style: theme.textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(LucideIcons.clock,
-                          size: 12,
-                          color: colorScheme.onSurface.withValues(alpha: 0.5)),
-                      const SizedBox(width: 4),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: diff.color.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            diff.label,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: diff.color,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(LucideIcons.clock,
+                            size: 12,
+                            color: colorScheme.onSurface.withValues(alpha: 0.5)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '예상 ${scenario.estimatedMinutes}분',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurface.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (scenario.keyExpressions.isNotEmpty) ...[
+                      const SizedBox(height: 4),
                       Text(
-                        '예상 ${scenario.estimatedMinutes}분',
+                        '핵심표현: ${scenario.keyExpressions.take(2).join(', ')}',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                  ),
-                  if (scenario.keyExpressions.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '핵심표현: ${scenario.keyExpressions.take(2).join(', ')}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ],
-                ],
-              ),
-            ),
-            if (showCallButton && onCall != null) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: onCall,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.scenarioPurple.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(LucideIcons.phone,
-                      size: 16, color: AppColors.scenarioPurple),
                 ),
               ),
+              if (showCallButton && onCall != null) ...[
+                const SizedBox(width: 8),
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () {
+                    HapticService().selection();
+                    onCall!();
+                  },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.scenarioPurple.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(LucideIcons.phone,
+                        size: 16, color: AppColors.scenarioPurple),
+                  ),
+                ),
+              ],
+              const SizedBox(width: 4),
+              Icon(LucideIcons.chevronRight,
+                  size: 16, color: colorScheme.onSurface.withValues(alpha: 0.4)),
             ],
-            const SizedBox(width: 4),
-            Icon(LucideIcons.chevronRight,
-                size: 16, color: colorScheme.onSurface.withValues(alpha: 0.4)),
-          ],
+          ),
         ),
       ),
     );

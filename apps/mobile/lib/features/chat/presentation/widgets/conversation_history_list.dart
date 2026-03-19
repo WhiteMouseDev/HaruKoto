@@ -89,17 +89,21 @@ class _HistoryItem extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.sm),
-      child: GestureDetector(
-        onTap: () {
-          context.go('/chat/${item.id}/feedback');
-        },
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          ),
-          child: Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          onTap: () {
+            HapticService().selection();
+            context.go('/chat/${item.id}/feedback');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            ),
+            child: Row(
             children: [
               // Icon
               Container(
@@ -183,6 +187,7 @@ class _HistoryItem extends StatelessWidget {
                   size: 16,
                   color: colorScheme.onSurface.withValues(alpha: 0.4)),
             ],
+          ),
           ),
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
 
@@ -11,12 +10,14 @@ class _Category {
   final IconData icon;
   final String label;
   final String scenarioCount;
+  final Color? color;
 
   const _Category({
     required this.id,
     required this.icon,
     required this.label,
     required this.scenarioCount,
+    this.color,
   });
 }
 
@@ -25,17 +26,20 @@ const _categories = [
       id: 'TRAVEL',
       icon: LucideIcons.plane,
       label: '여행',
-      scenarioCount: '12 시나리오'),
+      scenarioCount: '12 시나리오',
+      color: Color(0xFF6DB3CE)),
   _Category(
       id: 'DAILY',
       icon: LucideIcons.store,
       label: '일상',
-      scenarioCount: '10 시나리오'),
+      scenarioCount: '10 시나리오',
+      color: Color(0xFFEF8354)),
   _Category(
       id: 'BUSINESS',
       icon: LucideIcons.briefcase,
       label: '비즈니스',
-      scenarioCount: '8 시나리오'),
+      scenarioCount: '8 시나리오',
+      color: Color(0xFF7E57C2)),
   _Category(
       id: 'FREE',
       icon: LucideIcons.messageSquare,
@@ -73,6 +77,7 @@ class CategoryGrid extends StatelessWidget {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
+        final catColor = cat.color ?? colorScheme.primary;
         return Material(
           color: Colors.transparent,
           child: InkWell(
@@ -88,24 +93,32 @@ class CategoryGrid extends StatelessWidget {
                 border: Border.all(color: Colors.transparent),
               ),
               child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(cat.icon, size: 28, color: AppColors.primary),
-                const SizedBox(height: 6),
-                Text(
-                  cat.label,
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  cat.scenarioCount,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: catColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(cat.icon, size: 24, color: catColor),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 6),
+                  Text(
+                    cat.label,
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    cat.scenarioCount,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

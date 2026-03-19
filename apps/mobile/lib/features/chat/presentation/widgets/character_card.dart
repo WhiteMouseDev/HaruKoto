@@ -36,9 +36,17 @@ class CharacterCardWidget extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final unlocked = _isUnlocked;
 
-    return GestureDetector(
-      onTap: unlocked ? onTap : null,
-      child: Opacity(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        onTap: unlocked
+            ? () {
+                HapticService().selection();
+                onTap();
+              }
+            : null,
+        child: Opacity(
         opacity: unlocked ? 1.0 : 0.6,
         child: Container(
           padding: const EdgeInsets.all(AppSizes.md),
@@ -133,8 +141,12 @@ class CharacterCardWidget extends StatelessWidget {
 
               // Favorite + Call
               if (unlocked) ...[
-                GestureDetector(
-                  onTap: onToggleFavorite,
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () {
+                    HapticService().selection();
+                    onToggleFavorite();
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: Icon(
@@ -161,6 +173,7 @@ class CharacterCardWidget extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

@@ -124,7 +124,8 @@ class _ChatBubbleState extends State<ChatBubble> {
             // Feedback for user messages
             if (!_isAI && _hasFeedback) ...[
               const SizedBox(height: 6),
-              GestureDetector(
+              InkWell(
+                borderRadius: BorderRadius.circular(8),
                 onTap: () => setState(() => _showFeedback = !_showFeedback),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
