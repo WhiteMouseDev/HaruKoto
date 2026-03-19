@@ -102,10 +102,29 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     );
 
     if (updated == null || !mounted) return;
-    await ref
-        .read(myRepositoryProvider)
-        .updateProfile({'callSettings': updated.toJson()});
-    if (mounted) ref.invalidate(profileDetailProvider);
+    try {
+      await ref
+          .read(myRepositoryProvider)
+          .updateProfile({'callSettings': updated.toJson()});
+      if (mounted) {
+        ref.invalidate(profileDetailProvider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('통화 설정이 저장되었습니다'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('설정 저장에 실패했습니다'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   @override
