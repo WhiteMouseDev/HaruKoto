@@ -330,14 +330,26 @@ async def generate_live_feedback(
     if scenario_info:
         prompt += f"\n\nシナリオ情報: {scenario_info}"
 
-    response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=str(SYSTEM_PROMPTS["live_feedback"]),
-        ),
-    )
-    return _parse_json_response(response.text)
+    # 503 대비 최대 2회 재시도
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            response = await client.aio.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=str(SYSTEM_PROMPTS["live_feedback"]),
+                ),
+            )
+            return _parse_json_response(response.text)
+        except Exception as e:
+            last_error = e
+            logger.warning("Live feedback attempt %d/%d failed: %s", attempt + 1, 3, e)
+            if attempt < 2:
+                await asyncio.sleep(1 << attempt)  # 1s, 2s
+
+    logger.error("Live feedback failed after 3 attempts")
+    raise last_error or RuntimeError("Live feedback generation failed")
 
 
 # ---------------------------------------------------------------------------

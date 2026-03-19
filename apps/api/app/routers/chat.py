@@ -389,8 +389,14 @@ async def submit_live_feedback(
     else:
         transcript = []
 
-    # Generate feedback
-    feedback = await generate_live_feedback(transcript) if transcript else None
+    # Generate feedback (503 등 일시 오류 시 null 반환)
+    feedback = None
+    if transcript:
+        try:
+            feedback = await generate_live_feedback(transcript)
+        except Exception:
+            logger.exception("Live feedback generation failed")
+            # 피드백 실패해도 통화 기록은 저장
 
     # Create conversation record if it doesn't exist (voice call without pre-existing conversation)
     if not conversation:
