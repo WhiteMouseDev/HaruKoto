@@ -76,13 +76,39 @@ harukoto/
 - PR 리뷰 시뮬레이션
 - 사용: `/code-review` 커맨드
 
-## 개발 워크플로우
+## 개발 워크플로우 (Claude + Codex 협업)
 
-### 1. 기능 개발 사이클
+### 역할 분담
+- **Claude Code (주 개발자)**: 설계, 구현, 1차 검증 (lint/analyze/test)
+- **Codex (시니어 리뷰어)**: 교차 검증, API 계약 검증, 반박
+- **사용자 (PM)**: 최종 판단, 방향 결정
+
+### 기능 개발 사이클 (6단계)
 
 ```
-PM 검토 → 개발 → 코드 리뷰 → QA 테스트 → PM 최종 확인
+1. 설계     → Claude 초안 → Codex 검증 → 수렴
+2. 구현     → Claude 코드 작성
+3. 자체 검증 → lint/analyze/test 실행
+4. 교차 검증 → Codex 코드 리뷰
+5. 수렴     → Claude가 피드백 평가 → 수용/반박 → 사용자 보고
+6. 커밋     → 합의된 코드만 커밋 & 푸시
 ```
+
+### 단계별 Codex 활용
+
+**설계 단계**: Claude가 구현 계획을 세운 뒤 Codex에게 "이 설계에 빠진 것, 리스크, 더 나은 접근법이 있는지" 검증 요청. 특히 API 계약 변경, DB 스키마 변경, 외부 서비스 연동 시 필수.
+
+**교차 검증 단계**: 구현 완료 후 변경된 코드에 대해 Codex에게 리뷰 요청. 검증 항목:
+- API 계약 정합성 (endpoint + response_model + 모바일 parser 키)
+- 타입 안전성 (as int/String, List null 체크, float/int)
+- 런타임 에러 가능성 (모델 필드명, query param case, trailing slash)
+- 기존 테스트 호환성
+
+### 리뷰 규칙
+- Codex 피드백 중 P0/P1은 반드시 수용 또는 근거 있는 반박
+- P2 이하는 Claude가 판단하여 수용/보류
+- 반박 시 반드시 코드 라인 기준 근거를 제시
+- CamelModel, query parameter, raw dict 반환 등 자동 변환 비적용 영역은 3점 교차 검증 필수 (endpoint signature + response_model 유무 + 모바일 parser 키)
 
 ### 2. Git 브랜치 전략
 
