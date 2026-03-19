@@ -77,6 +77,12 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
       if (!mounted) return;
 
+      // Fail-fast: 토큰이나 모델이 비어있으면 연결 시도하지 않음
+      if (tokenResp.token.isEmpty || tokenResp.model.isEmpty) {
+        setState(() => _state = 'error');
+        return;
+      }
+
       // 3. Create and start Gemini Live service
       _service = GeminiLiveService(
         wsUri: tokenResp.wsUri,
