@@ -156,8 +156,8 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
     if (!mounted) return;
 
-    // 최소 5초 이상 통화해야 분석 진행
-    if (duration < 5 || transcript.isEmpty) {
+    // 최소 10초 이상 통화해야 분석 진행
+    if (duration < 10 || transcript.isEmpty) {
       Navigator.of(context).pop();
       return;
     }
