@@ -14,10 +14,8 @@ class ChatRepository {
 
   Future<List<ScenarioModel>> fetchScenarios({String? category}) async {
     final query = category != null ? '?category=$category' : '';
-    final response =
-        await _dio.get<Map<String, dynamic>>('/chat/scenarios$query');
-    final list = response.data!['scenarios'] as List<dynamic>? ?? [];
-    return list
+    final response = await _dio.get<List<dynamic>>('/chat/scenarios$query');
+    return (response.data ?? [])
         .map((e) => ScenarioModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }

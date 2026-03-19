@@ -27,6 +27,8 @@ from app.schemas.kana import (
     KanaProgressResponse,
     KanaQuizAnswerRequest,
     KanaQuizAnswerResponse,
+    KanaQuizCompleteRequest,
+    KanaQuizCompleteResponse,
     KanaQuizStartRequest,
     KanaQuizStartResponse,
     KanaStageCompleteRequest,
@@ -380,20 +382,84 @@ async def answer_kana_quiz(
     return KanaQuizAnswerResponse(is_correct=is_correct, correct_option_id=correct_option_id)
 
 
+@router.post("/quiz/complete", response_model=KanaQuizCompleteResponse, status_code=200)
+async def complete_kana_quiz(
+    body: KanaQuizCompleteRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    session = await db.get(QuizSession, body.session_id)
+    if not session or session.user_id != user.id:
+        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
+
+    total = session.total_questions or 0
+    correct = session.correct_count or 0
+    accuracy = round(correct / total * 100) if total > 0 else 0
+
+    # Award XP
+    xp_earned = KANA_REWARDS.QUIZ_PERFECT_XP if accuracy == 100 else KANA_REWARDS.QUIZ_PASS_XP
+    old_level = user.level
+    user.experience_points += xp_earned
+    level_info = calculate_level(user.experience_points)
+    user.level = level_info["level"]
+
+    # Update streak
+    today = get_today_kst()
+    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
+    user.streak_count = streak_info["streak_count"]
+    user.longest_streak = streak_info["longest_streak"]
+    user.last_study_date = datetime.now(UTC)
+
+    # Update daily progress
+    dp_stmt = pg_insert(DailyProgress).values(
+        user_id=user.id,
+        date=today,
+        xp_earned=xp_earned,
+        kana_learned=correct,
+    )
+    dp_stmt = dp_stmt.on_conflict_do_update(
+        index_elements=["user_id", "date"],
+        set_={
+            "xp_earned": DailyProgress.xp_earned + xp_earned,
+            "kana_learned": DailyProgress.kana_learned + correct,
+        },
+    )
+    await db.execute(dp_stmt)
+
+    # Check achievements
+    events = await check_and_grant_achievements(
+        db,
+        user.id,
+        {
+            "total_xp": user.experience_points,
+            "new_level": user.level,
+            "old_level": old_level,
+            "streak_count": user.streak_count,
+        },
+    )
+
+    # Mark session completed
+    session.completed_at = datetime.now(UTC)
+    await db.commit()
+
+    return KanaQuizCompleteResponse(
+        accuracy=accuracy,
+        xp_earned=xp_earned,
+        level=user.level,
+        current_xp=level_info["current_xp"],
+        xp_for_next=level_info["xp_for_next"],
+        events=events,
+    )
+
+
 @router.post("/stage-complete", response_model=KanaStageCompleteResponse, status_code=200)
 async def complete_stage(
     body: KanaStageCompleteRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Find stage
-    stage_result = await db.execute(
-        select(KanaLearningStage).where(
-            KanaLearningStage.kana_type == body.kana_type,
-            KanaLearningStage.stage_number == body.stage_number,
-        )
-    )
-    stage = stage_result.scalar_one_or_none()
+    # Find stage by ID
+    stage = await db.get(KanaLearningStage, body.stage_id)
     if not stage:
         raise HTTPException(status_code=404, detail="스테이지를 찾을 수 없습니다")
 
@@ -404,20 +470,20 @@ async def complete_stage(
         stage_id=stage.id,
         is_unlocked=True,
         is_completed=True,
-        quiz_score=body.score,
+        quiz_score=body.quiz_score,
         completed_at=now,
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["user_id", "stage_id"],
-        set_={"is_completed": True, "quiz_score": body.score, "completed_at": now},
+        set_={"is_completed": True, "quiz_score": body.quiz_score, "completed_at": now},
     )
     await db.execute(stmt)
 
     # Unlock next stage
     next_stage_result = await db.execute(
         select(KanaLearningStage).where(
-            KanaLearningStage.kana_type == body.kana_type,
-            KanaLearningStage.stage_number == body.stage_number + 1,
+            KanaLearningStage.kana_type == stage.kana_type,
+            KanaLearningStage.stage_number == stage.stage_number + 1,
         )
     )
     next_stage = next_stage_result.scalar_one_or_none()

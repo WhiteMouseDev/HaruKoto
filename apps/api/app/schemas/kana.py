@@ -73,10 +73,22 @@ class KanaQuizAnswerResponse(CamelModel):
     correct_option_id: str
 
 
+class KanaQuizCompleteRequest(CamelModel):
+    session_id: UUID
+
+
+class KanaQuizCompleteResponse(CamelModel):
+    accuracy: int
+    xp_earned: int
+    level: int
+    current_xp: int
+    xp_for_next: int
+    events: list[dict[str, Any]]
+
+
 class KanaStageCompleteRequest(CamelModel):
-    kana_type: KanaType
-    stage_number: int
-    score: int
+    stage_id: UUID
+    quiz_score: int | None = None
 
 
 class KanaStageCompleteResponse(CamelModel):
