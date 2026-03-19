@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 
 class PhoneCallBanner extends StatelessWidget {
   final VoidCallback onTap;
@@ -13,23 +14,29 @@ class PhoneCallBanner extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSizes.md),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.primary.withValues(alpha: 0.05),
-              AppColors.primary.withValues(alpha: 0.15),
-            ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        onTap: () {
+          HapticService().light();
+          onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.all(AppSizes.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withValues(alpha: 0.05),
+                AppColors.primary.withValues(alpha: 0.15),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.2),
+            ),
           ),
-          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Row(
+          child: Row(
           children: [
             Container(
               width: 44,
@@ -99,6 +106,7 @@ class PhoneCallBanner extends StatelessWidget {
             ),
             const Icon(LucideIcons.phone, size: 20, color: AppColors.primary),
           ],
+        ),
         ),
       ),
     );

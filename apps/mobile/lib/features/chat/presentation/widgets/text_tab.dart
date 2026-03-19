@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 import 'category_grid.dart';
 import 'conversation_history_list.dart';
 
@@ -23,10 +24,16 @@ class TextTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       children: [
-        GestureDetector(
-          onTap: onFreeChat,
-          child: Container(
-            decoration: BoxDecoration(
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+            onTap: () {
+              HapticService().light();
+              onFreeChat();
+            },
+            child: Container(
+              decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
                   AppColors.primary.withValues(alpha: 0.1),

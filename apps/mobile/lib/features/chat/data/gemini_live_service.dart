@@ -128,7 +128,7 @@ class GeminiLiveService {
     final instruction = systemInstruction ?? _defaultSystemInstruction();
     final setup = <String, dynamic>{
       'setup': {
-        'model': 'models/gemini-2.5-flash-preview-native-audio-dialog',
+        'model': 'models/gemini-2.5-flash-native-audio',
         'generationConfig': {
           'responseModalities': ['AUDIO'],
           'speechConfig': {

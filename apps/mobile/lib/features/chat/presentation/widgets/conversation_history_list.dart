@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../data/models/conversation_model.dart';
 import '../../providers/chat_provider.dart';
 

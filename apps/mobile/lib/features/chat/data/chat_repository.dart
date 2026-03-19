@@ -117,7 +117,7 @@ class ChatRepository {
     final response = await _dio.post<Map<String, dynamic>>(
       '/chat/live-token',
       data: {
-        if (characterId != null) 'character_id': characterId,
+        if (characterId != null) 'characterId': characterId,
       },
     );
     return LiveTokenResponse.fromJson(response.data!);

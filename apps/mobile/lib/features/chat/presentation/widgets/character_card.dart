@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../data/models/character_model.dart';
 
 class CharacterCardWidget extends StatelessWidget {

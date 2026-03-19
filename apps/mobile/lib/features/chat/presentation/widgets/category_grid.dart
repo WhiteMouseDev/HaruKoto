@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/services/haptic_service.dart';
 
 enum CategoryGridVariant { defaultVariant, call }
 
@@ -72,15 +73,21 @@ class CategoryGrid extends StatelessWidget {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
-        return GestureDetector(
-          onTap: () => onSelect(cat.id),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(color: Colors.transparent),
-            ),
-            child: Column(
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            onTap: () {
+              HapticService().selection();
+              onSelect(cat.id);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(color: Colors.transparent),
+              ),
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(cat.icon, size: 28, color: AppColors.primary),
@@ -98,6 +105,7 @@ class CategoryGrid extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
             ),
           ),
         );
