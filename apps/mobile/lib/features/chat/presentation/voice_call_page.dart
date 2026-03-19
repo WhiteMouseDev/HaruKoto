@@ -229,171 +229,194 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
       child: Scaffold(
         backgroundColor: bgColor,
         body: SafeArea(
-          child: Column(
+          child: Stack(
             children: [
-              // Top bar
-              Padding(
-                padding: const EdgeInsets.all(AppSizes.md),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: _endCall,
-                      icon: const Icon(LucideIcons.arrowLeft,
-                          color: AppColors.onGradientMuted),
+              // ── Main layout (자막에 영향받지 않음) ──
+              Column(
+                children: [
+                  // Top bar
+                  Padding(
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: _endCall,
+                          icon: const Icon(LucideIcons.arrowLeft,
+                              color: AppColors.onGradientMuted),
+                        ),
+                        const Spacer(),
+                        if (_state == 'connected')
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color:
+                                  AppColors.onGradient.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _formattedDuration,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.onGradientMuted,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures()
+                                ],
+                              ),
+                            ),
+                          ),
+                        const Spacer(),
+                        const SizedBox(width: 48),
+                      ],
                     ),
-                    const Spacer(),
-                    if (_state == 'connected')
-                      Container(
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // Character name + status
+                  Text(
+                    widget.characterName ?? '하루',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: AppColors.onGradient,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+                  Text(
+                    _state == 'connecting'
+                        ? '연결 중...'
+                        : _state == 'ending'
+                            ? '통화 종료 중...'
+                            : _state == 'error'
+                                ? '연결 실패'
+                                : _formattedDuration,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.onGradient.withValues(alpha: 0.54),
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.xl),
+
+                  // Waveform / Avatar
+                  CallWaveformWidget(
+                    mode: _state == 'connected' ? 'speaking' : 'idle',
+                    avatarUrl: widget.avatarUrl,
+                    characterName: widget.characterName,
+                  ),
+
+                  const Spacer(flex: 3),
+
+                  // Error
+                  if (_error != null)
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                      child: Column(
+                        children: [
+                          Text(
+                            _error!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  AppColors.onGradient.withValues(alpha: 0.7),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (_state == 'error') ...[
+                            const SizedBox(height: 12),
+                            FilledButton(
+                              onPressed: () {
+                                setState(() {
+                                  _state = 'connecting';
+                                  _error = null;
+                                });
+                                _startCall();
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.callAccent,
+                                foregroundColor: AppColors.onGradient,
+                              ),
+                              child: const Text('다시 연결'),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+
+                  // Controls
+                  Padding(
+                    padding: const EdgeInsets.all(AppSizes.xl),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Mute button
+                        if (_state == 'connected')
+                          _ControlButton(
+                            icon:
+                                _isMuted ? LucideIcons.micOff : LucideIcons.mic,
+                            label: _isMuted ? '음소거 해제' : '음소거',
+                            onTap: () {
+                              setState(() => _isMuted = !_isMuted);
+                              _service?.isMuted = _isMuted;
+                            },
+                            color: AppColors.onGradient.withValues(alpha: 0.24),
+                          ),
+
+                        // End call button
+                        _ControlButton(
+                          icon: LucideIcons.phoneOff,
+                          label: '통화 종료',
+                          onTap: _endCall,
+                          color: AppColors.error(Theme.of(context).brightness),
+                          size: 64,
+                        ),
+
+                        // Subtitle toggle
+                        if (_state == 'connected')
+                          _ControlButton(
+                            icon: LucideIcons.messageSquare,
+                            label: '자막',
+                            onTap: () =>
+                                setState(() => _showSubtitle = !_showSubtitle),
+                            color: _showSubtitle
+                                ? AppColors.callAccent
+                                : AppColors.onGradient.withValues(alpha: 0.24),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.lg),
+                ],
+              ),
+
+              // ── Subtitle overlay (하단 고정, 메인 레이아웃과 독립) ──
+              if (_showSubtitle && _state == 'connected')
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: 160, // 컨트롤 버튼 위
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: _currentAiText.isNotEmpty ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                            horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          color: AppColors.onGradient.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          _formattedDuration,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.onGradientMuted,
-                            fontFeatures: const [FontFeature.tabularFigures()],
+                          _currentAiText,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white,
+                            height: 1.4,
                           ),
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    const Spacer(),
-                    const SizedBox(width: 48),
-                  ],
-                ),
-              ),
-
-              const Spacer(),
-
-              // Character name
-              Text(
-                widget.characterName ?? '하루',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: AppColors.onGradient,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Text(
-                _state == 'connecting'
-                    ? '연결 중...'
-                    : _state == 'ending'
-                        ? '통화 종료 중...'
-                        : _state == 'error'
-                            ? '연결 실패'
-                            : '통화 중',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.onGradient.withValues(alpha: 0.54),
-                ),
-              ),
-              const SizedBox(height: AppSizes.xl),
-
-              // Waveform / Avatar
-              CallWaveformWidget(
-                mode: _state == 'connected' ? 'speaking' : 'idle',
-                avatarUrl: widget.avatarUrl,
-                characterName: widget.characterName,
-              ),
-
-              const Spacer(),
-
-              // Subtitle overlay
-              if (_showSubtitle &&
-                  _state == 'connected' &&
-                  _currentAiText.isNotEmpty)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
-                  padding: const EdgeInsets.all(AppSizes.md),
-                  decoration: BoxDecoration(
-                    color: AppColors.overlay(0.54),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    _currentAiText,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.onGradient,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
-
-              // Error
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
-                  child: Column(
-                    children: [
-                      Text(
-                        _error!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.onGradient.withValues(alpha: 0.7),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      if (_state == 'error') ...[
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: () {
-                            setState(() {
-                              _state = 'connecting';
-                              _error = null;
-                            });
-                            _startCall();
-                          },
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.callAccent,
-                            foregroundColor: AppColors.onGradient,
-                          ),
-                          child: const Text('다시 연결'),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-
-              // Controls
-              Padding(
-                padding: const EdgeInsets.all(AppSizes.xl),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Mute button
-                    if (_state == 'connected')
-                      _ControlButton(
-                        icon: _isMuted ? LucideIcons.micOff : LucideIcons.mic,
-                        label: _isMuted ? '음소거 해제' : '음소거',
-                        onTap: () {
-                          setState(() => _isMuted = !_isMuted);
-                          _service?.isMuted = _isMuted;
-                        },
-                        color: AppColors.onGradient.withValues(alpha: 0.24),
-                      ),
-
-                    // End call button
-                    _ControlButton(
-                      icon: LucideIcons.phoneOff,
-                      label: '통화 종료',
-                      onTap: _endCall,
-                      color: AppColors.error(Theme.of(context).brightness),
-                      size: 64,
-                    ),
-
-                    // Subtitle toggle
-                    if (_state == 'connected')
-                      _ControlButton(
-                        icon: LucideIcons.messageSquare,
-                        label: '자막',
-                        onTap: () =>
-                            setState(() => _showSubtitle = !_showSubtitle),
-                        color: _showSubtitle
-                            ? AppColors.callAccent
-                            : AppColors.onGradient.withValues(alpha: 0.24),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSizes.lg),
             ],
           ),
         ),
