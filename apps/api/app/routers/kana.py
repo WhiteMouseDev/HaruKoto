@@ -245,9 +245,7 @@ async def start_kana_quiz(
         )
     else:
         # Master quiz: all characters of this kana type
-        chars_result = await db.execute(
-            select(KanaCharacter).where(KanaCharacter.kana_type == body.kana_type)
-        )
+        chars_result = await db.execute(select(KanaCharacter).where(KanaCharacter.kana_type == body.kana_type))
 
     characters = chars_result.scalars().all()
 

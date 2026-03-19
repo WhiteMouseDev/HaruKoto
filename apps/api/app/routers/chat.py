@@ -376,17 +376,13 @@ async def submit_live_feedback(
 
     # Load existing conversation if provided
     if body.conversation_id:
-        result = await db.execute(
-            select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id)
-        )
+        result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
         conversation = result.scalar_one_or_none()
 
     # Get transcript: from conversation messages or request body
     if conversation and conversation.messages:
         transcript = [
-            {"role": m.get("role", "user"), "text": m.get("content", "")}
-            for m in conversation.messages
-            if m.get("role") != "system"
+            {"role": m.get("role", "user"), "text": m.get("content", "")} for m in conversation.messages if m.get("role") != "system"
         ]
     elif body.transcript:
         transcript = body.transcript
