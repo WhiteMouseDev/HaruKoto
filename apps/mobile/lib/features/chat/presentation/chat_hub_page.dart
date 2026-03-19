@@ -86,10 +86,14 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   }
 
   Future<void> _showCallSettings(BuildContext context) async {
-    final profileAsync = ref.read(profileDetailProvider);
-    final callSettings = profileAsync.hasValue
-        ? profileAsync.value!.profile.callSettings
-        : const CallSettings();
+    // 서버에서 최신 프로필을 직접 가져옴 (캐시 우회)
+    CallSettings callSettings = const CallSettings();
+    try {
+      final profile = await ref.read(myRepositoryProvider).fetchProfileDetail();
+      callSettings = profile.profile.callSettings;
+    } catch (_) {
+      // 실패 시 기본값 사용
+    }
 
     final updated = await showModalBottomSheet<CallSettings>(
       context: context,
