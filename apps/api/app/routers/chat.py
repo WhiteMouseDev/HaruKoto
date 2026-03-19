@@ -414,62 +414,73 @@ async def submit_live_feedback(
     conversation.ended_at = now
     conversation.feedback_summary = feedback
 
-    # Gamification (same as /end)
-    xp = REWARDS.CONVERSATION_COMPLETE_XP
-    old_level = calculate_level(user.experience_points)["level"]
+    # Gamification — DB 에러 시에도 피드백은 반환
+    xp = 0
+    events: list[dict] = []
+    new_level = user.level
+    try:
+        xp = REWARDS.CONVERSATION_COMPLETE_XP
+        old_level = calculate_level(user.experience_points)["level"]
 
-    await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
-    await db.refresh(user)
+        await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
+        await db.refresh(user)
 
-    new_level = calculate_level(user.experience_points)["level"]
-    if new_level != user.level:
-        user.level = new_level
+        new_level = calculate_level(user.experience_points)["level"]
+        if new_level != user.level:
+            user.level = new_level
 
-    streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-    user.streak_count = streak["streak_count"]
-    user.longest_streak = streak["longest_streak"]
-    user.last_study_date = now
+        streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
+        user.streak_count = streak["streak_count"]
+        user.longest_streak = streak["longest_streak"]
+        user.last_study_date = now
 
-    today = get_today_kst()
-    live_study_minutes = max(0, body.duration_seconds // 60)
-    await db.execute(
-        insert(DailyProgress)
-        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=live_study_minutes)
-        .on_conflict_do_update(
-            index_elements=["user_id", "date"],
-            set_={
-                "xp_earned": DailyProgress.xp_earned + xp,
-                "study_minutes": DailyProgress.study_minutes + live_study_minutes,
+        today = get_today_kst()
+        live_study_minutes = max(0, body.duration_seconds // 60)
+        await db.execute(
+            insert(DailyProgress)
+            .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=live_study_minutes)
+            .on_conflict_do_update(
+                index_elements=["user_id", "date"],
+                set_={
+                    "xp_earned": DailyProgress.xp_earned + xp,
+                    "study_minutes": DailyProgress.study_minutes + live_study_minutes,
+                },
+            )
+        )
+
+        # Track voice usage
+        await track_ai_usage(db, str(user.id), "call", body.duration_seconds)
+
+        # Achievements
+        conv_count = (
+            await db.execute(
+                select(func.count()).select_from(Conversation).where(Conversation.user_id == user.id, Conversation.ended_at.isnot(None))
+            )
+        ).scalar() or 0
+
+        events = await check_and_grant_achievements(
+            db,
+            user.id,
+            {
+                "total_xp": user.experience_points,
+                "new_level": new_level,
+                "old_level": old_level,
+                "streak_count": streak["streak_count"],
+                "conversation_count": conv_count,
             },
         )
-    )
 
-    # Track voice usage
-    await track_ai_usage(db, str(user.id), "call", body.duration_seconds)
+        for event in events:
+            db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
+    except Exception:
+        logger.exception("Live feedback gamification failed")
+        await db.rollback()
 
-    # Achievements
-    conv_count = (
-        await db.execute(
-            select(func.count()).select_from(Conversation).where(Conversation.user_id == user.id, Conversation.ended_at.isnot(None))
-        )
-    ).scalar() or 0
-
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": new_level,
-            "old_level": old_level,
-            "streak_count": streak["streak_count"],
-            "conversation_count": conv_count,
-        },
-    )
-
-    for event in events:
-        db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
-
-    await db.commit()
+    try:
+        await db.commit()
+    except Exception:
+        logger.exception("Live feedback commit failed")
+        await db.rollback()
 
     return {
         "conversationId": str(conversation.id),

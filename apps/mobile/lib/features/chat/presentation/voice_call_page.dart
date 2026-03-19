@@ -189,7 +189,12 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     });
   }
 
+  bool _isEnding = false;
+
   Future<void> _endCall() async {
+    if (_isEnding) return; // 중복 호출 방지
+    _isEnding = true;
+
     _timer?.cancel();
     _timer = null;
 
