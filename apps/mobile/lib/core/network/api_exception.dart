@@ -20,7 +20,26 @@ class ApiException implements Exception {
     String? errorCode;
     if (data is Map<String, dynamic>) {
       if (data.containsKey('detail')) {
-        message = data['detail'] as String;
+        final detail = data['detail'];
+        if (detail is String && detail.isNotEmpty) {
+          message = detail;
+        } else if (detail is List && detail.isNotEmpty) {
+          final first = detail.first;
+          if (first is String && first.isNotEmpty) {
+            message = first;
+          } else if (first is Map<String, dynamic>) {
+            final msg = first['msg'];
+            if (msg is String && msg.isNotEmpty) {
+              message = msg;
+            } else {
+              message = first.toString();
+            }
+          } else {
+            message = first.toString();
+          }
+        } else if (detail != null) {
+          message = detail.toString();
+        }
       }
       if (data.containsKey('errorCode')) {
         errorCode = data['errorCode'] as String;

@@ -26,6 +26,32 @@ void main() {
       expect(exception.message, equals('알 수 없는 오류가 발생했습니다.'));
     });
 
+    test('fromResponse handles FastAPI validation detail list', () {
+      final exception = ApiException.fromResponse(
+        422,
+        {
+          'detail': [
+            {
+              'type': 'int_parsing',
+              'loc': ['body', 'dailyGoal'],
+              'msg': 'Input should be a valid integer',
+            }
+          ],
+        },
+      );
+      expect(exception.message, equals('Input should be a valid integer'));
+    });
+
+    test('fromResponse handles detail list of strings', () {
+      final exception = ApiException.fromResponse(
+        422,
+        {
+          'detail': ['invalid payload'],
+        },
+      );
+      expect(exception.message, equals('invalid payload'));
+    });
+
     group('userMessage', () {
       test('returns correct message for 400', () {
         const e = ApiException(message: 'raw', statusCode: 400);

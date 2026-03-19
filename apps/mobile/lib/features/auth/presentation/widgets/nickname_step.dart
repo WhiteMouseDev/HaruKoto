@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/sizes.dart';
 
-class NicknameStep extends StatelessWidget {
+class NicknameStep extends StatefulWidget {
   final String nickname;
   final ValueChanged<String> onNicknameChanged;
   final VoidCallback onNext;
@@ -12,6 +12,41 @@ class NicknameStep extends StatelessWidget {
     required this.onNicknameChanged,
     required this.onNext,
   });
+
+  @override
+  State<NicknameStep> createState() => _NicknameStepState();
+}
+
+class _NicknameStepState extends State<NicknameStep> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.nickname);
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: _controller.text.length),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant NicknameStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.nickname != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.nickname,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: widget.nickname.length),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +79,8 @@ class NicknameStep extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               TextField(
-                onChanged: onNicknameChanged,
-                controller: TextEditingController(text: nickname)
-                  ..selection = TextSelection.fromPosition(
-                    TextPosition(offset: nickname.length),
-                  ),
+                onChanged: widget.onNicknameChanged,
+                controller: _controller,
                 maxLength: 20,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18),
@@ -64,7 +96,8 @@ class NicknameStep extends StatelessWidget {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: nickname.trim().isNotEmpty ? onNext : null,
+                  onPressed:
+                      widget.nickname.trim().isNotEmpty ? widget.onNext : null,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
