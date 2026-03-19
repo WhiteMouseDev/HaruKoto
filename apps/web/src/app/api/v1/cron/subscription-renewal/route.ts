@@ -14,11 +14,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 만료된 활성 구독 중 billingKey가 있는 것 조회
+    // 만료된 월간 구독 중 billingKey가 있는 것만 자동 갱신 (연간은 단건결제)
     const expiredSubscriptions = await prisma.subscription.findMany({
       where: {
         status: 'ACTIVE',
-        plan: { not: 'FREE' },
+        plan: 'MONTHLY',
         billingKey: { not: null },
         currentPeriodEnd: { lte: new Date() },
       },

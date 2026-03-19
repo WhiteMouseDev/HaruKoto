@@ -46,13 +46,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // 구독 활성화
+    // 구독 활성화 — 월간만 billingKey 저장 (정기결제), 연간은 단건
     const subscription = await activateSubscription({
       userId: user.id,
       plan,
       portonePaymentId: paymentId,
       amount: expectedAmount,
-      billingKey: portonePayment.method?.billingKey,
+      billingKey: plan === 'monthly' ? portonePayment.method?.billingKey : undefined,
     });
 
     return NextResponse.json({

@@ -96,7 +96,14 @@ export default function CheckoutPage(props: {
         /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
         window.innerWidth < 768;
 
-      const response = await PortOne.requestPayment({
+      // 월간: billingKey 발급 + 결제 (정기결제)
+      // 연간: 단건 결제 (billingKey 없음)
+      const isMonthly = plan === 'monthly';
+      const paymentFn = isMonthly
+        ? PortOne.requestIssueBillingKeyAndPay
+        : PortOne.requestPayment;
+
+      const response = await paymentFn({
         storeId: checkout.storeId,
         channelKey: checkout.channelKey,
         paymentId: checkout.paymentId,
@@ -193,7 +200,7 @@ export default function CheckoutPage(props: {
             <span>
               {plan === 'monthly'
                 ? '매월 자동 갱신되며, 언제든 취소할 수 있습니다.'
-                : '매년 자동 갱신되며, 언제든 취소할 수 있습니다.'}
+                : '12개월 이용권이며, 만료 후 재결제가 필요합니다.'}
             </span>
           </div>
         </CardContent>
