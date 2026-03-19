@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../data/models/conversation_model.dart';
 import '../../providers/chat_provider.dart';
 
@@ -81,6 +82,39 @@ class _HistoryItem extends StatelessWidget {
 
   const _HistoryItem({required this.item});
 
+  Widget _buildAvatar(ConversationModel item, bool isVoice) {
+    final localPath = CharacterAssets.pathFor(item.character?.name);
+    if (localPath != null) {
+      return ClipOval(
+        child: Image.asset(
+          localPath,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    if (item.character?.avatarUrl != null) {
+      return ClipOval(
+        child: Image.network(
+          item.character!.avatarUrl!,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(
+              LucideIcons.phone,
+              size: 16,
+              color: AppColors.primary),
+        ),
+      );
+    }
+    return Icon(
+      isVoice ? LucideIcons.phone : LucideIcons.messageSquare,
+      size: 16,
+      color: AppColors.primary,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -114,26 +148,7 @@ class _HistoryItem extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: item.character?.avatarUrl != null
-                        ? ClipOval(
-                            child: Image.network(
-                              item.character!.avatarUrl!,
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                  LucideIcons.phone,
-                                  size: 16,
-                                  color: AppColors.primary),
-                            ),
-                          )
-                        : Icon(
-                            isVoice
-                                ? LucideIcons.phone
-                                : LucideIcons.messageSquare,
-                            size: 16,
-                            color: AppColors.primary,
-                          ),
+                    child: _buildAvatar(item, isVoice),
                   ),
                 ),
                 const SizedBox(width: 12),

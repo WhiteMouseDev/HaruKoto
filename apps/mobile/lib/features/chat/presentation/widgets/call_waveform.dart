@@ -1,15 +1,18 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/colors.dart';
 
 class CallWaveformWidget extends StatefulWidget {
   final String mode; // 'idle' | 'speaking' | 'listening'
   final String? avatarUrl;
+  final String? characterName;
 
   const CallWaveformWidget({
     super.key,
     this.mode = 'idle',
     this.avatarUrl,
+    this.characterName,
   });
 
   @override
@@ -33,6 +36,31 @@ class _CallWaveformWidgetState extends State<CallWaveformWidget>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Widget _buildAvatar() {
+    final localPath = CharacterAssets.pathFor(widget.characterName);
+    if (localPath != null) {
+      return CircleAvatar(
+        radius: 64,
+        backgroundColor: AppColors.callSurface,
+        backgroundImage: AssetImage(localPath),
+      );
+    }
+    if (widget.avatarUrl != null) {
+      return CircleAvatar(
+        radius: 64,
+        backgroundColor: AppColors.callSurface,
+        backgroundImage: NetworkImage(widget.avatarUrl!),
+        onBackgroundImageError: (_, __) {},
+        child: null,
+      );
+    }
+    return const CircleAvatar(
+      radius: 64,
+      backgroundColor: AppColors.callSurface,
+      child: Text('\u{1F98A}', style: TextStyle(fontSize: 48)),
+    );
   }
 
   @override
@@ -64,16 +92,7 @@ class _CallWaveformWidgetState extends State<CallWaveformWidget>
                 ),
               ],
             ),
-            child: CircleAvatar(
-              radius: 64,
-              backgroundColor: AppColors.callSurface,
-              backgroundImage: widget.avatarUrl != null
-                  ? NetworkImage(widget.avatarUrl!)
-                  : null,
-              child: widget.avatarUrl == null
-                  ? const Text('🦊', style: TextStyle(fontSize: 48))
-                  : null,
-            ),
+            child: _buildAvatar(),
           ),
         ),
       ),

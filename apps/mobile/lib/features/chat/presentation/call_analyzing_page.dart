@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/constants/character_assets.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../providers/chat_provider.dart';
@@ -12,6 +13,7 @@ class CallAnalyzingPage extends ConsumerStatefulWidget {
   final List<Map<String, String>> transcript;
   final int durationSeconds;
   final String? characterId;
+  final String? characterName;
   final String? scenarioId;
 
   const CallAnalyzingPage({
@@ -19,6 +21,7 @@ class CallAnalyzingPage extends ConsumerStatefulWidget {
     required this.transcript,
     required this.durationSeconds,
     this.characterId,
+    this.characterName,
     this.scenarioId,
   });
 
@@ -98,6 +101,22 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     }
   }
 
+  Widget _buildAvatar() {
+    final localPath = CharacterAssets.pathFor(widget.characterName);
+    if (localPath != null) {
+      return CircleAvatar(
+        radius: 56,
+        backgroundColor: AppColors.callSurface,
+        backgroundImage: AssetImage(localPath),
+      );
+    }
+    return const CircleAvatar(
+      radius: 56,
+      backgroundColor: AppColors.callSurface,
+      child: Icon(LucideIcons.barChart, size: 40, color: AppColors.callAccentLight),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -126,11 +145,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                         ),
                       ],
                     ),
-                    child: const CircleAvatar(
-                      radius: 56,
-                      backgroundColor: AppColors.callSurface,
-                      child: Text('🦊', style: TextStyle(fontSize: 48)),
-                    ),
+                    child: _buildAvatar(),
                   ),
                   Positioned(
                     bottom: -4,

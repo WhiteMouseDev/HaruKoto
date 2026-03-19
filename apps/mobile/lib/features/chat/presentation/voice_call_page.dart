@@ -169,6 +169,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
           transcript: transcript.map((e) => e.toJson()).toList(),
           durationSeconds: duration,
           characterId: characterId,
+          characterName: widget.characterName,
           scenarioId: scenarioId,
         ),
       ),
@@ -256,6 +257,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
               CallWaveformWidget(
                 mode: _state == 'connected' ? 'speaking' : 'idle',
                 avatarUrl: widget.avatarUrl,
+                characterName: widget.characterName,
               ),
 
               const Spacer(),

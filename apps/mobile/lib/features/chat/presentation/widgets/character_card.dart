@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../data/models/character_model.dart';
 
 class CharacterCardWidget extends StatelessWidget {
@@ -28,6 +29,38 @@ class CharacterCardWidget extends StatelessWidget {
     final required = int.tryParse(character.unlockCondition!);
     if (required == null) return true;
     return userLevel >= required;
+  }
+
+  Widget _buildAvatar() {
+    final localPath = CharacterAssets.pathFor(character.nameRomaji);
+    if (localPath != null) {
+      return ClipOval(
+        child: Image.asset(
+          localPath,
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    if (character.avatarUrl != null) {
+      return ClipOval(
+        child: Image.network(
+          character.avatarUrl!,
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Text(
+            character.avatarEmoji,
+            style: const TextStyle(fontSize: 24),
+          ),
+        ),
+      );
+    }
+    return Text(
+      character.avatarEmoji,
+      style: const TextStyle(fontSize: 24),
+    );
   }
 
   @override
@@ -76,23 +109,7 @@ class CharacterCardWidget extends StatelessWidget {
                         ? Icon(LucideIcons.lock,
                             size: 20,
                             color: colorScheme.onSurface.withValues(alpha: 0.5))
-                        : character.avatarUrl != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  character.avatarUrl!,
-                                  width: 56,
-                                  height: 56,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Text(
-                                    character.avatarEmoji,
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                character.avatarEmoji,
-                                style: const TextStyle(fontSize: 24),
-                              ),
+                        : _buildAvatar(),
                   ),
                 ),
                 const SizedBox(width: AppSizes.md),
