@@ -4,12 +4,10 @@ import '../../features/my/data/models/profile_detail_model.dart';
 
 class CallSettingsSheet extends StatefulWidget {
   final CallSettings settings;
-  final void Function(CallSettings) onChanged;
 
   const CallSettingsSheet({
     super.key,
     required this.settings,
-    required this.onChanged,
   });
 
   @override
@@ -111,7 +109,7 @@ class _CallSettingsSheetState extends State<CallSettingsSheet> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () => widget.onChanged(_current),
+                onPressed: () => Navigator.of(context).pop(_current),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

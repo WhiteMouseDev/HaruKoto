@@ -575,11 +575,12 @@ class _MainContent extends ConsumerWidget {
     );
   }
 
-  void _showDailyGoalSheet(BuildContext context, WidgetRef ref) {
+  Future<void> _showDailyGoalSheet(BuildContext context, WidgetRef ref) async {
     final theme = Theme.of(context);
     final goals = [5, 10, 15, 20, 30];
-    showModalBottomSheet(
+    final selectedGoal = await showModalBottomSheet<int>(
       context: context,
+      useRootNavigator: true,
       shape: AppSizes.sheetShape,
       builder: (ctx) {
         return _DailyGoalSheetContent(
@@ -589,6 +590,33 @@ class _MainContent extends ConsumerWidget {
         );
       },
     );
+
+    if (selectedGoal == null || selectedGoal == dailyGoal) return;
+
+    try {
+      await ref.read(homeRepositoryProvider).updateDailyGoal(selectedGoal);
+      ref.invalidate(profileProvider);
+      ref.invalidate(profileDetailProvider);
+      ref.invalidate(dashboardProvider);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('하루 목표가 $selectedGoal개로 변경되었습니다'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('목표 변경에 실패했습니다. 다시 시도해주세요.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 }
 
@@ -596,7 +624,7 @@ class _MainContent extends ConsumerWidget {
 //  Supporting widgets
 // ═══════════════════════════════════════════════════════════════
 
-class _DailyGoalSheetContent extends ConsumerStatefulWidget {
+class _DailyGoalSheetContent extends StatelessWidget {
   final List<int> goals;
   final int currentGoal;
   final ThemeData theme;
@@ -608,47 +636,8 @@ class _DailyGoalSheetContent extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_DailyGoalSheetContent> createState() =>
-      _DailyGoalSheetContentState();
-}
-
-class _DailyGoalSheetContentState
-    extends ConsumerState<_DailyGoalSheetContent> {
-  bool _isLoading = false;
-
-  Future<void> _onGoalSelected(int goal) async {
-    if (goal == widget.currentGoal || _isLoading) return;
-    setState(() => _isLoading = true);
-    try {
-      await ref.read(homeRepositoryProvider).updateDailyGoal(goal);
-      ref.invalidate(profileProvider);
-      ref.invalidate(profileDetailProvider);
-      ref.invalidate(dashboardProvider);
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('하루 목표가 $goal개로 변경되었습니다'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('목표 변경에 실패했습니다. 다시 시도해주세요.'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final theme = widget.theme;
+    final theme = this.theme;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -661,8 +650,8 @@ class _DailyGoalSheetContentState
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            ...widget.goals.map((g) {
-              final isActive = g == widget.currentGoal;
+            ...goals.map((g) {
+              final isActive = g == currentGoal;
               return ListTile(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -677,17 +666,11 @@ class _DailyGoalSheetContentState
                           ? theme.colorScheme.primary
                           : theme.colorScheme.onSurface,
                     )),
-                trailing: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : isActive
-                        ? Icon(LucideIcons.check,
-                            color: theme.colorScheme.primary, size: 20)
-                        : null,
-                enabled: !_isLoading,
-                onTap: () => _onGoalSelected(g),
+                trailing: isActive
+                    ? Icon(LucideIcons.check,
+                        color: theme.colorScheme.primary, size: 20)
+                    : null,
+                onTap: () => Navigator.of(context).pop(g),
               );
             }),
             const SizedBox(height: 8),

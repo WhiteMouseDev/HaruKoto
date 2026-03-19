@@ -85,31 +85,27 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     }
   }
 
-  void _showCallSettings(BuildContext context) {
+  Future<void> _showCallSettings(BuildContext context) async {
     final profileAsync = ref.read(profileDetailProvider);
     final callSettings = profileAsync.hasValue
         ? profileAsync.value!.profile.callSettings
         : const CallSettings();
 
-    showModalBottomSheet(
+    final updated = await showModalBottomSheet<CallSettings>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
-        return CallSettingsSheet(
-          settings: callSettings,
-          onChanged: (updated) async {
-            await ref
-                .read(myRepositoryProvider)
-                .updateProfile({'callSettings': updated.toJson()});
-            ref.invalidate(profileDetailProvider);
-            if (context.mounted) Navigator.pop(context);
-          },
-        );
-      },
+      builder: (_) => CallSettingsSheet(settings: callSettings),
     );
+
+    if (updated == null || !mounted) return;
+    await ref
+        .read(myRepositoryProvider)
+        .updateProfile({'callSettings': updated.toJson()});
+    if (mounted) ref.invalidate(profileDetailProvider);
   }
 
   @override
