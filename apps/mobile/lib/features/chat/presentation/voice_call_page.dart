@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,11 +39,29 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
   String? _error;
   String _currentAiText = '';
   Timer? _timer;
+  final AudioPlayer _ringtone = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
+    _playRingtone();
     _startCall();
+  }
+
+  Future<void> _playRingtone() async {
+    try {
+      await _ringtone.setReleaseMode(ReleaseMode.loop);
+      await _ringtone.setVolume(0.5);
+      await _ringtone.play(AssetSource('sounds/ringtone.wav'));
+    } catch (e) {
+      debugPrint('[VoiceCall] Ringtone play failed: $e');
+    }
+  }
+
+  Future<void> _stopRingtone() async {
+    try {
+      await _ringtone.stop();
+    } catch (_) {}
   }
 
   String get _formattedDuration {
@@ -110,13 +129,16 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
               _state = 'connecting';
             case GeminiLiveState.connected:
               _state = 'connected';
+              _stopRingtone();
               _startTimer();
             case GeminiLiveState.ending:
               _state = 'ending';
+              _stopRingtone();
             case GeminiLiveState.ended:
               _state = 'ended';
             case GeminiLiveState.error:
               _state = 'error';
+              _stopRingtone();
           }
         });
       };
@@ -192,6 +214,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
   @override
   void dispose() {
     _timer?.cancel();
+    _ringtone.dispose();
     _service?.dispose();
     super.dispose();
   }

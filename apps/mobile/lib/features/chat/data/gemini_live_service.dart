@@ -169,6 +169,12 @@ class GeminiLiveService {
               },
             },
           },
+          // 웹과 동일: 감정 인식 + 선제 응답
+          'enableAffectiveDialog': true,
+          'proactivity': {'proactiveAudio': true},
+          // 자막: 입력/출력 모두 텍스트 변환 활성화
+          'inputAudioTranscription': {},
+          'outputAudioTranscription': {},
         },
         'systemInstruction': {
           'parts': [
@@ -183,7 +189,8 @@ class GeminiLiveService {
             'silenceDurationMs': silenceDurationMs,
           },
         },
-        if (handle != null) 'sessionResumption': {'handle': handle},
+        // 세션 재개: handle 없어도 빈 객체로 명시 (웹과 동일)
+        'sessionResumption': handle != null ? {'handle': handle} : {},
       },
     };
     _safeSend(jsonEncode(setup));
