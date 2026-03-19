@@ -14,13 +14,37 @@ abstract final class CharacterAssets {
     'riku': '$_basePath/riku-avatar.png',
   };
 
+  static const _koreanNameAliases = <String, String>{
+    '하루': 'haru',
+    '소라': 'sora',
+    '유키': 'yuki',
+    '카이토': 'kaito',
+    '미오': 'mio',
+    '렌': 'ren',
+    '아오이': 'aoi',
+    '리쿠': 'riku',
+  };
+
   /// Returns local asset path for a character name/id (case-insensitive).
   /// Returns null if no local asset exists.
   static String? pathFor(String? nameOrId) {
     if (nameOrId == null) return null;
-    final key = nameOrId.toLowerCase().trim();
+    final raw = nameOrId.trim();
+    if (raw.isEmpty) return null;
+    final key = raw.toLowerCase();
+
     // Try direct match first
     if (_assets.containsKey(key)) return _assets[key];
+
+    // Try Korean name -> romaji mapping.
+    final alias = _koreanNameAliases[raw] ?? _koreanNameAliases[key];
+    if (alias != null && _assets.containsKey(alias)) return _assets[alias];
+
+    // Try Korean name contained in a longer display name.
+    for (final entry in _koreanNameAliases.entries) {
+      if (raw.contains(entry.key)) return _assets[entry.value];
+    }
+
     // Try matching start of name (e.g. "하루" matches "haru")
     for (final entry in _assets.entries) {
       if (key.contains(entry.key)) return entry.value;

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
-import '../../../my/data/models/profile_detail_model.dart';
-import '../../../my/providers/my_provider.dart';
+import '../../../core/services/haptic_service.dart';
+import '../../my/data/models/profile_detail_model.dart';
+import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
 import '../providers/chat_provider.dart';
 import 'call_analyzing_page.dart';
@@ -404,27 +406,50 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                 Positioned(
                   left: 20,
                   right: 20,
-                  bottom: 160, // 컨트롤 버튼 위
+                  bottom: MediaQuery.paddingOf(context).bottom + 188,
                   child: IgnorePointer(
                     child: AnimatedOpacity(
                       opacity: _currentAiText.isNotEmpty ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 200),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          _currentAiText,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.white,
-                            height: 1.4,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 14),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.35),
+                                  Colors.black.withValues(alpha: 0.45),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.08),
+                              ),
+                            ),
+                            child: Text(
+                              _currentAiText,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: Colors.white,
+                                height: 1.4,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.28),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -458,16 +483,25 @@ class _ControlButton extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
+        Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
             width: size,
             height: size,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.onGradient, size: size * 0.4),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                HapticService().light();
+                onTap();
+              },
+              child: Icon(icon, color: AppColors.onGradient, size: size * 0.4),
+            ),
           ),
         ),
         const SizedBox(height: 8),
