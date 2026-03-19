@@ -143,8 +143,7 @@ class _HomePageState extends ConsumerState<HomePage>
             padding: const EdgeInsets.only(top: 12, bottom: 32),
             children: [
               // 1. Header
-              _staggered(
-                  0, HomeHeader(nickname: profile?.nickname ?? '학습자')),
+              _staggered(0, HomeHeader(nickname: profile?.nickname ?? '학습자')),
               const SizedBox(height: AppSizes.md),
 
               // 2. AI Phone Call CTA (주석 처리 — 추후 다시 활성화 가능)

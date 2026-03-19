@@ -24,7 +24,6 @@ const _tabBgColors = [
   Color(0xFFB2DFDB), // 문장: pastel mint
 ];
 
-
 const _categories = [
   _CategoryInfo(
     icon: LucideIcons.bookOpen,
@@ -235,12 +234,14 @@ class GooeyTabRailPainter extends CustomPainter {
       final top = i * tabHeight;
       final bottom = top + tabHeight;
       final rrect = RRect.fromLTRBAndCorners(
-        baseX, top - 4, w, bottom + 4,
+        baseX,
+        top - 4,
+        w,
+        bottom + 4,
         topRight: Radius.circular(_tabR),
         bottomRight: Radius.circular(_tabR),
       );
-      canvas.drawRRect(
-          rrect, Paint()..color = tabColors[i % tabColors.length]);
+      canvas.drawRRect(rrect, Paint()..color = tabColors[i % tabColors.length]);
     }
 
     // ── Step 2: Draw white card + active tab (Gemini bezier formula) ──
@@ -312,8 +313,7 @@ class GooeyTabRailPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(GooeyTabRailPainter old) =>
-      old.animatedIndex != animatedIndex ||
-      old.cardColor != cardColor;
+      old.animatedIndex != animatedIndex || old.cardColor != cardColor;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -345,8 +345,8 @@ class _MainContent extends ConsumerWidget {
 
     // Pre-fetch smart preview for vocabulary tab
     if (cat.quizType == 'vocabulary') {
-      ref.watch(smartPreviewProvider(
-          (category: 'VOCABULARY', jlptLevel: jlptLevel)));
+      ref.watch(
+          smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)));
     }
 
     return Column(
@@ -394,9 +394,7 @@ class _MainContent extends ConsumerWidget {
                     size: 14, color: theme.colorScheme.primary),
                 const SizedBox(width: 4),
                 Text(
-                  hasProgress
-                      ? '복습 정답률 ${_getAccuracy(today)}%'
-                      : '복습 정답률 -%',
+                  hasProgress ? '복습 정답률 ${_getAccuracy(today)}%' : '복습 정답률 -%',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w500,
@@ -558,8 +556,7 @@ class _MainContent extends ConsumerWidget {
 
   void _showTodayStudySheet(BuildContext context, WidgetRef ref) {
     final previewAsync = ref.read(
-      smartPreviewProvider(
-          (category: 'VOCABULARY', jlptLevel: jlptLevel)),
+      smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)),
     );
 
     if (!previewAsync.hasValue || previewAsync.value == null) {
@@ -662,7 +659,8 @@ class _DailyGoalSheetContentState
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
@@ -691,7 +689,8 @@ class _DailyGoalSheetContentState
                     )),
                 trailing: _isLoading
                     ? const SizedBox(
-                        width: 20, height: 20,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : isActive
                         ? Icon(LucideIcons.check,

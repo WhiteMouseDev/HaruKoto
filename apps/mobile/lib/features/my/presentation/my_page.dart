@@ -38,8 +38,7 @@ class _MyPageState extends ConsumerState<MyPage> {
         error: (error, _) => _buildError(context),
         data: (data) {
           // Sync furigana setting from server (only if changed)
-          final currentFurigana =
-              ref.read(quizSettingsProvider).showFurigana;
+          final currentFurigana = ref.read(quizSettingsProvider).showFurigana;
           if (currentFurigana != data.profile.showFurigana) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -300,10 +299,9 @@ class _MyPageState extends ConsumerState<MyPage> {
                 const SizedBox(height: 20),
                 Text(
                   '닉네임 변경',
-                  style:
-                      Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                  style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -356,7 +354,9 @@ class _MyPageState extends ConsumerState<MyPage> {
     ).then((nickname) async {
       controller.dispose();
       if (nickname == null || nickname.isEmpty || !mounted) return;
-      await ref.read(myRepositoryProvider).updateProfile({'nickname': nickname});
+      await ref
+          .read(myRepositoryProvider)
+          .updateProfile({'nickname': nickname});
       // Defer invalidation to next frame so widget tree is fully settled
       if (mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {

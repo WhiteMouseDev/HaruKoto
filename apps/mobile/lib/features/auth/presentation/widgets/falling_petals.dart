@@ -31,7 +31,8 @@ class _FallingPetalsState extends State<FallingPetals>
     // Ticker runs indefinitely; each petal tracks its own time
     _controller = AnimationController.unbounded(vsync: this);
 
-    _petals = List.generate(widget.petalCount, (_) => _spawnPetal(initial: true));
+    _petals =
+        List.generate(widget.petalCount, (_) => _spawnPetal(initial: true));
 
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
@@ -175,16 +176,16 @@ class _PetalPainter extends CustomPainter {
       // Time-based sway (continuous, not 0-1 bounded)
       final t = age;
 
-      final swayX =
-          math.sin(t * math.pi * 2 * petal.swayFreqX / petal.lifespan +
+      final swayX = math.sin(
+              t * math.pi * 2 * petal.swayFreqX / petal.lifespan +
                   petal.phase) *
-              petal.swayAmountX *
-              size.width;
-      final swayY =
-          math.cos(t * math.pi * 2 * petal.swayFreqY / petal.lifespan +
+          petal.swayAmountX *
+          size.width;
+      final swayY = math.cos(
+              t * math.pi * 2 * petal.swayFreqY / petal.lifespan +
                   petal.phase * 1.3) *
-              petal.swayAmountY *
-              size.height;
+          petal.swayAmountY *
+          size.height;
 
       final px = petal.x * size.width + swayX;
       final py = petal.y * size.height + swayY;
@@ -222,5 +223,6 @@ class _PetalPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_PetalPainter old) => true; // Ticker-driven, always repaint
+  bool shouldRepaint(_PetalPainter old) =>
+      true; // Ticker-driven, always repaint
 }

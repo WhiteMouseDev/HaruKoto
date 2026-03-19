@@ -56,8 +56,7 @@ class _WeeklyChartState extends State<WeeklyChart>
 
     final totalWords =
         widget.weeklyStats.fold<int>(0, (a, e) => a + e.wordsStudied);
-    final totalXp =
-        widget.weeklyStats.fold<int>(0, (a, e) => a + e.xpEarned);
+    final totalXp = widget.weeklyStats.fold<int>(0, (a, e) => a + e.xpEarned);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -65,7 +64,8 @@ class _WeeklyChartState extends State<WeeklyChart>
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+          border: Border.all(
+              color: theme.colorScheme.outline.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -143,8 +143,7 @@ class _WeeklyChartState extends State<WeeklyChart>
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: List.generate(barCount, (i) {
-                              final value =
-                                  widget.weeklyStats[i].wordsStudied;
+                              final value = widget.weeklyStats[i].wordsStudied;
                               final metGoal =
                                   value >= widget.dailyGoal && value > 0;
 
@@ -190,8 +189,7 @@ class _WeeklyChartState extends State<WeeklyChart>
                                                   ? theme.colorScheme.primary
                                                   : theme.colorScheme.primary
                                                       .withValues(alpha: 0.5),
-                                          borderRadius:
-                                              const BorderRadius.only(
+                                          borderRadius: const BorderRadius.only(
                                             topLeft: Radius.circular(6),
                                             topRight: Radius.circular(6),
                                           ),
@@ -272,7 +270,8 @@ class _WeeklyChartState extends State<WeeklyChart>
                   context.push('/stats');
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Text(
                     '학습 통계 자세히 보기 →',
                     style: TextStyle(

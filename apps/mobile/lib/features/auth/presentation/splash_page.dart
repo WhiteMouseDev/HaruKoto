@@ -97,99 +97,102 @@ class _SplashPageState extends State<SplashPage>
           children: [
             // Falling cherry blossom petals
             const Positioned.fill(
-              child: FallingPetals(petalCount: 22, duration: Duration(milliseconds: 5000)),
+              child: FallingPetals(
+                  petalCount: 22, duration: Duration(milliseconds: 5000)),
             ),
             SafeArea(
               child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Phase 1: App icon
-                FadeTransition(
-                  opacity: _iconFade,
-                  child: ScaleTransition(
-                    scale: _iconScale,
-                    child: Container(
-                      width: iconSize,
-                      height: iconSize,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(iconRadius),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.brandPink.withValues(alpha: 0.3),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Phase 1: App icon
+                    FadeTransition(
+                      opacity: _iconFade,
+                      child: ScaleTransition(
+                        scale: _iconScale,
+                        child: Container(
+                          width: iconSize,
+                          height: iconSize,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(iconRadius),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    AppColors.brandPink.withValues(alpha: 0.3),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(iconRadius),
-                        child: Image.asset('assets/icon.png'),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 36),
-
-                // Phase 2: Logo wordmark (with subtle glow)
-                FadeTransition(
-                  opacity: _logoFade,
-                  child: SlideTransition(
-                    position: _logoSlide,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.brandPink.withValues(alpha: 0.15),
-                            blurRadius: 20,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(iconRadius),
+                            child: Image.asset('assets/icon.png'),
                           ),
-                        ],
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/logo-wordmark.svg',
-                        width: wordmarkWidth,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.brandPink,
-                          BlendMode.srcIn,
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 22),
+                    const SizedBox(height: 36),
 
-                // Phase 3: Tagline — per-character bloom → single Text
-                AnimatedBuilder(
-                  animation: _taglineProgress,
-                  builder: (context, _) {
-                    final progress = _taglineProgress.value;
-                    // Once animation completes, render as single Text
-                    // to avoid kerning mismatch from per-character Row
-                    if (progress >= 1.0) {
-                      return const Text(
-                        _tagline,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: _taglineColor,
-                          fontWeight: FontWeight.w400,
+                    // Phase 2: Logo wordmark (with subtle glow)
+                    FadeTransition(
+                      opacity: _logoFade,
+                      child: SlideTransition(
+                        position: _logoSlide,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    AppColors.brandPink.withValues(alpha: 0.15),
+                                blurRadius: 20,
+                              ),
+                            ],
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/logo-wordmark.svg',
+                            width: wordmarkWidth,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.brandPink,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                         ),
-                      );
-                    }
-                    return _BloomText(
-                      text: _tagline,
-                      progress: progress,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: _taglineColor,
-                        fontWeight: FontWeight.w400,
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 22),
+
+                    // Phase 3: Tagline — per-character bloom → single Text
+                    AnimatedBuilder(
+                      animation: _taglineProgress,
+                      builder: (context, _) {
+                        final progress = _taglineProgress.value;
+                        // Once animation completes, render as single Text
+                        // to avoid kerning mismatch from per-character Row
+                        if (progress >= 1.0) {
+                          return const Text(
+                            _tagline,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: _taglineColor,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          );
+                        }
+                        return _BloomText(
+                          text: _tagline,
+                          progress: progress,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: _taglineColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
           ],
         ),
       ),

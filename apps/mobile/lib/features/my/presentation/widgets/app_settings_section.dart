@@ -77,6 +77,7 @@ class AppSettingsSection extends ConsumerWidget {
                 ),
                 value: ref.watch(quizSettingsProvider).showFurigana,
                 onChanged: (value) {
+                  HapticService().selection();
                   ref
                       .read(quizSettingsProvider.notifier)
                       .setShowFurigana(value);
@@ -106,9 +107,12 @@ class AppSettingsSection extends ConsumerWidget {
                           theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 value: ref.watch(notificationSettingsProvider).reminderEnabled,
-                onChanged: (value) => ref
-                    .read(notificationSettingsProvider.notifier)
-                    .setReminderEnabled(value),
+                onChanged: (value) {
+                  HapticService().selection();
+                  ref
+                      .read(notificationSettingsProvider.notifier)
+                      .setReminderEnabled(value);
+                },
               ),
               if (ref.watch(notificationSettingsProvider).reminderEnabled) ...[
                 const Divider(height: 1),
@@ -144,9 +148,12 @@ class AppSettingsSection extends ConsumerWidget {
                 value: ref
                     .watch(notificationSettingsProvider)
                     .streakDefenseEnabled,
-                onChanged: (value) => ref
-                    .read(notificationSettingsProvider.notifier)
-                    .setStreakDefenseEnabled(value),
+                onChanged: (value) {
+                  HapticService().selection();
+                  ref
+                      .read(notificationSettingsProvider.notifier)
+                      .setStreakDefenseEnabled(value);
+                },
               ),
             ],
           ),
@@ -253,6 +260,7 @@ class _SoundToggleState extends State<_SoundToggle> {
       ),
       value: _enabled,
       onChanged: (value) {
+        HapticService().selection();
         SoundService().setEnabled(value);
         setState(() => _enabled = value);
       },
@@ -285,6 +293,8 @@ class _HapticToggleState extends State<_HapticToggle> {
       ),
       value: _enabled,
       onChanged: (value) {
+        // Fire haptic BEFORE disabling (so user feels the last toggle)
+        HapticService().selection();
         HapticService().setEnabled(value);
         setState(() => _enabled = value);
       },

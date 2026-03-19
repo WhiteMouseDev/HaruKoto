@@ -40,7 +40,8 @@ class DailyMissionsCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+          border: Border.all(
+              color: theme.colorScheme.outline.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -184,7 +185,8 @@ class _MissionItem extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.zap, size: 14, color: theme.colorScheme.primary),
+                Icon(LucideIcons.zap,
+                    size: 14, color: theme.colorScheme.primary),
                 const SizedBox(width: 2),
                 Text(
                   '+${mission.xpReward}',

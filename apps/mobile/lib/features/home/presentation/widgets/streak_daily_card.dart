@@ -43,7 +43,8 @@ class StreakDailyCard extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-                border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+                border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.04),
@@ -64,7 +65,8 @@ class StreakDailyCard extends ConsumerWidget {
                       Icon(
                         LucideIcons.chevronRight,
                         size: 18,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.3),
                       ),
                     ],
                   ),

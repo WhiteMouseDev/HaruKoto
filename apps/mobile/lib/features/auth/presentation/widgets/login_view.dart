@@ -76,8 +76,7 @@ class _LoginViewState extends State<LoginView> {
             SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -89,8 +88,7 @@ class _LoginViewState extends State<LoginView> {
                           borderRadius: BorderRadius.circular(iconRadius),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  AppColors.brandPink.withValues(alpha: 0.3),
+                              color: AppColors.brandPink.withValues(alpha: 0.3),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -108,8 +106,8 @@ class _LoginViewState extends State<LoginView> {
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.brandPink
-                                  .withValues(alpha: 0.15),
+                              color:
+                                  AppColors.brandPink.withValues(alpha: 0.15),
                               blurRadius: 20,
                             ),
                           ],
@@ -167,9 +165,8 @@ class _LoginViewState extends State<LoginView> {
 
                             // Apple Sign-In (top, black — Apple HIG)
                             SocialButton(
-                              onPressed: widget.loading
-                                  ? null
-                                  : widget.onAppleSignIn,
+                              onPressed:
+                                  widget.loading ? null : widget.onAppleSignIn,
                               icon: const Icon(
                                 Icons.apple,
                                 size: 22,
@@ -183,9 +180,8 @@ class _LoginViewState extends State<LoginView> {
 
                             // Google
                             SocialButton(
-                              onPressed: widget.loading
-                                  ? null
-                                  : widget.onGoogleSignIn,
+                              onPressed:
+                                  widget.loading ? null : widget.onGoogleSignIn,
                               icon: googleIcon(),
                               label: 'Google로 계속하기',
                             ),
@@ -193,9 +189,8 @@ class _LoginViewState extends State<LoginView> {
 
                             // Kakao
                             SocialButton(
-                              onPressed: widget.loading
-                                  ? null
-                                  : widget.onKakaoSignIn,
+                              onPressed:
+                                  widget.loading ? null : widget.onKakaoSignIn,
                               icon: kakaoIcon(),
                               label: 'Kakao로 계속하기',
                               backgroundColor: AppColors.kakaoBg,
@@ -241,8 +236,8 @@ class _LoginViewState extends State<LoginView> {
                                 child: OutlinedButton.icon(
                                   onPressed: widget.loading
                                       ? null
-                                      : () => setState(
-                                          () => _showEmailForm = true),
+                                      : () =>
+                                          setState(() => _showEmailForm = true),
                                   icon: Icon(
                                     Icons.email_outlined,
                                     size: 18,
@@ -260,8 +255,7 @@ class _LoginViewState extends State<LoginView> {
                                       color: AppColors.overlay(0.15),
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
                                 ),
@@ -284,23 +278,20 @@ class _LoginViewState extends State<LoginView> {
                               TextField(
                                 controller: widget.passwordController,
                                 obscureText: true,
-                                decoration:
-                                    loginInputDecoration('6자 이상 입력'),
+                                decoration: loginInputDecoration('6자 이상 입력'),
                               ),
 
                               // Confirm password (sign-up only)
                               if (widget.isSignUp &&
-                                  widget.confirmPasswordController !=
-                                      null) ...[
+                                  widget.confirmPasswordController != null) ...[
                                 const SizedBox(height: 12),
                                 const FieldLabel(text: '비밀번호 확인'),
                                 const SizedBox(height: 6),
                                 TextField(
-                                  controller:
-                                      widget.confirmPasswordController,
+                                  controller: widget.confirmPasswordController,
                                   obscureText: true,
-                                  decoration: loginInputDecoration(
-                                      '비밀번호를 다시 입력하세요'),
+                                  decoration:
+                                      loginInputDecoration('비밀번호를 다시 입력하세요'),
                                 ),
                               ],
 
@@ -352,8 +343,7 @@ class _LoginViewState extends State<LoginView> {
                                         )
                                       : Text(
                                           widget.isSignUp ? '회원가입' : '로그인',
-                                          style:
-                                              const TextStyle(fontSize: 16),
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                 ),
                               ),
@@ -371,8 +361,7 @@ class _LoginViewState extends State<LoginView> {
                                     ),
                                   ),
                                 ),
-                              if (!widget.isSignUp)
-                                const SizedBox(height: 12),
+                              if (!widget.isSignUp) const SizedBox(height: 12),
                             ],
 
                             // Toggle sign-up / login

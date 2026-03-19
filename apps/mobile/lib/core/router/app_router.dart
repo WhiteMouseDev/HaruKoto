@@ -382,9 +382,7 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
     // Check onboarding status
     try {
-      final profile = await ref
-          .read(homeRepositoryProvider)
-          .fetchProfile();
+      final profile = await ref.read(homeRepositoryProvider).fetchProfile();
       if (!mounted) return;
       if (!profile.onboardingCompleted) {
         context.go('/onboarding');
