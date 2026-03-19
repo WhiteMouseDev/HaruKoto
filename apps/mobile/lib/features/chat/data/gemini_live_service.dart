@@ -40,9 +40,12 @@ class GeminiLiveService {
   OnError? onError;
 
   WebSocketChannel? _channel;
+  int _channelGeneration = 0; // 채널 세대 추적 (이전 소켓 콜백 구분)
   final AudioRecorder _recorder = AudioRecorder();
   StreamSubscription<Uint8List>? _recorderSub;
   bool _disposed = false;
+  bool _ended = false; // end()가 호출되었는지 추적
+  bool _reconnecting = false; // 재연결 중복 방지
   bool isMuted = false;
 
   // Transcript accumulation
@@ -74,6 +77,15 @@ class GeminiLiveService {
 
   /// Start the voice call: connect WebSocket, send setup, start mic.
   Future<void> start() async {
+    // model 유효성 검증
+    if (model.isEmpty) {
+      onError?.call('음성 모델이 설정되지 않았습니다');
+      _setState(GeminiLiveState.error);
+      return;
+    }
+
+    _ended = false;
+    _reconnecting = false;
     _setState(GeminiLiveState.connecting);
     try {
       await _connect();
@@ -86,6 +98,7 @@ class GeminiLiveService {
 
   /// End the voice call gracefully.
   Future<void> end() async {
+    _ended = true; // 재연결 방지 플래그
     _setState(GeminiLiveState.ending);
     _flushTranscripts();
     await _stopRecording();
@@ -97,6 +110,7 @@ class GeminiLiveService {
   /// Dispose all resources.
   Future<void> dispose() async {
     _disposed = true;
+    _ended = true;
     await _stopRecording();
     unawaited(_channel?.sink.close());
     _channel = null;
@@ -107,7 +121,16 @@ class GeminiLiveService {
   // ──────── Connection ────────
 
   Future<void> _connect({String? handle}) async {
-    final uri = Uri.parse('$wsUri?access_token=$token');
+    // URI를 안전하게 조합 (기존 query parameter 보존)
+    final baseUri = Uri.parse(wsUri);
+    final uri = baseUri.replace(queryParameters: {
+      ...baseUri.queryParameters,
+      'access_token': token,
+    });
+
+    _channelGeneration++;
+    final gen = _channelGeneration;
+
     _channel = WebSocketChannel.connect(uri);
     await _channel!.ready;
 
@@ -115,11 +138,16 @@ class GeminiLiveService {
       _onMessage,
       onError: (e) {
         debugPrint('[GeminiLive] WebSocket error: $e');
-        _attemptReconnect();
+        // 현재 세대의 채널에서만 재연결
+        if (gen == _channelGeneration) _attemptReconnect();
       },
       onDone: () {
         debugPrint('[GeminiLive] WebSocket closed');
-        if (!_disposed) _attemptReconnect();
+        // 현재 세대의 채널만 null 처리 (새 소켓이 있으면 건드리지 않음)
+        if (gen == _channelGeneration) {
+          _channel = null;
+          if (!_disposed && !_ended) _attemptReconnect();
+        }
       },
     );
 
@@ -157,18 +185,27 @@ class GeminiLiveService {
         if (handle != null) 'sessionResumption': {'handle': handle},
       },
     };
-    _channel?.sink.add(jsonEncode(setup));
+    _safeSend(jsonEncode(setup));
   }
 
   // ──────── Message handling ────────
 
   void _onMessage(dynamic raw) {
-    if (_disposed) return;
-    final msg = jsonDecode(raw as String) as Map<String, dynamic>;
+    if (_disposed || _ended) return;
+
+    // 메시지 파싱을 try-catch로 보호
+    final Map<String, dynamic> msg;
+    try {
+      msg = jsonDecode(raw as String) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('[GeminiLive] Failed to parse message: $e');
+      return;
+    }
 
     // Setup complete → start mic + send greeting
     if (msg.containsKey('setupComplete')) {
       _reconnectAttempts = 0;
+      _reconnecting = false; // 연결 완료 시점에 해제
       _setState(GeminiLiveState.connected);
       _sendGreeting();
       _startRecording();
@@ -177,8 +214,8 @@ class GeminiLiveService {
 
     // Session resumption handle
     if (msg.containsKey('sessionResumptionUpdate')) {
-      final update = msg['sessionResumptionUpdate'] as Map<String, dynamic>;
-      _resumptionHandle = update['newHandle'] as String?;
+      final update = msg['sessionResumptionUpdate'] as Map<String, dynamic>?;
+      _resumptionHandle = update?['newHandle'] as String?;
       return;
     }
 
@@ -219,8 +256,8 @@ class GeminiLiveService {
 
       final parts = modelTurn['parts'] as List<dynamic>? ?? [];
       for (final part in parts) {
-        final partMap = part as Map<String, dynamic>;
-        final inlineData = partMap['inlineData'] as Map<String, dynamic>?;
+        if (part is! Map<String, dynamic>) continue;
+        final inlineData = part['inlineData'] as Map<String, dynamic>?;
         if (inlineData != null) {
           final b64 = inlineData['data'] as String?;
           if (b64 != null && b64.isNotEmpty) {
@@ -261,13 +298,17 @@ class GeminiLiveService {
         'turnComplete': true,
       },
     };
-    _channel?.sink.add(jsonEncode(msg));
+    _safeSend(jsonEncode(msg));
   }
 
   // ──────── Recording ────────
 
   Future<void> _startRecording() async {
-    if (_disposed) return;
+    if (_disposed || _ended) return;
+
+    // 기존 녹음이 진행 중이면 먼저 정리
+    await _stopRecording();
+
     if (!await _recorder.hasPermission()) {
       onError?.call('마이크 권한이 필요합니다');
       return;
@@ -301,7 +342,7 @@ class GeminiLiveService {
           ],
         },
       };
-      _channel?.sink.add(jsonEncode(msg));
+      _safeSend(jsonEncode(msg));
     });
   }
 
@@ -364,23 +405,46 @@ class GeminiLiveService {
   // ──────── Reconnection ────────
 
   void _attemptReconnect() {
-    if (_disposed) return;
+    if (_disposed || _ended || _reconnecting) return;
     if (_reconnectAttempts >= _maxReconnectAttempts) {
       onError?.call('연결이 끊어졌습니다');
       _setState(GeminiLiveState.error);
       return;
     }
 
+    _reconnecting = true;
     _reconnectAttempts++;
     final delay =
         Duration(milliseconds: 1000 * (1 << (_reconnectAttempts - 1)));
     debugPrint(
         '[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $_reconnectAttempts)');
 
-    Future<void>.delayed(delay, () {
-      if (_disposed) return;
-      _connect(handle: _resumptionHandle);
+    Future<void>.delayed(delay, () async {
+      if (_disposed || _ended) {
+        _reconnecting = false;
+        return;
+      }
+      try {
+        await _connect(handle: _resumptionHandle);
+        // _reconnecting은 setupComplete 이벤트에서 해제됨
+      } catch (e) {
+        debugPrint('[GeminiLive] Reconnect failed: $e');
+        _reconnecting = false;
+        // 연결 실패 시 다음 재시도
+        if (!_disposed && !_ended) _attemptReconnect();
+      }
     });
+  }
+
+  // ──────── Safe send ────────
+
+  /// WebSocket sink에 안전하게 전송 (sink 닫힌 상태 보호)
+  void _safeSend(String data) {
+    try {
+      _channel?.sink.add(data);
+    } catch (e) {
+      debugPrint('[GeminiLive] sink.add failed: $e');
+    }
   }
 
   // ──────── State ────────
