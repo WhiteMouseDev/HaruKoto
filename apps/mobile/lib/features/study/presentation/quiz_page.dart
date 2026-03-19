@@ -76,6 +76,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     try {
       if (widget.resumeSessionId != null) {
         final data = await repo.resumeQuiz(widget.resumeSessionId!);
+        if (!mounted) return;
         setState(() {
           _sessionId = data.sessionId;
           _questions = data.questions;
@@ -98,6 +99,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           jlptLevel: widget.jlptLevel,
           count: widget.count,
         );
+        if (!mounted) return;
         setState(() {
           _sessionId = data.sessionId;
           _questions = data.questions;
@@ -110,6 +112,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           mode: widget.mode,
           stageId: widget.stageId,
         );
+        if (!mounted) return;
         setState(() {
           _sessionId = data.sessionId;
           _questions = data.questions;
@@ -118,8 +121,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     } catch (e) {
       debugPrint('Failed to init quiz: $e');
     } finally {
-      setState(() => _loading = false);
-      _startTimer();
+      if (mounted) {
+        setState(() => _loading = false);
+        _startTimer();
+      }
     }
   }
 

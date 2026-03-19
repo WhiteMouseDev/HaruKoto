@@ -47,6 +47,7 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         page: _page,
         sort: _sort,
       );
+      if (!mounted) return;
       setState(() {
         _entries = data.entries;
         _summary = data.summary;
@@ -99,7 +100,8 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal, AppSizes.md, AppSizes.pageHorizontal, 0),
+              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal,
+                  AppSizes.md, AppSizes.pageHorizontal, 0),
               child: Row(
                 children: [
                   GestureDetector(
@@ -184,7 +186,8 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
                           color: isActive
                               ? theme.colorScheme.primary
                               : theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.chipRadius),
                         ),
                         child: Text(
                           opt.$2,

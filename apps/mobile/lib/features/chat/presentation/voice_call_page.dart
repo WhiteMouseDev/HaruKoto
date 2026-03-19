@@ -319,7 +319,10 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                       _ControlButton(
                         icon: _isMuted ? LucideIcons.micOff : LucideIcons.mic,
                         label: _isMuted ? '음소거 해제' : '음소거',
-                        onTap: () => setState(() => _isMuted = !_isMuted),
+                        onTap: () {
+                          setState(() => _isMuted = !_isMuted);
+                          _service?.isMuted = _isMuted;
+                        },
                         color: AppColors.onGradient.withValues(alpha: 0.24),
                       ),
 

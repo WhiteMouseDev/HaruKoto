@@ -351,6 +351,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
         final res = await ref
             .read(kanaRepositoryProvider)
             .completeQuiz(sessionId: _quizSessionId!);
+        if (!mounted) return;
         setState(() => _xpEarned = res.xpEarned);
       } catch (e) {
         debugPrint('[KanaStagePage] Failed to complete quiz: $e');

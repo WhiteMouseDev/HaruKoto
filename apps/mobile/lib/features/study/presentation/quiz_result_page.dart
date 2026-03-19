@@ -62,12 +62,14 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     final repo = ref.read(studyRepositoryProvider);
     try {
       final answers = await repo.fetchWrongAnswersBySession(widget.sessionId);
+      if (!mounted) return;
       setState(() {
         _wrongAnswers = answers;
         _loadingWrong = false;
       });
     } catch (e, stackTrace) {
       unawaited(Sentry.captureException(e, stackTrace: stackTrace));
+      if (!mounted) return;
       setState(() => _loadingWrong = false);
     }
   }

@@ -125,7 +125,8 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal, AppSizes.md, AppSizes.pageHorizontal, 0),
+              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal,
+                  AppSizes.md, AppSizes.pageHorizontal, 0),
               child: Row(
                 children: [
                   GestureDetector(
@@ -203,7 +204,8 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
                                 ? theme.colorScheme.primary
                                 : theme.colorScheme.outline,
                           ),
-                          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.chipRadius),
                         ),
                         child: Text(
                           f.$2,

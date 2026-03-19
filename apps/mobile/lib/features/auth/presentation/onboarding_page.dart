@@ -53,10 +53,12 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         }
       }
     } on DioException catch (e) {
+      if (!mounted) return;
       final data = e.response?.data;
       final msg = data is Map ? data['error'] as String? : null;
       setState(() => _error = msg ?? '오류가 발생했습니다');
     } catch (_) {
+      if (!mounted) return;
       setState(() => _error = '오류가 발생했습니다');
     } finally {
       if (mounted) setState(() => _loading = false);

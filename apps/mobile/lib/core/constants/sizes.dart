@@ -40,8 +40,7 @@ abstract final class AppSizes {
   // ─── Chip ──────────────────────────────────────────────────
   static const double chipRadius = 20;
   static const double chipHeight = 32;
-  static const chipPadding =
-      EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+  static const chipPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 6);
 
   // ─── Bottom sheet ──────────────────────────────────────────
   static const double sheetRadius = 20;

@@ -125,7 +125,8 @@ class SmartLearningCard extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.warning(theme.brightness).withValues(alpha: 0.15),
+                  color: AppColors.warning(theme.brightness)
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: Row(

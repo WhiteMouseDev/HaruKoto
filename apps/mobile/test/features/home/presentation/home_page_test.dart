@@ -111,8 +111,19 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      // Should show the nickname from profile (rendered as '안녕, TestUser!')
-      expect(find.text('안녕, TestUser!'), findsOneWidget);
+      // Should show a time-based greeting with the nickname
+      final hour = DateTime.now().hour;
+      final String expectedGreeting;
+      if (hour >= 5 && hour < 12) {
+        expectedGreeting = '오늘도 화이팅, TestUser!';
+      } else if (hour >= 12 && hour < 18) {
+        expectedGreeting = '점심은 먹었어, TestUser?';
+      } else if (hour >= 18) {
+        expectedGreeting = '오늘 하루 수고했어, TestUser!';
+      } else {
+        expectedGreeting = '야행성이구나, TestUser!';
+      }
+      expect(find.text(expectedGreeting), findsOneWidget);
       // Should NOT show error
       expect(find.text('데이터를 불러올 수 없습니다'), findsNothing);
     });

@@ -230,7 +230,8 @@ class _StageCard extends ConsumerWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: AppColors.success(theme.brightness).withValues(alpha: 0.1),
+                    color: AppColors.success(theme.brightness)
+                        .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -497,9 +498,11 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                               ? theme.colorScheme.primary
                                   .withValues(alpha: 0.08)
                               : theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radiusMd),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radiusMd),
                             onTap: () =>
                                 setState(() => _selectedMode = mode.id),
                             child: Container(
@@ -511,7 +514,8 @@ class _ModeSelectionSheetState extends State<_ModeSelectionSheet> {
                                       : theme.colorScheme.outline,
                                   width: isSelected ? 2 : 1,
                                 ),
-                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                borderRadius:
+                                    BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               child: Row(
                                 children: [
