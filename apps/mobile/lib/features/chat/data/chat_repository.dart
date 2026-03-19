@@ -80,8 +80,10 @@ class ChatRepository {
   }
 
   Future<CharacterDetail> fetchCharacterDetail(String characterId) async {
-    final response =
-        await _dio.get<Map<String, dynamic>>('/chat/characters/$characterId');
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/chat/characters',
+      queryParameters: {'id': characterId},
+    );
     return CharacterDetail.fromJson(
       response.data!['character'] as Map<String, dynamic>? ?? {},
     );

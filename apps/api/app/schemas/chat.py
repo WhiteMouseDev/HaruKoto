@@ -94,5 +94,8 @@ class LiveTokenRequest(CamelModel):
 
 
 class LiveFeedbackRequest(CamelModel):
-    conversation_id: UUID
+    conversation_id: UUID | None = None
     duration_seconds: int
+    transcript: list[dict[str, str]] | None = None
+    scenario_id: str | None = None
+    character_id: str | None = None

@@ -371,20 +371,42 @@ async def submit_live_feedback(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Load existing conversation
-    result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
-    conversation = result.scalar_one_or_none()
-    if not conversation:
-        raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다")
+    now = get_now_kst()
+    conversation = None
 
-    # Generate feedback from transcript
-    transcript = conversation.messages or []
-    feedback = await generate_live_feedback(
-        [{"role": m.get("role", "user"), "text": m.get("content", "")} for m in transcript if m.get("role") != "system"]
-    )
+    # Load existing conversation if provided
+    if body.conversation_id:
+        result = await db.execute(
+            select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id)
+        )
+        conversation = result.scalar_one_or_none()
+
+    # Get transcript: from conversation messages or request body
+    if conversation and conversation.messages:
+        transcript = [
+            {"role": m.get("role", "user"), "text": m.get("content", "")}
+            for m in conversation.messages
+            if m.get("role") != "system"
+        ]
+    elif body.transcript:
+        transcript = body.transcript
+    else:
+        transcript = []
+
+    # Generate feedback
+    feedback = await generate_live_feedback(transcript) if transcript else None
+
+    # Create conversation record if it doesn't exist (voice call without pre-existing conversation)
+    if not conversation:
+        conversation = Conversation(
+            user_id=user.id,
+            conversation_type=ConversationType.VOICE,
+            messages=[{"role": e.get("role", "user"), "content": e.get("text", "")} for e in transcript],
+        )
+        db.add(conversation)
+        await db.flush()
 
     # Update conversation
-    now = get_now_kst()
     conversation.ended_at = now
     conversation.feedback_summary = feedback
 
@@ -446,7 +468,6 @@ async def submit_live_feedback(
     await db.commit()
 
     return {
-        "ok": True,
         "conversationId": str(conversation.id),
         "feedbackSummary": feedback,
         "xpEarned": xp,

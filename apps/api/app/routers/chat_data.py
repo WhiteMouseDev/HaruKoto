@@ -23,12 +23,15 @@ router = APIRouter(prefix="/api/v1/chat", tags=["chat-data"])
 
 @router.get("/scenarios", status_code=200)
 async def get_scenarios(
+    category: str | None = Query(default=None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(
-        select(ConversationScenario).where(ConversationScenario.is_active.is_(True)).order_by(ConversationScenario.order)
-    )
+    query = select(ConversationScenario).where(ConversationScenario.is_active.is_(True))
+    if category:
+        query = query.where(ConversationScenario.category == category)
+    query = query.order_by(ConversationScenario.order)
+    result = await db.execute(query)
     scenarios = result.scalars().all()
     return [
         {
