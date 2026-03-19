@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/dio_provider.dart';
+import '../../../core/services/local_notification_service.dart';
 import '../providers/onboarding_provider.dart';
 import 'widgets/nickname_step.dart';
 import 'widgets/level_step.dart';
@@ -44,6 +45,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           'showKana': state.showKana,
         },
       );
+
+      // 온보딩 완료 후 알림 권한 요청 (맥락이 있는 시점)
+      await LocalNotificationService.requestPermission();
 
       if (mounted) {
         if (state.showKana) {

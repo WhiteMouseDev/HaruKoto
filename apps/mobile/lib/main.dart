@@ -29,7 +29,7 @@ void main() async {
   );
 
   await LocalNotificationService.initialize();
-  await LocalNotificationService.requestPermission();
+  // 알림 권한은 앱 시작 시 요청하지 않음 — 온보딩 완료 후 요청
   await SoundService().init();
   await HapticService().init();
 
