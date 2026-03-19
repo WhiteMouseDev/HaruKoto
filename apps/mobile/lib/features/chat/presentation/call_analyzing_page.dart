@@ -165,9 +165,8 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       width: 40,
       height: 2,
       margin: const EdgeInsets.only(bottom: 20),
-      color: active
-          ? AppColors.callAccent
-          : Colors.white.withValues(alpha: 0.15),
+      color:
+          active ? AppColors.callAccent : Colors.white.withValues(alpha: 0.15),
     );
   }
 
@@ -183,7 +182,8 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     return const CircleAvatar(
       radius: 56,
       backgroundColor: AppColors.callSurface,
-      child: Icon(LucideIcons.barChart, size: 40, color: AppColors.callAccentLight),
+      child: Icon(LucideIcons.barChart,
+          size: 40, color: AppColors.callAccentLight),
     );
   }
 

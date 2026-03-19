@@ -101,10 +101,8 @@ class _HistoryItem extends StatelessWidget {
           width: 40,
           height: 40,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-              LucideIcons.phone,
-              size: 16,
-              color: AppColors.primary),
+          errorBuilder: (_, __, ___) =>
+              const Icon(LucideIcons.phone, size: 16, color: AppColors.primary),
         ),
       );
     }
