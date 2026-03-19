@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from app.models.enums import PaymentStatus, SubscriptionPlan
@@ -64,6 +65,33 @@ class ActivateRequest(CamelModel):
 
 class CancelRequest(CamelModel):
     reason: str | None = None
+
+
+class StoreVerifyRequest(CamelModel):
+    platform: Literal["ios", "android"]
+    plan: Literal["monthly", "yearly"]
+    product_id: str
+    transaction_id: str | None = None
+    original_transaction_id: str | None = None
+    purchase_token: str | None = None
+    signed_payload: str | None = None
+
+
+class StoreVerifyResponse(CamelModel):
+    ok: bool
+    status: str
+    grant_state: str
+    message: str
+
+
+class StoreNotificationRequest(CamelModel):
+    signed_payload: str
+
+
+class StoreNotificationAck(CamelModel):
+    ok: bool
+    accepted: bool
+    source: str
 
 
 class PaymentHistoryItem(CamelModel):

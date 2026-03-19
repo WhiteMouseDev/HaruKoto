@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.db.session import get_db
 from app.models import Payment
+from app.schemas.subscription import StoreNotificationAck, StoreNotificationRequest
 from app.services.subscription import activate_subscription
 from app.utils.helpers import enum_value
 
@@ -79,3 +80,21 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     await db.commit()
     logger.info("Webhook subscription activated", extra={"payment_id": payment_id, "user_id": str(payment.user_id)})
     return {"ok": True}
+
+
+@router.post("/apple/app-store-server", response_model=StoreNotificationAck, status_code=202)
+async def apple_app_store_server_notification(body: StoreNotificationRequest):
+    logger.info(
+        "Apple App Store Server notification received",
+        extra={"has_signed_payload": bool(body.signed_payload), "payload_size": len(body.signed_payload)},
+    )
+    return StoreNotificationAck(ok=True, accepted=True, source="apple")
+
+
+@router.post("/google/play", response_model=StoreNotificationAck, status_code=202)
+async def google_play_notification(body: StoreNotificationRequest):
+    logger.info(
+        "Google Play subscription notification received",
+        extra={"has_signed_payload": bool(body.signed_payload), "payload_size": len(body.signed_payload)},
+    )
+    return StoreNotificationAck(ok=True, accepted=True, source="google")

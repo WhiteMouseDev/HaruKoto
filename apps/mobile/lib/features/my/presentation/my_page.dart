@@ -73,6 +73,7 @@ class _MyPageState extends ConsumerState<MyPage> {
           // Subscription
           SubscriptionSection(
             onNavigateToPricing: () => context.push('/pricing'),
+            onNavigateToManage: () => context.push('/my/subscription'),
             onNavigateToPayments: () => context.push('/my/payments'),
           ),
           const SizedBox(height: AppSizes.md),

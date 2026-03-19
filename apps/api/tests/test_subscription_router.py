@@ -133,3 +133,24 @@ async def test_resume_subscription_no_cancelled(mock_resume, client, mock_user):
     response = await client.post("/api/v1/subscription/resume")
     assert response.status_code == 400
     assert response.json()["detail"] == "취소된 구독이 없거나 이미 만료되었습니다."
+
+
+@pytest.mark.asyncio
+async def test_store_verify_scaffolding(client, mock_user):
+    """Store verification endpoint is available and returns scaffolding response."""
+    response = await client.post(
+        "/api/v1/subscription/store/verify",
+        json={
+            "platform": "ios",
+            "plan": "monthly",
+            "productId": "dev.whitemouse.harukoto.premium.monthly",
+            "transactionId": "1000001234567890",
+            "originalTransactionId": "1000001234567890",
+            "signedPayload": "mock-jws-token",
+        },
+    )
+    assert response.status_code == 202
+    data = response.json()
+    assert data["ok"] is True
+    assert data["status"] == "PENDING"
+    assert data["grantState"] == "PENDING_VALIDATION"

@@ -186,3 +186,29 @@ async def test_payment_not_found_is_idempotent(mock_settings, client, mock_user,
     )
     assert response.status_code == 200
     assert response.json()["ok"] is True
+
+
+@pytest.mark.asyncio
+async def test_apple_store_notification_scaffolding(client):
+    response = await client.post(
+        "/api/v1/webhook/apple/app-store-server",
+        json={"signedPayload": "mock-apple-payload"},
+    )
+    assert response.status_code == 202
+    data = response.json()
+    assert data["ok"] is True
+    assert data["accepted"] is True
+    assert data["source"] == "apple"
+
+
+@pytest.mark.asyncio
+async def test_google_play_notification_scaffolding(client):
+    response = await client.post(
+        "/api/v1/webhook/google/play",
+        json={"signedPayload": "mock-google-payload"},
+    )
+    assert response.status_code == 202
+    data = response.json()
+    assert data["ok"] is True
+    assert data["accepted"] is True
+    assert data["source"] == "google"

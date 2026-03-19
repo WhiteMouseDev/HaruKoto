@@ -8,11 +8,13 @@ import '../../providers/my_provider.dart';
 
 class SubscriptionSection extends ConsumerWidget {
   final VoidCallback? onNavigateToPricing;
+  final VoidCallback? onNavigateToManage;
   final VoidCallback? onNavigateToPayments;
 
   const SubscriptionSection({
     super.key,
     this.onNavigateToPricing,
+    this.onNavigateToManage,
     this.onNavigateToPayments,
   });
 
@@ -109,6 +111,7 @@ class SubscriptionSection extends ConsumerWidget {
                     )
                   else
                     ListTile(
+                      onTap: onNavigateToPricing,
                       leading: Icon(
                         LucideIcons.crown,
                         size: 20,
@@ -137,54 +140,52 @@ class SubscriptionSection extends ConsumerWidget {
                                 color: AppColors.warning(theme.brightness),
                               ),
                             ),
+                          if (!sub.isCancelled)
+                            Text(
+                              '탭하여 플랜 변경',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
                         ],
+                      ),
+                      trailing: Icon(
+                        LucideIcons.chevronRight,
+                        size: 16,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
 
                   if (sub.isPremium) ...[
                     const Divider(height: 1),
-                    if (sub.isCancelled)
-                      ListTile(
-                        onTap: () async {
-                          await ref
-                              .read(myRepositoryProvider)
-                              .resumeSubscription();
-                          ref.invalidate(subscriptionStatusProvider);
-                        },
-                        title: Text(
-                          '구독 재개',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        trailing: Icon(
-                          LucideIcons.chevronRight,
-                          size: 16,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.4),
-                        ),
-                      )
-                    else
-                      ListTile(
-                        onTap: () => _showCancelDialog(context, ref),
-                        title: Text(
-                          '구독 취소',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.5),
-                          ),
-                        ),
-                        trailing: Icon(
-                          LucideIcons.chevronRight,
-                          size: 16,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.4),
-                        ),
+                    ListTile(
+                      onTap: onNavigateToManage,
+                      leading: Icon(
+                        LucideIcons.settings,
+                        size: 20,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
+                      title: const Text(
+                        '구독 관리',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        sub.isCancelled
+                            ? '구독 재개 또는 만료일 확인'
+                            : '플랜 변경, 취소/재개, 상태 확인',
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                      trailing: Icon(
+                        LucideIcons.chevronRight,
+                        size: 16,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                      ),
+                    ),
                   ],
 
                   const Divider(height: 1),
@@ -214,38 +215,6 @@ class SubscriptionSection extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  void _showCancelDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('구독을 취소하시겠습니까?'),
-          content: const Text(
-            '구독을 취소하면 현재 결제 기간이 끝날 때까지 프리미엄 기능을 계속 이용할 수 있습니다. '
-            '이후 무료 플랜으로 전환됩니다.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('유지하기'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                await ref.read(myRepositoryProvider).cancelSubscription();
-                ref.invalidate(subscriptionStatusProvider);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.error(Theme.of(context).brightness),
-              ),
-              child: const Text('구독 취소'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

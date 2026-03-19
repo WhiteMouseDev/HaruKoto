@@ -21,6 +21,8 @@ from app.schemas.subscription import (
     CancelRequest,
     CheckoutRequest,
     CheckoutResponse,
+    StoreVerifyRequest,
+    StoreVerifyResponse,
     SubscriptionInfo,
     SubscriptionStatusResponse,
 )
@@ -158,6 +160,36 @@ async def activate(
         "subscriptionId": str(subscription.id),
         "currentPeriodEnd": subscription.current_period_end.isoformat(),
     }
+
+
+@router.post("/store/verify", response_model=StoreVerifyResponse, status_code=202)
+async def verify_store_purchase(
+    body: StoreVerifyRequest,
+    user: Annotated[User, Depends(get_current_user)],
+):
+    logger.info(
+        "Store verification requested",
+        extra={
+            "user_id": str(user.id),
+            "platform": body.platform,
+            "plan": body.plan,
+            "product_id": body.product_id,
+            "transaction_id": body.transaction_id,
+            "original_transaction_id": body.original_transaction_id,
+            "has_purchase_token": bool(body.purchase_token),
+            "has_signed_payload": bool(body.signed_payload),
+        },
+    )
+
+    # Scaffolding only:
+    # - iOS: App Store Server API / signed transaction validation
+    # - Android: Google Play Developer API purchase token validation
+    return StoreVerifyResponse(
+        ok=True,
+        status="PENDING",
+        grant_state="PENDING_VALIDATION",
+        message="Store verification scaffolding is ready. External store validation is not wired yet.",
+    )
 
 
 @router.post("/cancel", status_code=200)

@@ -19,6 +19,7 @@ import '../../features/kana/presentation/kana_quiz_page.dart';
 import '../../features/kana/presentation/kana_chart_page.dart';
 import '../../features/my/presentation/my_page.dart';
 import '../../features/my/presentation/payments_page.dart';
+import '../../features/my/presentation/subscription_manage_page.dart';
 import '../../features/stats/presentation/stats_page.dart';
 import '../../features/practice/presentation/practice_page.dart';
 import '../../features/study/presentation/study_page.dart';
@@ -277,6 +278,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/my',
                 builder: (context, state) => const MyPage(),
                 routes: [
+                  GoRoute(
+                    path: 'subscription',
+                    pageBuilder: (context, state) => _slideTransitionPage(
+                      state: state,
+                      child: const SubscriptionManagePage(),
+                    ),
+                  ),
                   GoRoute(
                     path: 'payments',
                     pageBuilder: (context, state) => _slideTransitionPage(
