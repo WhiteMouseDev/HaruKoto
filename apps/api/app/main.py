@@ -46,6 +46,7 @@ from app.routers.cron import router as cron_router
 from app.routers.health import router as health_router
 from app.routers.kana import router as kana_router
 from app.routers.kana_tts import router as kana_tts_router
+from app.routers.lessons import router as lessons_router
 from app.routers.missions import router as missions_router
 from app.routers.notifications import router as notifications_router
 from app.routers.payments import router as payments_router
@@ -79,3 +80,4 @@ app.include_router(push_router)
 app.include_router(notifications_router)
 app.include_router(tts_router)
 app.include_router(study_router)
+app.include_router(lessons_router)

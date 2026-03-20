@@ -1,0 +1,362 @@
+"""Lesson API endpoints.
+
+GET  /api/v1/lessons/chapters          — 챕터 목록 + 유저 진도
+GET  /api/v1/lessons/{lesson_id}       — 레슨 상세 (대화문 + 문제, 정답 제거)
+POST /api/v1/lessons/{lesson_id}/start — 레슨 시작
+POST /api/v1/lessons/{lesson_id}/submit — 퀴즈 결과 제출
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.db.session import get_db
+from app.dependencies import get_current_user
+from app.models.content import Grammar, Vocabulary
+from app.models.lesson import Chapter, Lesson, UserLessonProgress
+from app.models.user import User
+from app.schemas.lesson import (
+    AnswerSubmission,
+    ChapterListResponse,
+    ChapterResponse,
+    GrammarItem,
+    LessonContent,
+    LessonDetailResponse,
+    LessonProgressResponse,
+    LessonSubmitRequest,
+    LessonSubmitResponse,
+    LessonSummary,
+    QuestionResult,
+    VocabItem,
+)
+
+router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
+
+
+# ── GET /chapters ──
+
+
+@router.get("/chapters", response_model=ChapterListResponse, status_code=200)
+async def get_chapters(
+    jlpt_level: str = Query(default="N5"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """챕터 목록 + 각 레슨의 유저 진도를 반환한다."""
+    result = await db.execute(
+        select(Chapter)
+        .where(Chapter.jlpt_level == jlpt_level, Chapter.is_published.is_(True))
+        .options(selectinload(Chapter.lessons))
+        .order_by(Chapter.part_no, Chapter.chapter_no)
+    )
+    chapters = result.scalars().unique().all()
+
+    # Fetch user progress for all lessons at once
+    lesson_ids = [ls.id for ch in chapters for ls in ch.lessons]
+    progress_map: dict[UUID, UserLessonProgress] = {}
+    if lesson_ids:
+        prog_result = await db.execute(
+            select(UserLessonProgress).where(
+                UserLessonProgress.user_id == user.id,
+                UserLessonProgress.lesson_id.in_(lesson_ids),
+            )
+        )
+        for p in prog_result.scalars().all():
+            progress_map[p.lesson_id] = p
+
+    chapter_responses = []
+    for ch in chapters:
+        published_lessons = sorted(
+            [ls for ls in ch.lessons if ls.is_published],
+            key=lambda ls: ls.chapter_lesson_no,
+        )
+        lesson_summaries = []
+        completed = 0
+        for ls in published_lessons:
+            prog = progress_map.get(ls.id)
+            status = prog.status if prog else "NOT_STARTED"
+            if status == "COMPLETED":
+                completed += 1
+            lesson_summaries.append(
+                LessonSummary(
+                    id=ls.id,
+                    lesson_no=ls.lesson_no,
+                    chapter_lesson_no=ls.chapter_lesson_no,
+                    title=ls.title,
+                    topic=ls.topic,
+                    estimated_minutes=ls.estimated_minutes,
+                    status=status,
+                    score_correct=prog.score_correct if prog else 0,
+                    score_total=prog.score_total if prog else 0,
+                )
+            )
+
+        chapter_responses.append(
+            ChapterResponse(
+                id=ch.id,
+                jlpt_level=str(ch.jlpt_level),
+                part_no=ch.part_no,
+                chapter_no=ch.chapter_no,
+                title=ch.title,
+                topic=ch.topic,
+                lessons=lesson_summaries,
+                completed_lessons=completed,
+                total_lessons=len(published_lessons),
+            )
+        )
+
+    return ChapterListResponse(chapters=chapter_responses)
+
+
+# ── GET /{lesson_id} ──
+
+
+@router.get("/{lesson_id}", response_model=LessonDetailResponse, status_code=200)
+async def get_lesson_detail(
+    lesson_id: UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """레슨 상세: 대화문 + 문제 (정답은 제거하여 클라이언트에 전달)."""
+    result = await db.execute(
+        select(Lesson).where(Lesson.id == lesson_id, Lesson.is_published.is_(True)).options(selectinload(Lesson.item_links))
+    )
+    lesson = result.scalar_one_or_none()
+    if lesson is None:
+        raise HTTPException(status_code=404, detail="레슨을 찾을 수 없습니다")
+
+    # Parse content_jsonb
+    content_raw = lesson.content_jsonb or {}
+    content = LessonContent.model_validate(content_raw)
+
+    # Strip correct answers from questions (prevent cheating)
+    for q in content.questions:
+        q.correct_answer = None
+        q.correct_order = None
+
+    # Fetch linked vocab/grammar items (batch query to avoid N+1)
+    vocab_ids = [lk.vocabulary_id for lk in lesson.item_links if lk.item_type == "WORD" and lk.vocabulary_id]
+    grammar_ids = [lk.grammar_id for lk in lesson.item_links if lk.item_type == "GRAMMAR" and lk.grammar_id]
+
+    vocab_map: dict[UUID, Vocabulary] = {}
+    if vocab_ids:
+        vr = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(vocab_ids)))
+        vocab_map = {v.id: v for v in vr.scalars().all()}
+
+    grammar_map: dict[UUID, Grammar] = {}
+    if grammar_ids:
+        gr = await db.execute(select(Grammar).where(Grammar.id.in_(grammar_ids)))
+        grammar_map = {g.id: g for g in gr.scalars().all()}
+
+    vocab_items: list[VocabItem] = []
+    grammar_items: list[GrammarItem] = []
+    for link in sorted(lesson.item_links, key=lambda x: x.item_order):
+        if link.item_type == "WORD" and link.vocabulary_id:
+            vocab = vocab_map.get(link.vocabulary_id)
+            if vocab:
+                vocab_items.append(
+                    VocabItem(
+                        id=vocab.id,
+                        word=vocab.word,
+                        reading=vocab.reading,
+                        meaning_ko=vocab.meaning_ko,
+                        part_of_speech=str(vocab.part_of_speech),
+                    )
+                )
+        elif link.item_type == "GRAMMAR" and link.grammar_id:
+            grammar = grammar_map.get(link.grammar_id)
+            if grammar:
+                grammar_items.append(
+                    GrammarItem(
+                        id=grammar.id,
+                        pattern=grammar.pattern,
+                        meaning_ko=grammar.meaning_ko,
+                        explanation=grammar.explanation,
+                    )
+                )
+
+    # Fetch user progress
+    prog_result = await db.execute(
+        select(UserLessonProgress).where(
+            UserLessonProgress.user_id == user.id,
+            UserLessonProgress.lesson_id == lesson.id,
+        )
+    )
+    prog = prog_result.scalar_one_or_none()
+    progress = None
+    if prog:
+        progress = LessonProgressResponse(
+            status=prog.status,
+            attempts=prog.attempts,
+            score_correct=prog.score_correct,
+            score_total=prog.score_total,
+            started_at=prog.started_at,
+            completed_at=prog.completed_at,
+        )
+
+    return LessonDetailResponse(
+        id=lesson.id,
+        lesson_no=lesson.lesson_no,
+        chapter_lesson_no=lesson.chapter_lesson_no,
+        title=lesson.title,
+        topic=lesson.topic,
+        estimated_minutes=lesson.estimated_minutes,
+        content=content,
+        vocab_items=vocab_items,
+        grammar_items=grammar_items,
+        progress=progress,
+    )
+
+
+# ── POST /{lesson_id}/start ──
+
+
+@router.post("/{lesson_id}/start", response_model=LessonProgressResponse, status_code=200)
+async def start_lesson(
+    lesson_id: UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """레슨 시작: 진도를 IN_PROGRESS로 업데이트한다."""
+    lesson = await db.get(Lesson, lesson_id)
+    if lesson is None or not lesson.is_published:
+        raise HTTPException(status_code=404, detail="레슨을 찾을 수 없습니다")
+
+    result = await db.execute(
+        select(UserLessonProgress).where(
+            UserLessonProgress.user_id == user.id,
+            UserLessonProgress.lesson_id == lesson_id,
+        )
+    )
+    prog = result.scalar_one_or_none()
+
+    now = datetime.now(UTC)
+    if prog is None:
+        prog = UserLessonProgress(
+            user_id=user.id,
+            lesson_id=lesson_id,
+            status="IN_PROGRESS",
+            started_at=now,
+        )
+        db.add(prog)
+    elif prog.status == "NOT_STARTED":
+        prog.status = "IN_PROGRESS"
+        prog.started_at = now
+
+    await db.commit()
+    await db.refresh(prog)
+
+    return LessonProgressResponse(
+        status=prog.status,
+        attempts=prog.attempts,
+        score_correct=prog.score_correct,
+        score_total=prog.score_total,
+        started_at=prog.started_at,
+        completed_at=prog.completed_at,
+    )
+
+
+# ── POST /{lesson_id}/submit ──
+
+
+@router.post("/{lesson_id}/submit", response_model=LessonSubmitResponse, status_code=200)
+async def submit_lesson(
+    lesson_id: UUID,
+    body: LessonSubmitRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """퀴즈 결과 제출: 채점 후 진도 업데이트."""
+    lesson = await db.get(Lesson, lesson_id)
+    if lesson is None:
+        raise HTTPException(status_code=404, detail="레슨을 찾을 수 없습니다")
+
+    content_raw = lesson.content_jsonb or {}
+    questions_raw = content_raw.get("questions", [])
+
+    # Build answer key from content_jsonb
+    answer_key: dict[int, dict] = {}
+    for q in questions_raw:
+        answer_key[q["order"]] = q
+
+    # Grade each answer
+    results: list[QuestionResult] = []
+    correct_count = 0
+
+    for ans in body.answers:
+        q_data = answer_key.get(ans.order)
+        if q_data is None:
+            continue
+
+        is_correct = _grade_answer(ans, q_data)
+        if is_correct:
+            correct_count += 1
+
+        results.append(
+            QuestionResult(
+                order=ans.order,
+                is_correct=is_correct,
+                correct_answer=q_data.get("correct_answer"),
+                correct_order=q_data.get("correct_order"),
+                explanation=q_data.get("explanation"),
+            )
+        )
+
+    total = len(results)
+
+    # Update progress
+    prog_result = await db.execute(
+        select(UserLessonProgress).where(
+            UserLessonProgress.user_id == user.id,
+            UserLessonProgress.lesson_id == lesson_id,
+        )
+    )
+    prog = prog_result.scalar_one_or_none()
+    now = datetime.now(UTC)
+
+    if prog is None:
+        prog = UserLessonProgress(
+            user_id=user.id,
+            lesson_id=lesson_id,
+            status="COMPLETED",
+            attempts=1,
+            score_correct=correct_count,
+            score_total=total,
+            started_at=now,
+            completed_at=now,
+        )
+        db.add(prog)
+    else:
+        prog.attempts += 1
+        prog.score_correct = correct_count
+        prog.score_total = total
+        prog.status = "COMPLETED"
+        prog.completed_at = now
+
+    await db.commit()
+
+    return LessonSubmitResponse(
+        score_correct=correct_count,
+        score_total=total,
+        results=results,
+        status=prog.status,
+    )
+
+
+def _grade_answer(ans: AnswerSubmission, q_data: dict) -> bool:
+    """Grade a single answer against the answer key."""
+    q_type = q_data.get("type", "")
+
+    if q_type == "SENTENCE_REORDER":
+        correct_order = q_data.get("correct_order", [])
+        return ans.submitted_order == correct_order
+
+    # VOCAB_MCQ, CONTEXT_CLOZE
+    correct = q_data.get("correct_answer", "")
+    return ans.selected_answer == correct
