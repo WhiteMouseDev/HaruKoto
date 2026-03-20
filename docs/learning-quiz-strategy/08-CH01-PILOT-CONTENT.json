@@ -146,9 +146,8 @@
       "grammar": {
         "pattern": "〜か",
         "meaning_ko": "~인가요? / ~입니까?",
-        "grammar_order": null,
-        "bunpro_ref": "L1",
-        "note": "신규 추가 필요 (기존 문법 DB에 없음)"
+        "grammar_order": 31,
+        "bunpro_ref": "L1"
       },
       "vocab_orders": [462, 328, 601, 254, 499, 222],
       "vocab_detail": {
@@ -271,9 +270,8 @@
       "grammar": {
         "pattern": "〜は",
         "meaning_ko": "~은/는 (주제를 나타내는 조사)",
-        "grammar_order": null,
-        "bunpro_ref": "L1",
-        "note": "신규 추가 필요 (기존 문법 DB에 없음)"
+        "grammar_order": 32,
+        "bunpro_ref": "L1"
       },
       "vocab_orders": [80, 27, 30, 226, 5, 7],
       "vocab_detail": {
@@ -396,9 +394,8 @@
       "grammar": {
         "pattern": "〜も",
         "meaning_ko": "~도 (같음·추가를 나타내는 조사)",
-        "grammar_order": null,
-        "bunpro_ref": "L1",
-        "note": "신규 추가 필요 (기존 문법 DB에 없음)"
+        "grammar_order": 33,
+        "bunpro_ref": "L1"
       },
       "vocab_orders": [76, 77, 78, 162, 79],
       "vocab_detail": {
@@ -520,9 +517,8 @@
       "grammar": {
         "pattern": "〜よ / 〜ね",
         "meaning_ko": "~요(알려줌) / ~네(공감·확인)",
-        "grammar_order": null,
-        "bunpro_ref": "L2",
-        "note": "신규 추가 필요 (기존 문법 DB에 없음)"
+        "grammar_order": 34,
+        "bunpro_ref": "L2"
       },
       "vocab_orders": [161, 196, 362, 197, 1, 5],
       "vocab_detail": {
