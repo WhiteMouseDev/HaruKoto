@@ -4,7 +4,8 @@ class OnboardingState {
   final int step; // 1-4
   final String nickname;
   final String? jlptLevel;
-  final String? goal;
+  final String? goal; // Legacy
+  final List<String> goals; // New (복수 선택)
   final bool showKana;
 
   const OnboardingState({
@@ -12,6 +13,7 @@ class OnboardingState {
     this.nickname = '',
     this.jlptLevel,
     this.goal,
+    this.goals = const [],
     this.showKana = false,
   });
 
@@ -20,6 +22,7 @@ class OnboardingState {
     String? nickname,
     String? jlptLevel,
     String? goal,
+    List<String>? goals,
     bool? showKana,
   }) {
     return OnboardingState(
@@ -27,6 +30,7 @@ class OnboardingState {
       nickname: nickname ?? this.nickname,
       jlptLevel: jlptLevel ?? this.jlptLevel,
       goal: goal ?? this.goal,
+      goals: goals ?? this.goals,
       showKana: showKana ?? this.showKana,
     );
   }
@@ -42,6 +46,17 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
   void setJlptLevel(String level) => state = state.copyWith(jlptLevel: level);
   void setGoal(String goal) => state = state.copyWith(goal: goal);
   void setShowKana(bool showKana) => state = state.copyWith(showKana: showKana);
+
+  void toggleGoal(String goal) {
+    final current = List<String>.from(state.goals);
+    if (current.contains(goal)) {
+      current.remove(goal);
+    } else if (current.length < 3) {
+      current.add(goal);
+    }
+    state = state.copyWith(goals: current);
+  }
+
   void reset() => state = const OnboardingState();
 }
 

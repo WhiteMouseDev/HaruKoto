@@ -120,8 +120,13 @@ async def onboarding(
     user.onboarding_completed = True
     if body.goal is not None:
         user.goal = body.goal
+    if body.goals is not None:
+        user.goals = body.goals[:3]  # 최대 3개
     if body.show_kana is not None:
         user.show_kana = body.show_kana
+    # ABSOLUTE_ZERO면 가나 학습 강제
+    if body.jlpt_level.value == "ABSOLUTE_ZERO":
+        user.show_kana = True
 
     await db.commit()
     await db.refresh(user)

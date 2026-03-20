@@ -20,6 +20,7 @@ class UserProfile(CamelModel):
     avatar_url: str | None = None
     jlpt_level: JlptLevel
     goal: UserGoal | None = None
+    goals: list[str] | None = None
     daily_goal: int
     experience_points: int
     level: int
@@ -39,7 +40,8 @@ class UserProfileUpdate(CamelModel):
     nickname: str | None = None
     jlpt_level: JlptLevel | None = None
     daily_goal: int | None = None
-    goal: UserGoal | None = None
+    goal: UserGoal | None = None  # Legacy
+    goals: list[str] | None = None  # New (복수 선택)
     show_kana: bool | None = None
     call_settings: dict[str, Any] | None = None
     app_settings: dict[str, Any] | None = None

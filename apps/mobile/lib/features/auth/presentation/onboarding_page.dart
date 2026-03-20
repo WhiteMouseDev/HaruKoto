@@ -25,7 +25,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final state = ref.read(onboardingProvider);
     if (state.nickname.isEmpty ||
         state.jlptLevel == null ||
-        state.goal == null) {
+        state.goals.isEmpty) {
       return;
     }
 
@@ -41,7 +41,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         data: {
           'nickname': state.nickname,
           'jlptLevel': state.jlptLevel,
-          'goal': state.goal,
+          'goals': state.goals,
           'showKana': state.showKana,
         },
       );
@@ -75,7 +75,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final state = ref.watch(onboardingProvider);
     final notifier = ref.read(onboardingProvider.notifier);
 
-    final totalSteps = state.jlptLevel == 'N5' ? 4 : 3;
+    final totalSteps = state.jlptLevel == 'ABSOLUTE_ZERO' ? 4 : 3;
     final isGoalStep =
         (state.step == 3 && state.jlptLevel != 'N5') || state.step == 4;
 
@@ -146,14 +146,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         selectedLevel: state.jlptLevel,
         onLevelSelected: (level) {
           notifier.setJlptLevel(level);
-          notifier.setShowKana(level == 'N5');
+          notifier.setShowKana(level == 'ABSOLUTE_ZERO');
         },
         onBack: () => notifier.setStep(1),
         onNext: () => notifier.setStep(3),
       );
     }
 
-    if (state.step == 3 && state.jlptLevel == 'N5') {
+    if (state.step == 3 && state.jlptLevel == 'ABSOLUTE_ZERO') {
       return KanaStep(
         key: const ValueKey('step-3-kana'),
         showKana: state.showKana,
@@ -166,9 +166,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     if (isGoalStep) {
       return GoalStep(
         key: const ValueKey('step-goal'),
-        selectedGoal: state.goal,
-        onGoalSelected: notifier.setGoal,
-        onBack: () => notifier.setStep(state.jlptLevel == 'N5' ? 3 : 2),
+        selectedGoals: state.goals,
+        onGoalToggled: notifier.toggleGoal,
+        onBack: () =>
+            notifier.setStep(state.jlptLevel == 'ABSOLUTE_ZERO' ? 3 : 2),
         onComplete: _handleComplete,
         loading: _loading,
         error: _error,

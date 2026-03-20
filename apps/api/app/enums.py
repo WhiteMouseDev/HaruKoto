@@ -2,11 +2,19 @@ import enum
 
 
 class JlptLevel(str, enum.Enum):
+    ABSOLUTE_ZERO = "ABSOLUTE_ZERO"
     N5 = "N5"
     N4 = "N4"
     N3 = "N3"
     N2 = "N2"
     N1 = "N1"
+
+
+def effective_jlpt_level(level: "JlptLevel") -> "JlptLevel":
+    """ABSOLUTE_ZERO는 콘텐츠 조회 시 N5로 매핑."""
+    if level == JlptLevel.ABSOLUTE_ZERO:
+        return JlptLevel.N5
+    return level
 
 
 class PartOfSpeech(str, enum.Enum):
@@ -52,13 +60,20 @@ class Difficulty(str, enum.Enum):
 
 
 class UserGoal(str, enum.Enum):
+    # Legacy (하위 호환)
     JLPT_N5 = "JLPT_N5"
     JLPT_N4 = "JLPT_N4"
     JLPT_N3 = "JLPT_N3"
     JLPT_N2 = "JLPT_N2"
     JLPT_N1 = "JLPT_N1"
-    TRAVEL = "TRAVEL"
     BUSINESS = "BUSINESS"
+    # New goals (v2)
+    TRAVEL = "TRAVEL"
+    CONTENT = "CONTENT"
+    JLPT = "JLPT"
+    WORK = "WORK"
+    STUDY_ABROAD = "STUDY_ABROAD"
+    LIVING = "LIVING"
     HOBBY = "HOBBY"
 
 

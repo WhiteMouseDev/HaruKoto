@@ -18,29 +18,34 @@ class LevelOption {
 
 const levels = [
   LevelOption(
+      value: 'ABSOLUTE_ZERO',
+      icon: LucideIcons.baby,
+      label: '첫걸음',
+      desc: '일본어를 전혀 몰라요'),
+  LevelOption(
       value: 'N5',
       icon: LucideIcons.sprout,
-      label: 'N5 — 완전 초보',
-      desc: '히라가나부터 시작'),
+      label: '입문 (N5)',
+      desc: '히라가나/카타카나를 알아요'),
   LevelOption(
       value: 'N4',
       icon: LucideIcons.leaf,
-      label: 'N4 — 기초',
+      label: '기초 (N4)',
       desc: '기본 문법과 단어를 알아요'),
   LevelOption(
       value: 'N3',
       icon: LucideIcons.treeDeciduous,
-      label: 'N3 — 중급',
+      label: '중급 (N3)',
       desc: '일상 회화가 가능해요'),
   LevelOption(
       value: 'N2',
       icon: LucideIcons.bookOpen,
-      label: 'N2 — 중상급',
+      label: '고급 (N2)',
       desc: '뉴스/소설을 읽을 수 있어요'),
   LevelOption(
       value: 'N1',
       icon: LucideIcons.crown,
-      label: 'N1 — 상급',
+      label: '마스터 (N1)',
       desc: '네이티브에 가까워요'),
 ];
 

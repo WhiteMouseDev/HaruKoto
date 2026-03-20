@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Integer, Text, func
-from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -19,7 +19,8 @@ class User(Base):
     nickname: Mapped[str | None] = mapped_column(Text, nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     jlpt_level: Mapped[JlptLevel] = mapped_column(default=JlptLevel.N5)
-    goal: Mapped[UserGoal | None] = mapped_column(nullable=True)
+    goal: Mapped[UserGoal | None] = mapped_column(nullable=True)  # Legacy (단일)
+    goals: Mapped[list[str] | None] = mapped_column(ARRAY(Text), nullable=True)  # New (복수)
     daily_goal: Mapped[int] = mapped_column(Integer, default=10)
     experience_points: Mapped[int] = mapped_column(Integer, default=0)
     level: Mapped[int] = mapped_column(Integer, default=1)
