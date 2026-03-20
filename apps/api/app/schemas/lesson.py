@@ -146,3 +146,4 @@ class LessonSubmitResponse(CamelModel):
     score_total: int
     results: list[QuestionResult]
     status: str  # IN_PROGRESS | COMPLETED
+    srs_items_registered: int = 0

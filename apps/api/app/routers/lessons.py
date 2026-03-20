@@ -8,6 +8,7 @@ POST /api/v1/lessons/{lesson_id}/submit — 퀴즈 결과 제출
 
 from __future__ import annotations
 
+import logging
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -19,7 +20,7 @@ from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.content import Grammar, Vocabulary
-from app.models.lesson import Chapter, Lesson, UserLessonProgress
+from app.models.lesson import Chapter, Lesson, LessonItemLink, UserLessonProgress
 from app.models.user import User
 from app.schemas.lesson import (
     AnswerSubmission,
@@ -35,6 +36,9 @@ from app.schemas.lesson import (
     QuestionResult,
     VocabItem,
 )
+from app.services.srs import process_answer, register_items_from_lesson
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
 
@@ -272,8 +276,10 @@ async def submit_lesson(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """퀴즈 결과 제출: 채점 후 진도 업데이트."""
-    lesson = await db.get(Lesson, lesson_id)
+    """퀴즈 결과 제출: 채점 → SRS 처리 → 진도 업데이트."""
+    # Load lesson with item_links eagerly
+    result = await db.execute(select(Lesson).where(Lesson.id == lesson_id).options(selectinload(Lesson.item_links)))
+    lesson = result.scalar_one_or_none()
     if lesson is None:
         raise HTTPException(status_code=404, detail="레슨을 찾을 수 없습니다")
 
@@ -285,9 +291,38 @@ async def submit_lesson(
     for q in questions_raw:
         answer_key[q["order"]] = q
 
-    # Grade each answer
+    # Build mapping from question order → vocab/grammar item via lesson_item_links.
+    # A question is mappable if it has a "vocabulary_id" or "grammar_id" field in
+    # content_jsonb, OR we fall back to positional mapping (item_order == question order)
+    # for VOCAB_MCQ questions where there is exactly one item link per order.
+    item_links_by_order: dict[int, LessonItemLink] = {link.item_order: link for link in lesson.item_links}
+
+    # Also build a lookup by item_id stored in the question's content_jsonb
+    question_to_link: dict[int, LessonItemLink] = {}
+    for q in questions_raw:
+        q_order = q["order"]
+        # Direct mapping: question has vocabulary_id or grammar_id in jsonb
+        q_vocab_id = q.get("vocabulary_id")
+        q_grammar_id = q.get("grammar_id")
+        if q_vocab_id:
+            for link in lesson.item_links:
+                if link.item_type == "WORD" and str(link.vocabulary_id) == str(q_vocab_id):
+                    question_to_link[q_order] = link
+                    break
+        elif q_grammar_id:
+            for link in lesson.item_links:
+                if link.item_type == "GRAMMAR" and str(link.grammar_id) == str(q_grammar_id):
+                    question_to_link[q_order] = link
+                    break
+        else:
+            # Fallback: positional mapping (item_order == question order)
+            if q_order in item_links_by_order:
+                question_to_link[q_order] = item_links_by_order[q_order]
+
+    # Grade each answer and process SRS
     results: list[QuestionResult] = []
     correct_count = 0
+    srs_items_registered = 0
 
     for ans in body.answers:
         q_data = answer_key.get(ans.order)
@@ -308,7 +343,47 @@ async def submit_lesson(
             )
         )
 
+        # SRS: process answer for mapped items
+        link = question_to_link.get(ans.order)
+        if link is not None:
+            item_id = link.vocabulary_id if link.item_type == "WORD" else link.grammar_id
+            if item_id is not None:
+                try:
+                    await process_answer(
+                        db=db,
+                        user_id=user.id,
+                        item_type=link.item_type,
+                        item_id=item_id,
+                        is_correct=is_correct,
+                        direction="JP_KR",  # lesson context default
+                        response_ms=ans.response_ms,
+                        session_id=None,
+                        lesson_id=lesson_id,
+                    )
+                except Exception:
+                    logger.warning(
+                        "SRS process_answer failed for item %s in lesson %s",
+                        item_id,
+                        lesson_id,
+                        exc_info=True,
+                    )
+
     total = len(results)
+
+    # SRS: register all lesson items (idempotent — skips already-registered)
+    try:
+        srs_items_registered = await register_items_from_lesson(
+            db=db,
+            user_id=user.id,
+            lesson_id=lesson_id,
+            item_links=list(lesson.item_links),
+        )
+    except Exception:
+        logger.warning(
+            "SRS register_items_from_lesson failed for lesson %s",
+            lesson_id,
+            exc_info=True,
+        )
 
     # Update progress
     prog_result = await db.execute(
@@ -330,6 +405,7 @@ async def submit_lesson(
             score_total=total,
             started_at=now,
             completed_at=now,
+            srs_registered_at=now if srs_items_registered > 0 else None,
         )
         db.add(prog)
     else:
@@ -338,6 +414,8 @@ async def submit_lesson(
         prog.score_total = total
         prog.status = "COMPLETED"
         prog.completed_at = now
+        if srs_items_registered > 0 and prog.srs_registered_at is None:
+            prog.srs_registered_at = now
 
     await db.commit()
 
@@ -346,6 +424,7 @@ async def submit_lesson(
         score_total=total,
         results=results,
         status=prog.status,
+        srs_items_registered=srs_items_registered,
     )
 
 

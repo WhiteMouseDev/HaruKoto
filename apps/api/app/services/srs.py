@@ -10,11 +10,11 @@ Scheduler version 1: SM-2 interval calculation.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import TypedDict
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.lesson import LessonItemLink
@@ -177,6 +177,65 @@ async def register_items_from_lesson(
     return registered
 
 
+async def log_review_event(
+    db: AsyncSession,
+    user_id: UUID,
+    item_type: str,
+    item_id: UUID,
+    session_id: UUID | None,
+    lesson_id: UUID | None,
+    direction: str,
+    is_correct: bool,
+    response_ms: int,
+    rating: int,
+    state_before: str,
+    state_after: str,
+    distractor_difficulty: str | None,
+    is_provisional_phase: bool,
+    is_new_card: bool,
+    reviewed_on: date,
+) -> None:
+    """Insert a row into the partitioned review_events table (raw SQL)."""
+    vocab_id = item_id if item_type == "WORD" else None
+    grammar_id = item_id if item_type == "GRAMMAR" else None
+
+    await db.execute(
+        text("""
+            INSERT INTO review_events (
+                user_id, item_type, vocabulary_id, grammar_id,
+                session_id, lesson_id, direction, is_correct,
+                response_ms, rating, state_before, state_after,
+                distractor_difficulty, is_provisional_phase,
+                is_new_card, reviewed_on
+            ) VALUES (
+                :user_id, :item_type, :vocabulary_id, :grammar_id,
+                :session_id, :lesson_id, :direction, :is_correct,
+                :response_ms, :rating, :state_before, :state_after,
+                :distractor_difficulty, :is_provisional_phase,
+                :is_new_card, :reviewed_on
+            )
+        """),
+        {
+            "user_id": user_id,
+            "item_type": item_type,
+            "vocabulary_id": vocab_id,
+            "grammar_id": grammar_id,
+            "session_id": session_id,
+            "lesson_id": lesson_id,
+            "direction": direction,
+            "is_correct": is_correct,
+            "response_ms": response_ms,
+            "rating": rating,
+            "state_before": state_before,
+            "state_after": state_after,
+            "distractor_difficulty": distractor_difficulty,
+            "is_provisional_phase": is_provisional_phase,
+            "is_new_card": is_new_card,
+            "reviewed_on": reviewed_on,
+        },
+    )
+
+
 async def process_answer(
     db: AsyncSession,
     user_id: UUID,
@@ -185,6 +244,8 @@ async def process_answer(
     is_correct: bool,
     direction: str,  # 'JP_KR' | 'KR_JP'
     response_ms: int,
+    session_id: UUID | None = None,
+    lesson_id: UUID | None = None,
 ) -> AnswerResult:
     """Process a quiz answer and update SRS state.
 
@@ -251,6 +312,27 @@ async def process_answer(
         progress.fsrs_lapses += 1
 
     await db.flush()
+
+    # 6. Log review event
+    is_new_card = state_before == UNSEEN
+    await log_review_event(
+        db=db,
+        user_id=user_id,
+        item_type=item_type,
+        item_id=item_id,
+        session_id=session_id,
+        lesson_id=lesson_id,
+        direction=direction,
+        is_correct=is_correct,
+        response_ms=response_ms,
+        rating=rating,
+        state_before=state_before,
+        state_after=progress.state,
+        distractor_difficulty=None,
+        is_provisional_phase=progress.state == PROVISIONAL,
+        is_new_card=is_new_card,
+        reviewed_on=now.date(),
+    )
 
     return AnswerResult(
         state_before=state_before,
