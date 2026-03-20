@@ -14,9 +14,10 @@ from datetime import UTC, date, datetime, timedelta
 from typing import TypedDict
 from uuid import UUID
 
-from sqlalchemy import select, text
+from sqlalchemy import case, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.content import Grammar, Vocabulary
 from app.models.lesson import LessonItemLink
 from app.models.progress import UserGrammarProgress, UserVocabProgress
 
@@ -518,3 +519,264 @@ def _update_direction_stats(
         progress.kr_jp_total += 1
         if is_correct:
             progress.kr_jp_correct += 1
+
+
+# ---------------------------------------------------------------------------
+# Smart session builder
+# ---------------------------------------------------------------------------
+
+
+class SessionCard(TypedDict):
+    item_id: str
+    item_type: str
+    direction: str
+    is_new: bool
+
+
+def _get_content_model(item_type: str) -> type[Vocabulary] | type[Grammar]:
+    """Return the content model for joining jlpt_level."""
+    if item_type == "WORD":
+        return Vocabulary
+    if item_type == "GRAMMAR":
+        return Grammar
+    msg = f"Unknown item_type: {item_type!r}."
+    raise ValueError(msg)
+
+
+def _get_content_join_col(
+    item_type: str,
+    progress_model: type[UserVocabProgress] | type[UserGrammarProgress],
+    content_model: type[Vocabulary] | type[Grammar],
+) -> tuple:
+    """Return (progress_fk_column, content_pk_column) for joining."""
+    if item_type == "WORD":
+        return progress_model.vocabulary_id, content_model.id  # type: ignore[attr-defined]
+    return progress_model.grammar_id, content_model.id  # type: ignore[attr-defined]
+
+
+def _assign_direction(index: int) -> str:
+    """Alternate direction: even index → JP_KR, odd → KR_JP."""
+    return "JP_KR" if index % 2 == 0 else "KR_JP"
+
+
+async def _count_new_cards_today(
+    db: AsyncSession,
+    user_id: UUID,
+    today: date,
+) -> int:
+    """Count new cards already presented today from review_events."""
+    result = await db.execute(
+        text("""
+            SELECT COUNT(*) FROM review_events
+            WHERE user_id = :user_id
+              AND reviewed_on = :today
+              AND is_new_card = true
+        """),
+        {"user_id": user_id, "today": today},
+    )
+    return result.scalar() or 0
+
+
+async def build_smart_session(
+    db: AsyncSession,
+    user_id: UUID,
+    item_type: str,  # 'WORD' | 'GRAMMAR'
+    jlpt_level: str,
+    count: int = 20,
+    daily_new_cap: int = 10,
+) -> list[SessionCard]:
+    """Build a smart quiz session with SRS-prioritized card selection.
+
+    Returns list of {item_id, item_type, direction, is_new} dicts.
+
+    Card selection priority:
+    1. Due cards (next_review_at <= now) — sorted by overdue amount
+    2. RELEARNING cards — highest priority within due
+    3. LEARNING cards — next priority
+    4. New cards (UNSEEN/PROVISIONAL) — capped by daily_new_cap
+    5. Fill remaining with REVIEW cards not yet due (preview)
+
+    Rules:
+    - No same-day re-presentation (last_presented_on != today)
+    - New cards ratio <= 20% of session
+    - Due cards always take priority over new cards
+    """
+    now = datetime.now(UTC)
+    today = now.date()
+
+    model = _get_progress_model(item_type)
+    content_model = _get_content_model(item_type)
+    fk_col, content_pk = _get_content_join_col(item_type, model, content_model)
+
+    # Shared filter: exclude items already presented today
+    not_presented_today = (
+        (model.last_presented_on.is_(None)) | (model.last_presented_on < today)  # type: ignore[union-attr]
+    )
+
+    # -------------------------------------------------------------------
+    # 1. Due cards: RELEARNING > LEARNING > REVIEW/PROVISIONAL, then by
+    #    overdue amount (next_review_at ASC = most overdue first)
+    # -------------------------------------------------------------------
+    state_priority = case(
+        (model.state == RELEARNING, 0),
+        (model.state == LEARNING, 1),
+        (model.state == PROVISIONAL, 2),
+        else_=3,
+    )
+
+    due_stmt = (
+        select(fk_col, model.state)
+        .join(content_model, fk_col == content_pk)
+        .where(
+            model.user_id == user_id,
+            content_model.jlpt_level == jlpt_level,
+            model.state.in_([RELEARNING, LEARNING, REVIEW, PROVISIONAL]),
+            model.next_review_at <= now,
+            not_presented_today,
+        )
+        .order_by(state_priority, model.next_review_at.asc())
+        .limit(count)
+    )
+    due_result = await db.execute(due_stmt)
+    due_rows = due_result.all()
+
+    cards: list[SessionCard] = []
+    seen_ids: set[str] = set()
+
+    for row in due_rows:
+        item_id_val = str(row[0])
+        if item_id_val in seen_ids:
+            continue
+        seen_ids.add(item_id_val)
+        cards.append(
+            SessionCard(
+                item_id=item_id_val,
+                item_type=item_type,
+                direction=_assign_direction(len(cards)),
+                is_new=False,
+            )
+        )
+
+    if len(cards) >= count:
+        return cards[:count]
+
+    # -------------------------------------------------------------------
+    # 2. New cards (UNSEEN) — capped by daily_new_cap and 20% of session
+    # -------------------------------------------------------------------
+    new_cards_today = await _count_new_cards_today(db, user_id, today)
+    remaining_new_cap = max(0, daily_new_cap - new_cards_today)
+    max_new_in_session = max(1, count // 5)  # 20% of session
+    new_limit = min(remaining_new_cap, max_new_in_session, count - len(cards))
+
+    if new_limit > 0:
+        new_stmt = (
+            select(fk_col)
+            .join(content_model, fk_col == content_pk)
+            .where(
+                model.user_id == user_id,
+                content_model.jlpt_level == jlpt_level,
+                model.state == UNSEEN,
+                not_presented_today,
+            )
+            .order_by(func.random())
+            .limit(new_limit)
+        )
+        new_result = await db.execute(new_stmt)
+        new_rows = new_result.all()
+
+        for row in new_rows:
+            item_id_val = str(row[0])
+            if item_id_val in seen_ids:
+                continue
+            seen_ids.add(item_id_val)
+            cards.append(
+                SessionCard(
+                    item_id=item_id_val,
+                    item_type=item_type,
+                    direction=_assign_direction(len(cards)),
+                    is_new=True,
+                )
+            )
+
+    if len(cards) >= count:
+        return cards[:count]
+
+    # -------------------------------------------------------------------
+    # 3. Also pick UNSEEN items that have no progress record at all
+    #    (items in the content table but not yet in the progress table)
+    # -------------------------------------------------------------------
+    unseen_no_record_limit = min(
+        max(0, remaining_new_cap - sum(1 for c in cards if c["is_new"])),
+        max(0, max_new_in_session - sum(1 for c in cards if c["is_new"])),
+        count - len(cards),
+    )
+
+    if unseen_no_record_limit > 0:
+        # Subquery: item IDs the user already has progress for
+        existing_ids_subq = select(fk_col).where(model.user_id == user_id).scalar_subquery()
+
+        fresh_stmt = (
+            select(content_model.id)
+            .where(
+                content_model.jlpt_level == jlpt_level,
+                content_model.id.notin_(existing_ids_subq),
+            )
+            .order_by(func.random())
+            .limit(unseen_no_record_limit)
+        )
+        fresh_result = await db.execute(fresh_stmt)
+        fresh_rows = fresh_result.all()
+
+        for row in fresh_rows:
+            item_id_val = str(row[0])
+            if item_id_val in seen_ids:
+                continue
+            seen_ids.add(item_id_val)
+            cards.append(
+                SessionCard(
+                    item_id=item_id_val,
+                    item_type=item_type,
+                    direction=_assign_direction(len(cards)),
+                    is_new=True,
+                )
+            )
+
+    if len(cards) >= count:
+        return cards[:count]
+
+    # -------------------------------------------------------------------
+    # 4. Fill remaining with preview cards (REVIEW not yet due)
+    # -------------------------------------------------------------------
+    remaining = count - len(cards)
+    if remaining > 0:
+        preview_stmt = (
+            select(fk_col)
+            .join(content_model, fk_col == content_pk)
+            .where(
+                model.user_id == user_id,
+                content_model.jlpt_level == jlpt_level,
+                model.state == REVIEW,
+                model.next_review_at > now,
+                not_presented_today,
+            )
+            .order_by(model.next_review_at.asc())
+            .limit(remaining)
+        )
+        preview_result = await db.execute(preview_stmt)
+        preview_rows = preview_result.all()
+
+        for row in preview_rows:
+            item_id_val = str(row[0])
+            if item_id_val in seen_ids:
+                continue
+            seen_ids.add(item_id_val)
+            cards.append(
+                SessionCard(
+                    item_id=item_id_val,
+                    item_type=item_type,
+                    direction=_assign_direction(len(cards)),
+                    is_new=False,
+                )
+            )
+
+    return cards[:count]

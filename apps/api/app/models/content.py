@@ -26,6 +26,9 @@ class Vocabulary(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     audio_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0)
+    meaning_glosses_ko: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    synonym_group_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    category_tag: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_progress: Mapped[list[UserVocabProgress]] = relationship(back_populates="vocabulary", cascade="all, delete-orphan")  # noqa: F821
@@ -44,6 +47,8 @@ class Grammar(Base):
     example_sentences: Mapped[dict | list] = mapped_column(JSON, default=list)
     related_grammar_ids: Mapped[list[uuid.UUID]] = mapped_column(ARRAY(UUID(as_uuid=True)), default=list)
     order: Mapped[int] = mapped_column(Integer, default=0)
+    meaning_glosses_ko: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    synonym_group_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_progress: Mapped[list[UserGrammarProgress]] = relationship(back_populates="grammar", cascade="all, delete-orphan")  # noqa: F821
