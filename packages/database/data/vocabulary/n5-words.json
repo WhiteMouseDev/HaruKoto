@@ -7764,5 +7764,41 @@
     "exampleTranslation": "날씨가 나쁘네요.",
     "tags": [],
     "order": 606
+  },
+  {
+    "word": "韓国",
+    "reading": "かんこく",
+    "meaningKo": "한국",
+    "partOfSpeech": "NOUN",
+    "jlptLevel": "N5",
+    "exampleSentence": "韓国から来ました。",
+    "exampleReading": "かんこくからきました。",
+    "exampleTranslation": "한국에서 왔습니다.",
+    "tags": ["나라", "기본"],
+    "order": 607
+  },
+  {
+    "word": "本当",
+    "reading": "ほんとう",
+    "meaningKo": "정말, 진짜",
+    "partOfSpeech": "NA_ADJECTIVE",
+    "jlptLevel": "N5",
+    "exampleSentence": "本当ですか。",
+    "exampleReading": "ほんとうですか。",
+    "exampleTranslation": "정말인가요?",
+    "tags": ["기본"],
+    "order": 608
+  },
+  {
+    "word": "こちらこそ",
+    "reading": "こちらこそ",
+    "meaningKo": "저야말로",
+    "partOfSpeech": "EXPRESSION",
+    "jlptLevel": "N5",
+    "exampleSentence": "こちらこそ、よろしくお願いします。",
+    "exampleReading": "こちらこそ、よろしくおねがいします。",
+    "exampleTranslation": "저야말로, 잘 부탁드립니다.",
+    "tags": ["인사", "기본"],
+    "order": 609
   }
 ]
