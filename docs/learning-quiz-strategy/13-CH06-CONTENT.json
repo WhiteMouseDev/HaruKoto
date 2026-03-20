@@ -1,0 +1,977 @@
+{
+  "meta": {
+    "chapter_id": "CH06",
+    "chapter_title": "진행과 습관",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 6,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-03-20",
+    "author": "Claude Code × Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-026",
+      "lesson_no": 26,
+      "chapter_lesson_no": 1,
+      "title": "지금 상태를 공유할 때",
+      "subtitle": "ている로 진행 상태 말하기",
+      "topic": "진행 상태",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ている",
+        "meaning_ko": "~하고 있다 (진행 중인 동작)",
+        "grammar_order": 20,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        91,
+        98,
+        100,
+        124,
+        247,
+        126
+      ],
+      "vocab_detail": {
+        "91": "食べる (먹다)",
+        "98": "読む (읽다)",
+        "100": "話す (말하다)",
+        "124": "働く (일하다)",
+        "247": "歌う (노래하다)",
+        "126": "遊ぶ (놀다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "전화로 지금 뭐 하고 있는지 물어보기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "もしもし、キムさん。今、何をしていますか。",
+              "translation": "여보세요, 김 씨. 지금 뭐 하고 있어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "今、本を読んでいます。田中さんは？",
+              "translation": "지금 책을 읽고 있어요. 다나카 씨는요?"
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "私はご飯を食べています。友達と話しています。",
+              "translation": "저는 밥을 먹고 있어요. 친구와 이야기하고 있어요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "そうですか。弟は歌を歌っていますよ。うるさいです。",
+              "translation": "그렇군요. 남동생은 노래를 부르고 있어요. 시끄러워요."
+            }
+          ],
+          "highlights": [
+            "ている",
+            "読んでいます",
+            "食べています",
+            "話しています",
+            "歌っています"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "読む의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "읽다"
+              },
+              {
+                "id": "b",
+                "text": "쓰다"
+              },
+              {
+                "id": "c",
+                "text": "말하다"
+              },
+              {
+                "id": "d",
+                "text": "먹다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "読む(よむ)는 '읽다'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'노래하다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "歌う"
+              },
+              {
+                "id": "b",
+                "text": "遊ぶ"
+              },
+              {
+                "id": "c",
+                "text": "働く"
+              },
+              {
+                "id": "d",
+                "text": "話す"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "歌う(うたう)는 '노래하다'입니다. 遊ぶ(あそぶ)는 '놀다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "今、本を読んで____。(지금 책을 읽고 있어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "います"
+              },
+              {
+                "id": "b",
+                "text": "ました"
+              },
+              {
+                "id": "c",
+                "text": "ません"
+              },
+              {
+                "id": "d",
+                "text": "ます"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ている(〜ています)는 '~하고 있다'로 지금 진행 중인 동작을 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "友達と話して____。(친구와 이야기하고 있어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "います"
+              },
+              {
+                "id": "b",
+                "text": "ありません"
+              },
+              {
+                "id": "c",
+                "text": "でした"
+              },
+              {
+                "id": "d",
+                "text": "ください"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "話して + います로 '이야기하고 있다'라는 진행 의미를 만듭니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'지금 밥을 먹고 있어요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "食べています",
+              "今",
+              "ご飯を"
+            ],
+            "correct_order": [
+              "今",
+              "ご飯を",
+              "食べています"
+            ],
+            "explanation": "시간(今) + 목적어(ご飯を) + 동사て형+います(食べています). ている로 진행을 나타냅니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-027",
+      "lesson_no": 27,
+      "chapter_lesson_no": 2,
+      "title": "진행 부정을 말할 때",
+      "subtitle": "ていない로 미진행 상태 말하기",
+      "topic": "미진행 부정",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ていない",
+        "meaning_ko": "~하고 있지 않다 (진행 부정)",
+        "grammar_order": 52,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        122,
+        277,
+        123,
+        393,
+        120
+      ],
+      "vocab_detail": {
+        "122": "分かる (알다, 이해하다)",
+        "277": "覚える (외우다, 기억하다)",
+        "123": "忘れる (잊다)",
+        "393": "知る (알다)",
+        "120": "教える (가르치다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "시험 공부 상태를 친구와 확인",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、テストの漢字を覚えていますか。",
+              "translation": "김 씨, 시험 한자를 외우고 있어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、まだ覚えていません。全然分かっていません。",
+              "translation": "아니요, 아직 외우고 있지 않아요. 전혀 이해하지 못하고 있어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "私も答えを知っていません。先生に教えてもらいましょう。",
+              "translation": "저도 답을 알고 있지 않아요. 선생님께 알려달라고 해요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "そうですね。忘れないように一緒に勉強しましょう。",
+              "translation": "그래요. 잊지 않도록 같이 공부합시다."
+            }
+          ],
+          "highlights": [
+            "ていない",
+            "覚えていません",
+            "分かっていません",
+            "知っていません"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "覚える의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "외우다, 기억하다"
+              },
+              {
+                "id": "b",
+                "text": "잊다"
+              },
+              {
+                "id": "c",
+                "text": "가르치다"
+              },
+              {
+                "id": "d",
+                "text": "읽다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "覚える(おぼえる)는 '외우다, 기억하다'라는 뜻입니다. 忘れる(わすれる)가 반대말입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'잊다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "忘れる"
+              },
+              {
+                "id": "b",
+                "text": "覚える"
+              },
+              {
+                "id": "c",
+                "text": "知る"
+              },
+              {
+                "id": "d",
+                "text": "分かる"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "忘れる(わすれる)는 '잊다'입니다. 覚える(おぼえる)는 '외우다'로 반대 의미입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "まだ覚えて____。(아직 외우고 있지 않아요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "いません"
+              },
+              {
+                "id": "b",
+                "text": "います"
+              },
+              {
+                "id": "c",
+                "text": "ました"
+              },
+              {
+                "id": "d",
+                "text": "ください"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ていません은 '~하고 있지 않다'로 진행 상태의 부정을 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "答えを知って____。(답을 알고 있지 않아요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "いません"
+              },
+              {
+                "id": "b",
+                "text": "います"
+              },
+              {
+                "id": "c",
+                "text": "でした"
+              },
+              {
+                "id": "d",
+                "text": "ありません"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "知っていません은 '알고 있지 않다'라는 뜻입니다. 知る의 て형 + いません입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'전혀 이해하지 못하고 있어요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "分かっていません",
+              "全然",
+              "まだ"
+            ],
+            "correct_order": [
+              "まだ",
+              "全然",
+              "分かっていません"
+            ],
+            "explanation": "부사(まだ) + 부사(全然) + 동사て형+いません(分かっていません). ていない로 미진행을 나타냅니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-028",
+      "lesson_no": 28,
+      "chapter_lesson_no": 3,
+      "title": "아직 끝나지 않았을 때",
+      "subtitle": "まだ〜ていません으로 미완료 말하기",
+      "topic": "미완료",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "まだ〜ていません",
+        "meaning_ko": "아직 ~하지 않았다 (미완료)",
+        "grammar_order": 53,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        83,
+        79,
+        81,
+        444,
+        500
+      ],
+      "vocab_detail": {
+        "83": "宿題 (숙제)",
+        "79": "料理 (요리)",
+        "81": "勉強 (공부)",
+        "444": "手紙 (편지)",
+        "500": "葉書 (엽서)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "방학 숙제 진행 상황 체크",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、夏休みの宿題はもう終わりましたか。",
+              "translation": "김 씨, 여름방학 숙제는 벌써 끝났어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、まだ宿題をしていません。勉強もまだしていません。",
+              "translation": "아니요, 아직 숙제를 하지 않았어요. 공부도 아직 하지 않았어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "私もまだ手紙を書いていません。葉書も出していません。",
+              "translation": "저도 아직 편지를 쓰지 않았어요. 엽서도 보내지 않았어요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "じゃあ、一緒にやりましょう。料理の宿題もまだですよ。",
+              "translation": "그러면 같이 합시다. 요리 숙제도 아직이에요."
+            }
+          ],
+          "highlights": [
+            "まだ〜ていません",
+            "していません",
+            "書いていません",
+            "宿題",
+            "勉強"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "宿題의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "숙제"
+              },
+              {
+                "id": "b",
+                "text": "공부"
+              },
+              {
+                "id": "c",
+                "text": "시험"
+              },
+              {
+                "id": "d",
+                "text": "수업"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "宿題(しゅくだい)는 '숙제'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'편지'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "手紙"
+              },
+              {
+                "id": "b",
+                "text": "葉書"
+              },
+              {
+                "id": "c",
+                "text": "宿題"
+              },
+              {
+                "id": "d",
+                "text": "料理"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "手紙(てがみ)는 '편지'입니다. 葉書(はがき)는 '엽서'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "まだ宿題を____。(아직 숙제를 하지 않았어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "していません"
+              },
+              {
+                "id": "b",
+                "text": "しています"
+              },
+              {
+                "id": "c",
+                "text": "しました"
+              },
+              {
+                "id": "d",
+                "text": "します"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "まだ〜していません은 '아직 ~하지 않았다'로 미완료 상태를 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "まだ手紙を書いて____。(아직 편지를 쓰지 않았어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "いません"
+              },
+              {
+                "id": "b",
+                "text": "います"
+              },
+              {
+                "id": "c",
+                "text": "ました"
+              },
+              {
+                "id": "d",
+                "text": "ください"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "書いて + いません으로 '아직 쓰지 않았다'라는 미완료를 나타냅니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'아직 공부를 하지 않았어요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "していません",
+              "勉強を",
+              "まだ"
+            ],
+            "correct_order": [
+              "まだ",
+              "勉強を",
+              "していません"
+            ],
+            "explanation": "まだ(아직) + 목적어(勉強を) + 동사て형+いません(していません). まだ로 미완료를 강조합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-029",
+      "lesson_no": 29,
+      "chapter_lesson_no": 4,
+      "title": "이미 끝냈을 때",
+      "subtitle": "もう〜ました로 완료 상태 말하기",
+      "topic": "완료",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "もう〜ました",
+        "meaning_ko": "이미 ~했다 (완료)",
+        "grammar_order": 54,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        185,
+        91,
+        99,
+        92,
+        101,
+        282
+      ],
+      "vocab_detail": {
+        "185": "もう (이미, 벌써)",
+        "91": "食べる (먹다)",
+        "99": "書く (쓰다)",
+        "92": "飲む (마시다)",
+        "101": "買う (사다)",
+        "282": "終わる (끝나다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "저녁, 오늘 할 일을 다 끝냈는지 확인",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、もう晩ご飯を食べましたか。",
+              "translation": "김 씨, 벌써 저녁밥 먹었어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、もう食べました。薬も飲みました。",
+              "translation": "네, 이미 먹었어요. 약도 마셨어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "レポートはもう書きましたか。",
+              "translation": "레포트는 벌써 썼어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、もう書きました。買い物ももう終わりました。",
+              "translation": "네, 이미 썼어요. 장보기도 벌써 끝났어요."
+            }
+          ],
+          "highlights": [
+            "もう",
+            "食べました",
+            "飲みました",
+            "書きました",
+            "終わりました"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "もう의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "이미, 벌써"
+              },
+              {
+                "id": "b",
+                "text": "아직"
+              },
+              {
+                "id": "c",
+                "text": "전혀"
+              },
+              {
+                "id": "d",
+                "text": "항상"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "もう는 '이미, 벌써'라는 뜻으로 완료를 나타낼 때 씁니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'끝나다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "終わる"
+              },
+              {
+                "id": "b",
+                "text": "買う"
+              },
+              {
+                "id": "c",
+                "text": "書く"
+              },
+              {
+                "id": "d",
+                "text": "飲む"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "終わる(おわる)는 '끝나다'입니다. 買う(かう)는 '사다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "もう晩ご飯を____。(벌써 저녁밥을 먹었어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "食べました"
+              },
+              {
+                "id": "b",
+                "text": "食べています"
+              },
+              {
+                "id": "c",
+                "text": "食べません"
+              },
+              {
+                "id": "d",
+                "text": "食べます"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "もう + 〜ました로 '이미 ~했다'라는 완료를 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "レポートは____書きましたか。(레포트는 벌써 썼어요?)",
+            "options": [
+              {
+                "id": "a",
+                "text": "もう"
+              },
+              {
+                "id": "b",
+                "text": "まだ"
+              },
+              {
+                "id": "c",
+                "text": "ちょっと"
+              },
+              {
+                "id": "d",
+                "text": "あまり"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "もう는 '이미/벌써'로, 완료 여부를 물을 때 もう〜ましたか로 씁니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'장보기도 벌써 끝났어요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "終わりました",
+              "もう",
+              "買い物も"
+            ],
+            "correct_order": [
+              "買い物も",
+              "もう",
+              "終わりました"
+            ],
+            "explanation": "주어(買い物も) + 부사(もう) + 동사ました형(終わりました). もう로 완료를 강조합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-030",
+      "lesson_no": 30,
+      "chapter_lesson_no": 5,
+      "title": "반복 습관을 말할 때",
+      "subtitle": "ている로 습관 표현하기",
+      "topic": "습관",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ている",
+        "meaning_ko": "~하고 있다 (반복 습관)",
+        "grammar_order": 20,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        179,
+        180,
+        181,
+        23,
+        24,
+        548
+      ],
+      "vocab_detail": {
+        "179": "いつも (항상)",
+        "180": "時々 (가끔)",
+        "181": "よく (자주)",
+        "23": "毎日 (매일)",
+        "24": "毎週 (매주)",
+        "548": "毎朝 (매일 아침)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "건강 습관에 대해 이야기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんは毎日運動していますか。",
+              "translation": "김 씨는 매일 운동하고 있어요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、毎朝走っています。いつも六時に起きています。",
+              "translation": "네, 매일 아침 달리고 있어요. 항상 여섯 시에 일어나고 있어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "すごいですね。私は時々散歩しています。",
+              "translation": "대단하네요. 저는 가끔 산책하고 있어요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "毎週テニスもしていますよ。よく友達と一緒にやっています。",
+              "translation": "매주 테니스도 하고 있어요. 자주 친구와 같이 하고 있어요."
+            }
+          ],
+          "highlights": [
+            "ている",
+            "していますか",
+            "走っています",
+            "しています",
+            "やっています",
+            "毎日",
+            "いつも"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "毎朝의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "매일 아침"
+              },
+              {
+                "id": "b",
+                "text": "매일 저녁"
+              },
+              {
+                "id": "c",
+                "text": "매주"
+              },
+              {
+                "id": "d",
+                "text": "가끔"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "毎朝(まいあさ)는 '매일 아침'이라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'가끔'을 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "時々"
+              },
+              {
+                "id": "b",
+                "text": "いつも"
+              },
+              {
+                "id": "c",
+                "text": "よく"
+              },
+              {
+                "id": "d",
+                "text": "毎日"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "時々(ときどき)는 '가끔'입니다. いつも는 '항상', よく는 '자주'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "毎日運動____。(매일 운동하고 있어요.) — 반복 습관을 말할 때",
+            "options": [
+              {
+                "id": "a",
+                "text": "しています"
+              },
+              {
+                "id": "b",
+                "text": "します"
+              },
+              {
+                "id": "c",
+                "text": "しました"
+              },
+              {
+                "id": "d",
+                "text": "しません"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ている(〜しています)는 진행뿐 아니라 반복적인 습관도 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "____六時に起きています。(항상 여섯 시에 일어나고 있어요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "いつも"
+              },
+              {
+                "id": "b",
+                "text": "時々"
+              },
+              {
+                "id": "c",
+                "text": "もう"
+              },
+              {
+                "id": "d",
+                "text": "まだ"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "いつも는 '항상'으로, ている와 함께 쓰면 규칙적 습관을 강조합니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'매주 테니스도 하고 있어요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "しています",
+              "テニスも",
+              "毎週"
+            ],
+            "correct_order": [
+              "毎週",
+              "テニスも",
+              "しています"
+            ],
+            "explanation": "빈도(毎週) + 목적어(テニスも) + 동사て형+います(しています). ている로 반복 습관을 나타냅니다."
+          }
+        ]
+      }
+    }
+  ]
+}

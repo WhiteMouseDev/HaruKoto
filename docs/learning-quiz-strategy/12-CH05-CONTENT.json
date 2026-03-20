@@ -1,0 +1,983 @@
+{
+  "meta": {
+    "chapter_id": "CH05",
+    "chapter_title": "과거와 순서",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 5,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-03-20",
+    "author": "Claude Code × Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-021",
+      "lesson_no": 21,
+      "chapter_lesson_no": 1,
+      "title": "지난 일을 보고할 때",
+      "subtitle": "ました로 정중 과거 긍정하기",
+      "topic": "정중 과거 긍정",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ました",
+        "meaning_ko": "~했습니다 (정중 과거 긍정)",
+        "grammar_order": 4,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        18,
+        412,
+        322,
+        332,
+        269
+      ],
+      "vocab_detail": {
+        "18": "昨日 (어제)",
+        "412": "先週 (지난주)",
+        "322": "去年 (작년)",
+        "332": "今朝 (오늘 아침)",
+        "269": "おととい (그저께)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "월요일 아침, 주말에 한 일 이야기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、おはようございます。先週の週末は何をしましたか。",
+              "translation": "김 씨, 안녕하세요. 지난주 주말에는 뭘 했나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "昨日は友達と映画を見ました。おとといは買い物をしました。",
+              "translation": "어제는 친구와 영화를 봤습니다. 그저께는 쇼핑을 했습니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "いいですね。今朝は何をしましたか。",
+              "translation": "좋네요. 오늘 아침에는 뭘 했나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "今朝は早く起きました。去年から毎朝走っています。",
+              "translation": "오늘 아침에는 일찍 일어났습니다. 작년부터 매일 아침 달리고 있어요."
+            }
+          ],
+          "highlights": [
+            "ました",
+            "昨日",
+            "先週",
+            "今朝",
+            "おととい",
+            "去年"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "昨日의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "어제"
+              },
+              {
+                "id": "b",
+                "text": "오늘"
+              },
+              {
+                "id": "c",
+                "text": "내일"
+              },
+              {
+                "id": "d",
+                "text": "그저께"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "昨日(きのう)는 '어제'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'지난주'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "先週"
+              },
+              {
+                "id": "b",
+                "text": "今週"
+              },
+              {
+                "id": "c",
+                "text": "来週"
+              },
+              {
+                "id": "d",
+                "text": "去年"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "先週(せんしゅう)는 '지난주'입니다. 今週는 '이번 주', 来週는 '다음 주'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "昨日、映画を見____。(어제 영화를 봤습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ました"
+              },
+              {
+                "id": "b",
+                "text": "ます"
+              },
+              {
+                "id": "c",
+                "text": "ません"
+              },
+              {
+                "id": "d",
+                "text": "ませんでした"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ました는 '~했습니다'로, 과거에 한 일을 정중하게 말할 때 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "今朝、早く起き____。(오늘 아침 일찍 일어났습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ました"
+              },
+              {
+                "id": "b",
+                "text": "ます"
+              },
+              {
+                "id": "c",
+                "text": "ません"
+              },
+              {
+                "id": "d",
+                "text": "ましょう"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "동사의 ます형 어간 + ました로 과거 긍정을 나타냅니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'어제 친구와 영화를 봤습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "見ました",
+              "昨日",
+              "友達と",
+              "映画を"
+            ],
+            "correct_order": [
+              "昨日",
+              "友達と",
+              "映画を",
+              "見ました"
+            ],
+            "explanation": "시간(昨日) + 동반(友達と) + 목적어(映画を) + 동사(見ました). 일본어는 동사가 문장 끝에 옵니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-022",
+      "lesson_no": 22,
+      "chapter_lesson_no": 2,
+      "title": "못 한 일을 보고할 때",
+      "subtitle": "ませんでした로 정중 과거 부정하기",
+      "topic": "정중 과거 부정",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ませんでした",
+        "meaning_ko": "~하지 않았습니다 (정중 과거 부정)",
+        "grammar_order": 5,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [
+        82,
+        83,
+        84,
+        369,
+        577
+      ],
+      "vocab_detail": {
+        "82": "テスト (시험)",
+        "83": "宿題 (숙제)",
+        "84": "質問 (질문)",
+        "369": "作文 (작문)",
+        "577": "問題 (문제)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "시험 후 선생님과 결과 이야기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、昨日のテストはどうでしたか。",
+              "translation": "김 씨, 어제 시험은 어땠나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "あまりよくなかったです。宿題はしましたが、作文の問題ができませんでした。",
+              "translation": "별로 좋지 않았어요. 숙제는 했지만 작문 문제를 못 했습니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "そうですか。質問はしませんでしたか。",
+              "translation": "그랬군요. 질문은 안 했나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、質問しませんでした。次のテストは頑張ります。",
+              "translation": "아니요, 질문하지 않았습니다. 다음 시험은 열심히 하겠습니다."
+            }
+          ],
+          "highlights": [
+            "ませんでした",
+            "テスト",
+            "宿題",
+            "質問",
+            "作文",
+            "問題"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "宿題의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "숙제"
+              },
+              {
+                "id": "b",
+                "text": "시험"
+              },
+              {
+                "id": "c",
+                "text": "질문"
+              },
+              {
+                "id": "d",
+                "text": "작문"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "宿題(しゅくだい)는 '숙제'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'문제'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "問題"
+              },
+              {
+                "id": "b",
+                "text": "質問"
+              },
+              {
+                "id": "c",
+                "text": "作文"
+              },
+              {
+                "id": "d",
+                "text": "テスト"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "問題(もんだい)는 '문제'입니다. 質問(しつもん)는 '질문'이니 혼동하지 마세요."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "質問し____。(질문하지 않았습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ませんでした"
+              },
+              {
+                "id": "b",
+                "text": "ました"
+              },
+              {
+                "id": "c",
+                "text": "ません"
+              },
+              {
+                "id": "d",
+                "text": "ます"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ませんでした는 '~하지 않았습니다'로, 과거에 안 한 일을 정중하게 말합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "作文の問題ができ____。(작문 문제를 못 했습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ませんでした"
+              },
+              {
+                "id": "b",
+                "text": "ました"
+              },
+              {
+                "id": "c",
+                "text": "ません"
+              },
+              {
+                "id": "d",
+                "text": "ましょう"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "できませんでした는 '할 수 없었습니다/못 했습니다'로, 과거 부정을 나타냅니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'어제 숙제를 하지 않았습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "しませんでした",
+              "昨日",
+              "宿題を"
+            ],
+            "correct_order": [
+              "昨日",
+              "宿題を",
+              "しませんでした"
+            ],
+            "explanation": "시간(昨日) + 목적어(宿題を) + 동사 부정 과거(しませんでした). ませんでした가 과거 부정을 나타냅니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-023",
+      "lesson_no": 23,
+      "chapter_lesson_no": 3,
+      "title": "활용 규칙을 정리할 때",
+      "subtitle": "て/た 변형 규칙으로 동사형 만들기",
+      "topic": "て형 변형",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "Verb て-form",
+        "meaning_ko": "동사 て형 (연결·요청 등의 기본형)",
+        "grammar_order": 49,
+        "bunpro_ref": "L6"
+      },
+      "vocab_orders": [
+        95,
+        93,
+        101,
+        94,
+        131,
+        117
+      ],
+      "vocab_detail": {
+        "95": "帰る (돌아가다)",
+        "93": "行く (가다)",
+        "101": "買う (사다)",
+        "94": "来る (오다)",
+        "131": "出かける (외출하다)",
+        "117": "出る (나가다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "일본어 수업에서 て형 변형 연습",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "今日はて形の練習をしましょう。行くのて形は何ですか。",
+              "translation": "오늘은 て형 연습을 합시다. 行く의 て형은 뭔가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "行って、です。帰るは帰って、買うは買ってですね。",
+              "translation": "行って입니다. 帰る는 帰って, 買う는 買って이지요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "正解です。では、来るのて形は？出かけるは？",
+              "translation": "정답입니다. 그럼, 来る의 て형은? 出かける는?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "来るは来て、出かけるは出かけてです。出るは出てですね。",
+              "translation": "来る는 来て, 出かける는 出かけて입니다. 出る는 出て이지요."
+            }
+          ],
+          "highlights": [
+            "て",
+            "行って",
+            "帰って",
+            "買って",
+            "来て",
+            "出かけて",
+            "出て"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "帰るの뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "돌아가다"
+              },
+              {
+                "id": "b",
+                "text": "가다"
+              },
+              {
+                "id": "c",
+                "text": "나가다"
+              },
+              {
+                "id": "d",
+                "text": "오다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "帰る(かえる)는 '돌아가다'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'사다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "買う"
+              },
+              {
+                "id": "b",
+                "text": "行く"
+              },
+              {
+                "id": "c",
+                "text": "出る"
+              },
+              {
+                "id": "d",
+                "text": "来る"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "買う(かう)는 '사다'입니다. 行く(いく)는 '가다'를 뜻합니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "行くのて形は「行____」です。",
+            "options": [
+              {
+                "id": "a",
+                "text": "って"
+              },
+              {
+                "id": "b",
+                "text": "いて"
+              },
+              {
+                "id": "c",
+                "text": "て"
+              },
+              {
+                "id": "d",
+                "text": "んで"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "行く는 예외적으로 行って가 됩니다. 보통 く→いて이지만 行く만 行って입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "来るのて形は「____」です。",
+            "options": [
+              {
+                "id": "a",
+                "text": "来て"
+              },
+              {
+                "id": "b",
+                "text": "来って"
+              },
+              {
+                "id": "c",
+                "text": "来いて"
+              },
+              {
+                "id": "d",
+                "text": "来んで"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "来る(くる)는 불규칙 동사로, て형은 来て(きて)가 됩니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'집에 돌아가서 밥을 먹었습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "帰って",
+              "家に",
+              "ご飯を食べました"
+            ],
+            "correct_order": [
+              "家に",
+              "帰って",
+              "ご飯を食べました"
+            ],
+            "explanation": "장소(家に) + て형(帰って) + 다음 동작(ご飯を食べました). て형으로 동작을 연결합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-024",
+      "lesson_no": 24,
+      "chapter_lesson_no": 4,
+      "title": "동작을 이어 말할 때",
+      "subtitle": "Verb+て로 동작 연결하기",
+      "topic": "동작 연결",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "Verb+て、Verb",
+        "meaning_ko": "~하고, ~해서 (동작을 순서대로 연결)",
+        "grammar_order": 50,
+        "bunpro_ref": "L6"
+      },
+      "vocab_orders": [
+        118,
+        119,
+        129,
+        560,
+        128,
+        216
+      ],
+      "vocab_detail": {
+        "118": "開ける (열다)",
+        "119": "閉める (닫다)",
+        "129": "洗う (씻다)",
+        "560": "磨く (닦다)",
+        "128": "着る (입다)",
+        "216": "浴びる (뒤집어쓰다, 샤워하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "아침 루틴을 순서대로 설명",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんの朝のルーティンは何ですか。",
+              "translation": "김 씨의 아침 루틴은 뭔가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "まず窓を開けて、顔を洗って、歯を磨きます。",
+              "translation": "먼저 창문을 열고, 얼굴을 씻고, 이를 닦습니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "それから？シャワーを浴びて、服を着ますか。",
+              "translation": "그다음은? 샤워를 하고 옷을 입나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、シャワーを浴びて、服を着て、窓を閉めて出かけます。",
+              "translation": "네, 샤워를 하고 옷을 입고 창문을 닫고 나갑니다."
+            }
+          ],
+          "highlights": [
+            "て",
+            "開けて",
+            "洗って",
+            "磨きます",
+            "浴びて",
+            "着て",
+            "閉めて"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "洗うの뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "씻다"
+              },
+              {
+                "id": "b",
+                "text": "닦다"
+              },
+              {
+                "id": "c",
+                "text": "열다"
+              },
+              {
+                "id": "d",
+                "text": "닫다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "洗う(あらう)는 '씻다'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'입다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "着る"
+              },
+              {
+                "id": "b",
+                "text": "開ける"
+              },
+              {
+                "id": "c",
+                "text": "閉める"
+              },
+              {
+                "id": "d",
+                "text": "浴びる"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "着る(きる)는 '입다'입니다. 浴びる(あびる)는 '(샤워를) 하다'를 뜻합니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "顔を洗____、歯を磨きます。(얼굴을 씻고 이를 닦습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "って"
+              },
+              {
+                "id": "b",
+                "text": "て"
+              },
+              {
+                "id": "c",
+                "text": "んで"
+              },
+              {
+                "id": "d",
+                "text": "いて"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "洗う(う동사)의 て형은 洗って입니다. う→って로 변합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "シャワーを浴び____、服を着ます。(샤워를 하고 옷을 입습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "て"
+              },
+              {
+                "id": "b",
+                "text": "って"
+              },
+              {
+                "id": "c",
+                "text": "んで"
+              },
+              {
+                "id": "d",
+                "text": "いて"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "浴びる(る동사)의 て형은 浴びて입니다. る동사는 る→て로 간단히 바뀝니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'창문을 열고 얼굴을 씻고 이를 닦습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "歯を磨きます",
+              "窓を開けて",
+              "顔を洗って"
+            ],
+            "correct_order": [
+              "窓を開けて",
+              "顔を洗って",
+              "歯を磨きます"
+            ],
+            "explanation": "동작 순서대로 て형으로 연결: 窓を開けて(열고) → 顔を洗って(씻고) → 歯を磨きます(닦습니다). 마지막 동작만 ます형으로 끝냅니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-025",
+      "lesson_no": 25,
+      "chapter_lesson_no": 5,
+      "title": "순서를 설명할 때",
+      "subtitle": "てから로 선후 관계 말하기",
+      "topic": "선후 관계",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "Verb+てから",
+        "meaning_ko": "~한 다음에, ~하고 나서",
+        "grammar_order": 51,
+        "bunpro_ref": "L6"
+      },
+      "vocab_orders": [
+        206,
+        517,
+        502,
+        282,
+        114
+      ],
+      "vocab_detail": {
+        "206": "朝御飯 (아침밥)",
+        "517": "晩御飯 (저녁밥)",
+        "502": "始まる (시작되다)",
+        "282": "終わる (끝나다)",
+        "114": "使う (사용하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "하루 일과의 순서를 설명",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、毎日の予定を教えてください。",
+              "translation": "김 씨, 매일 일정을 알려주세요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "朝御飯を食べてから、学校に行きます。授業が始まるまで本を読みます。",
+              "translation": "아침밥을 먹고 나서 학교에 갑니다. 수업이 시작될 때까지 책을 읽어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "授業が終わってから何をしますか。",
+              "translation": "수업이 끝나고 나서 뭘 하나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "図書館でパソコンを使ってから、晩御飯を食べます。",
+              "translation": "도서관에서 컴퓨터를 사용하고 나서 저녁밥을 먹습니다."
+            }
+          ],
+          "highlights": [
+            "てから",
+            "朝御飯",
+            "晩御飯",
+            "始まる",
+            "終わって",
+            "使って"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "朝御飯의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "아침밥"
+              },
+              {
+                "id": "b",
+                "text": "저녁밥"
+              },
+              {
+                "id": "c",
+                "text": "점심밥"
+              },
+              {
+                "id": "d",
+                "text": "간식"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "朝御飯(あさごはん)는 '아침밥'입니다. 晩御飯(ばんごはん)는 '저녁밥'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'끝나다'를 뜻하는 일본어는?",
+            "options": [
+              {
+                "id": "a",
+                "text": "終わる"
+              },
+              {
+                "id": "b",
+                "text": "始まる"
+              },
+              {
+                "id": "c",
+                "text": "使う"
+              },
+              {
+                "id": "d",
+                "text": "帰る"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "終わる(おわる)는 '끝나다'입니다. 始まる(はじまる)는 '시작되다'를 뜻합니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "朝御飯を食べ____、学校に行きます。(아침밥을 먹고 나서 학교에 갑니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "てから"
+              },
+              {
+                "id": "b",
+                "text": "て"
+              },
+              {
+                "id": "c",
+                "text": "たら"
+              },
+              {
+                "id": "d",
+                "text": "ながら"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "〜てから는 '~하고 나서'로, 먼저 하는 동작이 끝난 뒤 다음 동작을 할 때 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "授業が終わっ____、何をしますか。(수업이 끝나고 나서 뭘 하나요?)",
+            "options": [
+              {
+                "id": "a",
+                "text": "てから"
+              },
+              {
+                "id": "b",
+                "text": "て"
+              },
+              {
+                "id": "c",
+                "text": "ても"
+              },
+              {
+                "id": "d",
+                "text": "ないで"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "終わってから는 '끝나고 나서'입니다. て와 달리 てから는 선후 관계를 명확히 합니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'저녁밥을 먹고 나서 숙제를 합니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "晩御飯を",
+              "食べてから",
+              "宿題をします"
+            ],
+            "correct_order": [
+              "晩御飯を",
+              "食べてから",
+              "宿題をします"
+            ],
+            "explanation": "목적어(晩御飯を) + てから(食べてから) + 다음 동작(宿題をします). てから가 '~하고 나서'를 나타냅니다."
+          }
+        ]
+      }
+    }
+  ]
+}

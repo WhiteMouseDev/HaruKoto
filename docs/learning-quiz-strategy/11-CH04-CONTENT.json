@@ -1,0 +1,637 @@
+{
+  "meta": {
+    "chapter_id": "CH04",
+    "chapter_title": "동사 기초",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 4,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-03-20",
+    "author": "Claude Code x Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-016",
+      "lesson_no": 16,
+      "chapter_lesson_no": 1,
+      "title": "사전형을 읽어야 할 때",
+      "subtitle": "동사 사전형으로 기본 형태 구분하기",
+      "topic": "동사 그룹",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "動詞の辞書形 (る動詞 / う動詞)",
+        "meaning_ko": "동사 사전형 — る동사와 う동사 구분하기",
+        "grammar_order": 45,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [91, 92, 96, 99, 98, 105, 106],
+      "vocab_detail": {
+        "91": "食べる (먹다, る동사)",
+        "92": "飲む (마시다, う동사)",
+        "96": "見る (보다, る동사)",
+        "99": "書く (쓰다, う동사)",
+        "98": "読む (읽다, う동사)",
+        "105": "起きる (일어나다, る동사)",
+        "106": "寝る (자다, る동사)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "일본어 수업에서 동사 그룹 구분 연습",
+          "script": [
+            {
+              "speaker": "先生",
+              "voice_id": "japanese_female_1",
+              "text": "食べるは「る動詞」です。飲むは「う動詞」です。",
+              "translation": "'다베루'는 る동사입니다. '노무'는 う동사입니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "見るも「る動詞」ですか。",
+              "translation": "'미루'도 る동사인가요?"
+            },
+            {
+              "speaker": "先生",
+              "voice_id": "japanese_female_1",
+              "text": "はい、見るも「る動詞」です。起きると寝るも「る動詞」ですよ。",
+              "translation": "네, '미루'도 る동사입니다. '오키루'와 '네루'도 る동사예요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "書くと読むは「う動詞」ですね。",
+              "translation": "'카쿠'와 '요무'는 う동사네요."
+            }
+          ],
+          "highlights": ["食べる", "飲む", "見る", "書く", "読む", "起きる", "寝る"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "食べるの意味は? (食べる의 뜻은?)",
+            "options": [
+              {"id": "a", "text": "먹다"},
+              {"id": "b", "text": "마시다"},
+              {"id": "c", "text": "보다"},
+              {"id": "d", "text": "쓰다"}
+            ],
+            "correct_answer": "a",
+            "explanation": "食べる(たべる)는 '먹다'라는 뜻입니다. 飲む(のむ)가 '마시다'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'읽다'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "読む"},
+              {"id": "b", "text": "書く"},
+              {"id": "c", "text": "見る"},
+              {"id": "d", "text": "飲む"}
+            ],
+            "correct_answer": "a",
+            "explanation": "読む(よむ)는 '읽다'입니다. 書く(かく)는 '쓰다'이니 혼동하지 마세요."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "食べるは「____動詞」です。(다베루는 __동사입니다.)",
+            "options": [
+              {"id": "a", "text": "る"},
+              {"id": "b", "text": "う"},
+              {"id": "c", "text": "す"},
+              {"id": "d", "text": "く"}
+            ],
+            "correct_answer": "a",
+            "explanation": "食べる는 어미가 -える로 끝나므로 る동사입니다. る동사는 る를 빼고 활용합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "飲むは「____動詞」です。(노무는 __동사입니다.)",
+            "options": [
+              {"id": "a", "text": "う"},
+              {"id": "b", "text": "る"},
+              {"id": "c", "text": "す"},
+              {"id": "d", "text": "く"}
+            ],
+            "correct_answer": "a",
+            "explanation": "飲む는 어미가 -む로 끝나므로 う동사입니다. う동사는 어미가 う단 음으로 끝납니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'미루는 る동사입니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["「る動詞」", "見るは", "です"],
+            "correct_order": ["見るは", "「る動詞」", "です"],
+            "explanation": "주어(見るは) + 분류(「る動詞」) + です. 동사를 그룹으로 분류하는 문장입니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-017",
+      "lesson_no": 17,
+      "chapter_lesson_no": 2,
+      "title": "정중하게 말할 때",
+      "subtitle": "ます로 현재 동작 표현하기",
+      "topic": "정중형",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ます",
+        "meaning_ko": "~합니다 / ~해요 (동사 정중형)",
+        "grammar_order": 2,
+        "bunpro_ref": "L1"
+      },
+      "vocab_orders": [93, 100, 97, 101, 107, 112],
+      "vocab_detail": {
+        "93": "行く (가다)",
+        "100": "話す (말하다)",
+        "97": "聞く (듣다)",
+        "101": "買う (사다)",
+        "107": "歩く (걷다)",
+        "112": "待つ (기다리다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "일상 하루 일과를 선배에게 설명",
+          "script": [
+            {
+              "speaker": "山田",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、毎日何をしますか。",
+              "translation": "김 씨, 매일 뭘 하나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "朝、駅まで歩きます。そして電車で学校に行きます。",
+              "translation": "아침에 역까지 걸어갑니다. 그리고 전철로 학교에 갑니다."
+            },
+            {
+              "speaker": "山田",
+              "voice_id": "japanese_female_1",
+              "text": "授業で何をしますか。日本語を話しますか。",
+              "translation": "수업에서 뭘 하나요? 일본어를 말하나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、日本語を話します。先生の話を聞きます。帰りにパンを買います。そして友達を待ちます。",
+              "translation": "네, 일본어를 말합니다. 선생님 이야기를 듣습니다. 돌아오는 길에 빵을 삽니다. 그리고 친구를 기다립니다."
+            }
+          ],
+          "highlights": ["行きます", "歩きます", "話します", "聞きます", "買います", "待ちます"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "行くの意味は? (行く의 뜻은?)",
+            "options": [
+              {"id": "a", "text": "가다"},
+              {"id": "b", "text": "오다"},
+              {"id": "c", "text": "걷다"},
+              {"id": "d", "text": "달리다"}
+            ],
+            "correct_answer": "a",
+            "explanation": "行く(いく)는 '가다'라는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'듣다'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "聞く"},
+              {"id": "b", "text": "話す"},
+              {"id": "c", "text": "読む"},
+              {"id": "d", "text": "書く"}
+            ],
+            "correct_answer": "a",
+            "explanation": "聞く(きく)는 '듣다'입니다. 話す(はなす)는 '말하다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "学校に行き____。(학교에 갑니다.)",
+            "options": [
+              {"id": "a", "text": "ます"},
+              {"id": "b", "text": "ません"},
+              {"id": "c", "text": "ました"},
+              {"id": "d", "text": "る"}
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ます는 현재·미래의 동작을 정중하게 표현합니다. 行きます = 갑니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "日本語を話し____。(일본어를 말합니다.)",
+            "options": [
+              {"id": "a", "text": "ます"},
+              {"id": "b", "text": "ない"},
+              {"id": "c", "text": "た"},
+              {"id": "d", "text": "て"}
+            ],
+            "correct_answer": "a",
+            "explanation": "話す → 話します. う동사는 어미를 い단으로 바꾸고 ます를 붙입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'아침에 역까지 걸어갑니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["歩きます", "朝", "駅まで"],
+            "correct_order": ["朝", "駅まで", "歩きます"],
+            "explanation": "시간(朝) + 장소(駅まで) + 동사(歩きます). 일본어는 시간 → 장소 → 동사 순서입니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-018",
+      "lesson_no": 18,
+      "chapter_lesson_no": 3,
+      "title": "무엇을 하는지 말할 때",
+      "subtitle": "を로 목적어 표시하기",
+      "topic": "목적어",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜を",
+        "meaning_ko": "~을/를 (목적어를 나타내는 조사)",
+        "grammar_order": 46,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [39, 37, 38, 45, 46, 76, 77],
+      "vocab_detail": {
+        "39": "御飯 (밥)",
+        "37": "水 (물)",
+        "38": "お茶 (차)",
+        "45": "本 (책)",
+        "46": "新聞 (신문)",
+        "76": "映画 (영화)",
+        "77": "音楽 (음악)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "카페에서 주문하고 취미 이야기",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "すみません、お茶を一つください。",
+              "translation": "저기요, 차를 하나 주세요."
+            },
+            {
+              "speaker": "店員",
+              "voice_id": "japanese_female_1",
+              "text": "お茶ですね。お水もどうぞ。",
+              "translation": "차요. 물도 드세요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんは何を読みますか。本を読みますか。新聞を読みますか。",
+              "translation": "김 씨는 뭘 읽나요? 책을 읽나요? 신문을 읽나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "本を読みます。音楽を聞いて、映画を見ます。御飯を食べに行きましょう。",
+              "translation": "책을 읽습니다. 음악을 듣고, 영화를 봅니다. 밥을 먹으러 가요."
+            }
+          ],
+          "highlights": ["を", "お茶", "水", "本", "新聞", "音楽", "映画", "御飯"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "新聞의 뜻은?",
+            "options": [
+              {"id": "a", "text": "신문"},
+              {"id": "b", "text": "책"},
+              {"id": "c", "text": "잡지"},
+              {"id": "d", "text": "편지"}
+            ],
+            "correct_answer": "a",
+            "explanation": "新聞(しんぶん)는 '신문'입니다. 本(ほん)가 '책'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'물'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "水"},
+              {"id": "b", "text": "お茶"},
+              {"id": "c", "text": "御飯"},
+              {"id": "d", "text": "お酒"}
+            ],
+            "correct_answer": "a",
+            "explanation": "水(みず)는 '물'입니다. お茶(おちゃ)는 '차'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "本____読みます。(책을 읽습니다.)",
+            "options": [
+              {"id": "a", "text": "を"},
+              {"id": "b", "text": "は"},
+              {"id": "c", "text": "に"},
+              {"id": "d", "text": "で"}
+            ],
+            "correct_answer": "a",
+            "explanation": "を는 '~을/를'에 해당하는 조사로, 동사의 목적어를 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "音楽____聞きます。(음악을 듣습니다.)",
+            "options": [
+              {"id": "a", "text": "を"},
+              {"id": "b", "text": "が"},
+              {"id": "c", "text": "も"},
+              {"id": "d", "text": "と"}
+            ],
+            "correct_answer": "a",
+            "explanation": "聞く(듣다)의 목적어에는 を를 붙입니다. 音楽を聞きます = 음악을 듣습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'책을 읽습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["読みます", "本", "を"],
+            "correct_order": ["本", "を", "読みます"],
+            "explanation": "명사(本) + 조사(を) + 동사(読みます). を가 목적어를 표시합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-019",
+      "lesson_no": 19,
+      "chapter_lesson_no": 4,
+      "title": "예외 동사를 쓸 때",
+      "subtitle": "する・くる로 불규칙 활용하기",
+      "topic": "불규칙 동사",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "する / 来る (불규칙 동사)",
+        "meaning_ko": "하다 / 오다 — 불규칙 활용 (します / 来ます)",
+        "grammar_order": 47,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [81, 375, 78, 286, 80, 334],
+      "vocab_detail": {
+        "81": "勉強 (공부)",
+        "375": "散歩 (산책)",
+        "78": "旅行 (여행)",
+        "286": "買い物 (쇼핑)",
+        "80": "仕事 (일, 직업)",
+        "334": "結婚 (결혼)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "주말 계획에 대해 친구와 대화",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、週末は何をしますか。",
+              "translation": "김 씨, 주말에 뭘 하나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "土曜日は勉強をします。日曜日は散歩をします。",
+              "translation": "토요일은 공부를 합니다. 일요일은 산책을 합니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "いいですね。私は買い物をします。友達が韓国から来ます。",
+              "translation": "좋네요. 저는 쇼핑을 합니다. 친구가 한국에서 옵니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "来月、旅行をしますか。仕事はしませんか。",
+              "translation": "다음 달에 여행을 하나요? 일은 안 하나요?"
+            }
+          ],
+          "highlights": ["します", "来ます", "勉強", "散歩", "買い物", "旅行", "仕事"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "散歩의 뜻은?",
+            "options": [
+              {"id": "a", "text": "산책"},
+              {"id": "b", "text": "여행"},
+              {"id": "c", "text": "공부"},
+              {"id": "d", "text": "쇼핑"}
+            ],
+            "correct_answer": "a",
+            "explanation": "散歩(さんぽ)는 '산책'입니다. 旅行(りょこう)는 '여행'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'쇼핑'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "買い物"},
+              {"id": "b", "text": "仕事"},
+              {"id": "c", "text": "勉強"},
+              {"id": "d", "text": "結婚"}
+            ],
+            "correct_answer": "a",
+            "explanation": "買い物(かいもの)는 '쇼핑, 장보기'입니다. 仕事(しごと)는 '일'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "勉強を____。(공부를 합니다.)",
+            "options": [
+              {"id": "a", "text": "します"},
+              {"id": "b", "text": "来ます"},
+              {"id": "c", "text": "行きます"},
+              {"id": "d", "text": "あります"}
+            ],
+            "correct_answer": "a",
+            "explanation": "する의 ます형은 します입니다. 명사 + をします로 '~을/를 합니다'가 됩니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "友達が韓国から____。(친구가 한국에서 옵니다.)",
+            "options": [
+              {"id": "a", "text": "来ます"},
+              {"id": "b", "text": "します"},
+              {"id": "c", "text": "行きます"},
+              {"id": "d", "text": "帰ります"}
+            ],
+            "correct_answer": "a",
+            "explanation": "来る(くる)의 ます형은 来ます(きます)입니다. 불규칙 동사이므로 형태가 크게 바뀝니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'일요일은 산책을 합니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["します", "日曜日は", "散歩を"],
+            "correct_order": ["日曜日は", "散歩を", "します"],
+            "explanation": "시간(日曜日は) + 명사(散歩を) + します. する동사는 명사 + をします의 형태로 씁니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-020",
+      "lesson_no": 20,
+      "chapter_lesson_no": 5,
+      "title": "하지 않는 일을 말할 때",
+      "subtitle": "ない/ません으로 현재 부정하기",
+      "topic": "부정형",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜ない / 〜ません",
+        "meaning_ko": "~하지 않다 / ~하지 않습니다 (동사 부정형)",
+        "grammar_order": 48,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [40, 41, 42, 43, 263, 319],
+      "vocab_detail": {
+        "40": "肉 (고기)",
+        "41": "魚 (생선)",
+        "42": "野菜 (채소)",
+        "43": "果物 (과일)",
+        "263": "お酒 (술)",
+        "319": "牛乳 (우유)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "식당에서 음식 취향과 식이제한 이야기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんは肉を食べますか。",
+              "translation": "김 씨는 고기를 먹나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、食べます。でも魚は食べません。",
+              "translation": "네, 먹습니다. 하지만 생선은 먹지 않습니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "そうですか。お酒は飲みますか。",
+              "translation": "그렇군요. 술은 마시나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "お酒は飲みません。牛乳を飲みます。野菜と果物をたくさん食べます。",
+              "translation": "술은 마시지 않습니다. 우유를 마십니다. 채소와 과일을 많이 먹습니다."
+            }
+          ],
+          "highlights": ["食べません", "飲みません", "肉", "魚", "お酒", "牛乳", "野菜", "果物"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "野菜의 뜻은?",
+            "options": [
+              {"id": "a", "text": "채소"},
+              {"id": "b", "text": "과일"},
+              {"id": "c", "text": "고기"},
+              {"id": "d", "text": "생선"}
+            ],
+            "correct_answer": "a",
+            "explanation": "野菜(やさい)는 '채소'입니다. 果物(くだもの)가 '과일'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'우유'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "牛乳"},
+              {"id": "b", "text": "お茶"},
+              {"id": "c", "text": "お酒"},
+              {"id": "d", "text": "水"}
+            ],
+            "correct_answer": "a",
+            "explanation": "牛乳(ぎゅうにゅう)는 '우유'입니다. お酒(おさけ)는 '술'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "魚は食べ____。(생선은 먹지 않습니다.)",
+            "options": [
+              {"id": "a", "text": "ません"},
+              {"id": "b", "text": "ます"},
+              {"id": "c", "text": "ました"},
+              {"id": "d", "text": "ましょう"}
+            ],
+            "correct_answer": "a",
+            "explanation": "〜ません은 동사의 정중한 부정형입니다. 食べません = 먹지 않습니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "お酒は飲み____。(술은 마시지 않습니다.)",
+            "options": [
+              {"id": "a", "text": "ません"},
+              {"id": "b", "text": "ます"},
+              {"id": "c", "text": "ました"},
+              {"id": "d", "text": "たい"}
+            ],
+            "correct_answer": "a",
+            "explanation": "飲む → 飲みます(긍정) / 飲みません(부정). ません을 붙이면 부정이 됩니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'술은 마시지 않습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["飲みません", "お酒", "は"],
+            "correct_order": ["お酒", "は", "飲みません"],
+            "explanation": "명사(お酒) + 조사(は) + 부정동사(飲みません). は로 주제를 세우고 ません으로 부정합니다."
+          }
+        ]
+      }
+    }
+  ]
+}

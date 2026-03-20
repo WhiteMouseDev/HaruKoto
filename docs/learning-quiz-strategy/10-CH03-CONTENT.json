@@ -1,0 +1,635 @@
+{
+  "meta": {
+    "chapter_id": "CH03",
+    "chapter_title": "위치와 이동",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 3,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-03-20",
+    "author": "Claude Code x Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-011",
+      "lesson_no": 11,
+      "chapter_lesson_no": 1,
+      "title": "장소를 알려줄 때",
+      "subtitle": "ここ・そこ・あそこ로 위치 가리키기",
+      "topic": "위치 지시",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "ここ / そこ / あそこ",
+        "meaning_ko": "여기 / 거기 / 저기",
+        "grammar_order": 40,
+        "bunpro_ref": "L3"
+      },
+      "vocab_orders": [26, 29, 28, 32, 33, 30],
+      "vocab_detail": {
+        "26": "学校 (학교)",
+        "29": "駅 (역)",
+        "28": "病院 (병원)",
+        "32": "図書館 (도서관)",
+        "33": "公園 (공원)",
+        "30": "会社 (회사)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "대학 캠퍼스 안내",
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、ここは学校の図書館です。",
+              "translation": "김 씨, 여기는 학교의 도서관입니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "ありがとうございます。あそこは何ですか。",
+              "translation": "감사합니다. 저기는 뭔가요?"
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "あそこは駅です。そこは公園ですよ。",
+              "translation": "저기는 역입니다. 거기는 공원이에요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "そうですか。病院はどこですか。",
+              "translation": "그렇군요. 병원은 어디인가요?"
+            }
+          ],
+          "highlights": ["ここ", "そこ", "あそこ", "学校", "図書館", "駅", "公園"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "図書館의 뜻은?",
+            "options": [
+              {"id": "a", "text": "도서관"},
+              {"id": "b", "text": "학교"},
+              {"id": "c", "text": "병원"},
+              {"id": "d", "text": "회사"}
+            ],
+            "correct_answer": "a",
+            "explanation": "図書館(としょかん)는 '도서관'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'역'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "駅"},
+              {"id": "b", "text": "公園"},
+              {"id": "c", "text": "病院"},
+              {"id": "d", "text": "学校"}
+            ],
+            "correct_answer": "a",
+            "explanation": "駅(えき)는 '역'입니다. 公園(こうえん)는 '공원'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "____は学校の図書館です。(여기는 학교의 도서관입니다.)",
+            "options": [
+              {"id": "a", "text": "ここ"},
+              {"id": "b", "text": "どこ"},
+              {"id": "c", "text": "だれ"},
+              {"id": "d", "text": "なに"}
+            ],
+            "correct_answer": "a",
+            "explanation": "ここ는 '여기'라는 뜻으로, 화자 가까이에 있는 장소를 가리킵니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "____は駅です。(저기는 역입니다.) — 멀리 있는 곳을 가리킬 때",
+            "options": [
+              {"id": "a", "text": "あそこ"},
+              {"id": "b", "text": "ここ"},
+              {"id": "c", "text": "そこ"},
+              {"id": "d", "text": "どこ"}
+            ],
+            "correct_answer": "a",
+            "explanation": "あそこ는 '저기'로, 화자와 상대 모두에게서 먼 장소를 가리킵니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'거기는 공원입니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["公園", "そこは", "です"],
+            "correct_order": ["そこは", "公園", "です"],
+            "explanation": "지시어(そこは) + 명사(公園) + です. そこ는 상대 쪽에 있는 장소를 가리킵니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-012",
+      "lesson_no": 12,
+      "chapter_lesson_no": 2,
+      "title": "어디에 있나요?",
+      "subtitle": "どこ로 위치 묻기",
+      "topic": "위치 질문",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "どこ",
+        "meaning_ko": "어디 (장소를 묻는 의문사)",
+        "grammar_order": 41,
+        "bunpro_ref": "L3"
+      },
+      "vocab_orders": [447, 315, 585, 340, 603, 545],
+      "vocab_detail": {
+        "447": "デパート (백화점)",
+        "315": "喫茶店 (찻집, 카페)",
+        "585": "郵便局 (우체국)",
+        "340": "交番 (파출소)",
+        "603": "レストラン (레스토랑)",
+        "545": "ホテル (호텔)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "처음 온 도시에서 길 묻기",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "すみません。郵便局はどこですか。",
+              "translation": "실례합니다. 우체국은 어디인가요?"
+            },
+            {
+              "speaker": "山田",
+              "voice_id": "japanese_female_1",
+              "text": "郵便局はデパートの隣です。",
+              "translation": "우체국은 백화점 옆입니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "ありがとうございます。レストランはどこですか。",
+              "translation": "감사합니다. 레스토랑은 어디인가요?"
+            },
+            {
+              "speaker": "山田",
+              "voice_id": "japanese_female_1",
+              "text": "レストランはホテルの中です。喫茶店は交番の前ですよ。",
+              "translation": "레스토랑은 호텔 안에 있어요. 찻집은 파출소 앞이에요."
+            }
+          ],
+          "highlights": ["どこ", "郵便局", "デパート", "レストラン", "ホテル", "喫茶店", "交番"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "郵便局의 뜻은?",
+            "options": [
+              {"id": "a", "text": "우체국"},
+              {"id": "b", "text": "백화점"},
+              {"id": "c", "text": "파출소"},
+              {"id": "d", "text": "호텔"}
+            ],
+            "correct_answer": "a",
+            "explanation": "郵便局(ゆうびんきょく)는 '우체국'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'백화점'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "デパート"},
+              {"id": "b", "text": "レストラン"},
+              {"id": "c", "text": "ホテル"},
+              {"id": "d", "text": "喫茶店"}
+            ],
+            "correct_answer": "a",
+            "explanation": "デパート는 영어 department store에서 온 외래어로, '백화점'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "郵便局は____ですか。(우체국은 어디인가요?)",
+            "options": [
+              {"id": "a", "text": "どこ"},
+              {"id": "b", "text": "なに"},
+              {"id": "c", "text": "いつ"},
+              {"id": "d", "text": "だれ"}
+            ],
+            "correct_answer": "a",
+            "explanation": "どこ는 '어디'를 뜻하는 의문사로, 장소를 물을 때 사용합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "レストランは____ですか。(레스토랑은 어디인가요?)",
+            "options": [
+              {"id": "a", "text": "どこ"},
+              {"id": "b", "text": "ここ"},
+              {"id": "c", "text": "そこ"},
+              {"id": "d", "text": "あそこ"}
+            ],
+            "correct_answer": "a",
+            "explanation": "장소를 모를 때 どこ를 써서 '어디인가요?'라고 묻습니다. ここ/そこ/あそこ는 이미 알고 있는 장소를 가리킵니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'호텔은 어디인가요?'를 올바른 순서로 배열하세요.",
+            "tokens": ["どこ", "ホテルは", "ですか"],
+            "correct_order": ["ホテルは", "どこ", "ですか"],
+            "explanation": "주제(ホテルは) + 의문사(どこ) + ですか. 일본어에서는 의문사가 문장 끝이 아니라 서술어 앞에 옵니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-013",
+      "lesson_no": 13,
+      "chapter_lesson_no": 3,
+      "title": "존재 위치를 말할 때",
+      "subtitle": "に로 존재 장소 표시하기",
+      "topic": "존재 위치",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜に ある / いる",
+        "meaning_ko": "~에 있다 (존재 장소를 나타내는 조사)",
+        "grammar_order": 42,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [103, 104, 244, 382, 477, 467],
+      "vocab_detail": {
+        "103": "ある (있다-사물)",
+        "104": "いる (있다-생물)",
+        "244": "上 (위)",
+        "382": "下 (아래)",
+        "477": "中 (안)",
+        "467": "隣 (옆)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "새 방에서 물건 위치 설명",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "本は机の上にあります。",
+              "translation": "책은 책상 위에 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "かばんはどこにありますか。",
+              "translation": "가방은 어디에 있나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "かばんは椅子の下にあります。猫は箱の中にいますよ。",
+              "translation": "가방은 의자 아래에 있습니다. 고양이는 상자 안에 있어요."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "本当ですね。隣に犬もいますね。",
+              "translation": "정말이네요. 옆에 개도 있네요."
+            }
+          ],
+          "highlights": ["に", "ある", "いる", "上", "下", "中", "隣"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "上의 뜻은?",
+            "options": [
+              {"id": "a", "text": "위"},
+              {"id": "b", "text": "아래"},
+              {"id": "c", "text": "안"},
+              {"id": "d", "text": "옆"}
+            ],
+            "correct_answer": "a",
+            "explanation": "上(うえ)는 '위'입니다. 下(した)는 '아래'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'있다(생물)'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "いる"},
+              {"id": "b", "text": "ある"},
+              {"id": "c", "text": "する"},
+              {"id": "d", "text": "くる"}
+            ],
+            "correct_answer": "a",
+            "explanation": "いる는 사람이나 동물 등 생물이 '있다'는 뜻입니다. ある는 사물이 '있다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "本は机の上____あります。(책은 책상 위에 있습니다.)",
+            "options": [
+              {"id": "a", "text": "に"},
+              {"id": "b", "text": "で"},
+              {"id": "c", "text": "を"},
+              {"id": "d", "text": "は"}
+            ],
+            "correct_answer": "a",
+            "explanation": "に는 존재하는 장소를 나타내는 조사입니다. ある/いる 앞에는 に를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "猫は箱の中に____。(고양이는 상자 안에 있습니다.) — 생물의 존재",
+            "options": [
+              {"id": "a", "text": "います"},
+              {"id": "b", "text": "あります"},
+              {"id": "c", "text": "します"},
+              {"id": "d", "text": "きます"}
+            ],
+            "correct_answer": "a",
+            "explanation": "생물(사람, 동물)에는 いる(います)를 쓰고, 사물에는 ある(あります)를 씁니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'가방은 의자 아래에 있습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["椅子の下に", "かばんは", "あります"],
+            "correct_order": ["かばんは", "椅子の下に", "あります"],
+            "explanation": "주제(かばんは) + 장소(椅子の下に) + 존재(あります). に가 존재 장소를 표시합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-014",
+      "lesson_no": 14,
+      "chapter_lesson_no": 4,
+      "title": "행동 장소를 말할 때",
+      "subtitle": "で로 행동 장소와 수단 말하기",
+      "topic": "행동 장소",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜で",
+        "meaning_ko": "~에서 / ~(으)로 (행동 장소·수단을 나타내는 조사)",
+        "grammar_order": 43,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [32, 504, 70, 72, 392, 320],
+      "vocab_detail": {
+        "32": "図書館 (도서관)",
+        "504": "バス (버스)",
+        "70": "電車 (전철)",
+        "72": "自転車 (자전거)",
+        "392": "食堂 (식당)",
+        "320": "教室 (교실)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "통학 방법과 활동 장소 이야기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんは何で学校に来ますか。",
+              "translation": "김 씨는 뭘로 학교에 오나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "電車で来ます。田中さんはバスですか。",
+              "translation": "전철로 옵니다. 다나카 씨는 버스인가요?"
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "いいえ、自転車で来ます。今日は図書館で勉強しますか。",
+              "translation": "아니요, 자전거로 옵니다. 오늘은 도서관에서 공부하나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、図書館で勉強します。昼は食堂で食べます。",
+              "translation": "네, 도서관에서 공부합니다. 점심은 식당에서 먹습니다."
+            }
+          ],
+          "highlights": ["で", "電車", "バス", "自転車", "図書館", "食堂"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "電車의 뜻은?",
+            "options": [
+              {"id": "a", "text": "전철"},
+              {"id": "b", "text": "버스"},
+              {"id": "c", "text": "자전거"},
+              {"id": "d", "text": "택시"}
+            ],
+            "correct_answer": "a",
+            "explanation": "電車(でんしゃ)는 '전철'입니다. バス는 '버스', 自転車(じてんしゃ)는 '자전거'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'식당'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "食堂"},
+              {"id": "b", "text": "教室"},
+              {"id": "c", "text": "図書館"},
+              {"id": "d", "text": "病院"}
+            ],
+            "correct_answer": "a",
+            "explanation": "食堂(しょくどう)는 '식당'입니다. 教室(きょうしつ)는 '교실'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "電車____来ます。(전철로 옵니다.) — 이동 수단을 말할 때",
+            "options": [
+              {"id": "a", "text": "で"},
+              {"id": "b", "text": "に"},
+              {"id": "c", "text": "を"},
+              {"id": "d", "text": "は"}
+            ],
+            "correct_answer": "a",
+            "explanation": "で는 수단·방법을 나타냅니다. '전철로'처럼 '~(으)로'에 해당합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "図書館____勉強します。(도서관에서 공부합니다.) — 행동하는 장소를 말할 때",
+            "options": [
+              {"id": "a", "text": "で"},
+              {"id": "b", "text": "に"},
+              {"id": "c", "text": "へ"},
+              {"id": "d", "text": "が"}
+            ],
+            "correct_answer": "a",
+            "explanation": "で는 행동이 일어나는 장소를 나타냅니다. '~에서'에 해당합니다. に는 존재 장소에 쓰입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'식당에서 먹습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["食べます", "食堂で", "昼は"],
+            "correct_order": ["昼は", "食堂で", "食べます"],
+            "explanation": "주제(昼は) + 장소(食堂で) + 동사(食べます). で가 행동 장소를 표시합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-015",
+      "lesson_no": 15,
+      "chapter_lesson_no": 5,
+      "title": "목적지로 이동할 때",
+      "subtitle": "へ로 이동 방향 말하기",
+      "topic": "이동 방향",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "〜へ",
+        "meaning_ko": "~(으)로 / ~에 (이동 방향을 나타내는 조사)",
+        "grammar_order": 44,
+        "bunpro_ref": "L4"
+      },
+      "vocab_orders": [26, 30, 28, 284, 59, 57],
+      "vocab_detail": {
+        "26": "学校 (학교)",
+        "30": "会社 (회사)",
+        "28": "病院 (병원)",
+        "284": "外国 (외국)",
+        "59": "海 (바다)",
+        "57": "山 (산)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "주말 여행 계획 세우기",
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "週末はどこへ行きますか。",
+              "translation": "주말에는 어디로 가나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "海へ行きます。佐藤さんは？",
+              "translation": "바다로 갑니다. 사토 씨는요?"
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "私は山へ行きます。来月は外国へ行きますよ。",
+              "translation": "저는 산으로 갑니다. 다음 달에는 외국으로 가요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいですね。月曜日は学校へ行きますね。",
+              "translation": "좋겠네요. 월요일에는 학교에 가겠네요."
+            }
+          ],
+          "highlights": ["へ", "海", "山", "外国", "学校"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "海의 뜻은?",
+            "options": [
+              {"id": "a", "text": "바다"},
+              {"id": "b", "text": "산"},
+              {"id": "c", "text": "외국"},
+              {"id": "d", "text": "학교"}
+            ],
+            "correct_answer": "a",
+            "explanation": "海(うみ)는 '바다'입니다. 山(やま)는 '산'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'외국'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "外国"},
+              {"id": "b", "text": "会社"},
+              {"id": "c", "text": "病院"},
+              {"id": "d", "text": "学校"}
+            ],
+            "correct_answer": "a",
+            "explanation": "外国(がいこく)는 '외국'입니다. 会社(かいしゃ)는 '회사'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "海____行きます。(바다로 갑니다.) — 이동 방향을 말할 때",
+            "options": [
+              {"id": "a", "text": "へ"},
+              {"id": "b", "text": "で"},
+              {"id": "c", "text": "を"},
+              {"id": "d", "text": "が"}
+            ],
+            "correct_answer": "a",
+            "explanation": "へ는 이동의 방향을 나타내는 조사입니다. '~(으)로'에 해당합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "外国____行きますよ。(외국으로 가요.) — 목적지 방향을 알려줄 때",
+            "options": [
+              {"id": "a", "text": "へ"},
+              {"id": "b", "text": "に"},
+              {"id": "c", "text": "で"},
+              {"id": "d", "text": "は"}
+            ],
+            "correct_answer": "a",
+            "explanation": "へ를 써서 '외국으로(=방향)'라고 이동 방향을 나타냅니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'산으로 갑니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["行きます", "山へ", "私は"],
+            "correct_order": ["私は", "山へ", "行きます"],
+            "explanation": "주어(私は) + 방향(山へ) + 동사(行きます). へ가 이동 방향을 표시합니다."
+          }
+        ]
+      }
+    }
+  ]
+}

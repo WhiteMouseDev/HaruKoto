@@ -1,0 +1,635 @@
+{
+  "meta": {
+    "chapter_id": "CH02",
+    "chapter_title": "사물과 사람 소개",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 2,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-03-20",
+    "author": "Claude Code × Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-006",
+      "lesson_no": 6,
+      "chapter_lesson_no": 1,
+      "title": "물건을 가리킬 때",
+      "subtitle": "これ・それ・あれ로 대상 구분하기",
+      "topic": "지시대명사",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "これ / それ / あれ",
+        "meaning_ko": "이것 / 그것 / 저것",
+        "grammar_order": 35,
+        "bunpro_ref": "L2"
+      },
+      "vocab_orders": [534, 45, 52, 50, 48, 257],
+      "vocab_detail": {
+        "534": "ペン (펜)",
+        "45": "本 (책)",
+        "52": "鞄 (가방)",
+        "50": "傘 (우산)",
+        "48": "電話 (전화)",
+        "257": "鉛筆 (연필)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "교실에서 친구와 물건 확인",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさん、これはペンですか。",
+              "translation": "김 씨, 이것은 펜인가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、それは鉛筆です。これが私のペンです。",
+              "translation": "아니요, 그것은 연필입니다. 이것이 제 펜이에요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "あ、そうですか。あれは何ですか。鞄ですか。",
+              "translation": "아, 그렇군요. 저것은 무엇인가요? 가방인가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、あれは私の鞄です。本と傘が入っています。",
+              "translation": "네, 저것은 제 가방입니다. 책과 우산이 들어 있어요."
+            }
+          ],
+          "highlights": ["これ", "それ", "あれ", "ペン", "鉛筆", "鞄", "本", "傘"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "鉛筆의 뜻은?",
+            "options": [
+              {"id": "a", "text": "연필"},
+              {"id": "b", "text": "펜"},
+              {"id": "c", "text": "책"},
+              {"id": "d", "text": "가방"}
+            ],
+            "correct_answer": "a",
+            "explanation": "鉛筆(えんぴつ)는 '연필'입니다. ペン은 '펜'이니 혼동하지 마세요."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'가방'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "鞄"},
+              {"id": "b", "text": "傘"},
+              {"id": "c", "text": "本"},
+              {"id": "d", "text": "電話"}
+            ],
+            "correct_answer": "a",
+            "explanation": "鞄(かばん)는 '가방'입니다. 傘(かさ)는 '우산'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "（자기 근처 물건을 가리키며）____はペンです。(이것은 펜입니다.)",
+            "options": [
+              {"id": "a", "text": "これ"},
+              {"id": "b", "text": "それ"},
+              {"id": "c", "text": "あれ"},
+              {"id": "d", "text": "どれ"}
+            ],
+            "correct_answer": "a",
+            "explanation": "これ는 '이것'으로, 말하는 사람 가까이에 있는 물건을 가리킵니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "（멀리 있는 물건을 가리키며）____は鞄ですか。(저것은 가방인가요?)",
+            "options": [
+              {"id": "a", "text": "あれ"},
+              {"id": "b", "text": "これ"},
+              {"id": "c", "text": "それ"},
+              {"id": "d", "text": "どれ"}
+            ],
+            "correct_answer": "a",
+            "explanation": "あれ는 '저것'으로, 말하는 사람과 듣는 사람 모두에게서 먼 물건을 가리킵니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'그것은 연필입니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["鉛筆", "それは", "です"],
+            "correct_order": ["それは", "鉛筆", "です"],
+            "explanation": "지시어(それは) + 명사(鉛筆) + です. それ는 상대 가까이에 있는 물건을 가리킵니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-007",
+      "lesson_no": 7,
+      "chapter_lesson_no": 2,
+      "title": "어느 물건인가요?",
+      "subtitle": "この・その・あの로 명사 지정하기",
+      "topic": "연체사",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "この / その / あの + 名詞",
+        "meaning_ko": "이 ~ / 그 ~ / 저 ~ (명사 앞에서 수식)",
+        "grammar_order": 36,
+        "bunpro_ref": "L2"
+      },
+      "vocab_orders": [49, 47, 370, 380, 439, 300],
+      "vocab_detail": {
+        "49": "時計 (시계)",
+        "47": "写真 (사진)",
+        "370": "雑誌 (잡지)",
+        "380": "辞書 (사전)",
+        "439": "机 (책상)",
+        "300": "カメラ (카메라)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "도서관 분실물 센터에서 물건 찾기",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "すみません、この時計は私のです。",
+              "translation": "실례합니다, 이 시계는 제 것입니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "分かりました。その写真もキムさんのですか。",
+              "translation": "알겠습니다. 그 사진도 김 씨 것인가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、その写真は私のではありません。あの机の上の辞書は私のです。",
+              "translation": "아니요, 그 사진은 제 것이 아닙니다. 저 책상 위의 사전은 제 것입니다."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "あの辞書ですね。この雑誌とカメラはどなたのですか。",
+              "translation": "저 사전이군요. 이 잡지와 카메라는 누구 것인가요?"
+            }
+          ],
+          "highlights": ["この", "その", "あの", "時計", "写真", "辞書", "雑誌", "カメラ"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "辞書의 뜻은?",
+            "options": [
+              {"id": "a", "text": "사전"},
+              {"id": "b", "text": "잡지"},
+              {"id": "c", "text": "사진"},
+              {"id": "d", "text": "시계"}
+            ],
+            "correct_answer": "a",
+            "explanation": "辞書(じしょ)는 '사전'입니다. 雑誌(ざっし)는 '잡지'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'시계'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "時計"},
+              {"id": "b", "text": "写真"},
+              {"id": "c", "text": "カメラ"},
+              {"id": "d", "text": "机"}
+            ],
+            "correct_answer": "a",
+            "explanation": "時計(とけい)는 '시계'입니다. 写真(しゃしん)는 '사진'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "（자기 가까이의 시계를 가리키며）____時計は私のです。(이 시계는 제 것입니다.)",
+            "options": [
+              {"id": "a", "text": "この"},
+              {"id": "b", "text": "その"},
+              {"id": "c", "text": "あの"},
+              {"id": "d", "text": "どの"}
+            ],
+            "correct_answer": "a",
+            "explanation": "この는 '이 ~'로, 말하는 사람 가까이에 있는 명사를 수식합니다. これ와 달리 뒤에 반드시 명사가 옵니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "（멀리 있는 책상을 가리키며）____机の上の辞書は私のです。(저 책상 위의 사전은 제 것입니다.)",
+            "options": [
+              {"id": "a", "text": "あの"},
+              {"id": "b", "text": "この"},
+              {"id": "c", "text": "その"},
+              {"id": "d", "text": "どの"}
+            ],
+            "correct_answer": "a",
+            "explanation": "あの는 '저 ~'로, 둘 다에게서 먼 대상의 명사를 수식합니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'그 사진은 김 씨 것인가요?'를 올바른 순서로 배열하세요.",
+            "tokens": ["キムさんの", "その写真は", "ですか"],
+            "correct_order": ["その写真は", "キムさんの", "ですか"],
+            "explanation": "수식어+명사(その写真は) + 소유(キムさんの) + ですか. その는 상대 가까이의 물건을 지정합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-008",
+      "lesson_no": 8,
+      "chapter_lesson_no": 3,
+      "title": "소유를 확인할 때",
+      "subtitle": "の로 주인 밝히기",
+      "topic": "소유",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "名詞 + の + 名詞",
+        "meaning_ko": "~의 (소유·소속을 나타내는 조사)",
+        "grammar_order": 37,
+        "bunpro_ref": "L2"
+      },
+      "vocab_orders": [74, 26, 14, 6, 7, 36],
+      "vocab_detail": {
+        "74": "名前 (이름)",
+        "26": "学校 (학교)",
+        "14": "家族 (가족)",
+        "6": "先生 (선생님)",
+        "7": "学生 (학생)",
+        "36": "家 (집)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "학교에서 소지품 주인 확인",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "これは先生の本ですか。",
+              "translation": "이것은 선생님의 책인가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、それは学生の本です。名前が書いてあります。",
+              "translation": "아니요, 그것은 학생의 책입니다. 이름이 쓰여 있어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "本当ですね。学校の近くに家がありますか。",
+              "translation": "정말이네요. 학교 근처에 집이 있나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、家族の家は学校の近くです。",
+              "translation": "네, 가족의 집은 학교 근처입니다."
+            }
+          ],
+          "highlights": ["の", "先生", "学生", "名前", "学校", "家族", "家"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "家族의 뜻은?",
+            "options": [
+              {"id": "a", "text": "가족"},
+              {"id": "b", "text": "친구"},
+              {"id": "c", "text": "선생님"},
+              {"id": "d", "text": "학생"}
+            ],
+            "correct_answer": "a",
+            "explanation": "家族(かぞく)는 '가족'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'학교'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "学校"},
+              {"id": "b", "text": "大学"},
+              {"id": "c", "text": "会社"},
+              {"id": "d", "text": "家"}
+            ],
+            "correct_answer": "a",
+            "explanation": "学校(がっこう)는 '학교'입니다. 大学(だいがく)는 '대학교'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "これは先生____本です。(이것은 선생님의 책입니다.)",
+            "options": [
+              {"id": "a", "text": "の"},
+              {"id": "b", "text": "は"},
+              {"id": "c", "text": "が"},
+              {"id": "d", "text": "を"}
+            ],
+            "correct_answer": "a",
+            "explanation": "の는 '~의'로, 명사와 명사를 연결하여 소유·소속을 나타냅니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "家族____家は学校____近くです。(가족의 집은 학교 근처입니다.)",
+            "options": [
+              {"id": "a", "text": "の … の"},
+              {"id": "b", "text": "は … は"},
+              {"id": "c", "text": "の … は"},
+              {"id": "d", "text": "が … の"}
+            ],
+            "correct_answer": "a",
+            "explanation": "の를 반복해서 '가족의 집', '학교의 근처'처럼 소유·소속 관계를 이어갈 수 있습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'이것은 학생의 책입니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["学生の本", "これは", "です"],
+            "correct_order": ["これは", "学生の本", "です"],
+            "explanation": "주제(これは) + 소유+명사(学生の本) + です. の가 '학생의'라는 소유를 나타냅니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-009",
+      "lesson_no": 9,
+      "chapter_lesson_no": 4,
+      "title": "인상을 전하고 싶을 때",
+      "subtitle": "い/な형용사로 상태 묘사하기",
+      "topic": "형용사",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "い形容詞 / な形容詞 + です",
+        "meaning_ko": "い/な형용사 + 입니다 (상태 서술)",
+        "grammar_order": 38,
+        "bunpro_ref": "L3"
+      },
+      "vocab_orders": [136, 137, 148, 140, 166, 161],
+      "vocab_detail": {
+        "136": "大きい (크다)",
+        "137": "小さい (작다)",
+        "148": "美味しい (맛있다)",
+        "140": "高い (높다, 비싸다)",
+        "166": "静か (조용하다)",
+        "161": "元気 (건강하다, 활기차다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "새로 이사 온 동네를 산책하며 감상",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "この公園は大きいですね。",
+              "translation": "이 공원은 크네요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "はい、静かで元気になります。あのレストランは美味しいですよ。",
+              "translation": "네, 조용해서 기운이 나요. 저 레스토랑은 맛있어요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "本当ですか。高いですか。",
+              "translation": "정말이에요? 비싼가요?"
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "いいえ、高くないです。小さい店ですが、美味しいです。",
+              "translation": "아니요, 비싸지 않아요. 작은 가게이지만, 맛있습니다."
+            }
+          ],
+          "highlights": ["大きい", "静か", "元気", "美味しい", "高い", "小さい"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "美味しい의 뜻은?",
+            "options": [
+              {"id": "a", "text": "맛있다"},
+              {"id": "b", "text": "크다"},
+              {"id": "c", "text": "비싸다"},
+              {"id": "d", "text": "조용하다"}
+            ],
+            "correct_answer": "a",
+            "explanation": "美味しい(おいしい)는 '맛있다'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'조용하다'를 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "静か"},
+              {"id": "b", "text": "元気"},
+              {"id": "c", "text": "大きい"},
+              {"id": "d", "text": "小さい"}
+            ],
+            "correct_answer": "a",
+            "explanation": "静か(しずか)는 'な형용사'로 '조용하다'는 뜻입니다. 元気(げんき)는 '건강하다, 활기차다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "この公園は____ですね。(이 공원은 크네요.)",
+            "options": [
+              {"id": "a", "text": "大きい"},
+              {"id": "b", "text": "小さい"},
+              {"id": "c", "text": "高い"},
+              {"id": "d", "text": "静か"}
+            ],
+            "correct_answer": "a",
+            "explanation": "大きい(おおきい)는 'い형용사'로 '크다'라는 뜻입니다. い형용사 + です로 정중하게 말합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "あのレストランは____ですよ。(저 레스토랑은 맛있어요.)",
+            "options": [
+              {"id": "a", "text": "美味しい"},
+              {"id": "b", "text": "高い"},
+              {"id": "c", "text": "大きい"},
+              {"id": "d", "text": "元気"}
+            ],
+            "correct_answer": "a",
+            "explanation": "美味しい + です로 '맛있습니다'라고 정중하게 서술합니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'작은 가게이지만 맛있습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["美味しい", "小さい", "店ですが", "です"],
+            "correct_order": ["小さい", "店ですが", "美味しい", "です"],
+            "explanation": "수식(小さい) + 명사(店ですが) + 서술(美味しい + です). い형용사가 명사 앞에서 직접 수식합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-010",
+      "lesson_no": 10,
+      "chapter_lesson_no": 5,
+      "title": "특징을 덧붙일 때",
+      "subtitle": "형용사+명사로 대상 구체화하기",
+      "topic": "형용사수식",
+      "estimated_minutes": 10,
+      "grammar": {
+        "pattern": "い形容詞 + 名詞 / な形容詞 + な + 名詞",
+        "meaning_ko": "형용사로 명사를 수식 (큰 방, 조용한 곳)",
+        "grammar_order": 39,
+        "bunpro_ref": "L3"
+      },
+      "vocab_orders": [35, 463, 34, 79, 57, 557],
+      "vocab_detail": {
+        "35": "部屋 (방)",
+        "463": "所 (장소, 곳)",
+        "34": "店 (가게)",
+        "79": "料理 (요리)",
+        "57": "山 (산)",
+        "557": "町 (마을, 동네)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "친구에게 자기 동네 추천하기",
+          "script": [
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんの町はどんな所ですか。",
+              "translation": "김 씨의 동네는 어떤 곳인가요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "静かな町です。大きい山があります。",
+              "translation": "조용한 동네입니다. 큰 산이 있어요."
+            },
+            {
+              "speaker": "田中",
+              "voice_id": "japanese_female_1",
+              "text": "いいですね。美味しい料理の店はありますか。",
+              "translation": "좋네요. 맛있는 요리 가게가 있나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、小さい店ですが、美味しい料理があります。静かな所でゆっくり食べられます。",
+              "translation": "네, 작은 가게이지만, 맛있는 요리가 있습니다. 조용한 곳에서 천천히 먹을 수 있어요."
+            }
+          ],
+          "highlights": ["静かな", "大きい", "美味しい", "小さい", "町", "山", "料理", "店", "所"]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "町의 뜻은?",
+            "options": [
+              {"id": "a", "text": "마을, 동네"},
+              {"id": "b", "text": "산"},
+              {"id": "c", "text": "가게"},
+              {"id": "d", "text": "방"}
+            ],
+            "correct_answer": "a",
+            "explanation": "町(まち)는 '마을' 또는 '동네'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "'방'을 뜻하는 일본어는?",
+            "options": [
+              {"id": "a", "text": "部屋"},
+              {"id": "b", "text": "店"},
+              {"id": "c", "text": "所"},
+              {"id": "d", "text": "家"}
+            ],
+            "correct_answer": "a",
+            "explanation": "部屋(へや)는 '방'입니다. 店(みせ)는 '가게', 所(ところ)는 '장소'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "____町です。(조용한 동네입니다.) — な형용사가 명사를 수식할 때",
+            "options": [
+              {"id": "a", "text": "静かな"},
+              {"id": "b", "text": "静かの"},
+              {"id": "c", "text": "静か"},
+              {"id": "d", "text": "静かに"}
+            ],
+            "correct_answer": "a",
+            "explanation": "な형용사는 명사를 수식할 때 '静か + な + 名詞' 형태를 취합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "____料理の店はありますか。(맛있는 요리 가게가 있나요?) — い형용사가 명사를 수식할 때",
+            "options": [
+              {"id": "a", "text": "美味しい"},
+              {"id": "b", "text": "美味しな"},
+              {"id": "c", "text": "美味しくの"},
+              {"id": "d", "text": "美味しいな"}
+            ],
+            "correct_answer": "a",
+            "explanation": "い형용사는 그대로 명사 앞에 붙습니다: 美味しい + 料理 = 맛있는 요리."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'큰 산이 있습니다'를 올바른 순서로 배열하세요.",
+            "tokens": ["あります", "大きい", "山が"],
+            "correct_order": ["大きい", "山が", "あります"],
+            "explanation": "수식(大きい) + 명사(山が) + 서술(あります). い형용사는 그대로 명사 앞에 붙어 수식합니다."
+          }
+        ]
+      }
+    }
+  ]
+}
