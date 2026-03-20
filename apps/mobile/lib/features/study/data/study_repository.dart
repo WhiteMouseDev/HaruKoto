@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
 import 'models/quiz_result_model.dart';
@@ -333,5 +334,40 @@ class StudyRepository {
       data: {'id': vocabId},
     );
     return response.data!['audioUrl'] as String;
+  }
+
+  // ── Lessons ──
+
+  Future<ChapterListModel> fetchChapters(String jlptLevel) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/lessons/chapters',
+      queryParameters: {'jlptLevel': jlptLevel},
+    );
+    return ChapterListModel.fromJson(response.data!);
+  }
+
+  Future<LessonDetailModel> fetchLessonDetail(String lessonId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/lessons/$lessonId',
+    );
+    return LessonDetailModel.fromJson(response.data!);
+  }
+
+  Future<LessonProgressModel> startLesson(String lessonId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/lessons/$lessonId/start',
+    );
+    return LessonProgressModel.fromJson(response.data!);
+  }
+
+  Future<LessonSubmitResultModel> submitLesson(
+    String lessonId,
+    List<Map<String, dynamic>> answers,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/lessons/$lessonId/submit',
+      data: {'answers': answers},
+    );
+    return LessonSubmitResultModel.fromJson(response.data!);
   }
 }

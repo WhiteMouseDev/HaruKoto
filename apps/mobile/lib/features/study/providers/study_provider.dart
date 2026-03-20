@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../data/study_repository.dart';
+import '../data/models/lesson_models.dart';
 import '../data/models/quiz_session_model.dart';
 import '../data/models/recommendation_model.dart';
 import '../data/models/smart_preview_model.dart';
@@ -42,4 +43,16 @@ final stagesProvider = FutureProvider.autoDispose
   return ref
       .watch(studyRepositoryProvider)
       .fetchStages(params.category, params.jlptLevel);
+});
+
+// ── Lesson Providers ──
+
+final chaptersProvider = FutureProvider.autoDispose
+    .family<ChapterListModel, String>((ref, jlptLevel) {
+  return ref.watch(studyRepositoryProvider).fetchChapters(jlptLevel);
+});
+
+final lessonDetailProvider = FutureProvider.autoDispose
+    .family<LessonDetailModel, String>((ref, lessonId) {
+  return ref.watch(studyRepositoryProvider).fetchLessonDetail(lessonId);
 });

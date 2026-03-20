@@ -23,6 +23,8 @@ import '../../features/my/presentation/subscription_manage_page.dart';
 import '../../features/stats/presentation/stats_page.dart';
 import '../../features/practice/presentation/practice_page.dart';
 import '../../features/study/presentation/study_page.dart';
+import '../../features/study/presentation/lesson_list_page.dart';
+import '../../features/study/presentation/lesson_page.dart';
 import '../../features/study/presentation/learned_words_page.dart';
 import '../../features/study/presentation/wrong_answers_page.dart';
 import '../../features/study/presentation/wordbook_page.dart';
@@ -141,6 +143,28 @@ final routerProvider = Provider<GoRouter>((ref) {
                       state: state,
                       child: const WordbookPage(),
                     ),
+                  ),
+
+                  // Lesson learning routes
+                  GoRoute(
+                    path: 'lessons',
+                    pageBuilder: (context, state) => _slideTransitionPage(
+                      state: state,
+                      child: const LessonListPage(),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: ':lessonId',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) {
+                          final lessonId = state.pathParameters['lessonId']!;
+                          return _slideTransitionPage(
+                            state: state,
+                            child: LessonPage(lessonId: lessonId),
+                          );
+                        },
+                      ),
+                    ],
                   ),
 
                   // Kana learning routes
