@@ -77,7 +77,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
     final totalSteps = state.jlptLevel == 'ABSOLUTE_ZERO' ? 4 : 3;
     final isGoalStep =
-        (state.step == 3 && state.jlptLevel != 'N5') || state.step == 4;
+        (state.step == 3 && state.jlptLevel != 'ABSOLUTE_ZERO') ||
+            state.step == 4;
 
     return Scaffold(
       body: SafeArea(

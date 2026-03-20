@@ -210,7 +210,10 @@ async def get_stages(
     db: AsyncSession = Depends(get_db),
 ):
     """카테고리별 스테이지 목록과 유저 진행 상황 조회."""
-    level = jlpt_level or enum_value(user.jlpt_level)
+    from app.enums import effective_jlpt_level
+
+    raw_level = jlpt_level or enum_value(user.jlpt_level)
+    level = enum_value(effective_jlpt_level(user.jlpt_level)) if not jlpt_level else raw_level
 
     # Fetch stages
     stages_result = await db.execute(
