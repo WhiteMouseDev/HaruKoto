@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
@@ -170,6 +171,64 @@ class _StudyPageState extends ConsumerState<StudyPage>
                               },
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 12),
+                        // 레슨 학습 진입 배너
+                        GestureDetector(
+                          onTap: () => context.push('/study/lessons'),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  theme.colorScheme.primaryContainer,
+                                  theme.colorScheme.primaryContainer
+                                      .withValues(alpha: 0.6),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.bookOpen,
+                                    size: 20,
+                                    color:
+                                        theme.colorScheme.onPrimaryContainer),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '체계적 학습',
+                                        style: theme.textTheme.titleSmall
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme
+                                              .colorScheme.onPrimaryContainer,
+                                        ),
+                                      ),
+                                      Text(
+                                        '대화문 읽기 → 확인 문제 풀기',
+                                        style:
+                                            theme.textTheme.bodySmall?.copyWith(
+                                          color: theme
+                                              .colorScheme.onPrimaryContainer
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(LucideIcons.chevronRight,
+                                    size: 18,
+                                    color:
+                                        theme.colorScheme.onPrimaryContainer),
+                              ],
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],

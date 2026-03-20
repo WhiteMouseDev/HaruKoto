@@ -19,8 +19,18 @@ from app.config import settings
 from app.models.content import Grammar, Vocabulary
 from app.models.lesson import Chapter, Lesson, LessonItemLink
 
-# Path to pilot content JSON (relative to project root)
-CONTENT_PATH = Path(__file__).resolve().parents[4] / "docs" / "learning-quiz-strategy" / "08-CH01-PILOT-CONTENT.json"
+# Content JSON directory (relative to project root)
+CONTENT_DIR = Path(__file__).resolve().parents[4] / "docs" / "learning-quiz-strategy"
+
+# All Part 1 content files (Ch.01~06)
+CONTENT_FILES = [
+    "08-CH01-PILOT-CONTENT.json",
+    "09-CH02-CONTENT.json",
+    "10-CH03-CONTENT.json",
+    "11-CH04-CONTENT.json",
+    "12-CH05-CONTENT.json",
+    "13-CH06-CONTENT.json",
+]
 
 
 async def _upsert_chapter(db: AsyncSession, meta: dict) -> Chapter:
@@ -147,20 +157,15 @@ async def _link_items(
     return count
 
 
-async def seed_lessons(db: AsyncSession) -> dict[str, int]:
-    """Seed Ch.01 pilot lessons. Returns counts summary."""
-    if not CONTENT_PATH.exists():
-        raise FileNotFoundError(f"Content file not found: {CONTENT_PATH}")
-
-    data = json.loads(CONTENT_PATH.read_text(encoding="utf-8"))
+async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+    """Seed one chapter from a content JSON file."""
+    data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
 
-    # 1. Create chapter
     chapter = await _upsert_chapter(db, meta)
-    print(f"✅ Chapter: {chapter.title} (id={chapter.id})")
+    print(f"✅ Chapter {meta['chapter_no']}: {chapter.title} (id={chapter.id})")
 
-    # 2. Create lessons + link items
     lesson_count = 0
     link_count = 0
 
@@ -179,15 +184,32 @@ async def seed_lessons(db: AsyncSession) -> dict[str, int]:
         lesson_count += 1
         link_count += links
 
-    await db.commit()
     return {"chapters": 1, "lessons": lesson_count, "item_links": link_count}
+
+
+async def seed_lessons(db: AsyncSession) -> dict[str, int]:
+    """Seed Part 1 lessons (Ch.01~06). Returns counts summary."""
+    totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0}
+
+    for filename in CONTENT_FILES:
+        filepath = CONTENT_DIR / filename
+        if not filepath.exists():
+            print(f"⚠️  {filename} not found, skipping")
+            continue
+
+        counts = await _seed_one_chapter(db, filepath)
+        for key in totals:
+            totals[key] += counts[key]
+
+    await db.commit()
+    return totals
 
 
 async def main() -> None:
     engine = create_async_engine(settings.DATABASE_URL, echo=False)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
-    print("Seeding Ch.01 pilot lessons...")
+    print("Seeding Part 1 lessons (Ch.01~06)...")
     async with async_session() as db:
         counts = await seed_lessons(db)
         for key, val in counts.items():
