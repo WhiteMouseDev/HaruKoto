@@ -1,0 +1,438 @@
+"""SRS (Spaced Repetition System) core service.
+
+State machine: UNSEEN → PROVISIONAL → LEARNING → REVIEW → MASTERED
+                                                   ↓
+                                             RELEARNING → REVIEW
+
+Scheduler version 1: SM-2 interval calculation.
+"""
+
+from __future__ import annotations
+
+import uuid
+from datetime import UTC, datetime, timedelta
+from typing import TypedDict
+from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.lesson import LessonItemLink
+from app.models.progress import UserGrammarProgress, UserVocabProgress
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+PROVISIONAL_STEPS_REQUIRED = 2
+PROVISIONAL_INTERVALS = [1, 3]  # days: step 0→1 = 1d, step 1→LEARNING = 3d
+LEARNING_INTERVALS = [1, 3]  # days: step 0→1 = 1d, step 1→REVIEW = 3d
+MASTERED_THRESHOLD_DAYS = 21
+DEFAULT_EASE_FACTOR = 2.5
+MIN_EASE_FACTOR = 1.3
+
+# Rating thresholds (response time in ms)
+FAST_THRESHOLD_MS = 3_000
+SLOW_THRESHOLD_MS = 10_000
+
+# States
+UNSEEN = "UNSEEN"
+PROVISIONAL = "PROVISIONAL"
+LEARNING = "LEARNING"
+REVIEW = "REVIEW"
+MASTERED = "MASTERED"
+RELEARNING = "RELEARNING"
+
+# Ratings
+AGAIN = 1
+HARD = 2
+GOOD = 3
+EASY = 4
+
+
+# ---------------------------------------------------------------------------
+# Return types
+# ---------------------------------------------------------------------------
+
+
+class AnswerResult(TypedDict):
+    state_before: str
+    state_after: str
+    next_review_at: str | None
+    is_provisional_phase: bool
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _calculate_rating(is_correct: bool, response_ms: int) -> int:
+    """Determine rating 1-4 based on correctness and response time."""
+    if not is_correct:
+        return AGAIN
+    if response_ms < FAST_THRESHOLD_MS:
+        return EASY
+    if response_ms <= SLOW_THRESHOLD_MS:
+        return GOOD
+    return HARD
+
+
+def _sm2_update_correct(ease_factor: float, interval: int) -> tuple[float, int]:
+    """SM-2 correct answer: increase ease_factor, multiply interval."""
+    new_ef = ease_factor + 0.1
+    new_interval = max(int(interval * new_ef), 1) if interval > 0 else 1
+    return new_ef, new_interval
+
+
+def _sm2_update_incorrect(ease_factor: float) -> tuple[float, int]:
+    """SM-2 incorrect answer: decrease ease_factor, reset interval."""
+    new_ef = max(ease_factor - 0.2, MIN_EASE_FACTOR)
+    return new_ef, 1
+
+
+def _get_progress_model(item_type: str) -> type[UserVocabProgress] | type[UserGrammarProgress]:
+    """Return the correct progress model class for the given item type."""
+    if item_type == "WORD":
+        return UserVocabProgress
+    if item_type == "GRAMMAR":
+        return UserGrammarProgress
+    msg = f"Unknown item_type: {item_type!r}. Expected 'WORD' or 'GRAMMAR'."
+    raise ValueError(msg)
+
+
+def _get_item_fk_column(item_type: str) -> str:
+    """Return the foreign key column name for the given item type."""
+    if item_type == "WORD":
+        return "vocabulary_id"
+    if item_type == "GRAMMAR":
+        return "grammar_id"
+    msg = f"Unknown item_type: {item_type!r}."
+    raise ValueError(msg)
+
+
+# ---------------------------------------------------------------------------
+# Core service functions
+# ---------------------------------------------------------------------------
+
+
+async def register_items_from_lesson(
+    db: AsyncSession,
+    user_id: UUID,
+    lesson_id: UUID,
+    item_links: list[LessonItemLink],
+) -> int:
+    """Register lesson items into SRS. Returns count of newly registered items.
+
+    For each WORD/GRAMMAR link:
+    - If UNSEEN → set state=PROVISIONAL, introduced_by=LESSON, source_lesson_id
+    - If already registered (state != UNSEEN) → skip (no duplicate)
+    """
+    registered = 0
+
+    for link in item_links:
+        if link.item_type not in ("WORD", "GRAMMAR"):
+            continue
+
+        model = _get_progress_model(link.item_type)
+        fk_col = _get_item_fk_column(link.item_type)
+        item_id = link.vocabulary_id if link.item_type == "WORD" else link.grammar_id
+
+        if item_id is None:
+            continue
+
+        # Check if progress record already exists
+        stmt = select(model).where(
+            model.user_id == user_id,
+            getattr(model, fk_col) == item_id,
+        )
+        result = await db.execute(stmt)
+        progress = result.scalar_one_or_none()
+
+        if progress is not None:
+            # Already registered — upgrade if UNSEEN, otherwise skip
+            if progress.state == UNSEEN:
+                progress.state = LEARNING
+                progress.introduced_by = "LESSON"
+                progress.source_lesson_id = lesson_id
+                progress.learning_step = 0
+                progress.next_review_at = datetime.now(UTC) + timedelta(days=LEARNING_INTERVALS[0])
+                registered += 1
+        else:
+            # Create new progress record
+            new_progress = model(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                **{fk_col: item_id},
+                state=LEARNING,
+                introduced_by="LESSON",
+                source_lesson_id=lesson_id,
+                learning_step=0,
+                next_review_at=datetime.now(UTC) + timedelta(days=LEARNING_INTERVALS[0]),
+            )
+            db.add(new_progress)
+            registered += 1
+
+    await db.flush()
+    return registered
+
+
+async def process_answer(
+    db: AsyncSession,
+    user_id: UUID,
+    item_type: str,  # 'WORD' | 'GRAMMAR'
+    item_id: UUID,
+    is_correct: bool,
+    direction: str,  # 'JP_KR' | 'KR_JP'
+    response_ms: int,
+) -> AnswerResult:
+    """Process a quiz answer and update SRS state.
+
+    Returns state transition info including before/after states and next review.
+    """
+    model = _get_progress_model(item_type)
+    fk_col = _get_item_fk_column(item_type)
+
+    # 1. Get current progress record
+    stmt = select(model).where(
+        model.user_id == user_id,
+        getattr(model, fk_col) == item_id,
+    )
+    result = await db.execute(stmt)
+    progress = result.scalar_one_or_none()
+
+    # If no progress record exists, create one (quiz tab first encounter)
+    if progress is None:
+        progress = model(
+            id=uuid.uuid4(),
+            user_id=user_id,
+            **{fk_col: item_id},
+            state=PROVISIONAL,
+            introduced_by="QUIZ",
+            learning_step=0,
+        )
+        db.add(progress)
+
+    state_before = progress.state
+
+    # 2. Calculate rating
+    rating = _calculate_rating(is_correct, response_ms)
+
+    # For PROVISIONAL first correct answer, force rating to HARD (찍기 방지)
+    if state_before == UNSEEN:
+        rating = HARD if is_correct else AGAIN
+
+    # Handle UNSEEN → PROVISIONAL transition (quiz tab first encounter)
+    if state_before == UNSEEN:
+        progress.state = PROVISIONAL
+        progress.introduced_by = "QUIZ"
+        progress.learning_step = 0
+        state_before = UNSEEN  # keep original for return value
+
+    # 3. Apply state transition
+    now = datetime.now(UTC)
+    _apply_transition(progress, is_correct, rating, now)
+
+    # 4. Update directional stats
+    _update_direction_stats(progress, direction, is_correct)
+
+    # 5. Update common fields
+    progress.last_reviewed_at = now
+    progress.last_presented_on = now.date()
+    progress.fsrs_last_rating = rating
+    progress.fsrs_reps += 1
+
+    if is_correct:
+        progress.correct_count += 1
+        progress.streak += 1
+    else:
+        progress.incorrect_count += 1
+        progress.streak = 0
+        progress.fsrs_lapses += 1
+
+    await db.flush()
+
+    return AnswerResult(
+        state_before=state_before,
+        state_after=progress.state,
+        next_review_at=progress.next_review_at.isoformat() if progress.next_review_at else None,
+        is_provisional_phase=progress.state == PROVISIONAL,
+    )
+
+
+def _apply_transition(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    rating: int,
+    now: datetime,
+) -> None:
+    """Apply SRS state transition based on current state and answer correctness."""
+    state = progress.state
+
+    if state == PROVISIONAL:
+        _transition_provisional(progress, is_correct, now)
+    elif state == LEARNING:
+        _transition_learning(progress, is_correct, rating, now)
+    elif state == REVIEW:
+        _transition_review(progress, is_correct, rating, now)
+    elif state == MASTERED:
+        _transition_mastered(progress, is_correct, rating, now)
+    elif state == RELEARNING:
+        _transition_relearning(progress, is_correct, now)
+    # UNSEEN is handled before this function is called
+
+
+def _transition_provisional(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    now: datetime,
+) -> None:
+    """PROVISIONAL phase: must pass 2 consecutive correct answers.
+
+    Step 0 → correct → step 1, review in 1 day
+    Step 1 → correct → LEARNING (step 0), review in 3 days
+    Any wrong → reset step to 0, review in 1 day
+    """
+    if is_correct:
+        progress.learning_step += 1
+        if progress.learning_step >= PROVISIONAL_STEPS_REQUIRED:
+            # Passed PROVISIONAL → move to LEARNING
+            progress.state = LEARNING
+            progress.learning_step = 0
+            progress.next_review_at = now + timedelta(days=LEARNING_INTERVALS[0])
+        else:
+            # Still in PROVISIONAL, schedule next check
+            step_idx = min(progress.learning_step, len(PROVISIONAL_INTERVALS) - 1)
+            progress.next_review_at = now + timedelta(days=PROVISIONAL_INTERVALS[step_idx])
+    else:
+        # Wrong → reset
+        progress.learning_step = 0
+        progress.next_review_at = now + timedelta(days=1)
+
+
+def _transition_learning(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    rating: int,
+    now: datetime,
+) -> None:
+    """LEARNING phase: pass learning steps then move to REVIEW.
+
+    Correct → increment step. If step >= 2 → REVIEW with SM-2 interval.
+    Wrong → stay LEARNING, reset streak.
+    """
+    if is_correct:
+        progress.learning_step += 1
+        if progress.learning_step >= len(LEARNING_INTERVALS):
+            # Graduated to REVIEW
+            progress.state = REVIEW
+            progress.learning_step = 0
+            # Set initial interval based on SM-2
+            progress.interval = LEARNING_INTERVALS[-1]
+            ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
+            progress.ease_factor = ef
+            progress.interval = new_interval
+            progress.next_review_at = now + timedelta(days=new_interval)
+        else:
+            # Next learning step
+            step_idx = min(progress.learning_step, len(LEARNING_INTERVALS) - 1)
+            progress.next_review_at = now + timedelta(days=LEARNING_INTERVALS[step_idx])
+    else:
+        # Wrong → stay in LEARNING, reset step
+        progress.learning_step = 0
+        progress.streak = 0
+        progress.next_review_at = now + timedelta(days=1)
+
+
+def _transition_review(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    rating: int,
+    now: datetime,
+) -> None:
+    """REVIEW phase: SM-2 interval scheduling.
+
+    Correct → update interval, check MASTERED threshold.
+    Wrong → RELEARNING.
+    """
+    if is_correct:
+        ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
+        progress.ease_factor = ef
+        progress.interval = new_interval
+        progress.next_review_at = now + timedelta(days=new_interval)
+
+        # Check if mastered
+        if new_interval >= MASTERED_THRESHOLD_DAYS:
+            progress.state = MASTERED
+            progress.mastered = True
+    else:
+        # Wrong → RELEARNING
+        ef, new_interval = _sm2_update_incorrect(progress.ease_factor)
+        progress.state = RELEARNING
+        progress.ease_factor = ef
+        progress.interval = new_interval
+        progress.learning_step = 0
+        progress.next_review_at = now + timedelta(days=1)
+
+
+def _transition_mastered(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    rating: int,
+    now: datetime,
+) -> None:
+    """MASTERED phase: long-term review.
+
+    Correct → extend interval further.
+    Wrong → RELEARNING (lapse).
+    """
+    if is_correct:
+        ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
+        progress.ease_factor = ef
+        progress.interval = new_interval
+        progress.next_review_at = now + timedelta(days=new_interval)
+    else:
+        # Lapse → RELEARNING
+        ef, new_interval = _sm2_update_incorrect(progress.ease_factor)
+        progress.state = RELEARNING
+        progress.ease_factor = ef
+        progress.interval = new_interval
+        progress.learning_step = 0
+        progress.mastered = False
+        progress.next_review_at = now + timedelta(days=1)
+
+
+def _transition_relearning(
+    progress: UserVocabProgress | UserGrammarProgress,
+    is_correct: bool,
+    now: datetime,
+) -> None:
+    """RELEARNING phase: re-study after a lapse.
+
+    Correct → back to REVIEW with interval=1.
+    Wrong → stay RELEARNING.
+    """
+    if is_correct:
+        progress.state = REVIEW
+        progress.interval = 1
+        progress.learning_step = 0
+        progress.next_review_at = now + timedelta(days=1)
+    else:
+        # Stay in RELEARNING
+        progress.next_review_at = now + timedelta(days=1)
+
+
+def _update_direction_stats(
+    progress: UserVocabProgress | UserGrammarProgress,
+    direction: str,
+    is_correct: bool,
+) -> None:
+    """Update directional statistics (JP→KR / KR→JP)."""
+    if direction == "JP_KR":
+        progress.jp_kr_total += 1
+        if is_correct:
+            progress.jp_kr_correct += 1
+    elif direction == "KR_JP":
+        progress.kr_jp_total += 1
+        if is_correct:
+            progress.kr_jp_correct += 1
