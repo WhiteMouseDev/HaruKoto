@@ -16,6 +16,7 @@ from app.models.enums import (
 )
 from app.models.gamification import DailyMission, DailyProgress, UserAchievement
 from app.models.kana import KanaCharacter, KanaLearningStage, UserKanaProgress, UserKanaStage
+from app.models.lesson import Chapter, Lesson, LessonItemLink, UserLessonProgress
 from app.models.notification import Notification, PushSubscription
 from app.models.progress import UserGrammarProgress, UserVocabProgress
 from app.models.quiz import QuizAnswer, QuizSession
@@ -27,6 +28,7 @@ from app.models.user import User
 
 __all__ = [
     "AiCharacter",
+    "Chapter",
     "ClozeQuestion",
     "Conversation",
     "ConversationScenario",
@@ -40,6 +42,8 @@ __all__ = [
     "KanaCharacter",
     "KanaLearningStage",
     "KanaType",
+    "Lesson",
+    "LessonItemLink",
     "Notification",
     "PartOfSpeech",
     "Payment",
@@ -63,6 +67,7 @@ __all__ = [
     "UserGrammarProgress",
     "UserKanaProgress",
     "UserKanaStage",
+    "UserLessonProgress",
     "UserStudyStageProgress",
     "UserVocabProgress",
     "Vocabulary",

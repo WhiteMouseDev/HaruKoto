@@ -55,3 +55,4 @@ class User(Base):
     payments: Mapped[list[Payment]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
     daily_ai_usage: Mapped[list[DailyAiUsage]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
     study_stage_progress: Mapped[list[UserStudyStageProgress]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
+    lesson_progress: Mapped[list[UserLessonProgress]] = relationship(back_populates="user", cascade="all, delete-orphan")  # noqa: F821
