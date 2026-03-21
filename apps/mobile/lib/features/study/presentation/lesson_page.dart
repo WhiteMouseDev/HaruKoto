@@ -69,9 +69,26 @@ class _LessonPageState extends ConsumerState<LessonPage> {
                   horizontal: AppSizes.md,
                   vertical: AppSizes.sm,
                 ),
-                child: _StepProgressBar(
-                  currentStep: _step,
-                  totalSteps: _totalSteps,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _StepProgressBar(
+                        currentStep: _step,
+                        totalSteps: _totalSteps,
+                      ),
+                    ),
+                    if (_step >= 2 && _step <= 4) ...[
+                      const SizedBox(width: AppSizes.sm),
+                      GestureDetector(
+                        onTap: () => _showDialogueSheet(context, detail),
+                        child: const Icon(
+                          LucideIcons.messageSquare,
+                          size: 18,
+                          color: AppColors.primaryStrong,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               Expanded(
@@ -246,6 +263,50 @@ class _LessonPageState extends ConsumerState<LessonPage> {
       _answers.clear();
       _result = null;
     });
+  }
+
+  void _showDialogueSheet(BuildContext context, LessonDetailModel detail) {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        expand: false,
+        builder: (context, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.all(AppSizes.md),
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSizes.md),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              '대화 다시 보기',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppSizes.md),
+            ...detail.content.reading.script.map(
+              (line) => _DialogueBubble(line: line, showTranslation: true),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -429,7 +490,7 @@ class _GuidedReadingStep extends StatefulWidget {
 }
 
 class _GuidedReadingStepState extends State<_GuidedReadingStep> {
-  bool _showTranslation = true;
+  bool _showTranslation = false;
 
   @override
   Widget build(BuildContext context) {
@@ -573,7 +634,8 @@ class _DialogueBubble extends StatelessWidget {
                   Text(
                     line.translation!,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.lightSubtext,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.55),
                       fontSize: 13,
                     ),
                   ),
