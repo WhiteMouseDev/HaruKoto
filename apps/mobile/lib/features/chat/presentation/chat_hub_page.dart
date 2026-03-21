@@ -95,6 +95,8 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       // 실패 시 기본값 사용
     }
 
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
     final updated = await showModalBottomSheet<CallSettings>(
       context: context,
       useRootNavigator: true,
@@ -105,14 +107,14 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       builder: (_) => CallSettingsSheet(settings: callSettings),
     );
 
-    if (updated == null || !mounted) return;
+    if (updated == null || !context.mounted) return;
     try {
       await ref
           .read(myRepositoryProvider)
           .updateProfile({'callSettings': updated.toJson()});
-      if (mounted) {
+      if (context.mounted) {
         ref.invalidate(profileDetailProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('통화 설정이 저장되었습니다'),
             behavior: SnackBarBehavior.floating,
@@ -120,8 +122,8 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
         );
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) {
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('설정 저장에 실패했습니다'),
             behavior: SnackBarBehavior.floating,
