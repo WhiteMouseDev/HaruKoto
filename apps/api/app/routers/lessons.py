@@ -343,23 +343,24 @@ async def submit_lesson(
             )
         )
 
-        # SRS: process answer for mapped items
+        # SRS: process answer for mapped items (nested savepoint for isolation)
         link = question_to_link.get(ans.order)
         if link is not None:
             item_id = link.vocabulary_id if link.item_type == "WORD" else link.grammar_id
             if item_id is not None:
                 try:
-                    await process_answer(
-                        db=db,
-                        user_id=user.id,
-                        item_type=link.item_type,
-                        item_id=item_id,
-                        is_correct=is_correct,
-                        direction="JP_KR",  # lesson context default
-                        response_ms=ans.response_ms,
-                        session_id=None,
-                        lesson_id=lesson_id,
-                    )
+                    async with db.begin_nested():
+                        await process_answer(
+                            db=db,
+                            user_id=user.id,
+                            item_type=link.item_type,
+                            item_id=item_id,
+                            is_correct=is_correct,
+                            direction="JP_KR",  # lesson context default
+                            response_ms=ans.response_ms,
+                            session_id=None,
+                            lesson_id=lesson_id,
+                        )
                 except Exception:
                     logger.warning(
                         "SRS process_answer failed for item %s in lesson %s",
@@ -370,14 +371,15 @@ async def submit_lesson(
 
     total = len(results)
 
-    # SRS: register all lesson items (idempotent — skips already-registered)
+    # SRS: register all lesson items (nested savepoint for isolation)
     try:
-        srs_items_registered = await register_items_from_lesson(
-            db=db,
-            user_id=user.id,
-            lesson_id=lesson_id,
-            item_links=list(lesson.item_links),
-        )
+        async with db.begin_nested():
+            srs_items_registered = await register_items_from_lesson(
+                db=db,
+                user_id=user.id,
+                lesson_id=lesson_id,
+                item_links=list(lesson.item_links),
+            )
     except Exception:
         logger.warning(
             "SRS register_items_from_lesson failed for lesson %s",

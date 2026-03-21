@@ -312,10 +312,8 @@ async def process_answer(
         progress.streak = 0
         progress.fsrs_lapses += 1
 
-    await db.flush()
-
-    # 6. Log review event
-    is_new_card = state_before == UNSEEN
+    # 6. Log review event (before flush — both go in same transaction)
+    is_new_card = state_before in (UNSEEN, PROVISIONAL)
     await log_review_event(
         db=db,
         user_id=user_id,
@@ -334,6 +332,9 @@ async def process_answer(
         is_new_card=is_new_card,
         reviewed_on=now.date(),
     )
+
+    # Flush both progress update + review event atomically
+    await db.flush()
 
     return AnswerResult(
         state_before=state_before,

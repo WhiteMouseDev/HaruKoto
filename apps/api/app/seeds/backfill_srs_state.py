@@ -47,7 +47,7 @@ WHERE introduced_by IS NULL AND state != 'UNSEEN';
 GLOSSES_UPDATE_SQL = """
 UPDATE {table}
 SET meaning_glosses_ko = regexp_split_to_array(meaning_ko, E'\\s*[,;./·]\\s*|\\s*\\.\\s+')
-WHERE meaning_glosses_ko IS NULL
+WHERE (meaning_glosses_ko IS NULL OR meaning_glosses_ko = '{}')
   AND meaning_ko IS NOT NULL
   AND meaning_ko != '';
 """
