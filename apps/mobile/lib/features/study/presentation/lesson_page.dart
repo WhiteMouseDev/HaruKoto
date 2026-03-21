@@ -754,6 +754,8 @@ class _ResultPhase extends StatelessWidget {
     if (after == 'REVIEW') return Colors.blue;
     if (after == 'LEARNING') return Colors.orange;
     if (after == 'RELEARNING') return Colors.red;
+    if (after == 'PROVISIONAL') return Colors.amber;
+    if (after == 'UNSEEN') return Colors.grey;
     return Colors.grey;
   }
 

@@ -323,6 +323,7 @@ class LessonProgressModel {
   final int scoreTotal;
   final String? startedAt;
   final String? completedAt;
+  final String? srsRegisteredAt;
 
   const LessonProgressModel({
     required this.status,
@@ -331,6 +332,7 @@ class LessonProgressModel {
     required this.scoreTotal,
     this.startedAt,
     this.completedAt,
+    this.srsRegisteredAt,
   });
 
   factory LessonProgressModel.fromJson(Map<String, dynamic> json) {
@@ -341,6 +343,7 @@ class LessonProgressModel {
       scoreTotal: json['scoreTotal'] as int? ?? 0,
       startedAt: json['startedAt'] as String?,
       completedAt: json['completedAt'] as String?,
+      srsRegisteredAt: json['srsRegisteredAt'] as String?,
     );
   }
 }
