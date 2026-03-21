@@ -21,16 +21,16 @@ from app.models.content import Grammar, Vocabulary
 from app.models.lesson import Chapter, Lesson, LessonItemLink
 
 # Content JSON directory (relative to project root)
-CONTENT_DIR = Path(__file__).resolve().parents[4] / "docs" / "learning-quiz-strategy"
+CONTENT_DIR = Path(__file__).resolve().parents[4] / "packages" / "database" / "data" / "lessons" / "n5"
 
 # All Part 1 content files (Ch.01~06)
 CONTENT_FILES = [
-    "08-CH01-PILOT-CONTENT.json",
-    "09-CH02-CONTENT.json",
-    "10-CH03-CONTENT.json",
-    "11-CH04-CONTENT.json",
-    "12-CH05-CONTENT.json",
-    "13-CH06-CONTENT.json",
+    "ch01-greetings-and-first-meetings.json",
+    "ch02-introducing-things-and-people.json",
+    "ch03-location-and-movement.json",
+    "ch04-verb-basics.json",
+    "ch05-past-and-sequence.json",
+    "ch06-progress-and-habits.json",
 ]
 
 
