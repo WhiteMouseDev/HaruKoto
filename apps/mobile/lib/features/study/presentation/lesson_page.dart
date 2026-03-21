@@ -1208,6 +1208,15 @@ class _SentenceReorderStep extends StatefulWidget {
 class _SentenceReorderStepState extends State<_SentenceReorderStep> {
   late List<String> _available;
   final List<String> _selected = [];
+  late int _totalTokenCount;
+  bool _submitting = false;
+
+  // Track which tokens were just added/removed for animation
+  String? _lastAddedToken;
+  String? _lastRemovedToken;
+
+  // Long-press reorder: index of picked-up token (-1 = none)
+  int _dragSourceIndex = -1;
 
   @override
   void initState() {
@@ -1227,6 +1236,72 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
     final q = widget.questions[widget.currentIndex];
     _available = List.of(q.tokens ?? [])..shuffle(Random());
     _selected.clear();
+    _totalTokenCount = _available.length;
+    _submitting = false;
+    _lastAddedToken = null;
+    _lastRemovedToken = null;
+    _dragSourceIndex = -1;
+  }
+
+  void _selectToken(String token) {
+    setState(() {
+      _available.remove(token);
+      _selected.add(token);
+      _lastAddedToken = token;
+      _lastRemovedToken = null;
+    });
+    if (_available.isEmpty) {
+      _doAutoSubmit();
+    }
+  }
+
+  void _deselectToken(String token) {
+    setState(() {
+      _selected.remove(token);
+      _available.add(token);
+      _lastRemovedToken = token;
+      _lastAddedToken = null;
+      _submitting = false;
+      _dragSourceIndex = -1;
+    });
+  }
+
+  void _onLongPressToken(int index) {
+    if (_submitting) return;
+    setState(() {
+      _dragSourceIndex = _dragSourceIndex == index ? -1 : index;
+    });
+  }
+
+  void _onTapSelectedToken(int index) {
+    if (_submitting) return;
+    if (_dragSourceIndex >= 0 && _dragSourceIndex != index) {
+      // Reorder: move dragged token to this position
+      setState(() {
+        final item = _selected.removeAt(_dragSourceIndex);
+        _selected.insert(index, item);
+        _dragSourceIndex = -1;
+      });
+    } else if (_dragSourceIndex == index) {
+      // Deselect the drag source
+      setState(() => _dragSourceIndex = -1);
+    } else {
+      // Normal tap: remove from answer area
+      _deselectToken(_selected[index]);
+    }
+  }
+
+  void _doAutoSubmit() {
+    final q = widget.questions[widget.currentIndex];
+    setState(() => _submitting = true);
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (!mounted) return;
+      widget.onAnswer({
+        'order': q.order,
+        'submittedOrder': List<String>.from(_selected),
+        'responseMs': 0,
+      });
+    });
   }
 
   @override
@@ -1243,73 +1318,315 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
           Text(
             '5/${widget.totalSteps} · 문항 ${widget.currentIndex + 1}/${widget.questions.length}',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.outline,
+              color: AppColors.lightSubtext,
             ),
           ),
           const SizedBox(height: AppSizes.md),
 
+          // Prompt
           Text(
             q.prompt,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: AppColors.lightText,
             ),
           ),
-          const SizedBox(height: AppSizes.lg),
 
-          // Selected tokens area
+          // Korean hint (explanation as subtitle)
+          if (q.explanation != null) ...[
+            const SizedBox(height: AppSizes.xs),
+            Text(
+              q.explanation!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.lightSubtext,
+                fontSize: 13,
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 20),
+
+          // Answer area label + counter
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '정답 영역',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.lightSubtext,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '선택 ${_selected.length}/$_totalTokenCount',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.primaryStrong,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizes.sm),
+
+          // Answer area card
           Container(
             width: double.infinity,
-            constraints: const BoxConstraints(minHeight: 60),
+            constraints: const BoxConstraints(minHeight: 70),
             padding: const EdgeInsets.all(AppSizes.gap),
             decoration: BoxDecoration(
+              color: AppColors.lightCard,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(color: AppColors.lightBorder),
-              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
-            child: Wrap(
-              spacing: AppSizes.sm,
-              runSpacing: AppSizes.sm,
-              children: _selected
-                  .map((t) => ActionChip(
-                        label: Text(t, style: const TextStyle(fontSize: 16)),
-                        onPressed: () {
-                          setState(() {
-                            _selected.remove(t);
-                            _available.add(t);
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
+            child: _buildAnswerArea(theme),
           ),
-          const SizedBox(height: AppSizes.md),
 
-          // Available tokens
-          Wrap(
-            spacing: AppSizes.sm,
-            runSpacing: AppSizes.sm,
-            children: _available
-                .map((t) => ActionChip(
-                      label: Text(t, style: const TextStyle(fontSize: 16)),
-                      onPressed: () {
-                        setState(() {
-                          _available.remove(t);
-                          _selected.add(t);
-                        });
-                        if (_available.isEmpty) {
-                          Future.delayed(const Duration(milliseconds: 400), () {
-                            if (!mounted) return;
-                            widget.onAnswer({
-                              'order': q.order,
-                              'submittedOrder': List<String>.from(_selected),
-                              'responseMs': 0,
-                            });
-                          });
-                        }
-                      },
-                    ))
-                .toList(),
-          ),
+          // Submitting indicator
+          if (_submitting)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSizes.sm),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primaryStrong,
+                    ),
+                  ),
+                  const SizedBox(width: AppSizes.sm),
+                  Text(
+                    '제출 중...',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: AppColors.primaryStrong,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 20),
+
+          // Bank area
+          if (_available.isNotEmpty)
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: _available.asMap().entries.map((entry) {
+                final token = entry.value;
+                final isJustReturned = _lastRemovedToken == token;
+                return TweenAnimationBuilder<double>(
+                  key: ValueKey('bank-$token-${entry.key}'),
+                  tween: Tween(
+                    begin: isJustReturned ? 0.8 : 1.0,
+                    end: 1.0,
+                  ),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  builder: (context, scale, child) => Transform.scale(
+                    scale: scale,
+                    child: child,
+                  ),
+                  child: _ReorderToken(
+                    text: token,
+                    isSelected: false,
+                    onTap: _submitting ? null : () => _selectToken(token),
+                  ),
+                );
+              }).toList(),
+            ),
+
+          if (_available.isNotEmpty && _selected.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSizes.gap),
+              child: Center(
+                child: Text(
+                  '토큰을 탭해서 문장을 만드세요',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.lightSubtext,
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAnswerArea(ThemeData theme) {
+    final remaining = _totalTokenCount - _selected.length;
+
+    // Build list of children: placed tokens + empty slot placeholders
+    final List<Widget> children = [];
+
+    for (int i = 0; i < _selected.length; i++) {
+      final token = _selected[i];
+      final isJustAdded = _lastAddedToken == token;
+      final isDragSource = _dragSourceIndex == i;
+
+      children.add(
+        TweenAnimationBuilder<double>(
+          key: ValueKey('answer-$token-$i'),
+          tween: Tween(
+            begin: isJustAdded ? 0.8 : 1.0,
+            end: 1.0,
+          ),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          builder: (context, scale, child) => Transform.scale(
+            scale: isDragSource ? 1.05 : scale,
+            child: child,
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              GestureDetector(
+                onTap: () => _onTapSelectedToken(i),
+                onLongPress: () => _onLongPressToken(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isDragSource
+                        ? AppColors.primaryStrong.withValues(alpha: 0.18)
+                        : AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primaryStrong,
+                      width: isDragSource ? 2.0 : 1.5,
+                    ),
+                    boxShadow: isDragSource
+                        ? [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    token,
+                    style: const TextStyle(
+                      color: AppColors.lightText,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              // Index badge
+              Positioned(
+                top: -6,
+                left: -6,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryStrong,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${i + 1}',
+                    style: const TextStyle(
+                      color: AppColors.onGradient,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Empty slot placeholders for remaining
+    for (int i = 0; i < remaining; i++) {
+      children.add(
+        Container(
+          key: ValueKey('empty-slot-${_selected.length + i}'),
+          constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.lightBorder,
+            ),
+          ),
+          child: Text(
+            '　',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.lightSubtext.withValues(alpha: 0.3),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: children,
+    );
+  }
+}
+
+/// Custom styled token widget for sentence reorder (bank tokens)
+class _ReorderToken extends StatelessWidget {
+  final String text;
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const _ReorderToken({
+    required this.text,
+    required this.isSelected,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : AppColors.lightCard,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryStrong : AppColors.lightBorder,
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          boxShadow: isSelected
+              ? null
+              : [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: AppColors.lightText,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
