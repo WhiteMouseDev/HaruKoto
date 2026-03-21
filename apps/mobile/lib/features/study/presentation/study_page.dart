@@ -336,7 +336,13 @@ class _ReviewDueCard extends StatelessWidget {
                 ),
               ),
               FilledButton(
-                onPressed: () => context.push('/study/quiz?mode=review'),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).push(
+                  quizRoute(QuizPage(
+                      quizType: 'VOCABULARY',
+                      jlptLevel: jlptLevel,
+                      mode: 'review')),
+                ),
                 style: FilledButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
