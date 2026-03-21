@@ -905,94 +905,88 @@ class _MatchingGameStepState extends State<_MatchingGameStep>
                   child: child,
                 );
               },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left column: Japanese
-                  Expanded(
-                    child: Column(
-                      children: List.generate(_pairs.length, (i) {
-                        final isMatched = _matched.contains(i);
-                        final isSelected = _selectedLeft == i && !isMatched;
+              child: Column(
+                children: List.generate(_pairs.length, (i) {
+                  final rightIndex = _shuffledRightIndices[i];
+                  final leftMatched = _matched.contains(i);
+                  final rightMatched = _matched.contains(rightIndex);
+                  final leftSelected = _selectedLeft == i && !leftMatched;
+                  final rightSelected =
+                      _selectedRight == rightIndex && !rightMatched;
 
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: AppSizes.sm),
-                          child: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 300),
-                            opacity: isMatched ? 0.3 : 1.0,
-                            child: _MatchCard(
-                              onTap: isMatched ? null : () => _onTapLeft(i),
-                              isSelected: isSelected,
-                              isMatched: isMatched,
-                              isWrong: _wrongFlash && isSelected,
-                              brightness: brightness,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    _pairs[i].word,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  if (_pairs[i].reading != _pairs[i].word) ...[
-                                    const SizedBox(height: 2),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Left: Japanese
+                          Expanded(
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 300),
+                              opacity: leftMatched ? 0.3 : 1.0,
+                              child: _MatchCard(
+                                onTap: leftMatched ? null : () => _onTapLeft(i),
+                                isSelected: leftSelected,
+                                isMatched: leftMatched,
+                                isWrong: _wrongFlash && leftSelected,
+                                brightness: brightness,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
                                     Text(
-                                      _pairs[i].reading,
+                                      _pairs[i].word,
                                       style:
-                                          theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.outline,
+                                          theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
+                                    if (_pairs[i].reading !=
+                                        _pairs[i].word) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _pairs[i].reading,
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          color: theme.colorScheme.outline,
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-
-                  const SizedBox(width: AppSizes.gap),
-
-                  // Right column: Korean (shuffled)
-                  Expanded(
-                    child: Column(
-                      children:
-                          List.generate(_shuffledRightIndices.length, (si) {
-                        final actualIndex = _shuffledRightIndices[si];
-                        final isMatched = _matched.contains(actualIndex);
-                        final isSelected =
-                            _selectedRight == actualIndex && !isMatched;
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: AppSizes.sm),
-                          child: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 300),
-                            opacity: isMatched ? 0.3 : 1.0,
-                            child: _MatchCard(
-                              onTap: isMatched
-                                  ? null
-                                  : () => _onTapRight(actualIndex),
-                              isSelected: isSelected,
-                              isMatched: isMatched,
-                              isWrong: _wrongFlash && isSelected,
-                              brightness: brightness,
-                              child: Text(
-                                _pairs[actualIndex].meaningKo,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
-                        );
-                      }),
+                          const SizedBox(width: AppSizes.gap),
+                          // Right: Korean
+                          Expanded(
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 300),
+                              opacity: rightMatched ? 0.3 : 1.0,
+                              child: _MatchCard(
+                                onTap: rightMatched
+                                    ? null
+                                    : () => _onTapRight(rightIndex),
+                                isSelected: rightSelected,
+                                isMatched: rightMatched,
+                                isWrong: _wrongFlash && rightSelected,
+                                brightness: brightness,
+                                child: Text(
+                                  _pairs[rightIndex].meaningKo,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  );
+                }),
               ),
             ),
           ),
