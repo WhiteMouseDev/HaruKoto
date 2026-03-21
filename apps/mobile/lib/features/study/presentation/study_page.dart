@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
+import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
-import '../../kana/presentation/kana_hub_page.dart';
-import 'widgets/study_tab_content.dart';
+import '../data/models/review_summary_model.dart';
+import '../providers/study_provider.dart';
+import 'quiz_page.dart';
+import 'widgets/lesson_chapter_list.dart';
 import 'widgets/study_skeleton.dart';
 
 /// Represents a study category tab.
@@ -28,103 +32,15 @@ class StudyPage extends ConsumerStatefulWidget {
   ConsumerState<StudyPage> createState() => _StudyPageState();
 }
 
-class _StudyPageState extends ConsumerState<StudyPage>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
-  List<StudyCategory> _tabs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _tabs = [
-      StudyCategory.vocabulary,
-      StudyCategory.grammar,
-      StudyCategory.sentenceArrange
-    ];
-    _tabController = TabController(length: _tabs.length, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  /// Rebuild tab list based on kana state from dashboard.
-  void _updateTabs({
-    required bool showKana,
-    required bool kanaCompleted,
-    required bool kanaManuallyReEnabled,
-  }) {
-    final newTabs = <StudyCategory>[];
-
-    // If showKana is true AND kana not completed -> kana FIRST
-    if (showKana && !kanaCompleted && !kanaManuallyReEnabled) {
-      newTabs.add(StudyCategory.kana);
-    }
-
-    newTabs.addAll([
-      StudyCategory.vocabulary,
-      StudyCategory.grammar,
-      StudyCategory.sentenceArrange,
-    ]);
-
-    // If manually re-enabled in settings -> kana LAST
-    if (kanaManuallyReEnabled) {
-      newTabs.add(StudyCategory.kana);
-    }
-
-    if (_tabs.length != newTabs.length || !_listsEqual(_tabs, newTabs)) {
-      setState(() {
-        final oldIndex = _tabController.index;
-        _tabs = newTabs;
-        _tabController.dispose();
-        _tabController = TabController(
-          length: _tabs.length,
-          vsync: this,
-          initialIndex: oldIndex.clamp(0, _tabs.length - 1),
-        );
-      });
-    }
-  }
-
-  bool _listsEqual(List<StudyCategory> a, List<StudyCategory> b) {
-    if (a.length != b.length) return false;
-    for (int i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
-  }
-
+class _StudyPageState extends ConsumerState<StudyPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
 
-    // Multi-provider composition: manual AsyncValue handling is used instead
-    // of .when() because loading/error states are combined across 2 providers.
-
-    // Determine kana tab visibility from dashboard data
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
     final profile = profileAsync.hasValue ? profileAsync.value : null;
-
-    if (dashboard != null && profile != null) {
-      final showKana = dashboard.showKana;
-      final kanaCompleted = dashboard.kanaProgress?.completed ?? false;
-      // "Manually re-enabled" means showKana is true but kana is already completed
-      final kanaManuallyReEnabled = showKana && kanaCompleted;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _updateTabs(
-            showKana: showKana,
-            kanaCompleted: kanaCompleted,
-            kanaManuallyReEnabled: kanaManuallyReEnabled,
-          );
-        }
-      });
-    }
 
     final jlptLevel = profile != null ? profile.jlptLevel : 'N5';
 
@@ -133,6 +49,17 @@ class _StudyPageState extends ConsumerState<StudyPage>
       return const Scaffold(body: SafeArea(child: StudySkeleton()));
     }
 
+    // Kana visibility
+    final showKana = dashboard?.showKana ?? false;
+    final kanaCompleted = dashboard?.kanaProgress?.completed ?? false;
+    final showKanaCard = showKana && !kanaCompleted;
+
+    // Watch review summary
+    final reviewAsync = ref.watch(reviewSummaryProvider(jlptLevel));
+
+    // Watch chapters for inline lesson list
+    final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
+
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
@@ -140,141 +67,476 @@ class _StudyPageState extends ConsumerState<StudyPage>
           onRefresh: () async {
             ref.invalidate(dashboardProvider);
             ref.invalidate(profileProvider);
+            ref.invalidate(reviewSummaryProvider(jlptLevel));
+            ref.invalidate(chaptersProvider(jlptLevel));
           },
-          child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'JLPT 학습',
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Spacer(),
-                            _JlptLevelChip(
-                              level: jlptLevel,
-                              onChanged: (newLevel) async {
-                                await ref
-                                    .read(homeRepositoryProvider)
-                                    .updateJlptLevel(newLevel);
-                                ref.invalidate(profileProvider);
-                                ref.invalidate(dashboardProvider);
-                              },
-                            ),
-                          ],
+          child: CustomScrollView(
+            slivers: [
+              // 1. App Bar area
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '학습',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 12),
-                        // 레슨 학습 진입 배너
-                        GestureDetector(
-                          onTap: () => context.push('/study/lessons'),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  theme.colorScheme.primaryContainer,
-                                  theme.colorScheme.primaryContainer
-                                      .withValues(alpha: 0.6),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                      ),
+                      const Spacer(),
+                      _JlptLevelChip(
+                        level: jlptLevel,
+                        onChanged: (newLevel) async {
+                          await ref
+                              .read(homeRepositoryProvider)
+                              .updateJlptLevel(newLevel);
+                          ref.invalidate(profileProvider);
+                          ref.invalidate(dashboardProvider);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+              // 2. SRS Review Card
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: reviewAsync.when(
+                    data: (summary) => summary.totalDue > 0
+                        ? _ReviewDueCard(summary: summary, jlptLevel: jlptLevel)
+                        : _ReviewCompleteBar(summary: summary),
+                    loading: () => Container(
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                    error: (_, __) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+              // 3. Lesson Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Icon(LucideIcons.bookOpen,
+                          size: 20, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        '체계적 학습',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () => context.push('/study/lessons'),
+                        child: const Text('전체 보기'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Inline chapter cards
+              SliverToBoxAdapter(
+                child: chaptersAsync.when(
+                  data: (data) => data.chapters.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
+                          child: Text(
+                            '준비 중인 콘텐츠입니다',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
                             ),
-                            child: Row(
-                              children: [
-                                Icon(LucideIcons.bookOpen,
-                                    size: 20,
-                                    color:
-                                        theme.colorScheme.onPrimaryContainer),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '체계적 학습',
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: theme
-                                              .colorScheme.onPrimaryContainer,
-                                        ),
-                                      ),
-                                      Text(
-                                        '대화문 읽기 → 확인 문제 풀기',
-                                        style:
-                                            theme.textTheme.bodySmall?.copyWith(
-                                          color: theme
-                                              .colorScheme.onPrimaryContainer
-                                              .withValues(alpha: 0.7),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Icon(LucideIcons.chevronRight,
-                                    size: 18,
-                                    color:
-                                        theme.colorScheme.onPrimaryContainer),
-                              ],
+                          ),
+                        )
+                      : LessonChapterList(
+                          chapters: data.chapters,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                        ),
+                  loading: () => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: List.generate(
+                        2,
+                        (i) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHigh,
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radiusMd),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-                // Tab bar
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _TabBarDelegate(
-                    tabBar: TabBar(
-                      controller: _tabController,
-                      tabs: _tabs.map((t) => Tab(text: t.label)).toList(),
-                      isScrollable: false,
-                      labelStyle: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
                       ),
-                      unselectedLabelStyle: theme.textTheme.bodySmall,
-                      labelColor: theme.colorScheme.primary,
-                      unselectedLabelColor:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                      indicatorColor: theme.colorScheme.primary,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      dividerColor:
-                          theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
-                    backgroundColor: theme.scaffoldBackgroundColor,
+                  ),
+                  error: (_, __) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    child: Text(
+                      '레슨을 불러올 수 없습니다',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
                   ),
                 ),
-              ];
-            },
-            body: TabBarView(
-              controller: _tabController,
-              children: _tabs.map((tab) {
-                if (tab == StudyCategory.kana) {
-                  return const KanaHubPage();
-                }
-                return StudyTabContent(
-                  category: tab,
-                  jlptLevel: jlptLevel,
-                );
-              }).toList(),
-            ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+              // 4. Kana Card (conditional)
+              if (showKanaCard)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _KanaBootcampCard(dashboard: dashboard!),
+                  ),
+                ),
+
+              if (showKanaCard)
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+              // 5. Legacy Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(
+                        '추가 연습',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _LegacyLink(
+                            label: '단어',
+                            onTap: () =>
+                                context.push('/study/legacy/VOCABULARY'),
+                          ),
+                          _LegacyDivider(theme: theme),
+                          _LegacyLink(
+                            label: '문법',
+                            onTap: () => context.push('/study/legacy/GRAMMAR'),
+                          ),
+                          _LegacyDivider(theme: theme),
+                          _LegacyLink(
+                            label: '문장배열',
+                            onTap: () => context.push('/study/legacy/SENTENCE'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Bottom padding
+              const SliverToBoxAdapter(child: SizedBox(height: 40)),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── SRS Review Card (due items) ──
+
+class _ReviewDueCard extends StatelessWidget {
+  final String jlptLevel;
+  final ReviewSummaryModel summary;
+
+  const _ReviewDueCard({required this.summary, required this.jlptLevel});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        onTap: () => Navigator.of(context, rootNavigator: true).push(
+          quizRoute(QuizPage(
+              quizType: 'VOCABULARY', jlptLevel: jlptLevel, mode: 'review')),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(
+                    LucideIcons.rotateCcw,
+                    size: 22,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '복습 대기 ${summary.totalDue}개',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '단어 ${summary.wordDue} · 문법 ${summary.grammarDue}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer
+                            .withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              FilledButton(
+                onPressed: () => context.push('/study/quiz?mode=review'),
+                style: FilledButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  textStyle: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                child: const Text('복습 시작'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── SRS Review Complete Bar ──
+
+class _ReviewCompleteBar extends StatelessWidget {
+  final ReviewSummaryModel summary;
+
+  const _ReviewCompleteBar({required this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(
+          color: Colors.green.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Text('✅', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              '오늘 복습 완료',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.green.shade700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Kana Bootcamp Card ──
+
+class _KanaBootcampCard extends StatelessWidget {
+  final DashboardModel dashboard;
+
+  const _KanaBootcampCard({required this.dashboard});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final kana = dashboard.kanaProgress;
+    final learned =
+        (kana?.hiragana.learned ?? 0) + (kana?.katakana.learned ?? 0);
+    final total = (kana?.hiragana.total ?? 0) + (kana?.katakana.total ?? 0);
+    final progress = total > 0 ? learned / total : 0.0;
+
+    return Material(
+      color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.4),
+      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        onTap: () => context.push('/study/kana'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: theme.colorScheme.tertiary.withValues(alpha: 0.2),
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.tertiary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    'あ',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.tertiary,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '가나 부트캠프',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 4,
+                              backgroundColor:
+                                  theme.colorScheme.surfaceContainerHighest,
+                              color: theme.colorScheme.tertiary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '$learned/$total',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onTertiaryContainer
+                                .withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                onPressed: () => context.push('/study/kana'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.tertiary,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  textStyle: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                child: const Text('계속하기'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Legacy Links ──
+
+class _LegacyLink extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _LegacyLink({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return TextButton(
+      onPressed: onTap,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        textStyle: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      child: Text(label),
+    );
+  }
+}
+
+class _LegacyDivider extends StatelessWidget {
+  final ThemeData theme;
+
+  const _LegacyDivider({required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 16,
+      color: theme.colorScheme.outline.withValues(alpha: 0.3),
     );
   }
 }
@@ -432,34 +694,5 @@ class _JlptLevelChip extends StatelessWidget {
       default:
         return '';
     }
-  }
-}
-
-/// Delegate for pinning the tab bar during scroll.
-class _TabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar tabBar;
-  final Color backgroundColor;
-
-  _TabBarDelegate({required this.tabBar, required this.backgroundColor});
-
-  @override
-  double get minExtent => tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: backgroundColor,
-      child: tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_TabBarDelegate oldDelegate) {
-    return tabBar != oldDelegate.tabBar ||
-        backgroundColor != oldDelegate.backgroundColor;
   }
 }

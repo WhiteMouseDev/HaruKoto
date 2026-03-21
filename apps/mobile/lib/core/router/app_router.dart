@@ -25,6 +25,7 @@ import '../../features/practice/presentation/practice_page.dart';
 import '../../features/study/presentation/study_page.dart';
 import '../../features/study/presentation/lesson_list_page.dart';
 import '../../features/study/presentation/lesson_page.dart';
+import '../../features/study/presentation/legacy_study_page.dart';
 import '../../features/study/presentation/learned_words_page.dart';
 import '../../features/study/presentation/wrong_answers_page.dart';
 import '../../features/study/presentation/wordbook_page.dart';
@@ -165,6 +166,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                       ),
                     ],
+                  ),
+
+                  // Legacy study tab content routes
+                  GoRoute(
+                    path: 'legacy/:category',
+                    pageBuilder: (context, state) {
+                      final category = state.pathParameters['category']!;
+                      return _slideTransitionPage(
+                        state: state,
+                        child: LegacyStudyPage(category: category),
+                      );
+                    },
                   ),
 
                   // Kana learning routes

@@ -3,6 +3,7 @@ import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
 import 'models/quiz_result_model.dart';
+import 'models/review_summary_model.dart';
 import 'models/smart_preview_model.dart';
 import 'models/stage_model.dart';
 import 'models/word_entry_model.dart';
@@ -334,6 +335,16 @@ class StudyRepository {
       data: {'id': vocabId},
     );
     return response.data!['audioUrl'] as String;
+  }
+
+  // ── Review Summary ──
+
+  Future<ReviewSummaryModel> fetchReviewSummary(String jlptLevel) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/lessons/review/summary',
+      queryParameters: {'jlptLevel': jlptLevel},
+    );
+    return ReviewSummaryModel.fromJson(response.data!);
   }
 
   // ── Lessons ──

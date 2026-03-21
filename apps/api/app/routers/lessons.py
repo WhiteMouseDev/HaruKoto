@@ -1,6 +1,7 @@
 """Lesson API endpoints.
 
 GET  /api/v1/lessons/chapters          — 챕터 목록 + 유저 진도
+GET  /api/v1/lessons/review/summary    — SRS 복습 요약 (due/new 카드 수)
 GET  /api/v1/lessons/{lesson_id}       — 레슨 상세 (대화문 + 문제, 정답 제거)
 POST /api/v1/lessons/{lesson_id}/start — 레슨 시작
 POST /api/v1/lessons/{lesson_id}/submit — 퀴즈 결과 제출
@@ -10,10 +11,11 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -21,6 +23,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.content import Grammar, Vocabulary
 from app.models.lesson import Chapter, Lesson, LessonItemLink, UserLessonProgress
+from app.models.progress import UserGrammarProgress, UserVocabProgress
 from app.models.user import User
 from app.schemas.lesson import (
     AnswerSubmission,
@@ -34,6 +37,7 @@ from app.schemas.lesson import (
     LessonSubmitResponse,
     LessonSummary,
     QuestionResult,
+    ReviewSummaryResponse,
     VocabItem,
 )
 from app.services.srs import process_answer, register_items_from_lesson
@@ -116,6 +120,110 @@ async def get_chapters(
         )
 
     return ChapterListResponse(chapters=chapter_responses)
+
+
+# ── GET /review/summary ──
+
+
+@router.get("/review/summary", response_model=ReviewSummaryResponse, status_code=200)
+async def get_review_summary(
+    jlpt_level: Annotated[str, Query(alias="jlptLevel")] = "N5",
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """SRS 복습 요약: due 카드 수 + 새 카드 수를 반환한다."""
+    # ABSOLUTE_ZERO maps to N5 for content queries
+    effective_level = "N5" if jlpt_level == "ABSOLUTE_ZERO" else jlpt_level
+    now = datetime.now(UTC)
+
+    due_states = ("RELEARNING", "LEARNING", "REVIEW", "PROVISIONAL")
+
+    # ── Due WORD items ──
+    word_due_result = await db.execute(
+        select(func.count())
+        .select_from(UserVocabProgress)
+        .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
+        .where(
+            UserVocabProgress.user_id == user.id,
+            UserVocabProgress.state.in_(due_states),
+            UserVocabProgress.next_review_at <= now,
+            Vocabulary.jlpt_level == effective_level,
+        )
+    )
+    word_due = word_due_result.scalar() or 0
+
+    # ── Due GRAMMAR items ──
+    grammar_due_result = await db.execute(
+        select(func.count())
+        .select_from(UserGrammarProgress)
+        .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
+        .where(
+            UserGrammarProgress.user_id == user.id,
+            UserGrammarProgress.state.in_(due_states),
+            UserGrammarProgress.next_review_at <= now,
+            Grammar.jlpt_level == effective_level,
+        )
+    )
+    grammar_due = grammar_due_result.scalar() or 0
+
+    # ── New WORD items: UNSEEN state + no progress record ──
+    word_unseen_result = await db.execute(
+        select(func.count())
+        .select_from(UserVocabProgress)
+        .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
+        .where(
+            UserVocabProgress.user_id == user.id,
+            UserVocabProgress.state == "UNSEEN",
+            Vocabulary.jlpt_level == effective_level,
+        )
+    )
+    word_unseen = word_unseen_result.scalar() or 0
+
+    # Words with no progress record at all
+    existing_vocab_ids = select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id).scalar_subquery()
+    word_no_record_result = await db.execute(
+        select(func.count())
+        .select_from(Vocabulary)
+        .where(
+            Vocabulary.jlpt_level == effective_level,
+            Vocabulary.id.notin_(existing_vocab_ids),
+        )
+    )
+    word_no_record = word_no_record_result.scalar() or 0
+    word_new = word_unseen + word_no_record
+
+    # ── New GRAMMAR items: UNSEEN state + no progress record ──
+    grammar_unseen_result = await db.execute(
+        select(func.count())
+        .select_from(UserGrammarProgress)
+        .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
+        .where(
+            UserGrammarProgress.user_id == user.id,
+            UserGrammarProgress.state == "UNSEEN",
+            Grammar.jlpt_level == effective_level,
+        )
+    )
+    grammar_unseen = grammar_unseen_result.scalar() or 0
+
+    existing_grammar_ids = select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id).scalar_subquery()
+    grammar_no_record_result = await db.execute(
+        select(func.count())
+        .select_from(Grammar)
+        .where(
+            Grammar.jlpt_level == effective_level,
+            Grammar.id.notin_(existing_grammar_ids),
+        )
+    )
+    grammar_no_record = grammar_no_record_result.scalar() or 0
+    grammar_new = grammar_unseen + grammar_no_record
+
+    return ReviewSummaryResponse(
+        word_due=word_due,
+        grammar_due=grammar_due,
+        total_due=word_due + grammar_due,
+        word_new=word_new,
+        grammar_new=grammar_new,
+    )
 
 
 # ── GET /{lesson_id} ──

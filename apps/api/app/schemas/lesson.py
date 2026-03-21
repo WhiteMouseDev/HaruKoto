@@ -153,3 +153,14 @@ class LessonSubmitResponse(CamelModel):
     results: list[QuestionResult]
     status: str  # IN_PROGRESS | COMPLETED
     srs_items_registered: int = 0
+
+
+# ── Response: SRS 복습 요약 ──
+
+
+class ReviewSummaryResponse(CamelModel):
+    word_due: int = 0
+    grammar_due: int = 0
+    total_due: int = 0
+    word_new: int = 0
+    grammar_new: int = 0

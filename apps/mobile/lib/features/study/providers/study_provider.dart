@@ -4,6 +4,7 @@ import '../data/study_repository.dart';
 import '../data/models/lesson_models.dart';
 import '../data/models/quiz_session_model.dart';
 import '../data/models/recommendation_model.dart';
+import '../data/models/review_summary_model.dart';
 import '../data/models/smart_preview_model.dart';
 import '../data/models/stage_model.dart';
 
@@ -43,6 +44,13 @@ final stagesProvider = FutureProvider.autoDispose
   return ref
       .watch(studyRepositoryProvider)
       .fetchStages(params.category, params.jlptLevel);
+});
+
+// ── Review Summary ──
+
+final reviewSummaryProvider = FutureProvider.autoDispose
+    .family<ReviewSummaryModel, String>((ref, jlptLevel) {
+  return ref.watch(studyRepositoryProvider).fetchReviewSummary(jlptLevel);
 });
 
 // ── Lesson Providers ──
