@@ -11,7 +11,8 @@ import asyncio
 import json
 from pathlib import Path
 
-from sqlalchemy import select
+import sqlalchemy as sa
+from sqlalchemy import cast, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -31,6 +32,11 @@ CONTENT_FILES = [
     "12-CH05-CONTENT.json",
     "13-CH06-CONTENT.json",
 ]
+
+
+def _jlpt_str(level: object) -> str:
+    """Extract string value from JlptLevel enum or plain string."""
+    return level.value if hasattr(level, "value") else str(level)
 
 
 async def _upsert_chapter(db: AsyncSession, meta: dict) -> Chapter:
@@ -55,7 +61,7 @@ async def _upsert_chapter(db: AsyncSession, meta: dict) -> Chapter:
 
     result = await db.execute(
         select(Chapter).where(
-            Chapter.jlpt_level == meta["jlpt_level"],
+            cast(Chapter.jlpt_level, sa.Text()) == meta["jlpt_level"],
             Chapter.part_no == meta["part_no"],
             Chapter.chapter_no == meta["chapter_no"],
         )
@@ -67,7 +73,7 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict) 
     """Create or update lesson record."""
     stmt = pg_insert(Lesson).values(
         chapter_id=chapter.id,
-        jlpt_level=str(chapter.jlpt_level),
+        jlpt_level=_jlpt_str(chapter.jlpt_level),
         lesson_no=lesson_data["lesson_no"],
         chapter_lesson_no=lesson_data["chapter_lesson_no"],
         title=lesson_data["title"],
@@ -89,7 +95,7 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict) 
 
     result = await db.execute(
         select(Lesson).where(
-            Lesson.jlpt_level == str(chapter.jlpt_level),
+            cast(Lesson.jlpt_level, sa.Text()) == _jlpt_str(chapter.jlpt_level),
             Lesson.lesson_no == lesson_data["lesson_no"],
         )
     )
@@ -109,7 +115,7 @@ async def _link_items(
     for idx, order in enumerate(vocab_orders):
         result = await db.execute(
             select(Vocabulary).where(
-                Vocabulary.jlpt_level == str(lesson.jlpt_level),
+                cast(Vocabulary.jlpt_level, sa.Text()) == _jlpt_str(lesson.jlpt_level),
                 Vocabulary.order == order,
             )
         )
@@ -134,7 +140,7 @@ async def _link_items(
     if grammar_order is not None:
         result = await db.execute(
             select(Grammar).where(
-                Grammar.jlpt_level == str(lesson.jlpt_level),
+                cast(Grammar.jlpt_level, sa.Text()) == _jlpt_str(lesson.jlpt_level),
                 Grammar.order == grammar_order,
             )
         )
