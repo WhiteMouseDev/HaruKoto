@@ -110,7 +110,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                   child: reviewAsync.when(
                     data: (summary) => summary.totalDue > 0
                         ? _ReviewDueCard(summary: summary, jlptLevel: jlptLevel)
-                        : _ReviewCompleteBar(summary: summary),
+                        : _ReviewIdleBar(
+                            hasEverStudied:
+                                summary.wordNew > 0 || summary.grammarNew > 0),
                     loading: () => Container(
                       height: 72,
                       decoration: BoxDecoration(
@@ -361,34 +363,39 @@ class _ReviewDueCard extends StatelessWidget {
 
 // ── SRS Review Complete Bar ──
 
-class _ReviewCompleteBar extends StatelessWidget {
-  final ReviewSummaryModel summary;
+class _ReviewIdleBar extends StatelessWidget {
+  final bool hasEverStudied;
 
-  const _ReviewCompleteBar({required this.summary});
+  const _ReviewIdleBar({required this.hasEverStudied});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final message = hasEverStudied ? '오늘 복습 완료' : '레슨을 완료하면 복습이 시작됩니다';
+    final iconData =
+        hasEverStudied ? LucideIcons.checkCircle : LucideIcons.info;
+    final color = hasEverStudied ? Colors.green : theme.colorScheme.outline;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-          color: Colors.green.withValues(alpha: 0.2),
+          color: color.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
         children: [
-          const Text('✅', style: TextStyle(fontSize: 18)),
+          Icon(iconData, size: 20, color: color),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              '오늘 복습 완료',
+              message,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.green.shade700,
+                color: color,
               ),
             ),
           ),

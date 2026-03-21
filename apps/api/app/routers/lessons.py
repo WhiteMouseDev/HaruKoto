@@ -52,7 +52,7 @@ router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
 
 @router.get("/chapters", response_model=ChapterListResponse, status_code=200)
 async def get_chapters(
-    jlpt_level: str = Query(default="N5"),
+    jlpt_level: str = Query(default="N5", alias="jlptLevel"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
