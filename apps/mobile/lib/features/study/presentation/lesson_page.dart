@@ -564,6 +564,7 @@ class _DialogueBubble extends StatelessWidget {
                   line.text,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     height: 1.5,
                   ),
                 ),
@@ -572,7 +573,8 @@ class _DialogueBubble extends StatelessWidget {
                   Text(
                     line.translation!,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.outline,
+                      color: AppColors.lightSubtext,
+                      fontSize: 13,
                     ),
                   ),
                 ],
