@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../home/data/models/dashboard_model.dart';
@@ -227,27 +228,26 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                       const SizedBox(height: 8),
                       Text(
                         '추가 연습',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
-                          fontWeight: FontWeight.w600,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: AppColors.lightSubtext,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          _LegacyLink(
+                          _LegacyChip(
                             label: '단어',
                             onTap: () =>
                                 context.push('/study/legacy/VOCABULARY'),
                           ),
-                          _LegacyDivider(theme: theme),
-                          _LegacyLink(
+                          const SizedBox(width: 8),
+                          _LegacyChip(
                             label: '문법',
                             onTap: () => context.push('/study/legacy/GRAMMAR'),
                           ),
-                          _LegacyDivider(theme: theme),
-                          _LegacyLink(
+                          const SizedBox(width: 8),
+                          _LegacyChip(
                             label: '문장배열',
                             onTap: () => context.push('/study/legacy/SENTENCE'),
                           ),
@@ -281,7 +281,7 @@ class _ReviewDueCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Material(
-      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -292,10 +292,23 @@ class _ReviewDueCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primaryStrong.withValues(alpha: 0.16),
+                AppColors.primary.withValues(alpha: 0.10),
+              ],
+            ),
             border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+              color: AppColors.primaryStrong.withValues(alpha: 0.40),
             ),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -303,14 +316,14 @@ class _ReviewDueCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                  color: AppColors.primaryStrong.withValues(alpha: 0.18),
                   shape: BoxShape.circle,
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     LucideIcons.rotateCcw,
                     size: 22,
-                    color: theme.colorScheme.primary,
+                    color: AppColors.primaryStrong,
                   ),
                 ),
               ),
@@ -322,16 +335,15 @@ class _ReviewDueCard extends StatelessWidget {
                     Text(
                       '복습 대기 ${summary.totalDue}개',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '단어 ${summary.wordDue} · 문법 ${summary.grammarDue}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer
-                            .withValues(alpha: 0.7),
+                        color: AppColors.lightSubtext,
                       ),
                     ),
                   ],
@@ -346,6 +358,7 @@ class _ReviewDueCard extends StatelessWidget {
                       mode: 'review')),
                 ),
                 style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryStrong,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   textStyle: const TextStyle(
@@ -372,30 +385,29 @@ class _ReviewIdleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final message = hasEverStudied ? '오늘 복습 완료' : '레슨을 완료하면 복습이 시작됩니다';
+    final message = hasEverStudied ? '오늘 복습 완료' : '첫 레슨을 시작해보세요';
     final iconData =
-        hasEverStudied ? LucideIcons.checkCircle : LucideIcons.info;
-    final color = hasEverStudied ? Colors.green : theme.colorScheme.outline;
+        hasEverStudied ? LucideIcons.checkCircle2 : LucideIcons.sparkles;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: AppColors.primary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-          color: color.withValues(alpha: 0.2),
+          color: AppColors.primary.withValues(alpha: 0.28),
         ),
       ),
       child: Row(
         children: [
-          Icon(iconData, size: 20, color: color),
+          Icon(iconData, size: 20, color: AppColors.primaryStrong),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: color,
+                color: AppColors.primaryStrong,
               ),
             ),
           ),
@@ -422,7 +434,7 @@ class _KanaBootcampCard extends StatelessWidget {
     final progress = total > 0 ? learned / total : 0.0;
 
     return Material(
-      color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.4),
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -430,8 +442,9 @@ class _KanaBootcampCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.07),
             border: Border.all(
-              color: theme.colorScheme.tertiary.withValues(alpha: 0.2),
+              color: AppColors.primary.withValues(alpha: 0.22),
             ),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
@@ -441,16 +454,16 @@ class _KanaBootcampCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.tertiary.withValues(alpha: 0.15),
+                  color: AppColors.primary.withValues(alpha: 0.18),
                   shape: BoxShape.circle,
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     'あ',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.tertiary,
+                      color: AppColors.primaryStrong,
                     ),
                   ),
                 ),
@@ -464,21 +477,29 @@ class _KanaBootcampCard extends StatelessWidget {
                       '가나 부트캠프',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onTertiaryContainer,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
+                    Text(
+                      '매일 5분이면 46자 금방 익혀요',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.progressRadius),
                             child: LinearProgressIndicator(
                               value: progress,
-                              minHeight: 4,
+                              minHeight: AppSizes.progressHeight,
                               backgroundColor:
-                                  theme.colorScheme.surfaceContainerHighest,
-                              color: theme.colorScheme.tertiary,
+                                  AppColors.primary.withValues(alpha: 0.12),
+                              color: AppColors.primaryStrong,
                             ),
                           ),
                         ),
@@ -486,8 +507,7 @@ class _KanaBootcampCard extends StatelessWidget {
                         Text(
                           '$learned/$total',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onTertiaryContainer
-                                .withValues(alpha: 0.6),
+                            color: AppColors.lightSubtext,
                           ),
                         ),
                       ],
@@ -496,10 +516,11 @@ class _KanaBootcampCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              FilledButton(
+              OutlinedButton(
                 onPressed: () => context.push('/study/kana'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: theme.colorScheme.tertiary,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryStrong,
+                  side: const BorderSide(color: AppColors.primaryStrong),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   textStyle: const TextStyle(
@@ -515,41 +536,36 @@ class _KanaBootcampCard extends StatelessWidget {
   }
 }
 
-// ── Legacy Links ──
+// ── Legacy Chip Links ──
 
-class _LegacyLink extends StatelessWidget {
+class _LegacyChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _LegacyLink({required this.label, required this.onTap});
+  const _LegacyChip({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return TextButton(
-      onPressed: onTap,
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.18),
+          ),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.lightSubtext,
+          ),
         ),
       ),
-      child: Text(label),
-    );
-  }
-}
-
-class _LegacyDivider extends StatelessWidget {
-  final ThemeData theme;
-
-  const _LegacyDivider({required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 16,
-      color: theme.colorScheme.outline.withValues(alpha: 0.3),
     );
   }
 }
@@ -572,10 +588,10 @@ class _JlptLevelChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+          color: AppColors.primary.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
           ),
         ),
         child: Row(

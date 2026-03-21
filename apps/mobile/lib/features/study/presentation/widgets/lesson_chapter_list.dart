@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../data/models/lesson_models.dart';
 
 /// Reusable chapter list widget used both inline in StudyPage
@@ -35,12 +38,27 @@ class ChapterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final brightness = theme.brightness;
     final progress = chapter.totalLessons > 0
         ? chapter.completedLessons / chapter.totalLessons
         : 0.0;
+    final isComplete = progress >= 1.0;
+    final percentText = '${(progress * 100).round()}%';
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: AppColors.lightBorder),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -50,39 +68,48 @@ class ChapterCard extends StatelessWidget {
               children: [
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.primary.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
                     'Ch.${chapter.chapterNo}',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
+                      color: AppColors.primaryStrong,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(chapter.title,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    chapter.title,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Text(
-                  '${chapter.completedLessons}/${chapter.totalLessons}',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.outline),
+                  percentText,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: isComplete
+                        ? AppColors.success(brightness)
+                        : AppColors.primaryStrong,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(AppSizes.progressRadius),
               child: LinearProgressIndicator(
                 value: progress,
-                minHeight: 4,
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                minHeight: AppSizes.progressHeight,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                color: isComplete
+                    ? AppColors.success(brightness)
+                    : AppColors.primaryStrong,
               ),
             ),
             const SizedBox(height: 12),
@@ -104,67 +131,95 @@ class LessonTile extends StatelessWidget {
       lesson.scoreCorrect == lesson.scoreTotal &&
       lesson.scoreTotal > 0;
 
-  IconData get _statusIcon {
-    if (_isPerfect) return Icons.star;
-    switch (lesson.status) {
-      case 'COMPLETED':
-        return Icons.check_circle;
-      case 'IN_PROGRESS':
-        return Icons.play_circle;
-      default:
-        return Icons.circle_outlined;
-    }
-  }
-
-  Color _statusColor(ThemeData theme) {
-    if (_isPerfect) return Colors.amber;
-    switch (lesson.status) {
-      case 'COMPLETED':
-        return Colors.green;
-      case 'IN_PROGRESS':
-        return theme.colorScheme.primary;
-      default:
-        return theme.colorScheme.outline;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final brightness = theme.brightness;
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(_statusIcon, color: _statusColor(theme)),
-      title: Text(lesson.title, style: theme.textTheme.bodyMedium),
-      subtitle: Text('${lesson.estimatedMinutes}분 · ${lesson.topic}',
-          style: theme.textTheme.bodySmall),
-      trailing: lesson.status == 'COMPLETED'
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+    // Determine state-dependent styles
+    final Color bgColor;
+    final IconData iconData;
+    final Color iconColor;
+
+    if (_isPerfect) {
+      bgColor = AppColors.hkYellowLight.withValues(alpha: 0.22);
+      iconData = LucideIcons.sparkles;
+      iconColor = AppColors.hkYellow(brightness);
+    } else {
+      switch (lesson.status) {
+        case 'COMPLETED':
+          bgColor = AppColors.success(brightness).withValues(alpha: 0.14);
+          iconData = LucideIcons.checkCircle2;
+          iconColor = AppColors.success(brightness);
+        case 'IN_PROGRESS':
+          bgColor = AppColors.primary.withValues(alpha: 0.12);
+          iconData = LucideIcons.playCircle;
+          iconColor = AppColors.primaryStrong;
+        default:
+          bgColor = Colors.transparent;
+          iconData = LucideIcons.circle;
+          iconColor = AppColors.lightSubtext;
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: GestureDetector(
+        onTap: () => context.push('/study/lessons/${lesson.id}'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
+            children: [
+              Icon(iconData, size: 20, color: iconColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      lesson.title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${lesson.estimatedMinutes}분 · ${lesson.topic}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (lesson.status == 'COMPLETED')
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(4),
+                    color: _isPerfect
+                        ? AppColors.hkYellowLight.withValues(alpha: 0.30)
+                        : AppColors.success(brightness).withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
-                    '복습 예약',
+                    '${lesson.scoreCorrect}/${lesson.scoreTotal}',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontSize: 10,
+                      color: _isPerfect
+                          ? AppColors.hkYellow(brightness)
+                          : AppColors.success(brightness),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(width: 6),
-                Text('${lesson.scoreCorrect}/${lesson.scoreTotal}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.green, fontWeight: FontWeight.bold)),
-              ],
-            )
-          : const Icon(Icons.chevron_right),
-      onTap: () => context.push('/study/lessons/${lesson.id}'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
