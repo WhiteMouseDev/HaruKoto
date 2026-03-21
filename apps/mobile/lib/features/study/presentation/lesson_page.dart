@@ -513,17 +513,18 @@ class _GuidedReadingStepState extends State<_GuidedReadingStep> {
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         LucideIcons.mapPin,
                         size: AppSizes.iconSm,
-                        color: theme.colorScheme.outline,
+                        color: AppColors.primaryStrong,
                       ),
                       const SizedBox(width: AppSizes.sm),
                       Expanded(
                         child: Text(
                           reading.scene!,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.outline,
+                            color: AppColors.lightText,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -540,7 +541,7 @@ class _GuidedReadingStepState extends State<_GuidedReadingStep> {
                   Text(
                     '번역',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.outline,
+                      color: AppColors.lightText,
                     ),
                   ),
                   const SizedBox(width: AppSizes.xs),
@@ -627,6 +628,7 @@ class _DialogueBubble extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     height: 1.5,
+                    color: AppColors.lightText,
                   ),
                 ),
                 if (showTranslation && line.translation != null) ...[
