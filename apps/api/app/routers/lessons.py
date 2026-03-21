@@ -14,8 +14,9 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
+import sqlalchemy as sa
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -57,9 +58,12 @@ async def get_chapters(
     db: AsyncSession = Depends(get_db),
 ):
     """챕터 목록 + 각 레슨의 유저 진도를 반환한다."""
+    # ABSOLUTE_ZERO → N5 매핑
+    effective_level = "N5" if jlpt_level == "ABSOLUTE_ZERO" else jlpt_level
+
     result = await db.execute(
         select(Chapter)
-        .where(Chapter.jlpt_level == jlpt_level, Chapter.is_published.is_(True))
+        .where(cast(Chapter.jlpt_level, sa.Text()) == effective_level, Chapter.is_published.is_(True))
         .options(selectinload(Chapter.lessons))
         .order_by(Chapter.part_no, Chapter.chapter_no)
     )
