@@ -367,103 +367,235 @@ class _ContextPreviewStep extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSizes.lg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Scene card
-                  if (reading.scene != null)
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.lg,
+              vertical: AppSizes.md,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Meta bar
+                Row(
+                  children: [
                     Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSizes.lg),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.primary.withValues(alpha: 0.08),
-                            AppColors.primary.withValues(alpha: 0.03),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.15),
-                        ),
+                        color: AppColors.primaryStrong,
+                        borderRadius:
+                            BorderRadius.circular(AppSizes.radiusFull),
                       ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            LucideIcons.mapPin,
-                            size: AppSizes.iconXl,
-                            color: AppColors.primaryStrong,
-                          ),
-                          const SizedBox(height: AppSizes.gap),
-                          Text(
-                            reading.scene!,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      child: Text(
+                        'Ch.${detail.chapterLessonNo}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppColors.onGradient,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-
-                  const SizedBox(height: AppSizes.lg),
-
-                  // Highlights label
-                  if (reading.highlights.isNotEmpty) ...[
+                    const SizedBox(width: AppSizes.sm),
                     Text(
-                      '오늘의 핵심 표현',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.outline,
+                      '약 ${detail.estimatedMinutes}분',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppColors.lightSubtext,
                       ),
-                    ),
-                    const SizedBox(height: AppSizes.gap),
-                    Wrap(
-                      spacing: AppSizes.sm,
-                      runSpacing: AppSizes.sm,
-                      alignment: WrapAlignment.center,
-                      children: reading.highlights.map((h) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radiusFull),
-                          ),
-                          child: Text(
-                            h,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.onGradient,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        );
-                      }).toList(),
                     ),
                   ],
+                ),
+
+                const SizedBox(height: AppSizes.lg),
+
+                // Big title
+                Text(
+                  detail.title,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                if (detail.subtitle != null) ...[
+                  const SizedBox(height: AppSizes.xs),
+                  Text(
+                    detail.subtitle!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.lightSubtext,
+                    ),
+                  ),
                 ],
-              ),
+
+                const SizedBox(height: AppSizes.lg),
+
+                // Scene card
+                if (reading.scene != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightCard,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      border: Border.all(color: AppColors.lightBorder),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            LucideIcons.messagesSquare,
+                            size: 22,
+                            color: AppColors.primaryStrong,
+                          ),
+                        ),
+                        const SizedBox(width: AppSizes.gap),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '오늘의 상황',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppColors.primaryStrong,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                reading.scene!,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.lightText,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: AppSizes.lg),
+
+                // Highlights
+                if (reading.highlights.isNotEmpty) ...[
+                  Text(
+                    '오늘의 핵심 표현',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.lightText,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.gap),
+                  Wrap(
+                    spacing: AppSizes.sm,
+                    runSpacing: AppSizes.sm,
+                    children: reading.highlights.map((h) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightCard,
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radiusFull),
+                          border: Border.all(
+                            color: AppColors.primaryStrong,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          h,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.lightText,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+
+                const SizedBox(height: AppSizes.lg),
+
+                // Dialogue teaser
+                if (reading.script.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '미리보기',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.primaryStrong,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: AppSizes.xs),
+                        Text(
+                          '${reading.script.first.speaker}: ${reading.script.first.text}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.lightText,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          '...',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.lightSubtext,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(AppSizes.md),
-            child: SizedBox(
-              width: double.infinity,
-              height: AppSizes.buttonHeight,
-              child: FilledButton.icon(
-                onPressed: onNext,
-                icon: const Icon(LucideIcons.messageSquare),
-                label: const Text('대화 시작하기'),
-              ),
+            child: Column(
+              children: [
+                Text(
+                  '이 표현만 익히면 바로 대화할 수 있어요',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.lightSubtext,
+                  ),
+                ),
+                const SizedBox(height: AppSizes.sm),
+                SizedBox(
+                  width: double.infinity,
+                  height: AppSizes.buttonHeight,
+                  child: FilledButton.icon(
+                    onPressed: onNext,
+                    icon: const Icon(LucideIcons.messageSquare),
+                    label: const Text('대화 시작하기'),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
