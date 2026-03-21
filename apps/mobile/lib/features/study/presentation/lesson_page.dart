@@ -3,11 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../core/constants/colors.dart';
+import '../../../core/constants/sizes.dart';
 import '../data/models/lesson_models.dart';
 import '../providers/study_provider.dart';
 
-/// 레슨 상세: 대화문 읽기 → 퀴즈 풀기 → 결과 확인
+/// 레슨 학습 플로우: 6-Step (상황 프리뷰 → 가이드 리딩 → 이해 체크 → 매칭 게임 → 문장 재구성 → 결과)
 class LessonPage extends ConsumerStatefulWidget {
   final String lessonId;
   const LessonPage({super.key, required this.lessonId});
@@ -17,26 +20,31 @@ class LessonPage extends ConsumerStatefulWidget {
 }
 
 class _LessonPageState extends ConsumerState<LessonPage> {
-  // 단계: 0=대화문, 1=퀴즈, 2=결과
-  int _phase = 0;
-  int _currentQuestion = 0;
-  final List<Map<String, dynamic>> _answers = [];
+  // ── State ──
+  int _step = 0; // 0~5
+
+  int _recognitionIndex = 0;
+  int _reorderIndex = 0;
+  final Map<int, Map<String, dynamic>> _answers = {};
+
   LessonSubmitResultModel? _result;
   bool _submitting = false;
+
+  static const _totalSteps = 6;
 
   @override
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(lessonDetailProvider(widget.lessonId));
 
     return PopScope(
-      canPop: _phase == 0,
+      canPop: _step == 0,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && _phase > 0) {
+        if (!didPop && _step > 0) {
           setState(() {
-            if (_phase == 2) {
-              _phase = 0;
+            if (_step == 5) {
+              _step = 0;
             } else {
-              _phase--;
+              _step = (_step - 1).clamp(0, 5);
             }
           });
         }
@@ -49,12 +57,31 @@ class _LessonPageState extends ConsumerState<LessonPage> {
             error: (_, __) => const Text('레슨'),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.close),
+            icon: const Icon(LucideIcons.x),
             onPressed: () => context.pop(),
           ),
         ),
         body: detailAsync.when(
-          data: (detail) => _buildPhase(detail),
+          data: (detail) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.md,
+                  vertical: AppSizes.sm,
+                ),
+                child: _StepProgressBar(
+                  currentStep: _step,
+                  totalSteps: _totalSteps,
+                ),
+              ),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _buildStep(detail),
+                ),
+              ),
+            ],
+          ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('오류: $e')),
         ),
@@ -62,24 +89,78 @@ class _LessonPageState extends ConsumerState<LessonPage> {
     );
   }
 
-  Widget _buildPhase(LessonDetailModel detail) {
-    switch (_phase) {
+  Widget _buildStep(LessonDetailModel detail) {
+    switch (_step) {
       case 0:
-        return _ReadingPhase(
+        return _ContextPreviewStep(
+          key: const ValueKey('step-0'),
           detail: detail,
-          onNext: () => _startQuiz(detail),
+          onNext: () => setState(() => _step = 1),
         );
       case 1:
-        return _QuizPhase(
-          questions: detail.content.questions,
-          currentIndex: _currentQuestion,
-          onAnswer: (answer) => _handleAnswer(detail, answer),
+        return _GuidedReadingStep(
+          key: const ValueKey('step-1'),
+          detail: detail,
+          onNext: () => _startPractice(detail),
         );
       case 2:
-        return _ResultPhase(
+        final recognitionQs = detail.content.questions
+            .where((q) => q.type == 'VOCAB_MCQ' || q.type == 'CONTEXT_CLOZE')
+            .toList();
+        if (recognitionQs.isEmpty) {
+          // Skip recognition if no matching questions
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _step = 3);
+          });
+          return const SizedBox.shrink(key: ValueKey('step-2-skip'));
+        }
+        return _RecognitionCheckStep(
+          key: ValueKey('step-2-$_recognitionIndex'),
+          questions: recognitionQs,
+          currentIndex: _recognitionIndex,
+          totalSteps: _totalSteps,
+          onAnswer: (answer) => _handleRecognitionAnswer(
+            recognitionQs,
+            answer,
+          ),
+        );
+      case 3:
+        return _MatchingGameStep(
+          key: const ValueKey('step-3'),
+          vocabItems: detail.vocabItems,
+          onComplete: () {
+            setState(() {
+              _step = 4;
+            });
+          },
+        );
+      case 4:
+        final reorderQs = detail.content.questions
+            .where((q) => q.type == 'SENTENCE_REORDER')
+            .toList();
+        if (reorderQs.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _submitAnswers(detail);
+          });
+          return const SizedBox.shrink(key: ValueKey('step-4-skip'));
+        }
+        return _SentenceReorderStep(
+          key: ValueKey('step-4-$_reorderIndex'),
+          questions: reorderQs,
+          currentIndex: _reorderIndex,
+          totalSteps: _totalSteps,
+          onAnswer: (answer) => _handleReorderAnswer(
+            detail,
+            reorderQs,
+            answer,
+          ),
+        );
+      case 5:
+        return _ResultStep(
+          key: const ValueKey('step-5'),
           result: _result!,
           detail: detail,
-          onRetry: () => _retry(),
+          onRetry: _retry,
           onDone: () => context.pop(),
         );
       default:
@@ -87,24 +168,46 @@ class _LessonPageState extends ConsumerState<LessonPage> {
     }
   }
 
-  Future<void> _startQuiz(LessonDetailModel detail) async {
-    // 레슨 시작 API 호출
+  // ── Actions ──
+
+  Future<void> _startPractice(LessonDetailModel detail) async {
     try {
       await ref.read(studyRepositoryProvider).startLesson(detail.id);
     } catch (_) {
-      // 이미 시작된 경우 무시
+      // Already started — ignore
     }
     setState(() {
-      _phase = 1;
-      _currentQuestion = 0;
+      _step = 2;
+      _recognitionIndex = 0;
+      _reorderIndex = 0;
       _answers.clear();
     });
   }
 
-  void _handleAnswer(LessonDetailModel detail, Map<String, dynamic> answer) {
-    _answers.add(answer);
-    if (_currentQuestion < detail.content.questions.length - 1) {
-      setState(() => _currentQuestion++);
+  void _handleRecognitionAnswer(
+    List<LessonQuestionModel> recognitionQs,
+    Map<String, dynamic> answer,
+  ) {
+    final order = answer['order'] as int;
+    _answers[order] = answer;
+
+    if (_recognitionIndex < recognitionQs.length - 1) {
+      setState(() => _recognitionIndex++);
+    } else {
+      setState(() => _step = 3);
+    }
+  }
+
+  void _handleReorderAnswer(
+    LessonDetailModel detail,
+    List<LessonQuestionModel> reorderQs,
+    Map<String, dynamic> answer,
+  ) {
+    final order = answer['order'] as int;
+    _answers[order] = answer;
+
+    if (_reorderIndex < reorderQs.length - 1) {
+      setState(() => _reorderIndex++);
     } else {
       _submitAnswers(detail);
     }
@@ -115,12 +218,13 @@ class _LessonPageState extends ConsumerState<LessonPage> {
     setState(() => _submitting = true);
 
     try {
+      final answersList = _answers.values.toList();
       final result = await ref
           .read(studyRepositoryProvider)
-          .submitLesson(detail.id, _answers);
+          .submitLesson(detail.id, answersList);
       setState(() {
         _result = result;
-        _phase = 2;
+        _step = 5;
         _submitting = false;
       });
       ref.invalidate(chaptersProvider('N5'));
@@ -136,20 +240,63 @@ class _LessonPageState extends ConsumerState<LessonPage> {
 
   void _retry() {
     setState(() {
-      _phase = 0;
-      _currentQuestion = 0;
+      _step = 0;
+      _recognitionIndex = 0;
+      _reorderIndex = 0;
       _answers.clear();
       _result = null;
     });
   }
 }
 
-// ── Phase 0: 대화문 읽기 ──
+// ═══════════════════════════════════════════════════════════════════
+// _StepProgressBar — 6 segments
+// ═══════════════════════════════════════════════════════════════════
 
-class _ReadingPhase extends StatelessWidget {
+class _StepProgressBar extends StatelessWidget {
+  final int currentStep;
+  final int totalSteps;
+  const _StepProgressBar({required this.currentStep, required this.totalSteps});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(totalSteps, (i) {
+        final isCompleted = i < currentStep;
+        final isCurrent = i == currentStep;
+
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: i < totalSteps - 1 ? 3 : 0),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              height: 4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: isCompleted || isCurrent
+                    ? AppColors.primaryStrong
+                    : AppColors.primary.withValues(alpha: 0.15),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Step 0: _ContextPreviewStep
+// ═══════════════════════════════════════════════════════════════════
+
+class _ContextPreviewStep extends StatelessWidget {
   final LessonDetailModel detail;
   final VoidCallback onNext;
-  const _ReadingPhase({required this.detail, required this.onNext});
+  const _ContextPreviewStep({
+    super.key,
+    required this.detail,
+    required this.onNext,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -159,82 +306,102 @@ class _ReadingPhase extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // 상황 설명
-              if (reading.scene != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.place,
-                          size: 16, color: theme.colorScheme.outline),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(reading.scene!,
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(color: theme.colorScheme.outline)),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSizes.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Scene card
+                  if (reading.scene != null)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppSizes.lg),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.08),
+                            AppColors.primary.withValues(alpha: 0.03),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // 대화문
-              ...reading.script.map((line) => _DialogueBubble(line: line)),
-
-              const SizedBox(height: 24),
-
-              // 단어 목록
-              if (detail.vocabItems.isNotEmpty) ...[
-                Text('단어', style: theme.textTheme.titleSmall),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: detail.vocabItems
-                      .map((v) => Chip(
-                            label: Text('${v.word} (${v.reading})',
-                                style: theme.textTheme.bodySmall),
-                            backgroundColor:
-                                theme.colorScheme.surfaceContainerHighest,
-                          ))
-                      .toList(),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // 문법
-              if (detail.grammarItems.isNotEmpty) ...[
-                Text('문법', style: theme.textTheme.titleSmall),
-                const SizedBox(height: 8),
-                ...detail.grammarItems.map((g) => Card(
-                      child: ListTile(
-                        title: Text(g.pattern,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text(g.meaningKo),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            LucideIcons.mapPin,
+                            size: AppSizes.iconXl,
+                            color: AppColors.primaryStrong,
+                          ),
+                          const SizedBox(height: AppSizes.gap),
+                          Text(
+                            reading.scene!,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                    )),
-              ],
-            ],
+                    ),
+
+                  const SizedBox(height: AppSizes.lg),
+
+                  // Highlights label
+                  if (reading.highlights.isNotEmpty) ...[
+                    Text(
+                      '오늘의 핵심 표현',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
+                    ),
+                    const SizedBox(height: AppSizes.gap),
+                    Wrap(
+                      spacing: AppSizes.sm,
+                      runSpacing: AppSizes.sm,
+                      alignment: WrapAlignment.center,
+                      children: reading.highlights.map((h) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radiusFull),
+                          ),
+                          child: Text(
+                            h,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.onGradient,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.md),
             child: SizedBox(
               width: double.infinity,
+              height: AppSizes.buttonHeight,
               child: FilledButton.icon(
                 onPressed: onNext,
-                icon: const Icon(Icons.quiz),
-                label: const Text('확인 문제 풀기'),
+                icon: const Icon(LucideIcons.messageSquare),
+                label: const Text('대화 시작하기'),
               ),
             ),
           ),
@@ -244,40 +411,170 @@ class _ReadingPhase extends StatelessWidget {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// Step 1: _GuidedReadingStep
+// ═══════════════════════════════════════════════════════════════════
+
+class _GuidedReadingStep extends StatefulWidget {
+  final LessonDetailModel detail;
+  final VoidCallback onNext;
+  const _GuidedReadingStep({
+    super.key,
+    required this.detail,
+    required this.onNext,
+  });
+
+  @override
+  State<_GuidedReadingStep> createState() => _GuidedReadingStepState();
+}
+
+class _GuidedReadingStepState extends State<_GuidedReadingStep> {
+  bool _showTranslation = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final reading = widget.detail.content.reading;
+
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(AppSizes.md),
+            children: [
+              // Scene bar
+              if (reading.scene != null) ...[
+                Container(
+                  padding: const EdgeInsets.all(AppSizes.gap),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: AppSizes.iconSm,
+                        color: theme.colorScheme.outline,
+                      ),
+                      const SizedBox(width: AppSizes.sm),
+                      Expanded(
+                        child: Text(
+                          reading.scene!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSizes.md),
+              ],
+
+              // Translation toggle
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '번역',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                  const SizedBox(width: AppSizes.xs),
+                  SizedBox(
+                    height: 28,
+                    child: Switch.adaptive(
+                      value: _showTranslation,
+                      onChanged: (v) => setState(() => _showTranslation = v),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSizes.sm),
+
+              // Dialogue bubbles
+              ...reading.script.map(
+                (line) => _DialogueBubble(
+                  line: line,
+                  showTranslation: _showTranslation,
+                ),
+              ),
+
+              const SizedBox(height: AppSizes.lg),
+            ],
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: SizedBox(
+              width: double.infinity,
+              height: AppSizes.buttonHeight,
+              child: FilledButton.icon(
+                onPressed: widget.onNext,
+                icon: const Icon(LucideIcons.checkCircle),
+                label: const Text('이해 체크로'),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Dialogue Bubble (shared) ──
+
 class _DialogueBubble extends StatelessWidget {
   final ScriptLineModel line;
-  const _DialogueBubble({required this.line});
+  final bool showTranslation;
+  const _DialogueBubble({
+    required this.line,
+    this.showTranslation = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSizes.gap),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(line.speaker,
-              style: theme.textTheme.labelSmall
-                  ?.copyWith(color: theme.colorScheme.primary)),
-          const SizedBox(height: 4),
+          Text(
+            line.speaker,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: AppColors.primaryStrong,
+            ),
+          ),
+          const SizedBox(height: AppSizes.xs),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSizes.gap),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(line.text,
-                    style: theme.textTheme.bodyLarge
-                        ?.copyWith(fontSize: 18, height: 1.5)),
-                if (line.translation != null) ...[
-                  const SizedBox(height: 4),
-                  Text(line.translation!,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.colorScheme.outline)),
+                Text(
+                  line.text,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 18,
+                    height: 1.5,
+                  ),
+                ),
+                if (showTranslation && line.translation != null) ...[
+                  const SizedBox(height: AppSizes.xs),
+                  Text(
+                    line.translation!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -288,66 +585,28 @@ class _DialogueBubble extends StatelessWidget {
   }
 }
 
-// ── Phase 1: 퀴즈 ──
+// ═══════════════════════════════════════════════════════════════════
+// Step 2: _RecognitionCheckStep
+// ═══════════════════════════════════════════════════════════════════
 
-class _QuizPhase extends StatelessWidget {
+class _RecognitionCheckStep extends StatefulWidget {
   final List<LessonQuestionModel> questions;
   final int currentIndex;
+  final int totalSteps;
   final ValueChanged<Map<String, dynamic>> onAnswer;
-  const _QuizPhase({
+  const _RecognitionCheckStep({
+    super.key,
     required this.questions,
     required this.currentIndex,
+    required this.totalSteps,
     required this.onAnswer,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final q = questions[currentIndex];
-
-    return Column(
-      children: [
-        // 진행 바
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              Text('${currentIndex + 1}/${questions.length}',
-                  style: theme.textTheme.bodySmall),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: (currentIndex + 1) / questions.length,
-                    minHeight: 6,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Expanded(
-          child: q.type == 'SENTENCE_REORDER'
-              ? _SentenceReorderQuiz(question: q, onAnswer: onAnswer)
-              : _MultipleChoiceQuiz(question: q, onAnswer: onAnswer),
-        ),
-      ],
-    );
-  }
+  State<_RecognitionCheckStep> createState() => _RecognitionCheckStepState();
 }
 
-class _MultipleChoiceQuiz extends StatefulWidget {
-  final LessonQuestionModel question;
-  final ValueChanged<Map<String, dynamic>> onAnswer;
-  const _MultipleChoiceQuiz({required this.question, required this.onAnswer});
-
-  @override
-  State<_MultipleChoiceQuiz> createState() => _MultipleChoiceQuizState();
-}
-
-class _MultipleChoiceQuizState extends State<_MultipleChoiceQuiz> {
+class _RecognitionCheckStepState extends State<_RecognitionCheckStep> {
   String? _selected;
   late List<QuizOptionModel> _shuffledOptions;
 
@@ -358,47 +617,61 @@ class _MultipleChoiceQuizState extends State<_MultipleChoiceQuiz> {
   }
 
   @override
-  void didUpdateWidget(covariant _MultipleChoiceQuiz oldWidget) {
+  void didUpdateWidget(covariant _RecognitionCheckStep oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.question.order != widget.question.order) {
+    if (oldWidget.currentIndex != widget.currentIndex) {
       _selected = null;
       _shuffleOptions();
     }
   }
 
   void _shuffleOptions() {
-    _shuffledOptions = List.of(widget.question.options ?? [])
-      ..shuffle(Random());
+    final q = widget.questions[widget.currentIndex];
+    _shuffledOptions = List.of(q.options ?? [])..shuffle(Random());
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final q = widget.questions[widget.currentIndex];
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.question.prompt,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 24),
+          // Sub-progress
+          Text(
+            '3/${widget.totalSteps} · 문항 ${widget.currentIndex + 1}/${widget.questions.length}',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: AppSizes.md),
+
+          Text(
+            q.prompt,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSizes.lg),
+
           ..._shuffledOptions.map((opt) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: AppSizes.sm),
                 child: SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: _selected != null ? null : () => _select(opt.id),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSizes.md),
                       side: BorderSide(
                         color: _selected == opt.id
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.outline.withValues(alpha: 0.3),
+                            ? AppColors.primaryStrong
+                            : AppColors.lightBorder,
                       ),
                       backgroundColor: _selected == opt.id
-                          ? theme.colorScheme.primaryContainer
+                          ? AppColors.primary.withValues(alpha: 0.15)
                           : null,
                     ),
                     child: Align(
@@ -416,8 +689,9 @@ class _MultipleChoiceQuizState extends State<_MultipleChoiceQuiz> {
   void _select(String id) {
     setState(() => _selected = id);
     Future.delayed(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
       widget.onAnswer({
-        'order': widget.question.order,
+        'order': widget.questions[widget.currentIndex].order,
         'selectedAnswer': _selected,
         'responseMs': 0,
       });
@@ -425,16 +699,321 @@ class _MultipleChoiceQuizState extends State<_MultipleChoiceQuiz> {
   }
 }
 
-class _SentenceReorderQuiz extends StatefulWidget {
-  final LessonQuestionModel question;
-  final ValueChanged<Map<String, dynamic>> onAnswer;
-  const _SentenceReorderQuiz({required this.question, required this.onAnswer});
+// ═══════════════════════════════════════════════════════════════════
+// Step 3: _MatchingGameStep
+// ═══════════════════════════════════════════════════════════════════
+
+class _MatchingGameStep extends StatefulWidget {
+  final List<VocabItemModel> vocabItems;
+  final VoidCallback onComplete;
+  const _MatchingGameStep({
+    super.key,
+    required this.vocabItems,
+    required this.onComplete,
+  });
 
   @override
-  State<_SentenceReorderQuiz> createState() => _SentenceReorderQuizState();
+  State<_MatchingGameStep> createState() => _MatchingGameStepState();
 }
 
-class _SentenceReorderQuizState extends State<_SentenceReorderQuiz> {
+class _MatchingGameStepState extends State<_MatchingGameStep>
+    with SingleTickerProviderStateMixin {
+  late List<VocabItemModel> _pairs;
+  late List<int> _shuffledRightIndices;
+  int? _selectedLeft;
+  int? _selectedRight;
+  final Set<int> _matched = {};
+  bool _wrongFlash = false;
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initPairs();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _shakeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn),
+    );
+  }
+
+  void _initPairs() {
+    final all = List.of(widget.vocabItems)..shuffle(Random());
+    _pairs = all.take(min(4, all.length)).toList();
+    _shuffledRightIndices = List.generate(_pairs.length, (i) => i)
+      ..shuffle(Random());
+    _selectedLeft = null;
+    _selectedRight = null;
+    _matched.clear();
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _onTapLeft(int index) {
+    if (_matched.contains(index)) return;
+    setState(() {
+      _selectedLeft = index;
+      _wrongFlash = false;
+    });
+    _checkMatch();
+  }
+
+  void _onTapRight(int index) {
+    if (_matched.contains(index)) return;
+    setState(() {
+      _selectedRight = index;
+      _wrongFlash = false;
+    });
+    _checkMatch();
+  }
+
+  void _checkMatch() {
+    if (_selectedLeft == null || _selectedRight == null) return;
+
+    if (_selectedLeft == _selectedRight) {
+      // Correct match
+      setState(() {
+        _matched.add(_selectedLeft!);
+        _selectedLeft = null;
+        _selectedRight = null;
+      });
+      if (_matched.length == _pairs.length) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) widget.onComplete();
+        });
+      }
+    } else {
+      // Wrong match
+      setState(() => _wrongFlash = true);
+      _shakeController.forward(from: 0).then((_) {
+        if (mounted) {
+          setState(() {
+            _selectedLeft = null;
+            _selectedRight = null;
+            _wrongFlash = false;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+
+    return Padding(
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '단어 매칭',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSizes.xs),
+          Text(
+            '일본어와 뜻을 연결하세요',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: AppSizes.lg),
+          Expanded(
+            child: AnimatedBuilder(
+              animation: _shakeAnimation,
+              builder: (context, child) {
+                final shakeOffset =
+                    _wrongFlash ? sin(_shakeAnimation.value * pi * 4) * 6 : 0.0;
+                return Transform.translate(
+                  offset: Offset(shakeOffset, 0),
+                  child: child,
+                );
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left column: Japanese
+                  Expanded(
+                    child: Column(
+                      children: List.generate(_pairs.length, (i) {
+                        final isMatched = _matched.contains(i);
+                        final isSelected = _selectedLeft == i && !isMatched;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                          child: AnimatedOpacity(
+                            duration: const Duration(milliseconds: 300),
+                            opacity: isMatched ? 0.3 : 1.0,
+                            child: _MatchCard(
+                              onTap: isMatched ? null : () => _onTapLeft(i),
+                              isSelected: isSelected,
+                              isMatched: isMatched,
+                              isWrong: _wrongFlash && isSelected,
+                              brightness: brightness,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    _pairs[i].word,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  if (_pairs[i].reading != _pairs[i].word) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      _pairs[i].reading,
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.outline,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  const SizedBox(width: AppSizes.gap),
+
+                  // Right column: Korean (shuffled)
+                  Expanded(
+                    child: Column(
+                      children:
+                          List.generate(_shuffledRightIndices.length, (si) {
+                        final actualIndex = _shuffledRightIndices[si];
+                        final isMatched = _matched.contains(actualIndex);
+                        final isSelected =
+                            _selectedRight == actualIndex && !isMatched;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                          child: AnimatedOpacity(
+                            duration: const Duration(milliseconds: 300),
+                            opacity: isMatched ? 0.3 : 1.0,
+                            child: _MatchCard(
+                              onTap: isMatched
+                                  ? null
+                                  : () => _onTapRight(actualIndex),
+                              isSelected: isSelected,
+                              isMatched: isMatched,
+                              isWrong: _wrongFlash && isSelected,
+                              brightness: brightness,
+                              child: Text(
+                                _pairs[actualIndex].meaningKo,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MatchCard extends StatelessWidget {
+  final VoidCallback? onTap;
+  final bool isSelected;
+  final bool isMatched;
+  final bool isWrong;
+  final Brightness brightness;
+  final Widget child;
+
+  const _MatchCard({
+    required this.onTap,
+    required this.isSelected,
+    required this.isMatched,
+    required this.isWrong,
+    required this.brightness,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color bgColor;
+    Color borderColor;
+
+    if (isMatched) {
+      bgColor = AppColors.success(brightness).withValues(alpha: 0.15);
+      borderColor = AppColors.success(brightness);
+    } else if (isWrong) {
+      bgColor = AppColors.error(brightness).withValues(alpha: 0.15);
+      borderColor = AppColors.error(brightness);
+    } else if (isSelected) {
+      bgColor = AppColors.primary.withValues(alpha: 0.15);
+      borderColor = AppColors.primaryStrong;
+    } else {
+      bgColor = AppColors.lightCard;
+      borderColor = AppColors.lightBorder;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.gap,
+          vertical: AppSizes.md,
+        ),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          border: Border.all(color: borderColor, width: 1.5),
+        ),
+        child: Center(child: child),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Step 4: _SentenceReorderStep
+// ═══════════════════════════════════════════════════════════════════
+
+class _SentenceReorderStep extends StatefulWidget {
+  final List<LessonQuestionModel> questions;
+  final int currentIndex;
+  final int totalSteps;
+  final ValueChanged<Map<String, dynamic>> onAnswer;
+  const _SentenceReorderStep({
+    super.key,
+    required this.questions,
+    required this.currentIndex,
+    required this.totalSteps,
+    required this.onAnswer,
+  });
+
+  @override
+  State<_SentenceReorderStep> createState() => _SentenceReorderStepState();
+}
+
+class _SentenceReorderStepState extends State<_SentenceReorderStep> {
   late List<String> _available;
   final List<String> _selected = [];
 
@@ -445,45 +1024,58 @@ class _SentenceReorderQuizState extends State<_SentenceReorderQuiz> {
   }
 
   @override
-  void didUpdateWidget(covariant _SentenceReorderQuiz oldWidget) {
+  void didUpdateWidget(covariant _SentenceReorderStep oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.question.order != widget.question.order) {
+    if (oldWidget.currentIndex != widget.currentIndex) {
       _reset();
     }
   }
 
   void _reset() {
-    _available = List.of(widget.question.tokens ?? [])..shuffle(Random());
+    final q = widget.questions[widget.currentIndex];
+    _available = List.of(q.tokens ?? [])..shuffle(Random());
     _selected.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final q = widget.questions[widget.currentIndex];
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.question.prompt,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 24),
+          // Sub-progress
+          Text(
+            '5/${widget.totalSteps} · 문항 ${widget.currentIndex + 1}/${widget.questions.length}',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: AppSizes.md),
 
-          // 선택된 토큰
+          Text(
+            q.prompt,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSizes.lg),
+
+          // Selected tokens area
           Container(
             width: double.infinity,
             constraints: const BoxConstraints(minHeight: 60),
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSizes.gap),
             decoration: BoxDecoration(
-              border: Border.all(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3)),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.lightBorder),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSizes.sm,
+              runSpacing: AppSizes.sm,
               children: _selected
                   .map((t) => ActionChip(
                         label: Text(t, style: const TextStyle(fontSize: 16)),
@@ -497,12 +1089,12 @@ class _SentenceReorderQuizState extends State<_SentenceReorderQuiz> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.md),
 
-          // 남은 토큰
+          // Available tokens
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSizes.sm,
+            runSpacing: AppSizes.sm,
             children: _available
                 .map((t) => ActionChip(
                       label: Text(t, style: const TextStyle(fontSize: 16)),
@@ -511,11 +1103,11 @@ class _SentenceReorderQuizState extends State<_SentenceReorderQuiz> {
                           _available.remove(t);
                           _selected.add(t);
                         });
-                        // 전부 선택하면 자동 제출
                         if (_available.isEmpty) {
                           Future.delayed(const Duration(milliseconds: 400), () {
+                            if (!mounted) return;
                             widget.onAnswer({
-                              'order': widget.question.order,
+                              'order': q.order,
                               'submittedOrder': List<String>.from(_selected),
                               'responseMs': 0,
                             });
@@ -531,14 +1123,17 @@ class _SentenceReorderQuizState extends State<_SentenceReorderQuiz> {
   }
 }
 
-// ── Phase 2: 결과 ──
+// ═══════════════════════════════════════════════════════════════════
+// Step 5: _ResultStep
+// ═══════════════════════════════════════════════════════════════════
 
-class _ResultPhase extends StatelessWidget {
+class _ResultStep extends StatelessWidget {
   final LessonSubmitResultModel result;
   final LessonDetailModel detail;
   final VoidCallback onRetry;
   final VoidCallback onDone;
-  const _ResultPhase({
+  const _ResultStep({
+    super.key,
     required this.result,
     required this.detail,
     required this.onRetry,
@@ -548,6 +1143,7 @@ class _ResultPhase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final brightness = theme.brightness;
     final score = result.scoreTotal > 0
         ? (result.scoreCorrect / result.scoreTotal * 100).round()
         : 0;
@@ -557,100 +1153,123 @@ class _ResultPhase extends StatelessWidget {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.md),
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.lg),
               Center(
-                child: Text(
-                  isPerfect ? '🎉' : '📝',
-                  style: const TextStyle(fontSize: 48),
+                child: Icon(
+                  isPerfect ? LucideIcons.trophy : LucideIcons.clipboardCheck,
+                  size: 48,
+                  color: isPerfect
+                      ? AppColors.success(brightness)
+                      : AppColors.primaryStrong,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSizes.md),
               Center(
                 child: Text(
                   '$score%',
-                  style: theme.textTheme.displaySmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Center(
                 child: Text(
                   '${result.scoreCorrect}/${result.scoreTotal} 정답',
-                  style: theme.textTheme.bodyLarge
-                      ?.copyWith(color: theme.colorScheme.outline),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSizes.md),
 
-              // T12: SRS 복습 예약 요약 카드
+              // SRS registration card
               if (result.srsItemsRegistered > 0)
-                Card(
-                  color: theme.colorScheme.primaryContainer,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle,
-                            color: Colors.green, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${result.srsItemsRegistered}개 항목이 복습 예약되었습니다',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: AppSizes.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizes.md,
+                    vertical: AppSizes.gap,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.success(brightness).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    border: Border.all(
+                      color:
+                          AppColors.success(brightness).withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        LucideIcons.checkCircle2,
+                        color: AppColors.success(brightness),
+                        size: AppSizes.iconMd,
+                      ),
+                      const SizedBox(width: AppSizes.sm),
+                      Expanded(
+                        child: Text(
+                          '${result.srsItemsRegistered}개 항목이 복습 예약되었습니다',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSizes.sm),
 
-              // 문제별 결과
+              // Per-question results
               ...result.results.map((r) {
                 final q = detail.content.questions.firstWhere(
                   (q) => q.order == r.order,
                   orElse: () => detail.content.questions.first,
                 );
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: AppSizes.sm),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSizes.gap),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Icon(
-                              r.isCorrect ? Icons.check_circle : Icons.cancel,
-                              color: r.isCorrect ? Colors.green : Colors.red,
-                              size: 20,
+                              r.isCorrect
+                                  ? LucideIcons.checkCircle2
+                                  : LucideIcons.xCircle,
+                              color: r.isCorrect
+                                  ? AppColors.success(brightness)
+                                  : AppColors.error(brightness),
+                              size: AppSizes.iconMd,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSizes.sm),
                             Expanded(
-                              child: Text(q.prompt,
-                                  style: theme.textTheme.bodyMedium),
+                              child: Text(
+                                q.prompt,
+                                style: theme.textTheme.bodyMedium,
+                              ),
                             ),
                           ],
                         ),
                         if (r.explanation != null) ...[
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSizes.xs),
                           Padding(
                             padding: const EdgeInsets.only(left: 28),
-                            child: Text(r.explanation!,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.outline)),
+                            child: Text(
+                              r.explanation!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.outline,
+                              ),
+                            ),
                           ),
                         ],
-                        // T11: SRS state transition badge
+                        // SRS state transition
                         if (r.stateBefore != null && r.stateAfter != null) ...[
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSizes.sm),
                           Padding(
                             padding: const EdgeInsets.only(left: 28),
                             child: Row(
@@ -660,14 +1279,20 @@ class _ResultPhase extends StatelessWidget {
                                       r.stateBefore!, r.stateAfter!),
                                   size: 14,
                                   color: _srsTransitionColor(
-                                      r.stateBefore!, r.stateAfter!),
+                                    brightness,
+                                    r.stateBefore!,
+                                    r.stateAfter!,
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: AppSizes.xs),
                                 Text(
                                   '${r.stateBefore} → ${r.stateAfter}',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: _srsTransitionColor(
-                                        r.stateBefore!, r.stateAfter!),
+                                      brightness,
+                                      r.stateBefore!,
+                                      r.stateAfter!,
+                                    ),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -675,16 +1300,19 @@ class _ResultPhase extends StatelessWidget {
                                   const SizedBox(width: 6),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 6, vertical: 2),
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: Colors.amber.shade100,
+                                      color: AppColors.warning(brightness)
+                                          .withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       'SRS 등록됨',
                                       style:
                                           theme.textTheme.labelSmall?.copyWith(
-                                        color: Colors.amber.shade900,
+                                        color: AppColors.warning(brightness),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 10,
                                       ),
@@ -697,7 +1325,7 @@ class _ResultPhase extends StatelessWidget {
                         ],
                         // Next review date
                         if (r.nextReviewAt != null) ...[
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSizes.xs),
                           Padding(
                             padding: const EdgeInsets.only(left: 28),
                             child: Text(
@@ -718,7 +1346,7 @@ class _ResultPhase extends StatelessWidget {
         ),
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.md),
             child: Row(
               children: [
                 Expanded(
@@ -727,7 +1355,7 @@ class _ResultPhase extends StatelessWidget {
                     child: const Text('다시 풀기'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSizes.gap),
                 Expanded(
                   child: FilledButton(
                     onPressed: onDone,
@@ -743,20 +1371,20 @@ class _ResultPhase extends StatelessWidget {
   }
 
   IconData _srsTransitionIcon(String before, String after) {
-    if (before == 'UNSEEN') return Icons.fiber_new;
-    if (after == 'REVIEW' || after == 'MASTERED') return Icons.trending_up;
-    if (after == 'RELEARNING') return Icons.replay;
-    return Icons.swap_horiz;
+    if (before == 'UNSEEN') return LucideIcons.sparkles;
+    if (after == 'REVIEW' || after == 'MASTERED') return LucideIcons.trendingUp;
+    if (after == 'RELEARNING') return LucideIcons.refreshCw;
+    return LucideIcons.arrowLeftRight;
   }
 
-  Color _srsTransitionColor(String before, String after) {
-    if (after == 'MASTERED') return Colors.green;
-    if (after == 'REVIEW') return Colors.blue;
-    if (after == 'LEARNING') return Colors.orange;
-    if (after == 'RELEARNING') return Colors.red;
-    if (after == 'PROVISIONAL') return Colors.amber;
-    if (after == 'UNSEEN') return Colors.grey;
-    return Colors.grey;
+  Color _srsTransitionColor(
+      Brightness brightness, String before, String after) {
+    if (after == 'MASTERED') return AppColors.success(brightness);
+    if (after == 'REVIEW') return AppColors.info(brightness);
+    if (after == 'LEARNING') return AppColors.warning(brightness);
+    if (after == 'RELEARNING') return AppColors.error(brightness);
+    if (after == 'PROVISIONAL') return AppColors.warning(brightness);
+    return AppColors.lightSubtext;
   }
 
   String _formatReviewDate(String isoDate) {
