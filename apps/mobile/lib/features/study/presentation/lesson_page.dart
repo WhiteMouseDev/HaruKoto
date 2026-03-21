@@ -581,7 +581,36 @@ class _ResultPhase extends StatelessWidget {
                       ?.copyWith(color: theme.colorScheme.outline),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // T12: SRS 복습 예약 요약 카드
+              if (result.srsItemsRegistered > 0)
+                Card(
+                  color: theme.colorScheme.primaryContainer,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${result.srsItemsRegistered}개 항목이 복습 예약되었습니다',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 8),
 
               // 문제별 결과
               ...result.results.map((r) {
@@ -591,17 +620,96 @@ class _ResultPhase extends StatelessWidget {
                 );
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: Icon(
-                      r.isCorrect ? Icons.check_circle : Icons.cancel,
-                      color: r.isCorrect ? Colors.green : Colors.red,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              r.isCorrect ? Icons.check_circle : Icons.cancel,
+                              color: r.isCorrect ? Colors.green : Colors.red,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(q.prompt,
+                                  style: theme.textTheme.bodyMedium),
+                            ),
+                          ],
+                        ),
+                        if (r.explanation != null) ...[
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 28),
+                            child: Text(r.explanation!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.outline)),
+                          ),
+                        ],
+                        // T11: SRS state transition badge
+                        if (r.stateBefore != null && r.stateAfter != null) ...[
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 28),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _srsTransitionIcon(
+                                      r.stateBefore!, r.stateAfter!),
+                                  size: 14,
+                                  color: _srsTransitionColor(
+                                      r.stateBefore!, r.stateAfter!),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${r.stateBefore} → ${r.stateAfter}',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: _srsTransitionColor(
+                                        r.stateBefore!, r.stateAfter!),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                if (r.isProvisionalPhase) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.amber.shade100,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'SRS 등록됨',
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color: Colors.amber.shade900,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                        // Next review date
+                        if (r.nextReviewAt != null) ...[
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 28),
+                            child: Text(
+                              '다음 복습: ${_formatReviewDate(r.nextReviewAt!)}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.outline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    title: Text(q.prompt, style: theme.textTheme.bodyMedium),
-                    subtitle: r.explanation != null
-                        ? Text(r.explanation!,
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(color: theme.colorScheme.outline))
-                        : null,
                   ),
                 );
               }),
@@ -632,5 +740,34 @@ class _ResultPhase extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  IconData _srsTransitionIcon(String before, String after) {
+    if (before == 'UNSEEN') return Icons.fiber_new;
+    if (after == 'REVIEW' || after == 'MASTERED') return Icons.trending_up;
+    if (after == 'RELEARNING') return Icons.replay;
+    return Icons.swap_horiz;
+  }
+
+  Color _srsTransitionColor(String before, String after) {
+    if (after == 'MASTERED') return Colors.green;
+    if (after == 'REVIEW') return Colors.blue;
+    if (after == 'LEARNING') return Colors.orange;
+    if (after == 'RELEARNING') return Colors.red;
+    return Colors.grey;
+  }
+
+  String _formatReviewDate(String isoDate) {
+    try {
+      final date = DateTime.parse(isoDate);
+      final now = DateTime.now();
+      final diff = date.difference(now);
+      if (diff.inMinutes < 60) return '${diff.inMinutes}분 후';
+      if (diff.inHours < 24) return '${diff.inHours}시간 후';
+      if (diff.inDays < 7) return '${diff.inDays}일 후';
+      return '${date.month}/${date.day}';
+    } catch (_) {
+      return isoDate;
+    }
   }
 }

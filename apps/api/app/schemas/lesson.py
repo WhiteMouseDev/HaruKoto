@@ -117,6 +117,7 @@ class LessonProgressResponse(CamelModel):
     score_total: int
     started_at: datetime | None = None
     completed_at: datetime | None = None
+    srs_registered_at: datetime | None = None
 
 
 # ── Request: 퀴즈 제출 ──
@@ -139,6 +140,11 @@ class QuestionResult(CamelModel):
     correct_answer: str | None = None
     correct_order: list[str] | None = None
     explanation: str | None = None
+    # SRS feedback
+    state_before: str | None = None
+    state_after: str | None = None
+    next_review_at: str | None = None
+    is_provisional_phase: bool = False
 
 
 class LessonSubmitResponse(CamelModel):

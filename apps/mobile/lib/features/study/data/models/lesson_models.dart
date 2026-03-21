@@ -352,12 +352,14 @@ class LessonSubmitResultModel {
   final int scoreTotal;
   final List<QuestionResultModel> results;
   final String status;
+  final int srsItemsRegistered;
 
   const LessonSubmitResultModel({
     required this.scoreCorrect,
     required this.scoreTotal,
     required this.results,
     required this.status,
+    this.srsItemsRegistered = 0,
   });
 
   factory LessonSubmitResultModel.fromJson(Map<String, dynamic> json) {
@@ -368,6 +370,7 @@ class LessonSubmitResultModel {
           .map((e) => QuestionResultModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       status: json['status'] as String? ?? '',
+      srsItemsRegistered: json['srsItemsRegistered'] as int? ?? 0,
     );
   }
 }
@@ -378,6 +381,10 @@ class QuestionResultModel {
   final String? correctAnswer;
   final List<String>? correctOrder;
   final String? explanation;
+  final String? stateBefore;
+  final String? stateAfter;
+  final String? nextReviewAt;
+  final bool isProvisionalPhase;
 
   const QuestionResultModel({
     required this.order,
@@ -385,6 +392,10 @@ class QuestionResultModel {
     this.correctAnswer,
     this.correctOrder,
     this.explanation,
+    this.stateBefore,
+    this.stateAfter,
+    this.nextReviewAt,
+    this.isProvisionalPhase = false,
   });
 
   factory QuestionResultModel.fromJson(Map<String, dynamic> json) {
@@ -396,6 +407,10 @@ class QuestionResultModel {
           ?.map((e) => e as String)
           .toList(),
       explanation: json['explanation'] as String?,
+      stateBefore: json['stateBefore'] as String?,
+      stateAfter: json['stateAfter'] as String?,
+      nextReviewAt: json['nextReviewAt'] as String?,
+      isProvisionalPhase: json['isProvisionalPhase'] as bool? ?? false,
     );
   }
 }

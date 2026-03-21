@@ -202,6 +202,7 @@ async def get_lesson_detail(
             score_total=prog.score_total,
             started_at=prog.started_at,
             completed_at=prog.completed_at,
+            srs_registered_at=getattr(prog, "srs_registered_at", None),
         )
 
     return LessonDetailResponse(
@@ -263,6 +264,7 @@ async def start_lesson(
         score_total=prog.score_total,
         started_at=prog.started_at,
         completed_at=prog.completed_at,
+        srs_registered_at=getattr(prog, "srs_registered_at", None),
     )
 
 
@@ -333,24 +335,15 @@ async def submit_lesson(
         if is_correct:
             correct_count += 1
 
-        results.append(
-            QuestionResult(
-                order=ans.order,
-                is_correct=is_correct,
-                correct_answer=q_data.get("correct_answer"),
-                correct_order=q_data.get("correct_order"),
-                explanation=q_data.get("explanation"),
-            )
-        )
-
         # SRS: process answer for mapped items (nested savepoint for isolation)
+        srs_result = None
         link = question_to_link.get(ans.order)
         if link is not None:
             item_id = link.vocabulary_id if link.item_type == "WORD" else link.grammar_id
             if item_id is not None:
                 try:
                     async with db.begin_nested():
-                        await process_answer(
+                        srs_result = await process_answer(
                             db=db,
                             user_id=user.id,
                             item_type=link.item_type,
@@ -368,6 +361,20 @@ async def submit_lesson(
                         lesson_id,
                         exc_info=True,
                     )
+
+        results.append(
+            QuestionResult(
+                order=ans.order,
+                is_correct=is_correct,
+                correct_answer=q_data.get("correct_answer"),
+                correct_order=q_data.get("correct_order"),
+                explanation=q_data.get("explanation"),
+                state_before=srs_result["state_before"] if srs_result else None,
+                state_after=srs_result["state_after"] if srs_result else None,
+                next_review_at=srs_result["next_review_at"] if srs_result else None,
+                is_provisional_phase=srs_result["is_provisional_phase"] if srs_result else False,
+            )
+        )
 
     total = len(results)
 

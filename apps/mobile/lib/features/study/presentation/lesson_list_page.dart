@@ -119,7 +119,13 @@ class _LessonTile extends StatelessWidget {
   final LessonSummaryModel lesson;
   const _LessonTile({required this.lesson});
 
+  bool get _isPerfect =>
+      lesson.status == 'COMPLETED' &&
+      lesson.scoreCorrect == lesson.scoreTotal &&
+      lesson.scoreTotal > 0;
+
   IconData get _statusIcon {
+    if (_isPerfect) return Icons.star;
     switch (lesson.status) {
       case 'COMPLETED':
         return Icons.check_circle;
@@ -131,6 +137,7 @@ class _LessonTile extends StatelessWidget {
   }
 
   Color _statusColor(ThemeData theme) {
+    if (_isPerfect) return Colors.amber;
     switch (lesson.status) {
       case 'COMPLETED':
         return Colors.green;
@@ -152,9 +159,30 @@ class _LessonTile extends StatelessWidget {
       subtitle: Text('${lesson.estimatedMinutes}분 · ${lesson.topic}',
           style: theme.textTheme.bodySmall),
       trailing: lesson.status == 'COMPLETED'
-          ? Text('${lesson.scoreCorrect}/${lesson.scoreTotal}',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: Colors.green, fontWeight: FontWeight.bold))
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '복습 예약',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text('${lesson.scoreCorrect}/${lesson.scoreTotal}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.green, fontWeight: FontWeight.bold)),
+              ],
+            )
           : const Icon(Icons.chevron_right),
       onTap: () => context.push('/study/lessons/${lesson.id}'),
     );
