@@ -325,21 +325,13 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     AsyncValue<SmartPreviewModel>? previewAsync,
     String jlptLevel,
   ) {
-    // Loading state (smart categories only)
-    if (_selectedCategory.hasSmart &&
+    final hasIncomplete = incomplete != null && _selectedCategory.hasSmart;
+    final isSmartLoading = _selectedCategory.hasSmart &&
         previewAsync != null &&
         previewAsync.isLoading &&
-        preview == null) {
-      return Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(20),
-        ),
-      );
-    }
-
-    final hasIncomplete = incomplete != null && _selectedCategory.hasSmart;
+        preview == null;
+    // Allow tap when resuming (no preview needed) or when loaded
+    final isTappable = hasIncomplete || !isSmartLoading;
     final todayCompleted = preview?.todayCompleted ?? 0;
     final dailyGoal = preview?.dailyGoal ?? 20;
     final completedPct =
@@ -349,90 +341,104 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final ctaTitle =
         hasIncomplete ? '이어서 학습하기' : '오늘의 ${_selectedCategory.label} 학습';
 
-    final ctaSubtitle = hasIncomplete
-        ? '${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중'
-        : _selectedCategory.hasSmart
-            ? '하루 목표 $dailyGoal개 · $todayCompleted/$dailyGoal'
-            : '${_selectedCategory.label} 10문제';
+    final String ctaSubtitle;
+    if (hasIncomplete) {
+      ctaSubtitle =
+          '${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중';
+    } else if (!_selectedCategory.hasSmart) {
+      ctaSubtitle = '${_selectedCategory.label} 10문제';
+    } else if (isSmartLoading) {
+      ctaSubtitle = '불러오는 중...';
+    } else {
+      ctaSubtitle = '하루 목표 $dailyGoal개 · $todayCompleted/$dailyGoal';
+    }
 
     return GestureDetector(
-      onTap: () => _handleCtaTap(
-          incomplete: incomplete, preview: preview, jlptLevel: jlptLevel),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: hasIncomplete
-                ? [
-                    AppColors.primaryStrong.withValues(alpha: 0.14),
-                    AppColors.primary.withValues(alpha: 0.08),
-                  ]
-                : [
-                    AppColors.primary.withValues(alpha: 0.10),
-                    AppColors.primary.withValues(alpha: 0.04),
-                  ],
+      onTap: isTappable
+          ? () => _handleCtaTap(
+              incomplete: incomplete, preview: preview, jlptLevel: jlptLevel)
+          : null,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: isTappable ? 1.0 : 0.6,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: hasIncomplete
+                  ? [
+                      AppColors.primaryStrong.withValues(alpha: 0.14),
+                      AppColors.primary.withValues(alpha: 0.08),
+                    ]
+                  : [
+                      AppColors.primary.withValues(alpha: 0.10),
+                      AppColors.primary.withValues(alpha: 0.04),
+                    ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: hasIncomplete
+                  ? AppColors.primaryStrong.withValues(alpha: 0.3)
+                  : AppColors.primary.withValues(alpha: 0.2),
+            ),
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: hasIncomplete
-                ? AppColors.primaryStrong.withValues(alpha: 0.3)
-                : AppColors.primary.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ctaTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    ctaSubtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.lightSubtext,
-                    ),
-                  ),
-                  if (!hasIncomplete &&
-                      _selectedCategory.hasSmart &&
-                      todayCompleted > 0) ...[
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: completedPct,
-                        minHeight: 6,
-                        backgroundColor:
-                            AppColors.primary.withValues(alpha: 0.12),
-                        color: AppColors.primaryStrong,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ctaTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 6),
+                    Text(
+                      ctaSubtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                      ),
+                    ),
+                    if (!hasIncomplete &&
+                        _selectedCategory.hasSmart &&
+                        todayCompleted > 0) ...[
+                      const SizedBox(height: 10),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: completedPct,
+                          minHeight: 6,
+                          backgroundColor:
+                              AppColors.primary.withValues(alpha: 0.12),
+                          color: AppColors.primaryStrong,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
+              const SizedBox(width: 16),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  hasIncomplete
+                      ? LucideIcons.playCircle
+                      : _selectedCategory.icon,
+                  size: 24,
+                  color: AppColors.primaryStrong,
+                ),
               ),
-              child: Icon(
-                hasIncomplete ? LucideIcons.playCircle : _selectedCategory.icon,
-                size: 24,
-                color: AppColors.primaryStrong,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
