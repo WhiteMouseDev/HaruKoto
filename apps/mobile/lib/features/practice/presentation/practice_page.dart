@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/constants/sizes.dart';
+import '../../home/providers/home_provider.dart';
 import '../../study/data/models/quiz_session_model.dart';
 import '../../study/data/models/smart_preview_model.dart';
 import '../../study/providers/study_provider.dart';
 import '../../study/presentation/quiz_page.dart';
 import '../../study/presentation/widgets/today_study_sheet.dart';
-import '../../study/presentation/widgets/free_quiz_sheet.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
   const PracticePage({super.key});
@@ -18,9 +19,7 @@ class PracticePage extends ConsumerStatefulWidget {
 }
 
 class _PracticePageState extends ConsumerState<PracticePage> {
-  final String _selectedLevel = 'N5';
-
-  void _showTodayStudySheet(SmartPreviewModel data) {
+  void _showTodayStudySheet(SmartPreviewModel data, String jlptLevel) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -29,40 +28,44 @@ class _PracticePageState extends ConsumerState<PracticePage> {
       ),
       builder: (_) => TodayStudySheet(
         data: data,
-        jlptLevel: _selectedLevel,
+        jlptLevel: jlptLevel,
       ),
-    );
-  }
-
-  void _showFreeQuizSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => const FreeQuizSheet(),
     );
   }
 
   void _handleCtaTap({
     IncompleteSessionModel? incomplete,
     SmartPreviewModel? preview,
+    required String jlptLevel,
   }) {
-    // If incomplete session exists, show choice bottom sheet
     if (incomplete != null) {
-      _showResumeOrNewSheet(incomplete, preview);
+      _showResumeOrNewSheet(incomplete, preview, jlptLevel);
       return;
     }
-    // Otherwise show today's study sheet
     if (preview != null) {
-      _showTodayStudySheet(preview);
+      _showTodayStudySheet(preview, jlptLevel);
     }
+  }
+
+  void _launchQuickQuiz({
+    required String quizType,
+    required String jlptLevel,
+    String? mode,
+  }) {
+    Navigator.of(context, rootNavigator: true).push(
+      quizRoute(QuizPage(
+        quizType: quizType,
+        jlptLevel: jlptLevel,
+        count: 10,
+        mode: mode,
+      )),
+    );
   }
 
   void _showResumeOrNewSheet(
     IncompleteSessionModel session,
     SmartPreviewModel? preview,
+    String jlptLevel,
   ) {
     final theme = Theme.of(context);
     showModalBottomSheet(
@@ -77,7 +80,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle
                 Container(
                   width: 40,
                   height: 4,
@@ -101,7 +103,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Resume button
                 SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -128,7 +129,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // New session button
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -136,7 +136,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                     onPressed: () {
                       Navigator.pop(ctx);
                       if (preview != null) {
-                        _showTodayStudySheet(preview);
+                        _showTodayStudySheet(preview, jlptLevel);
                       }
                     },
                     style: OutlinedButton.styleFrom(
@@ -164,9 +164,13 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final profileAsync = ref.watch(profileProvider);
+    final jlptLevel =
+        profileAsync.hasValue ? profileAsync.value!.jlptLevel : 'N5';
+
     final incompleteAsync = ref.watch(incompleteQuizProvider);
     final previewAsync = ref.watch(
-      smartPreviewProvider((category: 'VOCABULARY', jlptLevel: _selectedLevel)),
+      smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)),
     );
 
     final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
@@ -178,9 +182,10 @@ class _PracticePageState extends ConsumerState<PracticePage> {
           color: theme.colorScheme.primary,
           onRefresh: () async {
             ref.invalidate(incompleteQuizProvider);
+            ref.invalidate(profileProvider);
             ref.invalidate(
               smartPreviewProvider(
-                  (category: 'VOCABULARY', jlptLevel: _selectedLevel)),
+                  (category: 'VOCABULARY', jlptLevel: jlptLevel)),
             );
           },
           child: ListView(
@@ -196,38 +201,77 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               const SizedBox(height: 20),
 
               // ── Main CTA Card ──
-              _buildCtaCard(theme, incomplete, preview, previewAsync),
+              _buildCtaCard(
+                  theme, incomplete, preview, previewAsync, jlptLevel),
+              const SizedBox(height: 24),
+
+              // ── Quick Start Section ──
+              Text(
+                '빠른 시작',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _QuickStartChip(
+                    icon: LucideIcons.languages,
+                    label: '단어',
+                    onTap: () => _launchQuickQuiz(
+                      quizType: 'VOCABULARY',
+                      jlptLevel: jlptLevel,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _QuickStartChip(
+                    icon: LucideIcons.braces,
+                    label: '문법',
+                    onTap: () => _launchQuickQuiz(
+                      quizType: 'GRAMMAR',
+                      jlptLevel: jlptLevel,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _QuickStartChip(
+                    icon: LucideIcons.arrowUpDown,
+                    label: '문장배열',
+                    onTap: () => _launchQuickQuiz(
+                      quizType: 'SENTENCE_ARRANGE',
+                      jlptLevel: jlptLevel,
+                      mode: 'arrange',
+                    ),
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 28),
 
-              // ── Menu Section ──
+              // ── Study Management Section ──
+              Text(
+                '학습 관리',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
               _MenuListTile(
                 icon: LucideIcons.fileX,
-                iconColor: theme.colorScheme.error,
+                iconColor: AppColors.primaryStrong,
                 label: '오답노트',
                 onTap: () => context.push('/study/wrong-answers'),
               ),
               _MenuListTile(
                 icon: LucideIcons.bookOpen,
-                iconColor: theme.colorScheme.primary,
+                iconColor: AppColors.primary,
                 label: '학습한 단어',
                 onTap: () => context.push('/study/learned-words'),
               ),
               _MenuListTile(
                 icon: LucideIcons.bookMarked,
-                iconColor: const Color(0xFFF59E0B),
+                iconColor: AppColors.primaryStrong,
                 label: '단어장',
                 onTap: () => context.push('/study/wordbook'),
-              ),
-              Divider(
-                color: theme.colorScheme.outline.withValues(alpha: 0.15),
-                height: 16,
-              ),
-              _MenuListTile(
-                icon: LucideIcons.dices,
-                iconColor: const Color(0xFF8B5CF6),
-                label: '자유 퀴즈',
-                subtitle: '레벨 · 유형 · 모드 직접 선택',
-                onTap: _showFreeQuizSheet,
               ),
             ],
           ),
@@ -241,8 +285,8 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     IncompleteSessionModel? incomplete,
     SmartPreviewModel? preview,
     AsyncValue<SmartPreviewModel> previewAsync,
+    String jlptLevel,
   ) {
-    // Loading state
     if (previewAsync.isLoading && preview == null) {
       return Container(
         height: 120,
@@ -253,7 +297,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
       );
     }
 
-    // Determine card content based on state
     final hasIncomplete = incomplete != null;
     final todayCompleted = preview?.todayCompleted ?? 0;
     final dailyGoal = preview?.dailyGoal ?? 20;
@@ -261,7 +304,8 @@ class _PracticePageState extends ConsumerState<PracticePage> {
         dailyGoal > 0 ? (todayCompleted / dailyGoal).clamp(0.0, 1.0) : 0.0;
 
     return GestureDetector(
-      onTap: () => _handleCtaTap(incomplete: incomplete, preview: preview),
+      onTap: () => _handleCtaTap(
+          incomplete: incomplete, preview: preview, jlptLevel: jlptLevel),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -270,19 +314,19 @@ class _PracticePageState extends ConsumerState<PracticePage> {
             end: Alignment.bottomRight,
             colors: hasIncomplete
                 ? [
-                    const Color(0xFFFEF3C7),
-                    const Color(0xFFFDE68A).withValues(alpha: 0.6),
+                    AppColors.primaryStrong.withValues(alpha: 0.14),
+                    AppColors.primary.withValues(alpha: 0.08),
                   ]
                 : [
-                    theme.colorScheme.primary.withValues(alpha: 0.08),
-                    theme.colorScheme.primary.withValues(alpha: 0.04),
+                    AppColors.primary.withValues(alpha: 0.10),
+                    AppColors.primary.withValues(alpha: 0.04),
                   ],
           ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: hasIncomplete
-                ? const Color(0xFFF59E0B).withValues(alpha: 0.3)
-                : theme.colorScheme.primary.withValues(alpha: 0.15),
+                ? AppColors.primaryStrong.withValues(alpha: 0.3)
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
@@ -302,28 +346,25 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                     Text(
                       '${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: AppColors.lightSubtext,
                       ),
                     )
                   else
                     Text(
                       '하루 목표 $dailyGoal개 · $todayCompleted/$dailyGoal',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: AppColors.lightSubtext,
                       ),
                     ),
                   if (!hasIncomplete && todayCompleted > 0) ...[
                     const SizedBox(height: 10),
-                    // Mini progress bar
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: completedPct,
                         minHeight: 6,
                         backgroundColor:
-                            theme.colorScheme.primary.withValues(alpha: 0.12),
+                            AppColors.primary.withValues(alpha: 0.12),
                         color: AppColors.primaryStrong,
                       ),
                     ),
@@ -336,20 +377,67 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: hasIncomplete
-                    ? const Color(0xFFF59E0B).withValues(alpha: 0.15)
-                    : theme.colorScheme.primary.withValues(alpha: 0.12),
+                color: AppColors.primary.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 hasIncomplete ? LucideIcons.playCircle : LucideIcons.play,
                 size: 24,
-                color: hasIncomplete
-                    ? const Color(0xFFF59E0B)
-                    : theme.colorScheme.primary,
+                color: AppColors.primaryStrong,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick start chip for launching quizzes directly.
+class _QuickStartChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickStartChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.lightCard,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: AppColors.lightBorder),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 22, color: AppColors.primaryStrong),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.lightText,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -361,14 +449,12 @@ class _MenuListTile extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
-  final String? subtitle;
   final VoidCallback onTap;
 
   const _MenuListTile({
     required this.icon,
     required this.iconColor,
     required this.label,
-    this.subtitle,
     required this.onTap,
   });
 
@@ -394,24 +480,11 @@ class _MenuListTile extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (subtitle != null)
-                    Text(
-                      subtitle!,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                      ),
-                    ),
-                ],
+              child: Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             Icon(
