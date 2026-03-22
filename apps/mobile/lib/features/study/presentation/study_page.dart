@@ -104,16 +104,23 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-              // 2. SRS Review Card
+              // 2. SRS Review Card (hidden when no due items for existing users)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: reviewAsync.when(
-                    data: (summary) => summary.totalDue > 0
-                        ? _ReviewDueCard(summary: summary, jlptLevel: jlptLevel)
-                        : _ReviewIdleBar(
-                            hasEverStudied:
-                                summary.wordNew > 0 || summary.grammarNew > 0),
+                    data: (summary) {
+                      final hasEverStudied =
+                          summary.wordNew > 0 || summary.grammarNew > 0;
+                      if (summary.totalDue > 0) {
+                        return _ReviewDueCard(
+                            summary: summary, jlptLevel: jlptLevel);
+                      }
+                      if (!hasEverStudied) {
+                        return const _ReviewIdleBar();
+                      }
+                      return const SizedBox.shrink();
+                    },
                     loading: () => Container(
                       height: 72,
                       decoration: BoxDecoration(
@@ -335,17 +342,14 @@ class _ReviewDueCard extends StatelessWidget {
 // ── SRS Review Complete Bar ──
 
 class _ReviewIdleBar extends StatelessWidget {
-  final bool hasEverStudied;
-
-  const _ReviewIdleBar({required this.hasEverStudied});
+  const _ReviewIdleBar();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final message = hasEverStudied ? '오늘 복습 완료' : '첫 레슨을 시작해보세요';
-    final iconData =
-        hasEverStudied ? LucideIcons.checkCircle2 : LucideIcons.sparkles;
+    const message = '첫 레슨을 시작해보세요';
+    const iconData = LucideIcons.sparkles;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
