@@ -936,11 +936,26 @@ class _MatchingGameStepState extends State<_MatchingGameStep>
     _shakeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn),
     );
+
+    // Skip matching step if not enough unique pairs
+    if (_pairs.length < 2) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) widget.onComplete();
+      });
+    }
   }
 
   void _initPairs() {
-    final all = List.of(widget.vocabItems)..shuffle(Random());
-    _pairs = all.take(min(4, all.length)).toList();
+    // Deduplicate by meaningKo so matching is unambiguous
+    // Skip entries with empty meaningKo, normalize with trim
+    final seen = <String>{};
+    final unique = <VocabItemModel>[];
+    for (final v in widget.vocabItems) {
+      final key = v.meaningKo.trim();
+      if (key.isNotEmpty && seen.add(key)) unique.add(v);
+    }
+    unique.shuffle(Random());
+    _pairs = unique.take(min(4, unique.length)).toList();
     _shuffledRightIndices = List.generate(_pairs.length, (i) => i)
       ..shuffle(Random());
     _selectedLeft = null;
@@ -1169,6 +1184,7 @@ class _MatchCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizes.gap,
           vertical: AppSizes.md,
