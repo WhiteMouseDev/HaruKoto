@@ -166,6 +166,7 @@ class _LessonPageState extends ConsumerState<LessonPage> {
           questions: reorderQs,
           currentIndex: _reorderIndex,
           totalSteps: _totalSteps,
+          vocabItems: detail.vocabItems,
           onAnswer: (answer) => _handleReorderAnswer(
             detail,
             reorderQs,
@@ -1208,12 +1209,14 @@ class _SentenceReorderStep extends StatefulWidget {
   final List<LessonQuestionModel> questions;
   final int currentIndex;
   final int totalSteps;
+  final List<VocabItemModel> vocabItems;
   final ValueChanged<Map<String, dynamic>> onAnswer;
   const _SentenceReorderStep({
     super.key,
     required this.questions,
     required this.currentIndex,
     required this.totalSteps,
+    required this.vocabItems,
     required this.onAnswer,
   });
 
@@ -1224,15 +1227,15 @@ class _SentenceReorderStep extends StatefulWidget {
 class _SentenceReorderStepState extends State<_SentenceReorderStep> {
   late List<String> _available;
   final List<String> _selected = [];
-  late int _totalTokenCount;
+  late int _correctTokenCount;
   bool _submitting = false;
 
   // Track which tokens were just added/removed for animation
   String? _lastAddedToken;
   String? _lastRemovedToken;
 
-  // Long-press reorder: index of picked-up token (-1 = none)
-  int _dragSourceIndex = -1;
+  // Drag-and-drop: index being hovered over (-1 = none)
+  int _dragHoverIndex = -1;
 
   @override
   void initState() {
@@ -1250,67 +1253,63 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
 
   void _reset() {
     final q = widget.questions[widget.currentIndex];
-    _available = List.of(q.tokens ?? [])..shuffle(Random());
+    final correctTokens = q.tokens ?? [];
+    _correctTokenCount = correctTokens.length;
+
+    // Generate distractors from vocabItems
+    final correctSet = correctTokens.toSet();
+    final distractors = widget.vocabItems
+        .map((v) => v.word)
+        .where((w) => w.trim().isNotEmpty && !correctSet.contains(w))
+        .toSet()
+        .toList()
+      ..shuffle(Random());
+    final picked = distractors.take(min(3, distractors.length)).toList();
+
+    _available = [...correctTokens, ...picked]..shuffle(Random());
     _selected.clear();
-    _totalTokenCount = _available.length;
     _submitting = false;
     _lastAddedToken = null;
     _lastRemovedToken = null;
-    _dragSourceIndex = -1;
+    _dragHoverIndex = -1;
   }
 
+  bool get _isFull => _selected.length >= _correctTokenCount;
+
   void _selectToken(String token) {
+    if (_isFull || _submitting) return;
     setState(() {
       _available.remove(token);
       _selected.add(token);
       _lastAddedToken = token;
       _lastRemovedToken = null;
     });
-    if (_available.isEmpty) {
-      _doAutoSubmit();
-    }
   }
 
-  void _deselectToken(String token) {
+  void _deselectToken(int index) {
+    if (_submitting) return;
     setState(() {
-      _selected.remove(token);
+      final token = _selected.removeAt(index);
       _available.add(token);
       _lastRemovedToken = token;
       _lastAddedToken = null;
-      _submitting = false;
-      _dragSourceIndex = -1;
     });
   }
 
-  void _onLongPressToken(int index) {
-    if (_submitting) return;
+  void _onReorder(int fromIndex, int toIndex) {
+    if (_submitting || fromIndex == toIndex) return;
     setState(() {
-      _dragSourceIndex = _dragSourceIndex == index ? -1 : index;
+      final item = _selected.removeAt(fromIndex);
+      _selected.insert(toIndex, item);
+      _dragHoverIndex = -1;
     });
   }
 
-  void _onTapSelectedToken(int index) {
-    if (_submitting) return;
-    if (_dragSourceIndex >= 0 && _dragSourceIndex != index) {
-      // Reorder: move dragged token to this position
-      setState(() {
-        final item = _selected.removeAt(_dragSourceIndex);
-        _selected.insert(index, item);
-        _dragSourceIndex = -1;
-      });
-    } else if (_dragSourceIndex == index) {
-      // Deselect the drag source
-      setState(() => _dragSourceIndex = -1);
-    } else {
-      // Normal tap: remove from answer area
-      _deselectToken(_selected[index]);
-    }
-  }
-
-  void _doAutoSubmit() {
+  void _submit() {
+    if (!_isFull || _submitting) return;
     final q = widget.questions[widget.currentIndex];
     setState(() => _submitting = true);
-    Future.delayed(const Duration(milliseconds: 600), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (!mounted) return;
       widget.onAnswer({
         'order': q.order,
@@ -1374,9 +1373,11 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
                 ),
               ),
               Text(
-                '선택 ${_selected.length}/$_totalTokenCount',
+                '선택 ${_selected.length}/$_correctTokenCount',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.primaryStrong,
+                  color: _isFull
+                      ? AppColors.primaryStrong
+                      : AppColors.lightSubtext,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1397,63 +1398,36 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
             child: _buildAnswerArea(theme),
           ),
 
-          // Submitting indicator
-          if (_submitting)
-            Padding(
-              padding: const EdgeInsets.only(top: AppSizes.sm),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primaryStrong,
-                    ),
-                  ),
-                  const SizedBox(width: AppSizes.sm),
-                  Text(
-                    '제출 중...',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.primaryStrong,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
           const SizedBox(height: 20),
 
           // Bank area
-          if (_available.isNotEmpty)
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: _available.asMap().entries.map((entry) {
-                final token = entry.value;
-                final isJustReturned = _lastRemovedToken == token;
-                return TweenAnimationBuilder<double>(
-                  key: ValueKey('bank-$token-${entry.key}'),
-                  tween: Tween(
-                    begin: isJustReturned ? 0.8 : 1.0,
-                    end: 1.0,
-                  ),
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  builder: (context, scale, child) => Transform.scale(
-                    scale: scale,
-                    child: child,
-                  ),
-                  child: _ReorderToken(
-                    text: token,
-                    isSelected: false,
-                    onTap: _submitting ? null : () => _selectToken(token),
-                  ),
-                );
-              }).toList(),
-            ),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: _available.asMap().entries.map((entry) {
+              final token = entry.value;
+              final isJustReturned = _lastRemovedToken == token;
+              final disabled = _isFull || _submitting;
+              return TweenAnimationBuilder<double>(
+                key: ValueKey('bank-$token-${entry.key}'),
+                tween: Tween(
+                  begin: isJustReturned ? 0.8 : 1.0,
+                  end: 1.0,
+                ),
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                builder: (context, scale, child) => Transform.scale(
+                  scale: scale,
+                  child: child,
+                ),
+                child: _BankToken(
+                  text: token,
+                  disabled: disabled,
+                  onTap: disabled ? null : () => _selectToken(token),
+                ),
+              );
+            }).toList(),
+          ),
 
           if (_available.isNotEmpty && _selected.isEmpty)
             Padding(
@@ -1467,104 +1441,128 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
                 ),
               ),
             ),
+
+          const Spacer(),
+
+          // Confirm button
+          SafeArea(
+            top: false,
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: (_isFull && !_submitting) ? _submit : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryStrong,
+                  disabledBackgroundColor:
+                      AppColors.lightBorder.withValues(alpha: 0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
+                  elevation: 0,
+                ),
+                child: _submitting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        '확인',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: _isFull
+                              ? AppColors.onGradient
+                              : AppColors.lightSubtext,
+                        ),
+                      ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildAnswerArea(ThemeData theme) {
-    final remaining = _totalTokenCount - _selected.length;
+    final remaining = _correctTokenCount - _selected.length;
 
-    // Build list of children: placed tokens + empty slot placeholders
     final List<Widget> children = [];
 
     for (int i = 0; i < _selected.length; i++) {
       final token = _selected[i];
       final isJustAdded = _lastAddedToken == token;
-      final isDragSource = _dragSourceIndex == i;
+      final isHovered = _dragHoverIndex == i;
 
       children.add(
-        TweenAnimationBuilder<double>(
-          key: ValueKey('answer-$token-$i'),
-          tween: Tween(
-            begin: isJustAdded ? 0.8 : 1.0,
-            end: 1.0,
-          ),
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          builder: (context, scale, child) => Transform.scale(
-            scale: isDragSource ? 1.05 : scale,
-            child: child,
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              GestureDetector(
-                onTap: () => _onTapSelectedToken(i),
-                onLongPress: () => _onLongPressToken(i),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  constraints: const BoxConstraints(minHeight: 48),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isDragSource
-                        ? AppColors.primaryStrong.withValues(alpha: 0.18)
-                        : AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primaryStrong,
-                      width: isDragSource ? 2.0 : 1.5,
-                    ),
-                    boxShadow: isDragSource
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    token,
-                    style: const TextStyle(
-                      color: AppColors.lightText,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+        DragTarget<int>(
+          key: ValueKey('answer-target-$i'),
+          onWillAcceptWithDetails: (details) {
+            if (details.data != i) {
+              setState(() => _dragHoverIndex = i);
+            }
+            return details.data != i;
+          },
+          onLeave: (_) {
+            if (_dragHoverIndex == i) {
+              setState(() => _dragHoverIndex = -1);
+            }
+          },
+          onAcceptWithDetails: (details) {
+            _onReorder(details.data, i);
+          },
+          builder: (context, candidateData, rejectedData) {
+            return LongPressDraggable<int>(
+              data: i,
+              delay: const Duration(milliseconds: 200),
+              feedback: Material(
+                color: Colors.transparent,
+                child: _AnswerToken(
+                  text: token,
+                  index: i,
+                  isDragging: true,
+                  isHovered: false,
+                ),
+              ),
+              childWhenDragging: Opacity(
+                opacity: 0.3,
+                child: _AnswerToken(
+                  text: token,
+                  index: i,
+                  isDragging: false,
+                  isHovered: false,
+                ),
+              ),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(
+                  begin: isJustAdded ? 0.8 : 1.0,
+                  end: 1.0,
+                ),
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                builder: (context, scale, child) =>
+                    Transform.scale(scale: scale, child: child),
+                child: GestureDetector(
+                  onTap: _submitting ? null : () => _deselectToken(i),
+                  child: _AnswerToken(
+                    text: token,
+                    index: i,
+                    isDragging: false,
+                    isHovered: isHovered,
                   ),
                 ),
               ),
-              // Index badge
-              Positioned(
-                top: -6,
-                left: -6,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryStrong,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${i + 1}',
-                    style: const TextStyle(
-                      color: AppColors.onGradient,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       );
     }
 
-    // Empty slot placeholders for remaining
+    // Empty slot placeholders
     for (int i = 0; i < remaining; i++) {
       children.add(
         Container(
@@ -1573,9 +1571,7 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.lightBorder,
-            ),
+            border: Border.all(color: AppColors.lightBorder),
           ),
           child: Text(
             '　',
@@ -1597,15 +1593,93 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
   }
 }
 
-/// Custom styled token widget for sentence reorder (bank tokens)
-class _ReorderToken extends StatelessWidget {
+/// Answer area token with drag-and-drop support
+class _AnswerToken extends StatelessWidget {
   final String text;
-  final bool isSelected;
+  final int index;
+  final bool isDragging;
+  final bool isHovered;
+
+  const _AnswerToken({
+    required this.text,
+    required this.index,
+    required this.isDragging,
+    required this.isHovered,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          decoration: BoxDecoration(
+            color: isHovered
+                ? AppColors.primaryStrong.withValues(alpha: 0.22)
+                : AppColors.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.primaryStrong,
+              width: isHovered ? 2.0 : 1.5,
+            ),
+            boxShadow: isDragging
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: AppColors.lightText,
+              fontSize: isDragging ? 17 : 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        // Index badge
+        Positioned(
+          top: -6,
+          left: -6,
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              color: AppColors.primaryStrong,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${index + 1}',
+              style: const TextStyle(
+                color: AppColors.onGradient,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Bank token widget
+class _BankToken extends StatelessWidget {
+  final String text;
+  final bool disabled;
   final VoidCallback? onTap;
 
-  const _ReorderToken({
+  const _BankToken({
     required this.text,
-    required this.isSelected,
+    required this.disabled,
     this.onTap,
   });
 
@@ -1613,34 +1687,35 @@ class _ReorderToken extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 48),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.12)
-              : AppColors.lightCard,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryStrong : AppColors.lightBorder,
-            width: isSelected ? 1.5 : 1.0,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: disabled ? 0.4 : 1.0,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.lightCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.lightBorder,
+            ),
+            boxShadow: disabled
+                ? null
+                : [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.08),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
-          boxShadow: isSelected
-              ? null
-              : [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: AppColors.lightText,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: AppColors.lightText,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
