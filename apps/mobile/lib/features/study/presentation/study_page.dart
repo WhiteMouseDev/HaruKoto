@@ -216,50 +216,8 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 ),
 
               if (showKanaCard)
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-              // 5. Legacy Section
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        '추가 연습',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: AppColors.lightSubtext,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          _LegacyChip(
-                            label: '단어',
-                            onTap: () =>
-                                context.push('/study/legacy/VOCABULARY'),
-                          ),
-                          const SizedBox(width: 8),
-                          _LegacyChip(
-                            label: '문법',
-                            onTap: () => context.push('/study/legacy/GRAMMAR'),
-                          ),
-                          const SizedBox(width: 8),
-                          _LegacyChip(
-                            label: '문장배열',
-                            onTap: () => context.push('/study/legacy/SENTENCE'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Bottom padding
-              const SliverToBoxAdapter(child: SizedBox(height: 40)),
+                // Bottom padding
+                const SliverToBoxAdapter(child: SizedBox(height: 40)),
             ],
           ),
         ),
@@ -529,40 +487,6 @@ class _KanaBootcampCard extends StatelessWidget {
                 child: const Text('계속하기'),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Legacy Chip Links ──
-
-class _LegacyChip extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _LegacyChip({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(AppSizes.chipRadius),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.18),
-          ),
-        ),
-        child: Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppColors.lightSubtext,
           ),
         ),
       ),

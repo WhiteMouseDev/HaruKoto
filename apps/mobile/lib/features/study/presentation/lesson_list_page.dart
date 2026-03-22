@@ -14,11 +14,10 @@ class LessonListPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('학습')),
       body: chaptersAsync.when(
-        data: (data) => ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: data.chapters.length,
-          itemBuilder: (context, index) =>
-              ChapterCard(chapter: data.chapters[index]),
+        data: (data) => SingleChildScrollView(
+          child: LessonChapterList(
+            chapters: data.chapters,
+          ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
