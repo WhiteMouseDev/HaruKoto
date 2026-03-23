@@ -44,6 +44,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
       builder: (_) => TodayStudySheet(
         data: data,
         jlptLevel: jlptLevel,
+        category: _selectedCategory.apiType,
       ),
     );
   }

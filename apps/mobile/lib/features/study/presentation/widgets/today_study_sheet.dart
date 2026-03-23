@@ -14,11 +14,13 @@ import '../quiz_page.dart';
 class TodayStudySheet extends ConsumerStatefulWidget {
   final SmartPreviewModel data;
   final String jlptLevel;
+  final String category;
 
   const TodayStudySheet({
     super.key,
     required this.data,
     required this.jlptLevel,
+    this.category = 'VOCABULARY',
   });
 
   @override
@@ -37,7 +39,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
       ref.invalidate(profileProvider);
       ref.invalidate(
         smartPreviewProvider(
-            (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)),
+            (category: widget.category, jlptLevel: widget.jlptLevel)),
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +196,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${widget.jlptLevel} 단어',
+                        '${widget.jlptLevel} ${widget.category == 'GRAMMAR' ? '문법' : '단어'}',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -247,19 +249,19 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
               child: Row(
                 children: [
                   _DistItem(
-                    label: '새로운 단어',
+                    label: widget.category == 'GRAMMAR' ? '새로운 문법' : '새로운 단어',
                     count: dist.newCount,
                     color: theme.colorScheme.primary,
                   ),
                   _divider(theme),
                   _DistItem(
-                    label: '복습할 단어',
+                    label: widget.category == 'GRAMMAR' ? '복습할 문법' : '복습할 단어',
                     count: dist.review,
                     color: const Color(0xFF10B981),
                   ),
                   _divider(theme),
                   _DistItem(
-                    label: '재도전 단어',
+                    label: widget.category == 'GRAMMAR' ? '재도전 문법' : '재도전 단어',
                     count: dist.retry,
                     color: theme.colorScheme.error,
                   ),
@@ -278,7 +280,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                         Navigator.pop(context);
                         Navigator.of(context, rootNavigator: true).push(
                           quizRoute(QuizPage(
-                            quizType: 'VOCABULARY',
+                            quizType: widget.category,
                             jlptLevel: widget.jlptLevel,
                             count: dist.total,
                             mode: 'smart',
@@ -292,7 +294,9 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                   ),
                 ),
                 child: Text(
-                  dist.total > 0 ? '학습 시작 (${dist.total}문제)' : '학습할 단어가 없습니다',
+                  dist.total > 0
+                      ? '학습 시작 (${dist.total}문제)'
+                      : '학습할 ${widget.category == 'GRAMMAR' ? '문법' : '단어'}이 없습니다',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
