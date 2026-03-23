@@ -1306,6 +1306,13 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
 
   void _onReorder(int fromIndex, int toIndex) {
     if (_submitting || fromIndex == toIndex) return;
+    // Bounds check to prevent RangeError from stale drag data
+    if (fromIndex < 0 ||
+        fromIndex >= _selected.length ||
+        toIndex < 0 ||
+        toIndex >= _selected.length) {
+      return;
+    }
     setState(() {
       final item = _selected.removeAt(fromIndex);
       _selected.insert(toIndex, item);
@@ -1319,6 +1326,8 @@ class _SentenceReorderStepState extends State<_SentenceReorderStep> {
     setState(() => _submitting = true);
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!mounted) return;
+      // Reset submitting so widget is not permanently locked on failure
+      setState(() => _submitting = false);
       widget.onAnswer({
         'order': q.order,
         'submittedOrder': List<String>.from(_selected),
