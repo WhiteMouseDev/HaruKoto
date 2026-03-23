@@ -10,6 +10,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.enums import SubscriptionStatus
 from app.models import Subscription, User
+from app.services.fsrs_shadow import get_shadow_report
 
 router = APIRouter(prefix="/api/v1/cron", tags=["cron"])
 
@@ -92,3 +93,28 @@ async def ensure_review_event_partitions(request: Request, db: AsyncSession = De
 
     await db.commit()
     return {"created": created}
+
+
+@router.post("/fsrs-shadow-report", status_code=200)
+async def fsrs_shadow_report(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user_id: str | None = None,
+):
+    """Generate FSRS shadow report for a user (admin/cron only)."""
+    auth = request.headers.get("authorization", "")
+    if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    if not user_id:
+        raise HTTPException(status_code=400, detail="user_id query parameter required")
+
+    from uuid import UUID
+
+    try:
+        uid = UUID(user_id)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail="Invalid user_id format") from err
+
+    report = await get_shadow_report(db, uid)
+    return report

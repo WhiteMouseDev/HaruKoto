@@ -70,7 +70,16 @@ def _apply_srs_update(
     time_spent_seconds: int,
     now: datetime,
 ) -> None:
-    """SM-2 v2 algorithm with speed-based quality and Lapse Multiplier."""
+    """SM-2 v2 algorithm with speed-based quality and Lapse Multiplier.
+
+    When FSRS_ENABLED=True, this will be replaced by FSRS scheduling.
+    Currently SM-2 only, with state dual-write for migration preparation.
+    """
+    # TODO: When FSRS_ENABLED, use fsrs.review_card() instead of SM-2
+    # from app.config import settings
+    # if settings.FSRS_ENABLED and getattr(progress, 'scheduler_version', 'SM2') == 'FSRS':
+    #     return _apply_fsrs_update(progress, is_correct, time_spent_seconds, now)
+
     # Calculate quality rating
     if is_correct:
         if time_spent_seconds <= SRS_CONFIG.SPEED_THRESHOLDS.INSTANT:
