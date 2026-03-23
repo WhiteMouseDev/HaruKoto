@@ -241,6 +241,10 @@ class _ReviewDueCard extends StatelessWidget {
 
   const _ReviewDueCard({required this.summary, required this.jlptLevel});
 
+  // Pick review category: prefer the one with more due items
+  String get _reviewQuizType =>
+      summary.grammarDue > summary.wordDue ? 'GRAMMAR' : 'VOCABULARY';
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -252,7 +256,7 @@ class _ReviewDueCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         onTap: () => Navigator.of(context, rootNavigator: true).push(
           quizRoute(QuizPage(
-              quizType: 'VOCABULARY', jlptLevel: jlptLevel, mode: 'review')),
+              quizType: _reviewQuizType, jlptLevel: jlptLevel, mode: 'review')),
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -318,7 +322,7 @@ class _ReviewDueCard extends StatelessWidget {
                 onPressed: () =>
                     Navigator.of(context, rootNavigator: true).push(
                   quizRoute(QuizPage(
-                      quizType: 'VOCABULARY',
+                      quizType: _reviewQuizType,
                       jlptLevel: jlptLevel,
                       mode: 'review')),
                 ),

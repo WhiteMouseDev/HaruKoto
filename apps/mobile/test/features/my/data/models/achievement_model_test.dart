@@ -5,7 +5,7 @@ void main() {
   group('AchievementDefinition', () {
     test('constant list has expected entries', () {
       expect(achievementDefinitions.isNotEmpty, true);
-      expect(achievementDefinitions.length, 20);
+      expect(achievementDefinitions.length, 23);
     });
 
     test('first entry is first_quiz', () {
