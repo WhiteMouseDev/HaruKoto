@@ -174,8 +174,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Check Prisma schema drift
-        # TODO: baseline 동기화 완료 후 continue-on-error 제거하여 강제 fail 전환
-        continue-on-error: true
         working-directory: packages/database
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
