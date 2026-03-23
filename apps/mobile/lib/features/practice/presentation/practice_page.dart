@@ -14,6 +14,7 @@ import '../../study/presentation/widgets/today_study_sheet.dart';
 enum _QuizCategory {
   vocabulary('단어', 'VOCABULARY', LucideIcons.languages),
   grammar('문법', 'GRAMMAR', LucideIcons.braces),
+  kanji('한자', 'KANJI', LucideIcons.penTool),
   sentenceArrange('문장배열', 'SENTENCE_ARRANGE', LucideIcons.arrowUpDown);
 
   final String label;
@@ -21,7 +22,8 @@ enum _QuizCategory {
   final IconData icon;
   const _QuizCategory(this.label, this.apiType, this.icon);
 
-  bool get hasSmart => this != sentenceArrange;
+  /// Smart preview/start is available for vocabulary and grammar only
+  bool get hasSmart => this == vocabulary || this == grammar;
 }
 
 class PracticePage extends ConsumerStatefulWidget {
@@ -81,12 +83,14 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   }) {
     // For non-smart categories, launch directly
     if (!_selectedCategory.hasSmart) {
+      final mode =
+          _selectedCategory == _QuizCategory.sentenceArrange ? 'arrange' : null;
       Navigator.of(context, rootNavigator: true).push(
         quizRoute(QuizPage(
           quizType: _selectedCategory.apiType,
           jlptLevel: jlptLevel,
           count: 10,
-          mode: 'arrange',
+          mode: mode,
         )),
       );
       return;
@@ -219,7 +223,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final previewAsync = switch (_selectedCategory) {
       _QuizCategory.vocabulary => vocabPreviewAsync,
       _QuizCategory.grammar => grammarPreviewAsync,
-      _QuizCategory.sentenceArrange => null,
+      _QuizCategory.kanji || _QuizCategory.sentenceArrange => null,
     };
 
     final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;

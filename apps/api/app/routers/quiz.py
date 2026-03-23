@@ -254,28 +254,45 @@ async def _generate_normal_questions(db: AsyncSession, user: User, quiz_type: st
         )
         new_items = new_result.scalars().all()
 
-        # Combine and deduplicate by meaning_ko
+        # Combine items
         all_items = list(review_items) + list(new_items)
-        seen_meanings: set[str] = set()
+
+        # KANJI mode: filter kanji-containing words BEFORE dedupe
+        is_kanji_mode = quiz_type == "KANJI"
+        if is_kanji_mode:
+            all_items = [v for v in all_items if v.word != v.reading]
+
+        # Deduplicate by meaning_ko (or reading for kanji)
+        seen_keys: set[str] = set()
         unique_items = []
         for item in all_items:
-            if item.meaning_ko not in seen_meanings:
-                seen_meanings.add(item.meaning_ko)
+            key = item.reading if is_kanji_mode else item.meaning_ko
+            if key not in seen_keys:
+                seen_keys.add(key)
                 unique_items.append(item)
 
         # Get wrong options pool
-        pool_result = await db.execute(
-            select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-        )
-        all_meanings = [r for r in pool_result.scalars().all()]
+        if is_kanji_mode:
+            pool_result = await db.execute(
+                select(Vocabulary.reading)
+                .where(Vocabulary.jlpt_level == jlpt_level, Vocabulary.word != Vocabulary.reading)
+                .order_by(func.random())
+                .limit(50)
+            )
+        else:
+            pool_result = await db.execute(
+                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
+            )
+        all_pool = [r for r in pool_result.scalars().all()]
 
         for vocab in unique_items[:count]:
-            wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
+            correct_text = vocab.reading if is_kanji_mode else vocab.meaning_ko
+            wrong_options = [m for m in all_pool if m != correct_text]
             random.shuffle(wrong_options)
             wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
 
             correct_id = str(uuid.uuid4())
-            options = [QuizOption(id=correct_id, text=vocab.meaning_ko).model_dump()]
+            options = [QuizOption(id=correct_id, text=correct_text).model_dump()]
             for wo in wrong_options:
                 options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
             random.shuffle(options)
@@ -285,8 +302,8 @@ async def _generate_normal_questions(db: AsyncSession, user: User, quiz_type: st
                     "id": str(vocab.id),
                     "type": quiz_type,
                     "question": vocab.word,
-                    "reading": vocab.reading,
-                    "questionSubText": vocab.reading,
+                    "reading": vocab.reading if not is_kanji_mode else None,
+                    "questionSubText": None if is_kanji_mode else vocab.reading,
                     "options": options,
                     "correctOptionId": correct_id,
                     "word": vocab.word,
