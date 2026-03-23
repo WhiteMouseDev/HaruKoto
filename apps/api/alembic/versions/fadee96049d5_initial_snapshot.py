@@ -755,7 +755,14 @@ def upgrade() -> None:
     result = conn.execute(text("SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='users'"))
     if result.scalar() is not None:
         return  # Already bootstrapped (e.g. by Prisma in production)
-    conn.execute(text(_BASELINE_DDL))
+    # asyncpg cannot execute multiple statements in one call, so split by semicolon
+    # Strip SQL comments (-- ...) before splitting to avoid skipping valid DDL
+    import re
+    clean_sql = re.sub(r"--[^\n]*", "", _BASELINE_DDL)
+    for stmt in clean_sql.split(";"):
+        stmt = stmt.strip()
+        if stmt:
+            conn.execute(text(stmt))
 
 
 def downgrade() -> None:
