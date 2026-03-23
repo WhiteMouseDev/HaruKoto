@@ -442,22 +442,20 @@ class _StreakWeek extends StatelessWidget {
           child = const Icon(LucideIcons.check,
               color: AppColors.onGradient, size: 14);
         } else if (isToday) {
-          bgColor = theme.colorScheme.secondary;
-          child = Text(
-            '-',
-            style: TextStyle(
-              color: theme.colorScheme.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+          bgColor = theme.colorScheme.primary.withValues(alpha: 0.15);
+          child = Icon(
+            LucideIcons.sparkles,
+            size: 14,
+            color: theme.colorScheme.primary,
           );
         } else if (isPast) {
           bgColor = theme.colorScheme.surfaceContainerHigh;
-          child = Text(
-            '-',
-            style: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-              fontSize: 12,
+          child = Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
             ),
           );
         } else {

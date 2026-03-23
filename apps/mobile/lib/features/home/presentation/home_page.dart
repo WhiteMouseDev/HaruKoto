@@ -146,10 +146,28 @@ class _HomePageState extends ConsumerState<HomePage>
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // 4. Streak + Daily Stats
+              // 4. Study Card — 즉시 행동 영역 (최상단)
+              _staggered(
+                2,
+                QuickStartCard(
+                  levelProgress: dashboard?.levelProgress,
+                  today: dashboard?.today,
+                  dailyGoal: profile?.dailyGoal ?? 10,
+                  jlptLevel: profile?.jlptLevel ?? 'N5',
+                ),
+              ),
+              const SizedBox(height: AppSizes.md),
+
+              // 5. Daily Missions — 즉시 행동 영역
+              if (missions != null && missions.isNotEmpty) ...[
+                _staggered(3, DailyMissionsCard(missions: missions)),
+                const SizedBox(height: AppSizes.md),
+              ],
+
+              // 6. Streak + Daily Stats — 동기부여 영역
               if (dashboard != null) ...[
                 _staggered(
-                  2,
+                  4,
                   StreakDailyCard(
                     streak: dashboard.streak,
                     today: dashboard.today,
@@ -160,26 +178,8 @@ class _HomePageState extends ConsumerState<HomePage>
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // 5. Study Card with category tabs
-              _staggered(
-                3,
-                QuickStartCard(
-                  levelProgress: dashboard?.levelProgress,
-                  today: dashboard?.today,
-                  dailyGoal: profile?.dailyGoal ?? 10,
-                  jlptLevel: profile?.jlptLevel ?? 'N5',
-                ),
-              ),
-              const SizedBox(height: AppSizes.md),
-
-              // 6. Daily Missions
-              if (missions != null && missions.isNotEmpty) ...[
-                _staggered(4, DailyMissionsCard(missions: missions)),
-                const SizedBox(height: AppSizes.md),
-              ],
-
-              // 7. Weekly Chart
-              if (dashboard != null && dashboard.weeklyStats.isNotEmpty)
+              // 7. Weekly Chart — 회고 영역 (빈 상태도 표시)
+              if (dashboard != null)
                 _staggered(
                   5,
                   WeeklyChart(
@@ -189,7 +189,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
               const SizedBox(height: AppSizes.md),
 
-              // 8. Shortcut Grid
+              // 8. Shortcut Grid — 유틸리티 영역
               _staggered(6, const ShortcutGrid()),
             ],
           ),

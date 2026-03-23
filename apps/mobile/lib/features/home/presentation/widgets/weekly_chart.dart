@@ -94,8 +94,37 @@ class _WeeklyChartState extends State<WeeklyChart>
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final barCount = widget.weeklyStats.length.clamp(0, 7);
-                  if (barCount == 0) {
-                    return const Center(child: Text('데이터 없음'));
+                  if (barCount == 0 || totalWords == 0) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            LucideIcons.barChart3,
+                            size: 32,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.2),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '이번 주 학습 기록이 아직 없어요',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '오늘 단어 1개만 학습해도 그래프가 채워져요',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.35),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   const goalLineY = 120.0 * 0.3;
