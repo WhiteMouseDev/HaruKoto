@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import select, update
+from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -44,3 +44,51 @@ async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_
 
     await db.commit()
     return {"processed": len(expired)}
+
+
+@router.post("/ensure-partitions", status_code=200)
+async def ensure_review_event_partitions(request: Request, db: AsyncSession = Depends(get_db)):
+    """Ensure review_events partitions exist for the next 3 months."""
+    auth = request.headers.get("authorization", "")
+    if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    created = []
+    now = datetime.utcnow()
+    for offset in range(4):  # current month + next 3
+        # Calendar-accurate month arithmetic
+        month = now.month + offset
+        year = now.year + (month - 1) // 12
+        month = (month - 1) % 12 + 1
+        next_month = month + 1 if month < 12 else 1
+        next_year = year if month < 12 else year + 1
+        table_name = f"review_events_{year}_{month:02d}"
+
+        # Check if partition already exists as a child of review_events
+        result = await db.execute(
+            text(
+                "SELECT 1 FROM pg_inherits "
+                "JOIN pg_class child ON child.oid = pg_inherits.inhrelid "
+                "JOIN pg_class parent ON parent.oid = pg_inherits.inhparent "
+                "WHERE parent.relname = 'review_events' AND child.relname = :name"
+            ),
+            {"name": table_name},
+        )
+        if result.scalar() is not None:
+            continue
+
+        try:
+            await db.execute(
+                text(f"""
+                CREATE TABLE {table_name}
+                PARTITION OF review_events
+                FOR VALUES FROM ('{year}-{month:02d}-01') TO ('{next_year}-{next_month:02d}-01')
+            """)
+            )
+            created.append(table_name)
+        except Exception:
+            await db.rollback()
+            break
+
+    await db.commit()
+    return {"created": created}
