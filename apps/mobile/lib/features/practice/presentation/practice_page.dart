@@ -15,6 +15,7 @@ enum _QuizCategory {
   vocabulary('단어', 'VOCABULARY', LucideIcons.languages),
   grammar('문법', 'GRAMMAR', LucideIcons.braces),
   kanji('한자', 'KANJI', LucideIcons.penTool),
+  listening('리스닝', 'LISTENING', LucideIcons.headphones),
   sentenceArrange('문장배열', 'SENTENCE_ARRANGE', LucideIcons.arrowUpDown);
 
   final String label;
@@ -223,7 +224,10 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final previewAsync = switch (_selectedCategory) {
       _QuizCategory.vocabulary => vocabPreviewAsync,
       _QuizCategory.grammar => grammarPreviewAsync,
-      _QuizCategory.kanji || _QuizCategory.sentenceArrange => null,
+      _QuizCategory.kanji ||
+      _QuizCategory.listening ||
+      _QuizCategory.sentenceArrange =>
+        null,
     };
 
     final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
@@ -302,15 +306,17 @@ class _PracticePageState extends ConsumerState<PracticePage> {
         color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Row(
-        children: _QuizCategory.values.map((cat) {
-          final isSelected = _selectedCategory == cat;
-          return Expanded(
-            child: GestureDetector(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: _QuizCategory.values.map((cat) {
+            final isSelected = _selectedCategory == cat;
+            return GestureDetector(
               onTap: () => setState(() => _selectedCategory = cat),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.lightCard : Colors.transparent,
                   borderRadius: BorderRadius.circular(11),
@@ -348,9 +354,9 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   ],
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
