@@ -63,5 +63,12 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;")
+    op.execute("""
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'auth') THEN
+                DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+            END IF;
+        END $$;
+    """)
     op.execute("DROP FUNCTION IF EXISTS public.handle_new_user();")
