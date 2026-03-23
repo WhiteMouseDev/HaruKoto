@@ -362,7 +362,7 @@ class _ReviewIdleBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(iconData, size: 20, color: AppColors.primaryStrong),
+          const Icon(iconData, size: 20, color: AppColors.primaryStrong),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

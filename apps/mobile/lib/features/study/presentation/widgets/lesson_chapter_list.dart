@@ -166,7 +166,7 @@ class ChapterCard extends StatelessWidget {
                       AnimatedRotation(
                         turns: isExpanded ? 0.5 : 0.0,
                         duration: const Duration(milliseconds: 200),
-                        child: Icon(
+                        child: const Icon(
                           LucideIcons.chevronDown,
                           size: 18,
                           color: AppColors.lightSubtext,
