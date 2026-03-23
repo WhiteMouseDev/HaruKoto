@@ -395,9 +395,7 @@ class _MainContent extends ConsumerWidget {
                     size: 14, color: theme.colorScheme.primary),
                 const SizedBox(width: 4),
                 Text(
-                  hasProgress
-                      ? '복습 정답률 ${_getAccuracy(today)}%'
-                      : '첫 학습을 시작해보세요',
+                  hasProgress ? '복습 정답률 ${_getAccuracy(today)}%' : '복습 정답률 -%',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w500,
@@ -480,9 +478,7 @@ class _MainContent extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Text(
-                        progressPct > 0
-                            ? '${(progressPct * 100).toStringAsFixed(0)}%'
-                            : '시작',
+                        '${(progressPct * 100).toStringAsFixed(0)}%',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.primary,
