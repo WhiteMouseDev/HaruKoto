@@ -206,20 +206,11 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply Prisma baseline (creates tables)
-        working-directory: packages/database
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
-          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
-        run: pnpm exec prisma migrate deploy
-
-      - name: Apply Alembic migrations (on top of Prisma baseline)
-        # TODO: Alembic initial baseline 재구성 후 continue-on-error 제거
-        continue-on-error: true
+      - name: Apply Alembic migrations (single DDL authority)
         working-directory: apps/api
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/harukoto_ci
-        run: uv run alembic stamp fadee96049d5 && uv run alembic upgrade head
+        run: uv run alembic upgrade head
 
       - name: Check Prisma schema drift
         working-directory: packages/database
