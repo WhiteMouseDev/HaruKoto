@@ -49,6 +49,15 @@ if echo "$CHANGED" | grep -q "^apps/api/"; then
   cd ../..
 fi
 
+# Web/Packages 변경 감지
+if echo "$CHANGED" | grep -qE "^(apps/web/|packages/)"; then
+  LINT_OUT=$(pnpm lint 2>&1)
+  if [ $? -ne 0 ]; then
+    ERRORS=1
+    MESSAGES="${MESSAGES}[web] pnpm lint 에러 발견\n"
+  fi
+fi
+
 if [ $ERRORS -ne 0 ]; then
   echo "{\"continue\":false,\"stopReason\":\"Lint 실패:\\n${MESSAGES}수정 후 다시 커밋하세요\"}"
   exit 1
