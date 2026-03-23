@@ -210,6 +210,7 @@ jobs:
         working-directory: packages/database
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
         run: pnpm exec prisma migrate deploy
 
       - name: Apply Alembic migrations (on top of Prisma baseline)
@@ -222,6 +223,7 @@ jobs:
         working-directory: packages/database
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
         run: |
           pnpm exec prisma migrate diff \
             --exit-code \
