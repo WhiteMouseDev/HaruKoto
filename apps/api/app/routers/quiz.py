@@ -44,6 +44,7 @@ from app.schemas.quiz import (
     SmartPreviewResponse,
     SmartStartRequest,
 )
+from app.services.distractor import generate_distractors
 from app.services.gamification import (
     calculate_level,
     check_and_grant_achievements,
@@ -1425,11 +1426,11 @@ async def smart_start(
 
         all_items = list(review_items) + list(retry_items) + list(new_items)
 
-        # Get wrong options pool
-        pool_result = await db.execute(
+        # Pre-fetch random pool for fallback (1 query)
+        fallback_pool_result = await db.execute(
             select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
         )
-        all_meanings = list(pool_result.scalars().all())
+        fallback_meanings = list(fallback_pool_result.scalars().all())
 
         # Deduplicate by meaning
         seen_meanings: set[str] = set()
@@ -1438,14 +1439,30 @@ async def smart_start(
                 continue
             seen_meanings.add(vocab.meaning_ko)
 
-            wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
-            random.shuffle(wrong_options)
-            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
+            # Use distractor service for quality options
+            distractors = await generate_distractors(
+                db,
+                correct_item_id=vocab.id,
+                item_type="WORD",
+                jlpt_level=jlpt_level,
+                count=QUIZ_CONFIG.WRONG_OPTIONS_COUNT,
+                user_id=user.id,
+            )
 
             correct_id = str(uuid.uuid4())
             options = [{"id": correct_id, "text": vocab.meaning_ko}]
-            for wo in wrong_options:
-                options.append({"id": str(uuid.uuid4()), "text": wo})
+            used_texts = {vocab.meaning_ko}
+            for d in distractors:
+                options.append({"id": str(uuid.uuid4()), "text": d["text"]})
+                used_texts.add(d["text"])
+            # Fallback: fill remaining from random pool if distractors < 3
+            if len(options) - 1 < QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
+                for m in fallback_meanings:
+                    if m not in used_texts:
+                        options.append({"id": str(uuid.uuid4()), "text": m})
+                        used_texts.add(m)
+                        if len(options) - 1 >= QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
+                            break
             random.shuffle(options)
 
             questions.append(
