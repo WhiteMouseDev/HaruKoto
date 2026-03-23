@@ -34,6 +34,7 @@ jobs:
               - 'turbo.json'
             backend:
               - 'apps/api/**'
+              - 'packages/database/**'
             mobile:
               - 'apps/mobile/**'
 
@@ -115,6 +116,74 @@ jobs:
         env:
           DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
           SUPABASE_URL: https://test.supabase.co
+
+  # ============================
+  # Schema Drift Check (Alembic ↔ Prisma)
+  # ============================
+  schema-drift:
+    needs: changes
+    if: >
+      needs.changes.outputs.backend == 'true' ||
+      needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: harukoto_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install API dependencies
+        run: uv sync --frozen --extra dev
+        working-directory: apps/api
+
+      - name: Apply Alembic migrations
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/harukoto_ci
+        run: uv run alembic upgrade head
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Prisma schema drift
+        # TODO: baseline 동기화 완료 후 continue-on-error 제거하여 강제 fail 전환
+        continue-on-error: true
+        working-directory: packages/database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
+        run: |
+          pnpm exec prisma migrate diff \
+            --exit-code \
+            --from-url "$DATABASE_URL" \
+            --to-schema-datamodel prisma/schema.prisma
 
   # ============================
   # Mobile (Flutter)

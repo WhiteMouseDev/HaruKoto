@@ -6,8 +6,9 @@
   "types": "./src/index.ts",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
+    "db:sync": "prisma db pull --schema=prisma/schema.prisma && prisma format --schema=prisma/schema.prisma && prisma generate",
+    "db:push": "node ./scripts/block-prisma-ddl.mjs db:push",
+    "db:migrate": "node ./scripts/block-prisma-ddl.mjs db:migrate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "vocab:audit:n123": "node scripts/audit-n123-vocabulary.mjs",

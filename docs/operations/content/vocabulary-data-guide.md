@@ -360,7 +360,8 @@ if (errors > 0) process.exit(1);
 
 - [ ] `@@unique([word, jlptLevel])` → `@@unique([word, reading, jlptLevel])` 변경
 - [ ] `seed.ts` upsert where절 수정 (reading 추가)
-- [ ] `prisma db push` 또는 `prisma migrate dev` 실행
+- [ ] Alembic migration 실행 (`cd apps/api && uv run alembic revision --autogenerate -m "update unique constraint" && uv run alembic upgrade head`)
+- [ ] Prisma 동기화 (`cd packages/database && pnpm db:sync`)
 
 ### Phase C: 파싱 + 중복 검증
 

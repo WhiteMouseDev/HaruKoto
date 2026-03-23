@@ -396,7 +396,7 @@ JLPT(日本語能力試験)는 **공식 어휘/문법 목록을 발표하지 않
 
 | 변경 유형 | 필요한 작업 | 코드 배포 필요? |
 |-----------|-------------|-----------------|
-| 스키마 변경 (새 컬럼/테이블) | `prisma migrate dev` + 커밋 | **필요** |
+| 스키마 변경 (새 컬럼/테이블) | Alembic migration (`cd apps/api && uv run alembic revision --autogenerate -m "desc" && uv run alembic upgrade head`) + `cd packages/database && pnpm db:sync` | **필요** |
 | 콘텐츠 추가 (새 JSON 항목) | JSON 편집 + `pnpm db:seed` | **불필요** (DB에 직접 시딩) |
 | 콘텐츠 수정 (의미 오류 수정) | JSON 수정 + 타겟 update 스크립트 | **불필요** |
 | 시나리오 추가/수정 | JSON 편집 + `pnpm db:seed` | **불필요** |
