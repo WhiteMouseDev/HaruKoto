@@ -47,11 +47,18 @@ def upgrade() -> None:
         $$;
     """)
 
+    # Only create trigger if auth schema exists (Supabase environment)
+    # CI/test environments without auth schema will skip this safely
     op.execute("""
-        CREATE TRIGGER on_auth_user_created
-            AFTER INSERT ON auth.users
-            FOR EACH ROW
-            EXECUTE FUNCTION public.handle_new_user();
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'auth') THEN
+                CREATE TRIGGER on_auth_user_created
+                    AFTER INSERT ON auth.users
+                    FOR EACH ROW
+                    EXECUTE FUNCTION public.handle_new_user();
+            END IF;
+        END $$;
     """)
 
 
