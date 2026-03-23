@@ -38,8 +38,23 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = _QuizCategory.values.firstWhere(
-      (c) => c.apiType == widget.initialCategory,
+    _selectedCategory = _categoryFromString(widget.initialCategory);
+  }
+
+  @override
+  void didUpdateWidget(covariant PracticePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialCategory != null &&
+        widget.initialCategory != oldWidget.initialCategory) {
+      setState(() {
+        _selectedCategory = _categoryFromString(widget.initialCategory);
+      });
+    }
+  }
+
+  _QuizCategory _categoryFromString(String? category) {
+    return _QuizCategory.values.firstWhere(
+      (c) => c.apiType == category,
       orElse: () => _QuizCategory.vocabulary,
     );
   }
