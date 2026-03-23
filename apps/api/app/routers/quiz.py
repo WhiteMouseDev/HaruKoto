@@ -116,6 +116,51 @@ def _apply_srs_update(
     progress.last_reviewed_at = now
     progress.mastered = progress.interval >= SRS_CONFIG.MASTERY_INTERVAL
 
+    # ── Dual-write: update state for future SRS engine migration ──
+    # Aligned with srs.py process_answer state transitions
+    current_state = getattr(progress, "state", None) or "UNSEEN"
+    if current_state == "UNSEEN":
+        progress.state = "PROVISIONAL"
+        if not getattr(progress, "introduced_by", None):
+            progress.introduced_by = "QUIZ"
+        progress.learning_step = 1 if is_correct else 0
+    elif current_state == "PROVISIONAL":
+        if is_correct:
+            step = getattr(progress, "learning_step", 0) or 0
+            if step >= 1:
+                progress.state = "LEARNING"
+                progress.learning_step = 1
+            else:
+                progress.learning_step = (step or 0) + 1
+        else:
+            progress.learning_step = 0
+    elif current_state == "LEARNING":
+        if is_correct:
+            step = getattr(progress, "learning_step", 0) or 0
+            if step >= 2 or progress.interval >= 6:
+                progress.state = "REVIEW"
+            else:
+                progress.learning_step = step + 1
+        else:
+            # Stay in LEARNING, reset step (aligned with srs.py)
+            progress.learning_step = 0
+    elif current_state == "RELEARNING":
+        if is_correct:
+            # Immediately return to REVIEW (aligned with srs.py)
+            progress.state = "REVIEW"
+        else:
+            progress.learning_step = 0
+    elif current_state == "REVIEW":
+        if is_correct and progress.mastered:
+            progress.state = "MASTERED"
+        elif not is_correct:
+            progress.state = "RELEARNING"
+            progress.learning_step = 0
+    elif current_state == "MASTERED":
+        if not is_correct:
+            progress.state = "RELEARNING"
+            progress.learning_step = 0
+
 
 def _calculate_smart_distribution(daily_goal: int, review_due: int, retry_due: int) -> dict[str, int]:
     """Calculate optimal new/review/retry distribution for smart quiz."""
