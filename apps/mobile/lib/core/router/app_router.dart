@@ -18,8 +18,9 @@ import '../../features/kana/presentation/kana_stage_page.dart';
 import '../../features/kana/presentation/kana_quiz_page.dart';
 import '../../features/kana/presentation/kana_chart_page.dart';
 import '../../features/my/presentation/my_page.dart';
-import '../../features/my/presentation/payments_page.dart';
-import '../../features/my/presentation/subscription_manage_page.dart';
+// Hidden for free launch — re-enable when IAP ready
+// import '../../features/my/presentation/payments_page.dart';
+// import '../../features/my/presentation/subscription_manage_page.dart';
 import '../../features/stats/presentation/stats_page.dart';
 import '../../features/practice/presentation/practice_page.dart';
 import '../../features/study/presentation/study_page.dart';
@@ -29,9 +30,10 @@ import '../../features/study/presentation/legacy_study_page.dart';
 import '../../features/study/presentation/learned_words_page.dart';
 import '../../features/study/presentation/wrong_answers_page.dart';
 import '../../features/study/presentation/wordbook_page.dart';
-import '../../features/subscription/presentation/pricing_page.dart';
-import '../../features/subscription/presentation/checkout_page.dart';
-import '../../features/subscription/presentation/subscription_success_page.dart';
+// Hidden for free launch — re-enable when IAP ready
+// import '../../features/subscription/presentation/pricing_page.dart';
+// import '../../features/subscription/presentation/checkout_page.dart';
+// import '../../features/subscription/presentation/subscription_success_page.dart';
 import '../../features/legal/presentation/privacy_page.dart';
 import '../../features/legal/presentation/terms_page.dart';
 import '../../features/notifications/presentation/notification_page.dart';
@@ -316,22 +318,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/my',
                 builder: (context, state) => const MyPage(),
-                routes: [
-                  GoRoute(
-                    path: 'subscription',
-                    pageBuilder: (context, state) => _slideTransitionPage(
-                      state: state,
-                      child: const SubscriptionManagePage(),
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'payments',
-                    pageBuilder: (context, state) => _slideTransitionPage(
-                      state: state,
-                      child: const PaymentsPage(),
-                    ),
-                  ),
-                ],
+                // Subscription routes — hidden for free launch
+                routes: const [],
               ),
             ],
           ),
@@ -355,33 +343,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const NotificationPage(),
         ),
       ),
-      GoRoute(
-        path: '/pricing',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const PricingPage(),
-        ),
-      ),
-      GoRoute(
-        path: '/subscription/checkout',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) {
-          final planId = state.uri.queryParameters['planId'] ?? '';
-          return _slideTransitionPage(
-            state: state,
-            child: CheckoutPage(planId: planId),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/subscription/success',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const SubscriptionSuccessPage(),
-        ),
-      ),
+      // Pricing/Subscription routes — hidden for free launch (re-enable when IAP ready)
+      // GoRoute(path: '/pricing', ...),
+      // GoRoute(path: '/subscription/checkout', ...),
+      // GoRoute(path: '/subscription/success', ...),
       GoRoute(
         path: '/legal/privacy',
         parentNavigatorKey: _rootNavigatorKey,

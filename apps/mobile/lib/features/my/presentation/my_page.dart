@@ -9,7 +9,8 @@ import '../../home/providers/home_provider.dart';
 import '../data/models/profile_detail_model.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
-import 'widgets/subscription_section.dart';
+// Hidden for free launch
+// import 'widgets/subscription_section.dart';
 import 'widgets/settings_menu.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/info_section.dart';
@@ -70,13 +71,12 @@ class _MyPageState extends ConsumerState<MyPage> {
           ),
           const SizedBox(height: AppSizes.md),
 
-          // Subscription
-          SubscriptionSection(
-            onNavigateToPricing: () => context.push('/pricing'),
-            onNavigateToManage: () => context.push('/my/subscription'),
-            onNavigateToPayments: () => context.push('/my/payments'),
-          ),
-          const SizedBox(height: AppSizes.md),
+          // Subscription — hidden for free launch (re-enable when IAP ready)
+          // SubscriptionSection(
+          //   onNavigateToPricing: () => context.push('/pricing'),
+          //   onNavigateToManage: () => context.push('/my/subscription'),
+          //   onNavigateToPayments: () => context.push('/my/payments'),
+          // ),
 
           // Learning Stats
           Card(
