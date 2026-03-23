@@ -22,7 +22,7 @@ def upgrade() -> None:
         "study_stages",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("category", sa.Text(), nullable=False),
-        sa.Column("jlpt_level", sa.Enum("N5", "N4", "N3", "N2", "N1", name="JlptLevel", create_constraint=False, create_type=False), nullable=False),
+        sa.Column("jlpt_level", postgresql.ENUM("N5", "N4", "N3", "N2", "N1", name="JlptLevel", create_type=False), nullable=False),
         sa.Column("stage_number", sa.Integer(), nullable=False),
         sa.Column("title", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
