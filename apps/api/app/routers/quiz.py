@@ -1270,7 +1270,9 @@ async def smart_preview(
     )
     today_completed = today_result.scalar() or 0
 
-    dist = _calculate_smart_distribution(SMART_QUIZ.DAILY_GOAL, review_due, retry_due)
+    goal = getattr(user, "daily_goal", None) or SMART_QUIZ.DAILY_GOAL
+    remaining = max(0, goal - today_completed)
+    dist = _calculate_smart_distribution(remaining if remaining > 0 else goal, review_due, retry_due)
 
     return SmartPreviewResponse(
         pool_size=PoolSize(new_ready=new_ready, review_due=review_due, retry_due=retry_due),
@@ -1280,7 +1282,7 @@ async def smart_preview(
             retry=dist["retry"],
             total=dist["new"] + dist["review"] + dist["retry"],
         ),
-        daily_goal=SMART_QUIZ.DAILY_GOAL,
+        daily_goal=goal,
         today_completed=today_completed,
         overall_progress=OverallProgress(
             total=total,
