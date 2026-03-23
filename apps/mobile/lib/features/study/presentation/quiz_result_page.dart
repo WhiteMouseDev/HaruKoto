@@ -51,6 +51,12 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   @override
   void dispose() {
     _confettiController.dispose();
+    // Refresh quiz-related providers so PracticePage shows updated data
+    ref.invalidate(incompleteQuizProvider);
+    ref.invalidate(smartPreviewProvider(
+        (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)));
+    ref.invalidate(smartPreviewProvider(
+        (category: 'GRAMMAR', jlptLevel: widget.jlptLevel)));
     super.dispose();
   }
 
