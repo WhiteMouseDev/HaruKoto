@@ -146,9 +146,23 @@ class _HomePageState extends ConsumerState<HomePage>
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // 4. Study Card — 즉시 행동 영역 (최상단)
+              // 4. Streak + Daily Stats
+              if (dashboard != null) ...[
+                _staggered(
+                  2,
+                  StreakDailyCard(
+                    streak: dashboard.streak,
+                    today: dashboard.today,
+                    weeklyStats: dashboard.weeklyStats,
+                    dailyGoal: profile?.dailyGoal ?? 10,
+                  ),
+                ),
+                const SizedBox(height: AppSizes.md),
+              ],
+
+              // 5. Study Card with category tabs
               _staggered(
-                2,
+                3,
                 QuickStartCard(
                   levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
@@ -158,23 +172,9 @@ class _HomePageState extends ConsumerState<HomePage>
               ),
               const SizedBox(height: AppSizes.md),
 
-              // 5. Daily Missions — 즉시 행동 영역
+              // 6. Daily Missions
               if (missions != null && missions.isNotEmpty) ...[
-                _staggered(3, DailyMissionsCard(missions: missions)),
-                const SizedBox(height: AppSizes.md),
-              ],
-
-              // 6. Streak + Daily Stats — 동기부여 영역
-              if (dashboard != null) ...[
-                _staggered(
-                  4,
-                  StreakDailyCard(
-                    streak: dashboard.streak,
-                    today: dashboard.today,
-                    weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: profile?.dailyGoal ?? 10,
-                  ),
-                ),
+                _staggered(4, DailyMissionsCard(missions: missions)),
                 const SizedBox(height: AppSizes.md),
               ],
 
