@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
+import '../../home/providers/home_provider.dart';
 import '../data/models/quiz_result_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_page.dart';
@@ -51,12 +52,14 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   @override
   void dispose() {
     _confettiController.dispose();
-    // Refresh quiz-related providers so PracticePage shows updated data
+    // Refresh all dependent providers across tabs
     ref.invalidate(incompleteQuizProvider);
     ref.invalidate(smartPreviewProvider(
         (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)));
     ref.invalidate(smartPreviewProvider(
         (category: 'GRAMMAR', jlptLevel: widget.jlptLevel)));
+    ref.invalidate(reviewSummaryProvider(widget.jlptLevel));
+    ref.invalidate(dashboardProvider);
     super.dispose();
   }
 

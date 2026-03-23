@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
+import '../../home/providers/home_provider.dart';
 import '../data/models/kana_character_model.dart';
 import '../data/models/kana_stage_model.dart';
 import '../providers/kana_provider.dart';
@@ -48,6 +49,12 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   List<KanaCharacterModel> _reviewCharacters = [];
 
   String get kanaType => widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
+
+  @override
+  void dispose() {
+    ref.invalidate(dashboardProvider);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
