@@ -1955,20 +1955,34 @@ class _ResultStep extends StatelessWidget {
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(AppSizes.md),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onRetry,
-                    child: const Text('다시 풀기'),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: FilledButton.icon(
+                    onPressed: onDone,
+                    icon: const Icon(LucideIcons.bookOpen, size: 18),
+                    label: const Text('학습으로 돌아가기'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryStrong,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: AppSizes.gap),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: onDone,
-                    child: const Text('완료'),
-                  ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: onRetry,
+                        child: const Text('다시 풀기'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

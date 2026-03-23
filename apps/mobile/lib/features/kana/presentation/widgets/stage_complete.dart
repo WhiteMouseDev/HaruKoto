@@ -112,6 +112,21 @@ class StageComplete extends StatelessWidget {
                     child: const Text('가나 학습 홈으로'),
                   ),
                 ),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: TextButton(
+                    onPressed: () => context.go('/study'),
+                    child: const Text(
+                      'N5 레슨 시작하기',
+                      style: TextStyle(
+                        color: AppColors.primaryStrong,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
