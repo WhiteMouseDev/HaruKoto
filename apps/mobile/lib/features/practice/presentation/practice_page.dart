@@ -25,14 +25,24 @@ enum _QuizCategory {
 }
 
 class PracticePage extends ConsumerStatefulWidget {
-  const PracticePage({super.key});
+  final String? initialCategory;
+  const PracticePage({super.key, this.initialCategory});
 
   @override
   ConsumerState<PracticePage> createState() => _PracticePageState();
 }
 
 class _PracticePageState extends ConsumerState<PracticePage> {
-  _QuizCategory _selectedCategory = _QuizCategory.vocabulary;
+  late _QuizCategory _selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = _QuizCategory.values.firstWhere(
+      (c) => c.apiType == widget.initialCategory,
+      orElse: () => _QuizCategory.vocabulary,
+    );
+  }
 
   void _showTodayStudySheet(SmartPreviewModel data, String jlptLevel) {
     showModalBottomSheet(

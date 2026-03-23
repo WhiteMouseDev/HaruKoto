@@ -42,17 +42,26 @@ class QuizFeedbackBar extends StatelessWidget {
       }
       return null;
     } else {
-      // 오답: "정답: 닭고기"  + 원어 보충
+      // 오답: "정답: 닭고기"  + 원어 보충 + explanation
       final word = question.questionText;
       final reading = question.questionSubText;
       final meaning = question.meaningKo;
+      final parts = <String>[];
 
       if (meaning != null && meaning.isNotEmpty) {
         final readingPart =
             (reading != null && reading.isNotEmpty) ? ' ($reading)' : '';
-        return '정답: ${correctText ?? meaning}  ·  $word$readingPart';
+        parts.add('정답: ${correctText ?? meaning}  ·  $word$readingPart');
+      } else if (correctText != null) {
+        parts.add('정답: $correctText');
       }
-      return correctText != null ? '정답: $correctText' : null;
+
+      // Show explanation for additional learning context
+      if (question.explanation != null && question.explanation!.isNotEmpty) {
+        parts.add(question.explanation!);
+      }
+
+      return parts.isNotEmpty ? parts.join('\n') : null;
     }
   }
 
@@ -151,6 +160,8 @@ class QuizFeedbackBar extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               _feedbackDetail!,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: accentColor.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w600,

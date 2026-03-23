@@ -252,7 +252,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/practice',
-                builder: (context, state) => const PracticePage(),
+                builder: (context, state) => PracticePage(
+                  initialCategory: state.extra as String?,
+                ),
               ),
             ],
           ),

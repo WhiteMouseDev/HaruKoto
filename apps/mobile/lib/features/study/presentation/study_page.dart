@@ -8,6 +8,7 @@ import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
+import '../data/models/lesson_models.dart';
 import '../data/models/review_summary_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_page.dart';
@@ -117,7 +118,21 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                             summary: summary, jlptLevel: jlptLevel);
                       }
                       if (!hasEverStudied) {
-                        return const _ReviewIdleBar();
+                        // Find first uncompleted lesson for CTA
+                        final chapters = chaptersAsync.hasValue
+                            ? chaptersAsync.value!.chapters
+                            : <ChapterModel>[];
+                        String? firstLessonId;
+                        for (final ch in chapters) {
+                          for (final l in ch.lessons) {
+                            if (l.status != 'COMPLETED') {
+                              firstLessonId = l.id;
+                              break;
+                            }
+                          }
+                          if (firstLessonId != null) break;
+                        }
+                        return _ReviewIdleBar(firstLessonId: firstLessonId);
                       }
                       return const SizedBox.shrink();
                     },
@@ -346,38 +361,46 @@ class _ReviewDueCard extends StatelessWidget {
 // ── SRS Review Complete Bar ──
 
 class _ReviewIdleBar extends StatelessWidget {
-  const _ReviewIdleBar();
+  final String? firstLessonId;
+
+  const _ReviewIdleBar({this.firstLessonId});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    const message = '첫 레슨을 시작해보세요';
-    const iconData = LucideIcons.sparkles;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.28),
+    return GestureDetector(
+      onTap: firstLessonId != null
+          ? () => context.push('/study/lessons/$firstLessonId')
+          : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.28),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          const Icon(iconData, size: 20, color: AppColors.primaryStrong),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryStrong,
+        child: Row(
+          children: [
+            const Icon(LucideIcons.sparkles,
+                size: 20, color: AppColors.primaryStrong),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '첫 레슨을 시작해보세요',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryStrong,
+                ),
               ),
             ),
-          ),
-        ],
+            if (firstLessonId != null)
+              const Icon(LucideIcons.arrowRight,
+                  size: 18, color: AppColors.primaryStrong),
+          ],
+        ),
       ),
     );
   }

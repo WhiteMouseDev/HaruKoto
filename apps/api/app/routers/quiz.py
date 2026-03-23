@@ -50,6 +50,7 @@ from app.services.gamification import (
     check_and_grant_achievements,
     update_streak,
 )
+from app.services.srs import log_review_event
 from app.utils.constants import QUIZ_CONFIG, REWARDS, SMART_QUIZ, SRS_CONFIG
 from app.utils.date import get_today_kst
 from app.utils.helpers import enum_value
@@ -729,7 +730,27 @@ async def answer_quiz(
             db.add(progress)
             await db.flush()
 
+        state_before = getattr(progress, "state", "UNSEEN") or "UNSEEN"
         _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
+        with contextlib.suppress(Exception):
+            await log_review_event(
+                db,
+                user.id,
+                "WORD",
+                body.question_id,
+                session.id,
+                None,
+                "JP_KR",
+                is_correct,
+                body.time_spent_seconds * 1000,
+                3 if is_correct else 1,
+                state_before,
+                getattr(progress, "state", state_before) or state_before,
+                None,
+                getattr(progress, "state", "") == "PROVISIONAL",
+                state_before == "UNSEEN",
+                now.date(),
+            )
 
     elif question_type == "GRAMMAR":
         progress_result = await db.execute(
@@ -748,7 +769,27 @@ async def answer_quiz(
             db.add(progress)
             await db.flush()
 
+        state_before_g = getattr(progress, "state", "UNSEEN") or "UNSEEN"
         _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
+        with contextlib.suppress(Exception):
+            await log_review_event(
+                db,
+                user.id,
+                "GRAMMAR",
+                body.question_id,
+                session.id,
+                None,
+                "JP_KR",
+                is_correct,
+                body.time_spent_seconds * 1000,
+                3 if is_correct else 1,
+                state_before_g,
+                getattr(progress, "state", state_before_g) or state_before_g,
+                None,
+                getattr(progress, "state", "") == "PROVISIONAL",
+                state_before_g == "UNSEEN",
+                now.date(),
+            )
 
     await db.commit()
     return QuizAnswerResponse(success=True)

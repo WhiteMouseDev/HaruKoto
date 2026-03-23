@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     # Environment
     ENVIRONMENT: str = "development"
 
+    # Feature Flags
+    FSRS_ENABLED: bool = False  # Enable FSRS scheduler for new users
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]

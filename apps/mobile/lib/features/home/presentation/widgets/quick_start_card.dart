@@ -507,7 +507,11 @@ class _MainContent extends ConsumerWidget {
                 if (cat.quizType == 'vocabulary') {
                   _showTodayStudySheet(context, ref);
                 } else {
-                  context.go('/practice');
+                  // Map to API category type for practice tab
+                  final apiType = cat.quizType == 'grammar'
+                      ? 'GRAMMAR'
+                      : 'SENTENCE_ARRANGE';
+                  context.go('/practice', extra: apiType);
                 }
               },
               child: Container(
