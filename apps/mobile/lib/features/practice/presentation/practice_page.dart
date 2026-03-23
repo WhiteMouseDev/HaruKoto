@@ -183,11 +183,18 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
     final incompleteAsync = ref.watch(incompleteQuizProvider);
 
-    // Only fetch smart preview for smart-capable categories
-    final previewAsync = _selectedCategory.hasSmart
-        ? ref.watch(smartPreviewProvider(
-            (category: _selectedCategory.apiType, jlptLevel: jlptLevel)))
-        : null;
+    // Prefetch both VOCABULARY and GRAMMAR previews for smooth tab switching
+    final vocabPreviewAsync = ref.watch(
+        smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)));
+    final grammarPreviewAsync = ref.watch(
+        smartPreviewProvider((category: 'GRAMMAR', jlptLevel: jlptLevel)));
+
+    // Use the preview for the currently selected category
+    final previewAsync = switch (_selectedCategory) {
+      _QuizCategory.vocabulary => vocabPreviewAsync,
+      _QuizCategory.grammar => grammarPreviewAsync,
+      _QuizCategory.sentenceArrange => null,
+    };
 
     final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
     final preview = previewAsync?.hasValue == true ? previewAsync!.value : null;
@@ -199,10 +206,10 @@ class _PracticePageState extends ConsumerState<PracticePage> {
           onRefresh: () async {
             ref.invalidate(incompleteQuizProvider);
             ref.invalidate(profileProvider);
-            if (_selectedCategory.hasSmart) {
-              ref.invalidate(smartPreviewProvider(
-                  (category: _selectedCategory.apiType, jlptLevel: jlptLevel)));
-            }
+            ref.invalidate(smartPreviewProvider(
+                (category: 'VOCABULARY', jlptLevel: jlptLevel)));
+            ref.invalidate(smartPreviewProvider(
+                (category: 'GRAMMAR', jlptLevel: jlptLevel)));
           },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
