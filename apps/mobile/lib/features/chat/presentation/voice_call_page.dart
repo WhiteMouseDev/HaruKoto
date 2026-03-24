@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
-import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/services/haptic_service.dart';
-import '../../my/providers/my_provider.dart';
-import '../data/gemini_live_service.dart';
-import '../providers/chat_provider.dart';
+import '../providers/voice_call_session_provider.dart';
 import 'call_analyzing_page.dart';
 import 'widgets/call_waveform.dart';
 
@@ -35,187 +31,26 @@ class VoiceCallPage extends ConsumerStatefulWidget {
 }
 
 class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
-  GeminiLiveService? _service;
-  String _state = 'connecting';
-  int _callDuration = 0;
-  bool _isMuted = false;
-  bool _showSubtitle = true;
-  String? _error;
-  String _currentAiText = '';
-  Timer? _timer;
-  final AudioPlayer _ringtone = AudioPlayer();
-
   @override
   void initState() {
     super.initState();
-    _playRingtone();
-    _startCall();
+    unawaited(
+      ref.read(voiceCallSessionProvider.notifier).initialize(
+            VoiceCallSessionRequest(
+              scenarioId: widget.scenarioId,
+              characterId: widget.characterId,
+              characterName: widget.characterName,
+            ),
+          ),
+    );
   }
-
-  Future<void> _playRingtone() async {
-    try {
-      await _ringtone.setReleaseMode(ReleaseMode.loop);
-      await _ringtone.setVolume(0.5);
-      await _ringtone.play(AssetSource('sounds/ringtone.wav'));
-    } catch (e) {
-      debugPrint('[VoiceCall] Ringtone play failed: $e');
-    }
-  }
-
-  Future<void> _stopRingtone() async {
-    try {
-      await _ringtone.stop();
-    } catch (_) {}
-  }
-
-  String get _formattedDuration {
-    final mins = (_callDuration ~/ 60).toString().padLeft(2, '0');
-    final secs = (_callDuration % 60).toString().padLeft(2, '0');
-    return '$mins:$secs';
-  }
-
-  Future<void> _startCall() async {
-    debugPrint('[VoiceCall] _startCall() called');
-    try {
-      final repo = ref.read(chatRepositoryProvider);
-      final preferences = ref.read(userPreferencesProvider);
-
-      // 0. Load user profile (call settings + nickname + jlptLevel)
-      final profileAsync = ref.read(profileDetailProvider);
-      final profile =
-          profileAsync.hasValue ? profileAsync.value!.profile : null;
-      final callSettings = preferences.callSettings;
-      final userNickname = profile?.nickname ?? '학습자';
-      final userJlptLevel = preferences.jlptLevel;
-      _showSubtitle = callSettings.subtitleEnabled;
-
-      // 1. Get ephemeral token
-      debugPrint('[VoiceCall] Fetching live token...');
-      final tokenResp = await repo.fetchLiveToken(
-        characterId: widget.characterId,
-      );
-      debugPrint(
-          '[VoiceCall] Token received: ${tokenResp.token.substring(0, tokenResp.token.length.clamp(0, 30))}...');
-      debugPrint('[VoiceCall] Model: ${tokenResp.model}');
-
-      // 2. Get character detail for voice settings
-      String? voiceName;
-      String? personality;
-      if (widget.characterId != null) {
-        try {
-          final detail = await repo.fetchCharacterDetail(widget.characterId!);
-          voiceName = detail.voiceName;
-          personality = detail.personality;
-        } catch (e) {
-          debugPrint('[VoiceCall] Character detail fetch failed: $e');
-        }
-      }
-
-      // silenceDurationMs: 유저 설정 우선
-      final silenceMs = callSettings.silenceDurationMs;
-
-      if (!mounted) return;
-
-      // Fail-fast: 토큰이나 모델이 비어있으면 연결 시도하지 않음
-      if (tokenResp.token.isEmpty || tokenResp.model.isEmpty) {
-        setState(() => _state = 'error');
-        return;
-      }
-
-      // 3. Create and start Gemini Live service
-      _service = GeminiLiveService(
-        wsUri: tokenResp.wsUri,
-        token: tokenResp.token,
-        model: tokenResp.model,
-        characterName: widget.characterName,
-        voiceName: voiceName,
-        systemInstruction: personality,
-        userNickname: userNickname,
-        silenceDurationMs: silenceMs,
-        jlptLevel: userJlptLevel,
-      );
-
-      _service!.onStateChange = (state) {
-        if (!mounted) return;
-        setState(() {
-          switch (state) {
-            case GeminiLiveState.connecting:
-              _state = 'connecting';
-            case GeminiLiveState.connected:
-              _state = 'connected';
-              _stopRingtone();
-              _startTimer();
-            case GeminiLiveState.ending:
-              _state = 'ending';
-              _stopRingtone();
-            case GeminiLiveState.ended:
-              _state = 'ended';
-            case GeminiLiveState.error:
-              _state = 'error';
-              _stopRingtone();
-          }
-        });
-      };
-
-      _service!.onAiTextDelta = (text) {
-        if (!mounted) return;
-        setState(() => _currentAiText += text);
-      };
-
-      _service!.onTranscriptEntry = (entry) {
-        if (!mounted) return;
-        if (entry.role == 'assistant') {
-          setState(() => _currentAiText = '');
-        }
-      };
-
-      _service!.onError = (message) {
-        if (!mounted) return;
-        setState(() => _error = message);
-      };
-
-      await _service!.start();
-    } catch (e) {
-      debugPrint('[VoiceCall] Start failed: $e');
-      if (!mounted) return;
-      setState(() {
-        _state = 'error';
-        _error = '연결에 실패했습니다: $e';
-      });
-    }
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      setState(() => _callDuration++);
-    });
-  }
-
-  bool _isEnding = false;
 
   Future<void> _endCall() async {
-    if (_isEnding) return; // 중복 호출 방지
-    _isEnding = true;
+    final result = await ref.read(voiceCallSessionProvider.notifier).endCall();
+    if (!mounted || result.ignored) return;
 
-    _timer?.cancel();
-    _timer = null;
-
-    final transcript = _service?.transcript ?? [];
-    final duration = _callDuration;
-    final characterId = widget.characterId;
-    final scenarioId = widget.scenarioId;
-
-    await _service?.end();
-
-    if (!mounted) return;
-
-    // 최소 15초 이상 통화해야 분석 진행
-    final autoAnalysis =
-        ref.read(userPreferencesProvider).callSettings.autoAnalysis;
-
-    if (!autoAnalysis || duration < 15 || transcript.isEmpty) {
+    final analysisRequest = result.analysisRequest;
+    if (analysisRequest == null) {
       Navigator.of(context).pop();
       return;
     }
@@ -223,11 +58,11 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     unawaited(Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CallAnalyzingPage(
-          transcript: transcript.map((e) => e.toJson()).toList(),
-          durationSeconds: duration,
-          characterId: characterId,
-          characterName: widget.characterName,
-          scenarioId: scenarioId,
+          transcript: analysisRequest.transcript,
+          durationSeconds: analysisRequest.durationSeconds,
+          characterId: analysisRequest.characterId,
+          characterName: analysisRequest.characterName,
+          scenarioId: analysisRequest.scenarioId,
         ),
       ),
     ));
@@ -235,15 +70,14 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _ringtone.dispose();
-    _service?.dispose();
+    ref.invalidate(voiceCallSessionProvider);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final session = ref.watch(voiceCallSessionProvider);
     const bgColor = AppColors.callBackground;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -267,7 +101,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                               color: AppColors.onGradientMuted),
                         ),
                         const Spacer(),
-                        if (_state == 'connected')
+                        if (session.isConnected)
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 4),
@@ -277,7 +111,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              _formattedDuration,
+                              session.formattedDuration,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: AppColors.onGradientMuted,
                                 fontFeatures: const [
@@ -304,13 +138,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                   ),
                   const SizedBox(height: AppSizes.sm),
                   Text(
-                    _state == 'connecting'
-                        ? '연결 중...'
-                        : _state == 'ending'
-                            ? '통화 종료 중...'
-                            : _state == 'error'
-                                ? '연결 실패'
-                                : _formattedDuration,
+                    session.statusLabel,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.onGradient.withValues(alpha: 0.54),
                     ),
@@ -319,7 +147,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
                   // Waveform / Avatar
                   CallWaveformWidget(
-                    mode: _state == 'connected' ? 'speaking' : 'idle',
+                    mode: session.isConnected ? 'speaking' : 'idle',
                     avatarUrl: widget.avatarUrl,
                     characterName: widget.characterName,
                   ),
@@ -327,30 +155,28 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                   const Spacer(flex: 3),
 
                   // Error
-                  if (_error != null)
+                  if (session.errorMessage != null)
                     Padding(
                       padding:
                           const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                       child: Column(
                         children: [
                           Text(
-                            _error!,
+                            session.errorMessage!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color:
                                   AppColors.onGradient.withValues(alpha: 0.7),
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          if (_state == 'error') ...[
+                          if (session.canRetry) ...[
                             const SizedBox(height: 12),
                             FilledButton(
-                              onPressed: () {
-                                setState(() {
-                                  _state = 'connecting';
-                                  _error = null;
-                                });
-                                _startCall();
-                              },
+                              onPressed: () => unawaited(
+                                ref
+                                    .read(voiceCallSessionProvider.notifier)
+                                    .retry(),
+                              ),
                               style: FilledButton.styleFrom(
                                 backgroundColor: AppColors.callAccent,
                                 foregroundColor: AppColors.onGradient,
@@ -369,16 +195,16 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         // Mute button
-                        if (_state == 'connected')
+                        if (session.isConnected)
                           _ControlButton(
-                            icon:
-                                _isMuted ? LucideIcons.micOff : LucideIcons.mic,
-                            label: _isMuted ? '음소거 해제' : '음소거',
-                            onTap: () {
-                              setState(() => _isMuted = !_isMuted);
-                              _service?.isMuted = _isMuted;
-                            },
-                            color: _isMuted
+                            icon: session.isMuted
+                                ? LucideIcons.micOff
+                                : LucideIcons.mic,
+                            label: session.isMuted ? '음소거 해제' : '음소거',
+                            onTap: () => ref
+                                .read(voiceCallSessionProvider.notifier)
+                                .toggleMute(),
+                            color: session.isMuted
                                 ? AppColors.warning(theme.brightness)
                                 : AppColors.callSurface,
                           ),
@@ -393,13 +219,14 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                         ),
 
                         // Subtitle toggle
-                        if (_state == 'connected')
+                        if (session.isConnected)
                           _ControlButton(
                             icon: LucideIcons.messageSquare,
                             label: '자막',
-                            onTap: () =>
-                                setState(() => _showSubtitle = !_showSubtitle),
-                            color: _showSubtitle
+                            onTap: () => ref
+                                .read(voiceCallSessionProvider.notifier)
+                                .toggleSubtitle(),
+                            color: session.showSubtitle
                                 ? AppColors.callAccent
                                 : AppColors.callSurface,
                           ),
@@ -411,14 +238,14 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
               ),
 
               // ── Subtitle overlay (하단 고정, 메인 레이아웃과 독립) ──
-              if (_showSubtitle && _state == 'connected')
+              if (session.showSubtitle && session.isConnected)
                 Positioned(
                   left: 20,
                   right: 20,
                   bottom: MediaQuery.paddingOf(context).bottom + 188,
                   child: IgnorePointer(
                     child: AnimatedOpacity(
-                      opacity: _currentAiText.isNotEmpty ? 1.0 : 0.0,
+                      opacity: session.currentAiText.isNotEmpty ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 200),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
@@ -442,7 +269,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
                               ),
                             ),
                             child: Text(
-                              _currentAiText,
+                              session.currentAiText,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: Colors.white,
                                 height: 1.4,
