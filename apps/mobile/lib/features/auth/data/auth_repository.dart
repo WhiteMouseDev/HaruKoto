@@ -3,21 +3,26 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../core/constants/app_config.dart';
+import '../../../core/network/auth_refresh_client.dart';
 
 class AuthRepository {
   final SupabaseClient _client;
   final GoogleSignIn _googleSignIn;
+  final Dio _authRefreshClient;
 
   AuthRepository({
     SupabaseClient? client,
     GoogleSignIn? googleSignIn,
+    Dio? authRefreshClient,
   })  : _client = client ?? Supabase.instance.client,
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
               scopes: ['email', 'profile'],
               serverClientId: AppConfig.googleServerClientId,
-            );
+            ),
+        _authRefreshClient = authRefreshClient ?? AuthRefreshClient().dio;
 
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
@@ -59,16 +64,15 @@ class AuthRepository {
     }
 
     // 2. 백엔드에서 REST API 키로 토큰 교환 → aud가 Supabase 설정과 일치
-    final dio = Dio();
-    final response = await dio.post(
-      '${AppConfig.apiBaseUrl}/api/v1/auth/kakao/exchange',
+    final response = await _authRefreshClient.post<Map<String, dynamic>>(
+      '/auth/kakao/exchange',
       data: {
         'code': authCode,
         'redirect_uri': redirectUri,
       },
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = response.data ?? const <String, dynamic>{};
     final idToken = data['id_token'] as String?;
     if (idToken == null) {
       throw const AuthException('카카오 ID 토큰을 가져올 수 없습니다.');

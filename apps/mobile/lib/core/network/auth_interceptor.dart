@@ -1,93 +1,70 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../constants/app_config.dart';
+import '../auth/auth_session_manager.dart';
+import 'app_http_client.dart';
+import 'network_base.dart';
 
 class AuthInterceptor extends Interceptor {
-  bool _isRefreshing = false;
-  Completer<String?>? _refreshCompleter;
-  DateTime? _lastRefreshAttempt;
+  AuthInterceptor({
+    required AuthSessionManager authSessionManager,
+    required ReplayRequest replayRequest,
+  })  : _authSessionManager = authSessionManager,
+        _replayRequest = replayRequest;
 
-  Dio _createRetryClient() {
-    return Dio(
-      BaseOptions(
-        baseUrl: '${AppConfig.apiBaseUrl}/api/v1',
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 30),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-  }
+  final AuthSessionManager _authSessionManager;
+  final ReplayRequest _replayRequest;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final session = Supabase.instance.client.auth.currentSession;
-    if (session != null) {
-      options.headers['Authorization'] = 'Bearer ${session.accessToken}';
+    final accessToken = _authSessionManager.currentAccessToken;
+    if (accessToken != null) {
+      options.headers['Authorization'] = 'Bearer $accessToken';
     }
     handler.next(options);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode != 401) {
+    final metadata = err.requestOptions.extra;
+    if (err.response?.statusCode != 401 ||
+        metadata[RequestMetadata.skipAuthRefresh] == true) {
       handler.next(err);
       return;
     }
-
-    final now = DateTime.now();
-    if (_lastRefreshAttempt != null &&
-        now.difference(_lastRefreshAttempt!).inSeconds < 10) {
-      handler.next(err);
-      return;
-    }
-    _lastRefreshAttempt = now;
 
     try {
-      final newToken = await _refreshToken();
-      if (newToken != null) {
-        final opts = err.requestOptions;
-        opts.headers['Authorization'] = 'Bearer $newToken';
-        final retryResponse = await _createRetryClient().fetch(opts);
-        return handler.resolve(retryResponse);
+      final newToken = await _authSessionManager.refreshAccessToken();
+      if (newToken == null) {
+        await _signOutQuietly();
+        handler.next(err);
+        return;
+      }
+
+      final requestOptions = err.requestOptions;
+      requestOptions.headers['Authorization'] = 'Bearer $newToken';
+      requestOptions.extra[RequestMetadata.retryReason] = 'auth_refresh';
+
+      try {
+        final retryResponse = await _replayRequest(requestOptions);
+        handler.resolve(retryResponse);
+        return;
+      } on DioException catch (retryError) {
+        handler.next(retryError);
+        return;
       }
     } catch (e) {
       debugPrint('[AuthInterceptor] Token refresh failed: $e');
+      await _signOutQuietly();
+      handler.next(err);
     }
-
-    // Refresh failed → sign out so user returns to login screen
-    try {
-      await Supabase.instance.client.auth.signOut();
-    } catch (e) {
-      debugPrint('[AuthInterceptor] Sign-out failed: $e');
-    }
-    handler.next(err);
   }
 
-  Future<String?> _refreshToken() async {
-    if (_isRefreshing) {
-      return _refreshCompleter!.future;
-    }
-
-    _isRefreshing = true;
-    _refreshCompleter = Completer<String?>();
-
+  Future<void> _signOutQuietly() async {
     try {
-      final response = await Supabase.instance.client.auth.refreshSession();
-      final token = response.session?.accessToken;
-      _refreshCompleter!.complete(token);
-      return token;
+      await _authSessionManager.signOut();
     } catch (e) {
-      _refreshCompleter!.completeError(e);
-      rethrow;
-    } finally {
-      _isRefreshing = false;
+      debugPrint('[AuthInterceptor] Sign-out failed: $e');
     }
   }
 }
