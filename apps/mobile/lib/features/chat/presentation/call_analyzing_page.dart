@@ -3,27 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../core/constants/character_assets.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
-import '../providers/chat_provider.dart';
+import '../providers/call_analysis_provider.dart';
+import '../providers/voice_call_session_provider.dart';
 import 'conversation_feedback_page.dart';
 
 class CallAnalyzingPage extends ConsumerStatefulWidget {
-  final List<Map<String, String>> transcript;
-  final int durationSeconds;
-  final String? characterId;
-  final String? characterName;
-  final String? scenarioId;
-
   const CallAnalyzingPage({
     super.key,
-    required this.transcript,
-    required this.durationSeconds,
-    this.characterId,
-    this.characterName,
-    this.scenarioId,
+    required this.request,
   });
+
+  final VoiceCallAnalysisRequest request;
 
   @override
   ConsumerState<CallAnalyzingPage> createState() => _CallAnalyzingPageState();
@@ -32,9 +26,8 @@ class CallAnalyzingPage extends ConsumerStatefulWidget {
 class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  String _status = '통화 내용을 분석하고 있어요...';
-  double _progress = 0.0;
-  int _currentStep = 1;
+  bool _navigated = false;
+  bool _scheduledPop = false;
 
   @override
   void initState() {
@@ -43,83 +36,55 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _startAnalysis();
+    unawaited(
+      ref.read(callAnalysisProvider.notifier).analyze(widget.request),
+    );
   }
 
   @override
   void dispose() {
+    ref.invalidate(callAnalysisProvider);
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _startAnalysis() async {
-    // Phase 1: Show progress
+  Future<void> _openFeedback(CallAnalysisState analysis) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
-    if (!mounted) return;
-    setState(() {
-      _status = 'AI가 피드백을 생성하고 있어요...';
-      _progress = 0.3;
-      _currentStep = 2;
-    });
-
-    try {
-      // Phase 2: Call API
-      final repo = ref.read(chatRepositoryProvider);
-      final result = await repo.sendLiveFeedback(
-        transcript: widget.transcript,
-        durationSeconds: widget.durationSeconds,
-        characterId: widget.characterId,
-        scenarioId: widget.scenarioId,
-      );
-
-      if (!mounted) return;
-      setState(() {
-        _status = '분석 완료!';
-        _progress = 1.0;
-        _currentStep = 3;
-      });
-
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-
-      // Navigate to feedback page
-      unawaited(Navigator.of(context).pushReplacement(
+    if (!mounted || analysis.conversationId == null) return;
+    unawaited(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => ConversationFeedbackPage(
-            conversationId: result.conversationId,
+            conversationId: analysis.conversationId!,
+            initialFeedback: analysis.feedbackSummary,
           ),
         ),
-      ));
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _status = '분석에 실패했습니다';
-        _progress = 0.0;
-      });
-
-      // Wait and pop back
-      await Future<void>.delayed(const Duration(seconds: 2));
-      if (!mounted) return;
-      Navigator.of(context).pop();
-    }
+      ),
+    );
   }
 
-  Widget _buildStepIndicator() {
+  Future<void> _popAfterError() async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  Widget _buildStepIndicator(int currentStep) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildStepCircle(1, '음성 분석'),
-        _buildStepLine(_currentStep >= 2),
-        _buildStepCircle(2, '피드백 생성'),
-        _buildStepLine(_currentStep >= 3),
-        _buildStepCircle(3, '완료'),
+        _buildStepCircle(1, '음성 분석', currentStep),
+        _buildStepLine(currentStep >= 2),
+        _buildStepCircle(2, '피드백 생성', currentStep),
+        _buildStepLine(currentStep >= 3),
+        _buildStepCircle(3, '완료', currentStep),
       ],
     );
   }
 
-  Widget _buildStepCircle(int step, String label) {
-    final isActive = _currentStep >= step;
-    final isCompleted = _currentStep > step;
+  Widget _buildStepCircle(int step, String label, int currentStep) {
+    final isActive = currentStep >= step;
+    final isCompleted = currentStep > step;
     return Column(
       children: [
         Container(
@@ -171,7 +136,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   }
 
   Widget _buildAvatar() {
-    final localPath = CharacterAssets.pathFor(widget.characterName);
+    final localPath = CharacterAssets.pathFor(widget.request.characterName);
     if (localPath != null) {
       return CircleAvatar(
         radius: 56,
@@ -182,14 +147,31 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     return const CircleAvatar(
       radius: 56,
       backgroundColor: AppColors.callSurface,
-      child: Icon(LucideIcons.barChart,
-          size: 40, color: AppColors.callAccentLight),
+      child: Icon(
+        LucideIcons.barChart,
+        size: 40,
+        color: AppColors.callAccentLight,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final analysis = ref.watch(callAnalysisProvider);
+
+    ref.listen(callAnalysisProvider, (previous, next) {
+      if (!mounted) return;
+      if (next.isCompleted && !_navigated) {
+        _navigated = true;
+        unawaited(_openFeedback(next));
+        return;
+      }
+      if (next.status == CallAnalysisStatus.error && !_scheduledPop) {
+        _scheduledPop = true;
+        unawaited(_popAfterError());
+      }
+    });
 
     return Scaffold(
       backgroundColor: AppColors.callBackground,
@@ -199,7 +181,6 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Avatar with spinner
               Stack(
                 alignment: Alignment.bottomRight,
                 children: [
@@ -244,17 +225,13 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                 ],
               ),
               const SizedBox(height: AppSizes.lg),
-
-              // Step indicator
-              _buildStepIndicator(),
+              _buildStepIndicator(analysis.currentStep),
               const SizedBox(height: AppSizes.lg),
-
-              // Status text
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: Text(
-                  _status,
-                  key: ValueKey(_status),
+                  analysis.statusMessage,
+                  key: ValueKey(analysis.statusMessage),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.onGradientMuted,
                     fontWeight: FontWeight.w500,
@@ -263,15 +240,13 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                 ),
               ),
               const SizedBox(height: AppSizes.lg),
-
-              // Progress bar
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                   child: LinearProgressIndicator(
-                    value: _progress,
+                    value: analysis.progress,
                     backgroundColor:
                         AppColors.onGradient.withValues(alpha: 0.12),
                     valueColor: const AlwaysStoppedAnimation<Color>(
@@ -279,6 +254,14 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                     ),
                     minHeight: 4,
                   ),
+                ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Text(
+                '${(analysis.progress * 100).round()}%',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: AppColors.onGradient.withValues(alpha: 0.88),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

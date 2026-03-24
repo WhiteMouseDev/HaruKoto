@@ -5,13 +5,14 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/scenario_model.dart';
 import '../../providers/chat_provider.dart';
-import '../voice_call_page.dart';
+import '../chat_entry_mode.dart';
+import '../voice_call_launch.dart';
 import 'scenario_card.dart';
 import 'chat_loading_overlay.dart';
 
 class ScenarioListView extends ConsumerWidget {
   final String category;
-  final String categorySource;
+  final ChatEntryMode entryMode;
   final bool starting;
   final VoidCallback onBack;
   final ValueChanged<ScenarioModel> onStartConversation;
@@ -19,11 +20,13 @@ class ScenarioListView extends ConsumerWidget {
   const ScenarioListView({
     super.key,
     required this.category,
-    required this.categorySource,
+    required this.entryMode,
     required this.starting,
     required this.onBack,
     required this.onStartConversation,
   });
+
+  bool get _isVoiceMode => entryMode == ChatEntryMode.voice;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -120,29 +123,21 @@ class ScenarioListView extends ConsumerWidget {
                             child: ScenarioCard(
                               scenario: scenario,
                               onSelect: () {
-                                if (categorySource == 'voice') {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .push(
-                                    MaterialPageRoute(
-                                      builder: (_) => VoiceCallPage(
-                                        scenarioId: scenario.id,
-                                      ),
-                                    ),
+                                if (_isVoiceMode) {
+                                  openVoiceCallPage(
+                                    context,
+                                    scenarioId: scenario.id,
                                   );
                                 } else {
                                   onStartConversation(scenario);
                                 }
                               },
-                              showCallButton: categorySource == 'voice',
-                              onCall: categorySource == 'voice'
+                              showCallButton: _isVoiceMode,
+                              onCall: _isVoiceMode
                                   ? () {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .push(
-                                        MaterialPageRoute(
-                                          builder: (_) => VoiceCallPage(
-                                            scenarioId: scenario.id,
-                                          ),
-                                        ),
+                                      openVoiceCallPage(
+                                        context,
+                                        scenarioId: scenario.id,
                                       );
                                     }
                                   : null,

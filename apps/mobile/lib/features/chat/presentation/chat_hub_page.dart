@@ -10,6 +10,7 @@ import '../../../shared/widgets/call_settings_sheet.dart';
 import '../../my/providers/settings_sync_provider.dart';
 import '../providers/chat_provider.dart';
 import '../data/models/scenario_model.dart';
+import 'chat_entry_mode.dart';
 import 'widgets/chat_loading_overlay.dart';
 import 'widgets/scenario_list_view.dart';
 import 'widgets/voice_tab.dart';
@@ -26,7 +27,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   String? _selectedCategory;
-  String _categorySource = 'text';
+  ChatEntryMode _entryMode = ChatEntryMode.text;
   bool _starting = false;
   String? _error;
 
@@ -132,7 +133,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     if (_selectedCategory != null) {
       return ScenarioListView(
         category: _selectedCategory!,
-        categorySource: _categorySource,
+        entryMode: _entryMode,
         starting: _starting,
         onBack: () => setState(() => _selectedCategory = null),
         onStartConversation: _handleStartConversation,
@@ -261,7 +262,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                       VoiceTab(
                         onSelectCategory: (cat) {
                           setState(() {
-                            _categorySource = 'voice';
+                            _entryMode = ChatEntryMode.voice;
                             _selectedCategory = cat;
                           });
                         },
@@ -270,7 +271,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                         onFreeChat: _handleFreeChat,
                         onSelectCategory: (cat) {
                           setState(() {
-                            _categorySource = 'text';
+                            _entryMode = ChatEntryMode.text;
                             _selectedCategory = cat;
                           });
                         },

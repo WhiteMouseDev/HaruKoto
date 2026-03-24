@@ -9,7 +9,7 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/services/haptic_service.dart';
 import '../providers/voice_call_session_provider.dart';
-import 'call_analyzing_page.dart';
+import 'call_analysis_launch.dart';
 import 'widgets/call_waveform.dart';
 
 class VoiceCallPage extends ConsumerStatefulWidget {
@@ -55,17 +55,7 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
       return;
     }
 
-    unawaited(Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => CallAnalyzingPage(
-          transcript: analysisRequest.transcript,
-          durationSeconds: analysisRequest.durationSeconds,
-          characterId: analysisRequest.characterId,
-          characterName: analysisRequest.characterName,
-          scenarioId: analysisRequest.scenarioId,
-        ),
-      ),
-    ));
+    openCallAnalysisPage(context, analysisRequest);
   }
 
   @override

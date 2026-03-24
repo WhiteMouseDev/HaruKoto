@@ -10,7 +10,6 @@ import '../../features/chat/presentation/chat_page.dart';
 import '../../features/chat/presentation/contacts_page.dart';
 import '../../features/chat/presentation/conversation_page.dart';
 import '../../features/chat/presentation/conversation_feedback_page.dart';
-import '../../features/chat/presentation/call_analyzing_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/kana/presentation/kana_hub_page.dart';
 import '../../features/kana/presentation/kana_type_page.dart';
@@ -273,16 +272,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => _slideTransitionPage(
                       state: state,
                       child: const ContactsPage(),
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'call/analyzing',
-                    pageBuilder: (context, state) => _slideTransitionPage(
-                      state: state,
-                      child: const CallAnalyzingPage(
-                        transcript: [],
-                        durationSeconds: 0,
-                      ),
                     ),
                   ),
                   GoRoute(

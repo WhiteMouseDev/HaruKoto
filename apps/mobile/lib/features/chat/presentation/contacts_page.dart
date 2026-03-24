@@ -4,7 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../providers/chat_provider.dart';
-import 'voice_call_page.dart';
+import 'voice_call_launch.dart';
 import 'widgets/character_card.dart';
 
 class ContactsPage extends ConsumerWidget {
@@ -85,14 +85,11 @@ class ContactsPage extends ConsumerWidget {
                       isFavorite: favorites.contains(char.id),
                       userLevel: userLevel,
                       onTap: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (_) => VoiceCallPage(
-                              characterId: char.id,
-                              characterName: char.name,
-                              avatarUrl: char.avatarUrl,
-                            ),
-                          ),
+                        openVoiceCallPage(
+                          context,
+                          characterId: char.id,
+                          characterName: char.name,
+                          avatarUrl: char.avatarUrl,
                         );
                       },
                       onToggleFavorite: () async {

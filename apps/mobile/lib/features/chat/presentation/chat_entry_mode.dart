@@ -1,0 +1,4 @@
+enum ChatEntryMode {
+  voice,
+  text,
+}
