@@ -10,6 +10,7 @@ import '../../features/chat/presentation/chat_page.dart';
 import '../../features/chat/presentation/contacts_page.dart';
 import '../../features/chat/presentation/conversation_page.dart';
 import '../../features/chat/presentation/conversation_feedback_page.dart';
+import '../../features/chat/presentation/conversation_launch.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/kana/presentation/kana_hub_page.dart';
 import '../../features/kana/presentation/kana_type_page.dart';
@@ -278,9 +279,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: ':conversationId',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['conversationId']!;
+                      final launchData = state.extra is ConversationLaunchData
+                          ? state.extra as ConversationLaunchData
+                          : null;
                       return _slideTransitionPage(
                         state: state,
-                        child: ConversationPage(conversationId: id),
+                        child: ConversationPage(
+                          conversationId: id,
+                          initialScenario: launchData?.initialScenario,
+                          firstMessage: launchData?.firstMessage,
+                        ),
                       );
                     },
                     routes: [
@@ -356,7 +364,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Splash with 2-second delay then redirect based on auth state
+/// Splash: waits for BOTH minimum display time (1s) AND auth readiness,
+/// then redirects based on auth state.
 class _SplashRedirect extends ConsumerStatefulWidget {
   const _SplashRedirect();
 
@@ -365,16 +374,31 @@ class _SplashRedirect extends ConsumerStatefulWidget {
 }
 
 class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
+  bool _minTimeElapsed = false;
+  bool _redirected = false;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 3000), () {
+    Future.delayed(const Duration(milliseconds: 1200), () {
       if (!mounted) return;
-      _redirect();
+      _minTimeElapsed = true;
+      _tryRedirect();
     });
   }
 
-  Future<void> _redirect() async {
+  void _tryRedirect() {
+    if (_redirected || !_minTimeElapsed || !mounted) return;
+
+    final authState = ref.read(authStateProvider);
+    // Wait until auth state has resolved (not loading)
+    if (authState.isLoading) return;
+
+    _redirected = true;
+    _doRedirect();
+  }
+
+  Future<void> _doRedirect() async {
     final isAuth = ref.read(isAuthenticatedProvider);
     if (!isAuth) {
       if (mounted) context.go('/login');
@@ -398,6 +422,8 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to auth state changes — retry redirect when auth resolves
+    ref.listen(authStateProvider, (_, __) => _tryRedirect());
     return const SplashPage();
   }
 }

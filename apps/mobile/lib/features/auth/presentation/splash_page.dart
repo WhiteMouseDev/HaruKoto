@@ -35,40 +35,40 @@ class _SplashPageState extends State<SplashPage>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1000),
     );
 
-    // Phase 1: Icon — scale up + fade in
+    // Phase 1: Icon — scale up + fade in (0~400ms)
     _iconFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
     );
-    _iconScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+    _iconScale = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.4, curve: Curves.easeOutBack),
       ),
     );
 
-    // Phase 2: Logo — fade in + slide up
+    // Phase 2: Logo — fade in + slide up (200~600ms)
     _logoFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.25, 0.6, curve: Curves.easeOut),
+      curve: const Interval(0.2, 0.6, curve: Curves.easeOut),
     );
     _logoSlide = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.2),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.25, 0.6, curve: Curves.easeOutCubic),
+        curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
       ),
     );
 
-    // Phase 3: Tagline — drives per-character bloom
+    // Phase 3: Tagline — drives per-character bloom (500~1000ms)
     _taglineProgress = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.45, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
     );
 
     _controller.forward();
