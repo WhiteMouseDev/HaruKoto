@@ -76,7 +76,7 @@ final _routerRefreshProvider = Provider<_RouterRefreshNotifier>((ref) {
 });
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final refreshNotifier = ref.read(_routerRefreshProvider);
+  final refreshNotifier = ref.watch(_routerRefreshProvider);
 
   final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -96,14 +96,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuthenticated && path != '/login') return '/login';
-      if (isAuthenticated && path == '/login') return '/splash';
+      if (isAuthenticated && path == '/login') return '/splash?postLogin=1';
 
       return null;
     },
     routes: [
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const _SplashRedirect(),
+        builder: (context, state) => _SplashRedirect(
+          skipDelay: state.uri.queryParameters['postLogin'] == '1',
+        ),
       ),
       GoRoute(
         path: '/login',
@@ -383,10 +385,11 @@ final routerProvider = Provider<GoRouter>((ref) {
   return router;
 });
 
-/// Splash: waits for BOTH minimum display time (1s) AND auth readiness,
-/// then redirects based on auth state.
+/// Splash resolver: shows splash animation on cold start (1.5s),
+/// or resolves immediately after login (skipDelay=true).
 class _SplashRedirect extends ConsumerStatefulWidget {
-  const _SplashRedirect();
+  final bool skipDelay;
+  const _SplashRedirect({this.skipDelay = false});
 
   @override
   ConsumerState<_SplashRedirect> createState() => _SplashRedirectState();
@@ -399,11 +402,21 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (!mounted) return;
-      _minTimeElapsed = true;
-      _tryRedirect();
-    });
+    if (widget.skipDelay) {
+      // Post-login: skip splash delay, resolve immediately
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _minTimeElapsed = true;
+        _tryRedirect();
+      });
+    } else {
+      // Cold start: show splash for 1.5 seconds
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (!mounted) return;
+        _minTimeElapsed = true;
+        _tryRedirect();
+      });
+    }
   }
 
   void _tryRedirect() {
