@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../constants/colors.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/onboarding_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
@@ -451,6 +452,16 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
   @override
   Widget build(BuildContext context) {
+    // Post-login: show blank screen (same background) to avoid splash flash
+    if (widget.skipDelay) {
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.authGradient,
+          ),
+        ),
+      );
+    }
     return const SplashPage();
   }
 }
