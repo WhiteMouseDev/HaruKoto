@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/onboarding_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
@@ -389,18 +390,15 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
   void _tryRedirect() {
     if (_redirected || !_minTimeElapsed || !mounted) return;
-
-    final authState = ref.read(authStateProvider);
-    // Wait until auth state has resolved (not loading)
-    if (authState.isLoading) return;
-
     _redirected = true;
     _doRedirect();
   }
 
   Future<void> _doRedirect() async {
-    final isAuth = ref.read(isAuthenticatedProvider);
-    if (!isAuth) {
+    // Use Supabase session directly — more reliable than stream provider
+    // which may emit initial "no session" before restoration completes
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session == null || session.isExpired) {
       if (mounted) context.go('/login');
       return;
     }
@@ -422,8 +420,6 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to auth state changes — retry redirect when auth resolves
-    ref.listen(authStateProvider, (_, __) => _tryRedirect());
     return const SplashPage();
   }
 }
