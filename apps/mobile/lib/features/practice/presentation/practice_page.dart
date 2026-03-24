@@ -266,31 +266,36 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   theme, incomplete, preview, previewAsync, jlptLevel),
               const SizedBox(height: 28),
 
-              // ── Study Management Section ──
-              Text(
-                '학습 관리',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              // ── Quick Action Cards ──
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: LucideIcons.fileX,
+                      iconColor: AppColors.primaryStrong,
+                      label: '오답노트',
+                      subtitle: '틀린 문제 복습',
+                      onTap: () => context.push('/study/wrong-answers'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: LucideIcons.bookMarked,
+                      iconColor: AppColors.primary,
+                      label: '단어장',
+                      subtitle: '저장한 단어',
+                      onTap: () => context.push('/study/wordbook'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              _MenuListTile(
-                icon: LucideIcons.fileX,
-                iconColor: AppColors.primaryStrong,
-                label: '오답노트',
-                onTap: () => context.push('/study/wrong-answers'),
-              ),
+              const SizedBox(height: 12),
               _MenuListTile(
                 icon: LucideIcons.bookOpen,
                 iconColor: AppColors.primary,
                 label: '학습한 단어',
                 onTap: () => context.push('/study/learned-words'),
-              ),
-              _MenuListTile(
-                icon: LucideIcons.bookMarked,
-                iconColor: AppColors.primaryStrong,
-                label: '단어장',
-                onTap: () => context.push('/study/wordbook'),
               ),
             ],
           ),
@@ -482,6 +487,70 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick action card for study management.
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.15),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
       ),
     );

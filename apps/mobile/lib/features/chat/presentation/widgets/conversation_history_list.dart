@@ -57,14 +57,31 @@ class ConversationHistoryList extends ConsumerWidget {
 
         if (filtered.isEmpty) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSizes.lg),
-            child: Center(
-              child: Text(
-                '아직 회화 기록이 없어요.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+            padding: const EdgeInsets.symmetric(vertical: AppSizes.xl),
+            child: Column(
+              children: [
+                Icon(
+                  LucideIcons.messageCircle,
+                  size: 36,
+                  color: colorScheme.onSurface.withValues(alpha: 0.15),
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  '아직 회화 기록이 없어요',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '위 시나리오를 선택해서 첫 회화를 시작해보세요',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.35),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           );
         }
