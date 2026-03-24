@@ -14,11 +14,15 @@ import 'quiz_launch.dart';
 import 'widgets/result_score_display.dart';
 import 'widgets/wrong_answer_list.dart';
 
+typedef QuizResultLaunch = Future<void> Function(BuildContext context);
+
 class QuizResultPage extends ConsumerStatefulWidget {
   final QuizResultModel result;
   final String quizType;
   final String jlptLevel;
   final String sessionId;
+  final QuizResultLaunch? reviewLauncher;
+  final QuizResultLaunch? retryLauncher;
 
   const QuizResultPage({
     super.key,
@@ -26,6 +30,8 @@ class QuizResultPage extends ConsumerStatefulWidget {
     required this.quizType,
     required this.jlptLevel,
     required this.sessionId,
+    this.reviewLauncher,
+    this.retryLauncher,
   });
 
   @override
@@ -37,6 +43,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   final Set<String> _savedWords = {};
   bool _loadingWrong = true;
   late final ConfettiController _confettiController;
+  ProviderContainer? _container;
 
   @override
   void initState() {
@@ -50,16 +57,22 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container ??= ProviderScope.containerOf(context, listen: false);
+  }
+
+  @override
   void dispose() {
     _confettiController.dispose();
     // Refresh all dependent providers across tabs
-    ref.invalidate(incompleteQuizProvider);
-    ref.invalidate(smartPreviewProvider(
+    _container?.invalidate(incompleteQuizProvider);
+    _container?.invalidate(smartPreviewProvider(
         (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)));
-    ref.invalidate(smartPreviewProvider(
+    _container?.invalidate(smartPreviewProvider(
         (category: 'GRAMMAR', jlptLevel: widget.jlptLevel)));
-    ref.invalidate(reviewSummaryProvider(widget.jlptLevel));
-    ref.invalidate(dashboardProvider);
+    _container?.invalidate(reviewSummaryProvider(widget.jlptLevel));
+    _container?.invalidate(dashboardProvider);
     super.dispose();
   }
 
@@ -122,6 +135,33 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     if (widget.result.accuracy >= 80) return LucideIcons.partyPopper;
     if (widget.result.accuracy >= 50) return LucideIcons.thumbsUp;
     return LucideIcons.dumbbell;
+  }
+
+  Future<void> _openReview(BuildContext context) {
+    final launcher = widget.reviewLauncher;
+    if (launcher != null) {
+      return launcher(context);
+    }
+    return openReviewQuiz(
+      context,
+      quizType: widget.quizType,
+      jlptLevel: widget.jlptLevel,
+      replace: true,
+    );
+  }
+
+  Future<void> _retryQuiz(BuildContext context) {
+    final launcher = widget.retryLauncher;
+    if (launcher != null) {
+      return launcher(context);
+    }
+    return openQuizPageForSession(
+      context,
+      quizType: widget.quizType,
+      jlptLevel: widget.jlptLevel,
+      count: 10,
+      replace: true,
+    );
   }
 
   @override
@@ -198,12 +238,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        openReviewQuiz(
-                          context,
-                          quizType: widget.quizType,
-                          jlptLevel: widget.jlptLevel,
-                          replace: true,
-                        );
+                        unawaited(_openReview(context));
                       },
                       child: Container(
                         padding: const EdgeInsets.all(16),
@@ -260,13 +295,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   height: 48,
                   child: FilledButton.icon(
                     onPressed: () {
-                      openQuizPageForSession(
-                        context,
-                        quizType: widget.quizType,
-                        jlptLevel: widget.jlptLevel,
-                        count: 10,
-                        replace: true,
-                      );
+                      unawaited(_retryQuiz(context));
                     },
                     icon: const Icon(LucideIcons.rotateCcw, size: 16),
                     label:

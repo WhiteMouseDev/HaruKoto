@@ -11,13 +11,20 @@ import '../providers/call_analysis_provider.dart';
 import '../providers/voice_call_session_provider.dart';
 import 'conversation_feedback_launch.dart';
 
+typedef CallAnalysisFeedbackLauncher = Future<void> Function(
+  BuildContext context,
+  CallAnalysisState analysis,
+);
+
 class CallAnalyzingPage extends ConsumerStatefulWidget {
   const CallAnalyzingPage({
     super.key,
     required this.request,
+    this.feedbackLauncher,
   });
 
   final VoiceCallAnalysisRequest request;
+  final CallAnalysisFeedbackLauncher? feedbackLauncher;
 
   @override
   ConsumerState<CallAnalyzingPage> createState() => _CallAnalyzingPageState();
@@ -28,6 +35,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   late final AnimationController _controller;
   bool _navigated = false;
   bool _scheduledPop = false;
+  ProviderContainer? _container;
 
   @override
   void initState() {
@@ -36,14 +44,23 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    unawaited(
-      ref.read(callAnalysisProvider.notifier).analyze(widget.request),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        ref.read(callAnalysisProvider.notifier).analyze(widget.request),
+      );
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container ??= ProviderScope.containerOf(context, listen: false);
   }
 
   @override
   void dispose() {
-    ref.invalidate(callAnalysisProvider);
+    _container?.invalidate(callAnalysisProvider);
     _controller.dispose();
     super.dispose();
   }
@@ -51,6 +68,11 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   Future<void> _openFeedback(CallAnalysisState analysis) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
     if (!mounted || analysis.conversationId == null) return;
+    final launcher = widget.feedbackLauncher;
+    if (launcher != null) {
+      await launcher(context, analysis);
+      return;
+    }
     openConversationFeedbackPage(
       context,
       conversationId: analysis.conversationId!,
