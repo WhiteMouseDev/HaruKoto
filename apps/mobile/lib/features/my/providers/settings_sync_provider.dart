@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../../core/settings/call_settings.dart';
 import '../../../core/settings/user_preferences.dart';
 import '../../home/providers/home_provider.dart';
 import '../../study/providers/study_provider.dart';
-import '../data/models/profile_detail_model.dart';
 import 'my_provider.dart';
 
 final settingsSyncServiceProvider = Provider<SettingsSyncService>((ref) {

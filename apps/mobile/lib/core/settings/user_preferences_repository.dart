@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../features/my/data/models/profile_detail_model.dart';
+import 'call_settings.dart';
 import 'user_preferences.dart';
 
 class UserPreferencesRepository {

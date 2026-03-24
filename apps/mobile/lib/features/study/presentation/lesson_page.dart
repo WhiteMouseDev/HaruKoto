@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,8 +9,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
-import '../../home/providers/home_provider.dart';
 import '../data/models/lesson_models.dart';
+import '../providers/lesson_session_provider.dart';
 import '../providers/study_provider.dart';
 
 /// 레슨 학습 플로우: 6-Step (상황 프리뷰 → 가이드 리딩 → 이해 체크 → 매칭 게임 → 문장 재구성 → 결과)
@@ -22,33 +23,24 @@ class LessonPage extends ConsumerStatefulWidget {
 }
 
 class _LessonPageState extends ConsumerState<LessonPage> {
-  // ── State ──
-  int _step = 0; // 0~5
-
-  int _recognitionIndex = 0;
-  int _reorderIndex = 0;
-  final Map<int, Map<String, dynamic>> _answers = {};
-
-  LessonSubmitResultModel? _result;
-  bool _submitting = false;
-
   static const _totalSteps = 6;
+
+  @override
+  void dispose() {
+    ref.invalidate(lessonSessionProvider);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(lessonDetailProvider(widget.lessonId));
+    final session = ref.watch(lessonSessionProvider);
 
     return PopScope(
-      canPop: _step == 0,
+      canPop: session.canPop,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && _step > 0) {
-          setState(() {
-            if (_step == 5) {
-              _step = 0;
-            } else {
-              _step = (_step - 1).clamp(0, 5);
-            }
-          });
+        if (!didPop) {
+          ref.read(lessonSessionProvider.notifier).goBack();
         }
       },
       child: Scaffold(
@@ -75,11 +67,11 @@ class _LessonPageState extends ConsumerState<LessonPage> {
                   children: [
                     Expanded(
                       child: _StepProgressBar(
-                        currentStep: _step,
+                        currentStep: session.step.index,
                         totalSteps: _totalSteps,
                       ),
                     ),
-                    if (_step >= 2 && _step <= 4) ...[
+                    if (session.showDialogueShortcut) ...[
                       const SizedBox(width: AppSizes.sm),
                       GestureDetector(
                         onTap: () => _showDialogueSheet(context, detail),
@@ -96,7 +88,12 @@ class _LessonPageState extends ConsumerState<LessonPage> {
               Expanded(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  child: _buildStep(detail),
+                  child: _buildStep(
+                    context,
+                    ref,
+                    detail,
+                    session,
+                  ),
                 ),
               ),
             ],
@@ -108,168 +105,144 @@ class _LessonPageState extends ConsumerState<LessonPage> {
     );
   }
 
-  Widget _buildStep(LessonDetailModel detail) {
-    switch (_step) {
-      case 0:
+  Widget _buildStep(
+    BuildContext context,
+    WidgetRef ref,
+    LessonDetailModel detail,
+    LessonSessionState session,
+  ) {
+    switch (session.step) {
+      case LessonStep.contextPreview:
         return _ContextPreviewStep(
           key: const ValueKey('step-0'),
           detail: detail,
-          onNext: () => setState(() => _step = 1),
+          onNext: () =>
+              ref.read(lessonSessionProvider.notifier).goToGuidedReading(),
         );
-      case 1:
+      case LessonStep.guidedReading:
         return _GuidedReadingStep(
           key: const ValueKey('step-1'),
           detail: detail,
-          onNext: () => _startPractice(detail),
+          onNext: () {
+            unawaited(
+              ref.read(lessonSessionProvider.notifier).startPractice(detail),
+            );
+          },
         );
-      case 2:
-        final recognitionQs = detail.content.questions
-            .where((q) => q.type == 'VOCAB_MCQ' || q.type == 'CONTEXT_CLOZE')
-            .toList();
+      case LessonStep.recognition:
+        final recognitionQs = lessonRecognitionQuestions(detail);
         if (recognitionQs.isEmpty) {
-          // Skip recognition if no matching questions
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) setState(() => _step = 3);
+            ref.read(lessonSessionProvider.notifier).skipRecognition();
           });
           return const SizedBox.shrink(key: ValueKey('step-2-skip'));
         }
         return _RecognitionCheckStep(
-          key: ValueKey('step-2-$_recognitionIndex'),
+          key: ValueKey('step-2-${session.recognitionIndex}'),
           questions: recognitionQs,
-          currentIndex: _recognitionIndex,
+          currentIndex: session.recognitionIndex,
           totalSteps: _totalSteps,
-          onAnswer: (answer) => _handleRecognitionAnswer(
-            recognitionQs,
-            answer,
-          ),
+          onAnswer: (answer) => ref
+              .read(lessonSessionProvider.notifier)
+              .answerRecognition(detail, answer),
         );
-      case 3:
+      case LessonStep.matching:
         return _MatchingGameStep(
           key: const ValueKey('step-3'),
           vocabItems: detail.vocabItems,
           onComplete: () {
-            setState(() {
-              _step = 4;
-            });
+            unawaited(_handleMatchingComplete(context, ref, detail));
           },
         );
-      case 4:
-        final reorderQs = detail.content.questions
-            .where((q) => q.type == 'SENTENCE_REORDER')
-            .toList();
+      case LessonStep.sentenceReorder:
+        final reorderQs = lessonReorderQuestions(detail);
         if (reorderQs.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _submitAnswers(detail);
+            unawaited(_submitLesson(context, ref, detail));
           });
           return const SizedBox.shrink(key: ValueKey('step-4-skip'));
         }
         return _SentenceReorderStep(
-          key: ValueKey('step-4-$_reorderIndex'),
+          key: ValueKey('step-4-${session.reorderIndex}'),
           questions: reorderQs,
-          currentIndex: _reorderIndex,
+          currentIndex: session.reorderIndex,
           totalSteps: _totalSteps,
           vocabItems: detail.vocabItems,
           onAnswer: (answer) => _handleReorderAnswer(
+            context,
+            ref,
             detail,
-            reorderQs,
             answer,
           ),
         );
-      case 5:
+      case LessonStep.result:
         return _ResultStep(
           key: const ValueKey('step-5'),
-          result: _result!,
+          result: session.result!,
           detail: detail,
-          onRetry: _retry,
+          onRetry: () => ref.read(lessonSessionProvider.notifier).reset(),
           onDone: () => context.pop(),
         );
-      default:
-        return const SizedBox.shrink();
     }
   }
 
-  // ── Actions ──
-
-  Future<void> _startPractice(LessonDetailModel detail) async {
-    try {
-      await ref.read(studyRepositoryProvider).startLesson(detail.id);
-    } catch (_) {
-      // Already started — ignore
-    }
-    setState(() {
-      _step = 2;
-      _recognitionIndex = 0;
-      _reorderIndex = 0;
-      _answers.clear();
-    });
-  }
-
-  void _handleRecognitionAnswer(
-    List<LessonQuestionModel> recognitionQs,
-    Map<String, dynamic> answer,
-  ) {
-    final order = answer['order'] as int;
-    _answers[order] = answer;
-
-    if (_recognitionIndex < recognitionQs.length - 1) {
-      setState(() => _recognitionIndex++);
-    } else {
-      setState(() => _step = 3);
-    }
-  }
-
-  void _handleReorderAnswer(
+  Future<void> _handleMatchingComplete(
+    BuildContext context,
+    WidgetRef ref,
     LessonDetailModel detail,
-    List<LessonQuestionModel> reorderQs,
-    Map<String, dynamic> answer,
-  ) {
-    final order = answer['order'] as int;
-    _answers[order] = answer;
-
-    if (_reorderIndex < reorderQs.length - 1) {
-      setState(() => _reorderIndex++);
-    } else {
-      _submitAnswers(detail);
-    }
-  }
-
-  Future<void> _submitAnswers(LessonDetailModel detail) async {
-    if (_submitting) return;
-    setState(() => _submitting = true);
-
+  ) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
     try {
-      final answersList = _answers.values.toList();
-      final result = await ref
-          .read(studyRepositoryProvider)
-          .submitLesson(detail.id, answersList);
-      setState(() {
-        _result = result;
-        _step = 5;
-        _submitting = false;
-      });
-      // Refresh all dependent providers
       final level = ref.read(userPreferencesProvider).jlptLevel;
-      ref.invalidate(chaptersProvider(level));
-      ref.invalidate(reviewSummaryProvider(level));
-      ref.invalidate(dashboardProvider);
+      await ref.read(lessonSessionProvider.notifier).completeMatching(
+            detail: detail,
+            jlptLevel: level,
+          );
     } catch (e) {
-      setState(() => _submitting = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('제출 실패: $e')),
-        );
-      }
+      _showSubmitError(messenger, e);
     }
   }
 
-  void _retry() {
-    setState(() {
-      _step = 0;
-      _recognitionIndex = 0;
-      _reorderIndex = 0;
-      _answers.clear();
-      _result = null;
-    });
+  Future<void> _handleReorderAnswer(
+    BuildContext context,
+    WidgetRef ref,
+    LessonDetailModel detail,
+    Map<String, dynamic> answer,
+  ) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      final level = ref.read(userPreferencesProvider).jlptLevel;
+      await ref.read(lessonSessionProvider.notifier).answerReorder(
+            detail: detail,
+            jlptLevel: level,
+            answer: answer,
+          );
+    } catch (e) {
+      _showSubmitError(messenger, e);
+    }
+  }
+
+  Future<void> _submitLesson(
+    BuildContext context,
+    WidgetRef ref,
+    LessonDetailModel detail,
+  ) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      final level = ref.read(userPreferencesProvider).jlptLevel;
+      await ref.read(lessonSessionProvider.notifier).submitAnswers(
+            lessonId: detail.id,
+            jlptLevel: level,
+          );
+    } catch (e) {
+      _showSubmitError(messenger, e);
+    }
+  }
+
+  void _showSubmitError(ScaffoldMessengerState? messenger, Object error) {
+    messenger?.showSnackBar(
+      SnackBar(content: Text('제출 실패: $error')),
+    );
   }
 
   void _showDialogueSheet(BuildContext context, LessonDetailModel detail) {

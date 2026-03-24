@@ -1,4 +1,4 @@
-import '../../features/my/data/models/profile_detail_model.dart';
+import 'call_settings.dart';
 
 class UserPreferences {
   const UserPreferences({

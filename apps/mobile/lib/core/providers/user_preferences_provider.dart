@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/my/data/models/profile_detail_model.dart';
+import '../settings/call_settings.dart';
 import '../settings/user_preferences.dart';
 import '../settings/user_preferences_repository.dart';
 import 'shared_preferences_provider.dart';

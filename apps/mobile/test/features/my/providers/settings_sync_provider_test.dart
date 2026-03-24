@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/user_preferences_provider.dart';
-import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dart';
+import 'package:harukoto_mobile/core/settings/call_settings.dart';
 import 'package:harukoto_mobile/features/my/data/my_repository.dart';
 import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
 import 'package:harukoto_mobile/features/my/providers/settings_sync_provider.dart';

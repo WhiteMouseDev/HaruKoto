@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../features/my/data/models/profile_detail_model.dart';
+import '../../core/settings/call_settings.dart';
 
 class CallSettingsSheet extends StatefulWidget {
   final CallSettings settings;

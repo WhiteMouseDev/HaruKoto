@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/settings/call_settings.dart';
 import 'package:harukoto_mobile/core/settings/user_preferences.dart';
 import 'package:harukoto_mobile/core/settings/user_preferences_repository.dart';
-import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
