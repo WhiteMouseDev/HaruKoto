@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/device_settings_provider.dart';
 import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/services/haptic_service.dart';
-import '../../../../core/services/sound_service.dart';
 
-class AppSettingsSection extends ConsumerWidget {
+class AppSettingsSection extends ConsumerStatefulWidget {
   final bool showFurigana;
   final Future<void> Function(String field, Object value) onUpdate;
 
@@ -21,9 +21,26 @@ class AppSettingsSection extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppSettingsSection> createState() => _AppSettingsSectionState();
+}
+
+class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      ref
+          .read(quizSettingsProvider.notifier)
+          .seedFromServer(widget.showFurigana),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final themeMode = ref.watch(themeProvider);
+    final deviceSettings = ref.watch(deviceSettingsProvider);
+    final userPreferences = ref.watch(quizSettingsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,23 +92,25 @@ class AppSettingsSection extends ConsumerWidget {
                       color:
                           theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
-                value: ref.watch(quizSettingsProvider).showFurigana,
+                value: userPreferences.showFurigana,
                 onChanged: (value) {
                   HapticService().selection();
-                  ref
-                      .read(quizSettingsProvider.notifier)
-                      .setShowFurigana(value);
-                  onUpdate('app_settings', {'showFurigana': value});
+                  unawaited(
+                    ref.read(quizSettingsProvider.notifier).setShowFurigana(
+                          value,
+                        ),
+                  );
+                  widget.onUpdate('app_settings', {'showFurigana': value});
                 },
               ),
               const Divider(height: 1),
 
               // Sound Effects
-              _SoundToggle(theme: theme),
+              const _SoundToggle(),
               const Divider(height: 1),
 
               // Haptic Feedback
-              _HapticToggle(theme: theme),
+              const _HapticToggle(),
               const Divider(height: 1),
 
               // Study Reminder
@@ -106,22 +125,24 @@ class AppSettingsSection extends ConsumerWidget {
                       color:
                           theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
-                value: ref.watch(notificationSettingsProvider).reminderEnabled,
+                value: deviceSettings.reminderEnabled,
                 onChanged: (value) {
                   HapticService().selection();
-                  ref
-                      .read(notificationSettingsProvider.notifier)
-                      .setReminderEnabled(value);
+                  unawaited(
+                    ref
+                        .read(notificationSettingsProvider.notifier)
+                        .setReminderEnabled(value),
+                  );
                 },
               ),
-              if (ref.watch(notificationSettingsProvider).reminderEnabled) ...[
+              if (deviceSettings.reminderEnabled) ...[
                 const Divider(height: 1),
                 ListTile(
                   leading: Icon(LucideIcons.clock,
                       size: 20, color: theme.colorScheme.primary),
                   title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
                   trailing: Text(
-                    ref.watch(notificationSettingsProvider).reminderTimeLabel,
+                    deviceSettings.reminderTimeLabel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -145,14 +166,14 @@ class AppSettingsSection extends ConsumerWidget {
                       color:
                           theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
-                value: ref
-                    .watch(notificationSettingsProvider)
-                    .streakDefenseEnabled,
+                value: deviceSettings.streakDefenseEnabled,
                 onChanged: (value) {
                   HapticService().selection();
-                  ref
-                      .read(notificationSettingsProvider.notifier)
-                      .setStreakDefenseEnabled(value);
+                  unawaited(
+                    ref
+                        .read(notificationSettingsProvider.notifier)
+                        .setStreakDefenseEnabled(value),
+                  );
                 },
               ),
             ],
@@ -243,7 +264,11 @@ class AppSettingsSection extends ConsumerWidget {
                             color: Theme.of(context).colorScheme.primary)
                         : null,
                     onTap: () {
-                      ref.read(themeProvider.notifier).setThemeMode(entry.$1);
+                      unawaited(
+                        ref
+                            .read(deviceSettingsProvider.notifier)
+                            .setThemeMode(entry.$1),
+                      );
                       Navigator.pop(context);
                     },
                   ),
@@ -256,68 +281,58 @@ class AppSettingsSection extends ConsumerWidget {
   }
 }
 
-class _SoundToggle extends StatefulWidget {
-  final ThemeData theme;
-  const _SoundToggle({required this.theme});
+class _SoundToggle extends ConsumerWidget {
+  const _SoundToggle();
 
   @override
-  State<_SoundToggle> createState() => _SoundToggleState();
-}
-
-class _SoundToggleState extends State<_SoundToggle> {
-  bool _enabled = SoundService().enabled;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final settings = ref.watch(deviceSettingsProvider);
     return SwitchListTile(
-      secondary: Icon(LucideIcons.volume2,
-          size: 20, color: widget.theme.colorScheme.primary),
+      secondary:
+          Icon(LucideIcons.volume2, size: 20, color: theme.colorScheme.primary),
       title: const Text('효과음', style: TextStyle(fontSize: 14)),
       subtitle: Text(
         '정답/오답 시 효과음 재생',
         style: TextStyle(
             fontSize: 12,
-            color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       ),
-      value: _enabled,
+      value: settings.soundEnabled,
       onChanged: (value) {
         HapticService().selection();
-        SoundService().setEnabled(value);
-        setState(() => _enabled = value);
+        unawaited(
+          ref.read(deviceSettingsProvider.notifier).setSoundEnabled(value),
+        );
       },
     );
   }
 }
 
-class _HapticToggle extends StatefulWidget {
-  final ThemeData theme;
-  const _HapticToggle({required this.theme});
+class _HapticToggle extends ConsumerWidget {
+  const _HapticToggle();
 
   @override
-  State<_HapticToggle> createState() => _HapticToggleState();
-}
-
-class _HapticToggleState extends State<_HapticToggle> {
-  bool _enabled = HapticService().enabled;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final settings = ref.watch(deviceSettingsProvider);
     return SwitchListTile(
-      secondary: Icon(LucideIcons.vibrate,
-          size: 20, color: widget.theme.colorScheme.primary),
+      secondary:
+          Icon(LucideIcons.vibrate, size: 20, color: theme.colorScheme.primary),
       title: const Text('진동 피드백', style: TextStyle(fontSize: 14)),
       subtitle: Text(
         '터치 시 진동으로 반응',
         style: TextStyle(
             fontSize: 12,
-            color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       ),
-      value: _enabled,
+      value: settings.hapticEnabled,
       onChanged: (value) {
         // Fire haptic BEFORE disabling (so user feels the last toggle)
         HapticService().selection();
-        HapticService().setEnabled(value);
-        setState(() => _enabled = value);
+        unawaited(
+          ref.read(deviceSettingsProvider.notifier).setHapticEnabled(value),
+        );
       },
     );
   }

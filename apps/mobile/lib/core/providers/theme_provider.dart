@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ThemeNotifier extends Notifier<ThemeMode> {
-  @override
-  ThemeMode build() => ThemeMode.light;
+import 'device_settings_provider.dart';
 
-  void setThemeMode(ThemeMode mode) => state = mode;
-}
-
-final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(
-  ThemeNotifier.new,
+final themeProvider = Provider<ThemeMode>(
+  (ref) => ref.watch(deviceSettingsProvider).themeMode,
 );
