@@ -101,7 +101,9 @@ const callSettingsSchema = z.object({
 
 const updateProfileSchema = z.object({
   nickname: z.string().min(1).max(20).optional(),
-  jlptLevel: z.enum(['N5', 'N4', 'N3', 'N2', 'N1']).optional(),
+  jlptLevel: z
+    .enum(['ABSOLUTE_ZERO', 'N5', 'N4', 'N3', 'N2', 'N1'])
+    .optional(),
   dailyGoal: z.number().int().min(1).max(100).optional(),
   goal: z
     .enum([
@@ -113,6 +115,11 @@ const updateProfileSchema = z.object({
       'TRAVEL',
       'BUSINESS',
       'HOBBY',
+      'CONTENT',
+      'JLPT',
+      'WORK',
+      'STUDY_ABROAD',
+      'LIVING',
     ])
     .optional(),
   callSettings: callSettingsSchema.optional(),

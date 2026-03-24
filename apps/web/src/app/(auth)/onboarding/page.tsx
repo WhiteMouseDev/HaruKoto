@@ -54,7 +54,20 @@ const LEVELS: { value: 'N5' | 'N4' | 'N3' | 'N2' | 'N1'; Icon: LucideIcon; label
   },
 ];
 
-type UserGoal = 'JLPT_N5' | 'JLPT_N4' | 'JLPT_N3' | 'JLPT_N2' | 'JLPT_N1' | 'TRAVEL' | 'BUSINESS' | 'HOBBY';
+type UserGoal =
+  | 'JLPT_N5'
+  | 'JLPT_N4'
+  | 'JLPT_N3'
+  | 'JLPT_N2'
+  | 'JLPT_N1'
+  | 'TRAVEL'
+  | 'BUSINESS'
+  | 'HOBBY'
+  | 'CONTENT'
+  | 'JLPT'
+  | 'WORK'
+  | 'STUDY_ABROAD'
+  | 'LIVING';
 
 const GOALS: { value: UserGoal; Icon: LucideIcon; label: string }[] = [
   { value: 'JLPT_N5', Icon: Target, label: 'JLPT N5 합격' },

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
+type JlptLevel = 'ABSOLUTE_ZERO' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 type UserGoal =
   | 'JLPT_N5'
   | 'JLPT_N4'
@@ -9,7 +9,12 @@ type UserGoal =
   | 'JLPT_N1'
   | 'TRAVEL'
   | 'BUSINESS'
-  | 'HOBBY';
+  | 'HOBBY'
+  | 'CONTENT'
+  | 'JLPT'
+  | 'WORK'
+  | 'STUDY_ABROAD'
+  | 'LIVING';
 
 interface OnboardingState {
   step: 1 | 2 | 3 | 4;
