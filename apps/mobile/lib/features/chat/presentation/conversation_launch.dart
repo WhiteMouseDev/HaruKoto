@@ -14,6 +14,18 @@ class ConversationLaunchData {
   final FirstMessage? firstMessage;
 }
 
+class ConversationLaunchRequest {
+  const ConversationLaunchRequest({
+    required this.conversationId,
+    this.initialScenario,
+    this.firstMessage,
+  });
+
+  final String conversationId;
+  final ScenarioModel? initialScenario;
+  final FirstMessage? firstMessage;
+}
+
 void openConversationPage(
   BuildContext context, {
   required String conversationId,
