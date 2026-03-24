@@ -62,16 +62,31 @@ CustomTransitionPage<void> _slideTransitionPage({
   );
 }
 
-final routerProvider = Provider<GoRouter>((ref) {
-  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+/// Notifier that triggers GoRouter redirect re-evaluation on auth changes.
+/// GoRouter subscribes to this via refreshListenable — no router rebuild needed.
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
 
-  return GoRouter(
+final _routerRefreshProvider = Provider<_RouterRefreshNotifier>((ref) {
+  final notifier = _RouterRefreshNotifier();
+  ref.listen<bool>(isAuthenticatedProvider, (_, __) => notifier.notify());
+  ref.onDispose(notifier.dispose);
+  return notifier;
+});
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final refreshNotifier = ref.read(_routerRefreshProvider);
+
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final isAuthenticated = ref.read(isAuthenticatedProvider);
       final path = state.uri.path;
 
-      // Allow splash, legacy, and onboarding without auth check
+      // Allow splash and legacy without auth check
       if (path == '/splash' || path == '/legacy') return null;
 
       // Onboarding requires auth
@@ -363,6 +378,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.onDispose(router.dispose);
+  return router;
 });
 
 /// Splash: waits for BOTH minimum display time (1s) AND auth readiness,
@@ -381,7 +399,7 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       _minTimeElapsed = true;
       _tryRedirect();
