@@ -154,7 +154,12 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                     onPressed: () {
                       Navigator.pop(ctx);
                       Navigator.of(context, rootNavigator: true).push(
-                        quizRoute(QuizPage(resumeSessionId: session.id)),
+                        quizRoute(QuizPage(
+                          quizType: session.quizType,
+                          jlptLevel: session.jlptLevel,
+                          count: session.totalQuestions,
+                          resumeSessionId: session.id,
+                        )),
                       );
                     },
                     icon: const Icon(LucideIcons.playCircle, size: 18),

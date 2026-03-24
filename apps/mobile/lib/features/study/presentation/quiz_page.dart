@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/haptic_service.dart';
 import '../../../core/services/sound_service.dart';
 import '../../../core/providers/quiz_settings_provider.dart';
-import '../data/models/quiz_question_model.dart';
-import '../providers/study_provider.dart';
+import '../providers/quiz_session_provider.dart';
 import 'quiz_result_page.dart';
 import 'widgets/four_choice_quiz.dart';
 import 'widgets/matching_quiz.dart';
@@ -46,162 +45,102 @@ class QuizPage extends ConsumerStatefulWidget {
 }
 
 class _QuizPageState extends ConsumerState<QuizPage> {
-  String? _sessionId;
-  List<QuizQuestionModel> _questions = [];
-  int _currentIndex = 0;
-  String? _selectedOptionId;
-  bool _answered = false;
-  bool _isCorrect = false;
-  bool _loading = true;
-  int _streak = 0;
-  String? _resolvedMode;
   Timer? _timer;
-  int _timeSpent = 0;
 
   @override
   void initState() {
     super.initState();
-    _resolvedMode = widget.mode;
-    _initQuiz();
+    unawaited(_initializeQuiz());
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    ref.invalidate(quizSessionProvider);
     super.dispose();
   }
 
-  Future<void> _initQuiz() async {
-    final repo = ref.read(studyRepositoryProvider);
-    try {
-      if (widget.resumeSessionId != null) {
-        final data = await repo.resumeQuiz(widget.resumeSessionId!);
-        if (!mounted) return;
-        setState(() {
-          _sessionId = data.sessionId;
-          _questions = data.questions;
-          _currentIndex = data.answeredQuestionIds.length;
-          if (data.quizType != null) {
-            final modeMap = {
-              'CLOZE': 'cloze',
-              'SENTENCE_ARRANGE': 'arrange',
-              'TYPING': 'typing',
-              'MATCHING': 'matching',
-            };
-            if (modeMap.containsKey(data.quizType)) {
-              _resolvedMode = modeMap[data.quizType];
-            }
-          }
-        });
-      } else if (widget.mode == 'smart') {
-        final data = await repo.startSmartQuiz(
-          category: widget.quizType,
-          jlptLevel: widget.jlptLevel,
-          count: widget.count,
+  Future<void> _initializeQuiz() async {
+    await ref.read(quizSessionProvider.notifier).initialize(
+          QuizSessionRequest(
+            quizType: widget.quizType,
+            jlptLevel: widget.jlptLevel,
+            count: widget.count,
+            mode: widget.mode,
+            resumeSessionId: widget.resumeSessionId,
+            stageId: widget.stageId,
+          ),
         );
-        if (!mounted) return;
-        setState(() {
-          _sessionId = data.sessionId;
-          _questions = data.questions;
-        });
-      } else {
-        final data = await repo.startQuiz(
-          quizType: widget.quizType,
-          jlptLevel: widget.jlptLevel,
-          count: widget.count,
-          mode: widget.mode,
-          stageId: widget.stageId,
-        );
-        if (!mounted) return;
-        setState(() {
-          _sessionId = data.sessionId;
-          _questions = data.questions;
-        });
-      }
-    } catch (e) {
-      debugPrint('Failed to init quiz: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-        _startTimer();
-      }
-    }
+    if (!mounted) return;
+    _restartTimerIfNeeded();
   }
 
-  void _startTimer() {
+  void _restartTimerIfNeeded() {
     _timer?.cancel();
-    _timeSpent = 0;
+    final session = ref.read(quizSessionProvider);
+    if (session.loading ||
+        session.questions.isEmpty ||
+        session.answered ||
+        session.isSpecialMode) {
+      return;
+    }
+    ref.read(quizSessionProvider.notifier).resetTimer();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _timeSpent++;
+      ref.read(quizSessionProvider.notifier).incrementTimer();
     });
   }
 
   Future<void> _handleAnswer(String optionId) async {
-    if (_answered || _sessionId == null) return;
     _timer?.cancel();
-
-    final question = _questions[_currentIndex];
-    final isCorrect = optionId == question.correctOptionId;
-
-    setState(() {
-      _selectedOptionId = optionId;
-      _answered = true;
-      _isCorrect = isCorrect;
-      _streak = isCorrect ? _streak + 1 : 0;
-    });
+    final session = ref.read(quizSessionProvider);
+    final isCorrect =
+        ref.read(quizSessionProvider.notifier).answerCurrentQuestion(
+              optionId: optionId,
+              questionType: session.effectiveQuizType(widget.quizType),
+            );
+    if (isCorrect == null) return;
+    final streak = ref.read(quizSessionProvider).streak;
 
     // Haptic + sound feedback (fire-and-forget)
     final haptic = HapticService();
     final sound = SoundService();
     if (isCorrect) {
-      unawaited(_streak >= 3 ? haptic.heavy() : haptic.medium());
-      unawaited(sound.play(_streak >= 3 ? SoundType.combo : SoundType.correct));
+      unawaited(streak >= 3 ? haptic.heavy() : haptic.medium());
+      unawaited(sound.play(streak >= 3 ? SoundType.combo : SoundType.correct));
     } else {
       unawaited(haptic.heavy());
       unawaited(sound.play(SoundType.wrong));
     }
-
-    final repo = ref.read(studyRepositoryProvider);
-    unawaited(repo.answerQuestion(
-      sessionId: _sessionId!,
-      questionId: question.questionId,
-      selectedOptionId: optionId,
-      isCorrect: isCorrect,
-      timeSpentSeconds: _timeSpent,
-      questionType: widget.quizType,
-    ));
   }
 
   Future<void> _handleNext() async {
-    if (_currentIndex + 1 >= _questions.length) {
+    final session = ref.read(quizSessionProvider);
+    if (session.isLastQuestion) {
       await _completeQuiz();
       return;
     }
 
-    setState(() {
-      _currentIndex++;
-      _selectedOptionId = null;
-      _answered = false;
-      _isCorrect = false;
-    });
-    _startTimer();
+    ref.read(quizSessionProvider.notifier).advanceToNextQuestion();
+    _restartTimerIfNeeded();
   }
 
   Future<void> _completeQuiz() async {
-    if (_sessionId == null) return;
-    final repo = ref.read(studyRepositoryProvider);
+    _timer?.cancel();
     try {
-      final result =
-          await repo.completeQuiz(_sessionId!, stageId: widget.stageId);
+      final result = await ref.read(quizSessionProvider.notifier).completeQuiz(
+            stageId: widget.stageId,
+          );
+      if (result == null || !mounted) return;
+      final latestSession = ref.read(quizSessionProvider);
       if (!mounted) return;
       unawaited(HapticService().heavy());
       unawaited(SoundService().play(SoundType.complete));
       unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
         quizRoute(QuizResultPage(
           result: result,
-          quizType: widget.quizType,
+          quizType: latestSession.displayQuizType(widget.quizType),
           jlptLevel: widget.jlptLevel,
-          sessionId: _sessionId!,
+          sessionId: latestSession.sessionId!,
         )),
       ));
     } catch (e) {
@@ -235,27 +174,27 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     return shouldPop ?? false;
   }
 
-  String get _headerTitle => _resolvedMode == 'review'
+  String _headerTitle(QuizSessionState session) => session.resolvedMode ==
+          'review'
       ? '오답 복습'
       : '${widget.jlptLevel} ${widget.quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
-
-  String get _headerCount => '${_currentIndex + 1}/${_questions.length}';
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final session = ref.watch(quizSessionProvider);
 
-    if (_loading) {
+    if (session.loading) {
       return _buildLoadingState(theme);
     }
 
-    if (_questions.isEmpty) {
+    if (session.questions.isEmpty) {
       return _buildEmptyState(theme);
     }
 
-    final unanswered = _questions.sublist(_currentIndex);
+    final unanswered = session.unansweredQuestions;
 
-    if (_resolvedMode == 'matching') {
+    if (session.resolvedMode == 'matching') {
       final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
       return _buildSpecialMode(
         MatchingQuiz(
@@ -269,7 +208,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       );
     }
 
-    if (_resolvedMode == 'cloze') {
+    if (session.resolvedMode == 'cloze') {
       return _buildSpecialMode(
         ClozeQuiz(
           questions: unanswered,
@@ -281,7 +220,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       );
     }
 
-    if (_resolvedMode == 'arrange') {
+    if (session.resolvedMode == 'arrange') {
       return _buildSpecialMode(
         SentenceArrangeQuiz(
           questions: unanswered,
@@ -293,7 +232,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       );
     }
 
-    if (_resolvedMode == 'typing') {
+    if (session.resolvedMode == 'typing') {
       return _buildSpecialMode(
         TypingQuiz(
           questions: unanswered,
@@ -305,7 +244,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       );
     }
 
-    return _buildDefaultQuiz(theme);
+    return _buildDefaultQuiz(theme, session);
   }
 
   void _submitSpecialAnswer(
@@ -314,17 +253,12 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     String questionType, {
     String? optionId,
   }) {
-    if (_sessionId == null) return;
-    final repo = ref.read(studyRepositoryProvider);
-    final q = _questions.firstWhere((q) => q.questionId == qId);
-    repo.answerQuestion(
-      sessionId: _sessionId!,
-      questionId: qId,
-      selectedOptionId: optionId ?? (isCorrect ? q.correctOptionId : 'wrong'),
-      isCorrect: isCorrect,
-      timeSpentSeconds: 0,
-      questionType: questionType,
-    );
+    ref.read(quizSessionProvider.notifier).submitSpecialAnswer(
+          questionId: qId,
+          isCorrect: isCorrect,
+          questionType: questionType,
+          optionId: optionId,
+        );
   }
 
   Widget _buildPopScope({required Widget child}) {
@@ -343,14 +277,15 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Widget _buildSpecialMode(Widget quizWidget) {
+    final session = ref.read(quizSessionProvider);
     return _buildPopScope(
       child: Scaffold(
         body: SafeArea(
           child: Column(
             children: [
               QuizHeader(
-                title: _headerTitle,
-                count: _headerCount,
+                title: _headerTitle(session),
+                count: session.headerCount,
                 onBack: () async {
                   final shouldPop = await _onWillPop();
                   if (shouldPop && mounted) {
@@ -398,7 +333,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              _resolvedMode == 'review'
+              ref.watch(quizSessionProvider).resolvedMode == 'review'
                   ? Icons.celebration
                   : Icons.sentiment_dissatisfied,
               size: 48,
@@ -406,7 +341,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              _resolvedMode == 'review'
+              ref.watch(quizSessionProvider).resolvedMode == 'review'
                   ? '복습할 문제가 없어요!'
                   : '이 레벨의 콘텐츠를 준비하고 있어요',
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -424,9 +359,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     );
   }
 
-  Widget _buildDefaultQuiz(ThemeData theme) {
-    final question = _questions[_currentIndex];
-    final progress = (_currentIndex + 1) / _questions.length;
+  Widget _buildDefaultQuiz(ThemeData theme, QuizSessionState session) {
+    final question = session.currentQuestion!;
+    final progress = session.progress;
 
     return _buildPopScope(
       child: Scaffold(
@@ -436,8 +371,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
               Column(
                 children: [
                   QuizHeader(
-                    title: _headerTitle,
-                    count: _headerCount,
+                    title: _headerTitle(session),
+                    count: session.headerCount,
                     onBack: () async {
                       final shouldPop = await _onWillPop();
                       if (shouldPop && mounted) {
@@ -449,8 +384,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: QuizProgressBar(
                       progress: progress,
-                      streak: _streak,
-                      showStreak: _answered,
+                      streak: session.streak,
+                      showStreak: session.answered,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -459,9 +394,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: FourChoiceQuiz(
                         question: question,
-                        selectedOptionId: _selectedOptionId,
-                        answered: _answered,
-                        isCorrect: _isCorrect,
+                        selectedOptionId: session.selectedOptionId,
+                        answered: session.answered,
+                        isCorrect: session.isCorrect,
                         showFurigana:
                             ref.watch(quizSettingsProvider).showFurigana,
                         onSelect: _handleAnswer,
@@ -470,16 +405,16 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   ),
                 ],
               ),
-              if (_answered)
+              if (session.answered)
                 Positioned(
                   left: 0,
                   right: 0,
                   bottom: 0,
                   child: QuizFeedbackBar(
                     question: question,
-                    isCorrect: _isCorrect,
-                    streak: _streak,
-                    isLastQuestion: _currentIndex + 1 >= _questions.length,
+                    isCorrect: session.isCorrect,
+                    streak: session.streak,
+                    isLastQuestion: session.isLastQuestion,
                     onNext: _handleNext,
                   ),
                 ),

@@ -87,6 +87,9 @@ class ResumeBanner extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(
                       quizRoute(QuizPage(
+                        quizType: s.quizType,
+                        jlptLevel: s.jlptLevel,
+                        count: s.totalQuestions,
                         resumeSessionId: s.id,
                       )),
                     );
