@@ -23,6 +23,10 @@ class QuizQuestion(CamelModel):
     hint: str | None = None
     options: list[QuizOption]
     correct_option_id: str | None = None
+    # Sentence arrange fields
+    tokens: list[str] | None = None
+    japanese_sentence: str | None = None
+    explanation: str | None = None
 
 
 class WrongAnswer(CamelModel):

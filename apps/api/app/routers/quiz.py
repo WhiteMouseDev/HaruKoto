@@ -683,6 +683,9 @@ async def start_quiz(
                 hint=q.get("hint"),
                 options=[QuizOption(**o) for o in q["options"]],
                 correct_option_id=q.get("correctOptionId"),
+                tokens=q.get("tokens"),
+                japanese_sentence=q.get("japaneseSentence"),
+                explanation=q.get("explanation"),
             )
         )
 
@@ -1068,6 +1071,9 @@ async def resume_quiz(
                 hint=q.get("hint"),
                 options=[QuizOption(**o) for o in q["options"]],
                 correct_option_id=q.get("correctOptionId"),
+                tokens=q.get("tokens"),
+                japanese_sentence=q.get("japaneseSentence"),
+                explanation=q.get("explanation"),
             )
         )
 
@@ -1665,6 +1671,9 @@ async def smart_start(
                 hint=q.get("hint"),
                 options=[QuizOption(**o) for o in q["options"]],
                 correct_option_id=q.get("correctOptionId"),
+                tokens=q.get("tokens"),
+                japanese_sentence=q.get("japaneseSentence"),
+                explanation=q.get("explanation"),
             )
         )
 
