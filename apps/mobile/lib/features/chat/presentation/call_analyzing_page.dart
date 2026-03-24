@@ -9,7 +9,7 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../providers/call_analysis_provider.dart';
 import '../providers/voice_call_session_provider.dart';
-import 'conversation_feedback_page.dart';
+import 'conversation_feedback_launch.dart';
 
 class CallAnalyzingPage extends ConsumerStatefulWidget {
   const CallAnalyzingPage({
@@ -51,15 +51,11 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   Future<void> _openFeedback(CallAnalysisState analysis) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
     if (!mounted || analysis.conversationId == null) return;
-    unawaited(
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => ConversationFeedbackPage(
-            conversationId: analysis.conversationId!,
-            initialFeedback: analysis.feedbackSummary,
-          ),
-        ),
-      ),
+    openConversationFeedbackPage(
+      context,
+      conversationId: analysis.conversationId!,
+      initialFeedback: analysis.feedbackSummary,
+      replace: true,
     );
   }
 

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_error_retry.dart';
 import '../data/models/chat_message_model.dart';
 import '../data/models/scenario_model.dart';
+import '../providers/conversation_bootstrap_provider.dart';
+import '../providers/conversation_end_provider.dart';
 import '../providers/chat_provider.dart';
+import 'conversation_feedback_launch.dart';
 import 'widgets/chat_bubble.dart';
 import 'widgets/chat_input_bar.dart';
 import 'widgets/typing_indicator.dart';
@@ -43,13 +46,27 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
   bool _showHint = false;
   final List<VocabularyItem> _allVocabulary = [];
   bool _ending = false;
-  bool _initialized = false;
+  bool _bootstrapped = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _initConversation();
+    if (widget.firstMessage == null) return;
+    _applyBootstrap(
+      ConversationBootstrapData(
+        scenario: widget.initialScenario,
+        messages: [
+          ChatMessageModel(
+            id: 'ai-0',
+            role: 'ai',
+            messageJa: widget.firstMessage!.messageJa,
+            messageKo: widget.firstMessage!.messageKo,
+          ),
+        ],
+        currentHint: widget.firstMessage!.hint,
+      ),
+    );
   }
 
   @override
@@ -58,40 +75,13 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
     super.dispose();
   }
 
-  Future<void> _initConversation() async {
-    if (widget.firstMessage != null) {
-      _scenario = widget.initialScenario;
-      _messages.add(ChatMessageModel(
-        id: 'ai-0',
-        role: 'ai',
-        messageJa: widget.firstMessage!.messageJa,
-        messageKo: widget.firstMessage!.messageKo,
-      ));
-      _currentHint = widget.firstMessage!.hint;
-      setState(() => _initialized = true);
-    } else {
-      await _fetchFromServer();
-    }
-  }
-
-  Future<void> _fetchFromServer() async {
-    try {
-      final repo = ref.read(chatRepositoryProvider);
-      final detail = await repo.fetchConversation(widget.conversationId);
-      if (!mounted) return;
-      setState(() {
-        if (detail.scenario != null) _scenario = detail.scenario;
-        if (detail.messages.isNotEmpty) _messages.addAll(detail.messages);
-        _initialized = true;
-      });
-    } catch (e) {
-      debugPrint('[ConversationPage] Failed to fetch conversation: $e');
-      if (!mounted) return;
-      setState(() {
-        _error = '대화를 불러올 수 없습니다.';
-        _initialized = true;
-      });
-    }
+  void _applyBootstrap(ConversationBootstrapData data) {
+    _scenario = data.scenario;
+    _currentHint = data.currentHint;
+    _messages
+      ..clear()
+      ..addAll(data.messages);
+    _bootstrapped = true;
   }
 
   void _scrollToBottom() {
@@ -162,10 +152,19 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
       _error = null;
     });
     try {
-      final repo = ref.read(chatRepositoryProvider);
-      await repo.endConversation(widget.conversationId);
+      final result = await ref
+          .read(conversationEndServiceProvider)
+          .endConversation(widget.conversationId);
       if (!mounted) return;
-      context.go('/chat/${widget.conversationId}/feedback');
+      openConversationFeedbackPage(
+        context,
+        conversationId: widget.conversationId,
+        initialFeedback: result.feedbackSummary,
+        vocabulary: _allVocabulary.isEmpty
+            ? null
+            : List<VocabularyItem>.from(_allVocabulary),
+        replace: true,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -296,8 +295,22 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final bootstrapProvider =
+        conversationBootstrapProvider(widget.conversationId);
 
-    if (!_initialized) {
+    if (!_bootstrapped) {
+      ref.listen<AsyncValue<ConversationBootstrapData>>(
+        bootstrapProvider,
+        (previous, next) {
+          if (!mounted || _bootstrapped) return;
+          next.whenData((data) {
+            setState(() {
+              _applyBootstrap(data);
+            });
+          });
+        },
+      );
+
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -305,7 +318,13 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
             icon: const Icon(LucideIcons.arrowLeft),
           ),
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: ref.watch(bootstrapProvider).when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => AppErrorRetry(
+                onRetry: () => ref.invalidate(bootstrapProvider),
+              ),
+              data: (_) => const Center(child: CircularProgressIndicator()),
+            ),
       );
     }
 

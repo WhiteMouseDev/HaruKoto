@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
@@ -11,6 +10,7 @@ import '../../my/providers/settings_sync_provider.dart';
 import '../providers/chat_provider.dart';
 import '../data/models/scenario_model.dart';
 import 'chat_entry_mode.dart';
+import 'conversation_launch.dart';
 import 'widgets/chat_loading_overlay.dart';
 import 'widgets/scenario_list_view.dart';
 import 'widgets/voice_tab.dart';
@@ -52,7 +52,12 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       final repo = ref.read(chatRepositoryProvider);
       final result = await repo.startConversation(scenario.id);
       if (!mounted) return;
-      context.go('/chat/${result.conversationId}');
+      openConversationPage(
+        context,
+        conversationId: result.conversationId,
+        initialScenario: scenario,
+        firstMessage: result.firstMessage,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
