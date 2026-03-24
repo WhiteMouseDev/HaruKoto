@@ -38,6 +38,12 @@ docs/
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)
+- [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
+- [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
+- [모바일 아키텍처 감사 (2026-03-24)](operations/audits/mobile-architecture-audit-2026-03-24.md) — 모바일 구조 문제점과 개선 우선순위
+- [모바일 시작/스플래시 정책 (2026-03-24)](operations/mobile/mobile-startup-splash-policy-2026-03-24.md) — 스플래시 길이와 시작 경험 기준
+- [모바일 비스플래시 개선 설계 (2026-03-24)](operations/plans/mobile-non-splash-improvement-design-2026-03-24.md) — 네트워크, 설정, 세션, 테스트 개선 설계
+- [모바일 비스플래시 실행 로드맵 (2026-03-24)](operations/plans/mobile-non-splash-implementation-roadmap-2026-03-24.md) — 단계별 작업 순서와 완료 기준
 
 ## 콘텐츠 데이터
 

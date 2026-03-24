@@ -1,0 +1,17 @@
+# Project-local Codex defaults for HaruKoto.
+# Leave `model` unset so this repo works with either ChatGPT sign-in or API providers.
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "high"
+model_reasoning_summary = "concise"
+model_verbosity = "medium"
+
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
+[sandbox_workspace_write]
+writable_roots = []
+network_access = false
