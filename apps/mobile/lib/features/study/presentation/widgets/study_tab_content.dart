@@ -7,8 +7,8 @@ import '../../../../shared/widgets/app_error_retry.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../data/models/stage_model.dart';
 import '../../providers/study_provider.dart';
+import '../quiz_launch.dart';
 import '../study_page.dart';
-import '../quiz_page.dart';
 
 /// Content for each study category tab (vocabulary, grammar, sentence arrange).
 /// Shows a vertical list of stage cards fetched from the API.
@@ -273,17 +273,14 @@ class _StageCard extends ConsumerWidget {
   }
 
   void _startStageQuiz(BuildContext context, WidgetRef ref, String mode) {
-    Navigator.of(context, rootNavigator: true)
-        .push(
-      quizRoute(QuizPage(
-        quizType: category.apiType,
-        jlptLevel: jlptLevel,
-        count: stage.contentCount > 0 ? stage.contentCount : 10,
-        mode: mode != 'normal' ? mode : null,
-        stageId: stage.id,
-      )),
-    )
-        .then((_) {
+    openQuizPageForSession(
+      context,
+      quizType: category.apiType,
+      jlptLevel: jlptLevel,
+      count: stage.contentCount > 0 ? stage.contentCount : 10,
+      mode: mode != 'normal' ? mode : null,
+      stageId: stage.id,
+    ).then((_) {
       // Refresh stages after quiz completion
       ref.invalidate(
         stagesProvider((category: category.apiType, jlptLevel: jlptLevel)),

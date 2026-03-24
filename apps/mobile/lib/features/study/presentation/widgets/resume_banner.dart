@@ -3,7 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/quiz_session_model.dart';
-import '../quiz_page.dart';
+import '../quiz_launch.dart';
 
 class ResumeBanner extends StatelessWidget {
   final IncompleteSessionModel session;
@@ -69,12 +69,11 @@ class ResumeBanner extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      quizRoute(QuizPage(
-                        quizType: s.quizType,
-                        jlptLevel: s.jlptLevel,
-                        count: s.totalQuestions,
-                      )),
+                    openQuizPageForSession(
+                      context,
+                      quizType: s.quizType,
+                      jlptLevel: s.jlptLevel,
+                      count: s.totalQuestions,
                     );
                   },
                   icon: const Icon(LucideIcons.rotateCcw, size: 14),
@@ -85,13 +84,12 @@ class ResumeBanner extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      quizRoute(QuizPage(
-                        quizType: s.quizType,
-                        jlptLevel: s.jlptLevel,
-                        count: s.totalQuestions,
-                        resumeSessionId: s.id,
-                      )),
+                    openQuizPageForSession(
+                      context,
+                      quizType: s.quizType,
+                      jlptLevel: s.jlptLevel,
+                      count: s.totalQuestions,
+                      resumeSessionId: s.id,
                     );
                   },
                   icon: const Icon(LucideIcons.playCircle, size: 14),

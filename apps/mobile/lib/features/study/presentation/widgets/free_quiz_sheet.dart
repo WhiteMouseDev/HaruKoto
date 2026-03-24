@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../providers/study_provider.dart';
-import '../quiz_page.dart';
+import '../quiz_launch.dart';
 import 'jlpt_level_selector.dart';
 import 'quiz_mode_selector.dart';
 import 'quiz_type_selector.dart';
@@ -43,13 +43,12 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
 
   void _startQuiz() {
     Navigator.pop(context);
-    Navigator.of(context, rootNavigator: true).push(
-      quizRoute(QuizPage(
-        quizType: _type,
-        jlptLevel: _level,
-        count: 10,
-        mode: _mode != 'normal' ? _mode : null,
-      )),
+    openQuizPageForSession(
+      context,
+      quizType: _type,
+      jlptLevel: _level,
+      count: 10,
+      mode: _mode != 'normal' ? _mode : null,
     );
   }
 

@@ -10,7 +10,7 @@ import '../../../core/constants/colors.dart';
 import '../../home/providers/home_provider.dart';
 import '../data/models/quiz_result_model.dart';
 import '../providers/study_provider.dart';
-import 'quiz_page.dart';
+import 'quiz_launch.dart';
 import 'widgets/result_score_display.dart';
 import 'widgets/wrong_answer_list.dart';
 
@@ -198,14 +198,11 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        Navigator.of(context, rootNavigator: true)
-                            .pushReplacement(
-                          quizRoute(QuizPage(
-                            quizType: widget.quizType,
-                            jlptLevel: widget.jlptLevel,
-                            count: 10,
-                            mode: 'review',
-                          )),
+                        openReviewQuiz(
+                          context,
+                          quizType: widget.quizType,
+                          jlptLevel: widget.jlptLevel,
+                          replace: true,
                         );
                       },
                       child: Container(
@@ -263,12 +260,12 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   height: 48,
                   child: FilledButton.icon(
                     onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        quizRoute(QuizPage(
-                          quizType: widget.quizType,
-                          jlptLevel: widget.jlptLevel,
-                          count: 10,
-                        )),
+                      openQuizPageForSession(
+                        context,
+                        quizType: widget.quizType,
+                        jlptLevel: widget.jlptLevel,
+                        count: 10,
+                        replace: true,
                       );
                     },
                     icon: const Icon(LucideIcons.rotateCcw, size: 16),

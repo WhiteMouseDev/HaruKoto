@@ -9,7 +9,7 @@ import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
-import 'quiz_page.dart';
+import 'quiz_launch.dart';
 import 'widgets/wrong_answers_content.dart';
 import 'widgets/wrong_answers_summary_card.dart';
 
@@ -152,13 +152,12 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
                   child: FilledButton.icon(
                     onPressed: () {
                       final level = ref.read(userPreferencesProvider).jlptLevel;
-                      Navigator.of(context, rootNavigator: true).push(
-                        quizRoute(QuizPage(
-                          quizType: 'VOCABULARY',
-                          jlptLevel: level,
-                          count: _summary!.remaining.clamp(1, 20),
-                          mode: 'review',
-                        )),
+                      openQuizPageForSession(
+                        context,
+                        quizType: 'VOCABULARY',
+                        jlptLevel: level,
+                        count: _summary!.remaining.clamp(1, 20),
+                        mode: 'review',
                       );
                     },
                     icon: const Icon(LucideIcons.rotateCcw, size: 16),

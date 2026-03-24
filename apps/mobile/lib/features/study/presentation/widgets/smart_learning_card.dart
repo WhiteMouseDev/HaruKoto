@@ -5,7 +5,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/smart_preview_model.dart';
 import '../../providers/study_provider.dart';
-import '../quiz_page.dart';
+import '../quiz_launch.dart';
 
 class SmartLearningCard extends ConsumerWidget {
   final String jlptLevel;
@@ -192,13 +192,12 @@ class SmartLearningCard extends ConsumerWidget {
   }
 
   void _startSmartQuiz(BuildContext context, WidgetRef ref, int count) {
-    Navigator.of(context, rootNavigator: true).push(
-      quizRoute(QuizPage(
-        quizType: 'VOCABULARY',
-        jlptLevel: jlptLevel,
-        count: count,
-        mode: 'smart',
-      )),
+    openQuizPageForSession(
+      context,
+      quizType: 'VOCABULARY',
+      jlptLevel: jlptLevel,
+      count: count,
+      mode: 'smart',
     );
   }
 

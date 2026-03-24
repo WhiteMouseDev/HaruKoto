@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../data/models/recommendation_model.dart';
-import '../quiz_page.dart';
+import '../quiz_launch.dart';
 import '../wrong_answers_page.dart';
 import 'recommendation_card.dart';
 
@@ -96,13 +96,10 @@ class RecommendTab extends ConsumerWidget {
             actionText: '지금 복습하기 →',
             isPrimary: true,
             onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                quizRoute(const QuizPage(
-                  quizType: 'VOCABULARY',
-                  jlptLevel: 'N5',
-                  count: 10,
-                  mode: 'review',
-                )),
+              openReviewQuiz(
+                context,
+                quizType: 'VOCABULARY',
+                jlptLevel: 'N5',
               );
             },
           ),
@@ -114,12 +111,11 @@ class RecommendTab extends ConsumerWidget {
             subtitle: '아직 안 본 단어 ${data.newWordsCount}개',
             actionText: '학습 시작 →',
             onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                quizRoute(const QuizPage(
-                  quizType: 'VOCABULARY',
-                  jlptLevel: 'N5',
-                  count: 10,
-                )),
+              openQuizPageForSession(
+                context,
+                quizType: 'VOCABULARY',
+                jlptLevel: 'N5',
+                count: 10,
               );
             },
           ),
