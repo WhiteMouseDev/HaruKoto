@@ -6,7 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
-import '../../home/providers/home_provider.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_page.dart';
@@ -151,9 +151,7 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
                   height: 44,
                   child: FilledButton.icon(
                     onPressed: () {
-                      final profile = ref.read(profileProvider);
-                      final level =
-                          profile.hasValue ? profile.value!.jlptLevel : 'N5';
+                      final level = ref.read(userPreferencesProvider).jlptLevel;
                       Navigator.of(context, rootNavigator: true).push(
                         quizRoute(QuizPage(
                           quizType: 'VOCABULARY',

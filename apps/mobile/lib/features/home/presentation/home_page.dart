@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import 'widgets/home_skeleton.dart';
 import '../providers/home_provider.dart';
@@ -74,6 +75,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
     final missionsAsync = ref.watch(missionsProvider);
+    final preferences = ref.watch(userPreferencesProvider);
 
     // Multi-provider composition: manual AsyncValue handling is used instead
     // of .when() because loading/error states are combined across 3 providers.
@@ -107,8 +109,6 @@ class _HomePageState extends ConsumerState<HomePage>
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
 
-    // Furigana is local-first (SharedPreferences). No server sync needed.
-
     // Trigger stagger animation on first data load
     if (!_hasAnimated && !_animationScheduled) {
       _animationScheduled = true;
@@ -138,7 +138,7 @@ class _HomePageState extends ConsumerState<HomePage>
               // const SizedBox(height: AppSizes.md),
 
               // 3. Kana CTA (conditional)
-              if (profile?.showKana == true &&
+              if (preferences.showKana &&
                   dashboard?.kanaProgress != null &&
                   !dashboard!.kanaProgress!.completed) ...[
                 _staggered(
@@ -154,7 +154,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     streak: dashboard.streak,
                     today: dashboard.today,
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: profile?.dailyGoal ?? 10,
+                    dailyGoal: preferences.dailyGoal,
                   ),
                 ),
                 const SizedBox(height: AppSizes.md),
@@ -166,8 +166,8 @@ class _HomePageState extends ConsumerState<HomePage>
                 QuickStartCard(
                   levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
-                  dailyGoal: profile?.dailyGoal ?? 10,
-                  jlptLevel: profile?.jlptLevel ?? 'N5',
+                  dailyGoal: preferences.dailyGoal,
+                  jlptLevel: preferences.jlptLevel,
                 ),
               ),
               const SizedBox(height: AppSizes.md),
@@ -184,7 +184,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   5,
                   WeeklyChart(
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: profile?.dailyGoal ?? 10,
+                    dailyGoal: preferences.dailyGoal,
                   ),
                 ),
               const SizedBox(height: AppSizes.md),

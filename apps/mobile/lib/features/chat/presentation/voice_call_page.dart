@@ -8,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/services/haptic_service.dart';
-import '../../my/data/models/profile_detail_model.dart';
 import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
 import '../providers/chat_provider.dart';
@@ -78,14 +78,15 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     debugPrint('[VoiceCall] _startCall() called');
     try {
       final repo = ref.read(chatRepositoryProvider);
+      final preferences = ref.read(userPreferencesProvider);
 
       // 0. Load user profile (call settings + nickname + jlptLevel)
       final profileAsync = ref.read(profileDetailProvider);
       final profile =
           profileAsync.hasValue ? profileAsync.value!.profile : null;
-      final callSettings = profile?.callSettings ?? const CallSettings();
+      final callSettings = preferences.callSettings;
       final userNickname = profile?.nickname ?? '학습자';
-      final userJlptLevel = profile?.jlptLevel ?? 'N5';
+      final userJlptLevel = preferences.jlptLevel;
       _showSubtitle = callSettings.subtitleEnabled;
 
       // 1. Get ephemeral token
@@ -211,10 +212,8 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     if (!mounted) return;
 
     // 최소 15초 이상 통화해야 분석 진행
-    final profileAsync = ref.read(profileDetailProvider);
-    final autoAnalysis = profileAsync.hasValue
-        ? profileAsync.value!.profile.callSettings.autoAnalysis
-        : true;
+    final autoAnalysis =
+        ref.read(userPreferencesProvider).callSettings.autoAnalysis;
 
     if (!autoAnalysis || duration < 15 || transcript.isEmpty) {
       Navigator.of(context).pop();

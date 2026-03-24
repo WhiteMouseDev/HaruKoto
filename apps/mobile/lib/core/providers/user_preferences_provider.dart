@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/my/data/models/profile_detail_model.dart';
 import '../settings/user_preferences.dart';
 import '../settings/user_preferences_repository.dart';
 import 'shared_preferences_provider.dart';
@@ -21,13 +22,47 @@ class UserPreferencesNotifier extends Notifier<UserPreferences> {
     return _repository.load();
   }
 
-  Future<void> setShowFurigana(bool value) async {
-    state = state.copyWith(showFurigana: value);
-    await _repository.persistShowFurigana(value);
+  Future<void> replace(UserPreferences preferences) async {
+    state = preferences;
+    await _repository.persist(preferences);
   }
 
-  Future<void> seedFromServer(bool showFurigana) async {
-    state = await _repository.seedFromServer(showFurigana: showFurigana);
+  Future<void> syncFromServer({
+    bool? showFurigana,
+    bool? showKana,
+    int? dailyGoal,
+    String? jlptLevel,
+    CallSettings? callSettings,
+  }) {
+    return replace(
+      state.copyWith(
+        showFurigana: showFurigana,
+        showKana: showKana,
+        dailyGoal: dailyGoal,
+        jlptLevel: jlptLevel,
+        callSettings: callSettings,
+      ),
+    );
+  }
+
+  Future<void> setShowFurigana(bool value) {
+    return replace(state.copyWith(showFurigana: value));
+  }
+
+  Future<void> setShowKana(bool value) {
+    return replace(state.copyWith(showKana: value));
+  }
+
+  Future<void> setDailyGoal(int value) {
+    return replace(state.copyWith(dailyGoal: value));
+  }
+
+  Future<void> setJlptLevel(String value) {
+    return replace(state.copyWith(jlptLevel: value));
+  }
+
+  Future<void> setCallSettings(CallSettings value) {
+    return replace(state.copyWith(callSettings: value));
   }
 }
 

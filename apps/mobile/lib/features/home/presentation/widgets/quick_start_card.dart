@@ -7,11 +7,10 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
-import '../../../my/providers/my_provider.dart';
+import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../../study/presentation/widgets/today_study_sheet.dart';
 import '../../data/models/dashboard_model.dart';
-import '../../providers/home_provider.dart';
 
 // ═══════════════════════════════════════════════════════════════
 //  Constants
@@ -598,10 +597,7 @@ class _MainContent extends ConsumerWidget {
     if (selectedGoal == null || selectedGoal == dailyGoal) return;
 
     try {
-      await ref.read(homeRepositoryProvider).updateDailyGoal(selectedGoal);
-      ref.invalidate(profileProvider);
-      ref.invalidate(profileDetailProvider);
-      ref.invalidate(dashboardProvider);
+      await ref.read(settingsSyncServiceProvider).updateDailyGoal(selectedGoal);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

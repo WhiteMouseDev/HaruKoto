@@ -4,9 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/call_settings_sheet.dart';
 import '../../my/data/models/profile_detail_model.dart';
-import '../../my/providers/my_provider.dart';
+import '../../my/providers/settings_sync_provider.dart';
 import '../providers/chat_provider.dart';
 import '../data/models/scenario_model.dart';
 import 'widgets/chat_loading_overlay.dart';
@@ -86,14 +87,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   }
 
   Future<void> _showCallSettings(BuildContext context) async {
-    // 서버에서 최신 프로필을 직접 가져옴 (캐시 우회)
-    CallSettings callSettings = const CallSettings();
-    try {
-      final profile = await ref.read(myRepositoryProvider).fetchProfileDetail();
-      callSettings = profile.profile.callSettings;
-    } catch (_) {
-      // 실패 시 기본값 사용
-    }
+    final callSettings = ref.read(userPreferencesProvider).callSettings;
 
     if (!context.mounted) return;
     final messenger = ScaffoldMessenger.of(context);
@@ -109,11 +103,8 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
 
     if (updated == null || !context.mounted) return;
     try {
-      await ref
-          .read(myRepositoryProvider)
-          .updateProfile({'callSettings': updated.toJson()});
+      await ref.read(settingsSyncServiceProvider).updateCallSettings(updated);
       if (context.mounted) {
-        ref.invalidate(profileDetailProvider);
         messenger.showSnackBar(
           const SnackBar(
             content: Text('통화 설정이 저장되었습니다'),

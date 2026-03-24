@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_skeleton.dart';
 import '../../home/data/models/dashboard_model.dart';
@@ -27,14 +28,12 @@ class _StatsPageState extends ConsumerState<StatsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dashboardAsync = ref.watch(dashboardProvider);
-    final profileAsync = ref.watch(profileProvider);
     final historyAsync = ref.watch(statsHistoryProvider(_heatmapYear));
+    final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
 
     // Multi-provider composition: manual AsyncValue handling is used instead
-    // of .when() because loading/error states are combined across 3 providers.
-    final allLoading = dashboardAsync.isLoading &&
-        profileAsync.isLoading &&
-        historyAsync.isLoading;
+    // of .when() because loading/error states are combined across providers.
+    final allLoading = dashboardAsync.isLoading && historyAsync.isLoading;
 
     if (allLoading) {
       return Scaffold(
@@ -47,25 +46,22 @@ class _StatsPageState extends ConsumerState<StatsPage> {
     }
 
     // Show error if main data failed and no fallback available
-    final hasAnyError = dashboardAsync.hasError || profileAsync.hasError;
-    final hasAnyValue = dashboardAsync.hasValue || profileAsync.hasValue;
+    final hasAnyError = dashboardAsync.hasError;
+    final hasAnyValue = dashboardAsync.hasValue;
 
     if (hasAnyError && !hasAnyValue) {
       return Scaffold(
         appBar: AppBar(title: const Text('학습 통계')),
         body: AppErrorRetry(onRetry: () {
           ref.invalidate(dashboardProvider);
-          ref.invalidate(profileProvider);
           ref.invalidate(statsHistoryProvider(_heatmapYear));
         }),
       );
     }
 
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
-    final profile = profileAsync.hasValue ? profileAsync.value : null;
     final historyRecords =
         historyAsync.hasValue ? historyAsync.value! : <StatsHistoryRecord>[];
-    final jlptLevel = profile?.jlptLevel ?? 'N5';
 
     // JLPT progress fallback — actual data is fetched via jlptProgressProvider
     // inside JlptTab and StudyTab widgets directly.

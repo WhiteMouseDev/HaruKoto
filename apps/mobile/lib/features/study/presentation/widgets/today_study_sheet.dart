@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/providers/user_preferences_provider.dart';
+import '../../../home/providers/home_provider.dart';
+import '../../../my/providers/settings_sync_provider.dart';
 import '../../data/models/smart_preview_model.dart';
 import '../../providers/study_provider.dart';
-import '../../../home/providers/home_provider.dart';
 import '../quiz_page.dart';
 
 /// Bottom sheet for "오늘의 학습" — shows smart quiz preview,
@@ -34,9 +36,8 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
     if (_isGoalLoading) return;
     setState(() => _isGoalLoading = true);
     try {
-      await ref.read(homeRepositoryProvider).updateDailyGoal(goal);
+      await ref.read(settingsSyncServiceProvider).updateDailyGoal(goal);
       ref.invalidate(dashboardProvider);
-      ref.invalidate(profileProvider);
       ref.invalidate(
         smartPreviewProvider(
             (category: widget.category, jlptLevel: widget.jlptLevel)),
@@ -65,7 +66,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
 
   void _showGoalPicker() {
     final goals = [5, 10, 15, 20, 30];
-    final currentGoal = widget.data.dailyGoal;
+    final currentGoal = ref.read(userPreferencesProvider).dailyGoal;
 
     showModalBottomSheet(
       context: context,
@@ -140,6 +141,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final data = widget.data;
+    final currentGoal = ref.watch(userPreferencesProvider).dailyGoal;
     final dist = data.sessionDistribution;
     final progress = data.overallProgress;
     final progressPct =
@@ -216,7 +218,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                         child: Row(
                           children: [
                             Text(
-                              '하루 목표 ${data.dailyGoal}개',
+                              '하루 목표 $currentGoal개',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,

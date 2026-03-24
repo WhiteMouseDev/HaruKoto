@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
-import '../../home/providers/home_provider.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../providers/chat_provider.dart';
 import 'voice_call_page.dart';
 import 'widgets/character_card.dart';
@@ -17,7 +17,7 @@ class ContactsPage extends ConsumerWidget {
     final charactersAsync = ref.watch(charactersProvider);
     final statsAsync = ref.watch(characterStatsProvider);
     final favoritesAsync = ref.watch(characterFavoritesProvider);
-    final profileAsync = ref.watch(profileProvider);
+    final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
 
     return Scaffold(
       appBar: AppBar(
@@ -63,14 +63,8 @@ class ContactsPage extends ConsumerWidget {
             loading: () => <String>{},
             error: (_, __) => <String>{},
           );
-          final userLevel = profileAsync.when(
-            data: (p) {
-              const levels = {'N5': 1, 'N4': 2, 'N3': 3, 'N2': 4, 'N1': 5};
-              return levels[p.jlptLevel] ?? 1;
-            },
-            loading: () => 1,
-            error: (_, __) => 1,
-          );
+          const levels = {'N5': 1, 'N4': 2, 'N3': 3, 'N2': 4, 'N1': 5};
+          final userLevel = levels[jlptLevel] ?? 1;
 
           // Sort: favorites first, then by order
           final sorted = [...characters]..sort((a, b) {

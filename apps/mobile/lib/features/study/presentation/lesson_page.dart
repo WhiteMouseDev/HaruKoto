@@ -7,6 +7,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../home/providers/home_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../providers/study_provider.dart';
@@ -247,10 +248,7 @@ class _LessonPageState extends ConsumerState<LessonPage> {
         _submitting = false;
       });
       // Refresh all dependent providers
-      final profile = ref.read(profileProvider).hasValue
-          ? ref.read(profileProvider).value
-          : null;
-      final level = profile?.jlptLevel ?? 'N5';
+      final level = ref.read(userPreferencesProvider).jlptLevel;
       ref.invalidate(chaptersProvider(level));
       ref.invalidate(reviewSummaryProvider(level));
       ref.invalidate(dashboardProvider);

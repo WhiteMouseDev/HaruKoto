@@ -3,16 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/mission_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/user_profile_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/home_page.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('HomePage', () {
     testWidgets('shows skeleton when all providers are loading',
         (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
       // Use completers that never complete to simulate loading
       final dashboardCompleter = Completer<DashboardModel>();
       final profileCompleter = Completer<UserProfileModel>();
@@ -21,6 +26,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => dashboardCompleter.future,
             ),
@@ -50,9 +56,13 @@ void main() {
 
     testWidgets('shows error state when providers fail with no data',
         (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => Future<DashboardModel>.error(Exception('API down')),
             ),
@@ -76,6 +86,9 @@ void main() {
     });
 
     testWidgets('shows data when providers resolve', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
       final dashboard = DashboardModel(
         showKana: false,
         today: TodayStats.fromJson({}),
@@ -92,6 +105,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => Future.value(dashboard),
             ),

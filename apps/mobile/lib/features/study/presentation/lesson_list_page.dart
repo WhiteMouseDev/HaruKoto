@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../home/providers/home_provider.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
 
@@ -10,9 +10,7 @@ class LessonListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(profileProvider);
-    final jlptLevel =
-        profileAsync.hasValue ? profileAsync.value!.jlptLevel : 'N5';
+    final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
 
     return Scaffold(

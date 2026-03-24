@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
-import '../../home/providers/home_provider.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/data/models/quiz_session_model.dart';
 import '../../study/data/models/smart_preview_model.dart';
 import '../../study/providers/study_provider.dart';
@@ -208,9 +208,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final profileAsync = ref.watch(profileProvider);
-    final jlptLevel =
-        profileAsync.hasValue ? profileAsync.value!.jlptLevel : 'N5';
+    final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
 
     final incompleteAsync = ref.watch(incompleteQuizProvider);
 
@@ -239,7 +237,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
           color: theme.colorScheme.primary,
           onRefresh: () async {
             ref.invalidate(incompleteQuizProvider);
-            ref.invalidate(profileProvider);
             ref.invalidate(smartPreviewProvider(
                 (category: 'VOCABULARY', jlptLevel: jlptLevel)));
             ref.invalidate(smartPreviewProvider(

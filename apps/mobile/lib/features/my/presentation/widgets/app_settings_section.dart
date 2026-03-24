@@ -9,34 +9,13 @@ import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../providers/settings_sync_provider.dart';
 
-class AppSettingsSection extends ConsumerStatefulWidget {
-  final bool showFurigana;
-  final Future<void> Function(String field, Object value) onUpdate;
-
-  const AppSettingsSection({
-    super.key,
-    required this.showFurigana,
-    required this.onUpdate,
-  });
+class AppSettingsSection extends ConsumerWidget {
+  const AppSettingsSection({super.key});
 
   @override
-  ConsumerState<AppSettingsSection> createState() => _AppSettingsSectionState();
-}
-
-class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
-  @override
-  void initState() {
-    super.initState();
-    unawaited(
-      ref
-          .read(quizSettingsProvider.notifier)
-          .seedFromServer(widget.showFurigana),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final themeMode = ref.watch(themeProvider);
     final deviceSettings = ref.watch(deviceSettingsProvider);
@@ -93,14 +72,21 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                           theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 value: userPreferences.showFurigana,
-                onChanged: (value) {
-                  HapticService().selection();
-                  unawaited(
-                    ref.read(quizSettingsProvider.notifier).setShowFurigana(
-                          value,
-                        ),
-                  );
-                  widget.onUpdate('app_settings', {'showFurigana': value});
+                onChanged: (value) async {
+                  unawaited(HapticService().selection());
+                  try {
+                    await ref
+                        .read(settingsSyncServiceProvider)
+                        .updateShowFurigana(value);
+                  } catch (_) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('후리가나 설정 저장에 실패했습니다'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
                 },
               ),
               const Divider(height: 1),

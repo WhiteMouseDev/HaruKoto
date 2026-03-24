@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../home/providers/home_provider.dart';
 import '../data/models/profile_detail_model.dart';
 import '../providers/my_provider.dart';
 import 'widgets/profile_hero.dart';
@@ -50,9 +49,6 @@ class _MyPageState extends ConsumerState<MyPage> {
 
   Widget _buildContent(
       BuildContext context, ThemeData theme, ProfileDetailModel data) {
-    // Furigana is local-first (SharedPreferences).
-    // No server→local sync needed. Server is backup only.
-    {}
     return RefreshIndicator(
       color: theme.colorScheme.primary,
       onRefresh: () async {
@@ -97,30 +93,11 @@ class _MyPageState extends ConsumerState<MyPage> {
           const SizedBox(height: AppSizes.md),
 
           // Settings
-          SettingsMenu(
-            jlptLevel: data.profile.jlptLevel,
-            showKana: data.profile.showKana,
-            onUpdate: (field, value) async {
-              await ref
-                  .read(myRepositoryProvider)
-                  .updateProfile({field: value});
-              ref.invalidate(profileDetailProvider);
-              ref.invalidate(dashboardProvider);
-              ref.invalidate(profileProvider);
-            },
-          ),
+          const SettingsMenu(),
           const SizedBox(height: AppSizes.md),
 
           // App Settings
-          AppSettingsSection(
-            showFurigana: data.profile.showFurigana,
-            onUpdate: (field, value) async {
-              await ref
-                  .read(myRepositoryProvider)
-                  .updateProfile({field: value});
-              ref.invalidate(profileDetailProvider);
-            },
-          ),
+          const AppSettingsSection(),
           const SizedBox(height: AppSizes.md),
 
           // Info

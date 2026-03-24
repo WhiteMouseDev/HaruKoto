@@ -5,9 +5,11 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
+import '../../my/providers/settings_sync_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../data/models/review_summary_model.dart';
 import '../providers/study_provider.dart';
@@ -39,12 +41,10 @@ class _StudyPageState extends ConsumerState<StudyPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dashboardAsync = ref.watch(dashboardProvider);
-    final profileAsync = ref.watch(profileProvider);
+    final preferences = ref.watch(userPreferencesProvider);
 
     final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
-    final profile = profileAsync.hasValue ? profileAsync.value : null;
-
-    final jlptLevel = profile != null ? profile.jlptLevel : 'N5';
+    final jlptLevel = preferences.jlptLevel;
 
     final isLoading = dashboardAsync.isLoading && !dashboardAsync.hasValue;
     if (isLoading) {
@@ -52,7 +52,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
     }
 
     // Kana visibility
-    final showKana = dashboard?.showKana ?? false;
+    final showKana = preferences.showKana;
     final kanaCompleted = dashboard?.kanaProgress?.completed ?? false;
     final showKanaCard = showKana && !kanaCompleted;
 
@@ -68,7 +68,6 @@ class _StudyPageState extends ConsumerState<StudyPage> {
           color: theme.colorScheme.primary,
           onRefresh: () async {
             ref.invalidate(dashboardProvider);
-            ref.invalidate(profileProvider);
             ref.invalidate(reviewSummaryProvider(jlptLevel));
             ref.invalidate(chaptersProvider(jlptLevel));
           },
@@ -92,10 +91,8 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                         level: jlptLevel,
                         onChanged: (newLevel) async {
                           await ref
-                              .read(homeRepositoryProvider)
+                              .read(settingsSyncServiceProvider)
                               .updateJlptLevel(newLevel);
-                          ref.invalidate(profileProvider);
-                          ref.invalidate(dashboardProvider);
                         },
                       ),
                     ],

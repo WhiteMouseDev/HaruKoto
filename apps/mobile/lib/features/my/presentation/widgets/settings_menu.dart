@@ -1,52 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/user_preferences_provider.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../providers/settings_sync_provider.dart';
 
-class SettingsMenu extends StatefulWidget {
-  final String jlptLevel;
-  final bool showKana;
-  final Future<void> Function(String field, Object value) onUpdate;
-
-  const SettingsMenu({
-    super.key,
-    required this.jlptLevel,
-    required this.showKana,
-    required this.onUpdate,
-  });
-
-  @override
-  State<SettingsMenu> createState() => _SettingsMenuState();
-}
-
-class _SettingsMenuState extends State<SettingsMenu> {
-  late String _jlptLevel;
-  late bool _showKana;
-
+class SettingsMenu extends ConsumerWidget {
+  const SettingsMenu({super.key});
   static const _jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
   @override
-  void initState() {
-    super.initState();
-    _jlptLevel = widget.jlptLevel;
-    _showKana = widget.showKana;
-  }
-
-  @override
-  void didUpdateWidget(SettingsMenu oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Sync from server if parent provides new values
-    if (oldWidget.jlptLevel != widget.jlptLevel) {
-      _jlptLevel = widget.jlptLevel;
-    }
-    if (oldWidget.showKana != widget.showKana) {
-      _showKana = widget.showKana;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final preferences = ref.watch(userPreferencesProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +44,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     size: 20, color: theme.colorScheme.primary),
                 title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
                 trailing: Text(
-                  _jlptLevel,
+                  preferences.jlptLevel,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.primary,
                   ),
                 ),
-                onTap: () => _showJlptSheet(context),
+                onTap: () => _showJlptSheet(
+                  context,
+                  ref,
+                  preferences.jlptLevel,
+                ),
               ),
               const Divider(height: 1),
 
@@ -91,11 +64,22 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 secondary: Icon(LucideIcons.languages,
                     size: 20, color: theme.colorScheme.primary),
                 title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
-                value: _showKana,
-                onChanged: (value) {
-                  HapticService().selection();
-                  setState(() => _showKana = value);
-                  widget.onUpdate('showKana', value);
+                value: preferences.showKana,
+                onChanged: (value) async {
+                  unawaited(HapticService().selection());
+                  try {
+                    await ref
+                        .read(settingsSyncServiceProvider)
+                        .updateShowKana(value);
+                  } catch (_) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('가나 설정 저장에 실패했습니다'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
                 },
               ),
             ],
@@ -105,7 +89,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
     );
   }
 
-  void _showJlptSheet(BuildContext context) {
+  void _showJlptSheet(
+    BuildContext context,
+    WidgetRef ref,
+    String currentJlptLevel,
+  ) {
     final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
@@ -129,11 +117,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 for (final level in _jlptLevels)
                   ListTile(
                     title: Text(level),
-                    trailing: _jlptLevel == level
+                    trailing: currentJlptLevel == level
                         ? Icon(LucideIcons.check,
                             color: theme.colorScheme.primary, size: 20)
                         : null,
-                    selected: _jlptLevel == level,
+                    selected: currentJlptLevel == level,
                     selectedTileColor:
                         theme.colorScheme.primary.withValues(alpha: 0.08),
                     shape: RoundedRectangleBorder(
@@ -142,11 +130,22 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     onTap: () {
                       HapticService().selection();
                       Navigator.pop(context);
-                      if (level != _jlptLevel) {
-                        // Optimistic: update local state immediately
-                        setState(() => _jlptLevel = level);
-                        // Server sync in background
-                        widget.onUpdate('jlptLevel', level);
+                      if (level != currentJlptLevel) {
+                        unawaited(() async {
+                          try {
+                            await ref
+                                .read(settingsSyncServiceProvider)
+                                .updateJlptLevel(level);
+                          } catch (_) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('JLPT 레벨 저장에 실패했습니다'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        }());
                       }
                     },
                   ),
