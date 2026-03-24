@@ -13,7 +13,7 @@ import '../../my/providers/settings_sync_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../data/models/review_summary_model.dart';
 import '../providers/study_provider.dart';
-import 'quiz_page.dart';
+import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/study_skeleton.dart';
 
@@ -266,9 +266,10 @@ class _ReviewDueCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        onTap: () => Navigator.of(context, rootNavigator: true).push(
-          quizRoute(QuizPage(
-              quizType: _reviewQuizType, jlptLevel: jlptLevel, mode: 'review')),
+        onTap: () => openReviewQuiz(
+          context,
+          quizType: _reviewQuizType,
+          jlptLevel: jlptLevel,
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -331,12 +332,10 @@ class _ReviewDueCard extends StatelessWidget {
                 ),
               ),
               FilledButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).push(
-                  quizRoute(QuizPage(
-                      quizType: _reviewQuizType,
-                      jlptLevel: jlptLevel,
-                      mode: 'review')),
+                onPressed: () => openReviewQuiz(
+                  context,
+                  quizType: _reviewQuizType,
+                  jlptLevel: jlptLevel,
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primaryStrong,

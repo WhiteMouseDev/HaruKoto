@@ -7,8 +7,7 @@ import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/data/models/quiz_session_model.dart';
 import '../../study/data/models/smart_preview_model.dart';
 import '../../study/providers/study_provider.dart';
-import '../../study/presentation/quiz_page.dart';
-import '../../study/presentation/widgets/today_study_sheet.dart';
+import '../../study/presentation/study_entry_flow.dart';
 
 /// Quiz category tabs.
 enum _QuizCategory {
@@ -62,154 +61,6 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     );
   }
 
-  void _showTodayStudySheet(SmartPreviewModel data, String jlptLevel) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => TodayStudySheet(
-        data: data,
-        jlptLevel: jlptLevel,
-        category: _selectedCategory.apiType,
-      ),
-    );
-  }
-
-  void _handleCtaTap({
-    IncompleteSessionModel? incomplete,
-    SmartPreviewModel? preview,
-    required String jlptLevel,
-  }) {
-    // For non-smart categories, launch directly
-    if (!_selectedCategory.hasSmart) {
-      final mode =
-          _selectedCategory == _QuizCategory.sentenceArrange ? 'arrange' : null;
-      Navigator.of(context, rootNavigator: true).push(
-        quizRoute(QuizPage(
-          quizType: _selectedCategory.apiType,
-          jlptLevel: jlptLevel,
-          count: 10,
-          mode: mode,
-        )),
-      );
-      return;
-    }
-
-    if (incomplete != null) {
-      _showResumeOrNewSheet(incomplete, preview, jlptLevel);
-      return;
-    }
-    if (preview != null) {
-      _showTodayStudySheet(preview, jlptLevel);
-    }
-  }
-
-  void _showResumeOrNewSheet(
-    IncompleteSessionModel session,
-    SmartPreviewModel? preview,
-    String jlptLevel,
-  ) {
-    final theme = Theme.of(context);
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  '진행 중인 학습이 있어요',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${session.jlptLevel} ${session.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${session.answeredCount}/${session.totalQuestions} 문제 진행',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.lightSubtext,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.of(context, rootNavigator: true).push(
-                        quizRoute(QuizPage(
-                          quizType: session.quizType,
-                          jlptLevel: session.jlptLevel,
-                          count: session.totalQuestions,
-                          resumeSessionId: session.id,
-                        )),
-                      );
-                    },
-                    icon: const Icon(LucideIcons.playCircle, size: 18),
-                    label: const Text(
-                      '이어서 학습하기',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      if (preview != null) {
-                        _showTodayStudySheet(preview, jlptLevel);
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      '새로 시작하기',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -235,6 +86,11 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
     final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
     final preview = previewAsync?.hasValue == true ? previewAsync!.value : null;
+    final decision = resolveStudyEntryDecision(
+      category: _selectedCategory.apiType,
+      hasIncomplete: incomplete != null && _selectedCategory.hasSmart,
+      hasPreview: preview != null,
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -265,7 +121,13 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
               // ── Main CTA Card ──
               _buildCtaCard(
-                  theme, incomplete, preview, previewAsync, jlptLevel),
+                theme,
+                incomplete,
+                preview,
+                previewAsync,
+                jlptLevel,
+                decision,
+              ),
               const SizedBox(height: 28),
 
               // ── Study Management Section ──
@@ -369,14 +231,14 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     SmartPreviewModel? preview,
     AsyncValue<SmartPreviewModel>? previewAsync,
     String jlptLevel,
+    StudyEntryDecision decision,
   ) {
-    final hasIncomplete = incomplete != null && _selectedCategory.hasSmart;
+    final hasIncomplete = decision.action == StudyEntryActionKind.resumeOrNew;
     final isSmartLoading = _selectedCategory.hasSmart &&
         previewAsync != null &&
         previewAsync.isLoading &&
         preview == null;
-    // Allow tap when resuming (no preview needed) or when loaded
-    final isTappable = hasIncomplete || !isSmartLoading;
+    final isTappable = !isSmartLoading && decision.isTappable;
     final todayCompleted = preview?.todayCompleted ?? 0;
     final dailyGoal = preview?.dailyGoal ?? 20;
     final completedPct =
@@ -388,8 +250,9 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
     final String ctaSubtitle;
     if (hasIncomplete) {
+      final session = incomplete!;
       ctaSubtitle =
-          '${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중';
+          '${session.answeredCount}/${session.totalQuestions} 문제 진행 중';
     } else if (!_selectedCategory.hasSmart) {
       ctaSubtitle = '${_selectedCategory.label} 10문제';
     } else if (isSmartLoading) {
@@ -400,8 +263,14 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
     return GestureDetector(
       onTap: isTappable
-          ? () => _handleCtaTap(
-              incomplete: incomplete, preview: preview, jlptLevel: jlptLevel)
+          ? () => executeStudyEntryDecision(
+                context,
+                decision: decision,
+                category: _selectedCategory.apiType,
+                jlptLevel: jlptLevel,
+                incomplete: incomplete,
+                preview: preview,
+              )
           : null,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),

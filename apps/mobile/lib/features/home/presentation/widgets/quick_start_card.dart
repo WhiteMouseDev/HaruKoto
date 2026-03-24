@@ -9,7 +9,7 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/providers/study_provider.dart';
-import '../../../study/presentation/widgets/today_study_sheet.dart';
+import '../../../study/presentation/study_entry_flow.dart';
 import '../../data/models/dashboard_model.dart';
 
 // ═══════════════════════════════════════════════════════════════
@@ -338,16 +338,33 @@ class _MainContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final cat = _categories[selectedIndex];
+    final apiType = _apiTypeForCategory(cat.quizType);
     final progress = _getProgress(cat.quizType);
     final hasProgress = progress != null && progress.total > 0;
     final progressPct =
         hasProgress ? (progress.mastered / progress.total) : 0.0;
+    final incompleteAsync = ref.watch(incompleteQuizProvider);
+    final previewAsync = switch (apiType) {
+      'VOCABULARY' => ref.watch(
+          smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)),
+        ),
+      'GRAMMAR' => ref.watch(
+          smartPreviewProvider((category: 'GRAMMAR', jlptLevel: jlptLevel)),
+        ),
+      _ => null,
+    };
+    final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
+    final preview = previewAsync?.hasValue == true ? previewAsync!.value : null;
+    final decision = resolveStudyEntryDecision(
+      category: apiType,
+      hasIncomplete: incomplete != null && categorySupportsSmartStudy(apiType),
+      hasPreview: preview != null,
+      allowPracticeFallback: categorySupportsSmartStudy(apiType),
+    );
 
-    // Pre-fetch smart preview for vocabulary tab
-    if (cat.quizType == 'vocabulary') {
-      ref.watch(
-          smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)));
-    }
+    final ctaLabel = decision.action == StudyEntryActionKind.resumeOrNew
+        ? '이어서 학습하기'
+        : cat.ctaLabel;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,15 +520,15 @@ class _MainContent extends ConsumerWidget {
               borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
               onTap: () {
                 HapticService().light();
-                if (cat.quizType == 'vocabulary') {
-                  _showTodayStudySheet(context, ref);
-                } else {
-                  // Map to API category type for practice tab
-                  final apiType = cat.quizType == 'grammar'
-                      ? 'GRAMMAR'
-                      : 'SENTENCE_ARRANGE';
-                  context.go('/practice', extra: apiType);
-                }
+                executeStudyEntryDecision(
+                  context,
+                  decision: decision,
+                  category: apiType,
+                  jlptLevel: jlptLevel,
+                  incomplete: incomplete,
+                  preview: preview,
+                  onOpenPractice: () => context.go('/practice', extra: apiType),
+                );
               },
               child: Container(
                 width: double.infinity,
@@ -523,7 +540,7 @@ class _MainContent extends ConsumerWidget {
                         color: Colors.white, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      cat.ctaLabel,
+                      ctaLabel,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -558,24 +575,12 @@ class _MainContent extends ConsumerWidget {
         .toStringAsFixed(0);
   }
 
-  void _showTodayStudySheet(BuildContext context, WidgetRef ref) {
-    final previewAsync = ref.read(
-      smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)),
-    );
-
-    if (!previewAsync.hasValue || previewAsync.value == null) {
-      context.go('/practice');
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      shape: AppSizes.sheetShape,
-      builder: (_) => TodayStudySheet(
-        data: previewAsync.value!,
-        jlptLevel: jlptLevel,
-      ),
-    );
+  static String _apiTypeForCategory(String quizType) {
+    return switch (quizType) {
+      'grammar' => 'GRAMMAR',
+      'sentence' => 'SENTENCE_ARRANGE',
+      _ => 'VOCABULARY',
+    };
   }
 
   Future<void> _showDailyGoalSheet(BuildContext context, WidgetRef ref) async {

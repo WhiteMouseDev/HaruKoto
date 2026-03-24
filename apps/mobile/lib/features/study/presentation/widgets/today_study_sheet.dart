@@ -9,7 +9,7 @@ import '../../../home/providers/home_provider.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../data/models/smart_preview_model.dart';
 import '../../providers/study_provider.dart';
-import '../quiz_page.dart';
+import '../quiz_launch.dart';
 
 /// Bottom sheet for "오늘의 학습" — shows smart quiz preview,
 /// distribution breakdown, goal setting, and start button.
@@ -280,13 +280,12 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
                 onPressed: dist.total > 0
                     ? () {
                         Navigator.pop(context);
-                        Navigator.of(context, rootNavigator: true).push(
-                          quizRoute(QuizPage(
-                            quizType: widget.category,
-                            jlptLevel: widget.jlptLevel,
-                            count: dist.total,
-                            mode: 'smart',
-                          )),
+                        openQuizPageForSession(
+                          context,
+                          quizType: widget.category,
+                          jlptLevel: widget.jlptLevel,
+                          count: dist.total,
+                          mode: 'smart',
                         );
                       }
                     : null,
