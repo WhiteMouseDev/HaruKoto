@@ -266,36 +266,31 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   theme, incomplete, preview, previewAsync, jlptLevel),
               const SizedBox(height: 28),
 
-              // ── Quick Action Cards ──
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      icon: LucideIcons.fileX,
-                      iconColor: AppColors.primaryStrong,
-                      label: '오답노트',
-                      subtitle: '틀린 문제 복습',
-                      onTap: () => context.push('/study/wrong-answers'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickActionCard(
-                      icon: LucideIcons.bookMarked,
-                      iconColor: AppColors.primary,
-                      label: '단어장',
-                      subtitle: '저장한 단어',
-                      onTap: () => context.push('/study/wordbook'),
-                    ),
-                  ),
-                ],
+              // ── Study Management Section ──
+              Text(
+                '학습 관리',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
+              _MenuListTile(
+                icon: LucideIcons.fileX,
+                iconColor: AppColors.primaryStrong,
+                label: '오답노트',
+                onTap: () => context.push('/study/wrong-answers'),
+              ),
               _MenuListTile(
                 icon: LucideIcons.bookOpen,
                 iconColor: AppColors.primary,
                 label: '학습한 단어',
                 onTap: () => context.push('/study/learned-words'),
+              ),
+              _MenuListTile(
+                icon: LucideIcons.bookMarked,
+                iconColor: AppColors.primaryStrong,
+                label: '단어장',
+                onTap: () => context.push('/study/wordbook'),
               ),
             ],
           ),
