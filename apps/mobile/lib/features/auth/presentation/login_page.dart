@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/router/post_auth_resolver.dart';
 import '../providers/auth_provider.dart';
 import 'widgets/login_view.dart';
 import 'widgets/reset_password_view.dart';
@@ -70,11 +71,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
   }
 
+  Future<void> _navigatePostAuth() async {
+    if (!mounted) return;
+    await resolvePostAuthDestination(context, ref);
+  }
+
   Future<void> _handleAppleSignIn() async {
     setState(() => _loading = true);
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithApple();
+      await _navigatePostAuth();
     } on AuthException catch (e) {
       if (mounted) _showError(_friendlyAuthError(e.message));
     } catch (e) {
@@ -89,6 +96,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithGoogle();
+      await _navigatePostAuth();
     } on AuthException catch (e) {
       if (mounted) _showError(_friendlyAuthError(e.message));
     } catch (e) {
@@ -103,6 +111,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithKakao();
+      await _navigatePostAuth();
     } on AuthException catch (e) {
       if (mounted) _showError(_friendlyAuthError(e.message));
     } catch (e) {
@@ -148,6 +157,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
       } else {
         await repo.signInWithEmail(email: email, password: password);
+        await _navigatePostAuth();
       }
     } on AuthException catch (e) {
       if (mounted) _showError(_friendlyAuthError(e.message));

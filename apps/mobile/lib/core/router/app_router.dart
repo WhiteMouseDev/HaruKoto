@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../constants/colors.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/onboarding_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
 import '../../features/auth/providers/auth_provider.dart';
-import '../../features/home/providers/home_provider.dart';
+import 'post_auth_resolver.dart';
 import '../../features/chat/presentation/chat_page.dart';
 import '../../features/chat/presentation/contacts_page.dart';
 import '../../features/chat/presentation/conversation_page.dart';
@@ -97,16 +96,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuthenticated && path != '/login') return '/login';
-      if (isAuthenticated && path == '/login') return '/splash?postLogin=1';
+      // Note: when isAuth && path=='/login', we return null.
+      // Login handlers call _navigatePostAuth() directly after auth success,
+      // which checks onboarding before navigating. No redirect needed here.
 
       return null;
     },
     routes: [
       GoRoute(
         path: '/splash',
-        builder: (context, state) => _SplashRedirect(
-          skipDelay: state.uri.queryParameters['postLogin'] == '1',
-        ),
+        builder: (context, state) => const _SplashRedirect(),
       ),
       GoRoute(
         path: '/login',
@@ -386,11 +385,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   return router;
 });
 
-/// Splash resolver: shows splash animation on cold start (1.5s),
-/// or resolves immediately after login (skipDelay=true).
+/// Splash: shows splash animation on cold start (1.5s),
+/// then resolves auth state and navigates.
 class _SplashRedirect extends ConsumerStatefulWidget {
-  final bool skipDelay;
-  const _SplashRedirect({this.skipDelay = false});
+  const _SplashRedirect();
 
   @override
   ConsumerState<_SplashRedirect> createState() => _SplashRedirectState();
@@ -403,21 +401,11 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
   @override
   void initState() {
     super.initState();
-    if (widget.skipDelay) {
-      // Post-login: skip splash delay, resolve immediately
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _minTimeElapsed = true;
-        _tryRedirect();
-      });
-    } else {
-      // Cold start: show splash for 1.5 seconds
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (!mounted) return;
-        _minTimeElapsed = true;
-        _tryRedirect();
-      });
-    }
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      _minTimeElapsed = true;
+      _tryRedirect();
+    });
   }
 
   void _tryRedirect() {
@@ -428,40 +416,17 @@ class _SplashRedirectState extends ConsumerState<_SplashRedirect> {
 
   Future<void> _doRedirect() async {
     // Use Supabase session directly — more reliable than stream provider
-    // which may emit initial "no session" before restoration completes
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null || session.isExpired) {
       if (mounted) context.go('/login');
       return;
     }
-
-    // Check onboarding status
-    try {
-      final profile = await ref.read(homeRepositoryProvider).fetchProfile();
-      if (!mounted) return;
-      if (!profile.onboardingCompleted) {
-        context.go('/onboarding');
-      } else {
-        context.go('/home');
-      }
-    } catch (_) {
-      // If profile fetch fails, go home anyway (existing user)
-      if (mounted) context.go('/home');
-    }
+    // Shared post-auth resolver (same logic used by login handlers)
+    await resolvePostAuthDestination(context, ref);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Post-login: show blank screen (same background) to avoid splash flash
-    if (widget.skipDelay) {
-      return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.authGradient,
-          ),
-        ),
-      );
-    }
     return const SplashPage();
   }
 }
