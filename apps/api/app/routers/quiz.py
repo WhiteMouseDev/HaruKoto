@@ -649,7 +649,65 @@ async def start_quiz(
                     }
                 )
         else:
-            questions = await _generate_normal_questions(db, user, quiz_type, jlpt_level, count)
+            # Normal mode without stage — random questions from content pool
+            if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
+                result = await db.execute(
+                    select(Vocabulary).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(count)
+                )
+                items = result.scalars().all()
+                pool_result = await db.execute(
+                    select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
+                )
+                all_meanings = list(pool_result.scalars().all())
+                for vocab in items:
+                    wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
+                    random.shuffle(wrong_options)
+                    wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
+                    correct_id = str(uuid.uuid4())
+                    options = [QuizOption(id=correct_id, text=vocab.meaning_ko).model_dump()]
+                    for wo in wrong_options:
+                        options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
+                    random.shuffle(options)
+                    questions.append(
+                        {
+                            "id": str(vocab.id),
+                            "type": quiz_type,
+                            "question": vocab.word,
+                            "reading": vocab.reading,
+                            "questionSubText": vocab.reading,
+                            "options": options,
+                            "correctOptionId": correct_id,
+                            "word": vocab.word,
+                            "meaningKo": vocab.meaning_ko,
+                        }
+                    )
+            elif quiz_type == "GRAMMAR":
+                result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
+                items = result.scalars().all()
+                pool_result = await db.execute(
+                    select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
+                )
+                all_meanings = list(pool_result.scalars().all())
+                for grammar in items:
+                    wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
+                    random.shuffle(wrong_options)
+                    wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
+                    correct_id = str(uuid.uuid4())
+                    options = [QuizOption(id=correct_id, text=grammar.meaning_ko).model_dump()]
+                    for wo in wrong_options:
+                        options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
+                    random.shuffle(options)
+                    questions.append(
+                        {
+                            "id": str(grammar.id),
+                            "type": quiz_type,
+                            "question": grammar.pattern,
+                            "options": options,
+                            "correctOptionId": correct_id,
+                            "pattern": grammar.pattern,
+                            "meaningKo": grammar.meaning_ko,
+                        }
+                    )
 
     # Store stage_id in session questions_data metadata
     session_meta: dict[str, Any] = {}
