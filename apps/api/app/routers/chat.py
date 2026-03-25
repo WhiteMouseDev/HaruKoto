@@ -246,12 +246,21 @@ async def end_chat(
     chat_study_minutes = max(0, duration // 60)
     await db.execute(
         insert(DailyProgress)
-        .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=chat_study_minutes)
+        .values(
+            user_id=user.id,
+            date=today,
+            xp_earned=xp,
+            quizzes_completed=0,
+            words_studied=0,
+            study_minutes=chat_study_minutes,
+            conversation_count=1,
+        )
         .on_conflict_do_update(
             index_elements=["user_id", "date"],
             set_={
                 "xp_earned": DailyProgress.xp_earned + xp,
                 "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + chat_study_minutes,
+                "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
             },
         )
     )
@@ -438,12 +447,21 @@ async def submit_live_feedback(
         live_study_minutes = max(0, body.duration_seconds // 60)
         await db.execute(
             insert(DailyProgress)
-            .values(user_id=user.id, date=today, xp_earned=xp, quizzes_completed=0, words_studied=0, study_minutes=live_study_minutes)
+            .values(
+                user_id=user.id,
+                date=today,
+                xp_earned=xp,
+                quizzes_completed=0,
+                words_studied=0,
+                study_minutes=live_study_minutes,
+                conversation_count=1,
+            )
             .on_conflict_do_update(
                 index_elements=["user_id", "date"],
                 set_={
                     "xp_earned": DailyProgress.xp_earned + xp,
                     "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + live_study_minutes,
+                    "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
                 },
             )
         )
