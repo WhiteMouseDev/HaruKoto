@@ -359,7 +359,6 @@ class _MainContent extends ConsumerWidget {
       category: apiType,
       hasIncomplete: incomplete != null && categorySupportsSmartStudy(apiType),
       hasPreview: preview != null,
-      allowPracticeFallback: categorySupportsSmartStudy(apiType),
     );
 
     final ctaLabel = decision.action == StudyEntryActionKind.resumeOrNew
@@ -527,7 +526,6 @@ class _MainContent extends ConsumerWidget {
                   jlptLevel: jlptLevel,
                   incomplete: incomplete,
                   preview: preview,
-                  onOpenPractice: () => context.go('/practice', extra: apiType),
                 );
               },
               child: Container(

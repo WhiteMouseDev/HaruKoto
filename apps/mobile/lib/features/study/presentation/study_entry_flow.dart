@@ -11,8 +11,6 @@ enum StudyEntryActionKind {
   resumeOrNew,
   showPreview,
   startQuiz,
-  openPractice,
-  unavailable,
 }
 
 class StudyEntryDecision {
@@ -24,7 +22,7 @@ class StudyEntryDecision {
   final StudyEntryActionKind action;
   final String? mode;
 
-  bool get isTappable => action != StudyEntryActionKind.unavailable;
+  bool get isTappable => true;
 }
 
 bool categorySupportsSmartStudy(String category) {
@@ -38,33 +36,35 @@ String? defaultQuizModeForCategory(String category) {
   return null;
 }
 
+/// 진입 전략. unavailable 상태 없음 — 항상 시작 가능한 경로 보장.
+///
+/// 우선순위: resume > smart preview > 기본 퀴즈
 StudyEntryDecision resolveStudyEntryDecision({
   required String category,
   bool hasIncomplete = false,
   bool hasPreview = false,
-  bool allowPracticeFallback = false,
 }) {
+  // Smart 카테고리 (VOCABULARY, GRAMMAR)
   if (categorySupportsSmartStudy(category)) {
+    // 1순위: 미완료 세션 이어하기
     if (hasIncomplete) {
       return const StudyEntryDecision(
         action: StudyEntryActionKind.resumeOrNew,
       );
     }
+    // 2순위: Smart Preview 있으면 오늘의 학습
     if (hasPreview) {
       return const StudyEntryDecision(
         action: StudyEntryActionKind.showPreview,
       );
     }
-    if (allowPracticeFallback) {
-      return const StudyEntryDecision(
-        action: StudyEntryActionKind.openPractice,
-      );
-    }
+    // 3순위: 콘텐츠 있으면 기본 퀴즈 시작 (Day 1 유저 포함)
     return const StudyEntryDecision(
-      action: StudyEntryActionKind.unavailable,
+      action: StudyEntryActionKind.startQuiz,
     );
   }
 
+  // 비-Smart 카테고리 (SENTENCE_ARRANGE 등)
   return StudyEntryDecision(
     action: StudyEntryActionKind.startQuiz,
     mode: defaultQuizModeForCategory(category),
@@ -170,7 +170,16 @@ Future<void> showResumeOrNewStudySheet(
                 height: 48,
                 child: OutlinedButton(
                   onPressed: preview == null
-                      ? null
+                      ? () {
+                          // Smart Preview 없어도 기본 퀴즈로 시작 가능
+                          Navigator.pop(ctx);
+                          openQuizPageForSession(
+                            context,
+                            quizType: selectedCategory,
+                            jlptLevel: jlptLevel,
+                            count: 10,
+                          );
+                        }
                       : () {
                           Navigator.pop(ctx);
                           showTodayStudySheetModal(
@@ -185,9 +194,9 @@ Future<void> showResumeOrNewStudySheet(
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    '새로 시작하기',
-                    style: TextStyle(
+                  child: Text(
+                    preview == null ? '새로 시작하기' : '오늘의 학습 보기',
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -209,7 +218,6 @@ Future<void> executeStudyEntryDecision(
   required String jlptLevel,
   SmartPreviewModel? preview,
   IncompleteSessionModel? incomplete,
-  VoidCallback? onOpenPractice,
 }) {
   switch (decision.action) {
     case StudyEntryActionKind.resumeOrNew:
@@ -237,11 +245,6 @@ Future<void> executeStudyEntryDecision(
         count: 10,
         mode: decision.mode,
       );
-      return Future.value();
-    case StudyEntryActionKind.openPractice:
-      onOpenPractice?.call();
-      return Future.value();
-    case StudyEntryActionKind.unavailable:
       return Future.value();
   }
 }

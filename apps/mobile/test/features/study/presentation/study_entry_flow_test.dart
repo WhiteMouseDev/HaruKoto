@@ -25,13 +25,13 @@ void main() {
       expect(decision.isTappable, isTrue);
     });
 
-    test('falls back to practice when smart data is unavailable', () {
+    test('falls back to startQuiz when no preview (Day 1 user)', () {
       final decision = resolveStudyEntryDecision(
         category: 'VOCABULARY',
-        allowPracticeFallback: true,
       );
 
-      expect(decision.action, StudyEntryActionKind.openPractice);
+      expect(decision.action, StudyEntryActionKind.startQuiz);
+      expect(decision.isTappable, isTrue);
     });
 
     test('starts sentence arrange quiz directly with arrange mode', () {
@@ -43,14 +43,32 @@ void main() {
       expect(decision.mode, 'arrange');
     });
 
-    test('marks unavailable when smart preview is missing without fallback',
-        () {
+    test('GRAMMAR without preview starts basic quiz (not unavailable)', () {
       final decision = resolveStudyEntryDecision(
         category: 'GRAMMAR',
       );
 
-      expect(decision.action, StudyEntryActionKind.unavailable);
-      expect(decision.isTappable, isFalse);
+      expect(decision.action, StudyEntryActionKind.startQuiz);
+      expect(decision.isTappable, isTrue);
+    });
+
+    test('resume takes priority over preview', () {
+      final decision = resolveStudyEntryDecision(
+        category: 'VOCABULARY',
+        hasIncomplete: true,
+        hasPreview: true,
+      );
+
+      expect(decision.action, StudyEntryActionKind.resumeOrNew);
+    });
+
+    test('preview takes priority over basic quiz', () {
+      final decision = resolveStudyEntryDecision(
+        category: 'VOCABULARY',
+        hasPreview: true,
+      );
+
+      expect(decision.action, StudyEntryActionKind.showPreview);
     });
   });
 }
