@@ -266,8 +266,8 @@ async def get_heatmap(
     current = start_date
     while current <= end_date:
         dp = progress_map.get(current)
-        words = dp.words_studied if dp else 0
-        minutes = dp.study_minutes if dp else 0
+        words = (dp.words_studied or 0) if dp else 0
+        minutes = (dp.study_minutes or 0) if dp else 0
         data.append(
             HeatmapItem(
                 date=str(current),
@@ -370,7 +370,7 @@ async def get_time_chart(
         data.append(
             TimeChartItem(
                 date=str(current),
-                minutes=dp.study_minutes if dp else 0,
+                minutes=(dp.study_minutes or 0) if dp else 0,
             )
         )
         current += timedelta(days=1)
@@ -406,9 +406,9 @@ async def get_volume_chart(
         data.append(
             VolumeChartItem(
                 date=str(current),
-                words_studied=dp.words_studied if dp else 0,
-                grammar_studied=dp.grammar_studied if dp else 0,
-                sentences_studied=dp.sentences_studied if dp else 0,
+                words_studied=(dp.words_studied or 0) if dp else 0,
+                grammar_studied=(dp.grammar_studied or 0) if dp else 0,
+                sentences_studied=(dp.sentences_studied or 0) if dp else 0,
             )
         )
         current += timedelta(days=1)
@@ -443,9 +443,9 @@ async def get_by_category(
     for i in range(7):
         d = start_date + timedelta(days=i)
         dp = progress_map.get(d)
-        vocab_daily.append(dp.words_studied if dp else 0)
-        grammar_daily.append(dp.grammar_studied if dp else 0)
-        sentences_daily.append(dp.sentences_studied if dp else 0)
+        vocab_daily.append((dp.words_studied or 0) if dp else 0)
+        grammar_daily.append((dp.grammar_studied or 0) if dp else 0)
+        sentences_daily.append((dp.sentences_studied or 0) if dp else 0)
 
     return ByCategoryResponse(
         vocabulary=CategoryStat(total=sum(vocab_daily), daily=vocab_daily),

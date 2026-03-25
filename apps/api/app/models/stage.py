@@ -22,8 +22,8 @@ class StudyStage(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     content_ids: Mapped[list | dict] = mapped_column(JSON, nullable=False, default=list)
     unlock_after: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("study_stages.id"), nullable=True)
-    order: Mapped[int] = mapped_column(Integer, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    order: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
+    created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, server_default=func.now())
 
     user_progress: Mapped[list[UserStudyStageProgress]] = relationship(back_populates="stage", cascade="all, delete-orphan")
 
@@ -36,13 +36,18 @@ class UserStudyStageProgress(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"))
     stage_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("study_stages.id", ondelete="CASCADE"))
-    best_score: Mapped[int] = mapped_column(Integer, default=0)
-    attempts: Mapped[int] = mapped_column(Integer, default=0)
-    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    best_score: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
+    attempts: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
+    completed: Mapped[bool | None] = mapped_column(Boolean, nullable=True, default=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_attempted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, server_default=func.now())
+    updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
     user: Mapped[User] = relationship(back_populates="study_stage_progress")  # noqa: F821
     stage: Mapped[StudyStage] = relationship(back_populates="user_progress")

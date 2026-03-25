@@ -251,7 +251,7 @@ async def end_chat(
             index_elements=["user_id", "date"],
             set_={
                 "xp_earned": DailyProgress.xp_earned + xp,
-                "study_minutes": DailyProgress.study_minutes + chat_study_minutes,
+                "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + chat_study_minutes,
             },
         )
     )
@@ -443,7 +443,7 @@ async def submit_live_feedback(
                 index_elements=["user_id", "date"],
                 set_={
                     "xp_earned": DailyProgress.xp_earned + xp,
-                    "study_minutes": DailyProgress.study_minutes + live_study_minutes,
+                    "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + live_study_minutes,
                 },
             )
         )

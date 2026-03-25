@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
-def _ignore_prisma_type_diffs(type1, type2, directive):
+def _ignore_prisma_type_diffs(autogen_context, alter_column_op, schema_type, reflected_type, rendered_metadata):
     """Prisma가 사용하는 타입(TIMESTAMP(3), JSONB)과 SQLAlchemy 기본 타입 차이를 무시."""
     return False
 

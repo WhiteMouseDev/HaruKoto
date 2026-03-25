@@ -898,9 +898,9 @@ async def complete_quiz(
             "total_answers": DailyProgress.total_answers + session.total_questions,
             "xp_earned": DailyProgress.xp_earned + xp_earned,
             "words_studied": DailyProgress.words_studied + words_increment,
-            "grammar_studied": DailyProgress.grammar_studied + grammar_increment,
-            "sentences_studied": DailyProgress.sentences_studied + sentences_increment,
-            "study_minutes": DailyProgress.study_minutes + study_duration_minutes,
+            "grammar_studied": func.coalesce(DailyProgress.grammar_studied, 0) + grammar_increment,
+            "sentences_studied": func.coalesce(DailyProgress.sentences_studied, 0) + sentences_increment,
+            "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + study_duration_minutes,
         },
     )
     await db.execute(stmt)
@@ -967,9 +967,9 @@ async def complete_quiz(
             )
             db.add(stage_progress)
         else:
-            stage_progress.attempts += 1
+            stage_progress.attempts = (stage_progress.attempts or 0) + 1
             stage_progress.last_attempted_at = now
-            if score_pct > stage_progress.best_score:
+            if score_pct > (stage_progress.best_score or 0):
                 stage_progress.best_score = score_pct
             if score_pct >= 70 and not stage_progress.completed:
                 stage_progress.completed = True
