@@ -17,6 +17,7 @@ Create Date: 2026-03-25 09:20:39.783232
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 from alembic import op
 
@@ -47,7 +48,13 @@ def upgrade() -> None:
         nullable=True,
     )
 
-    # -- 2. study_stages: order, created_at nullable 전환 --
+    # -- 2. study_stages: id default, order/created_at nullable, content_ids type/default --
+    op.alter_column(
+        "study_stages",
+        "id",
+        existing_type=sa.UUID(),
+        server_default=sa.text("gen_random_uuid()"),
+    )
     op.alter_column(
         "study_stages",
         "order",
@@ -60,15 +67,21 @@ def upgrade() -> None:
         existing_type=sa.DateTime(timezone=True),
         nullable=True,
     )
-    # study_stages.content_ids: server_default를 '[]'로 설정 (Prisma 기대값)
     op.alter_column(
         "study_stages",
         "content_ids",
+        type_=postgresql.JSONB(),
         existing_type=sa.JSON(),
-        server_default=sa.text("'[]'::json"),
+        server_default=sa.text("'[]'::jsonb"),
     )
 
-    # -- 3. user_study_stage_progress: 다수 컬럼 nullable 전환 --
+    # -- 3. user_study_stage_progress: id default + 다수 컬럼 nullable 전환 --
+    op.alter_column(
+        "user_study_stage_progress",
+        "id",
+        existing_type=sa.UUID(),
+        server_default=sa.text("gen_random_uuid()"),
+    )
     op.alter_column(
         "user_study_stage_progress",
         "best_score",
