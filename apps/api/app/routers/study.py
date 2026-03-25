@@ -8,7 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
+from app.enums import effective_jlpt_level
 from app.models import StudyStage, UserStudyStageProgress, UserVocabProgress, Vocabulary
+from app.models.content import ClozeQuestion, Grammar, SentenceArrangeQuestion
+from app.models.lesson import Chapter
 from app.models.user import User
 from app.schemas.stats import DailyGoalRequest, DailyGoalResponse
 from app.utils.helpers import enum_value
@@ -293,3 +296,88 @@ async def update_daily_goal(
     await db.refresh(user)
 
     return DailyGoalResponse(daily_goal=user.daily_goal)
+
+
+@router.get("/capabilities", status_code=200)
+async def get_capabilities(
+    jlpt_level: str | None = Query(default=None, alias="jlptLevel"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """레벨별 기능 가용성 매트릭스. 모든 진입/가드 화면의 단일 소스."""
+    requested = jlpt_level or enum_value(user.jlpt_level)
+    effective = enum_value(effective_jlpt_level(user.jlpt_level)) if not jlpt_level else requested
+    if effective == "ABSOLUTE_ZERO":
+        effective = "N5"
+
+    # --- Quiz: 카테고리별 콘텐츠 존재 여부 ---
+    vocab_count = (await db.execute(select(func.count()).select_from(Vocabulary).where(Vocabulary.jlpt_level == effective))).scalar_one()
+    grammar_count = (await db.execute(select(func.count()).select_from(Grammar).where(Grammar.jlpt_level == effective))).scalar_one()
+    cloze_count = (
+        await db.execute(select(func.count()).select_from(ClozeQuestion).where(ClozeQuestion.jlpt_level == effective))
+    ).scalar_one()
+    arrange_count = (
+        await db.execute(select(func.count()).select_from(SentenceArrangeQuestion).where(SentenceArrangeQuestion.jlpt_level == effective))
+    ).scalar_one()
+
+    quiz_caps = {
+        "VOCABULARY": vocab_count > 0,
+        "GRAMMAR": grammar_count > 0,
+        "KANJI": False,
+        "LISTENING": False,
+        "KANA": True,
+        "CLOZE": cloze_count > 0,
+        "SENTENCE_ARRANGE": arrange_count > 0,
+    }
+
+    # --- Smart: SRS pool 존재 여부 (유저별 + 레벨 필터) ---
+    from app.models.progress import UserGrammarProgress
+
+    vocab_pool = (
+        await db.execute(
+            select(func.count())
+            .select_from(UserVocabProgress)
+            .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
+            .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == effective)
+        )
+    ).scalar_one()
+
+    grammar_pool = (
+        await db.execute(
+            select(func.count())
+            .select_from(UserGrammarProgress)
+            .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
+            .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == effective)
+        )
+    ).scalar_one()
+
+    smart_caps = {
+        "VOCABULARY": {"available": vocab_count > 0, "hasPool": vocab_pool > 0},
+        "GRAMMAR": {"available": grammar_count > 0, "hasPool": grammar_pool > 0},
+    }
+
+    # --- Lesson: 해당 레벨 published 레슨 존재 여부 ---
+    lesson_count = (
+        await db.execute(select(func.count()).select_from(Chapter).where(Chapter.jlpt_level == effective, Chapter.is_published.is_(True)))
+    ).scalar_one()
+
+    # --- Stage: 카테고리별 스테이지 존재 여부 ---
+    stage_result = await db.execute(
+        select(StudyStage.category, func.count()).where(StudyStage.jlpt_level == effective).group_by(StudyStage.category)
+    )
+    stage_map = dict(stage_result.all())
+
+    stage_caps = {
+        "VOCABULARY": stage_map.get("VOCABULARY", 0) > 0,
+        "GRAMMAR": stage_map.get("GRAMMAR", 0) > 0,
+        "SENTENCE": stage_map.get("SENTENCE", 0) > 0,
+    }
+
+    return {
+        "requestedJlptLevel": requested,
+        "effectiveJlptLevel": effective,
+        "quiz": quiz_caps,
+        "smart": smart_caps,
+        "lesson": lesson_count > 0,
+        "stage": stage_caps,
+    }

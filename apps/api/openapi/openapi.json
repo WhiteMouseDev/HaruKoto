@@ -3046,6 +3046,74 @@
         }
       }
     },
+    "/api/v1/cron/ensure-partitions": {
+      "post": {
+        "tags": [
+          "cron"
+        ],
+        "summary": "Ensure Review Event Partitions",
+        "description": "Ensure review_events partitions exist for the next 3 months.",
+        "operationId": "ensure_review_event_partitions_api_v1_cron_ensure_partitions_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cron/fsrs-shadow-report": {
+      "post": {
+        "tags": [
+          "cron"
+        ],
+        "summary": "Fsrs Shadow Report",
+        "description": "Generate FSRS shadow report for a user (admin/cron only).",
+        "operationId": "fsrs_shadow_report_api_v1_cron_fsrs_shadow_report_post",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/push/subscribe": {
       "post": {
         "tags": [
@@ -3513,6 +3581,59 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/study/capabilities": {
+      "get": {
+        "tags": [
+          "study"
+        ],
+        "summary": "Get Capabilities",
+        "description": "레벨별 기능 가용성 매트릭스. 모든 진입/가드 화면의 단일 소스.",
+        "operationId": "get_capabilities_api_v1_study_capabilities_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jlptLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlptlevel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/lessons/chapters": {
@@ -6309,6 +6430,42 @@
               }
             ],
             "title": "Correctoptionid"
+          },
+          "tokens": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tokens"
+          },
+          "japaneseSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Japanesesentence"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
           }
         },
         "type": "object",
