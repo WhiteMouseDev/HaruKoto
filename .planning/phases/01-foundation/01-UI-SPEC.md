@@ -73,13 +73,14 @@ must be loaded. Korean and English fall back to system sans-serif at same sizes.
 | Role | Size | Weight | Line Height | Font |
 |------|------|--------|-------------|------|
 | Body | 14px | 400 (regular) | 1.5 | Noto Sans JP |
-| Label | 12px | 500 (medium) | 1.4 | Noto Sans JP |
+| Label | 12px | 400 (regular) | 1.4 | Noto Sans JP |
 | Heading | 20px | 600 (semibold) | 1.3 | Noto Sans JP |
-| Display | 28px | 700 (bold) | 1.2 | Noto Sans JP |
+| Display | 28px | 600 (semibold) | 1.2 | Noto Sans JP |
 
-Weights in use: 400 (regular) and 600 (semibold). 500 is used only for form labels and
-badge text; 700 is used only for the login page app title. Do not introduce additional
-weights.
+Weights in use: 400 (regular) and 600 (semibold) only. Do not introduce additional weights.
+Form labels (Label row) are differentiated from body text by their smaller 12px size and
+muted-foreground color (#6B7280), not by a separate weight. The login page app title at
+Display 28px/semibold is visually dominant enough without requiring bold weight.
 
 ---
 
@@ -176,7 +177,7 @@ shadcn official registry (ui.shadcn.com).
 - Background: dominant (gray-50)
 - Login card: 400px max-width, secondary (white), rounded-lg, border, shadow-sm
 - Card padding: 48px (2xl token) vertical, 32px (xl token) horizontal
-- App title at top of card: Display size (28px/700), centered
+- App title at top of card: Display size (28px/semibold), centered
 - Form fields stacked vertically with 16px (md token) gap
 - Submit button: full-width, accent fill (#F6A5B3), Label size text, 40px height
 - Error banner (access denied): destructive (#EF4444) background tint below the form,
@@ -192,9 +193,11 @@ shadcn official registry (ui.shadcn.com).
 
 ### Dashboard Stub — `/(admin)/dashboard`
 
-- Page heading: Heading size (20px/600)
+- Page heading: Heading size (20px/semibold)
 - Empty state card: centered, max-width 480px, 48px vertical padding inside card,
   Display size emoji-free heading + Body size explanation + muted-foreground text
+- Empty state card is the focal point of this screen; the heading text ("データがありません")
+  is the primary visual anchor, rendered at Display size in foreground color
 
 ---
 
