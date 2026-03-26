@@ -50,7 +50,13 @@ Plans:
   3. 검색창에 텍스트를 입력하면 해당 텍스트가 포함된 항목만 표시된다
   4. 각 목록 행에 검증 상태 뱃지(needs_review/approved/rejected)가 시각적으로 표시된다
   5. 대시보드에서 콘텐츠 타입별 검증 현황(상태별 건수)을 한눈에 확인할 수 있다
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Alembic migration + ReviewStatus enum + FastAPI admin content endpoints
+- [ ] 02-02-PLAN.md — Sidebar navigation + shadcn Table + shared UI components (StatusBadge, FilterBar, PaginationBar) + i18n
+- [ ] 02-03-PLAN.md — Content list pages + dashboard stats wired to FastAPI via TanStack Query
+
 **UI hint**: yes
 
 ### Phase 3: Content Editing & Review Workflow
@@ -95,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-26 |
-| 2. Content List Views | 0/TBD | Not started | - |
+| 2. Content List Views | 0/3 | Not started | - |
 | 3. Content Editing & Review Workflow | 0/TBD | Not started | - |
 | 4. TTS Audio | 0/TBD | Not started | - |
 | 5. Reviewer Productivity | 0/TBD | Not started | - |
