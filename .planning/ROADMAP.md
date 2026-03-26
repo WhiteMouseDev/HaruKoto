@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Scaffold apps/admin with configs, Supabase clients, i18n infra, root layout, test scaffolds
 - [ ] 01-02-PLAN.md — Auth gate: proxy.ts route guard, login page, reviewer provisioning, Codex verification
-- [ ] 01-03-PLAN.md — Admin shell: header layout, dashboard stub, locale switcher
+- [x] 01-03-PLAN.md — Admin shell: header layout, dashboard stub, locale switcher
 - [ ] 01-04-PLAN.md — Vercel deployment and end-to-end verification
 
 **UI hint**: yes
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/4 | In Progress|  |
+| 1. Foundation | 2/4 | In Progress|  |
 | 2. Content List Views | 0/TBD | Not started | - |
 | 3. Content Editing & Review Workflow | 0/TBD | Not started | - |
 | 4. TTS Audio | 0/TBD | Not started | - |

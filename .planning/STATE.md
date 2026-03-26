@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-26T07:59:20.790Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-03-26T08:05:03.652Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-03-26
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 5m | 2 tasks | 34 files |
+| Phase 01-foundation P03 | 5 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: requireReviewer() uses getUser() not getSession() for live DB auth validation (AUTH-03)
 - [Phase 01-foundation]: next-intl without-routing mode with NEXT_LOCALE cookie; ja default; no URL locale segments
 - [Phase 01-foundation]: ja.json as IntlMessages TypeScript type source; missing translations surface as compile errors
+- [Phase 01-foundation]: Header is async Server Component using getTranslations(); locale string passed from layout via getLocale()
+- [Phase 01-foundation]: Native language labels hardcoded (日本語/한국어/English) in LocaleSwitcher — shown in own language regardless of UI locale
+- [Phase 01-foundation]: middleware.ts removed: Next.js 16 forbids both middleware.ts and proxy.ts; proxy.ts is canonical per CLAUDE.md
 
 ### Pending Todos
 
@@ -81,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T07:59:20.787Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-03-26T08:05:03.649Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
