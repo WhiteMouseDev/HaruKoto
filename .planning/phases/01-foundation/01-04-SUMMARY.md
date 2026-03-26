@@ -106,16 +106,26 @@ None. Deployment is fully functional.
 
 - [x] Automated: `https://harukoto-admin.vercel.app` returns 307 redirect to `/login`
 - [x] Automated: `/login` returns HTTP 200 with "HaruKoto", "管理者", login form HTML
-- [ ] Human-verify: Login page visual renders correctly (no blank page, correct styling)
-- [ ] Human-verify: Login with reviewer account redirects to `/dashboard`
-- [ ] Human-verify: Locale switcher works (ja/ko/en)
-- [ ] Human-verify: Logout redirects back to `/login`
+- [x] Human-verify: Login page visual renders correctly (no blank page, correct styling)
+- [x] Human-verify: Login with reviewer account redirects to `/dashboard`
+- [x] Human-verify: Locale switcher works (ja/ko/en)
+- [x] Human-verify: Logout redirects back to `/login`
 
 ## Next Phase Readiness
 
 - Vercel project is deployed and reachable
 - Future deployments: `npx vercel --prod --cwd <monorepo-root>`
 - Reviewer provisioning: `cd apps/admin && npx tsx scripts/provision-reviewer.ts <user-id> grant`
+
+## Self-Check: PASSED
+
+- FOUND: apps/admin/.gitignore
+- FOUND: apps/admin/next-env.d.ts
+- FOUND: .planning/phases/01-foundation/01-04-SUMMARY.md
+- FOUND: commit 8cfa4cf (task commit)
+- FOUND: commit 07df7a7 (metadata commit)
+- Live URL verified: https://harukoto-admin.vercel.app returns 307 to /login
+- Login page verified: HTTP 200 with "HaruKoto", "管理者" content
 
 ---
 *Phase: 01-foundation*
