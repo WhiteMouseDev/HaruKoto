@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "project_name": "HaruKoto Admin",
+  "workflow_mode": "interactive",
+  "granularity": "standard",
+  "parallelization": true,
+  "commit_docs": true,
+  "planning": {
+    "sub_repos": []
+  },
+  "models": {
+    "researcher": "sonnet",
+    "synthesizer": "sonnet",
+    "roadmapper": "sonnet"
+  },
+  "created_at": "2026-03-26"
+}
