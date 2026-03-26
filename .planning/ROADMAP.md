@@ -30,12 +30,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. reviewer 역할이 DB에서 제거된 후 페이지를 새로고침하면 즉시 로그아웃된다
   4. UI가 일본어로 표시되며, 언어 전환 컨트롤로 한국어·영어로 전환할 수 있다
   5. Vercel 배포 URL에서 앱이 정상적으로 로드된다
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold apps/admin with configs, Supabase clients, i18n infra, root layout
-- [ ] 01-02-PLAN.md — Auth gate: proxy.ts route guard, login page, reviewer provisioning
+- [ ] 01-01-PLAN.md — Scaffold apps/admin with configs, Supabase clients, i18n infra, root layout, test scaffolds
+- [ ] 01-02-PLAN.md — Auth gate: proxy.ts route guard, login page, reviewer provisioning, Codex verification
 - [ ] 01-03-PLAN.md — Admin shell: header layout, dashboard stub, locale switcher
+- [ ] 01-04-PLAN.md — Vercel deployment and end-to-end verification
 
 **UI hint**: yes
 
@@ -93,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Planning complete | - |
+| 1. Foundation | 0/4 | Planning complete | - |
 | 2. Content List Views | 0/TBD | Not started | - |
 | 3. Content Editing & Review Workflow | 0/TBD | Not started | - |
 | 4. TTS Audio | 0/TBD | Not started | - |
