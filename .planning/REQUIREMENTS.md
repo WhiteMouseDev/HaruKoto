@@ -17,9 +17,9 @@
 - [ ] **LIST-02**: Reviewer가 문법/문장 목록을 페이지네이션으로 조회할 수 있다
 - [ ] **LIST-03**: Reviewer가 퀴즈/문제 목록을 페이지네이션으로 조회할 수 있다
 - [ ] **LIST-04**: Reviewer가 회화 시나리오 목록을 페이지네이션으로 조회할 수 있다
-- [ ] **LIST-05**: Reviewer가 JLPT 레벨, 카테고리, 검증 상태로 데이터를 필터링할 수 있다
-- [ ] **LIST-06**: Reviewer가 텍스트 검색으로 특정 데이터를 찾을 수 있다
-- [ ] **LIST-07**: 각 항목에 검증 상태 뱃지(needs_review/approved/rejected)가 표시된다
+- [x] **LIST-05**: Reviewer가 JLPT 레벨, 카테고리, 검증 상태로 데이터를 필터링할 수 있다
+- [x] **LIST-06**: Reviewer가 텍스트 검색으로 특정 데이터를 찾을 수 있다
+- [x] **LIST-07**: 각 항목에 검증 상태 뱃지(needs_review/approved/rejected)가 표시된다
 
 ### Content Editing
 
@@ -90,9 +90,9 @@
 | LIST-02 | Phase 2 | Pending |
 | LIST-03 | Phase 2 | Pending |
 | LIST-04 | Phase 2 | Pending |
-| LIST-05 | Phase 2 | Pending |
-| LIST-06 | Phase 2 | Pending |
-| LIST-07 | Phase 2 | Pending |
+| LIST-05 | Phase 2 | Complete |
+| LIST-06 | Phase 2 | Complete |
+| LIST-07 | Phase 2 | Complete |
 | EDIT-01 | Phase 3 | Pending |
 | EDIT-02 | Phase 3 | Pending |
 | EDIT-03 | Phase 3 | Pending |

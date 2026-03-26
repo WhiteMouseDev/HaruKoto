@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-03-26T14:35:05.085Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-26T15:22:37.703Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 7
+  completed_plans: 5
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 02 — content-list-views
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (content-list-views) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
 Last activity: 2026-03-26
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P03 | 5 | 2 tasks | 8 files |
 | Phase 01-foundation P02 | 2m | 2 tasks | 7 files |
 | Phase 01-foundation P04 | 15m | 1 tasks | 2 files |
+| Phase 02-content-list-views P02 | 10m | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Non-reviewer authenticated users redirected to /login?error=access_denied — distinct error path from unauthenticated redirect
 - [Phase 01-foundation]: Login form validates on submit only (no real-time validation) per D-03 UX decision
 - [Phase 01-foundation]: Deploy from monorepo root (not apps/admin cwd) with rootDirectory=apps/admin via Vercel REST API — ensures workspace packages are included in upload
+- [Phase 02-content-list-views]: FilterBar uses native <select> for dropdowns — simpler than DropdownMenu for non-interactive admin UI
+- [Phase 02-content-list-views]: Sidebar bottom reuses existing LocaleSwitcher + LogoutButton — no duplication needed
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T14:35:05.082Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-content-list-views/02-UI-SPEC.md
+Last session: 2026-03-26T15:22:37.700Z
+Stopped at: Completed 02-02-PLAN.md
+Resume file: None
