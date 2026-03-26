@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship as sa_relationship
 
 from app.db.base import Base
-from app.models.enums import ConversationType, Difficulty, ScenarioCategory
+from app.models.enums import ConversationType, Difficulty, ReviewStatus, ScenarioCategory
 
 
 class ConversationScenario(Base):
@@ -29,6 +29,7 @@ class ConversationScenario(Base):
     system_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     order: Mapped[int] = mapped_column(Integer, default=0)
+    review_status: Mapped[ReviewStatus] = mapped_column(nullable=False, server_default="needs_review")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     conversations: Mapped[list[Conversation]] = sa_relationship(back_populates="scenario")

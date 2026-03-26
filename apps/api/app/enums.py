@@ -107,3 +107,9 @@ class PaymentStatus(str, enum.Enum):
 class ConversationType(str, enum.Enum):
     VOICE = "VOICE"
     TEXT = "TEXT"
+
+
+class ReviewStatus(str, enum.Enum):
+    NEEDS_REVIEW = "needs_review"
+    APPROVED = "approved"
+    REJECTED = "rejected"

@@ -13,10 +13,10 @@
 
 ### Content Listing
 
-- [ ] **LIST-01**: Reviewer가 단어/어휘 목록을 페이지네이션으로 조회할 수 있다
-- [ ] **LIST-02**: Reviewer가 문법/문장 목록을 페이지네이션으로 조회할 수 있다
-- [ ] **LIST-03**: Reviewer가 퀴즈/문제 목록을 페이지네이션으로 조회할 수 있다
-- [ ] **LIST-04**: Reviewer가 회화 시나리오 목록을 페이지네이션으로 조회할 수 있다
+- [x] **LIST-01**: Reviewer가 단어/어휘 목록을 페이지네이션으로 조회할 수 있다
+- [x] **LIST-02**: Reviewer가 문법/문장 목록을 페이지네이션으로 조회할 수 있다
+- [x] **LIST-03**: Reviewer가 퀴즈/문제 목록을 페이지네이션으로 조회할 수 있다
+- [x] **LIST-04**: Reviewer가 회화 시나리오 목록을 페이지네이션으로 조회할 수 있다
 - [x] **LIST-05**: Reviewer가 JLPT 레벨, 카테고리, 검증 상태로 데이터를 필터링할 수 있다
 - [x] **LIST-06**: Reviewer가 텍스트 검색으로 특정 데이터를 찾을 수 있다
 - [x] **LIST-07**: 각 항목에 검증 상태 뱃지(needs_review/approved/rejected)가 표시된다
@@ -86,10 +86,10 @@
 | I18N-01 | Phase 1 | Complete |
 | I18N-02 | Phase 1 | Complete |
 | I18N-03 | Phase 1 | Complete |
-| LIST-01 | Phase 2 | Pending |
-| LIST-02 | Phase 2 | Pending |
-| LIST-03 | Phase 2 | Pending |
-| LIST-04 | Phase 2 | Pending |
+| LIST-01 | Phase 2 | Complete |
+| LIST-02 | Phase 2 | Complete |
+| LIST-03 | Phase 2 | Complete |
+| LIST-04 | Phase 2 | Complete |
 | LIST-05 | Phase 2 | Complete |
 | LIST-06 | Phase 2 | Complete |
 | LIST-07 | Phase 2 | Complete |

@@ -8,6 +8,7 @@ from app.enums import (  # noqa: F401
     PartOfSpeech,
     PaymentStatus,
     QuizType,
+    ReviewStatus,
     ScenarioCategory,
     SubscriptionPlan,
     SubscriptionStatus,

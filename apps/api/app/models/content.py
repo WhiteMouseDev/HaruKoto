@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.enums import JlptLevel, PartOfSpeech
+from app.models.enums import JlptLevel, PartOfSpeech, ReviewStatus
 
 
 class Vocabulary(Base):
@@ -29,6 +29,7 @@ class Vocabulary(Base):
     meaning_glosses_ko: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     synonym_group_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     category_tag: Mapped[str | None] = mapped_column(Text, nullable=True)
+    review_status: Mapped[ReviewStatus] = mapped_column(nullable=False, server_default="needs_review")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_progress: Mapped[list[UserVocabProgress]] = relationship(back_populates="vocabulary", cascade="all, delete-orphan")  # noqa: F821
@@ -49,6 +50,7 @@ class Grammar(Base):
     order: Mapped[int] = mapped_column(Integer, default=0)
     meaning_glosses_ko: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     synonym_group_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    review_status: Mapped[ReviewStatus] = mapped_column(nullable=False, server_default="needs_review")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_progress: Mapped[list[UserGrammarProgress]] = relationship(back_populates="grammar", cascade="all, delete-orphan")  # noqa: F821
@@ -69,6 +71,7 @@ class ClozeQuestion(Base):
     jlpt_level: Mapped[JlptLevel] = mapped_column(nullable=False)
     difficulty: Mapped[int] = mapped_column(Integer, default=1)
     order: Mapped[int] = mapped_column(Integer, default=0)
+    review_status: Mapped[ReviewStatus] = mapped_column(nullable=False, server_default="needs_review")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (UniqueConstraint("sentence", "jlpt_level"),)
@@ -86,6 +89,7 @@ class SentenceArrangeQuestion(Base):
     jlpt_level: Mapped[JlptLevel] = mapped_column(nullable=False)
     difficulty: Mapped[int] = mapped_column(Integer, default=1)
     order: Mapped[int] = mapped_column(Integer, default=0)
+    review_status: Mapped[ReviewStatus] = mapped_column(nullable=False, server_default="needs_review")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (UniqueConstraint("korean_sentence", "jlpt_level"),)

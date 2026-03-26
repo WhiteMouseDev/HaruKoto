@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-26T15:22:37.703Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-26T15:25:11.482Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 7
-  completed_plans: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 02 (content-list-views) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-26
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P02 | 2m | 2 tasks | 7 files |
 | Phase 01-foundation P04 | 15m | 1 tasks | 2 files |
 | Phase 02-content-list-views P02 | 10m | 2 tasks | 11 files |
+| Phase 02-content-list-views P01 | 10 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Deploy from monorepo root (not apps/admin cwd) with rootDirectory=apps/admin via Vercel REST API — ensures workspace packages are included in upload
 - [Phase 02-content-list-views]: FilterBar uses native <select> for dropdowns — simpler than DropdownMenu for non-interactive admin UI
 - [Phase 02-content-list-views]: Sidebar bottom reuses existing LocaleSwitcher + LogoutButton — no duplication needed
+- [Phase 02-content-list-views]: require_reviewer reads app_metadata.reviewer from JWT without DB role table — lightweight, matches pre-phase decision
+- [Phase 02-content-list-views]: ConversationAdminItem.jlpt_level is always None — ConversationScenario has no jlpt_level column
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T15:22:37.700Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-26T15:25:11.479Z
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
