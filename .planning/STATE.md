@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Checkpoint: Task 3 Codex cross-verification of auth logic (01-02-PLAN.md)"
-last_updated: "2026-03-26T08:05:31.086Z"
+stopped_at: "Checkpoint: Task 2 human-verify deployed admin app at https://harukoto-admin.vercel.app (01-04-PLAN.md)"
+last_updated: "2026-03-26T08:30:42.106Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-03-26
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P01 | 5m | 2 tasks | 34 files |
 | Phase 01-foundation P03 | 5 | 2 tasks | 8 files |
 | Phase 01-foundation P02 | 2m | 2 tasks | 7 files |
+| Phase 01-foundation P04 | 15m | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,7 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: proxy.ts uses getUser() not getSession() for live DB auth validation — role revocation effective immediately on next request (AUTH-03)
 - [Phase 01-foundation]: Non-reviewer authenticated users redirected to /login?error=access_denied — distinct error path from unauthenticated redirect
 - [Phase 01-foundation]: Login form validates on submit only (no real-time validation) per D-03 UX decision
+- [Phase 01-foundation]: Deploy from monorepo root (not apps/admin cwd) with rootDirectory=apps/admin via Vercel REST API — ensures workspace packages are included in upload
 
 ### Pending Todos
 
@@ -89,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T08:05:31.082Z
-Stopped at: Checkpoint: Task 3 Codex cross-verification of auth logic (01-02-PLAN.md)
+Last session: 2026-03-26T08:30:42.103Z
+Stopped at: Checkpoint: Task 2 human-verify deployed admin app at https://harukoto-admin.vercel.app (01-04-PLAN.md)
 Resume file: None
