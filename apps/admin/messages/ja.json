@@ -1,0 +1,32 @@
+{
+  "auth": {
+    "login": {
+      "heading": "HaruKoto 管理者",
+      "emailLabel": "メールアドレス",
+      "passwordLabel": "パスワード",
+      "submit": "ログイン",
+      "errorWrongCredentials": "メールアドレスまたはパスワードが間違っています",
+      "errorAccessDenied": "アクセス権限がありません。管理者に連絡してください",
+      "errorSessionExpired": "セッションが無効になりました。再度ログインしてください"
+    },
+    "logout": "ログアウト"
+  },
+  "dashboard": {
+    "welcome": "こんにちは、{name}さん",
+    "emptyTitle": "データがありません",
+    "emptyBody": "コンテンツ一覧はフェーズ2で追加されます",
+    "vocabulary": "単語",
+    "grammar": "文法",
+    "quiz": "クイズ",
+    "conversation": "会話"
+  },
+  "locale": {
+    "label": "言語",
+    "ja": "日本語",
+    "ko": "한국어",
+    "en": "English"
+  },
+  "common": {
+    "appName": "HaruKoto Admin"
+  }
+}
