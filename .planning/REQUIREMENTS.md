@@ -80,13 +80,38 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated during roadmap creation) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| I18N-01 | Phase 1 | Pending |
+| I18N-02 | Phase 1 | Pending |
+| I18N-03 | Phase 1 | Pending |
+| LIST-01 | Phase 2 | Pending |
+| LIST-02 | Phase 2 | Pending |
+| LIST-03 | Phase 2 | Pending |
+| LIST-04 | Phase 2 | Pending |
+| LIST-05 | Phase 2 | Pending |
+| LIST-06 | Phase 2 | Pending |
+| LIST-07 | Phase 2 | Pending |
+| EDIT-01 | Phase 3 | Pending |
+| EDIT-02 | Phase 3 | Pending |
+| EDIT-03 | Phase 3 | Pending |
+| EDIT-04 | Phase 3 | Pending |
+| REVW-01 | Phase 3 | Pending |
+| REVW-02 | Phase 3 | Pending |
+| REVW-03 | Phase 3 | Pending |
+| REVW-04 | Phase 3 | Pending |
+| TTS-01 | Phase 4 | Pending |
+| TTS-02 | Phase 4 | Pending |
+| UX-01 | Phase 5 | Pending |
+| UX-02 | Phase 5 | Pending |
+| UX-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 after initial definition*
+*Last updated: 2026-03-26 — Traceability populated after roadmap creation*
