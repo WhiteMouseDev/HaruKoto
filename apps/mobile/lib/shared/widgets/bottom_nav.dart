@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/constants/colors.dart';
 import '../../core/services/haptic_service.dart';
@@ -15,11 +16,12 @@ class BottomNav extends StatelessWidget {
   });
 
   static const _tabs = [
-    _TabData(icon: LucideIcons.home, label: '홈'),
-    _TabData(icon: LucideIcons.map, label: '학습'),
-    _TabData(icon: LucideIcons.penTool, label: '퀴즈'),
-    _TabData(icon: LucideIcons.messageCircle, label: '실전회화', isBeta: true),
-    _TabData(icon: LucideIcons.user, label: 'MY'),
+    _TabData(svgPath: 'assets/icons/ic_home.svg', label: '홈'),
+    _TabData(svgPath: 'assets/icons/ic_book.svg', label: '학습'),
+    _TabData(svgPath: 'assets/icons/ic_note.svg', label: '퀴즈'),
+    _TabData(
+        svgPath: 'assets/icons/ic_messages.svg', label: '실전회화', isBeta: true),
+    _TabData(svgPath: 'assets/icons/ic_user.svg', label: 'MY'),
   ];
 
   @override
@@ -78,12 +80,12 @@ class BottomNav extends StatelessWidget {
 }
 
 class _TabData {
-  final IconData icon;
+  final String svgPath;
   final String label;
   final bool isBeta;
 
   const _TabData({
-    required this.icon,
+    required this.svgPath,
     required this.label,
     this.isBeta = false,
   });
@@ -127,11 +129,11 @@ class _TabItem extends StatelessWidget {
               scale: isActive ? 1.15 : 1.0,
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeOut,
-              child: Icon(
-                tab.icon,
-                size: 20,
-                color: color,
-                weight: isActive ? 2.5 : 2.0,
+              child: SvgPicture.asset(
+                tab.svgPath,
+                width: 22,
+                height: 22,
+                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
               ),
             ),
             if (tab.isBeta)

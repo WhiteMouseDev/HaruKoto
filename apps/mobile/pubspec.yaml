@@ -82,4 +82,5 @@ flutter:
     - assets/icon.png
     - assets/logo-wordmark.svg
     - assets/sounds/
+    - assets/icons/
     - assets/images/characters/
