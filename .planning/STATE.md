@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-26T07:21:46.713Z"
-last_activity: 2026-03-26 — Roadmap created, 24 v1 requirements mapped to 5 phases
+status: executing
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-03-26T07:59:20.790Z"
+last_activity: 2026-03-26
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 4
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 01 — foundation
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-26 — Roadmap created, 24 v1 requirements mapped to 5 phases
+Phase: 01 (foundation) — EXECUTING
+Plan: 2 of 4
+Status: Ready to execute
+Last activity: 2026-03-26
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-foundation P01 | 5m | 2 tasks | 34 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - [Pre-Phase 1]: next-intl without-routing mode (cookie-based locale, flat app/ dir) — Japanese primary, no URL segments
 - [Pre-Phase 1]: Supabase app_metadata.reviewer claim for role gate — no Custom Access Token Hook needed at 1-3 user scale
 - [Pre-Phase 1]: FastAPI TTS endpoint reused — new POST /api/v1/admin/tts/regenerate with require_admin_role dependency
+- [Phase 01-foundation]: requireReviewer() uses getUser() not getSession() for live DB auth validation (AUTH-03)
+- [Phase 01-foundation]: next-intl without-routing mode with NEXT_LOCALE cookie; ja default; no URL locale segments
+- [Phase 01-foundation]: ja.json as IntlMessages TypeScript type source; missing translations surface as compile errors
 
 ### Pending Todos
 
@@ -77,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T07:21:46.710Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Last session: 2026-03-26T07:59:20.787Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None

@@ -8,8 +8,8 @@
 ### Authentication & Authorization
 
 - [ ] **AUTH-01**: Reviewer가 ID/PW로 어드민에 로그인할 수 있다
-- [ ] **AUTH-02**: Reviewer가 아닌 사용자는 어드민 페이지 접근이 차단된다
-- [ ] **AUTH-03**: Reviewer 역할이 폐기되면 즉시 접근이 차단된다 (DB 레벨 확인)
+- [x] **AUTH-02**: Reviewer가 아닌 사용자는 어드민 페이지 접근이 차단된다
+- [x] **AUTH-03**: Reviewer 역할이 폐기되면 즉시 접근이 차단된다 (DB 레벨 확인)
 
 ### Content Listing
 
@@ -48,7 +48,7 @@
 
 ### Internationalization
 
-- [ ] **I18N-01**: UI가 일본어를 기본 언어로 제공한다
+- [x] **I18N-01**: UI가 일본어를 기본 언어로 제공한다
 - [ ] **I18N-02**: UI 언어를 한국어로 전환할 수 있다
 - [ ] **I18N-03**: UI 언어를 영어로 전환할 수 있다
 
@@ -81,9 +81,9 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| I18N-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| I18N-01 | Phase 1 | Complete |
 | I18N-02 | Phase 1 | Pending |
 | I18N-03 | Phase 1 | Pending |
 | LIST-01 | Phase 2 | Pending |
