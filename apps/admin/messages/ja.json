@@ -18,7 +18,55 @@
     "vocabulary": "単語",
     "grammar": "文法",
     "quiz": "クイズ",
+    "conversation": "会話",
+    "progressLabel": "{n}% 承認済み",
+    "needsReview": "要確認",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "pageTitle": "ダッシュボード"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "vocabulary": "単語",
+    "grammar": "文法",
+    "quiz": "クイズ",
     "conversation": "会話"
+  },
+  "filter": {
+    "searchPlaceholder": "検索...",
+    "jlptLabel": "JLPTレベル",
+    "jlptAll": "すべてのレベル",
+    "categoryLabel": "カテゴリ",
+    "categoryAll": "すべてのカテゴリ",
+    "statusLabel": "ステータス",
+    "statusAll": "すべてのステータス"
+  },
+  "status": {
+    "needsReview": "要確認",
+    "approved": "承認済み",
+    "rejected": "却下"
+  },
+  "table": {
+    "detailLink": "詳細",
+    "paginationPrev": "前へ",
+    "paginationNext": "次へ",
+    "itemsPerPage": "件 / ページ",
+    "totalItems": "{n}件"
+  },
+  "empty": {
+    "heading": "データがありません",
+    "noResults": "検索条件を変更して再度お試しください",
+    "noContent": "このコンテンツタイプにはまだデータがありません"
+  },
+  "error": {
+    "failedToLoad": "データの読み込みに失敗しました。再度お試しください",
+    "network": "ネットワークエラーが発生しました"
+  },
+  "page": {
+    "vocabulary": "単語一覧",
+    "grammar": "文法一覧",
+    "quiz": "クイズ一覧",
+    "conversation": "会話シナリオ一覧"
   },
   "locale": {
     "label": "言語",

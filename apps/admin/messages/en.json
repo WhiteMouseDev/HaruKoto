@@ -18,7 +18,55 @@
     "vocabulary": "Vocabulary",
     "grammar": "Grammar",
     "quiz": "Quiz",
+    "conversation": "Conversation",
+    "progressLabel": "{n}% approved",
+    "needsReview": "Needs review",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pageTitle": "Dashboard"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "vocabulary": "Vocabulary",
+    "grammar": "Grammar",
+    "quiz": "Quiz",
     "conversation": "Conversation"
+  },
+  "filter": {
+    "searchPlaceholder": "Search...",
+    "jlptLabel": "JLPT Level",
+    "jlptAll": "All Levels",
+    "categoryLabel": "Category",
+    "categoryAll": "All Categories",
+    "statusLabel": "Status",
+    "statusAll": "All Status"
+  },
+  "status": {
+    "needsReview": "Needs Review",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "table": {
+    "detailLink": "Details",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next",
+    "itemsPerPage": "per page",
+    "totalItems": "{n} items"
+  },
+  "empty": {
+    "heading": "No data found",
+    "noResults": "Try adjusting your search or filters",
+    "noContent": "No content has been added yet"
+  },
+  "error": {
+    "failedToLoad": "Failed to load data. Please try again",
+    "network": "A network error occurred"
+  },
+  "page": {
+    "vocabulary": "Vocabulary",
+    "grammar": "Grammar",
+    "quiz": "Quiz",
+    "conversation": "Conversation Scenarios"
   },
   "locale": {
     "label": "Language",

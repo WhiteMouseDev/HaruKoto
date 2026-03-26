@@ -18,7 +18,55 @@
     "vocabulary": "단어",
     "grammar": "문법",
     "quiz": "퀴즈",
-    "conversation": "대화"
+    "conversation": "회화",
+    "progressLabel": "{n}% 승인됨",
+    "needsReview": "검토 필요",
+    "approved": "승인됨",
+    "rejected": "반려됨",
+    "pageTitle": "대시보드"
+  },
+  "nav": {
+    "dashboard": "대시보드",
+    "vocabulary": "단어",
+    "grammar": "문법",
+    "quiz": "퀴즈",
+    "conversation": "회화"
+  },
+  "filter": {
+    "searchPlaceholder": "검색...",
+    "jlptLabel": "JLPT 레벨",
+    "jlptAll": "전체 레벨",
+    "categoryLabel": "카테고리",
+    "categoryAll": "전체 카테고리",
+    "statusLabel": "상태",
+    "statusAll": "전체 상태"
+  },
+  "status": {
+    "needsReview": "검토 필요",
+    "approved": "승인됨",
+    "rejected": "반려됨"
+  },
+  "table": {
+    "detailLink": "상세",
+    "paginationPrev": "이전",
+    "paginationNext": "다음",
+    "itemsPerPage": "건 / 페이지",
+    "totalItems": "총 {n}건"
+  },
+  "empty": {
+    "heading": "데이터가 없습니다",
+    "noResults": "검색 조건을 변경해 주세요",
+    "noContent": "아직 데이터가 없습니다"
+  },
+  "error": {
+    "failedToLoad": "데이터를 불러오지 못했습니다. 다시 시도해 주세요",
+    "network": "네트워크 오류가 발생했습니다"
+  },
+  "page": {
+    "vocabulary": "단어 목록",
+    "grammar": "문법 목록",
+    "quiz": "퀴즈 목록",
+    "conversation": "회화 시나리오 목록"
   },
   "locale": {
     "label": "언어",
