@@ -39,6 +39,7 @@ app.add_middleware(
 
 # Include routers
 from app.routers.achievements import router as achievements_router
+from app.routers.admin_content import router as admin_content_router
 from app.routers.auth import router as auth_router
 from app.routers.chat import router as chat_router
 from app.routers.chat_data import router as chat_data_router
@@ -61,6 +62,7 @@ from app.routers.webhook import router as webhook_router
 from app.routers.wordbook import router as wordbook_router
 
 app.include_router(health_router)
+app.include_router(admin_content_router)
 app.include_router(achievements_router)
 app.include_router(auth_router)
 app.include_router(user_router)
