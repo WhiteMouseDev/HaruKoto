@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* shadcn color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Font families */
+  --font-sans: var(--font-sans-system), ui-sans-serif, system-ui, sans-serif;
+  --font-jp: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+
+  /* Border radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: 1rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+}
+
+/* ========================================
+   HaruKoto Admin Light Theme (Warm Admin)
+   ======================================== */
+:root {
+  --radius: 0.75rem;
+
+  /* Core colors */
+  --background: #F9FAFB;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+
+  /* Primary: Cherry Pink */
+  --primary: #F6A5B3;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary */
+  --secondary: #F3F4F6;
+  --secondary-foreground: #111827;
+
+  /* Muted */
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+
+  /* Accent */
+  --accent: #FCE7EC;
+  --accent-foreground: #111827;
+
+  /* Destructive */
+  --destructive: #EF4444;
+
+  /* Borders & Input */
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #F6A5B3;
+
+  /* Chart colors */
+  --chart-1: #F6A5B3;
+  --chart-2: #87CEEB;
+  --chart-3: #98D8C8;
+  --chart-4: #FFD93D;
+  --chart-5: #FF6B6B;
+}
+
+/* ========================================
+   HaruKoto Admin Dark Theme
+   ======================================== */
+.dark {
+  --background: #111827;
+  --foreground: #F9FAFB;
+  --card: #1F2937;
+  --card-foreground: #F9FAFB;
+  --popover: #1F2937;
+  --popover-foreground: #F9FAFB;
+
+  --primary: #F6A5B3;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #374151;
+  --secondary-foreground: #F9FAFB;
+
+  --muted: #374151;
+  --muted-foreground: #9CA3AF;
+
+  --accent: #3D1F2A;
+  --accent-foreground: #F9FAFB;
+
+  --destructive: #F87171;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #F6A5B3;
+
+  --chart-1: #F6A5B3;
+  --chart-2: #5BA3C9;
+  --chart-3: #6BC4AD;
+  --chart-4: #E5C235;
+  --chart-5: #E05252;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-jp {
+    font-family: var(--font-noto-sans-jp), 'Noto Sans JP', sans-serif;
+  }
+}
