@@ -60,7 +60,8 @@
   },
   "error": {
     "failedToLoad": "Failed to load data. Please try again",
-    "network": "A network error occurred"
+    "network": "A network error occurred",
+    "retry": "Try again"
   },
   "page": {
     "vocabulary": "Vocabulary",
