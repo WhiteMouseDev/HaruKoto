@@ -52,7 +52,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
 
   @override
   void dispose() {
-    ref.invalidate(dashboardProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    Future(() => container.invalidate(dashboardProvider));
     super.dispose();
   }
 

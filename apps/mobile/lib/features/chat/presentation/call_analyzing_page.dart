@@ -60,7 +60,10 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
 
   @override
   void dispose() {
-    _container?.invalidate(callAnalysisProvider);
+    final container = _container;
+    if (container != null) {
+      Future(() => container.invalidate(callAnalysisProvider));
+    }
     _controller.dispose();
     super.dispose();
   }

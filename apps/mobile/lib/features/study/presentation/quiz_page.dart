@@ -50,13 +50,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(_initializeQuiz());
+    Future(_initializeQuiz);
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    ref.invalidate(quizSessionProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    Future(() => container.invalidate(quizSessionProvider));
     super.dispose();
   }
 

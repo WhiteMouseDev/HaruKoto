@@ -44,20 +44,21 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(
+    Future(() {
       ref.read(conversationSessionProvider.notifier).initialize(
             ConversationLaunchRequest(
               conversationId: widget.conversationId,
               initialScenario: widget.initialScenario,
               firstMessage: widget.firstMessage,
             ),
-          ),
-    );
+          );
+    });
   }
 
   @override
   void dispose() {
-    ref.invalidate(conversationSessionProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    Future(() => container.invalidate(conversationSessionProvider));
     _scrollController.dispose();
     super.dispose();
   }

@@ -34,15 +34,15 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(
+    Future(() {
       ref.read(voiceCallSessionProvider.notifier).initialize(
             VoiceCallSessionRequest(
               scenarioId: widget.scenarioId,
               characterId: widget.characterId,
               characterName: widget.characterName,
             ),
-          ),
-    );
+          );
+    });
   }
 
   Future<void> _endCall() async {
@@ -60,7 +60,8 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
   @override
   void dispose() {
-    ref.invalidate(voiceCallSessionProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    Future(() => container.invalidate(voiceCallSessionProvider));
     super.dispose();
   }
 

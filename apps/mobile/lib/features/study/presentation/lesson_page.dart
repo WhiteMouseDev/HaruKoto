@@ -27,7 +27,8 @@ class _LessonPageState extends ConsumerState<LessonPage> {
 
   @override
   void dispose() {
-    ref.invalidate(lessonSessionProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    Future(() => container.invalidate(lessonSessionProvider));
     super.dispose();
   }
 

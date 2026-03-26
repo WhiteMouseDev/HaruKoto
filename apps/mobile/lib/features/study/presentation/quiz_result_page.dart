@@ -65,14 +65,19 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   @override
   void dispose() {
     _confettiController.dispose();
-    // Refresh all dependent providers across tabs
-    _container?.invalidate(incompleteQuizProvider);
-    _container?.invalidate(smartPreviewProvider(
-        (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)));
-    _container?.invalidate(smartPreviewProvider(
-        (category: 'GRAMMAR', jlptLevel: widget.jlptLevel)));
-    _container?.invalidate(reviewSummaryProvider(widget.jlptLevel));
-    _container?.invalidate(dashboardProvider);
+    // Refresh all dependent providers across tabs (deferred to avoid build-phase conflicts)
+    final container = _container;
+    if (container != null) {
+      Future(() {
+        container.invalidate(incompleteQuizProvider);
+        container.invalidate(smartPreviewProvider(
+            (category: 'VOCABULARY', jlptLevel: widget.jlptLevel)));
+        container.invalidate(smartPreviewProvider(
+            (category: 'GRAMMAR', jlptLevel: widget.jlptLevel)));
+        container.invalidate(reviewSummaryProvider(widget.jlptLevel));
+        container.invalidate(dashboardProvider);
+      });
+    }
     super.dispose();
   }
 
