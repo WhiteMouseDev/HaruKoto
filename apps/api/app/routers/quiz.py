@@ -507,7 +507,7 @@ async def start_quiz(
                     "type": "SENTENCE_ARRANGE",
                     "question": item.korean_sentence,
                     "japaneseSentence": item.japanese_sentence,
-                    "tokens": item.tokens,
+                    "tokens": [t["text"] if isinstance(t, dict) else t for t in (item.tokens or [])],
                     "explanation": item.explanation,
                     "correctOptionId": "",
                     "options": [],
