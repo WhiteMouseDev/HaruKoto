@@ -53,9 +53,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Alembic migration + ReviewStatus enum + FastAPI admin content endpoints
+- [x] 02-01-PLAN.md — Alembic migration + ReviewStatus enum + FastAPI admin content endpoints
 - [x] 02-02-PLAN.md — Sidebar navigation + shadcn Table + shared UI components (StatusBadge, FilterBar, PaginationBar) + i18n
-- [ ] 02-03-PLAN.md — Content list pages + dashboard stats wired to FastAPI via TanStack Query
+- [x] 02-03-PLAN.md — Content list pages + dashboard stats wired to FastAPI via TanStack Query
 
 **UI hint**: yes
 
