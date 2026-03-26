@@ -46,7 +46,7 @@ decisions:
 metrics:
   duration: 2m
   completed: 2026-03-26
-  tasks_completed: 2
+  tasks_completed: 3
   tasks_total: 3
   files_created: 7
   files_modified: 0
@@ -150,9 +150,16 @@ The plan stated "check apps/web's actual pattern first" for middleware.ts. Resul
 |------|------|-----------|
 | `src/__tests__/auth.test.ts` | 4 `.todo()` tests for proxy and login-form | Deferred — not in Plan 02 scope |
 
-## CHECKPOINT: Awaiting Codex Cross-Verification
+## Codex Cross-Verification: PASSED
 
-Plan 02 reaches a `checkpoint:human-verify` gate (Task 3) requiring Codex cross-verification of the security-critical auth implementation per CLAUDE.md workflow rules.
+Codex reviewed all auth files (proxy.ts, auth.ts, login-form.tsx, provision-reviewer.ts):
+- **P0/P1:** None
+- **P2 (deferred):** 3 items — `/api/*` blanket exempt (fail-open for future APIs), metadata merge semantics, test stubs as todo
+- AUTH-01: Only `getUser()` used ✓
+- AUTH-02: `app_metadata.reviewer` in proxy.ts + auth.ts ✓
+- AUTH-03: No bypass paths ✓
+- No sensitive error leaks ✓
+- OAuth callback secure ✓
 
 ## Self-Check: PASSED
 
