@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
@@ -68,7 +69,7 @@ class ProfileHero extends StatelessWidget {
                   radius: 24,
                   backgroundColor: theme.colorScheme.surfaceContainerHigh,
                   backgroundImage: profile.avatarUrl != null
-                      ? NetworkImage(profile.avatarUrl!)
+                      ? CachedNetworkImageProvider(profile.avatarUrl!)
                       : null,
                   child: profile.avatarUrl == null
                       ? Icon(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
@@ -45,12 +46,12 @@ class CharacterCardWidget extends StatelessWidget {
     }
     if (character.avatarUrl != null) {
       return ClipOval(
-        child: Image.network(
-          character.avatarUrl!,
+        child: CachedNetworkImage(
+          imageUrl: character.avatarUrl!,
           width: 56,
           height: 56,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Text(
+          errorWidget: (_, __, ___) => Text(
             character.avatarEmoji,
             style: const TextStyle(fontSize: 24),
           ),

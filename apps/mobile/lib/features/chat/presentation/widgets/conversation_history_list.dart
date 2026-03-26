@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -113,12 +114,12 @@ class _HistoryItem extends StatelessWidget {
     }
     if (item.character?.avatarUrl != null) {
       return ClipOval(
-        child: Image.network(
-          item.character!.avatarUrl!,
+        child: CachedNetworkImage(
+          imageUrl: item.character!.avatarUrl!,
           width: 40,
           height: 40,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
+          errorWidget: (_, __, ___) =>
               const Icon(LucideIcons.phone, size: 16, color: AppColors.primary),
         ),
       );

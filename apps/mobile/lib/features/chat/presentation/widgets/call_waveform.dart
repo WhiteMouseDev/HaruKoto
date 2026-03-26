@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/colors.dart';
@@ -51,7 +52,7 @@ class _CallWaveformWidgetState extends State<CallWaveformWidget>
       return CircleAvatar(
         radius: 64,
         backgroundColor: AppColors.callSurface,
-        backgroundImage: NetworkImage(widget.avatarUrl!),
+        backgroundImage: CachedNetworkImageProvider(widget.avatarUrl!),
         onBackgroundImageError: (_, __) {},
         child: null,
       );
