@@ -83,7 +83,13 @@ Plans:
   1. 편집 화면에서 오디오 플레이어가 표시되고 기존 TTS 오디오를 재생할 수 있다
   2. 재생성 버튼을 누르면 확인 다이얼로그가 표시되고, 확인 후 FastAPI를 통해 재생성이 진행되며, 완료 후 새 오디오가 플레이어에 표시된다
   3. 재생성 후 10분 이내에 같은 항목의 재생성을 다시 시도하면 쿨다운 안내 메시지가 표시된다
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — FastAPI admin TTS endpoints (GET fetch + POST regenerate with Redis cooldown) + pytest tests
+- [ ] 04-02-PLAN.md — TtsPlayer component, useTtsPlayer hook, i18n, integration into 4 edit pages + human verification
+
+**UI hint**: yes
 
 ### Phase 5: Reviewer Productivity
 **Goal**: Reviewer가 리뷰 큐로 needs_review 항목을 순서대로 효율적으로 처리하고, 새 데이터 알림을 받을 수 있다
@@ -106,5 +112,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 4/4 | Complete   | 2026-03-26 |
 | 2. Content List Views | 0/3 | Not started | - |
 | 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
-| 4. TTS Audio | 0/TBD | Not started | - |
+| 4. TTS Audio | 0/2 | Not started | - |
 | 5. Reviewer Productivity | 0/TBD | Not started | - |
