@@ -210,3 +210,20 @@ class AuditLogItem(CamelModel):
 class OkResponse(CamelModel):
     ok: bool = True
     count: int = 0
+
+
+# ---------------------------------------------------------------------------
+# TTS schemas (Phase 4)
+# ---------------------------------------------------------------------------
+
+
+class AdminTtsResponse(CamelModel):
+    audio_url: str | None
+    field: str | None
+    provider: str | None
+
+
+class AdminTtsRegenerateRequest(CamelModel):
+    content_type: Literal["vocabulary", "grammar", "cloze", "sentence_arrange", "conversation"]
+    item_id: str
+    field: str  # "reading", "word", "example_sentence", "pattern", "sentence", "japanese_sentence", "situation"
