@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import time
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -13,7 +12,6 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 from app.db.session import get_db
-from app.middleware.rate_limit import RateLimitResult
 from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.admin_content import require_reviewer
@@ -152,7 +150,6 @@ async def test_regenerate_tts_success(client):
     ac, mock_db = client
 
     vocab = _make_vocab(reading="テスト")
-    # First call: rate_limit check (no execute), then content fetch, then delete
     call_count = 0
 
     def execute_side_effect(stmt):
@@ -169,11 +166,9 @@ async def test_regenerate_tts_success(client):
     fake_tts = FakeTtsResult(audio=b"fake-mp3", provider="elevenlabs", model="eleven_multilingual_v2")
 
     with (
-        patch("app.routers.admin_content.rate_limit") as mock_rl,
         patch("app.routers.admin_content.generate_tts") as mock_tts,
         patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
     ):
-        mock_rl.return_value = RateLimitResult(success=True, remaining=1, reset=time.time() + 600)
         mock_tts.return_value = fake_tts
         mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id.mp3"
 
@@ -189,32 +184,15 @@ async def test_regenerate_tts_success(client):
 
 
 @pytest.mark.asyncio
-async def test_regenerate_tts_cooldown_429(client):
-    """POST regenerate returns 429 when Redis cooldown is active."""
-    ac, mock_db = client
-
-    with patch("app.routers.admin_content.rate_limit") as mock_rl:
-        mock_rl.return_value = RateLimitResult(success=False, remaining=0, reset=time.time() + 300)
-        resp = await ac.post(
-            "/api/v1/admin/content/tts/regenerate",
-            json={"contentType": "vocabulary", "itemId": "test-id", "field": "reading"},
-        )
-
-    assert resp.status_code == 429
-
-
-@pytest.mark.asyncio
 async def test_regenerate_tts_not_found_404(client):
     """POST regenerate returns 404 when content item does not exist."""
     ac, mock_db = client
     mock_db.execute.return_value = _scalar_result(None)
 
-    with patch("app.routers.admin_content.rate_limit") as mock_rl:
-        mock_rl.return_value = RateLimitResult(success=True, remaining=1, reset=time.time() + 600)
-        resp = await ac.post(
-            "/api/v1/admin/content/tts/regenerate",
-            json={"contentType": "vocabulary", "itemId": "nonexistent-id", "field": "reading"},
-        )
+    resp = await ac.post(
+        "/api/v1/admin/content/tts/regenerate",
+        json={"contentType": "vocabulary", "itemId": "nonexistent-id", "field": "reading"},
+    )
 
     assert resp.status_code == 404
 
@@ -229,11 +207,9 @@ async def test_regenerate_tts_empty_field_422(client):
     vocab.reading = ""  # empty field
     mock_db.execute.return_value = _scalar_result(vocab)
 
-    with patch("app.routers.admin_content.rate_limit") as mock_rl:
-        mock_rl.return_value = RateLimitResult(success=True, remaining=1, reset=time.time() + 600)
-        resp = await ac.post(
-            "/api/v1/admin/content/tts/regenerate",
-            json={"contentType": "vocabulary", "itemId": "test-id", "field": "reading"},
-        )
+    resp = await ac.post(
+        "/api/v1/admin/content/tts/regenerate",
+        json={"contentType": "vocabulary", "itemId": "test-id", "field": "reading"},
+    )
 
     assert resp.status_code == 422

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import time
 import uuid
 from typing import Annotated
 
@@ -15,7 +14,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
-from app.middleware.rate_limit import rate_limit
 from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion, Vocabulary
 from app.models.admin import AuditLog
 from app.models.tts import TtsAudio
@@ -1002,18 +1000,8 @@ async def regenerate_admin_tts(
     reviewer: Annotated[User, Depends(require_reviewer)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> AdminTtsResponse:
-    """Regenerate TTS for a content item with 10-minute cooldown."""
-    # 1. Cooldown check via Redis (10 min = 600 seconds)
-    cooldown_key = f"admin_tts_cooldown:{body.content_type}:{body.item_id}"
-    rl = await rate_limit(cooldown_key, max_requests=1, window_seconds=600)
-    if not rl.success:
-        reset_in = max(1, int(rl.reset - time.time()))
-        raise HTTPException(
-            status_code=429,
-            detail=f"再生成は{reset_in // 60}分後に可能です",
-        )
-
-    # 2. Fetch the content item
+    """Regenerate TTS for a content item (no cooldown — admin tool for 1-3 reviewers)."""
+    # 1. Fetch the content item
     model_cls = _CONTENT_MODEL_MAP.get(body.content_type)
     if not model_cls:
         raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")

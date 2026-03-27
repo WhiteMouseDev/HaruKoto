@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Play, Pause, RotateCcw, Clock } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,14 +27,12 @@ export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
     audioUrl,
     isLoading,
     isPlaying,
-    remainingSeconds,
     selectedField,
     setSelectedField,
     confirmOpen,
     setConfirmOpen,
     handlePlayPause,
     regenerateMutation,
-    cooldownMinutes,
   } = useTtsPlayer(contentType, itemId);
 
   const fields = TTS_FIELDS[contentType].options;
@@ -145,29 +143,15 @@ export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
           ))}
         </div>
 
-        {/* Cooldown or regenerate button */}
-        {remainingSeconds > 0 ? (
-          <div
-            className="flex shrink-0 items-center gap-1"
-            role="status"
-            aria-live="polite"
-          >
-            <Clock className="size-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
-              {t('cooldownLabel', { n: cooldownMinutes })}
-            </span>
-          </div>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setConfirmOpen(true)}
-            aria-label={t('regenerateTooltip')}
-            className="size-8 shrink-0"
-          >
-            <RotateCcw className="size-4" />
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setConfirmOpen(true)}
+          aria-label={t('regenerateTooltip')}
+          className="size-8 shrink-0"
+        >
+          <RotateCcw className="size-4" />
+        </Button>
       </div>
 
       <RegenerateConfirmDialog
