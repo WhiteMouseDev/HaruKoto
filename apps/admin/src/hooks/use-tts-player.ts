@@ -92,7 +92,7 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
   const data = ttsQuery.data;
 
   function handlePlayPause() {
-    const url = data?.audio_url;
+    const url = data?.audioUrl;
     if (!url) return;
 
     if (!audioRef.current) {
@@ -123,11 +123,11 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
       setConfirmOpen(false);
 
       // Auto-play new audio
-      if (newData.audio_url) {
+      if (newData.audioUrl) {
         if (audioRef.current) {
           audioRef.current.pause();
         }
-        audioRef.current = new Audio(newData.audio_url);
+        audioRef.current = new Audio(newData.audioUrl);
         audioRef.current.addEventListener('ended', () => {
           setIsPlaying(false);
         });
@@ -144,7 +144,7 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
   });
 
   return {
-    audioUrl: data?.audio_url ?? null, // Remap snake_case -> camelCase for component consumption
+    audioUrl: data?.audioUrl ?? null,
     isLoading: ttsQuery.isLoading,
     isPlaying,
     remainingSeconds,

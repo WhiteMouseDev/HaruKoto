@@ -188,10 +188,9 @@ export async function fetchAuditLogs(
 
 // ---- TTS API functions ----
 
-// IMPORTANT: Field names are snake_case to match FastAPI's Pydantic JSON serialization.
-// FastAPI AdminTtsResponse has `audio_url`, `field`, `provider` — NOT camelCase.
+// AdminTtsResponse extends CamelModel — FastAPI returns camelCase JSON.
 export type TtsAudioResponse = {
-  audio_url: string | null;
+  audioUrl: string | null;
   field: string | null;
   provider: string | null;
 };
