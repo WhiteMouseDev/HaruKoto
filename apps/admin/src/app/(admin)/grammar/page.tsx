@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { ContentTable, type Column } from '@/components/content/content-table';
 import { FilterBar } from '@/components/content/filter-bar';
+import { ReviewStartButton } from '@/components/content/review-start-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useContentList } from '@/hooks/use-content-list';
 import type { GrammarItem } from '@/lib/api/admin-content';
@@ -100,7 +101,12 @@ export default function GrammarPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">{t('grammar')}</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">{t('grammar')}</h1>
+        <Suspense fallback={null}>
+          <ReviewStartButton contentType="grammar" />
+        </Suspense>
+      </div>
       <Suspense fallback={<div className="animate-pulse" />}>
         <GrammarContent />
       </Suspense>

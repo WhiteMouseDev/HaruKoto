@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 
 import { useContentDetail } from '@/hooks/use-content-detail';
+import { useReviewQueue } from '@/hooks/use-review-queue';
 import { ReviewHeader } from '@/components/content/review-header';
+import { QueueNavigationBar } from '@/components/content/queue-navigation-bar';
 import { RejectReasonDialog } from '@/components/content/reject-reason-dialog';
 import { TtsPlayer } from '@/components/content/tts-player';
 import { AuditTimeline } from '@/components/content/audit-timeline';
@@ -64,6 +66,18 @@ export default function GrammarDetailPage() {
   const { detailQuery, patchMutation, reviewMutation, auditQuery } =
     useContentDetail<GrammarDetail>('grammar', id);
 
+  const {
+    isInQueue,
+    position,
+    total,
+    goNext,
+    goPrev,
+    hasPrev,
+    hasNext,
+    exitQueue,
+    isLastItem,
+  } = useReviewQueue('grammar');
+
   const data = detailQuery.data;
 
   const {
@@ -115,7 +129,20 @@ export default function GrammarDetailPage() {
   function handleApprove() {
     reviewMutation.mutate(
       { action: 'approve' },
-      { onSuccess: () => toast.success(tReview('approveSuccess')) },
+      {
+        onSuccess: () => {
+          toast.success(tReview('approveSuccess'));
+          if (isInQueue) {
+            if (isLastItem) {
+              toast.info(tReview('queueComplete'));
+              setTimeout(exitQueue, 800);
+            } else {
+              toast.info(tReview('autoAdvance'));
+              setTimeout(goNext, 800);
+            }
+          }
+        },
+      },
     );
   }
 
@@ -126,6 +153,15 @@ export default function GrammarDetailPage() {
         onSuccess: () => {
           setRejectDialogOpen(false);
           toast.success(tReview('rejectSuccess'));
+          if (isInQueue) {
+            if (isLastItem) {
+              toast.info(tReview('queueComplete'));
+              setTimeout(exitQueue, 800);
+            } else {
+              toast.info(tReview('autoAdvance'));
+              setTimeout(goNext, 800);
+            }
+          }
         },
       },
     );
@@ -160,6 +196,18 @@ export default function GrammarDetailPage() {
       </Link>
 
       <h1 className="text-xl font-semibold">{t('title.grammar')}</h1>
+
+      {isInQueue && (
+        <QueueNavigationBar
+          position={position}
+          total={total}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
+          onPrev={goPrev}
+          onNext={goNext}
+          onExit={exitQueue}
+        />
+      )}
 
       <ReviewHeader
         reviewStatus={data.reviewStatus}
