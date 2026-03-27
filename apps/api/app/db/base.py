@@ -13,6 +13,7 @@ from app.enums import (
     PartOfSpeech,
     PaymentStatus,
     QuizType,
+    ReviewStatus,
     ScenarioCategory,
     SubscriptionPlan,
     SubscriptionStatus,
@@ -35,6 +36,13 @@ class Base(DeclarativeBase):
         SubscriptionStatus: Enum(SubscriptionStatus, name="SubscriptionStatus", create_constraint=False, native_enum=True),
         PaymentStatus: Enum(PaymentStatus, name="PaymentStatus", create_constraint=False, native_enum=True),
         ConversationType: Enum(ConversationType, name="ConversationType", create_constraint=False, native_enum=True),
+        ReviewStatus: Enum(
+            ReviewStatus,
+            name="reviewstatus",
+            create_constraint=False,
+            native_enum=True,
+            values_callable=lambda e: [x.value for x in e],
+        ),
     }
 
 
