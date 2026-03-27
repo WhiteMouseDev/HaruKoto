@@ -50,7 +50,10 @@ function setupHook(overrides: Partial<ReturnType<typeof useTtsPlayer>> = {}) {
     confirmField: null,
     setConfirmField: mockSetConfirmField,
     handlePlayPause: mockHandlePlayPause,
-    regenerateMutation: { mutate: mockMutate, isPending: false } as any,
+    regenerateMutation: {
+      mutate: mockMutate,
+      isPending: false,
+    } as ReturnType<typeof useTtsPlayer>['regenerateMutation'],
     ...overrides,
   });
 }

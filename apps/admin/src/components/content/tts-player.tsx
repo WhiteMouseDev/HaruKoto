@@ -1,16 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, CheckCircle2, XCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useTtsPlayer } from '@/hooks/use-tts-player';
 import { TTS_FIELDS, type ContentType } from '@/lib/tts-fields';
 import { RegenerateConfirmDialog } from '@/components/content/regenerate-confirm-dialog';
@@ -26,11 +19,9 @@ export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
   const {
     audioUrl,
     isLoading,
-    isPlaying,
-    selectedField,
-    setSelectedField,
-    confirmOpen,
-    setConfirmOpen,
+    playingField,
+    confirmField,
+    setConfirmField,
     handlePlayPause,
     regenerateMutation,
   } = useTtsPlayer(contentType, itemId);
@@ -56,108 +47,82 @@ export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
     );
   }
 
-  // Audio absent state
-  if (!audioUrl) {
-    return (
-      <>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted p-3">
-          <Select value={selectedField} onValueChange={setSelectedField}>
-            <SelectTrigger className="h-8 w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {fields.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {t(opt.labelKey as Parameters<typeof t>[0])}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+  const hasAudio = !!audioUrl;
 
-          <span className="flex-1 text-sm text-muted-foreground">
-            {t('noAudio')}
-          </span>
-
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => setConfirmOpen(true)}
-          >
-            {t('generate')}
-          </Button>
-        </div>
-
-        <RegenerateConfirmDialog
-          open={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={() => regenerateMutation.mutate()}
-          itemLabel={itemLabel}
-          isLoading={regenerateMutation.isPending}
-        />
-      </>
-    );
-  }
-
-  // Audio present state
   return (
     <>
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-card p-3">
-        <Select value={selectedField} onValueChange={setSelectedField}>
-          <SelectTrigger className="h-8 w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {fields.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {t(opt.labelKey as Parameters<typeof t>[0])}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="rounded-lg border border-border bg-card">
+        {fields.map((field, index) => (
+          <div
+            key={field.value}
+            className={`flex items-center gap-2 p-3 ${
+              index < fields.length - 1 ? 'border-b border-border' : ''
+            }`}
+          >
+            {/* Status icon */}
+            {hasAudio ? (
+              <CheckCircle2 className="size-4 shrink-0 text-green-500" />
+            ) : (
+              <XCircle className="size-4 shrink-0 text-muted-foreground" />
+            )}
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handlePlayPause}
-          aria-label={isPlaying ? t('pause') : t('play')}
-          className="size-8 shrink-0"
-        >
-          {isPlaying ? (
-            <Pause className="size-4" />
-          ) : (
-            <Play className="size-4" />
-          )}
-        </Button>
+            {/* Field name label */}
+            <span className="flex-1 text-sm">
+              {t(field.labelKey as Parameters<typeof t>[0])}
+            </span>
 
-        {/* Waveform bars */}
-        <div
-          className="flex flex-1 items-end gap-0.5"
-          aria-hidden="true"
-        >
-          {[3, 5, 4, 3].map((h, i) => (
-            <div
-              key={i}
-              className={`w-1 rounded-sm bg-primary/60 transition-all ${isPlaying ? 'animate-pulse' : ''}`}
-              style={{ height: isPlaying ? `${h * 4}px` : `${h * 2}px` }}
-            />
-          ))}
-        </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setConfirmOpen(true)}
-          aria-label={t('regenerateTooltip')}
-          className="size-8 shrink-0"
-        >
-          <RotateCcw className="size-4" />
-        </Button>
+            {/* Action buttons — audio present */}
+            {hasAudio ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePlayPause(field.value)}
+                  aria-label={playingField === field.value ? t('pause') : t('play')}
+                  className="size-8 shrink-0"
+                >
+                  {playingField === field.value ? (
+                    <Pause className="size-4" />
+                  ) : (
+                    <Play className="size-4" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setConfirmField(field.value)}
+                  aria-label={t('regenerateTooltip')}
+                  className="size-8 shrink-0"
+                >
+                  <RotateCcw className="size-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  {t('noAudio')}
+                </span>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setConfirmField(field.value)}
+                >
+                  {t('generate')}
+                </Button>
+              </>
+            )}
+          </div>
+        ))}
       </div>
 
       <RegenerateConfirmDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={() => regenerateMutation.mutate()}
+        open={confirmField !== null}
+        onClose={() => setConfirmField(null)}
+        onConfirm={() => {
+          if (confirmField) {
+            regenerateMutation.mutate(confirmField);
+          }
+        }}
         itemLabel={itemLabel}
         isLoading={regenerateMutation.isPending}
       />
