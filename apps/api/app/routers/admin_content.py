@@ -36,6 +36,8 @@ from app.schemas.admin_content import (
     GrammarUpdateRequest,
     OkResponse,
     QuizAdminItem,
+    ReviewQueueItem,
+    ReviewQueueResponse,
     ReviewRequest,
     SentenceArrangeDetailResponse,
     SentenceArrangeUpdateRequest,
@@ -1086,6 +1088,91 @@ async def get_audit_logs(
     )
     logs = result.scalars().all()
     return [AuditLogItem.model_validate(log) for log in logs]
+
+
+# ==========================================
+# Review queue endpoint (Phase 5)
+# ==========================================
+
+REVIEW_QUEUE_LIMIT = 200
+
+
+@router.get("/{content_type}/review-queue", response_model=ReviewQueueResponse)
+async def get_review_queue(
+    content_type: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+    jlpt_level: JlptLevel | None = Query(default=None),
+    category: str | None = Query(default=None),
+) -> ReviewQueueResponse:
+    """Return ordered list of needs_review item IDs for sequential review.
+
+    Items are ordered by created_at ASC (oldest first = natural queue order).
+    Capped at 200 items to avoid URL length limits on the frontend.
+    """
+    if content_type == "quiz":
+        return await _get_quiz_review_queue(db, jlpt_level)
+
+    model = MODEL_MAP.get(content_type)
+    if model is None:
+        raise HTTPException(status_code=400, detail=f"Unknown content type: {content_type}")
+
+    q = select(model.id).where(model.review_status == ReviewStatus.NEEDS_REVIEW)  # type: ignore[attr-defined]
+    if jlpt_level is not None:
+        q = q.where(model.jlpt_level == jlpt_level)  # type: ignore[attr-defined]
+    if category is not None and content_type == "conversation":
+        q = q.where(ConversationScenario.category == category)
+
+    q = q.order_by(model.created_at.asc()).limit(REVIEW_QUEUE_LIMIT + 1)  # type: ignore[attr-defined]
+    result = await db.execute(q)
+    all_ids = [str(row[0]) for row in result.all()]
+
+    capped = len(all_ids) > REVIEW_QUEUE_LIMIT
+    ids = all_ids[:REVIEW_QUEUE_LIMIT]
+
+    return ReviewQueueResponse(
+        ids=[ReviewQueueItem(id=item_id) for item_id in ids],
+        total=len(ids),
+        capped=capped,
+    )
+
+
+async def _get_quiz_review_queue(
+    db: AsyncSession,
+    jlpt_level: JlptLevel | None,
+) -> ReviewQueueResponse:
+    """Build review queue for quiz by merging cloze + sentence_arrange, sorted by created_at ASC."""
+    items: list[tuple[str, str, object]] = []  # (id, quiz_type, created_at)
+
+    # Cloze questions
+    cq = select(ClozeQuestion.id, ClozeQuestion.created_at).where(ClozeQuestion.review_status == ReviewStatus.NEEDS_REVIEW)
+    if jlpt_level is not None:
+        cq = cq.where(ClozeQuestion.jlpt_level == jlpt_level)
+    cloze_result = await db.execute(cq)
+    for row in cloze_result.all():
+        items.append((str(row[0]), "cloze", row[1]))
+
+    # Sentence arrange questions
+    aq = select(SentenceArrangeQuestion.id, SentenceArrangeQuestion.created_at).where(
+        SentenceArrangeQuestion.review_status == ReviewStatus.NEEDS_REVIEW
+    )
+    if jlpt_level is not None:
+        aq = aq.where(SentenceArrangeQuestion.jlpt_level == jlpt_level)
+    arrange_result = await db.execute(aq)
+    for row in arrange_result.all():
+        items.append((str(row[0]), "sentence_arrange", row[1]))
+
+    # Sort by created_at ASC (oldest first)
+    items.sort(key=lambda x: x[2])
+
+    capped = len(items) > REVIEW_QUEUE_LIMIT
+    items = items[:REVIEW_QUEUE_LIMIT]
+
+    return ReviewQueueResponse(
+        ids=[ReviewQueueItem(id=item_id, quiz_type=qt) for item_id, qt, _ in items],
+        total=len(items),
+        capped=capped,
+    )
 
 
 # ==========================================

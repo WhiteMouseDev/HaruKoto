@@ -227,3 +227,19 @@ class AdminTtsRegenerateRequest(CamelModel):
     content_type: Literal["vocabulary", "grammar", "cloze", "sentence_arrange", "conversation"]
     item_id: str
     field: str  # "reading", "word", "example_sentence", "pattern", "sentence", "japanese_sentence", "situation"
+
+
+# ---------------------------------------------------------------------------
+# Review queue schemas (Phase 5)
+# ---------------------------------------------------------------------------
+
+
+class ReviewQueueItem(CamelModel):
+    id: str
+    quiz_type: str | None = None  # only for quiz content type: "cloze" or "sentence_arrange"
+
+
+class ReviewQueueResponse(CamelModel):
+    ids: list[ReviewQueueItem]
+    total: int
+    capped: bool
