@@ -58,11 +58,11 @@ Identical to Phase 3 — reuse without modification.
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | Player bar labels, dialog body text, cooldown countdown text |
-| Label | 12px | 500 (medium) | 1.4 | "オーディオなし" empty-state label, field selector option text |
+| Label | 12px | 400 (regular) | 1.4 | "オーディオなし" empty-state label, field selector option text |
 | Heading | 20px | 600 (semibold) | 1.2 | Regeneration confirm dialog title |
-| Display | 24px | 700 (bold) | 1.2 | Not used in this phase |
+| Display | 24px | 600 (semibold) | 1.2 | Not used in this phase |
 
-Enforced weights: 400 (regular) and 600 (semibold). 500 used only for compact chrome labels.
+Enforced weights: 400 (regular) and 600 (semibold). No other weights permitted.
 
 Font note: TTS field selector option labels for Japanese field names (読み方, 単語, etc.) render with `font-jp` class.
 
@@ -91,6 +91,7 @@ Player strip in normal state (audio present):
 - Border: `--border` (#E5E7EB / rgba(255,255,255,0.1))
 - Play/Pause button: `variant="outline"` — NOT accent (secondary action; reviewer already has the audio)
 - Regenerate button: `variant="ghost"` with `RotateCcw` icon — NOT accent (secondary/optional action)
+- Primary visual anchor in audio-present state: Play/Pause button (leftmost action element after field selector).
 
 Audio-absent state:
 - Player strip background: `--muted` (#F3F4F6 / #374151)
