@@ -94,7 +94,7 @@ async def test_expired_timestamp_rejected(mock_settings, client, mock_user, webh
         headers=headers,
     )
     assert response.status_code == 401
-    assert response.json()["detail"] == "Timestamp expired"
+    assert response.json()["error"]["message"] == "Timestamp expired"
 
 
 @pytest.mark.asyncio
@@ -155,7 +155,7 @@ async def test_invalid_signature_rejected(mock_settings, client, mock_user, webh
         headers=headers,
     )
     assert response.status_code == 401
-    assert response.json()["detail"] == "Invalid signature"
+    assert response.json()["error"]["message"] == "Invalid signature"
 
 
 @pytest.mark.asyncio

@@ -136,7 +136,7 @@ async def test_send_message_conversation_not_found(client, mock_user, test_user_
         },
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "대화를 찾을 수 없습니다"
+    assert response.json()["error"]["message"] == "대화를 찾을 수 없습니다"
 
 
 @pytest.mark.asyncio
@@ -271,4 +271,4 @@ async def test_transcribe_file_too_large(client, mock_user):
         files={"file": ("audio.webm", large_audio, "audio/webm")},
     )
     assert response.status_code == 400
-    assert "4.5MB" in response.json()["detail"]
+    assert "4.5MB" in response.json()["error"]["message"]

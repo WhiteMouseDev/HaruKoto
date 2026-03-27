@@ -138,7 +138,7 @@ async def test_claim_mission_already_claimed(client, mock_user, mock_daily_missi
         json={"missionId": str(mock_daily_mission.id)},
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "이미 보상을 받았습니다"
+    assert response.json()["error"]["message"] == "이미 보상을 받았습니다"
 
 
 @pytest.mark.asyncio
@@ -162,4 +162,4 @@ async def test_claim_mission_not_completed(client, mock_user, mock_daily_mission
         json={"missionId": str(mock_daily_mission.id)},
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "미션이 완료되지 않았습니다"
+    assert response.json()["error"]["message"] == "미션이 완료되지 않았습니다"

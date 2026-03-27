@@ -92,7 +92,7 @@ async def test_subscription_renewal_unauthorized(mock_settings, client, mock_use
         headers={"authorization": "Bearer wrong-secret"},
     )
     assert response.status_code == 401
-    assert response.json()["detail"] == "Unauthorized"
+    assert response.json()["error"]["message"] == "Unauthorized"
 
 
 @pytest.mark.asyncio

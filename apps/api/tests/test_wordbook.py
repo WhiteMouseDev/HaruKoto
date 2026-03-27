@@ -164,4 +164,4 @@ async def test_delete_wordbook_entry_not_found(client, mock_user, test_user_id):
         f"/api/v1/wordbook/{uuid.uuid4()}",
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "단어장 항목을 찾을 수 없습니다"
+    assert response.json()["error"]["message"] == "단어장 항목을 찾을 수 없습니다"

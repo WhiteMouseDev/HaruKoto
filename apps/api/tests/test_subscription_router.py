@@ -110,7 +110,7 @@ async def test_cancel_subscription_no_active(mock_cancel, client, mock_user):
         json={},
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "활성 구독이 없습니다."
+    assert response.json()["error"]["message"] == "활성 구독이 없습니다."
 
 
 @pytest.mark.asyncio
@@ -132,7 +132,7 @@ async def test_resume_subscription_no_cancelled(mock_resume, client, mock_user):
 
     response = await client.post("/api/v1/subscription/resume")
     assert response.status_code == 400
-    assert response.json()["detail"] == "취소된 구독이 없거나 이미 만료되었습니다."
+    assert response.json()["error"]["message"] == "취소된 구독이 없거나 이미 만료되었습니다."
 
 
 @pytest.mark.asyncio

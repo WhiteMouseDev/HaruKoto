@@ -322,4 +322,4 @@ async def test_answer_question_session_not_found(client, mock_user, test_user_id
         },
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "세션을 찾을 수 없습니다"
+    assert response.json()["error"]["message"] == "세션을 찾을 수 없습니다"

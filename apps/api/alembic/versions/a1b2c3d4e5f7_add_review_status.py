@@ -1,6 +1,6 @@
 """add review_status to content and conversation tables
 
-Revision ID: a1b2c3d4e5f6
+Revision ID: a1b2c3d4e5f7
 Revises: 0e6f6c2a3136
 Create Date: 2026-03-26 00:00:00.000000
 """
@@ -12,7 +12,7 @@ from sqlalchemy.dialects import postgresql
 
 from alembic import op
 
-revision: str = "a1b2c3d4e5f6"
+revision: str = "a1b2c3d4e5f7"
 down_revision: str | None = "0e6f6c2a3136"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
