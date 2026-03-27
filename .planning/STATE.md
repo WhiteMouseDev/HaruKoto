@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-27T05:56:48.734Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-27T06:48:57.126Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 15
+  completed_plans: 14
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 04 — tts-audio
+**Current focus:** Phase 05 — reviewer-productivity
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
+Phase: 05 (reviewer-productivity) — EXECUTING
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -64,6 +64,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-content-editing-review-workflow P03 | 6m | 2 tasks | 18 files |
 | Phase 04-tts-audio P01 | 5m | 2 tasks | 3 files |
 | Phase 04-tts-audio P02 | 4m | 3 tasks | 13 files |
+| Phase 05-reviewer-productivity P01 | 2m | 2 tasks | 4 files |
+| Phase 05 P02 | 3m | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -99,6 +101,10 @@ Recent decisions affecting current work:
 - [Phase 04-tts-audio]: CamelModel base used for AdminTtsResponse/AdminTtsRegenerateRequest — consistent with all existing admin schemas
 - [Phase 04-tts-audio]: Lazy state initialization used for localStorage cooldown read — avoids react-hooks/set-state-in-effect lint error
 - [Phase 04-tts-audio]: Snake_case TtsAudioResponse type matches FastAPI Pydantic JSON; hook remaps audio_url to audioUrl camelCase for components
+- [Phase 05-reviewer-productivity]: GET /{content_type}/review-queue placed before /stats — prevents wildcard path conflict with FastAPI top-down matching
+- [Phase 05-reviewer-productivity]: Quiz review-queue merges cloze + sentence_arrange in memory sorted by created_at ASC — avoids complex UNION SQL at 1-3 user scale
+- [Phase 05]: NavBadge is a separate file (sidebar-badge.tsx) — importable without pulling in SidebarNavItem
+- [Phase 05]: getBadgeCount and getStatsForKey both merge cloze+sentence_arrange for quiz key — same pattern in sidebar and dashboard
 
 ### Pending Todos
 
@@ -113,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T05:56:48.730Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-reviewer-productivity/05-CONTEXT.md
+Last session: 2026-03-27T06:48:57.123Z
+Stopped at: Completed 05-02-PLAN.md
+Resume file: None
