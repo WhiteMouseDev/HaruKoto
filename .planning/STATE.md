@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 999.1 context gathered
-last_updated: "2026-03-27T08:08:54.199Z"
+status: executing
+stopped_at: Completed 999.1-01-PLAN.md
+last_updated: "2026-03-27T09:02:57.385Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 17
+  completed_plans: 16
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 05 — reviewer-productivity
+**Current focus:** Phase 999.1 — tts-field-ui-improvement
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 999.1 (tts-field-ui-improvement) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
@@ -67,6 +67,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 05-reviewer-productivity P01 | 2m | 2 tasks | 4 files |
 | Phase 05 P02 | 3m | 2 tasks | 10 files |
 | Phase 05-reviewer-productivity P03 | 4m | 2 tasks | 13 files |
+| Phase 999.1 P01 | 3m | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,7 @@ Recent decisions affecting current work:
 - [Phase 05]: getBadgeCount and getStatsForKey both merge cloze+sentence_arrange for quiz key — same pattern in sidebar and dashboard
 - [Phase 05-reviewer-productivity]: Queue state stored in URL params (queue=id1,id2,id3&qi=0) — no global state needed, survives page reload
 - [Phase 05-reviewer-productivity]: Auto-advance uses setTimeout 800ms — gives reviewer time to read success toast before navigation
+- [Phase 999.1]: playingField/confirmField as string|null instead of boolean flags enables per-row state tracking in TtsPlayer
 
 ### Pending Todos
 
@@ -122,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T08:08:54.195Z
-Stopped at: Phase 999.1 context gathered
-Resume file: .planning/phases/999.1-tts-field-ui-improvement/999.1-CONTEXT.md
+Last session: 2026-03-27T09:02:57.381Z
+Stopped at: Completed 999.1-01-PLAN.md
+Resume file: None

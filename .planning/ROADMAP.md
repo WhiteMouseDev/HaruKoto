@@ -127,8 +127,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 **Goal:** 드롭다운 대신 읽기/단어/예문 등 전체 필드를 리스트로 표시하여, 리뷰어가 각 필드의 TTS 유무를 한눈에 파악하고 빠진 것만 바로 생성할 수 있도록 개선
 **Requirements:** BACKLOG-999.1
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 999.1-01-PLAN.md — Refactor useTtsPlayer hook + TtsPlayer component: Select dropdown to vertical field list
+- [x] 999.1-01-PLAN.md — Refactor useTtsPlayer hook + TtsPlayer component: Select dropdown to vertical field list
 - [ ] 999.1-02-PLAN.md — Human verification of TTS field list UI on all 4 content types
