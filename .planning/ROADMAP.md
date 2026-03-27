@@ -114,3 +114,14 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
 | 4. TTS Audio | 1/2 | In Progress|  |
 | 5. Reviewer Productivity | 0/TBD | Not started | - |
+
+## Backlog
+
+### Phase 999.1: TTS 필드 UI 개선 — select → 전체 필드 목록 (BACKLOG)
+
+**Goal:** 드롭다운 대신 읽기/단어/예문 등 전체 필드를 리스트로 표시하여, 리뷰어가 각 필드의 TTS 유무를 한눈에 파악하고 빠진 것만 바로 생성할 수 있도록 개선
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
