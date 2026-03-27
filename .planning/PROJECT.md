@@ -24,7 +24,11 @@ apps/admin으로 메인 앱과 분리된 독립 Next.js 앱, Vercel 배포.
 
 ### Active
 
-- [ ] 원어민이 TTS 오디오를 재생하고 재생성을 요청할 수 있다
+(모든 v1 요구사항 완료 — Phase 5 Reviewer Productivity 남음)
+
+### Validated in Phase 4
+
+- ✓ 원어민이 TTS 오디오를 재생하고 재생성을 요청할 수 있다 — Phase 4 완료
 
 ### Validated in Phase 3
 
@@ -71,4 +75,4 @@ apps/admin으로 메인 앱과 분리된 독립 Next.js 앱, Vercel 배포.
 | 다국어 UI (한/일/영) | 일본인 원어민 + 한국인 개발자 모두 사용 | — Pending |
 
 ---
-*Last updated: 2026-03-27 after Phase 3 (Content Editing & Review Workflow) completion*
+*Last updated: 2026-03-27 after Phase 4 (TTS Audio) completion*
