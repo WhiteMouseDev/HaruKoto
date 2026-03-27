@@ -25,6 +25,1441 @@
         }
       }
     },
+    "/api/v1/admin/content/vocabulary": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "List Vocabulary",
+        "description": "List vocabulary items with optional filters and search.",
+        "operationId": "list_vocabulary_api_v1_admin_content_vocabulary_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "jlpt_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlpt Level"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReviewStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Review Status"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_VocabularyAdminItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/vocabulary/{item_id}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Vocabulary Detail",
+        "description": "Return full detail for a single vocabulary item.",
+        "operationId": "get_vocabulary_detail_api_v1_admin_content_vocabulary__item_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabularyDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Patch Vocabulary",
+        "description": "Partial update vocabulary item. Only sent fields are updated.",
+        "operationId": "patch_vocabulary_api_v1_admin_content_vocabulary__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VocabularyUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabularyDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/vocabulary/{item_id}/review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Review Vocabulary",
+        "description": "Approve or reject a vocabulary item.",
+        "operationId": "review_vocabulary_api_v1_admin_content_vocabulary__item_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabularyDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/grammar": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "List Grammar",
+        "description": "List grammar items with optional filters and search.",
+        "operationId": "list_grammar_api_v1_admin_content_grammar_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "jlpt_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlpt Level"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReviewStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Review Status"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_GrammarAdminItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/grammar/{item_id}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Grammar Detail",
+        "description": "Return full detail for a single grammar item.",
+        "operationId": "get_grammar_detail_api_v1_admin_content_grammar__item_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrammarDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Patch Grammar",
+        "description": "Partial update grammar item. Only sent fields are updated.",
+        "operationId": "patch_grammar_api_v1_admin_content_grammar__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrammarUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrammarDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/grammar/{item_id}/review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Review Grammar",
+        "description": "Approve or reject a grammar item.",
+        "operationId": "review_grammar_api_v1_admin_content_grammar__item_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrammarDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/quiz": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "List Quiz",
+        "description": "List quiz items (cloze + sentence_arrange) with optional filters and search.",
+        "operationId": "list_quiz_api_v1_admin_content_quiz_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "jlpt_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlpt Level"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReviewStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Review Status"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "quiz_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by quiz type: 'cloze' or 'sentence_arrange'",
+              "title": "Quiz Type"
+            },
+            "description": "Filter by quiz type: 'cloze' or 'sentence_arrange'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_QuizAdminItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/quiz/cloze/{item_id}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Cloze Detail",
+        "description": "Return full detail for a single cloze question.",
+        "operationId": "get_cloze_detail_api_v1_admin_content_quiz_cloze__item_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClozeQuestionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Patch Cloze",
+        "description": "Partial update cloze question. Only sent fields are updated.",
+        "operationId": "patch_cloze_api_v1_admin_content_quiz_cloze__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClozeQuestionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClozeQuestionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/quiz/cloze/{item_id}/review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Review Cloze",
+        "description": "Approve or reject a cloze question.",
+        "operationId": "review_cloze_api_v1_admin_content_quiz_cloze__item_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClozeQuestionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/quiz/sentence-arrange/{item_id}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Sentence Arrange Detail",
+        "description": "Return full detail for a single sentence arrange question.",
+        "operationId": "get_sentence_arrange_detail_api_v1_admin_content_quiz_sentence_arrange__item_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentenceArrangeDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Patch Sentence Arrange",
+        "description": "Partial update sentence arrange question. Only sent fields are updated.",
+        "operationId": "patch_sentence_arrange_api_v1_admin_content_quiz_sentence_arrange__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SentenceArrangeUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentenceArrangeDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/quiz/sentence-arrange/{item_id}/review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Review Sentence Arrange",
+        "description": "Approve or reject a sentence arrange question.",
+        "operationId": "review_sentence_arrange_api_v1_admin_content_quiz_sentence_arrange__item_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentenceArrangeDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/conversation": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "List Conversation",
+        "description": "List conversation scenario items with optional filters and search.\n\nNote: ConversationScenario has no jlpt_level column; jlpt_level filter is ignored.\njlpt_level in response is always None.",
+        "operationId": "list_conversation_api_v1_admin_content_conversation_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "jlpt_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlpt Level"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReviewStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Review Status"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ScenarioCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_ConversationAdminItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/conversation/{item_id}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Conversation Detail",
+        "description": "Return full detail for a single conversation scenario.",
+        "operationId": "get_conversation_detail_api_v1_admin_content_conversation__item_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Patch Conversation",
+        "description": "Partial update conversation scenario. Only sent fields are updated.",
+        "operationId": "patch_conversation_api_v1_admin_content_conversation__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/conversation/{item_id}/review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Review Conversation",
+        "description": "Approve or reject a conversation scenario.",
+        "operationId": "review_conversation_api_v1_admin_content_conversation__item_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/batch-review": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Batch Review",
+        "description": "Batch approve or reject multiple content items in a single transaction.",
+        "operationId": "batch_review_api_v1_admin_content_batch_review_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/content/{content_type}/{item_id}/audit-logs": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Audit Logs",
+        "description": "Return audit log entries for a content item, ordered by created_at DESC.",
+        "operationId": "get_audit_logs_api_v1_admin_content__content_type___item_id__audit_logs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "content_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Type"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLogItem"
+                  },
+                  "title": "Response Get Audit Logs Api V1 Admin Content  Content Type   Item Id  Audit Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/stats": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Content Stats",
+        "description": "Return review_status counts for all content types.",
+        "operationId": "get_content_stats_api_v1_admin_content_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/achievements": {
       "get": {
         "tags": [
@@ -4042,6 +5477,62 @@
         ],
         "title": "AnswerSubmission"
       },
+      "AuditLogItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "changes": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changes"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "reviewerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewerid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "changes",
+          "reason",
+          "reviewerId",
+          "createdAt"
+        ],
+        "title": "AuditLogItem"
+      },
       "AvatarUpdateRequest": {
         "properties": {
           "avatar_url": {
@@ -4054,6 +5545,55 @@
           "avatar_url"
         ],
         "title": "AvatarUpdateRequest"
+      },
+      "BatchReviewRequest": {
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "vocabulary",
+              "grammar",
+              "cloze",
+              "sentence_arrange",
+              "conversation"
+            ],
+            "title": "Contenttype"
+          },
+          "ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Action"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contentType",
+          "ids",
+          "action"
+        ],
+        "title": "BatchReviewRequest"
       },
       "Body_transcribe_voice_api_v1_chat_voice_transcribe_post": {
         "properties": {
@@ -4522,6 +6062,380 @@
         ],
         "title": "CheckoutResponse"
       },
+      "ClozeQuestionDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sentence": {
+            "type": "string",
+            "title": "Sentence"
+          },
+          "translation": {
+            "type": "string",
+            "title": "Translation"
+          },
+          "correctAnswer": {
+            "type": "string",
+            "title": "Correctanswer"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sentence",
+          "translation",
+          "correctAnswer",
+          "options",
+          "explanation",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ClozeQuestionDetailResponse"
+      },
+      "ClozeQuestionUpdateRequest": {
+        "properties": {
+          "sentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentence"
+          },
+          "translation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Translation"
+          },
+          "correctAnswer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctanswer"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "title": "ClozeQuestionUpdateRequest"
+      },
+      "ContentStatsItem": {
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "title": "Contenttype"
+          },
+          "needsReview": {
+            "type": "integer",
+            "title": "Needsreview"
+          },
+          "approved": {
+            "type": "integer",
+            "title": "Approved"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contentType",
+          "needsReview",
+          "approved",
+          "rejected",
+          "total"
+        ],
+        "title": "ContentStatsItem"
+      },
+      "ContentStatsResponse": {
+        "properties": {
+          "stats": {
+            "items": {
+              "$ref": "#/components/schemas/ContentStatsItem"
+            },
+            "type": "array",
+            "title": "Stats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stats"
+        ],
+        "title": "ContentStatsResponse"
+      },
+      "ConversationAdminItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "jlptLevel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt"
+        ],
+        "title": "ConversationAdminItem"
+      },
+      "ConversationDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "titleJa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleja"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "situation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Situation"
+          },
+          "yourRole": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yourrole"
+          },
+          "aiRole": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Airole"
+          },
+          "systemPrompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Systemprompt"
+          },
+          "keyExpressions": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyexpressions"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "titleJa",
+          "description",
+          "situation",
+          "yourRole",
+          "aiRole",
+          "systemPrompt",
+          "keyExpressions",
+          "category",
+          "reviewStatus",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ConversationDetailResponse"
+      },
       "ConversationType": {
         "type": "string",
         "enum": [
@@ -4529,6 +6443,101 @@
           "TEXT"
         ],
         "title": "ConversationType"
+      },
+      "ConversationUpdateRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "titleJa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleja"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "situation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Situation"
+          },
+          "yourRole": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yourrole"
+          },
+          "aiRole": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Airole"
+          },
+          "systemPrompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Systemprompt"
+          },
+          "keyExpressions": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyexpressions"
+          }
+        },
+        "type": "object",
+        "title": "ConversationUpdateRequest"
       },
       "DailyGoalRequest": {
         "properties": {
@@ -4752,6 +6761,129 @@
         ],
         "title": "GameEvent"
       },
+      "GrammarAdminItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pattern": {
+            "type": "string",
+            "title": "Pattern"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pattern",
+          "explanation",
+          "meaningKo",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt"
+        ],
+        "title": "GrammarAdminItem"
+      },
+      "GrammarDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pattern": {
+            "type": "string",
+            "title": "Pattern"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "exampleSentences": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentences"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pattern",
+          "meaningKo",
+          "explanation",
+          "exampleSentences",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "GrammarDetailResponse"
+      },
       "GrammarItem": {
         "properties": {
           "id": {
@@ -4780,6 +6912,45 @@
           "explanation"
         ],
         "title": "GrammarItem"
+      },
+      "GrammarUpdateRequest": {
+        "properties": {
+          "pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pattern"
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meaningko"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "title": "GrammarUpdateRequest"
       },
       "HTTPValidationError": {
         "properties": {
@@ -5858,6 +8029,22 @@
         ],
         "title": "NotificationsListResponse"
       },
+      "OkResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "OkResponse"
+      },
       "OnboardingRequest": {
         "properties": {
           "nickname": {
@@ -5954,6 +8141,150 @@
           "percentage"
         ],
         "title": "OverallProgress"
+      },
+      "PaginatedResponse_ConversationAdminItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationAdminItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "title": "PaginatedResponse[ConversationAdminItem]"
+      },
+      "PaginatedResponse_GrammarAdminItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GrammarAdminItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "title": "PaginatedResponse[GrammarAdminItem]"
+      },
+      "PaginatedResponse_QuizAdminItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuizAdminItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "title": "PaginatedResponse[QuizAdminItem]"
+      },
+      "PaginatedResponse_VocabularyAdminItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/VocabularyAdminItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "title": "PaginatedResponse[VocabularyAdminItem]"
       },
       "PoolSize": {
         "properties": {
@@ -6231,6 +8562,46 @@
           "isCorrect"
         ],
         "title": "QuestionResult"
+      },
+      "QuizAdminItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "questionText": {
+            "type": "string",
+            "title": "Questiontext"
+          },
+          "quizType": {
+            "type": "string",
+            "title": "Quiztype"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "questionText",
+          "quizType",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt"
+        ],
+        "title": "QuizAdminItem"
       },
       "QuizAnswerRequest": {
         "properties": {
@@ -6633,6 +9004,43 @@
         ],
         "title": "Reading"
       },
+      "ReviewRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Action"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "ReviewRequest"
+      },
+      "ReviewStatus": {
+        "type": "string",
+        "enum": [
+          "needs_review",
+          "approved",
+          "rejected"
+        ],
+        "title": "ReviewStatus"
+      },
       "ReviewSummaryResponse": {
         "properties": {
           "wordDue": {
@@ -6663,6 +9071,16 @@
         },
         "type": "object",
         "title": "ReviewSummaryResponse"
+      },
+      "ScenarioCategory": {
+        "type": "string",
+        "enum": [
+          "TRAVEL",
+          "DAILY",
+          "BUSINESS",
+          "FREE"
+        ],
+        "title": "ScenarioCategory"
       },
       "ScriptLine": {
         "properties": {
@@ -6697,6 +9115,135 @@
           "text"
         ],
         "title": "ScriptLine"
+      },
+      "SentenceArrangeDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "koreanSentence": {
+            "type": "string",
+            "title": "Koreansentence"
+          },
+          "japaneseSentence": {
+            "type": "string",
+            "title": "Japanesesentence"
+          },
+          "tokens": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tokens"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "koreanSentence",
+          "japaneseSentence",
+          "tokens",
+          "explanation",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "SentenceArrangeDetailResponse"
+      },
+      "SentenceArrangeUpdateRequest": {
+        "properties": {
+          "koreanSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Koreansentence"
+          },
+          "japaneseSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Japanesesentence"
+          },
+          "tokens": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tokens"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "title": "SentenceArrangeUpdateRequest"
       },
       "SessionDistribution": {
         "properties": {
@@ -7493,6 +10040,240 @@
           "id"
         ],
         "title": "VocabTTSRequest"
+      },
+      "VocabularyAdminItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "type": "string",
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "word",
+          "reading",
+          "meaningKo",
+          "jlptLevel",
+          "reviewStatus",
+          "createdAt"
+        ],
+        "title": "VocabularyAdminItem"
+      },
+      "VocabularyDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "type": "string",
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "partOfSpeech": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partofspeech"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleReading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplereading"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "title": "Reviewstatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "word",
+          "reading",
+          "meaningKo",
+          "jlptLevel",
+          "partOfSpeech",
+          "exampleSentence",
+          "exampleReading",
+          "exampleTranslation",
+          "reviewStatus",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "VocabularyDetailResponse"
+      },
+      "VocabularyUpdateRequest": {
+        "properties": {
+          "word": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Word"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meaningko"
+          },
+          "partOfSpeech": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partofspeech"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleReading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplereading"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          }
+        },
+        "type": "object",
+        "title": "VocabularyUpdateRequest"
       },
       "VolumeChartItem": {
         "properties": {

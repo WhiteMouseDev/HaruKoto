@@ -3,12 +3,14 @@ class ApiException implements Exception {
   final int? statusCode;
   final String? errorCode;
   final String? requestPath;
+  final dynamic details;
 
   const ApiException({
     required this.message,
     this.statusCode,
     this.errorCode,
     this.requestPath,
+    this.details,
   });
 
   factory ApiException.fromResponse(
@@ -18,8 +20,20 @@ class ApiException implements Exception {
   }) {
     String message = '알 수 없는 오류가 발생했습니다.';
     String? errorCode;
+    dynamic details;
+
     if (data is Map<String, dynamic>) {
-      if (data.containsKey('detail')) {
+      // 표준 형식: {"error": {"code": "...", "message": "...", "details": ...}}
+      final error = data['error'];
+      if (error is Map<String, dynamic>) {
+        final code = error['code'];
+        final msg = error['message'];
+        if (code is String) errorCode = code;
+        if (msg is String && msg.isNotEmpty) message = msg;
+        details = error['details'];
+      }
+      // 레거시 형식: {"detail": "..."}
+      else if (data.containsKey('detail')) {
         final detail = data['detail'];
         if (detail is String && detail.isNotEmpty) {
           message = detail;
@@ -41,17 +55,21 @@ class ApiException implements Exception {
           message = detail.toString();
         }
       }
-      if (data.containsKey('errorCode')) {
-        errorCode = data['errorCode'] as String;
-      }
     }
+
     return ApiException(
       message: message,
       statusCode: statusCode,
       errorCode: errorCode,
       requestPath: requestPath,
+      details: details,
     );
   }
+
+  bool get isAuth => errorCode != null && errorCode!.startsWith('AUTH_');
+  bool get isValidation => errorCode == 'VALIDATION_ERROR';
+  bool get isRateLimited => errorCode == 'RATE_LIMITED';
+  bool get isNotFound => errorCode != null && errorCode!.endsWith('_NOT_FOUND');
 
   String get userMessage {
     switch (statusCode) {
@@ -77,5 +95,5 @@ class ApiException implements Exception {
   }
 
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() => 'ApiException($statusCode, $errorCode): $message';
 }

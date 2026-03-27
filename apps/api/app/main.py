@@ -29,6 +29,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from app.error_handlers import register_error_handlers  # noqa: E402
+
+register_error_handlers(app)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
