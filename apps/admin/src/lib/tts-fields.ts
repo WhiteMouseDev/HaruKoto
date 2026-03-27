@@ -2,28 +2,28 @@ export const TTS_FIELDS = {
   vocabulary: {
     default: 'reading',
     options: [
-      { value: 'reading', labelKey: 'tts.fields.reading' },
-      { value: 'word', labelKey: 'tts.fields.word' },
-      { value: 'example_sentence', labelKey: 'tts.fields.exampleSentence' },
+      { value: 'reading', labelKey: 'fields.reading' },
+      { value: 'word', labelKey: 'fields.word' },
+      { value: 'example_sentence', labelKey: 'fields.exampleSentence' },
     ],
   },
   grammar: {
     default: 'pattern',
-    options: [{ value: 'pattern', labelKey: 'tts.fields.pattern' }],
+    options: [{ value: 'pattern', labelKey: 'fields.pattern' }],
   },
   cloze: {
     default: 'sentence',
-    options: [{ value: 'sentence', labelKey: 'tts.fields.sentence' }],
+    options: [{ value: 'sentence', labelKey: 'fields.sentence' }],
   },
   sentence_arrange: {
     default: 'japanese_sentence',
     options: [
-      { value: 'japanese_sentence', labelKey: 'tts.fields.japaneseSentence' },
+      { value: 'japanese_sentence', labelKey: 'fields.japaneseSentence' },
     ],
   },
   conversation: {
     default: 'situation',
-    options: [{ value: 'situation', labelKey: 'tts.fields.situation' }],
+    options: [{ value: 'situation', labelKey: 'fields.situation' }],
   },
 } as const;
 

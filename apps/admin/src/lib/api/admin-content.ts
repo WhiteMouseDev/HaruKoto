@@ -215,7 +215,7 @@ export async function regenerateTts(
   field: string,
 ): Promise<TtsAudioResponse> {
   const headers = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/v1/admin/tts/regenerate`, {
+  const res = await fetch(`${API_URL}/api/v1/admin/content/tts/regenerate`, {
     method: 'POST',
     headers: {
       ...(headers as Record<string, string>),
