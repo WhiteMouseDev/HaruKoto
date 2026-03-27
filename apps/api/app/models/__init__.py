@@ -1,3 +1,4 @@
+from app.models.admin import AuditLog
 from app.models.content import ClozeQuestion, Grammar, SentenceArrangeQuestion, Vocabulary
 from app.models.conversation import AiCharacter, Conversation, ConversationScenario
 from app.models.enums import (
@@ -27,6 +28,7 @@ from app.models.tts import TtsAudio
 from app.models.user import User
 
 __all__ = [
+    "AuditLog",
     "AiCharacter",
     "Chapter",
     "ClozeQuestion",
