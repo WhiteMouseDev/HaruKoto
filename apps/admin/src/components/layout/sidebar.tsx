@@ -7,7 +7,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { getTranslations, getLocale } from 'next-intl/server';
-import { SidebarNavItem } from './sidebar-nav-item';
+import { SidebarNavWithBadges } from './sidebar-nav-with-badges';
 import { LocaleSwitcher } from './locale-switcher';
 import { LogoutButton } from './logout-button';
 
@@ -26,21 +26,25 @@ export async function Sidebar() {
       href: '/vocabulary',
       icon: <BookOpen className="size-4 shrink-0" />,
       label: t('vocabulary'),
+      contentTypeKey: 'vocabulary',
     },
     {
       href: '/grammar',
       icon: <BookMarked className="size-4 shrink-0" />,
       label: t('grammar'),
+      contentTypeKey: 'grammar',
     },
     {
       href: '/quiz',
       icon: <HelpCircle className="size-4 shrink-0" />,
       label: t('quiz'),
+      contentTypeKey: 'quiz',
     },
     {
       href: '/conversation',
       icon: <MessageSquare className="size-4 shrink-0" />,
       label: t('conversation'),
+      contentTypeKey: 'conversation',
     },
   ];
 
@@ -58,17 +62,8 @@ export async function Sidebar() {
         <span className="text-sm font-semibold">HaruKoto Admin</span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-1 py-4">
-        {navItems.map((item) => (
-          <SidebarNavItem
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-          />
-        ))}
-      </nav>
+      {/* Navigation with badges */}
+      <SidebarNavWithBadges navItems={navItems} />
 
       {/* Bottom: Locale + Logout */}
       <div className="flex flex-col gap-2 border-t border-border px-4 py-4">

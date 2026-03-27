@@ -3,14 +3,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { NavBadge } from './sidebar-badge';
 
 type SidebarNavItemProps = {
   href: string;
   icon: React.ReactNode;
   label: string;
+  badge?: number;
 };
 
-export function SidebarNavItem({ href, icon, label }: SidebarNavItemProps) {
+export function SidebarNavItem({ href, icon, label, badge }: SidebarNavItemProps) {
   const pathname = usePathname();
   const isActive =
     pathname === href ||
@@ -28,6 +30,7 @@ export function SidebarNavItem({ href, icon, label }: SidebarNavItemProps) {
     >
       {icon}
       <span>{label}</span>
+      {badge !== undefined && badge > 0 && <NavBadge count={badge} />}
     </Link>
   );
 }
