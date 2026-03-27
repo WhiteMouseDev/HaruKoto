@@ -30,6 +30,7 @@ model User {
   showKana                  Boolean                     @default(false) @map("show_kana")
   app_settings              Json?
   goals                     String[]
+  audit_logs                audit_logs[]
   conversations             Conversation[]
   dailyAiUsage              DailyAiUsage[]
   dailyMissions             DailyMission[]
@@ -70,12 +71,14 @@ model Vocabulary {
   meaning_glosses_ko String[]            @default([])
   synonym_group_id   String?             @db.Uuid
   category_tag       String?
+  review_status      reviewstatus        @default(needs_review)
   lesson_item_links  lesson_item_links[]
   userProgress       UserVocabProgress[]
 
   @@unique([word, reading, jlptLevel])
   @@index([jlptLevel])
   @@index([partOfSpeech])
+  @@index([review_status], map: "idx_vocabularies_review_status")
   @@map("vocabularies")
 }
 
@@ -91,11 +94,13 @@ model Grammar {
   createdAt          DateTime              @default(now()) @map("created_at")
   meaning_glosses_ko String[]              @default([])
   synonym_group_id   String?               @db.Uuid
+  review_status      reviewstatus          @default(needs_review)
   lesson_item_links  lesson_item_links[]
   userProgress       UserGrammarProgress[]
 
   @@unique([pattern, jlptLevel])
   @@index([jlptLevel])
+  @@index([review_status], map: "idx_grammars_review_status")
   @@map("grammars")
 }
 
@@ -133,39 +138,43 @@ model QuizAnswer {
 }
 
 model ClozeQuestion {
-  id            String    @id @default(uuid()) @db.Uuid
+  id            String       @id @default(uuid()) @db.Uuid
   sentence      String
   translation   String
-  correctAnswer String    @map("correct_answer")
+  correctAnswer String       @map("correct_answer")
   options       Json
   explanation   String
-  grammarPoint  String?   @map("grammar_point")
-  jlptLevel     JlptLevel @map("jlpt_level")
-  difficulty    Int       @default(1)
-  order         Int       @default(0)
-  createdAt     DateTime  @default(now()) @map("created_at")
+  grammarPoint  String?      @map("grammar_point")
+  jlptLevel     JlptLevel    @map("jlpt_level")
+  difficulty    Int          @default(1)
+  order         Int          @default(0)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  review_status reviewstatus @default(needs_review)
 
   @@unique([sentence, jlptLevel])
   @@index([jlptLevel])
   @@index([jlptLevel, difficulty])
+  @@index([review_status], map: "idx_cloze_questions_review_status")
   @@map("cloze_questions")
 }
 
 model SentenceArrangeQuestion {
-  id               String    @id @default(uuid()) @db.Uuid
-  koreanSentence   String    @map("korean_sentence")
-  japaneseSentence String    @map("japanese_sentence")
+  id               String       @id @default(uuid()) @db.Uuid
+  koreanSentence   String       @map("korean_sentence")
+  japaneseSentence String       @map("japanese_sentence")
   tokens           Json
   explanation      String
-  grammarPoint     String?   @map("grammar_point")
-  jlptLevel        JlptLevel @map("jlpt_level")
-  difficulty       Int       @default(1)
-  order            Int       @default(0)
-  createdAt        DateTime  @default(now()) @map("created_at")
+  grammarPoint     String?      @map("grammar_point")
+  jlptLevel        JlptLevel    @map("jlpt_level")
+  difficulty       Int          @default(1)
+  order            Int          @default(0)
+  createdAt        DateTime     @default(now()) @map("created_at")
+  review_status    reviewstatus @default(needs_review)
 
   @@unique([koreanSentence, jlptLevel])
   @@index([jlptLevel])
   @@index([jlptLevel, difficulty])
+  @@index([review_status], map: "idx_sentence_arrange_questions_review_status")
   @@map("sentence_arrange_questions")
 }
 
@@ -185,10 +194,12 @@ model ConversationScenario {
   isActive         Boolean          @default(true) @map("is_active")
   order            Int              @default(0)
   createdAt        DateTime         @default(now()) @map("created_at")
+  review_status    reviewstatus     @default(needs_review)
   conversations    Conversation[]
 
   @@index([category])
   @@index([difficulty])
+  @@index([review_status], map: "idx_conversation_scenarios_review_status")
   @@map("conversation_scenarios")
 }
 
@@ -750,6 +761,21 @@ model user_study_stage_progress {
   @@unique([user_id, stage_id])
 }
 
+model audit_logs {
+  id           String   @id @db.Uuid
+  content_type String
+  content_id   String   @db.Uuid
+  action       String
+  changes      Json?    @db.Json
+  reason       String?
+  reviewer_id  String   @db.Uuid
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  users        User     @relation(fields: [reviewer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([content_type, content_id], map: "ix_audit_logs_content")
+  @@index([created_at], map: "ix_audit_logs_created_at")
+}
+
 enum JlptLevel {
   ABSOLUTE_ZERO
   N5
@@ -847,4 +873,10 @@ enum PaymentStatus {
 enum ConversationType {
   VOICE
   TEXT
+}
+
+enum reviewstatus {
+  needs_review
+  approved
+  rejected
 }
