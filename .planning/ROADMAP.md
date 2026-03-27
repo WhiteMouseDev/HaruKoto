@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Content List Views** - 4개 콘텐츠 타입 목록, 검색·필터·페이지네이션, 대시보드 (completed 2026-03-26)
 - [x] **Phase 3: Content Editing & Review Workflow** - 편집 폼, 승인/반려 워크플로우, 감사 로그 (completed 2026-03-27)
 - [ ] **Phase 4: TTS Audio** - 오디오 재생, 재생성 요청, FastAPI 엔드포인트 연동
-- [ ] **Phase 5: Reviewer Productivity** - 리뷰 큐 탐색, 일괄 상태 변경, 알림
+- [x] **Phase 5: Reviewer Productivity** - 리뷰 큐 탐색, 일괄 상태 변경, 알림 (completed 2026-03-27)
 
 ## Phase Details
 
@@ -104,7 +104,7 @@ Plans:
 Plans:
 - [x] 05-01-PLAN.md — FastAPI review-queue endpoint + Pydantic schemas + pytest + frontend API function
 - [x] 05-02-PLAN.md — Sidebar needs_review badges + dashboard quiz stats fix + Phase 5 i18n keys
-- [ ] 05-03-PLAN.md — Review queue frontend: useReviewQueue hook, QueueNavigationBar, ReviewStartButton, wire into 4 content types + human verification
+- [x] 05-03-PLAN.md — Review queue frontend: useReviewQueue hook, QueueNavigationBar, ReviewStartButton, wire into 4 content types + human verification
 
 **UI hint**: yes
 
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Content List Views | 0/3 | Not started | - |
 | 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
 | 4. TTS Audio | 1/2 | In Progress|  |
-| 5. Reviewer Productivity | 2/3 | In Progress|  |
+| 5. Reviewer Productivity | 3/3 | Complete   | 2026-03-27 |
 
 ## Backlog
 
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 **Goal:** 드롭다운 대신 읽기/단어/예문 등 전체 필드를 리스트로 표시하여, 리뷰어가 각 필드의 TTS 유무를 한눈에 파악하고 빠진 것만 바로 생성할 수 있도록 개선
 **Requirements:** TBD
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
