@@ -1049,47 +1049,6 @@ async def regenerate_admin_tts(
     return AdminTtsResponse(audio_url=audio_url, field=text, provider=tts_result.provider)
 
 
-@router.get("/{content_type}/{item_id}/tts", response_model=AdminTtsResponse)
-async def get_admin_tts(
-    content_type: str,
-    item_id: str,
-    reviewer: Annotated[User, Depends(require_reviewer)],
-    db: Annotated[AsyncSession, Depends(get_db)],
-) -> AdminTtsResponse:
-    """Return existing TTS audio URL for a content item, or null if none exists."""
-    result = await db.execute(
-        select(TtsAudio).where(
-            TtsAudio.target_type == content_type,
-            TtsAudio.target_id == item_id,
-            TtsAudio.speed == 1.0,
-        )
-    )
-    record = result.scalar_one_or_none()
-    if record:
-        return AdminTtsResponse(audio_url=record.audio_url, field=record.text, provider=record.provider)
-    return AdminTtsResponse(audio_url=None, field=None, provider=None)
-
-
-# ==========================================
-# Audit logs endpoint
-# ==========================================
-
-
-@router.get("/{content_type}/{item_id}/audit-logs", response_model=list[AuditLogItem])
-async def get_audit_logs(
-    content_type: str,
-    item_id: uuid.UUID,
-    db: Annotated[AsyncSession, Depends(get_db)],
-    _reviewer: Annotated[User, Depends(require_reviewer)],
-) -> list[AuditLogItem]:
-    """Return audit log entries for a content item, ordered by created_at DESC."""
-    result = await db.execute(
-        select(AuditLog).where(AuditLog.content_type == content_type, AuditLog.content_id == item_id).order_by(AuditLog.created_at.desc())
-    )
-    logs = result.scalars().all()
-    return [AuditLogItem.model_validate(log) for log in logs]
-
-
 # ==========================================
 # Review queue endpoint (Phase 5)
 # ==========================================
@@ -1173,6 +1132,47 @@ async def _get_quiz_review_queue(
         total=len(items),
         capped=capped,
     )
+
+
+@router.get("/{content_type}/{item_id}/tts", response_model=AdminTtsResponse)
+async def get_admin_tts(
+    content_type: str,
+    item_id: str,
+    reviewer: Annotated[User, Depends(require_reviewer)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> AdminTtsResponse:
+    """Return existing TTS audio URL for a content item, or null if none exists."""
+    result = await db.execute(
+        select(TtsAudio).where(
+            TtsAudio.target_type == content_type,
+            TtsAudio.target_id == item_id,
+            TtsAudio.speed == 1.0,
+        )
+    )
+    record = result.scalar_one_or_none()
+    if record:
+        return AdminTtsResponse(audio_url=record.audio_url, field=record.text, provider=record.provider)
+    return AdminTtsResponse(audio_url=None, field=None, provider=None)
+
+
+# ==========================================
+# Audit logs endpoint
+# ==========================================
+
+
+@router.get("/{content_type}/{item_id}/audit-logs", response_model=list[AuditLogItem])
+async def get_audit_logs(
+    content_type: str,
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> list[AuditLogItem]:
+    """Return audit log entries for a content item, ordered by created_at DESC."""
+    result = await db.execute(
+        select(AuditLog).where(AuditLog.content_type == content_type, AuditLog.content_id == item_id).order_by(AuditLog.created_at.desc())
+    )
+    logs = result.scalars().all()
+    return [AuditLogItem.model_validate(log) for log in logs]
 
 
 # ==========================================
