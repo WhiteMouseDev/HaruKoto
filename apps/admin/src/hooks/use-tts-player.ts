@@ -9,17 +9,14 @@ import {
   regenerateTts,
   type TtsAudioResponse,
 } from '@/lib/api/admin-content';
-import { TTS_FIELDS, type ContentType } from '@/lib/tts-fields';
+import { type ContentType } from '@/lib/tts-fields';
 
 export function useTtsPlayer(contentType: ContentType, itemId: string) {
   const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedField, setSelectedField] = useState<string>(
-    TTS_FIELDS[contentType].default,
-  );
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [playingField, setPlayingField] = useState<string | null>(null);
+  const [confirmField, setConfirmField] = useState<string | null>(null);
 
   // Cleanup audio on unmount
   useEffect(() => {
@@ -39,64 +36,59 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
 
   const data = ttsQuery.data;
 
-  function handlePlayPause() {
+  function handlePlayPause(field: string) {
     const url = data?.audioUrl;
     if (!url) return;
 
-    if (!audioRef.current) {
-      audioRef.current = new Audio(url);
-      audioRef.current.addEventListener('ended', () => {
-        setIsPlaying(false);
-      });
-    }
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
+    if (playingField === field) {
+      // Same row — pause
+      audioRef.current?.pause();
+      setPlayingField(null);
     } else {
+      // Different row or nothing playing — stop current, play new
+      audioRef.current?.pause();
+      if (!audioRef.current || audioRef.current.src !== url) {
+        audioRef.current = new Audio(url);
+        audioRef.current.addEventListener('ended', () => setPlayingField(null));
+      } else {
+        audioRef.current.currentTime = 0;
+      }
       void audioRef.current.play();
-      setIsPlaying(true);
+      setPlayingField(field);
     }
   }
 
   const regenerateMutation = useMutation({
-    mutationFn: () => regenerateTts(contentType, itemId, selectedField),
-    onSuccess: (newData) => {
+    mutationFn: (field: string) => regenerateTts(contentType, itemId, field),
+    onSuccess: (newData, field) => {
       void queryClient.invalidateQueries({
         queryKey: ['admin-tts', contentType, itemId],
       });
 
-      setConfirmOpen(false);
-
-      // Auto-play new audio
+      // Auto-play new audio on the field that was just regenerated
       if (newData.audioUrl) {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
+        audioRef.current?.pause();
         audioRef.current = new Audio(newData.audioUrl);
-        audioRef.current.addEventListener('ended', () => {
-          setIsPlaying(false);
-        });
+        audioRef.current.addEventListener('ended', () => setPlayingField(null));
         void audioRef.current.play();
-        setIsPlaying(true);
+        setPlayingField(field);
       }
 
+      setConfirmField(null);
       toast.success('TTSを再生成しました');
     },
     onError: (err: Error) => {
       toast.error(err.message || '再生成に失敗しました。もう一度お試しください。');
-      setConfirmOpen(false);
+      setConfirmField(null);
     },
   });
 
   return {
     audioUrl: data?.audioUrl ?? null,
     isLoading: ttsQuery.isLoading,
-    isPlaying,
-    selectedField,
-    setSelectedField,
-    confirmOpen,
-    setConfirmOpen,
+    playingField,
+    confirmField,
+    setConfirmField,
     handlePlayPause,
     regenerateMutation,
   };
