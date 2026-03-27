@@ -24,13 +24,16 @@ apps/admin으로 메인 앱과 분리된 독립 Next.js 앱, Vercel 배포.
 
 ### Active
 
-- [ ] 원어민이 단어/어휘 데이터를 조회·수정할 수 있다
-- [ ] 원어민이 문법/문장 데이터를 조회·수정할 수 있다
-- [ ] 원어민이 퀴즈/문제 데이터를 조회·수정할 수 있다
-- [ ] 원어민이 회화 시나리오 데이터를 조회·수정할 수 있다
 - [ ] 원어민이 TTS 오디오를 재생하고 재생성을 요청할 수 있다
-- [ ] reviewer 역할 기반 접근 제어 (Supabase Auth + role)
-- [ ] 다국어 UI 지원 (한/일/영)
+
+### Validated in Phase 3
+
+- ✓ 원어민이 단어/어휘 데이터를 조회·수정할 수 있다 — Phase 3 완료
+- ✓ 원어민이 문법/문장 데이터를 조회·수정할 수 있다 — Phase 3 완료
+- ✓ 원어민이 퀴즈/문제 데이터를 조회·수정할 수 있다 — Phase 3 완료
+- ✓ 원어민이 회화 시나리오 데이터를 조회·수정할 수 있다 — Phase 3 완료
+- ✓ reviewer 역할 기반 접근 제어 (Supabase Auth + role) — Phase 1 완료
+- ✓ 다국어 UI 지원 (한/일/영) — Phase 1 완료
 
 ### Out of Scope
 
@@ -68,4 +71,4 @@ apps/admin으로 메인 앱과 분리된 독립 Next.js 앱, Vercel 배포.
 | 다국어 UI (한/일/영) | 일본인 원어민 + 한국인 개발자 모두 사용 | — Pending |
 
 ---
-*Last updated: 2026-03-26 after project initialization*
+*Last updated: 2026-03-27 after Phase 3 (Content Editing & Review Workflow) completion*
