@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import uuid
 from typing import Annotated
 
 import jwt
@@ -13,14 +14,29 @@ from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
 from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion, Vocabulary
+from app.models.admin import AuditLog
 from app.models.user import User
 from app.schemas.admin_content import (
+    AuditLogItem,
+    BatchReviewRequest,
+    ClozeQuestionDetailResponse,
+    ClozeQuestionUpdateRequest,
     ContentStatsItem,
     ContentStatsResponse,
     ConversationAdminItem,
+    ConversationDetailResponse,
+    ConversationUpdateRequest,
     GrammarAdminItem,
+    GrammarDetailResponse,
+    GrammarUpdateRequest,
+    OkResponse,
     QuizAdminItem,
+    ReviewRequest,
+    SentenceArrangeDetailResponse,
+    SentenceArrangeUpdateRequest,
     VocabularyAdminItem,
+    VocabularyDetailResponse,
+    VocabularyUpdateRequest,
 )
 from app.schemas.common import PaginatedResponse
 
@@ -85,7 +101,20 @@ async def require_reviewer(
 
 
 # ==========================================
-# Vocabulary endpoint
+# Content type model map (for batch operations)
+# ==========================================
+
+MODEL_MAP: dict[str, type] = {
+    "vocabulary": Vocabulary,
+    "grammar": Grammar,
+    "cloze": ClozeQuestion,
+    "sentence_arrange": SentenceArrangeQuestion,
+    "conversation": ConversationScenario,
+}
+
+
+# ==========================================
+# Vocabulary endpoints
 # ==========================================
 
 
@@ -131,8 +160,127 @@ async def list_vocabulary(
     )
 
 
+@router.get("/vocabulary/{item_id}", response_model=VocabularyDetailResponse)
+async def get_vocabulary_detail(
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> VocabularyDetailResponse:
+    """Return full detail for a single vocabulary item."""
+    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return VocabularyDetailResponse(
+        id=item.id,
+        word=item.word,
+        reading=item.reading,
+        meaning_ko=item.meaning_ko,
+        jlpt_level=item.jlpt_level.value,
+        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
+        example_sentence=item.example_sentence,
+        example_reading=item.example_reading,
+        example_translation=item.example_translation,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.patch("/vocabulary/{item_id}", response_model=VocabularyDetailResponse)
+async def patch_vocabulary(
+    item_id: uuid.UUID,
+    body: VocabularyUpdateRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> VocabularyDetailResponse:
+    """Partial update vocabulary item. Only sent fields are updated."""
+    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    updates = body.model_dump(exclude_unset=True, by_alias=False)
+    changes: dict = {}
+    for field, new_value in updates.items():
+        old_value = getattr(item, field, None)
+        if old_value != new_value:
+            changes[field] = {"before": old_value, "after": new_value}
+            setattr(item, field, new_value)
+
+    if changes:
+        audit = AuditLog(
+            content_type="vocabulary",
+            content_id=item_id,
+            action="edit",
+            changes=changes,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    await db.refresh(item)
+    return VocabularyDetailResponse(
+        id=item.id,
+        word=item.word,
+        reading=item.reading,
+        meaning_ko=item.meaning_ko,
+        jlpt_level=item.jlpt_level.value,
+        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
+        example_sentence=item.example_sentence,
+        example_reading=item.example_reading,
+        example_translation=item.example_translation,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.post("/vocabulary/{item_id}/review", response_model=VocabularyDetailResponse)
+async def review_vocabulary(
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> VocabularyDetailResponse:
+    """Approve or reject a vocabulary item."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+    audit = AuditLog(
+        content_type="vocabulary",
+        content_id=item_id,
+        action=body.action,
+        reason=body.reason,
+        reviewer_id=reviewer.id,
+    )
+    db.add(audit)
+    await db.commit()
+    await db.refresh(item)
+    return VocabularyDetailResponse(
+        id=item.id,
+        word=item.word,
+        reading=item.reading,
+        meaning_ko=item.meaning_ko,
+        jlpt_level=item.jlpt_level.value,
+        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
+        example_sentence=item.example_sentence,
+        example_reading=item.example_reading,
+        example_translation=item.example_translation,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
 # ==========================================
-# Grammar endpoint
+# Grammar endpoints
 # ==========================================
 
 
@@ -174,6 +322,116 @@ async def list_grammar(
         page=page,
         page_size=page_size,
         total_pages=math.ceil(total / page_size) if total > 0 else 1,
+    )
+
+
+@router.get("/grammar/{item_id}", response_model=GrammarDetailResponse)
+async def get_grammar_detail(
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> GrammarDetailResponse:
+    """Return full detail for a single grammar item."""
+    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return GrammarDetailResponse(
+        id=item.id,
+        pattern=item.pattern,
+        meaning_ko=item.meaning_ko,
+        explanation=item.explanation,
+        example_sentences=item.example_sentences,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.patch("/grammar/{item_id}", response_model=GrammarDetailResponse)
+async def patch_grammar(
+    item_id: uuid.UUID,
+    body: GrammarUpdateRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> GrammarDetailResponse:
+    """Partial update grammar item. Only sent fields are updated."""
+    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    updates = body.model_dump(exclude_unset=True, by_alias=False)
+    changes: dict = {}
+    for field, new_value in updates.items():
+        old_value = getattr(item, field, None)
+        if old_value != new_value:
+            changes[field] = {"before": old_value, "after": new_value}
+            setattr(item, field, new_value)
+
+    if changes:
+        audit = AuditLog(
+            content_type="grammar",
+            content_id=item_id,
+            action="edit",
+            changes=changes,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    await db.refresh(item)
+    return GrammarDetailResponse(
+        id=item.id,
+        pattern=item.pattern,
+        meaning_ko=item.meaning_ko,
+        explanation=item.explanation,
+        example_sentences=item.example_sentences,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.post("/grammar/{item_id}/review", response_model=GrammarDetailResponse)
+async def review_grammar(
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> GrammarDetailResponse:
+    """Approve or reject a grammar item."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+    audit = AuditLog(
+        content_type="grammar",
+        content_id=item_id,
+        action=body.action,
+        reason=body.reason,
+        reviewer_id=reviewer.id,
+    )
+    db.add(audit)
+    await db.commit()
+    await db.refresh(item)
+    return GrammarDetailResponse(
+        id=item.id,
+        pattern=item.pattern,
+        meaning_ko=item.meaning_ko,
+        explanation=item.explanation,
+        example_sentences=item.example_sentences,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
     )
 
 
@@ -256,8 +514,231 @@ async def list_quiz(
     )
 
 
+@router.get("/quiz/cloze/{item_id}", response_model=ClozeQuestionDetailResponse)
+async def get_cloze_detail(
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ClozeQuestionDetailResponse:
+    """Return full detail for a single cloze question."""
+    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return ClozeQuestionDetailResponse(
+        id=item.id,
+        sentence=item.sentence,
+        translation=item.translation,
+        correct_answer=item.correct_answer,
+        options=item.options,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.patch("/quiz/cloze/{item_id}", response_model=ClozeQuestionDetailResponse)
+async def patch_cloze(
+    item_id: uuid.UUID,
+    body: ClozeQuestionUpdateRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ClozeQuestionDetailResponse:
+    """Partial update cloze question. Only sent fields are updated."""
+    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    updates = body.model_dump(exclude_unset=True, by_alias=False)
+    changes: dict = {}
+    for field, new_value in updates.items():
+        old_value = getattr(item, field, None)
+        if old_value != new_value:
+            changes[field] = {"before": old_value, "after": new_value}
+            setattr(item, field, new_value)
+
+    if changes:
+        audit = AuditLog(
+            content_type="cloze",
+            content_id=item_id,
+            action="edit",
+            changes=changes,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    await db.refresh(item)
+    return ClozeQuestionDetailResponse(
+        id=item.id,
+        sentence=item.sentence,
+        translation=item.translation,
+        correct_answer=item.correct_answer,
+        options=item.options,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.post("/quiz/cloze/{item_id}/review", response_model=ClozeQuestionDetailResponse)
+async def review_cloze(
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ClozeQuestionDetailResponse:
+    """Approve or reject a cloze question."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+    audit = AuditLog(
+        content_type="cloze",
+        content_id=item_id,
+        action=body.action,
+        reason=body.reason,
+        reviewer_id=reviewer.id,
+    )
+    db.add(audit)
+    await db.commit()
+    await db.refresh(item)
+    return ClozeQuestionDetailResponse(
+        id=item.id,
+        sentence=item.sentence,
+        translation=item.translation,
+        correct_answer=item.correct_answer,
+        options=item.options,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.get("/quiz/sentence-arrange/{item_id}", response_model=SentenceArrangeDetailResponse)
+async def get_sentence_arrange_detail(
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> SentenceArrangeDetailResponse:
+    """Return full detail for a single sentence arrange question."""
+    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return SentenceArrangeDetailResponse(
+        id=item.id,
+        korean_sentence=item.korean_sentence,
+        japanese_sentence=item.japanese_sentence,
+        tokens=item.tokens,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.patch("/quiz/sentence-arrange/{item_id}", response_model=SentenceArrangeDetailResponse)
+async def patch_sentence_arrange(
+    item_id: uuid.UUID,
+    body: SentenceArrangeUpdateRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> SentenceArrangeDetailResponse:
+    """Partial update sentence arrange question. Only sent fields are updated."""
+    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    updates = body.model_dump(exclude_unset=True, by_alias=False)
+    changes: dict = {}
+    for field, new_value in updates.items():
+        old_value = getattr(item, field, None)
+        if old_value != new_value:
+            changes[field] = {"before": old_value, "after": new_value}
+            setattr(item, field, new_value)
+
+    if changes:
+        audit = AuditLog(
+            content_type="sentence_arrange",
+            content_id=item_id,
+            action="edit",
+            changes=changes,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    await db.refresh(item)
+    return SentenceArrangeDetailResponse(
+        id=item.id,
+        korean_sentence=item.korean_sentence,
+        japanese_sentence=item.japanese_sentence,
+        tokens=item.tokens,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.post("/quiz/sentence-arrange/{item_id}/review", response_model=SentenceArrangeDetailResponse)
+async def review_sentence_arrange(
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> SentenceArrangeDetailResponse:
+    """Approve or reject a sentence arrange question."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+    audit = AuditLog(
+        content_type="sentence_arrange",
+        content_id=item_id,
+        action=body.action,
+        reason=body.reason,
+        reviewer_id=reviewer.id,
+    )
+    db.add(audit)
+    await db.commit()
+    await db.refresh(item)
+    return SentenceArrangeDetailResponse(
+        id=item.id,
+        korean_sentence=item.korean_sentence,
+        japanese_sentence=item.japanese_sentence,
+        tokens=item.tokens,
+        explanation=item.explanation,
+        jlpt_level=item.jlpt_level.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
 # ==========================================
-# Conversation endpoint
+# Conversation endpoints
 # ==========================================
 
 
@@ -317,6 +798,188 @@ async def list_conversation(
         page_size=page_size,
         total_pages=math.ceil(total / page_size) if total > 0 else 1,
     )
+
+
+@router.get("/conversation/{item_id}", response_model=ConversationDetailResponse)
+async def get_conversation_detail(
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ConversationDetailResponse:
+    """Return full detail for a single conversation scenario."""
+    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return ConversationDetailResponse(
+        id=item.id,
+        title=item.title,
+        title_ja=item.title_ja,
+        description=item.description,
+        situation=item.situation,
+        your_role=item.your_role,
+        ai_role=item.ai_role,
+        system_prompt=item.system_prompt,
+        key_expressions=list(item.key_expressions) if item.key_expressions else None,
+        category=item.category.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.patch("/conversation/{item_id}", response_model=ConversationDetailResponse)
+async def patch_conversation(
+    item_id: uuid.UUID,
+    body: ConversationUpdateRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ConversationDetailResponse:
+    """Partial update conversation scenario. Only sent fields are updated."""
+    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    updates = body.model_dump(exclude_unset=True, by_alias=False)
+    changes: dict = {}
+    for field, new_value in updates.items():
+        old_value = getattr(item, field, None)
+        if old_value != new_value:
+            changes[field] = {"before": old_value, "after": new_value}
+            setattr(item, field, new_value)
+
+    if changes:
+        audit = AuditLog(
+            content_type="conversation",
+            content_id=item_id,
+            action="edit",
+            changes=changes,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    await db.refresh(item)
+    return ConversationDetailResponse(
+        id=item.id,
+        title=item.title,
+        title_ja=item.title_ja,
+        description=item.description,
+        situation=item.situation,
+        your_role=item.your_role,
+        ai_role=item.ai_role,
+        system_prompt=item.system_prompt,
+        key_expressions=list(item.key_expressions) if item.key_expressions else None,
+        category=item.category.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+@router.post("/conversation/{item_id}/review", response_model=ConversationDetailResponse)
+async def review_conversation(
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> ConversationDetailResponse:
+    """Approve or reject a conversation scenario."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+    audit = AuditLog(
+        content_type="conversation",
+        content_id=item_id,
+        action=body.action,
+        reason=body.reason,
+        reviewer_id=reviewer.id,
+    )
+    db.add(audit)
+    await db.commit()
+    await db.refresh(item)
+    return ConversationDetailResponse(
+        id=item.id,
+        title=item.title,
+        title_ja=item.title_ja,
+        description=item.description,
+        situation=item.situation,
+        your_role=item.your_role,
+        ai_role=item.ai_role,
+        system_prompt=item.system_prompt,
+        key_expressions=list(item.key_expressions) if item.key_expressions else None,
+        category=item.category.value,
+        review_status=item.review_status.value,
+        created_at=item.created_at,
+        updated_at=None,
+    )
+
+
+# ==========================================
+# Batch review endpoint
+# ==========================================
+
+
+@router.post("/batch-review", response_model=OkResponse)
+async def batch_review(
+    body: BatchReviewRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    reviewer: Annotated[User, Depends(require_reviewer)],
+) -> OkResponse:
+    """Batch approve or reject multiple content items in a single transaction."""
+    if body.action == "reject" and not body.reason:
+        raise HTTPException(status_code=422, detail="reason required for reject")
+
+    model_class = MODEL_MAP.get(body.content_type)
+    if model_class is None:
+        raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")
+
+    new_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
+
+    for item_id in body.ids:
+        result = await db.execute(select(model_class).where(model_class.id == item_id))  # type: ignore[attr-defined]
+        item = result.scalar_one_or_none()
+        if item is None:
+            raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+        item.review_status = new_status
+        audit = AuditLog(
+            content_type=body.content_type,
+            content_id=item_id,
+            action=body.action,
+            reason=body.reason,
+            reviewer_id=reviewer.id,
+        )
+        db.add(audit)
+
+    await db.commit()
+    return OkResponse(ok=True, count=len(body.ids))
+
+
+# ==========================================
+# Audit logs endpoint
+# ==========================================
+
+
+@router.get("/{content_type}/{item_id}/audit-logs", response_model=list[AuditLogItem])
+async def get_audit_logs(
+    content_type: str,
+    item_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> list[AuditLogItem]:
+    """Return audit log entries for a content item, ordered by created_at DESC."""
+    result = await db.execute(
+        select(AuditLog).where(AuditLog.content_type == content_type, AuditLog.content_id == item_id).order_by(AuditLog.created_at.desc())
+    )
+    logs = result.scalars().all()
+    return [AuditLogItem.model_validate(log) for log in logs]
 
 
 # ==========================================
