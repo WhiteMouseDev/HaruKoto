@@ -127,7 +127,17 @@
     "rejectSuccess": "반려되었습니다",
     "bulkSelected": "{count}개 선택됨",
     "bulkApprove": "일괄 승인",
-    "bulkReject": "일괄 반려"
+    "bulkReject": "일괄 반려",
+    "startQueue": "리뷰 시작",
+    "startQueueEmpty": "리뷰 대기 중인 항목이 없습니다",
+    "queueCapped": "처음 200개 항목만 표시하고 있습니다",
+    "queuePosition": "{current} / {total}",
+    "prevItem": "이전",
+    "nextItem": "다음",
+    "exitQueue": "큐 종료",
+    "autoAdvance": "다음 항목으로 이동합니다",
+    "queueComplete": "모든 항목의 리뷰가 완료되었습니다",
+    "queueLoadError": "리뷰 큐를 불러오지 못했습니다. 페이지를 새로고침해주세요."
   },
   "audit": {
     "title": "변경 이력",

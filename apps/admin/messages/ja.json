@@ -127,7 +127,17 @@
     "rejectSuccess": "差し戻しました",
     "bulkSelected": "{count}件選択中",
     "bulkApprove": "一括承認",
-    "bulkReject": "一括差し戻し"
+    "bulkReject": "一括差し戻し",
+    "startQueue": "レビュー開始",
+    "startQueueEmpty": "レビュー待ち項目はありません",
+    "queueCapped": "リビューキューは最初の200件のみ表示しています",
+    "queuePosition": "{current} / {total}",
+    "prevItem": "前へ",
+    "nextItem": "次へ",
+    "exitQueue": "キューを終了",
+    "autoAdvance": "次の項目へ移動します",
+    "queueComplete": "すべての項目をレビューしました",
+    "queueLoadError": "レビューキューの読み込みに失敗しました。ページを再読み込みしてください。"
   },
   "audit": {
     "title": "変更履歴",

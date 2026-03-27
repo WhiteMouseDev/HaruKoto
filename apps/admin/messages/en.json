@@ -127,7 +127,17 @@
     "rejectSuccess": "Rejected",
     "bulkSelected": "{count} selected",
     "bulkApprove": "Approve All",
-    "bulkReject": "Reject All"
+    "bulkReject": "Reject All",
+    "startQueue": "Start Review",
+    "startQueueEmpty": "No items pending review",
+    "queueCapped": "Showing first 200 items only",
+    "queuePosition": "{current} / {total}",
+    "prevItem": "Previous",
+    "nextItem": "Next",
+    "exitQueue": "Exit Queue",
+    "autoAdvance": "Moving to next item",
+    "queueComplete": "All items have been reviewed",
+    "queueLoadError": "Failed to load review queue. Please reload the page."
   },
   "audit": {
     "title": "Change History",

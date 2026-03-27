@@ -8,6 +8,41 @@ import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 import { StatsCard } from '@/components/features/dashboard/stats-card';
 import type { User } from '@supabase/supabase-js';
 
+function getStatsForKey(
+  stats:
+    | Array<{
+        contentType: string;
+        needsReview: number;
+        approved: number;
+        rejected: number;
+        total: number;
+      }>
+    | undefined,
+  key: string,
+): { needsReview: number; approved: number; rejected: number; total: number } {
+  if (!stats) return { needsReview: 0, approved: 0, rejected: 0, total: 0 };
+
+  if (key === 'quiz') {
+    // Merge cloze + sentence_arrange stats
+    const cloze = stats.find((s) => s.contentType === 'cloze');
+    const sa = stats.find((s) => s.contentType === 'sentence_arrange');
+    return {
+      needsReview: (cloze?.needsReview ?? 0) + (sa?.needsReview ?? 0),
+      approved: (cloze?.approved ?? 0) + (sa?.approved ?? 0),
+      rejected: (cloze?.rejected ?? 0) + (sa?.rejected ?? 0),
+      total: (cloze?.total ?? 0) + (sa?.total ?? 0),
+    };
+  }
+
+  const item = stats.find((s) => s.contentType === key);
+  return {
+    needsReview: item?.needsReview ?? 0,
+    approved: item?.approved ?? 0,
+    rejected: item?.rejected ?? 0,
+    total: item?.total ?? 0,
+  };
+}
+
 const CONTENT_TYPE_CONFIG = [
   {
     key: 'vocabulary',
@@ -82,18 +117,16 @@ export default function DashboardPage() {
                 <SkeletonCard key={i} />
               ))
             : CONTENT_TYPE_CONFIG.map(({ key, icon }) => {
-                const statsItem = data?.stats.find(
-                  (s) => s.contentType === key
-                );
+                const merged = getStatsForKey(data?.stats, key);
                 return (
                   <StatsCard
                     key={key}
                     title={t(key as 'vocabulary' | 'grammar' | 'quiz' | 'conversation')}
                     icon={icon}
-                    needsReview={statsItem?.needsReview ?? 0}
-                    approved={statsItem?.approved ?? 0}
-                    rejected={statsItem?.rejected ?? 0}
-                    total={statsItem?.total ?? 0}
+                    needsReview={merged.needsReview}
+                    approved={merged.approved}
+                    rejected={merged.rejected}
+                    total={merged.total}
                   />
                 );
               })}
