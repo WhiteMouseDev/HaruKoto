@@ -44,7 +44,7 @@
 
 - [x] **UX-01**: needs_review 항목을 순서대로 탐색하는 리뷰 큐(다음/이전)가 있다
 - [x] **UX-02**: 대시보드에서 검증 진행률과 카테고리별 현황을 확인할 수 있다
-- [ ] **UX-03**: 새로 추가되거나 변경된 데이터에 대한 알림이 표시된다
+- [x] **UX-03**: 새로 추가되거나 변경된 데이터에 대한 알림이 표시된다
 
 ### Internationalization
 
@@ -105,7 +105,7 @@
 | TTS-02 | Phase 4 | Complete |
 | UX-01 | Phase 5 | Complete |
 | UX-02 | Phase 5 | Complete |
-| UX-03 | Phase 5 | Pending |
+| UX-03 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 24 total
