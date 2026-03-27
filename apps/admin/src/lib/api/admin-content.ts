@@ -105,3 +105,83 @@ export async function fetchContentStats(): Promise<ContentStatsResponse> {
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json() as Promise<ContentStatsResponse>;
 }
+
+// ---- Detail / Edit API functions ----
+
+export type AuditLogEntry = {
+  id: string;
+  action: string;
+  changes: Record<string, unknown> | null;
+  reason: string | null;
+  reviewerEmail: string;
+  createdAt: string;
+};
+
+export async function fetchAdminContentDetail<T>(
+  contentType: string,
+  id: string,
+): Promise<T> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}`);
+  const res = await fetch(url.toString(), { headers });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+export async function patchAdminContent(
+  contentType: string,
+  id: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}`);
+  const res = await fetch(url.toString(), {
+    method: 'PATCH',
+    headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+}
+
+export async function reviewContent(
+  contentType: string,
+  id: string,
+  action: 'approve' | 'reject',
+  reason?: string,
+): Promise<void> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}/review`);
+  const res = await fetch(url.toString(), {
+    method: 'POST',
+    headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, reason }),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+}
+
+export async function batchReviewContent(
+  contentType: string,
+  ids: string[],
+  action: 'approve' | 'reject',
+  reason?: string,
+): Promise<void> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/batch-review`);
+  const res = await fetch(url.toString(), {
+    method: 'POST',
+    headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contentType, ids, action, reason }),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+}
+
+export async function fetchAuditLogs(
+  contentType: string,
+  id: string,
+): Promise<AuditLogEntry[]> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}/audit-logs`);
+  const res = await fetch(url.toString(), { headers });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json() as Promise<AuditLogEntry[]>;
+}

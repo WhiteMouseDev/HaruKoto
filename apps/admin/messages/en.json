@@ -77,5 +77,63 @@
   },
   "common": {
     "appName": "HaruKoto Admin"
+  },
+  "edit": {
+    "title": {
+      "vocabulary": "Edit Vocabulary",
+      "grammar": "Edit Grammar",
+      "quiz": "Edit Quiz",
+      "conversation": "Edit Conversation Scenario"
+    },
+    "save": "Save",
+    "saveSuccess": "Saved successfully",
+    "saveError": "Failed to save",
+    "backToList": "Back to list",
+    "field": {
+      "word": "Word",
+      "reading": "Reading",
+      "meaningKo": "Meaning (Korean)",
+      "partOfSpeech": "Part of Speech",
+      "exampleSentence": "Example Sentence",
+      "exampleReading": "Example Reading",
+      "exampleTranslation": "Example Translation",
+      "pattern": "Pattern",
+      "explanation": "Explanation",
+      "exampleSentences": "Example Sentences (JSON)",
+      "sentence": "Sentence",
+      "translation": "Translation",
+      "correctAnswer": "Correct Answer",
+      "options": "Options (JSON)",
+      "koreanSentence": "Korean Sentence",
+      "japaneseSentence": "Japanese Sentence",
+      "tokens": "Tokens (JSON)",
+      "title": "Title",
+      "titleJa": "Japanese Title",
+      "description": "Description",
+      "situation": "Situation",
+      "yourRole": "Your Role",
+      "aiRole": "AI Role",
+      "systemPrompt": "System Prompt",
+      "keyExpressions": "Key Expressions (JSON)"
+    }
+  },
+  "review": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmReject": "Confirm Reject",
+    "reasonLabel": "Rejection Reason",
+    "reasonPlaceholder": "Enter rejection reason",
+    "approveSuccess": "Approved",
+    "rejectSuccess": "Rejected",
+    "bulkSelected": "{count} selected",
+    "bulkApprove": "Approve All",
+    "bulkReject": "Reject All"
+  },
+  "audit": {
+    "title": "Change History",
+    "empty": "No change history yet",
+    "modified": "Modified",
+    "approved": "Approved",
+    "rejected": "Rejected"
   }
 }

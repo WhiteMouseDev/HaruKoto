@@ -77,5 +77,63 @@
   },
   "common": {
     "appName": "HaruKoto Admin"
+  },
+  "edit": {
+    "title": {
+      "vocabulary": "単語を編集",
+      "grammar": "文法を編集",
+      "quiz": "クイズを編集",
+      "conversation": "会話シナリオを編集"
+    },
+    "save": "保存",
+    "saveSuccess": "保存しました",
+    "saveError": "保存に失敗しました",
+    "backToList": "一覧に戻る",
+    "field": {
+      "word": "単語",
+      "reading": "読み方",
+      "meaningKo": "意味（韓国語）",
+      "partOfSpeech": "品詞",
+      "exampleSentence": "例文",
+      "exampleReading": "例文読み方",
+      "exampleTranslation": "例文訳",
+      "pattern": "パターン",
+      "explanation": "説明",
+      "exampleSentences": "例文（JSON）",
+      "sentence": "問題文",
+      "translation": "訳",
+      "correctAnswer": "正解",
+      "options": "選択肢（JSON）",
+      "koreanSentence": "韓国語文",
+      "japaneseSentence": "日本語文",
+      "tokens": "トークン（JSON）",
+      "title": "タイトル",
+      "titleJa": "日本語タイトル",
+      "description": "説明",
+      "situation": "シチュエーション",
+      "yourRole": "ユーザーの役割",
+      "aiRole": "AIの役割",
+      "systemPrompt": "システムプロンプト",
+      "keyExpressions": "重要表現（JSON）"
+    }
+  },
+  "review": {
+    "approve": "承認",
+    "reject": "差し戻し",
+    "confirmReject": "差し戻す",
+    "reasonLabel": "差し戻し理由",
+    "reasonPlaceholder": "差し戻しの理由を入力してください",
+    "approveSuccess": "承認しました",
+    "rejectSuccess": "差し戻しました",
+    "bulkSelected": "{count}件選択中",
+    "bulkApprove": "一括承認",
+    "bulkReject": "一括差し戻し"
+  },
+  "audit": {
+    "title": "変更履歴",
+    "empty": "まだ変更履歴がありません",
+    "modified": "修正",
+    "approved": "承認",
+    "rejected": "差し戻し"
   }
 }
