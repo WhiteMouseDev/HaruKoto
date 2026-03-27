@@ -253,7 +253,7 @@ export async function fetchReviewQueue(
 ): Promise<ReviewQueueResponse> {
   const headers = await getAuthHeaders();
   const url = new URL(
-    `${API_URL}/api/v1/admin/content/${contentType}/review-queue`,
+    `${API_URL}/api/v1/admin/content/review-queue/${contentType}`,
   );
   if (params.jlptLevel) url.searchParams.set('jlpt_level', params.jlptLevel);
   if (params.category) url.searchParams.set('category', params.category);

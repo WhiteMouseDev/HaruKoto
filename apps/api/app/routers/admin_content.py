@@ -1056,7 +1056,7 @@ async def regenerate_admin_tts(
 REVIEW_QUEUE_LIMIT = 200
 
 
-@router.get("/{content_type}/review-queue", response_model=ReviewQueueResponse)
+@router.get("/review-queue/{content_type}", response_model=ReviewQueueResponse)
 async def get_review_queue(
     content_type: str,
     db: Annotated[AsyncSession, Depends(get_db)],
