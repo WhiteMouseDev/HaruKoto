@@ -86,7 +86,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — FastAPI admin TTS endpoints (GET fetch + POST regenerate with Redis cooldown) + pytest tests
+- [x] 04-01-PLAN.md — FastAPI admin TTS endpoints (GET fetch + POST regenerate with Redis cooldown) + pytest tests
 - [ ] 04-02-PLAN.md — TtsPlayer component, useTtsPlayer hook, i18n, integration into 4 edit pages + human verification
 
 **UI hint**: yes
@@ -112,5 +112,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 4/4 | Complete   | 2026-03-26 |
 | 2. Content List Views | 0/3 | Not started | - |
 | 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
-| 4. TTS Audio | 0/2 | Not started | - |
+| 4. TTS Audio | 1/2 | In Progress|  |
 | 5. Reviewer Productivity | 0/TBD | Not started | - |

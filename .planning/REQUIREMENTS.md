@@ -37,8 +37,8 @@
 
 ### TTS Audio
 
-- [ ] **TTS-01**: Reviewer가 편집 화면에서 기존 TTS 오디오를 재생할 수 있다
-- [ ] **TTS-02**: Reviewer가 개별 항목의 TTS를 재생성 요청할 수 있다 (확인 다이얼로그 포함)
+- [x] **TTS-01**: Reviewer가 편집 화면에서 기존 TTS 오디오를 재생할 수 있다
+- [x] **TTS-02**: Reviewer가 개별 항목의 TTS를 재생성 요청할 수 있다 (확인 다이얼로그 포함)
 
 ### Reviewer UX
 
@@ -101,8 +101,8 @@
 | REVW-02 | Phase 3 | Complete |
 | REVW-03 | Phase 3 | Complete |
 | REVW-04 | Phase 3 | Complete |
-| TTS-01 | Phase 4 | Pending |
-| TTS-02 | Phase 4 | Pending |
+| TTS-01 | Phase 4 | Complete |
+| TTS-02 | Phase 4 | Complete |
 | UX-01 | Phase 5 | Pending |
 | UX-02 | Phase 5 | Pending |
 | UX-03 | Phase 5 | Pending |

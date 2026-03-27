@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-03-27T01:15:27.181Z"
+status: executing
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-27T02:00:06.257Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 12
+  completed_plans: 11
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 03 — content-editing-review-workflow
+**Current focus:** Phase 04 — tts-audio
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 04 (tts-audio) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-content-editing-review-workflow P01 | 3m | 2 tasks | 8 files |
 | Phase 03-content-editing-review-workflow P02 | 15m | 2 tasks | 2 files |
 | Phase 03-content-editing-review-workflow P03 | 6m | 2 tasks | 18 files |
+| Phase 04-tts-audio P01 | 5m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 03-content-editing-review-workflow]: by_alias=False in model_dump() ensures snake_case field names for ORM setattr(); real AuditLog instances used in test mocks for Pydantic model_validate compatibility
 - [Phase 03-content-editing-review-workflow]: Quiz edit page uses searchParams type param to branch between cloze and sentence_arrange forms and API content type paths
 - [Phase 03-content-editing-review-workflow]: ContentTable checkbox state is local useState — resets on page navigation; no global selection state needed at 1-3 user scale
+- [Phase 04-tts-audio]: POST /tts/regenerate registered before wildcard GET /{content_type}/{item_id}/tts to prevent FastAPI treating 'tts' as content_type param
+- [Phase 04-tts-audio]: CamelModel base used for AdminTtsResponse/AdminTtsRegenerateRequest — consistent with all existing admin schemas
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T01:15:27.178Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-tts-audio/04-UI-SPEC.md
+Last session: 2026-03-27T02:00:06.254Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None
