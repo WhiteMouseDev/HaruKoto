@@ -23,16 +23,16 @@
 
 ### Content Editing
 
-- [ ] **EDIT-01**: Reviewer가 단어/어휘 데이터를 개별 수정할 수 있다 (일본어, 읽기, 뜻, 예문)
-- [ ] **EDIT-02**: Reviewer가 문법/문장 데이터를 개별 수정할 수 있다
-- [ ] **EDIT-03**: Reviewer가 퀴즈/문제 데이터를 개별 수정할 수 있다 (문제, 선택지, 정답, 해설)
-- [ ] **EDIT-04**: Reviewer가 회화 시나리오 데이터를 개별 수정할 수 있다
+- [x] **EDIT-01**: Reviewer가 단어/어휘 데이터를 개별 수정할 수 있다 (일본어, 읽기, 뜻, 예문)
+- [x] **EDIT-02**: Reviewer가 문법/문장 데이터를 개별 수정할 수 있다
+- [x] **EDIT-03**: Reviewer가 퀴즈/문제 데이터를 개별 수정할 수 있다 (문제, 선택지, 정답, 해설)
+- [x] **EDIT-04**: Reviewer가 회화 시나리오 데이터를 개별 수정할 수 있다
 
 ### Review Workflow
 
-- [ ] **REVW-01**: Reviewer가 개별 항목을 승인(approved) 또는 반려(rejected)할 수 있다
-- [ ] **REVW-02**: Reviewer가 여러 항목을 선택하여 일괄 승인/반려할 수 있다
-- [ ] **REVW-03**: 반려 시 사유를 입력할 수 있다
+- [x] **REVW-01**: Reviewer가 개별 항목을 승인(approved) 또는 반려(rejected)할 수 있다
+- [x] **REVW-02**: Reviewer가 여러 항목을 선택하여 일괄 승인/반려할 수 있다
+- [x] **REVW-03**: 반려 시 사유를 입력할 수 있다
 - [x] **REVW-04**: 모든 수정/승인/반려에 대한 이력(audit log)이 기록된다
 
 ### TTS Audio
@@ -93,13 +93,13 @@
 | LIST-05 | Phase 2 | Complete |
 | LIST-06 | Phase 2 | Complete |
 | LIST-07 | Phase 2 | Complete |
-| EDIT-01 | Phase 3 | Pending |
-| EDIT-02 | Phase 3 | Pending |
-| EDIT-03 | Phase 3 | Pending |
-| EDIT-04 | Phase 3 | Pending |
-| REVW-01 | Phase 3 | Pending |
-| REVW-02 | Phase 3 | Pending |
-| REVW-03 | Phase 3 | Pending |
+| EDIT-01 | Phase 3 | Complete |
+| EDIT-02 | Phase 3 | Complete |
+| EDIT-03 | Phase 3 | Complete |
+| EDIT-04 | Phase 3 | Complete |
+| REVW-01 | Phase 3 | Complete |
+| REVW-02 | Phase 3 | Complete |
+| REVW-03 | Phase 3 | Complete |
 | REVW-04 | Phase 3 | Complete |
 | TTS-01 | Phase 4 | Pending |
 | TTS-02 | Phase 4 | Pending |
