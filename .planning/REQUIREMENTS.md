@@ -33,7 +33,7 @@
 - [ ] **REVW-01**: Reviewer가 개별 항목을 승인(approved) 또는 반려(rejected)할 수 있다
 - [ ] **REVW-02**: Reviewer가 여러 항목을 선택하여 일괄 승인/반려할 수 있다
 - [ ] **REVW-03**: 반려 시 사유를 입력할 수 있다
-- [ ] **REVW-04**: 모든 수정/승인/반려에 대한 이력(audit log)이 기록된다
+- [x] **REVW-04**: 모든 수정/승인/반려에 대한 이력(audit log)이 기록된다
 
 ### TTS Audio
 
@@ -100,7 +100,7 @@
 | REVW-01 | Phase 3 | Pending |
 | REVW-02 | Phase 3 | Pending |
 | REVW-03 | Phase 3 | Pending |
-| REVW-04 | Phase 3 | Pending |
+| REVW-04 | Phase 3 | Complete |
 | TTS-01 | Phase 4 | Pending |
 | TTS-02 | Phase 4 | Pending |
 | UX-01 | Phase 5 | Pending |
