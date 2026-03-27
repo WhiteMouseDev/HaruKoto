@@ -87,7 +87,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — FastAPI admin TTS endpoints (GET fetch + POST regenerate with Redis cooldown) + pytest tests
-- [ ] 04-02-PLAN.md — TtsPlayer component, useTtsPlayer hook, i18n, integration into 4 edit pages + human verification
+- [x] 04-02-PLAN.md — TtsPlayer component, useTtsPlayer hook, i18n, integration into 4 edit pages + human verification
 
 **UI hint**: yes
 
