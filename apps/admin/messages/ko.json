@@ -135,5 +135,32 @@
     "modified": "수정",
     "approved": "승인",
     "rejected": "반려"
+  },
+  "tts": {
+    "sectionLabel": "오디오",
+    "noAudio": "오디오 없음",
+    "generate": "생성하기",
+    "regenerateTooltip": "재생성",
+    "regenerateTitle": "{itemLabel}의 TTS를 재생성하시겠습니까?",
+    "regenerateConfirm": "재생성하기",
+    "regenerateCancel": "취소",
+    "regenerating": "생성 중...",
+    "regenerateSuccess": "TTS를 재생성했습니다",
+    "regenerateError": "재생성에 실패했습니다. 다시 시도해 주세요.",
+    "cooldownLabel": "{n}분 후 재생성 가능",
+    "fieldLabel": "필드",
+    "fetchError": "오디오 불러오기에 실패했습니다",
+    "playingNewAudio": "새 오디오 재생 중",
+    "play": "재생",
+    "pause": "일시정지",
+    "fields": {
+      "reading": "읽기",
+      "word": "단어",
+      "exampleSentence": "예문",
+      "pattern": "패턴",
+      "sentence": "문장",
+      "japaneseSentence": "일본어 문장",
+      "situation": "상황"
+    }
   }
 }

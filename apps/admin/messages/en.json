@@ -135,5 +135,32 @@
     "modified": "Modified",
     "approved": "Approved",
     "rejected": "Rejected"
+  },
+  "tts": {
+    "sectionLabel": "Audio",
+    "noAudio": "No audio",
+    "generate": "Generate",
+    "regenerateTooltip": "Regenerate",
+    "regenerateTitle": "Regenerate TTS for {itemLabel}?",
+    "regenerateConfirm": "Regenerate",
+    "regenerateCancel": "Cancel",
+    "regenerating": "Generating...",
+    "regenerateSuccess": "TTS regenerated",
+    "regenerateError": "Regeneration failed. Please try again.",
+    "cooldownLabel": "Available in {n}m",
+    "fieldLabel": "Field",
+    "fetchError": "Failed to load audio",
+    "playingNewAudio": "Playing new audio",
+    "play": "Play",
+    "pause": "Pause",
+    "fields": {
+      "reading": "Reading",
+      "word": "Word",
+      "exampleSentence": "Example",
+      "pattern": "Pattern",
+      "sentence": "Sentence",
+      "japaneseSentence": "Japanese sentence",
+      "situation": "Situation"
+    }
   }
 }

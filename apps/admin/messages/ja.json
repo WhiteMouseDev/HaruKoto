@@ -135,5 +135,32 @@
     "modified": "修正",
     "approved": "承認",
     "rejected": "差し戻し"
+  },
+  "tts": {
+    "sectionLabel": "オーディオ",
+    "noAudio": "オーディオなし",
+    "generate": "生成する",
+    "regenerateTooltip": "再生成",
+    "regenerateTitle": "{itemLabel}のTTSを再生成しますか？",
+    "regenerateConfirm": "再生成する",
+    "regenerateCancel": "キャンセル",
+    "regenerating": "生成中...",
+    "regenerateSuccess": "TTSを再生成しました",
+    "regenerateError": "再生成に失敗しました。もう一度お試しください。",
+    "cooldownLabel": "{n}分後に再生成可能",
+    "fieldLabel": "フィールド",
+    "fetchError": "オーディオの読み込みに失敗しました",
+    "playingNewAudio": "新しいオーディオを再生中",
+    "play": "再生",
+    "pause": "一時停止",
+    "fields": {
+      "reading": "読み方",
+      "word": "単語",
+      "exampleSentence": "例文",
+      "pattern": "パターン",
+      "sentence": "文",
+      "japaneseSentence": "日本語文",
+      "situation": "シチュエーション"
+    }
   }
 }

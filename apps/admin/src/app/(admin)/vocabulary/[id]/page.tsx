@@ -13,6 +13,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useContentDetail } from '@/hooks/use-content-detail';
 import { ReviewHeader } from '@/components/content/review-header';
 import { RejectReasonDialog } from '@/components/content/reject-reason-dialog';
+import { TtsPlayer } from '@/components/content/tts-player';
 import { AuditTimeline } from '@/components/content/audit-timeline';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -154,6 +155,12 @@ export default function VocabularyDetailPage() {
         onApprove={handleApprove}
         onReject={() => setRejectDialogOpen(true)}
         isLoading={reviewMutation.isPending}
+      />
+
+      <TtsPlayer
+        contentType="vocabulary"
+        itemId={id}
+        itemLabel={data.word}
       />
 
       <form onSubmit={handleSubmit(onSave)} className="space-y-6">
