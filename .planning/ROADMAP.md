@@ -99,7 +99,13 @@ Plans:
   1. 리뷰 큐 진입 후 다음/이전 버튼으로 needs_review 항목을 순서대로 탐색할 수 있다
   2. 대시보드에서 전체 검증 진행률(%)과 카테고리별 현황이 시각적으로 표시된다
   3. 새로 추가되거나 변경된 데이터가 있을 때 알림 표시가 나타난다
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — FastAPI review-queue endpoint + Pydantic schemas + pytest + frontend API function
+- [ ] 05-02-PLAN.md — Sidebar needs_review badges + dashboard quiz stats fix + Phase 5 i18n keys
+- [ ] 05-03-PLAN.md — Review queue frontend: useReviewQueue hook, QueueNavigationBar, ReviewStartButton, wire into 4 content types + human verification
+
 **UI hint**: yes
 
 ## Progress
@@ -113,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Content List Views | 0/3 | Not started | - |
 | 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
 | 4. TTS Audio | 1/2 | In Progress|  |
-| 5. Reviewer Productivity | 0/TBD | Not started | - |
+| 5. Reviewer Productivity | 0/3 | Not started | - |
 
 ## Backlog
 
