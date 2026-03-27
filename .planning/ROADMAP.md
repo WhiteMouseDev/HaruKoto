@@ -126,8 +126,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 ### Phase 999.1: TTS 필드 UI 개선 — select → 전체 필드 목록 (BACKLOG)
 
 **Goal:** 드롭다운 대신 읽기/단어/예문 등 전체 필드를 리스트로 표시하여, 리뷰어가 각 필드의 TTS 유무를 한눈에 파악하고 빠진 것만 바로 생성할 수 있도록 개선
-**Requirements:** TBD
-**Plans:** 3/3 plans complete
+**Requirements:** BACKLOG-999.1
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] 999.1-01-PLAN.md — Refactor useTtsPlayer hook + TtsPlayer component: Select dropdown to vertical field list
+- [ ] 999.1-02-PLAN.md — Human verification of TTS field list UI on all 4 content types
