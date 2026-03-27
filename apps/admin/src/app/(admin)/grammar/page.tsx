@@ -88,6 +88,8 @@ function GrammarContent() {
         currentPage={currentPage}
         totalPages={data?.totalPages ?? 1}
         onRetry={() => void refetch()}
+        selectable
+        contentType="grammar"
       />
     </>
   );

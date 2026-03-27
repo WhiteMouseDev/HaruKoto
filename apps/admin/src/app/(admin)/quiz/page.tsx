@@ -93,6 +93,8 @@ function QuizContent() {
         currentPage={currentPage}
         totalPages={data?.totalPages ?? 1}
         onRetry={() => void refetch()}
+        selectable
+        contentType="quiz"
       />
     </>
   );
