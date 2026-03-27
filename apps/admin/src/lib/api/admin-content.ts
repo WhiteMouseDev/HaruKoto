@@ -233,3 +233,31 @@ export async function regenerateTts(
   if (!res.ok) throw new Error('TTS regeneration failed');
   return res.json() as Promise<TtsAudioResponse>;
 }
+
+// ---- Review Queue API functions ----
+
+export type ReviewQueueItem = {
+  id: string;
+  quizType?: string; // "cloze" or "sentence_arrange" — only present for quiz content type
+};
+
+export type ReviewQueueResponse = {
+  ids: ReviewQueueItem[];
+  total: number;
+  capped: boolean;
+};
+
+export async function fetchReviewQueue(
+  contentType: string,
+  params: { jlptLevel?: string; category?: string },
+): Promise<ReviewQueueResponse> {
+  const headers = await getAuthHeaders();
+  const url = new URL(
+    `${API_URL}/api/v1/admin/content/${contentType}/review-queue`,
+  );
+  if (params.jlptLevel) url.searchParams.set('jlpt_level', params.jlptLevel);
+  if (params.category) url.searchParams.set('category', params.category);
+  const res = await fetch(url.toString(), { headers });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json() as Promise<ReviewQueueResponse>;
+}
