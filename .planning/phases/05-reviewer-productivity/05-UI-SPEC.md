@@ -44,7 +44,7 @@ Declared values (must be multiples of 4):
 Exceptions:
 - Queue navigation bar: fixed height 48px (`h-12`) — touch-safe full-width strip above ReviewHeader
 - NavBadge: fixed 20px height (`h-5 min-w-5`) — overrides scale for compact sidebar display
-- Review position counter ("N / M"): `px-2 py-0.5` — compact pill display
+- Review position counter ("N / M"): `px-2 py-1` — compact pill display (4px vertical, on-scale)
 
 Source: established by Phases 1-4 (confirmed from `review-header.tsx`, `sidebar-nav-item.tsx`, `stats-card.tsx`).
 
@@ -140,7 +140,7 @@ Modified components this phase:
 - Position: between the page breadcrumb/title and the ReviewHeader strip
 - Layout: full-width flex row, `border-b border-border bg-card px-4 py-2`
 - Left side: `ChevronLeft` button (lucide) — "前へ" — `variant="ghost" size="sm"` — disabled when `hasPrev: false`
-- Center: queue position counter `"{current} / {total}"` — `text-sm text-muted-foreground`
+- Center: queue position counter `"{current} / {total}"` — `text-sm text-muted-foreground px-2 py-1` pill
 - Right side: `ChevronRight` button (lucide) — "次へ" — `variant="ghost" size="sm"` — disabled when `hasNext: false`; far-right: "キューを終了" link (`text-sm text-muted-foreground underline`)
 
 **Auto-advance after approve/reject:**
@@ -203,7 +203,7 @@ All copy in Japanese (primary locale). Korean (`ko.json`) and English (`en.json`
 | Progress bar label | {n}% 承認済み | `dashboard.progressLabel` (already exists in ja.json — add to en.json and ko.json) |
 
 **Error states:**
-- Review queue API failure: `sonner` toast (destructive) — "レビューキューの読み込みに失敗しました" (`review.queueLoadError`)
+- Review queue API failure: `sonner` toast (destructive) — "レビューキューの読み込みに失敗しました。ページを再読み込みしてください。" (`review.queueLoadError`)
 - Badge stats failure: silent — badge simply shows nothing (not a blocking error for 1-3 users)
 - Approve/reject API failure: existing error toast pattern from Phase 3 — no change
 
