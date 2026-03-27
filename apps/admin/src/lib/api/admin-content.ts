@@ -185,3 +185,52 @@ export async function fetchAuditLogs(
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json() as Promise<AuditLogEntry[]>;
 }
+
+// ---- TTS API functions ----
+
+// IMPORTANT: Field names are snake_case to match FastAPI's Pydantic JSON serialization.
+// FastAPI AdminTtsResponse has `audio_url`, `field`, `provider` — NOT camelCase.
+export type TtsAudioResponse = {
+  audio_url: string | null;
+  field: string | null;
+  provider: string | null;
+};
+
+export async function fetchTtsAudio(
+  contentType: string,
+  itemId: string,
+): Promise<TtsAudioResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(
+    `${API_URL}/api/v1/admin/content/${contentType}/${itemId}/tts`,
+    { headers },
+  );
+  if (!res.ok) throw new Error('Failed to fetch TTS audio');
+  return res.json() as Promise<TtsAudioResponse>;
+}
+
+export async function regenerateTts(
+  contentType: string,
+  itemId: string,
+  field: string,
+): Promise<TtsAudioResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/api/v1/admin/tts/regenerate`, {
+    method: 'POST',
+    headers: {
+      ...(headers as Record<string, string>),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      content_type: contentType,
+      item_id: itemId,
+      field,
+    }),
+  });
+  if (res.status === 429) {
+    const data = (await res.json()) as { detail?: string };
+    throw new Error(data.detail ?? 'Cooldown active');
+  }
+  if (!res.ok) throw new Error('TTS regeneration failed');
+  return res.json() as Promise<TtsAudioResponse>;
+}
