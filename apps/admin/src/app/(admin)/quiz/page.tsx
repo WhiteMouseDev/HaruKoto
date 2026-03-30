@@ -71,7 +71,7 @@ function QuizContent() {
       width: '13%',
       render: (item) => (
         <Link
-          href={`/quiz/${item.id}`}
+          href={`/quiz/${item.id}?type=${item.quizType === 'cloze' ? 'cloze' : 'sentence_arrange'}`}
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           {t('detailLink')}

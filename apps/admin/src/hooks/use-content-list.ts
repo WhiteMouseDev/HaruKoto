@@ -16,6 +16,8 @@ export function useContentList<T>(type: ContentType) {
   const review_status = searchParams.get('status') ?? undefined;
   const category = searchParams.get('category') ?? undefined;
   const quiz_type = searchParams.get('quiz_type') ?? undefined;
+  const sort_by = searchParams.get('sort_by') ?? undefined;
+  const sort_order = searchParams.get('sort_order') ?? undefined;
 
   const params: Record<string, string | undefined> = {
     page,
@@ -25,6 +27,8 @@ export function useContentList<T>(type: ContentType) {
     review_status,
     category,
     quiz_type,
+    sort_by,
+    sort_order,
   };
 
   return useQuery<PaginatedResponse<T>>({
