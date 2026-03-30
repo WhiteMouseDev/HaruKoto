@@ -1,117 +1,63 @@
-# Requirements: HaruKoto Admin
+# Requirements: HaruKoto Admin v1.1
 
-**Defined:** 2026-03-26
+**Defined:** 2026-03-30
 **Core Value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
 
-## v1 Requirements
+## v1.1 Requirements
 
-### Authentication & Authorization
+### TTS Per-Field Audio
 
-- [x] **AUTH-01**: Reviewer가 ID/PW로 어드민에 로그인할 수 있다
-- [x] **AUTH-02**: Reviewer가 아닌 사용자는 어드민 페이지 접근이 차단된다
-- [x] **AUTH-03**: Reviewer 역할이 폐기되면 즉시 접근이 차단된다 (DB 레벨 확인)
+- [ ] **TTS-03**: 단어 편집 화면에서 읽기/단어/예문 필드별로 개별 TTS 오디오를 생성할 수 있다
+- [ ] **TTS-04**: 필드별 오디오가 독립적으로 재생/재생성된다 (다른 필드에 영향 없음)
+- [ ] **TTS-05**: 기존 아이템당 1개 오디오 데이터가 마이그레이션 후에도 정상 동작한다
 
-### Content Listing
+### Internationalization Completion
 
-- [x] **LIST-01**: Reviewer가 단어/어휘 목록을 페이지네이션으로 조회할 수 있다
-- [x] **LIST-02**: Reviewer가 문법/문장 목록을 페이지네이션으로 조회할 수 있다
-- [x] **LIST-03**: Reviewer가 퀴즈/문제 목록을 페이지네이션으로 조회할 수 있다
-- [x] **LIST-04**: Reviewer가 회화 시나리오 목록을 페이지네이션으로 조회할 수 있다
-- [x] **LIST-05**: Reviewer가 JLPT 레벨, 카테고리, 검증 상태로 데이터를 필터링할 수 있다
-- [x] **LIST-06**: Reviewer가 텍스트 검색으로 특정 데이터를 찾을 수 있다
-- [x] **LIST-07**: 각 항목에 검증 상태 뱃지(needs_review/approved/rejected)가 표시된다
+- [ ] **I18N-04**: 모든 UI 문자열이 i18n 키를 통해 번역된다 (하드코딩 일본어 없음)
+- [ ] **I18N-05**: locale 전환 시 모든 텍스트가 선택된 언어로 표시된다
 
-### Content Editing
+### Accessibility
 
-- [x] **EDIT-01**: Reviewer가 단어/어휘 데이터를 개별 수정할 수 있다 (일본어, 읽기, 뜻, 예문)
-- [x] **EDIT-02**: Reviewer가 문법/문장 데이터를 개별 수정할 수 있다
-- [x] **EDIT-03**: Reviewer가 퀴즈/문제 데이터를 개별 수정할 수 있다 (문제, 선택지, 정답, 해설)
-- [x] **EDIT-04**: Reviewer가 회화 시나리오 데이터를 개별 수정할 수 있다
+- [ ] **A11Y-01**: 사이드바 활성 항목에 aria-current="page"가 설정된다
+- [ ] **A11Y-02**: 메인 콘텐츠로 건너뛰는 skip link가 있다
+- [ ] **A11Y-03**: nav, aside, main에 의미 있는 aria-label이 있다
+- [ ] **A11Y-04**: 검색 입력에 명시적 label이 있다
 
-### Review Workflow
-
-- [x] **REVW-01**: Reviewer가 개별 항목을 승인(approved) 또는 반려(rejected)할 수 있다
-- [x] **REVW-02**: Reviewer가 여러 항목을 선택하여 일괄 승인/반려할 수 있다
-- [x] **REVW-03**: 반려 시 사유를 입력할 수 있다
-- [x] **REVW-04**: 모든 수정/승인/반려에 대한 이력(audit log)이 기록된다
-
-### TTS Audio
-
-- [x] **TTS-01**: Reviewer가 편집 화면에서 기존 TTS 오디오를 재생할 수 있다
-- [x] **TTS-02**: Reviewer가 개별 항목의 TTS를 재생성 요청할 수 있다 (확인 다이얼로그 포함)
-
-### Reviewer UX
-
-- [x] **UX-01**: needs_review 항목을 순서대로 탐색하는 리뷰 큐(다음/이전)가 있다
-- [x] **UX-02**: 대시보드에서 검증 진행률과 카테고리별 현황을 확인할 수 있다
-- [x] **UX-03**: 새로 추가되거나 변경된 데이터에 대한 알림이 표시된다
-
-### Internationalization
-
-- [x] **I18N-01**: UI가 일본어를 기본 언어로 제공한다
-- [x] **I18N-02**: UI 언어를 한국어로 전환할 수 있다
-- [x] **I18N-03**: UI 언어를 영어로 전환할 수 있다
-
-## v2 Requirements
-
-### Batch Operations
+## Future Requirements
 
 - **BATCH-01**: TTS 일괄 재생성 (여러 항목 동시 재생성)
 - **BATCH-02**: CSV/Excel 일괄 가져오기
-
-### Advanced UX
-
 - **AUX-01**: 키보드 단축키로 리뷰 큐 탐색 (J/K, A/R)
 - **AUX-02**: 수정 전/후 비교(diff) 뷰
-- **AUX-03**: 리뷰어 간 코멘트/토론 기능
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
+| 다크 모드 | 사용자 요청 없음, 작업량 대비 효과 낮음 |
+| Admin content API 테스트 | 인프라 작업, 별도 처리 |
 | 사용자 계정 관리 | 메인 앱 관할 |
 | 결제/구독 관리 | 메인 앱 관할 |
-| AI 대화 실시간 테스트 | 복잡도 높음, 별도 마일스톤 |
-| 학습 진도/통계 대시보드 | 메인 앱 기능 |
-| 데이터 생성 (새 단어/문법 추가) | 초기에는 seed/migration으로 투입, 추후 고려 |
-| 모바일 반응형 | 데스크톱 전용 도구, 1-3명 사용 |
+| 모바일 반응형 | 데스크톱 전용 도구 |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Complete |
-| AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Complete |
-| I18N-01 | Phase 1 | Complete |
-| I18N-02 | Phase 1 | Complete |
-| I18N-03 | Phase 1 | Complete |
-| LIST-01 | Phase 2 | Complete |
-| LIST-02 | Phase 2 | Complete |
-| LIST-03 | Phase 2 | Complete |
-| LIST-04 | Phase 2 | Complete |
-| LIST-05 | Phase 2 | Complete |
-| LIST-06 | Phase 2 | Complete |
-| LIST-07 | Phase 2 | Complete |
-| EDIT-01 | Phase 3 | Complete |
-| EDIT-02 | Phase 3 | Complete |
-| EDIT-03 | Phase 3 | Complete |
-| EDIT-04 | Phase 3 | Complete |
-| REVW-01 | Phase 3 | Complete |
-| REVW-02 | Phase 3 | Complete |
-| REVW-03 | Phase 3 | Complete |
-| REVW-04 | Phase 3 | Complete |
-| TTS-01 | Phase 4 | Complete |
-| TTS-02 | Phase 4 | Complete |
-| UX-01 | Phase 5 | Complete |
-| UX-02 | Phase 5 | Complete |
-| UX-03 | Phase 5 | Complete |
+| TTS-03 | — | Not started |
+| TTS-04 | — | Not started |
+| TTS-05 | — | Not started |
+| I18N-04 | — | Not started |
+| I18N-05 | — | Not started |
+| A11Y-01 | — | Not started |
+| A11Y-02 | — | Not started |
+| A11Y-03 | — | Not started |
+| A11Y-04 | — | Not started |
 
 **Coverage:**
-- v1 requirements: 24 total
-- Mapped to phases: 24
-- Unmapped: 0 ✓
+- v1.1 requirements: 9 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 9
 
 ---
-*Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 — Traceability populated after roadmap creation*
+*Requirements defined: 2026-03-30*
