@@ -109,6 +109,36 @@
               ],
               "title": "Search"
             }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column to sort by: created_at, review_status, jlpt_level",
+              "title": "Sort By"
+            },
+            "description": "Column to sort by: created_at, review_status, jlpt_level"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort direction: asc or desc",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "Sort direction: asc or desc"
           }
         ],
         "responses": {
@@ -384,6 +414,36 @@
               ],
               "title": "Search"
             }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column to sort by: created_at, review_status, jlpt_level",
+              "title": "Sort By"
+            },
+            "description": "Column to sort by: created_at, review_status, jlpt_level"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort direction: asc or desc",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "Sort direction: asc or desc"
           }
         ],
         "responses": {
@@ -581,7 +641,7 @@
           "admin-content"
         ],
         "summary": "List Quiz",
-        "description": "List quiz items (cloze + sentence_arrange) with optional filters and search.",
+        "description": "List quiz items (cloze + sentence_arrange) with SQL UNION ALL pagination.",
         "operationId": "list_quiz_api_v1_admin_content_quiz_get",
         "security": [
           {
@@ -677,6 +737,36 @@
               "title": "Quiz Type"
             },
             "description": "Filter by quiz type: 'cloze' or 'sentence_arrange'"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column to sort by: created_at, review_status, jlpt_level",
+              "title": "Sort By"
+            },
+            "description": "Column to sort by: created_at, review_status, jlpt_level"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort direction: asc or desc",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "Sort direction: asc or desc"
           }
         ],
         "responses": {
@@ -1133,6 +1223,36 @@
               ],
               "title": "Category"
             }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column to sort by: created_at, review_status, category",
+              "title": "Sort By"
+            },
+            "description": "Column to sort by: created_at, review_status, category"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort direction: asc or desc",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "Sort direction: asc or desc"
           }
         ],
         "responses": {
@@ -1369,6 +1489,190 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/admin/content/tts/regenerate": {
+      "post": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Regenerate Admin Tts",
+        "description": "Regenerate TTS for a content item (no cooldown — admin tool for 1-3 reviewers).",
+        "operationId": "regenerate_admin_tts_api_v1_admin_content_tts_regenerate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminTtsRegenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/content/review-queue/{content_type}": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Review Queue",
+        "description": "Return ordered list of needs_review item IDs for sequential review.\n\nItems are ordered by created_at ASC (oldest first = natural queue order).\nCapped at 200 items to avoid URL length limits on the frontend.",
+        "operationId": "get_review_queue_api_v1_admin_content_review_queue__content_type__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "content_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Type"
+            }
+          },
+          {
+            "name": "jlpt_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlpt Level"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewQueueResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/{content_type}/{item_id}/tts": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Admin Tts",
+        "description": "Return existing TTS audio URL for a content item, or null if none exists.",
+        "operationId": "get_admin_tts_api_v1_admin_content__content_type___item_id__tts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "content_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Type"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/admin/content/{content_type}/{item_id}/audit-logs": {
@@ -5386,6 +5690,80 @@
         ],
         "title": "ActivateRequest"
       },
+      "AdminTtsRegenerateRequest": {
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "vocabulary",
+              "grammar",
+              "cloze",
+              "sentence_arrange",
+              "conversation"
+            ],
+            "title": "Contenttype"
+          },
+          "itemId": {
+            "type": "string",
+            "title": "Itemid"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contentType",
+          "itemId",
+          "field"
+        ],
+        "title": "AdminTtsRegenerateRequest"
+      },
+      "AdminTtsResponse": {
+        "properties": {
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audioUrl",
+          "field",
+          "provider"
+        ],
+        "title": "AdminTtsResponse"
+      },
       "AiUsageInfo": {
         "properties": {
           "chatCount": {
@@ -8570,9 +8948,9 @@
             "format": "uuid",
             "title": "Id"
           },
-          "questionText": {
+          "sentence": {
             "type": "string",
-            "title": "Questiontext"
+            "title": "Sentence"
           },
           "quizType": {
             "type": "string",
@@ -8595,7 +8973,7 @@
         "type": "object",
         "required": [
           "id",
-          "questionText",
+          "sentence",
           "quizType",
           "jlptLevel",
           "reviewStatus",
@@ -9003,6 +9381,56 @@
           "script"
         ],
         "title": "Reading"
+      },
+      "ReviewQueueItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "quizType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiztype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "ReviewQueueItem"
+      },
+      "ReviewQueueResponse": {
+        "properties": {
+          "ids": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewQueueItem"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "capped": {
+            "type": "boolean",
+            "title": "Capped"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ids",
+          "total",
+          "capped"
+        ],
+        "title": "ReviewQueueResponse"
       },
       "ReviewRequest": {
         "properties": {
