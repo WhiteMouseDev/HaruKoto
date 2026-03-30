@@ -145,8 +145,9 @@ Plans:
 ### Phase 999.3: Admin UI 폴리시 (BACKLOG)
 
 **Goal:** 헤더/사이드바 중복 정리, 뱃지 색상 개선, 대시보드 프로덕션 수준 디자인, 레이아웃 일관성 개선
-**Requirements:** TBD
-**Plans:** 0 plans
+**Requirements:** BACKLOG-999.3
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] 999.3-01-PLAN.md — Remove Header, consolidate identity into sidebar, fix badge color to informational pink
+- [ ] 999.3-02-PLAN.md — Color-code dashboard StatsCard counts with visual hierarchy
