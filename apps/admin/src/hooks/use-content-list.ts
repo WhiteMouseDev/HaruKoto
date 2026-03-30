@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 
 import { fetchAdminContent, type PaginatedResponse } from '@/lib/api/admin-content';
@@ -31,5 +31,6 @@ export function useContentList<T>(type: ContentType) {
     queryKey: ['admin-content', type, params],
     queryFn: () => fetchAdminContent<T>(type, params),
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
 }

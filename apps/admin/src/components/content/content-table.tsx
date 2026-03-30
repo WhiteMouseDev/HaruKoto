@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Search, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,11 @@ export function ContentTable<T extends { id: string }>({
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+
+  // Clear selection when data changes (page navigation, filter change)
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [data]);
 
   const bulkReview = useBulkReview(contentType);
 
