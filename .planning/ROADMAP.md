@@ -156,9 +156,9 @@ Plans:
 
 **Goal:** 퀴즈 API 계약 수정, 서버사이드 정렬 지원, FilterBar URL 동기화, selection 초기화, conversation JLPT 필터 숨김
 **Requirements:** BACKLOG-999.4
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 999.4-01-PLAN.md — Backend: Quiz API contract fix, real SQL pagination, sort_by/sort_order on all list endpoints
-- [ ] 999.4-02-PLAN.md — Frontend shared: FilterBar URL sync, conversation JLPT hide, selection reset, placeholderData
+- [x] 999.4-02-PLAN.md — Frontend shared: FilterBar URL sync, conversation JLPT hide, selection reset, placeholderData
 - [ ] 999.4-03-PLAN.md — Frontend quiz + sorting: Fix quiz type/links, sortable column headers on all tables

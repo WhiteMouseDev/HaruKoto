@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 999.3-01-PLAN.md
-last_updated: "2026-03-30T02:35:32.694Z"
+status: executing
+stopped_at: Completed 999.4-02-PLAN.md
+last_updated: "2026-03-30T04:02:14.878Z"
 last_activity: 2026-03-30
 progress:
-  total_phases: 9
+  total_phases: 10
   completed_phases: 7
-  total_plans: 19
-  completed_plans: 19
+  total_plans: 22
+  completed_plans: 20
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 999.3 — admin-ui-polish
+**Current focus:** Phase 999.4 — table-system-improvement
 
 ## Current Position
 
-Phase: 999.3
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 999.4 (table-system-improvement) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-03-30
 
 Progress: [░░░░░░░░░░] 0%
@@ -70,6 +70,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 999.1 P01 | 3m | 3 tasks | 3 files |
 | Phase 999.3 P02 | 2m | 1 tasks | 1 files |
 | Phase 999.3 P01 | 5m | 2 tasks | 3 files |
+| Phase 999.4 P02 | 3m | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,8 @@ Recent decisions affecting current work:
 - [Phase 999.3]: StatsCard uses amber/emerald/muted semantic colors for needs_review/approved/rejected counts with conditional amber left border when needsReview > 0
 - [Phase 999.3]: Header component removed from AdminLayout; sidebar is now the sole chrome with user display name in bottom zone
 - [Phase 999.3]: NavBadge color changed from bg-destructive (alarm-red) to bg-primary/15 text-primary (informational cherry-pink)
+- [Phase 999.4]: Controlled select dropdowns (value= from searchParams) for URL-driven FilterBar; showJlpt prop hides JLPT on conversation page
+- [Phase 999.4]: useEffect([data]) resets ContentTable selection on page/filter change; keepPreviousData eliminates skeleton flash on pagination
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T02:32:52.383Z
-Stopped at: Completed 999.3-01-PLAN.md
+Last session: 2026-03-30T04:02:14.874Z
+Stopped at: Completed 999.4-02-PLAN.md
 Resume file: None
