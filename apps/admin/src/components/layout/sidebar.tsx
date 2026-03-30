@@ -55,16 +55,15 @@ export async function Sidebar({ user, locale }: { user: User; locale: string }) 
 
   return (
     <aside className="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-background">
-      {/* Logo + App name */}
-      <div className="flex h-14 items-center gap-2 border-b border-border px-4">
+      {/* Logo */}
+      <div className="flex h-14 items-center border-b border-border px-4">
         <Image
-          src="/logo-symbol.svg"
-          alt="HaruKoto logo"
-          width={24}
-          height={24}
+          src="/images/logo-horizontal.svg"
+          alt="HaruKoto"
+          width={140}
+          height={32}
           className="shrink-0"
         />
-        <span className="text-sm font-semibold">HaruKoto Admin</span>
       </div>
 
       {/* Navigation with badges */}
