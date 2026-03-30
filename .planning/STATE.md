@@ -127,6 +127,12 @@ None yet.
 - [Phase 4 risk]: Check existing rate_limit.py pattern before designing TTS cooldown
 - [Phase 1 risk]: Document reviewer provisioning flow (Supabase Dashboard vs. script) before first deploy
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260330-h7k | Codex P0/P1 design system fixes | 2026-03-30 | 31ca737 | [260330-h7k-codex-p0-p1-design-system-fixes](./quick/260330-h7k-codex-p0-p1-design-system-fixes/) |
+
 ## Session Continuity
 
 Last session: 2026-03-30T02:32:52.383Z
