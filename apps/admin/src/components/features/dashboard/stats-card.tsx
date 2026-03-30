@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 type StatsCardProps = {
   title: string;
@@ -25,7 +26,7 @@ export function StatsCard({
   const progressPct = total > 0 ? Math.round((approved / total) * 100) : 0;
 
   return (
-    <Card>
+    <Card className={cn(needsReview > 0 && 'border-l-4 border-l-amber-400')}>
       <CardHeader className="flex-row items-center gap-3 space-y-0">
         <span className="text-muted-foreground [&_svg]:size-5">{icon}</span>
         <CardTitle className="text-base">{title}</CardTitle>
@@ -34,7 +35,7 @@ export function StatsCard({
         {/* Count rows */}
         <div className="space-y-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-[28px] font-semibold leading-none">
+            <span className="text-[28px] font-semibold leading-none text-amber-500">
               {needsReview}
             </span>
             <span className="text-sm text-muted-foreground">
@@ -42,15 +43,16 @@ export function StatsCard({
             </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[28px] font-semibold leading-none">
+            <span className="text-[28px] font-semibold leading-none text-emerald-600">
               {approved}
             </span>
             <span className="text-sm text-muted-foreground">
               {t('approved')}
+              <span className="ml-1 text-xs">/ {total}</span>
             </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[28px] font-semibold leading-none">
+            <span className="text-[28px] font-semibold leading-none text-muted-foreground">
               {rejected}
             </span>
             <span className="text-sm text-muted-foreground">
