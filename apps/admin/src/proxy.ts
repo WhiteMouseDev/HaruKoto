@@ -58,6 +58,13 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Redirect root path to dashboard (authenticated reviewer is guaranteed by checks above)
+  if (pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
   // Redirect already-authenticated reviewer away from login page
   if (isLoginPage && user && user.app_metadata?.reviewer === true) {
     const url = request.nextUrl.clone();
