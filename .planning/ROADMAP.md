@@ -132,3 +132,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 Plans:
 - [x] 999.1-01-PLAN.md — Refactor useTtsPlayer hook + TtsPlayer component: Select dropdown to vertical field list
 - [ ] 999.1-02-PLAN.md — Human verification of TTS field list UI on all 4 content types
+
+### Phase 999.2: 필드별 개별 TTS 오디오 지원 (BACKLOG)
+
+**Goal:** TtsAudio DB에 field 컬럼 추가하여 단어의 읽기/단어/예문 각각 개별 오디오 생성·저장·재생 지원. 현재는 아이템당 오디오 1개만 저장되어 vocabulary 3개 필드가 동일 오디오 공유.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
