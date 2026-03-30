@@ -27,7 +27,7 @@ export function QueueNavigationBar({
   const t = useTranslations('review');
 
   return (
-    <div className="flex h-12 items-center justify-between border-b border-border bg-card px-4">
+    <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-border bg-card px-4">
       <Button
         variant="ghost"
         size="sm"

@@ -22,7 +22,7 @@ export function ReviewHeader({
   const t = useTranslations('review');
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+    <div className="sticky top-0 z-10 flex items-center justify-between rounded-lg border border-border bg-card p-4">
       <StatusBadge status={reviewStatus} />
       <div className="flex items-center gap-2">
         <Button
