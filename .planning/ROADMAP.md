@@ -1,10 +1,14 @@
 # Roadmap: HaruKoto Admin
 
-## Overview
+## Milestones
 
-HaruKoto Admin는 5단계로 전달됩니다. 먼저 안전하게 배포 가능한 기반(앱 스캐폴딩, 인증, i18n)을 구축하고, 읽기 전용 콘텐츠 목록 뷰를 추가하고, 편집 폼과 검토 워크플로우로 핵심 가치를 전달하고, TTS 오디오 재생·재생성 기능을 추가한 뒤, 마지막으로 리뷰 큐·알림 등 생산성 기능으로 완성합니다. 모든 단계는 이전 단계에 의존하며, 각 단계는 실제로 검증 가능한 기능을 완성합니다.
+- ✅ **v1.0 MVP** - Phases 1-5 + 999.x backlog (shipped 2026-03-30)
+- 🚧 **v1.1 Quality & Polish** - Phases 6-7 (in progress)
 
 ## Phases
+
+<details>
+<summary>✅ v1.0 MVP (Phases 1-5 + backlog) - SHIPPED 2026-03-30</summary>
 
 **Phase Numbering:**
 - Integer phases (1, 2, 3): Planned milestone work
@@ -17,8 +21,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Content Editing & Review Workflow** - 편집 폼, 승인/반려 워크플로우, 감사 로그 (completed 2026-03-27)
 - [x] **Phase 4: TTS Audio** - 오디오 재생, 재생성 요청, FastAPI 엔드포인트 연동 (completed 2026-03-27)
 - [x] **Phase 5: Reviewer Productivity** - 리뷰 큐 탐색, 일괄 상태 변경, 알림 (completed 2026-03-27)
-
-## Phase Details
 
 ### Phase 1: Foundation
 **Goal**: Reviewer가 안전하게 어드민에 접근할 수 있고, 앱이 Vercel에 배포되어 있으며, UI가 일본어로 표시된다
@@ -69,10 +71,13 @@ Plans:
   3. 반려 버튼을 누르면 사유 입력 다이얼로그가 표시되고, 사유를 입력해야 rejected 상태로 변경된다
   4. 목록에서 여러 항목을 체크박스로 선택하고 일괄 승인/반려할 수 있다
   5. 항목 상세 페이지의 감사 로그 섹션에서 최근 수정·승인·반려 이력이 확인된다
-**Plans**:
-  - Plan 01 (Wave 1): Foundation — Alembic audit_logs migration, AuditLog model, shadcn Dialog/Textarea/Checkbox install, Pydantic schema extensions, test stubs
-  - Plan 02 (Wave 1): Backend — GET single, PATCH update, POST review, batch-review, audit-logs endpoints (depends on 03-01)
-  - Plan 03 (Wave 2): Frontend — 4 edit pages (RHF+Zod), review header, reject dialog, bulk toolbar, audit timeline, i18n
+**Plans**: 3 plans
+
+Plans:
+- [x] 03-01-PLAN.md — Alembic audit_logs migration, AuditLog model, shadcn installs, Pydantic schema extensions, test stubs
+- [x] 03-02-PLAN.md — Backend: GET single, PATCH update, POST review, batch-review, audit-logs endpoints
+- [x] 03-03-PLAN.md — Frontend: 4 edit pages (RHF+Zod), review header, reject dialog, bulk toolbar, audit timeline, i18n
+
 **UI hint**: yes
 
 ### Phase 4: TTS Audio
@@ -108,20 +113,7 @@ Plans:
 
 **UI hint**: yes
 
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation | 4/4 | Complete   | 2026-03-26 |
-| 2. Content List Views | 3/3 | Complete   | 2026-03-26 |
-| 3. Content Editing & Review Workflow | 3/3 | Complete   | 2026-03-27 |
-| 4. TTS Audio | 2/2 | Complete   | 2026-03-27 |
-| 5. Reviewer Productivity | 3/3 | Complete   | 2026-03-27 |
-
-## Backlog
+## Backlog (v1.0 era)
 
 ### Phase 999.1: TTS 필드 UI 개선 — select → 전체 필드 목록 (BACKLOG)
 
@@ -132,15 +124,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 Plans:
 - [x] 999.1-01-PLAN.md — Refactor useTtsPlayer hook + TtsPlayer component: Select dropdown to vertical field list
 - [ ] 999.1-02-PLAN.md — Human verification of TTS field list UI on all 4 content types
-
-### Phase 999.2: 필드별 개별 TTS 오디오 지원 (BACKLOG)
-
-**Goal:** TtsAudio DB에 field 컬럼 추가하여 단어의 읽기/단어/예문 각각 개별 오디오 생성·저장·재생 지원. 현재는 아이템당 오디오 1개만 저장되어 vocabulary 3개 필드가 동일 오디오 공유.
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
 
 ### Phase 999.3: Admin UI 폴리시 (BACKLOG)
 
@@ -162,3 +145,56 @@ Plans:
 - [x] 999.4-01-PLAN.md — Backend: Quiz API contract fix, real SQL pagination, sort_by/sort_order on all list endpoints
 - [x] 999.4-02-PLAN.md — Frontend shared: FilterBar URL sync, conversation JLPT hide, selection reset, placeholderData
 - [x] 999.4-03-PLAN.md — Frontend quiz + sorting: Fix quiz type/links, sortable column headers on all tables
+
+</details>
+
+---
+
+### 🚧 v1.1 Quality & Polish (In Progress)
+
+**Milestone Goal:** v1.0의 품질 미비 사항 해결 — 필드별 TTS, 번역 완성, 접근성 개선
+
+- [ ] **Phase 6: TTS Per-Field Audio** - TtsAudio DB 스키마 확장, FastAPI API 변경, 프론트엔드 훅·컴포넌트 업데이트
+- [ ] **Phase 7: i18n Completion & Accessibility** - 하드코딩 일본어 번역 완성, aria-current·skip link·랜드마크·검색 라벨 추가
+
+## Phase Details
+
+### Phase 6: TTS Per-Field Audio
+**Goal**: Reviewer가 단어 편집 화면에서 읽기/단어/예문 각 필드별로 독립적인 TTS 오디오를 생성·재생할 수 있으며, 기존 데이터가 마이그레이션 후에도 정상 동작한다
+**Depends on**: Phase 5 (v1.0 complete)
+**Requirements**: TTS-03, TTS-04, TTS-05
+**Success Criteria** (what must be TRUE):
+  1. 단어 편집 화면에서 읽기(reading), 단어(word), 예문(example) 각각에 별도 오디오 재생 버튼과 재생성 버튼이 표시된다
+  2. 한 필드의 오디오를 재생성해도 다른 필드의 오디오에는 영향이 없다
+  3. 마이그레이션 후 기존 아이템당 1개 오디오가 field=null 또는 기본 필드로 정상 조회·재생된다
+  4. 문법·퀴즈·회화 시나리오 편집 화면에서도 해당 콘텐츠 타입에 맞는 필드별 TTS UI가 동작한다
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 7: i18n Completion & Accessibility
+**Goal**: UI의 모든 텍스트가 선택된 언어로 표시되고, 스크린 리더와 키보드 사용자가 어드민을 탐색할 수 있다
+**Depends on**: Phase 6
+**Requirements**: I18N-04, I18N-05, A11Y-01, A11Y-02, A11Y-03, A11Y-04
+**Success Criteria** (what must be TRUE):
+  1. 언어를 한국어·영어·일본어로 전환했을 때 화면에 하드코딩 일본어 문자열이 남지 않는다
+  2. 사이드바 활성 항목에 시각적 강조와 함께 aria-current="page" 속성이 설정된다
+  3. 페이지 상단에 "메인 콘텐츠로 건너뛰기" skip link가 존재하고, 키보드 포커스 시 표시된다
+  4. nav, aside, main 영역에 스크린 리더가 읽을 수 있는 aria-label이 부여된다
+  5. 검색 입력 필드에 연결된 명시적 label 요소가 존재한다
+**Plans**: TBD
+**UI hint**: yes
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 6 → 7
+
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation | v1.0 | 4/4 | Complete | 2026-03-26 |
+| 2. Content List Views | v1.0 | 3/3 | Complete | 2026-03-26 |
+| 3. Content Editing & Review Workflow | v1.0 | 3/3 | Complete | 2026-03-27 |
+| 4. TTS Audio | v1.0 | 2/2 | Complete | 2026-03-27 |
+| 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
+| 6. TTS Per-Field Audio | v1.1 | 0/TBD | Not started | - |
+| 7. i18n Completion & Accessibility | v1.1 | 0/TBD | Not started | - |

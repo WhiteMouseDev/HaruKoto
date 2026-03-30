@@ -44,20 +44,20 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TTS-03 | — | Not started |
-| TTS-04 | — | Not started |
-| TTS-05 | — | Not started |
-| I18N-04 | — | Not started |
-| I18N-05 | — | Not started |
-| A11Y-01 | — | Not started |
-| A11Y-02 | — | Not started |
-| A11Y-03 | — | Not started |
-| A11Y-04 | — | Not started |
+| TTS-03 | Phase 6 | Not started |
+| TTS-04 | Phase 6 | Not started |
+| TTS-05 | Phase 6 | Not started |
+| I18N-04 | Phase 7 | Not started |
+| I18N-05 | Phase 7 | Not started |
+| A11Y-01 | Phase 7 | Not started |
+| A11Y-02 | Phase 7 | Not started |
+| A11Y-03 | Phase 7 | Not started |
+| A11Y-04 | Phase 7 | Not started |
 
 **Coverage:**
 - v1.1 requirements: 9 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 9
+- Mapped to phases: 9
+- Unmapped: 0
 
 ---
-*Requirements defined: 2026-03-30*
+*Requirements defined: 2026-03-30 | Traceability updated: 2026-03-30*
