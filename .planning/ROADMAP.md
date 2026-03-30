@@ -151,3 +151,12 @@ Plans:
 Plans:
 - [x] 999.3-01-PLAN.md — Remove Header, consolidate identity into sidebar, fix badge color to informational pink
 - [x] 999.3-02-PLAN.md — Color-code dashboard StatsCard counts with visual hierarchy
+
+### Phase 999.4: 테이블 시스템 개선 (BACKLOG)
+
+**Goal:** 퀴즈 API 계약 수정, 서버사이드 정렬 지원, FilterBar URL 동기화, selection 초기화, conversation JLPT 필터 숨김
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
