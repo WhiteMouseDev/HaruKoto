@@ -27,9 +27,9 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="h-full overflow-hidden">
       <body
-        className={`${notoSansJP.variable} font-jp bg-background antialiased`}
+        className={`${notoSansJP.variable} font-jp h-full overflow-hidden bg-background antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>{children}</QueryProvider>
