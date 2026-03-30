@@ -6,15 +6,20 @@ import {
   HelpCircle,
   MessageSquare,
 } from 'lucide-react';
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
+import type { User } from '@supabase/supabase-js';
 import { SidebarNavWithBadges } from './sidebar-nav-with-badges';
 import { LocaleSwitcher } from './locale-switcher';
 import { LogoutButton } from './logout-button';
 
-export async function Sidebar() {
+export async function Sidebar({ user, locale }: { user: User; locale: string }) {
   const t = await getTranslations('nav');
   const tAuth = await getTranslations('auth');
-  const locale = await getLocale();
+
+  const displayName =
+    (user.user_metadata?.full_name as string | undefined) ??
+    user.email?.split('@')[0] ??
+    'Reviewer';
 
   const navItems = [
     {
@@ -65,8 +70,9 @@ export async function Sidebar() {
       {/* Navigation with badges */}
       <SidebarNavWithBadges navItems={navItems} />
 
-      {/* Bottom: Locale + Logout */}
+      {/* Bottom: Display name + Locale + Logout */}
       <div className="flex flex-col gap-2 border-t border-border px-4 py-4">
+        <span className="text-xs text-muted-foreground">{displayName}</span>
         <LocaleSwitcher currentLocale={locale} />
         <LogoutButton label={tAuth('logout')} />
       </div>
