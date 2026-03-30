@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 999.4-02-PLAN.md
-last_updated: "2026-03-30T04:02:14.878Z"
+stopped_at: Completed 999.4-01-PLAN.md
+last_updated: "2026-03-30T04:02:56.605Z"
 last_activity: 2026-03-30
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 22
-  completed_plans: 20
+  completed_plans: 21
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 999.4 (table-system-improvement) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-30
 
@@ -71,6 +71,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 999.3 P02 | 2m | 1 tasks | 1 files |
 | Phase 999.3 P01 | 5m | 2 tasks | 3 files |
 | Phase 999.4 P02 | 3m | 2 tasks | 4 files |
+| Phase 999.4-table-system-improvement P01 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 999.3]: NavBadge color changed from bg-destructive (alarm-red) to bg-primary/15 text-primary (informational cherry-pink)
 - [Phase 999.4]: Controlled select dropdowns (value= from searchParams) for URL-driven FilterBar; showJlpt prop hides JLPT on conversation page
 - [Phase 999.4]: useEffect([data]) resets ContentTable selection on page/filter change; keepPreviousData eliminates skeleton flash on pagination
+- [Phase 999.4-table-system-improvement]: QuizAdminItem.sentence (not question_text) matches frontend QuizItem type directly without alias
+- [Phase 999.4-table-system-improvement]: SQL UNION ALL subquery for quiz list avoids loading all rows; sort_by/sort_order defaults to created_at desc across all 4 list endpoints
 
 ### Pending Todos
 
@@ -138,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T04:02:14.874Z
-Stopped at: Completed 999.4-02-PLAN.md
+Last session: 2026-03-30T04:02:56.602Z
+Stopped at: Completed 999.4-01-PLAN.md
 Resume file: None
