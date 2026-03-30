@@ -8,7 +8,7 @@ import jwt
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy import delete as sa_delete
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, literal, or_, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -126,6 +126,13 @@ MODEL_MAP: dict[str, type] = {
 # ==========================================
 
 
+_VOCAB_SORT_COLS = {
+    "created_at": Vocabulary.created_at,
+    "review_status": Vocabulary.review_status,
+    "jlpt_level": Vocabulary.jlpt_level,
+}
+
+
 @router.get("/vocabulary", response_model=PaginatedResponse[VocabularyAdminItem])
 async def list_vocabulary(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -135,6 +142,8 @@ async def list_vocabulary(
     jlpt_level: JlptLevel | None = Query(default=None),
     review_status: ReviewStatus | None = Query(default=None),
     search: str | None = Query(default=None),
+    sort_by: str | None = Query(default=None, description="Column to sort by: created_at, review_status, jlpt_level"),
+    sort_order: str = Query(default="desc", description="Sort direction: asc or desc"),
 ) -> PaginatedResponse[VocabularyAdminItem]:
     """List vocabulary items with optional filters and search."""
     q = select(Vocabulary)
@@ -155,8 +164,11 @@ async def list_vocabulary(
     total_result = await db.execute(select(func.count()).select_from(q.subquery()))
     total = total_result.scalar_one()
 
+    sort_col = _VOCAB_SORT_COLS.get(sort_by or "", Vocabulary.created_at)
+    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
+
     offset = (page - 1) * page_size
-    items_result = await db.execute(q.order_by(Vocabulary.created_at.desc()).offset(offset).limit(page_size))
+    items_result = await db.execute(q.order_by(order_expr).offset(offset).limit(page_size))
     items = items_result.scalars().all()
 
     return PaginatedResponse(
@@ -292,6 +304,13 @@ async def review_vocabulary(
 # ==========================================
 
 
+_GRAMMAR_SORT_COLS = {
+    "created_at": Grammar.created_at,
+    "review_status": Grammar.review_status,
+    "jlpt_level": Grammar.jlpt_level,
+}
+
+
 @router.get("/grammar", response_model=PaginatedResponse[GrammarAdminItem])
 async def list_grammar(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -301,6 +320,8 @@ async def list_grammar(
     jlpt_level: JlptLevel | None = Query(default=None),
     review_status: ReviewStatus | None = Query(default=None),
     search: str | None = Query(default=None),
+    sort_by: str | None = Query(default=None, description="Column to sort by: created_at, review_status, jlpt_level"),
+    sort_order: str = Query(default="desc", description="Sort direction: asc or desc"),
 ) -> PaginatedResponse[GrammarAdminItem]:
     """List grammar items with optional filters and search."""
     q = select(Grammar)
@@ -320,8 +341,11 @@ async def list_grammar(
     total_result = await db.execute(select(func.count()).select_from(q.subquery()))
     total = total_result.scalar_one()
 
+    sort_col = _GRAMMAR_SORT_COLS.get(sort_by or "", Grammar.created_at)
+    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
+
     offset = (page - 1) * page_size
-    items_result = await db.execute(q.order_by(Grammar.created_at.desc()).offset(offset).limit(page_size))
+    items_result = await db.execute(q.order_by(order_expr).offset(offset).limit(page_size))
     items = items_result.scalars().all()
 
     return PaginatedResponse(
@@ -448,6 +472,9 @@ async def review_grammar(
 # ==========================================
 
 
+_QUIZ_SORT_COLS = {"created_at", "review_status", "jlpt_level"}
+
+
 @router.get("/quiz", response_model=PaginatedResponse[QuizAdminItem])
 async def list_quiz(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -458,63 +485,77 @@ async def list_quiz(
     review_status: ReviewStatus | None = Query(default=None),
     search: str | None = Query(default=None),
     quiz_type: str | None = Query(default=None, description="Filter by quiz type: 'cloze' or 'sentence_arrange'"),
+    sort_by: str | None = Query(default=None, description="Column to sort by: created_at, review_status, jlpt_level"),
+    sort_order: str = Query(default="desc", description="Sort direction: asc or desc"),
 ) -> PaginatedResponse[QuizAdminItem]:
-    """List quiz items (cloze + sentence_arrange) with optional filters and search."""
-    cloze_items: list[QuizAdminItem] = []
-    arrange_items: list[QuizAdminItem] = []
+    """List quiz items (cloze + sentence_arrange) with SQL UNION ALL pagination."""
+    # Build projected cloze query
+    cloze_proj = select(
+        ClozeQuestion.id,
+        ClozeQuestion.sentence.label("sentence"),
+        literal("cloze").label("quiz_type"),
+        ClozeQuestion.jlpt_level.label("jlpt_level"),
+        ClozeQuestion.review_status.label("review_status"),
+        ClozeQuestion.created_at,
+    )
+    if jlpt_level is not None:
+        cloze_proj = cloze_proj.where(ClozeQuestion.jlpt_level == jlpt_level)
+    if review_status is not None:
+        cloze_proj = cloze_proj.where(ClozeQuestion.review_status == review_status)
+    if search:
+        cloze_proj = cloze_proj.where(ClozeQuestion.sentence.ilike(f"%{search}%"))
 
-    # Build cloze query
-    if quiz_type is None or quiz_type == "cloze":
-        cq = select(ClozeQuestion)
-        if jlpt_level is not None:
-            cq = cq.where(ClozeQuestion.jlpt_level == jlpt_level)
-        if review_status is not None:
-            cq = cq.where(ClozeQuestion.review_status == review_status)
-        if search:
-            cq = cq.where(ClozeQuestion.sentence.ilike(f"%{search}%"))
-        cloze_result = await db.execute(cq.order_by(ClozeQuestion.created_at.desc()))
-        for row in cloze_result.scalars().all():
-            cloze_items.append(
-                QuizAdminItem(
-                    id=row.id,
-                    question_text=row.sentence,
-                    quiz_type="cloze",
-                    jlpt_level=row.jlpt_level.value,
-                    review_status=row.review_status.value,
-                    created_at=row.created_at,
-                )
-            )
+    # Build projected sentence_arrange query
+    arrange_proj = select(
+        SentenceArrangeQuestion.id,
+        SentenceArrangeQuestion.korean_sentence.label("sentence"),
+        literal("sentence_arrange").label("quiz_type"),
+        SentenceArrangeQuestion.jlpt_level.label("jlpt_level"),
+        SentenceArrangeQuestion.review_status.label("review_status"),
+        SentenceArrangeQuestion.created_at,
+    )
+    if jlpt_level is not None:
+        arrange_proj = arrange_proj.where(SentenceArrangeQuestion.jlpt_level == jlpt_level)
+    if review_status is not None:
+        arrange_proj = arrange_proj.where(SentenceArrangeQuestion.review_status == review_status)
+    if search:
+        arrange_proj = arrange_proj.where(SentenceArrangeQuestion.korean_sentence.ilike(f"%{search}%"))
 
-    # Build sentence_arrange query
-    if quiz_type is None or quiz_type == "sentence_arrange":
-        aq = select(SentenceArrangeQuestion)
-        if jlpt_level is not None:
-            aq = aq.where(SentenceArrangeQuestion.jlpt_level == jlpt_level)
-        if review_status is not None:
-            aq = aq.where(SentenceArrangeQuestion.review_status == review_status)
-        if search:
-            aq = aq.where(SentenceArrangeQuestion.korean_sentence.ilike(f"%{search}%"))
-        arrange_result = await db.execute(aq.order_by(SentenceArrangeQuestion.created_at.desc()))
-        for row in arrange_result.scalars().all():
-            arrange_items.append(
-                QuizAdminItem(
-                    id=row.id,
-                    question_text=row.korean_sentence,
-                    quiz_type="sentence_arrange",
-                    jlpt_level=row.jlpt_level.value,
-                    review_status=row.review_status.value,
-                    created_at=row.created_at,
-                )
-            )
+    # Build UNION subquery based on quiz_type filter
+    if quiz_type == "cloze":
+        combined = cloze_proj.subquery()
+    elif quiz_type == "sentence_arrange":
+        combined = arrange_proj.subquery()
+    else:
+        combined = union_all(cloze_proj, arrange_proj).subquery()
 
-    # Merge and sort by created_at desc
-    all_items = sorted(cloze_items + arrange_items, key=lambda x: x.created_at, reverse=True)
-    total = len(all_items)
+    # Count total via SQL
+    total_result = await db.execute(select(func.count()).select_from(combined))
+    total = total_result.scalar_one()
+
+    # Determine sort column on the subquery
+    effective_sort_by = sort_by if sort_by in _QUIZ_SORT_COLS else "created_at"
+    sort_col = combined.c[effective_sort_by]
+    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
+
     offset = (page - 1) * page_size
-    page_items = all_items[offset : offset + page_size]
+    items_result = await db.execute(select(combined).order_by(order_expr).offset(offset).limit(page_size))
+    rows = items_result.all()
+
+    items = [
+        QuizAdminItem(
+            id=row.id,
+            sentence=row.sentence,
+            quiz_type=row.quiz_type,
+            jlpt_level=row.jlpt_level.value if hasattr(row.jlpt_level, "value") else str(row.jlpt_level),
+            review_status=row.review_status.value if hasattr(row.review_status, "value") else str(row.review_status),
+            created_at=row.created_at,
+        )
+        for row in rows
+    ]
 
     return PaginatedResponse(
-        items=page_items,
+        items=items,
         total=total,
         page=page,
         page_size=page_size,
@@ -750,6 +791,13 @@ async def review_sentence_arrange(
 # ==========================================
 
 
+_CONVERSATION_SORT_COLS = {
+    "created_at": ConversationScenario.created_at,
+    "review_status": ConversationScenario.review_status,
+    "category": ConversationScenario.category,
+}
+
+
 @router.get("/conversation", response_model=PaginatedResponse[ConversationAdminItem])
 async def list_conversation(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -760,6 +808,8 @@ async def list_conversation(
     review_status: ReviewStatus | None = Query(default=None),
     search: str | None = Query(default=None),
     category: ScenarioCategory | None = Query(default=None),
+    sort_by: str | None = Query(default=None, description="Column to sort by: created_at, review_status, category"),
+    sort_order: str = Query(default="desc", description="Sort direction: asc or desc"),
 ) -> PaginatedResponse[ConversationAdminItem]:
     """List conversation scenario items with optional filters and search.
 
@@ -785,8 +835,11 @@ async def list_conversation(
     total_result = await db.execute(select(func.count()).select_from(q.subquery()))
     total = total_result.scalar_one()
 
+    sort_col = _CONVERSATION_SORT_COLS.get(sort_by or "", ConversationScenario.created_at)
+    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
+
     offset = (page - 1) * page_size
-    items_result = await db.execute(q.order_by(ConversationScenario.created_at.desc()).offset(offset).limit(page_size))
+    items_result = await db.execute(q.order_by(order_expr).offset(offset).limit(page_size))
     items = items_result.scalars().all()
 
     return PaginatedResponse(
