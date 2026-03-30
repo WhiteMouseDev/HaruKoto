@@ -43,6 +43,7 @@ function ConversationContent() {
       key: 'category',
       header: 'カテゴリ',
       width: '15%',
+      sortKey: 'category',
       render: (item) => {
         const cat = SCENARIO_CATEGORIES.find((c) => c.value === item.category);
         return (
@@ -64,6 +65,7 @@ function ConversationContent() {
       key: 'reviewStatus',
       header: 'ステータス',
       width: '15%',
+      sortKey: 'review_status',
       render: (item) => (
         <StatusBadge
           status={item.reviewStatus as 'needs_review' | 'approved' | 'rejected'}
@@ -74,6 +76,7 @@ function ConversationContent() {
       key: 'updatedAt',
       header: '更新日',
       width: '12%',
+      sortKey: 'created_at',
       render: (item) => (
         <span className="text-xs text-muted-foreground">
           {new Date(item.updatedAt || item.createdAt).toLocaleDateString('ja-JP')}

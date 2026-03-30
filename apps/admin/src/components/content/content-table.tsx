@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Search, Database } from 'lucide-react';
+import { Search, Database, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RejectReasonDialog } from '@/components/content/reject-reason-dialog';
@@ -22,6 +23,7 @@ export type Column<T> = {
   header: string;
   width: string;
   render?: (item: T) => React.ReactNode;
+  sortKey?: string; // Backend sort_by value. When set, column header is clickable.
 };
 
 type ContentTableProps<T> = {
@@ -52,6 +54,25 @@ export function ContentTable<T extends { id: string }>({
   const tEmpty = useTranslations('empty');
   const tError = useTranslations('error');
   const tReview = useTranslations('review');
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentSortBy = searchParams.get('sort_by');
+  const currentSortOrder = searchParams.get('sort_order') ?? 'desc';
+
+  function handleSort(sortKey: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (currentSortBy === sortKey) {
+      params.set('sort_order', currentSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      params.set('sort_by', sortKey);
+      params.set('sort_order', 'desc');
+    }
+    params.set('page', '1');
+    router.replace(pathname + '?' + params.toString());
+  }
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -156,6 +177,26 @@ export function ContentTable<T extends { id: string }>({
                         aria-label="全て選択"
                       />
                     )}
+                  </TableHead>
+                ) : col.sortKey ? (
+                  <TableHead
+                    key={col.key}
+                    style={{ width: col.width }}
+                    className="cursor-pointer select-none text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                    onClick={() => handleSort(col.sortKey!)}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {col.header}
+                      {currentSortBy === col.sortKey ? (
+                        currentSortOrder === 'asc' ? (
+                          <ArrowUp className="size-3" />
+                        ) : (
+                          <ArrowDown className="size-3" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="size-3 opacity-30" />
+                      )}
+                    </span>
                   </TableHead>
                 ) : (
                   <TableHead

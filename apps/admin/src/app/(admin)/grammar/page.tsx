@@ -36,6 +36,7 @@ function GrammarContent() {
       key: 'jlptLevel',
       header: 'JLPT',
       width: '8%',
+      sortKey: 'jlpt_level',
       render: (item) => (
         <span className="text-xs">{item.jlptLevel}</span>
       ),
@@ -44,6 +45,7 @@ function GrammarContent() {
       key: 'reviewStatus',
       header: 'ステータス',
       width: '15%',
+      sortKey: 'review_status',
       render: (item) => (
         <StatusBadge
           status={item.reviewStatus as 'needs_review' | 'approved' | 'rejected'}
@@ -54,6 +56,7 @@ function GrammarContent() {
       key: 'updatedAt',
       header: '更新日',
       width: '12%',
+      sortKey: 'created_at',
       render: (item) => (
         <span className="text-xs text-muted-foreground">
           {new Date(item.updatedAt || item.createdAt).toLocaleDateString('ja-JP')}
