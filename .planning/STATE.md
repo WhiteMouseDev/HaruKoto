@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: verifying
-stopped_at: Completed 999.4-03-PLAN.md
-last_updated: "2026-03-30T05:09:57.572Z"
+milestone: v1.1
+milestone_name: Quality & Polish
+status: planning
+stopped_at: Milestone v1.1 started
+last_updated: "2026-03-30T06:00:00.000Z"
 last_activity: 2026-03-30
 progress:
-  total_phases: 10
-  completed_phases: 8
-  total_plans: 22
-  completed_plans: 22
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
   percent: 0
 ---
 
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-26)
+See: .planning/PROJECT.md (updated 2026-03-30)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 999.4 — table-system-improvement
+**Current focus:** Defining requirements for v1.1
 
 ## Current Position
 
-Phase: 999.4 (table-system-improvement) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-03-30
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-30 — Milestone v1.1 started
 
 Progress: [░░░░░░░░░░] 0%
 

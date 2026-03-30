@@ -34,13 +34,16 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - ✓ 리뷰 큐/대시보드/알림 (UX-01~03) — Phase 5
 - ✓ 다국어 UI (I18N-01~03) — Phase 1
 
-### Active (v1.1 후보)
+### Active (v1.1)
 
-- [ ] 필드별 개별 TTS 오디오 (읽기/단어/예문 각각 생성) — 999.2 백로그
-- [ ] Admin content API 테스트 작성 — Codex 지적 사항
-- [ ] 접근성 개선 (aria-current, skip link, nav 랜드마크)
-- [ ] 하드코딩 일본어 번역 누락 수정
-- [ ] 실사용자 피드백 기반 개선
+- [ ] 필드별 개별 TTS 오디오 (읽기/단어/예문 각각 생성) — DB 스키마 변경 + API + 프론트엔드
+- [ ] 접근성 개선 (aria-current, skip link, nav 랜드마크, 검색 라벨)
+- [ ] 하드코딩 일본어 번역 누락 수정 (i18n 완성)
+
+### Deferred
+
+- Admin content API 테스트 작성 — Codex 지적, 인프라 작업으로 별도 처리
+- 다크 모드 — 사용자 요청 없음, 작업량 대비 효과 낮음
 
 ### Out of Scope
 
@@ -80,5 +83,31 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 | TanStack Table 미도입 | 현재 규모에서 커스텀 테이블 충분 | ✓ Good (Codex 확인) |
 | 서버사이드 정렬/페이지네이션 | 클라이언트 정렬은 대량 데이터에 부적합 | ✓ Good |
 
+## Current Milestone: v1.1 Quality & Polish
+
+**Goal:** v1.0의 품질 미비 사항 해결 — 필드별 TTS, 번역 완성, 접근성 개선
+
+**Target features:**
+- 필드별 개별 TTS 오디오 (DB 스키마 변경 + API + 프론트엔드)
+- 하드코딩 일본어 번역 누락 수정 (i18n 완성)
+- 접근성 개선 (aria-current, skip link, nav 랜드마크, 검색 라벨)
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
-*Last updated: 2026-03-30 after v1.0 milestone completion*
+*Last updated: 2026-03-30 after v1.1 milestone start*
