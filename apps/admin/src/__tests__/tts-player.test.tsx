@@ -53,7 +53,7 @@ function setupHook(overrides: Partial<ReturnType<typeof useTtsPlayer>> = {}) {
     regenerateMutation: {
       mutate: mockMutate,
       isPending: false,
-    } as ReturnType<typeof useTtsPlayer>['regenerateMutation'],
+    } as unknown as ReturnType<typeof useTtsPlayer>['regenerateMutation'],
     ...overrides,
   });
 }
