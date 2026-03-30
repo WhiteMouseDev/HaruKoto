@@ -54,7 +54,7 @@ export async function Sidebar({ user, locale }: { user: User; locale: string }) 
   ];
 
   return (
-    <aside className="flex h-full w-60 flex-col border-r border-border bg-background">
+    <aside className="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-background">
       {/* Logo + App name */}
       <div className="flex h-14 items-center gap-2 border-b border-border px-4">
         <Image
