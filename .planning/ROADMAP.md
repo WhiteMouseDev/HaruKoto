@@ -141,3 +141,12 @@ Plans:
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.3: Admin UI 폴리시 (BACKLOG)
+
+**Goal:** 헤더/사이드바 중복 정리, 뱃지 색상 개선, 대시보드 프로덕션 수준 디자인, 레이아웃 일관성 개선
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
