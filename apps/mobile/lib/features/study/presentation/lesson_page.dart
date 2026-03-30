@@ -9,6 +9,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../data/learning_goals.dart';
 import '../data/models/lesson_models.dart';
 import '../providers/lesson_session_provider.dart';
 import '../providers/study_provider.dart';
@@ -328,7 +329,7 @@ class _StepProgressBar extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Step 0: _ContextPreviewStep
+// Step 0: _ContextPreviewStep (Lesson Briefing)
 // ═══════════════════════════════════════════════════════════════════
 
 class _ContextPreviewStep extends StatelessWidget {
@@ -340,10 +341,39 @@ class _ContextPreviewStep extends StatelessWidget {
     required this.onNext,
   });
 
+  /// Select first 3 vocab items, skipping grammar-like function words
+  List<VocabItemModel> _previewVocab() {
+    final items = detail.vocabItems;
+    final grammarPatterns =
+        detail.grammarItems.map((g) => g.pattern.toLowerCase()).toSet();
+    final result = <VocabItemModel>[];
+    for (final v in items) {
+      // Skip if word is part of a grammar pattern
+      if (grammarPatterns.any((p) => p.contains(v.word.toLowerCase()))) {
+        continue;
+      }
+      result.add(v);
+      if (result.length >= 3) break;
+    }
+    // If not enough after filtering, fill from the start
+    if (result.length < 3) {
+      for (final v in items) {
+        if (!result.contains(v)) {
+          result.add(v);
+          if (result.length >= 3) break;
+        }
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final reading = detail.content.reading;
+    final learningGoal = getLearningGoal(detail.topic);
+    final previewVocab = _previewVocab();
+    final remainingCount = detail.vocabItems.length - previewVocab.length;
 
     return Column(
       children: [
@@ -356,7 +386,7 @@ class _ContextPreviewStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Meta bar
+                // Meta bar: lesson number + time
                 Row(
                   children: [
                     Container(
@@ -370,16 +400,22 @@ class _ContextPreviewStep extends StatelessWidget {
                             BorderRadius.circular(AppSizes.radiusFull),
                       ),
                       child: Text(
-                        'Ch.${detail.chapterLessonNo}',
+                        '레슨 ${detail.lessonNo}',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: AppColors.onGradient,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(width: AppSizes.sm),
+                    const Spacer(),
+                    const Icon(
+                      LucideIcons.clock,
+                      size: 14,
+                      color: AppColors.lightSubtext,
+                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      '약 ${detail.estimatedMinutes}분',
+                      '${detail.estimatedMinutes}분',
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: AppColors.lightSubtext,
                       ),
@@ -387,9 +423,9 @@ class _ContextPreviewStep extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: AppSizes.lg),
+                const SizedBox(height: AppSizes.md),
 
-                // Big title
+                // Title
                 Text(
                   detail.title,
                   style: theme.textTheme.headlineSmall?.copyWith(
@@ -397,160 +433,149 @@ class _ContextPreviewStep extends StatelessWidget {
                     color: AppColors.lightText,
                   ),
                 ),
-                if (detail.subtitle != null) ...[
-                  const SizedBox(height: AppSizes.xs),
-                  Text(
-                    detail.subtitle!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.lightSubtext,
+
+                const SizedBox(height: AppSizes.lg),
+
+                // Learning goal
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.12),
+                        AppColors.primary.withValues(alpha: 0.04),
+                      ],
                     ),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            LucideIcons.target,
+                            size: 16,
+                            color: AppColors.primaryStrong,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '이번 레슨을 끝내면',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: AppColors.primaryStrong,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        learningGoal,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.lightText,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Scene (compact)
+                if (reading.scene != null) ...[
+                  const SizedBox(height: AppSizes.md),
+                  Row(
+                    children: [
+                      const Icon(
+                        LucideIcons.mapPin,
+                        size: 14,
+                        color: AppColors.lightSubtext,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          reading.scene!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.lightSubtext,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
 
-                const SizedBox(height: AppSizes.lg),
+                const SizedBox(height: 24),
 
-                // Scene card
-                if (reading.scene != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightCard,
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                      border: Border.all(color: AppColors.lightBorder),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                // Vocab preview
+                if (previewVocab.isNotEmpty) ...[
+                  Row(
+                    children: [
+                      const Icon(
+                        LucideIcons.bookOpen,
+                        size: 16,
+                        color: AppColors.primaryStrong,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '배울 단어',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            LucideIcons.messagesSquare,
-                            size: 22,
-                            color: AppColors.primaryStrong,
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.gap),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '오늘의 상황',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppColors.primaryStrong,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                reading.scene!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.lightText,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: AppSizes.lg),
-
-                // Highlights
-                if (reading.highlights.isNotEmpty) ...[
-                  Text(
-                    '오늘의 핵심 표현',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: AppColors.lightText,
-                      fontWeight: FontWeight.bold,
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: AppSizes.gap),
                   Wrap(
                     spacing: AppSizes.sm,
                     runSpacing: AppSizes.sm,
-                    children: reading.highlights.map((h) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.lightCard,
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radiusFull),
-                          border: Border.all(
-                            color: AppColors.primaryStrong,
-                            width: 1.5,
+                    children: [
+                      ...previewVocab.map((v) => _VocabPreviewChip(vocab: v)),
+                      if (remainingCount > 0)
+                        Text(
+                          '+$remainingCount개',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.lightSubtext,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        child: Text(
-                          h,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.lightText,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                    ],
                   ),
                 ],
 
-                const SizedBox(height: AppSizes.lg),
+                const SizedBox(height: 20),
 
-                // Dialogue teaser
-                if (reading.script.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.06),
-                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.15),
+                // Grammar preview
+                if (detail.grammarItems.isNotEmpty) ...[
+                  Row(
+                    children: [
+                      const Icon(
+                        LucideIcons.braces,
+                        size: 16,
+                        color: AppColors.primaryStrong,
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '미리보기',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.primaryStrong,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '배울 문법',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: AppSizes.xs),
-                        Text(
-                          '${reading.script.first.speaker}: ${reading.script.first.text}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.lightText,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          '...',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.lightSubtext,
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+                  Text(
+                    '${detail.grammarItems.first.pattern} — ${detail.grammarItems.first.meaningKo}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.lightText,
                     ),
                   ),
+                ],
               ],
             ),
           ),
@@ -558,25 +583,14 @@ class _ContextPreviewStep extends StatelessWidget {
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(AppSizes.md),
-            child: Column(
-              children: [
-                Text(
-                  '이 표현만 익히면 바로 대화할 수 있어요',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.lightSubtext,
-                  ),
-                ),
-                const SizedBox(height: AppSizes.sm),
-                SizedBox(
-                  width: double.infinity,
-                  height: AppSizes.buttonHeight,
-                  child: FilledButton.icon(
-                    onPressed: onNext,
-                    icon: const Icon(LucideIcons.messageSquare),
-                    label: const Text('대화 시작하기'),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              height: AppSizes.buttonHeight,
+              child: FilledButton.icon(
+                onPressed: onNext,
+                icon: const Icon(LucideIcons.sparkles),
+                label: const Text('학습 시작하기'),
+              ),
             ),
           ),
         ),
@@ -2002,5 +2016,48 @@ class _ResultStep extends StatelessWidget {
     } catch (_) {
       return isoDate;
     }
+  }
+}
+
+/// Compact vocab preview chip for Step 0
+class _VocabPreviewChip extends StatelessWidget {
+  final VocabItemModel vocab;
+  const _VocabPreviewChip({required this.vocab});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final showReading = vocab.word != vocab.reading;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.lightCard,
+        borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            vocab.word,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.lightText,
+            ),
+          ),
+          if (showReading)
+            Text(
+              vocab.reading,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: AppColors.lightSubtext,
+                fontSize: 10,
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
