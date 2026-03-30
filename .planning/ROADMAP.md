@@ -146,8 +146,8 @@ Plans:
 
 **Goal:** 헤더/사이드바 중복 정리, 뱃지 색상 개선, 대시보드 프로덕션 수준 디자인, 레이아웃 일관성 개선
 **Requirements:** BACKLOG-999.3
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 999.3-01-PLAN.md — Remove Header, consolidate identity into sidebar, fix badge color to informational pink
-- [ ] 999.3-02-PLAN.md — Color-code dashboard StatsCard counts with visual hierarchy
+- [x] 999.3-01-PLAN.md — Remove Header, consolidate identity into sidebar, fix badge color to informational pink
+- [x] 999.3-02-PLAN.md — Color-code dashboard StatsCard counts with visual hierarchy

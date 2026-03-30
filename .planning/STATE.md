@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 999.3 UI-SPEC approved
-last_updated: "2026-03-30T01:58:04.143Z"
+status: verifying
+stopped_at: Completed 999.3-01-PLAN.md
+last_updated: "2026-03-30T02:32:52.386Z"
 last_activity: 2026-03-30
 progress:
   total_phases: 9
-  completed_phases: 6
-  total_plans: 17
-  completed_plans: 17
+  completed_phases: 7
+  total_plans: 19
+  completed_plans: 19
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 999.1 — tts-field-ui-improvement
+**Current focus:** Phase 999.3 — admin-ui-polish
 
 ## Current Position
 
-Phase: 999.2
-Plan: Not started
-Status: Ready to execute
+Phase: 999.3 (admin-ui-polish) — EXECUTING
+Plan: 2 of 2
+Status: Phase complete — ready for verification
 Last activity: 2026-03-30
 
 Progress: [░░░░░░░░░░] 0%
@@ -68,6 +68,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 05 P02 | 3m | 2 tasks | 10 files |
 | Phase 05-reviewer-productivity P03 | 4m | 2 tasks | 13 files |
 | Phase 999.1 P01 | 3m | 3 tasks | 3 files |
+| Phase 999.3 P02 | 2m | 1 tasks | 1 files |
+| Phase 999.3 P01 | 5m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -110,6 +112,9 @@ Recent decisions affecting current work:
 - [Phase 05-reviewer-productivity]: Queue state stored in URL params (queue=id1,id2,id3&qi=0) — no global state needed, survives page reload
 - [Phase 05-reviewer-productivity]: Auto-advance uses setTimeout 800ms — gives reviewer time to read success toast before navigation
 - [Phase 999.1]: playingField/confirmField as string|null instead of boolean flags enables per-row state tracking in TtsPlayer
+- [Phase 999.3]: StatsCard uses amber/emerald/muted semantic colors for needs_review/approved/rejected counts with conditional amber left border when needsReview > 0
+- [Phase 999.3]: Header component removed from AdminLayout; sidebar is now the sole chrome with user display name in bottom zone
+- [Phase 999.3]: NavBadge color changed from bg-destructive (alarm-red) to bg-primary/15 text-primary (informational cherry-pink)
 
 ### Pending Todos
 
@@ -124,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T01:58:04.139Z
-Stopped at: Phase 999.3 UI-SPEC approved
-Resume file: .planning/phases/999.3-admin-ui-polish/999.3-UI-SPEC.md
+Last session: 2026-03-30T02:32:52.383Z
+Stopped at: Completed 999.3-01-PLAN.md
+Resume file: None
