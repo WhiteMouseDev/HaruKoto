@@ -98,7 +98,7 @@ function ConversationContent() {
   return (
     <>
       <div className="mb-4">
-        <FilterBar showCategory categories={SCENARIO_CATEGORIES} />
+        <FilterBar showCategory categories={SCENARIO_CATEGORIES} showJlpt={false} />
       </div>
       <ContentTable
         columns={columns}
