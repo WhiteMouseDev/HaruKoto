@@ -33,7 +33,7 @@ class GrammarAdminItem(CamelModel):
 
 class QuizAdminItem(CamelModel):
     id: uuid.UUID
-    question_text: str  # sentence for cloze, korean_sentence for sentence_arrange
+    sentence: str  # sentence for cloze, korean_sentence for sentence_arrange
     quiz_type: str  # "cloze" or "sentence_arrange"
     jlpt_level: str
     review_status: str
