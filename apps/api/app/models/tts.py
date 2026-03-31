@@ -21,6 +21,7 @@ class TtsAudio(Base):
     provider: Mapped[str] = mapped_column(Text, nullable=False)  # 'elevenlabs' | 'gemini'
     model: Mapped[str] = mapped_column(Text, nullable=False)  # 'eleven_multilingual_v2' etc.
     audio_url: Mapped[str] = mapped_column(Text, nullable=False)
+    field: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    __table_args__ = (UniqueConstraint("target_type", "target_id", "speed"),)
+    __table_args__ = (UniqueConstraint("target_type", "target_id", "speed", "field"),)

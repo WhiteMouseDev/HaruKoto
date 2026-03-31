@@ -1024,8 +1024,16 @@ async def batch_review(
 
 
 # ==========================================
-# TTS endpoints (Phase 4)
+# TTS endpoints (Phase 4 + Phase 6 per-field TTS)
 # ==========================================
+
+TTS_FIELDS: dict[str, list[str]] = {
+    "vocabulary": ["reading", "word", "example_sentence"],
+    "grammar": ["pattern", "example_sentences"],
+    "cloze": ["sentence"],
+    "sentence_arrange": ["japanese_sentence"],
+    "conversation": ["situation"],
+}
 
 _CONTENT_MODEL_MAP: dict[str, type] = {
     "vocabulary": Vocabulary,

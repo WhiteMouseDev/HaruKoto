@@ -213,7 +213,7 @@ class OkResponse(CamelModel):
 
 
 # ---------------------------------------------------------------------------
-# TTS schemas (Phase 4)
+# TTS schemas (Phase 4 + Phase 6 per-field TTS)
 # ---------------------------------------------------------------------------
 
 
@@ -221,6 +221,16 @@ class AdminTtsResponse(CamelModel):
     audio_url: str | None
     field: str | None
     provider: str | None
+
+
+class AudioFieldInfo(CamelModel):
+    audio_url: str
+    provider: str
+    created_at: datetime
+
+
+class AdminTtsMapResponse(CamelModel):
+    audios: dict[str, AudioFieldInfo | None]
 
 
 class AdminTtsRegenerateRequest(CamelModel):
