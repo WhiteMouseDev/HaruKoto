@@ -1101,14 +1101,23 @@ class _RecognitionCheckStep extends StatefulWidget {
   State<_RecognitionCheckStep> createState() => _RecognitionCheckStepState();
 }
 
-class _RecognitionCheckStepState extends State<_RecognitionCheckStep> {
+class _RecognitionCheckStepState extends State<_RecognitionCheckStep>
+    with SingleTickerProviderStateMixin {
   String? _selected;
   late List<QuizOptionModel> _shuffledOptions;
+  late AnimationController _entryController;
 
   @override
   void initState() {
     super.initState();
     _shuffleOptions();
+    _entryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _entryController.forward();
+    });
   }
 
   @override
@@ -1117,12 +1126,51 @@ class _RecognitionCheckStepState extends State<_RecognitionCheckStep> {
     if (oldWidget.currentIndex != widget.currentIndex) {
       _selected = null;
       _shuffleOptions();
+      _entryController.forward(from: 0);
     }
+  }
+
+  @override
+  void dispose() {
+    _entryController.dispose();
+    super.dispose();
   }
 
   void _shuffleOptions() {
     final q = widget.questions[widget.currentIndex];
     _shuffledOptions = List.of(q.options ?? [])..shuffle(Random());
+  }
+
+  Widget _staggered(int index, Widget child) {
+    final start = (index * 0.1).clamp(0.0, 0.7);
+    final end = (start + 0.4).clamp(0.0, 1.0);
+    final animation = CurvedAnimation(
+      parent: _entryController,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) => Opacity(
+        opacity: animation.value,
+        child: Transform.translate(
+          offset: Offset(0, 12 * (1 - animation.value)),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  Color _optionBgColor(QuizOptionModel opt) {
+    if (_selected == opt.id) {
+      return AppColors.primary.withValues(alpha: 0.12);
+    }
+    return AppColors.lightCard;
+  }
+
+  Color _optionBorderColor(QuizOptionModel opt) {
+    if (_selected == opt.id) return AppColors.primaryStrong;
+    return AppColors.lightBorder;
   }
 
   @override
@@ -1136,46 +1184,132 @@ class _RecognitionCheckStepState extends State<_RecognitionCheckStep> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sub-progress
-          Text(
-            '3/${widget.totalSteps} · 문항 ${widget.currentIndex + 1}/${widget.questions.length}',
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.outline,
+          _staggered(
+            0,
+            Row(
+              children: [
+                Text(
+                  '문항 ${widget.currentIndex + 1}/${widget.questions.length}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.lightSubtext,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '이해 체크',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.primaryStrong,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppSizes.md),
 
-          Text(
-            q.prompt,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          _staggered(
+            1,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSizes.md),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Text(
+                q.prompt,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.lightText,
+                  height: 1.4,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: AppSizes.lg),
 
-          ..._shuffledOptions.map((opt) => Padding(
+          ..._shuffledOptions.asMap().entries.map((e) {
+            final opt = e.value;
+            return _staggered(
+              e.key + 2,
+              Padding(
                 padding: const EdgeInsets.only(bottom: AppSizes.sm),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: _selected != null ? null : () => _select(opt.id),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.all(AppSizes.md),
-                      side: BorderSide(
-                        color: _selected == opt.id
-                            ? AppColors.primaryStrong
-                            : AppColors.lightBorder,
+                child: GestureDetector(
+                  onTap: _selected != null ? null : () => _select(opt.id),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    decoration: BoxDecoration(
+                      color: _optionBgColor(opt),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                      border: Border.all(
+                        color: _optionBorderColor(opt),
+                        width: _selected == opt.id ? 1.5 : 1.0,
                       ),
-                      backgroundColor: _selected == opt.id
-                          ? AppColors.primary.withValues(alpha: 0.15)
-                          : null,
                     ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(opt.text, style: theme.textTheme.bodyLarge),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            opt.text,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: AppColors.lightText,
+                            ),
+                          ),
+                        ),
+                        if (_selected == opt.id) ...[
+                          const SizedBox(width: AppSizes.sm),
+                          const Icon(
+                            LucideIcons.check,
+                            size: 18,
+                            color: AppColors.primaryStrong,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
-              )),
+              ),
+            );
+          }),
+
+          // Explanation after answer
+          if (_selected != null && q.explanation != null) ...[
+            const SizedBox(height: AppSizes.md),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSizes.gap),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    LucideIcons.lightbulb,
+                    size: 16,
+                    color: AppColors.primaryStrong,
+                  ),
+                  const SizedBox(width: AppSizes.sm),
+                  Expanded(
+                    child: Text(
+                      q.explanation!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightText,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1183,7 +1317,7 @@ class _RecognitionCheckStepState extends State<_RecognitionCheckStep> {
 
   void _select(String id) {
     setState(() => _selected = id);
-    Future.delayed(const Duration(milliseconds: 400), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
       widget.onAnswer({
         'order': widget.questions[widget.currentIndex].order,
@@ -2032,7 +2166,7 @@ class _BankToken extends StatelessWidget {
 // Step 5: _ResultStep
 // ═══════════════════════════════════════════════════════════════════
 
-class _ResultStep extends StatelessWidget {
+class _ResultStep extends StatefulWidget {
   final LessonSubmitResultModel result;
   final LessonDetailModel detail;
   final VoidCallback onRetry;
@@ -2046,7 +2180,55 @@ class _ResultStep extends StatelessWidget {
   });
 
   @override
+  State<_ResultStep> createState() => _ResultStepState();
+}
+
+class _ResultStepState extends State<_ResultStep>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _staggerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _staggerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _staggerController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _staggerController.dispose();
+    super.dispose();
+  }
+
+  Widget _staggered(int index, Widget child) {
+    final start = (index * 0.1).clamp(0.0, 0.7);
+    final end = (start + 0.35).clamp(0.0, 1.0);
+    final animation = CurvedAnimation(
+      parent: _staggerController,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) => Opacity(
+        opacity: animation.value,
+        child: Transform.translate(
+          offset: Offset(0, 16 * (1 - animation.value)),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final result = widget.result;
+    final detail = widget.detail;
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final score = result.scoreTotal > 0
@@ -2061,29 +2243,56 @@ class _ResultStep extends StatelessWidget {
             padding: const EdgeInsets.all(AppSizes.md),
             children: [
               const SizedBox(height: AppSizes.lg),
-              Center(
-                child: Icon(
-                  isPerfect ? LucideIcons.trophy : LucideIcons.clipboardCheck,
-                  size: 48,
-                  color: isPerfect
-                      ? AppColors.success(brightness)
-                      : AppColors.primaryStrong,
-                ),
-              ),
-              const SizedBox(height: AppSizes.md),
-              Center(
-                child: Text(
-                  '$score%',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+              _staggered(
+                0,
+                Center(
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isPerfect
+                          ? AppColors.success(brightness)
+                              .withValues(alpha: 0.12)
+                          : AppColors.primary.withValues(alpha: 0.12),
+                    ),
+                    child: Icon(
+                      isPerfect
+                          ? LucideIcons.trophy
+                          : LucideIcons.clipboardCheck,
+                      size: 36,
+                      color: isPerfect
+                          ? AppColors.success(brightness)
+                          : AppColors.primaryStrong,
+                    ),
                   ),
                 ),
               ),
-              Center(
-                child: Text(
-                  '${result.scoreCorrect}/${result.scoreTotal} 정답',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.outline,
+              const SizedBox(height: AppSizes.md),
+              _staggered(
+                1,
+                Center(
+                  child: TweenAnimationBuilder<int>(
+                    tween: IntTween(begin: 0, end: score),
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, _) => Text(
+                      '$value%',
+                      style: theme.textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              _staggered(
+                1,
+                Center(
+                  child: Text(
+                    '${result.scoreCorrect}/${result.scoreTotal} 정답',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
                 ),
               ),
@@ -2091,157 +2300,166 @@ class _ResultStep extends StatelessWidget {
 
               // SRS registration card
               if (result.srsItemsRegistered > 0)
-                Container(
-                  margin: const EdgeInsets.only(bottom: AppSizes.md),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSizes.md,
-                    vertical: AppSizes.gap,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.success(brightness).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                    border: Border.all(
-                      color:
-                          AppColors.success(brightness).withValues(alpha: 0.3),
+                _staggered(
+                  2,
+                  Container(
+                    margin: const EdgeInsets.only(bottom: AppSizes.md),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.md,
+                      vertical: AppSizes.gap,
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LucideIcons.checkCircle2,
-                        color: AppColors.success(brightness),
-                        size: AppSizes.iconMd,
+                    decoration: BoxDecoration(
+                      color:
+                          AppColors.success(brightness).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                      border: Border.all(
+                        color: AppColors.success(brightness)
+                            .withValues(alpha: 0.3),
                       ),
-                      const SizedBox(width: AppSizes.sm),
-                      Expanded(
-                        child: Text(
-                          '${result.srsItemsRegistered}개 항목이 복습 예약되었습니다',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          LucideIcons.checkCircle2,
+                          color: AppColors.success(brightness),
+                          size: AppSizes.iconMd,
+                        ),
+                        const SizedBox(width: AppSizes.sm),
+                        Expanded(
+                          child: Text(
+                            '${result.srsItemsRegistered}개 항목이 복습 예약되었습니다',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
               const SizedBox(height: AppSizes.sm),
 
               // Per-question results
-              ...result.results.map((r) {
+              ...result.results.asMap().entries.map((entry) {
+                final r = entry.value;
                 final q = detail.content.questions.firstWhere(
                   (q) => q.order == r.order,
                   orElse: () => detail.content.questions.first,
                 );
-                return Card(
-                  margin: const EdgeInsets.only(bottom: AppSizes.sm),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSizes.gap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              r.isCorrect
-                                  ? LucideIcons.checkCircle2
-                                  : LucideIcons.xCircle,
-                              color: r.isCorrect
-                                  ? AppColors.success(brightness)
-                                  : AppColors.error(brightness),
-                              size: AppSizes.iconMd,
-                            ),
-                            const SizedBox(width: AppSizes.sm),
-                            Expanded(
+                return _staggered(
+                  entry.key + 3,
+                  Card(
+                    margin: const EdgeInsets.only(bottom: AppSizes.sm),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSizes.gap),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                r.isCorrect
+                                    ? LucideIcons.checkCircle2
+                                    : LucideIcons.xCircle,
+                                color: r.isCorrect
+                                    ? AppColors.success(brightness)
+                                    : AppColors.error(brightness),
+                                size: AppSizes.iconMd,
+                              ),
+                              const SizedBox(width: AppSizes.sm),
+                              Expanded(
+                                child: Text(
+                                  q.prompt,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (r.explanation != null) ...[
+                            const SizedBox(height: AppSizes.xs),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 28),
                               child: Text(
-                                q.prompt,
-                                style: theme.textTheme.bodyMedium,
+                                r.explanation!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.outline,
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                        if (r.explanation != null) ...[
-                          const SizedBox(height: AppSizes.xs),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 28),
-                            child: Text(
-                              r.explanation!,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.outline,
-                              ),
-                            ),
-                          ),
-                        ],
-                        // SRS state transition
-                        if (r.stateBefore != null && r.stateAfter != null) ...[
-                          const SizedBox(height: AppSizes.sm),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 28),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  _srsTransitionIcon(
-                                      r.stateBefore!, r.stateAfter!),
-                                  size: 14,
-                                  color: _srsTransitionColor(
-                                    brightness,
-                                    r.stateBefore!,
-                                    r.stateAfter!,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSizes.xs),
-                                Text(
-                                  '${r.stateBefore} → ${r.stateAfter}',
-                                  style: theme.textTheme.labelSmall?.copyWith(
+                          // SRS state transition
+                          if (r.stateBefore != null &&
+                              r.stateAfter != null) ...[
+                            const SizedBox(height: AppSizes.sm),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 28),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _srsTransitionIcon(
+                                        r.stateBefore!, r.stateAfter!),
+                                    size: 14,
                                     color: _srsTransitionColor(
                                       brightness,
                                       r.stateBefore!,
                                       r.stateAfter!,
                                     ),
-                                    fontWeight: FontWeight.w600,
                                   ),
-                                ),
-                                if (r.isProvisionalPhase) ...[
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
+                                  const SizedBox(width: AppSizes.xs),
+                                  Text(
+                                    '${r.stateBefore} → ${r.stateAfter}',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: _srsTransitionColor(
+                                        brightness,
+                                        r.stateBefore!,
+                                        r.stateAfter!,
+                                      ),
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.warning(brightness)
-                                          .withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'SRS 등록됨',
-                                      style:
-                                          theme.textTheme.labelSmall?.copyWith(
-                                        color: AppColors.warning(brightness),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10,
+                                  ),
+                                  if (r.isProvisionalPhase) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.warning(brightness)
+                                            .withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'SRS 등록됨',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          color: AppColors.warning(brightness),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 10,
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ],
-                              ],
-                            ),
-                          ),
-                        ],
-                        // Next review date
-                        if (r.nextReviewAt != null) ...[
-                          const SizedBox(height: AppSizes.xs),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 28),
-                            child: Text(
-                              '다음 복습: ${_formatReviewDate(r.nextReviewAt!)}',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.outline,
                               ),
                             ),
-                          ),
+                          ],
+                          // Next review date
+                          if (r.nextReviewAt != null) ...[
+                            const SizedBox(height: AppSizes.xs),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 28),
+                              child: Text(
+                                '다음 복습: ${_formatReviewDate(r.nextReviewAt!)}',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 );
@@ -2259,7 +2477,7 @@ class _ResultStep extends StatelessWidget {
                   width: double.infinity,
                   height: 52,
                   child: FilledButton.icon(
-                    onPressed: onDone,
+                    onPressed: widget.onDone,
                     icon: const Icon(LucideIcons.bookOpen, size: 18),
                     label: const Text('학습으로 돌아가기'),
                     style: FilledButton.styleFrom(
@@ -2275,7 +2493,7 @@ class _ResultStep extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: onRetry,
+                        onPressed: widget.onRetry,
                         child: const Text('다시 풀기'),
                       ),
                     ),
