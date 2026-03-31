@@ -171,7 +171,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Backend: Alembic migration (field column + backfill + UniqueConstraint), TtsAudio model, Pydantic schemas, API endpoint changes, tts.py compat, pytest
+- [x] 06-01-PLAN.md — Backend: Alembic migration (field column + backfill + UniqueConstraint), TtsAudio model, Pydantic schemas, API endpoint changes, tts.py compat, pytest
 - [ ] 06-02-PLAN.md — Frontend: tts-fields grammar update, API types for map response, useTtsPlayer hook refactor, TtsPlayer per-field state, i18n, Vitest tests
 
 **UI hint**: yes

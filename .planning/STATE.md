@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality & Polish
-status: planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-30T05:59:25.642Z"
-last_activity: 2026-03-30 — v1.1 roadmap created, Phase 6-7 defined
+status: executing
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-31T01:45:47.128Z"
+last_activity: 2026-03-31
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-30)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 6 — TTS Per-Field Audio (ready to plan)
+**Current focus:** Phase 06 — tts-per-field-audio
 
 ## Current Position
 
-Phase: 6 of 7 (TTS Per-Field Audio)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-03-30 — v1.1 roadmap created, Phase 6-7 defined
+Phase: 06 (tts-per-field-audio) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-03-31
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -47,6 +47,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 *Updated after each plan completion*
+| Phase 06 P01 | 4min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,8 @@ Recent decisions affecting current work:
 - [Phase 999.3]: Header removed; sidebar is sole chrome with user display name in bottom zone
 - [Phase 04-tts-audio]: Snake_case TtsAudioResponse matches FastAPI; hook remaps to camelCase for components
 - [Phase 03]: Manual Alembic migration (i9j0k1l2m3n4) — autogenerate blocked by duplicate revision ID cycle
+- [Phase 06]: 3-step migration (nullable->backfill->NOT NULL) for zero-downtime tts_audio.field addition
+- [Phase 06]: Field-scoped delete on POST /tts/regenerate preserves other fields' audio
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T05:59:25.639Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-tts-per-field-audio/06-CONTEXT.md
+Last session: 2026-03-31T01:45:47.125Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None
