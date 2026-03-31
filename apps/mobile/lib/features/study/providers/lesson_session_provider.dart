@@ -6,6 +6,8 @@ import 'study_provider.dart';
 
 enum LessonStep {
   contextPreview,
+  vocabLearning,
+  grammarLearning,
   guidedReading,
   recognition,
   matching,
@@ -90,6 +92,14 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   @override
   LessonSessionState build() {
     return const LessonSessionState();
+  }
+
+  void goToVocabLearning() {
+    state = state.copyWith(step: LessonStep.vocabLearning);
+  }
+
+  void goToGrammarLearning() {
+    state = state.copyWith(step: LessonStep.grammarLearning);
   }
 
   void goToGuidedReading() {
