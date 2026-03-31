@@ -22,6 +22,8 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - 리뷰 큐 + 대시보드 통계
 - 프로덕션 수준 UI (sticky 사이드바, 색상 계층, WCAG 대비)
 
+**Phase 6 complete (2026-03-31)** — 필드별 독립 TTS 오디오 생성·재생·재생성
+
 ## Requirements
 
 ### Validated (v1.0)
@@ -36,7 +38,7 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 
 ### Active (v1.1)
 
-- [ ] 필드별 개별 TTS 오디오 (읽기/단어/예문 각각 생성) — DB 스키마 변경 + API + 프론트엔드
+- ✓ 필드별 개별 TTS 오디오 (TTS-03~05) — Phase 6
 - [ ] 접근성 개선 (aria-current, skip link, nav 랜드마크, 검색 라벨)
 - [ ] 하드코딩 일본어 번역 누락 수정 (i18n 완성)
 
@@ -110,4 +112,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-30 after v1.1 milestone start*
+*Last updated: 2026-03-31 after Phase 6 completion*
