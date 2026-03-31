@@ -20,8 +20,10 @@ from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.tts import _upload_to_gcs
 from app.schemas.admin_content import (
+    AdminTtsMapResponse,
     AdminTtsRegenerateRequest,
     AdminTtsResponse,
+    AudioFieldInfo,
     AuditLogItem,
     BatchReviewRequest,
     ClozeQuestionDetailResponse,
@@ -1064,7 +1066,12 @@ async def regenerate_admin_tts(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> AdminTtsResponse:
     """Regenerate TTS for a content item (no cooldown — admin tool for 1-3 reviewers)."""
-    # 1. Fetch the content item
+    # 1. Validate field against TTS_FIELDS
+    valid_fields = TTS_FIELDS.get(body.content_type, [])
+    if body.field not in valid_fields:
+        raise HTTPException(status_code=422, detail=f"Invalid field '{body.field}' for {body.content_type}")
+
+    # 2. Fetch the content item
     model_cls = _CONTENT_MODEL_MAP.get(body.content_type)
     if not model_cls:
         raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")
@@ -1076,12 +1083,13 @@ async def regenerate_admin_tts(
     # 3. Resolve text from field
     text = resolve_tts_text(body.content_type, body.field, obj)
 
-    # 4. Delete existing TtsAudio row (avoid UniqueConstraint violation)
+    # 4. Delete existing TtsAudio row for this specific field (field-scoped delete)
     await db.execute(
         sa_delete(TtsAudio).where(
             TtsAudio.target_type == body.content_type,
             TtsAudio.target_id == body.item_id,
             TtsAudio.speed == 1.0,
+            TtsAudio.field == body.field,
         )
     )
 
@@ -1090,10 +1098,10 @@ async def regenerate_admin_tts(
         tts_result = await generate_tts(text)
     except RuntimeError:
         raise HTTPException(status_code=502, detail="TTS生成に失敗しました") from None
-    gcs_path = f"tts/admin/{body.content_type}/{body.item_id}.mp3"
+    gcs_path = f"tts/admin/{body.content_type}/{body.item_id}/{body.field}.mp3"
     audio_url = await _upload_to_gcs(gcs_path, tts_result.audio)
 
-    # 6. Save new TtsAudio row
+    # 6. Save new TtsAudio row with field
     db.add(
         TtsAudio(
             target_type=body.content_type,
@@ -1103,11 +1111,12 @@ async def regenerate_admin_tts(
             provider=tts_result.provider,
             model=tts_result.model,
             audio_url=audio_url,
+            field=body.field,
         )
     )
     await db.commit()
 
-    return AdminTtsResponse(audio_url=audio_url, field=text, provider=tts_result.provider)
+    return AdminTtsResponse(audio_url=audio_url, field=body.field, provider=tts_result.provider)
 
 
 # ==========================================
@@ -1195,14 +1204,18 @@ async def _get_quiz_review_queue(
     )
 
 
-@router.get("/{content_type}/{item_id}/tts", response_model=AdminTtsResponse)
+@router.get("/{content_type}/{item_id}/tts", response_model=AdminTtsMapResponse)
 async def get_admin_tts(
     content_type: str,
     item_id: str,
     reviewer: Annotated[User, Depends(require_reviewer)],
     db: Annotated[AsyncSession, Depends(get_db)],
-) -> AdminTtsResponse:
-    """Return existing TTS audio URL for a content item, or null if none exists."""
+) -> AdminTtsMapResponse:
+    """Return per-field TTS audio map for a content item."""
+    fields = TTS_FIELDS.get(content_type)
+    if fields is None:
+        raise HTTPException(status_code=400, detail=f"Unknown content_type: {content_type}")
+
     result = await db.execute(
         select(TtsAudio).where(
             TtsAudio.target_type == content_type,
@@ -1210,10 +1223,19 @@ async def get_admin_tts(
             TtsAudio.speed == 1.0,
         )
     )
-    record = result.scalar_one_or_none()
-    if record:
-        return AdminTtsResponse(audio_url=record.audio_url, field=record.text, provider=record.provider)
-    return AdminTtsResponse(audio_url=None, field=None, provider=None)
+    records = result.scalars().all()
+
+    # Build audios map: all fields default to None, then populate from records
+    audios: dict[str, AudioFieldInfo | None] = {f: None for f in fields}
+    for record in records:
+        if record.field in audios:
+            audios[record.field] = AudioFieldInfo(
+                audio_url=record.audio_url,
+                provider=record.provider,
+                created_at=record.created_at,
+            )
+
+    return AdminTtsMapResponse(audios=audios)
 
 
 # ==========================================

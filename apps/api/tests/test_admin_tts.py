@@ -1,4 +1,4 @@
-"""Tests for Phase 4: Admin TTS endpoints."""
+"""Tests for Phase 4/6: Admin TTS endpoints with per-field audio support."""
 
 from __future__ import annotations
 
@@ -76,12 +76,25 @@ def _make_tts_record(
     audio_url: str = "https://storage.googleapis.com/harukoto-tts/tts/vocab/123.mp3",
     text: str = "こんにちは",
     provider: str = "elevenlabs",
+    field: str = "reading",
+    created_at: datetime | None = None,
 ) -> MagicMock:
     record = MagicMock(spec=TtsAudio)
     record.audio_url = audio_url
     record.text = text
     record.provider = provider
+    record.field = field
+    record.created_at = created_at or datetime.now(UTC)
     return record
+
+
+def _scalars_result(objs: list):
+    """Mock result that returns scalars().all() -> list."""
+    r = MagicMock()
+    scalars_mock = MagicMock()
+    scalars_mock.all.return_value = objs
+    r.scalars.return_value = scalars_mock
+    return r
 
 
 def _scalar_result(obj):
@@ -107,40 +120,70 @@ class FakeTtsResult:
 
 
 # ---------------------------------------------------------------------------
-# GET /api/v1/admin/content/{content_type}/{item_id}/tts
+# GET /api/v1/admin/content/{content_type}/{item_id}/tts (map response)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
-async def test_get_tts_returns_audio_url(client):
-    """GET returns audio_url when TtsAudio record exists."""
+async def test_get_tts_returns_map_with_existing_audio(client):
+    """GET returns audios map with populated field when TtsAudio records exist."""
     ac, mock_db = client
-    record = _make_tts_record()
-    mock_db.execute.return_value = _scalar_result(record)
+    record = _make_tts_record(field="reading")
+    mock_db.execute.return_value = _scalars_result([record])
 
     resp = await ac.get("/api/v1/admin/content/vocabulary/test-id/tts")
     assert resp.status_code == 200
     data = resp.json()
-    assert data["audioUrl"] == "https://storage.googleapis.com/harukoto-tts/tts/vocab/123.mp3"
-    assert data["provider"] == "elevenlabs"
+    assert "audios" in data
+    assert data["audios"]["reading"] is not None
+    assert data["audios"]["reading"]["audioUrl"] == record.audio_url
+    assert data["audios"]["reading"]["provider"] == "elevenlabs"
+    # Other fields should be null
+    assert data["audios"]["word"] is None
+    assert data["audios"]["example_sentence"] is None
 
 
 @pytest.mark.asyncio
-async def test_get_tts_returns_null_when_no_record(client):
-    """GET returns audio_url=null when no TtsAudio record exists."""
+async def test_get_tts_returns_all_null_when_no_records(client):
+    """GET returns audios map with all null when no TtsAudio records exist."""
     ac, mock_db = client
-    mock_db.execute.return_value = _scalar_result(None)
+    mock_db.execute.return_value = _scalars_result([])
 
     resp = await ac.get("/api/v1/admin/content/vocabulary/test-id/tts")
     assert resp.status_code == 200
     data = resp.json()
-    assert data["audioUrl"] is None
-    assert data["field"] is None
-    assert data["provider"] is None
+    assert "audios" in data
+    assert data["audios"]["reading"] is None
+    assert data["audios"]["word"] is None
+    assert data["audios"]["example_sentence"] is None
+
+
+@pytest.mark.asyncio
+async def test_get_tts_returns_multiple_fields(client):
+    """GET returns audios map with multiple populated fields."""
+    ac, mock_db = client
+    reading_rec = _make_tts_record(field="reading", audio_url="https://cdn/reading.mp3")
+    word_rec = _make_tts_record(field="word", audio_url="https://cdn/word.mp3")
+    mock_db.execute.return_value = _scalars_result([reading_rec, word_rec])
+
+    resp = await ac.get("/api/v1/admin/content/vocabulary/test-id/tts")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["audios"]["reading"]["audioUrl"] == "https://cdn/reading.mp3"
+    assert data["audios"]["word"]["audioUrl"] == "https://cdn/word.mp3"
+    assert data["audios"]["example_sentence"] is None
+
+
+@pytest.mark.asyncio
+async def test_get_tts_invalid_content_type_400(client):
+    """GET returns 400 for unknown content_type."""
+    ac, mock_db = client
+    resp = await ac.get("/api/v1/admin/content/invalid_type/test-id/tts")
+    assert resp.status_code == 400
 
 
 # ---------------------------------------------------------------------------
-# POST /api/v1/admin/content/tts/regenerate
+# POST /api/v1/admin/content/tts/regenerate (field-scoped)
 # ---------------------------------------------------------------------------
 
 
@@ -170,7 +213,7 @@ async def test_regenerate_tts_success(client):
         patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
     ):
         mock_tts.return_value = fake_tts
-        mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id.mp3"
+        mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
 
         resp = await ac.post(
             "/api/v1/admin/content/tts/regenerate",
@@ -179,8 +222,14 @@ async def test_regenerate_tts_success(client):
 
     assert resp.status_code == 200
     data = resp.json()
-    assert data["audioUrl"] == "https://cdn.example.com/tts/admin/vocabulary/test-id.mp3"
+    assert data["audioUrl"] == "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
     assert data["provider"] == "elevenlabs"
+    assert data["field"] == "reading"
+
+    # Verify GCS path includes field
+    mock_upload.assert_called_once()
+    gcs_path_arg = mock_upload.call_args[0][0]
+    assert "/reading.mp3" in gcs_path_arg
 
 
 @pytest.mark.asyncio
@@ -213,3 +262,101 @@ async def test_regenerate_tts_empty_field_422(client):
     )
 
     assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_regenerate_tts_invalid_field_422(client):
+    """POST regenerate returns 422 when field is not valid for content_type."""
+    ac, mock_db = client
+
+    resp = await ac.post(
+        "/api/v1/admin/content/tts/regenerate",
+        json={"contentType": "vocabulary", "itemId": "test-id", "field": "nonexistent_field"},
+    )
+
+    assert resp.status_code == 422
+    body = resp.json()
+    # Custom error handler wraps HTTPException detail into error.message
+    assert "Invalid field" in (body.get("detail", "") or body.get("error", {}).get("message", ""))
+
+
+@pytest.mark.asyncio
+async def test_regenerate_tts_field_scoped_delete(client):
+    """POST regenerate only deletes the targeted field's row, not other fields."""
+    ac, mock_db = client
+
+    vocab = _make_vocab(reading="テスト")
+    call_count = 0
+    delete_stmt_captured = None
+
+    def execute_side_effect(stmt):
+        nonlocal call_count, delete_stmt_captured
+        call_count += 1
+        if call_count == 1:
+            return _scalar_result(vocab)
+        if call_count == 2:
+            # Capture the delete statement to verify field-scoped delete
+            delete_stmt_captured = stmt
+            return MagicMock()
+        return MagicMock()
+
+    mock_db.execute.side_effect = execute_side_effect
+
+    fake_tts = FakeTtsResult(audio=b"fake-mp3", provider="elevenlabs", model="eleven_multilingual_v2")
+
+    with (
+        patch("app.routers.admin_content.generate_tts") as mock_tts,
+        patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
+    ):
+        mock_tts.return_value = fake_tts
+        mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
+
+        resp = await ac.post(
+            "/api/v1/admin/content/tts/regenerate",
+            json={"contentType": "vocabulary", "itemId": "test-id", "field": "reading"},
+        )
+
+    assert resp.status_code == 200
+    # The delete statement should have been called (2nd execute call)
+    assert delete_stmt_captured is not None
+    # Verify that the delete includes field filter by checking compiled SQL
+    compiled = str(delete_stmt_captured.compile(compile_kwargs={"literal_binds": True}))
+    assert "field" in compiled.lower()
+
+
+@pytest.mark.asyncio
+async def test_regenerate_tts_adds_field_to_tts_audio(client):
+    """POST regenerate includes field in TtsAudio constructor."""
+    ac, mock_db = client
+
+    vocab = _make_vocab(reading="テスト")
+    call_count = 0
+
+    def execute_side_effect(stmt):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return _scalar_result(vocab)
+        return MagicMock()
+
+    mock_db.execute.side_effect = execute_side_effect
+
+    fake_tts = FakeTtsResult(audio=b"fake-mp3", provider="elevenlabs", model="eleven_multilingual_v2")
+
+    with (
+        patch("app.routers.admin_content.generate_tts") as mock_tts,
+        patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
+    ):
+        mock_tts.return_value = fake_tts
+        mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
+
+        await ac.post(
+            "/api/v1/admin/content/tts/regenerate",
+            json={"contentType": "vocabulary", "itemId": "test-id", "field": "reading"},
+        )
+
+    # Verify db.add was called with a TtsAudio that has field set
+    mock_db.add.assert_called_once()
+    added_obj = mock_db.add.call_args[0][0]
+    assert isinstance(added_obj, TtsAudio)
+    assert added_obj.field == "reading"

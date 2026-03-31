@@ -53,6 +53,7 @@ async def vocab_tts(
             TtsAudio.target_type == "vocabulary",
             TtsAudio.target_id == vocab_id_str,
             TtsAudio.speed == 1.0,
+            TtsAudio.field == "reading",
         )
     )
     tts_record = cached.scalar_one_or_none()
@@ -92,6 +93,7 @@ async def vocab_tts(
             provider=tts_result.provider,
             model=tts_result.model,
             audio_url=audio_url,
+            field="reading",
         )
         db.add(tts_audio)
 
