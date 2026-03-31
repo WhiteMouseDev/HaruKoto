@@ -341,30 +341,18 @@ class _ContextPreviewStep extends StatelessWidget {
     required this.onNext,
   });
 
-  /// Select first 3 vocab items, skipping grammar-like function words
+  /// Deduplicated vocab list (by word+reading)
+  List<VocabItemModel> get _uniqueVocab {
+    final seen = <String>{};
+    return detail.vocabItems.where((v) {
+      final key = '${v.word}_${v.reading}';
+      return seen.add(key);
+    }).toList();
+  }
+
+  /// Select first 3 unique vocab items for preview
   List<VocabItemModel> _previewVocab() {
-    final items = detail.vocabItems;
-    final grammarPatterns =
-        detail.grammarItems.map((g) => g.pattern.toLowerCase()).toSet();
-    final result = <VocabItemModel>[];
-    for (final v in items) {
-      // Skip if word is part of a grammar pattern
-      if (grammarPatterns.any((p) => p.contains(v.word.toLowerCase()))) {
-        continue;
-      }
-      result.add(v);
-      if (result.length >= 3) break;
-    }
-    // If not enough after filtering, fill from the start
-    if (result.length < 3) {
-      for (final v in items) {
-        if (!result.contains(v)) {
-          result.add(v);
-          if (result.length >= 3) break;
-        }
-      }
-    }
-    return result;
+    return _uniqueVocab.take(3).toList();
   }
 
   @override
@@ -373,7 +361,7 @@ class _ContextPreviewStep extends StatelessWidget {
     final reading = detail.content.reading;
     final learningGoal = getLearningGoal(detail.topic);
     final previewVocab = _previewVocab();
-    final remainingCount = detail.vocabItems.length - previewVocab.length;
+    final remainingCount = _uniqueVocab.length - previewVocab.length;
 
     return Column(
       children: [
