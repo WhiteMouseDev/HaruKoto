@@ -9,7 +9,10 @@ export const TTS_FIELDS = {
   },
   grammar: {
     default: 'pattern',
-    options: [{ value: 'pattern', labelKey: 'fields.pattern' }],
+    options: [
+      { value: 'pattern', labelKey: 'fields.pattern' },
+      { value: 'example_sentences', labelKey: 'fields.exampleSentences' },
+    ],
   },
   cloze: {
     default: 'sentence',

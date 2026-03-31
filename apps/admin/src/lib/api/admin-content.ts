@@ -195,17 +195,27 @@ export type TtsAudioResponse = {
   provider: string | null;
 };
 
+export type AudioFieldInfo = {
+  audioUrl: string;
+  provider: string;
+  createdAt: string;
+};
+
+export type TtsAudioMapResponse = {
+  audios: Record<string, AudioFieldInfo | null>;
+};
+
 export async function fetchTtsAudio(
   contentType: string,
   itemId: string,
-): Promise<TtsAudioResponse> {
+): Promise<TtsAudioMapResponse> {
   const headers = await getAuthHeaders();
   const res = await fetch(
     `${API_URL}/api/v1/admin/content/${contentType}/${itemId}/tts`,
     { headers },
   );
   if (!res.ok) throw new Error('Failed to fetch TTS audio');
-  return res.json() as Promise<TtsAudioResponse>;
+  return res.json() as Promise<TtsAudioMapResponse>;
 }
 
 export async function regenerateTts(

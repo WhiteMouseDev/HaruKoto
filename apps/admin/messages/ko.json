@@ -170,7 +170,8 @@
       "pattern": "패턴",
       "sentence": "문장",
       "japaneseSentence": "일본어 문장",
-      "situation": "상황"
+      "situation": "상황",
+      "exampleSentences": "예문"
     }
   }
 }
