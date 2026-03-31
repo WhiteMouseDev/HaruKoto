@@ -168,7 +168,12 @@ Plans:
   2. 한 필드의 오디오를 재생성해도 다른 필드의 오디오에는 영향이 없다
   3. 마이그레이션 후 기존 아이템당 1개 오디오가 field=null 또는 기본 필드로 정상 조회·재생된다
   4. 문법·퀴즈·회화 시나리오 편집 화면에서도 해당 콘텐츠 타입에 맞는 필드별 TTS UI가 동작한다
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Backend: Alembic migration (field column + backfill + UniqueConstraint), TtsAudio model, Pydantic schemas, API endpoint changes, tts.py compat, pytest
+- [ ] 06-02-PLAN.md — Frontend: tts-fields grammar update, API types for map response, useTtsPlayer hook refactor, TtsPlayer per-field state, i18n, Vitest tests
+
 **UI hint**: yes
 
 ### Phase 7: i18n Completion & Accessibility
@@ -196,5 +201,5 @@ Phases execute in numeric order: 6 → 7
 | 3. Content Editing & Review Workflow | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 4. TTS Audio | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
-| 6. TTS Per-Field Audio | v1.1 | 0/TBD | Not started | - |
+| 6. TTS Per-Field Audio | v1.1 | 0/2 | Planning | - |
 | 7. i18n Completion & Accessibility | v1.1 | 0/TBD | Not started | - |
