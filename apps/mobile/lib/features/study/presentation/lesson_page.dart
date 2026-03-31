@@ -1011,7 +1011,7 @@ class _DialogueBubble extends StatelessWidget {
 
     final baseTextStyle = theme.textTheme.bodyLarge?.copyWith(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           height: 1.5,
           color: AppColors.lightText,
         ) ??
@@ -1468,7 +1468,7 @@ class _MatchingGameStepState extends State<_MatchingGameStep>
           Text(
             '일본어와 뜻을 연결하세요',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.outline,
+              color: AppColors.lightSubtext,
             ),
           ),
           const SizedBox(height: AppSizes.lg),
@@ -1527,7 +1527,7 @@ class _MatchingGameStepState extends State<_MatchingGameStep>
                                         _pairs[i].reading,
                                         style: theme.textTheme.labelSmall
                                             ?.copyWith(
-                                          color: theme.colorScheme.outline,
+                                          color: AppColors.lightSubtext,
                                         ),
                                       ),
                                     ],
@@ -2291,7 +2291,7 @@ class _ResultStepState extends State<_ResultStep>
                   child: Text(
                     '${result.scoreCorrect}/${result.scoreTotal} 정답',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outline,
+                      color: AppColors.lightSubtext,
                     ),
                   ),
                 ),
@@ -2383,7 +2383,7 @@ class _ResultStepState extends State<_ResultStep>
                               child: Text(
                                 r.explanation!,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.outline,
+                                  color: AppColors.lightSubtext,
                                 ),
                               ),
                             ),
@@ -2453,7 +2453,7 @@ class _ResultStepState extends State<_ResultStep>
                               child: Text(
                                 '다음 복습: ${_formatReviewDate(r.nextReviewAt!)}',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.outline,
+                                  color: AppColors.lightSubtext,
                                 ),
                               ),
                             ),
