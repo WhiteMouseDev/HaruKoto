@@ -16,11 +16,13 @@ void main() {
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
-      final sub = container.listen(lessonSessionProvider, (_, __) {});
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
       addTearDown(sub.close);
       addTearDown(container.dispose);
 
-      final notifier = container.read(lessonSessionProvider.notifier);
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
       await notifier.startPractice(
         _buildDetail(
           questions: const [
@@ -38,7 +40,7 @@ void main() {
         ),
       );
 
-      final state = container.read(lessonSessionProvider);
+      final state = container.read(lessonSessionProvider('lesson-1'));
       expect(repository.startLessonCalls, 1);
       expect(state.step, LessonStep.recognition);
       expect(state.recognitionIndex, 0);
@@ -53,7 +55,8 @@ void main() {
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
-      final sub = container.listen(lessonSessionProvider, (_, __) {});
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
       addTearDown(sub.close);
       addTearDown(container.dispose);
 
@@ -72,7 +75,8 @@ void main() {
         ],
       );
 
-      final notifier = container.read(lessonSessionProvider.notifier);
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
       await notifier.startPractice(detail);
       notifier.answerRecognition(detail, const {
         'order': 1,
@@ -80,7 +84,7 @@ void main() {
         'responseMs': 0,
       });
 
-      var state = container.read(lessonSessionProvider);
+      var state = container.read(lessonSessionProvider('lesson-1'));
       expect(state.step, LessonStep.recognition);
       expect(state.recognitionIndex, 1);
       expect(state.answers.keys, contains(1));
@@ -91,7 +95,7 @@ void main() {
         'responseMs': 0,
       });
 
-      state = container.read(lessonSessionProvider);
+      state = container.read(lessonSessionProvider('lesson-1'));
       expect(state.step, LessonStep.matching);
       expect(state.answers.keys.toSet(), equals({1, 2}));
     });
@@ -104,21 +108,23 @@ void main() {
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
-      final sub = container.listen(lessonSessionProvider, (_, __) {});
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
       addTearDown(sub.close);
       addTearDown(container.dispose);
 
       final detail = _buildDetail(
         questions: const [],
       );
-      final notifier = container.read(lessonSessionProvider.notifier);
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
       await notifier.startPractice(detail);
       await notifier.completeMatching(
         detail: detail,
         jlptLevel: 'N4',
       );
 
-      final state = container.read(lessonSessionProvider);
+      final state = container.read(lessonSessionProvider('lesson-1'));
       expect(repository.submitLessonCalls, 1);
       expect(repository.submittedLessonId, detail.id);
       expect(state.step, LessonStep.result);
@@ -132,7 +138,8 @@ void main() {
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
-      final sub = container.listen(lessonSessionProvider, (_, __) {});
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
       addTearDown(sub.close);
       addTearDown(container.dispose);
 
@@ -153,14 +160,15 @@ void main() {
         ],
       );
 
-      final notifier = container.read(lessonSessionProvider.notifier);
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
       await notifier.startPractice(detail);
       await notifier.completeMatching(
         detail: detail,
         jlptLevel: 'N4',
       );
 
-      var state = container.read(lessonSessionProvider);
+      var state = container.read(lessonSessionProvider('lesson-1'));
       expect(state.step, LessonStep.sentenceReorder);
 
       await notifier.answerReorder(
@@ -173,7 +181,7 @@ void main() {
         },
       );
 
-      state = container.read(lessonSessionProvider);
+      state = container.read(lessonSessionProvider('lesson-1'));
       expect(state.step, LessonStep.sentenceReorder);
       expect(state.reorderIndex, 1);
 
@@ -187,7 +195,7 @@ void main() {
         },
       );
 
-      state = container.read(lessonSessionProvider);
+      state = container.read(lessonSessionProvider('lesson-1'));
       expect(repository.submitLessonCalls, 1);
       expect(repository.submittedAnswers!.map((e) => e['order']), [3, 4]);
       expect(state.step, LessonStep.result);

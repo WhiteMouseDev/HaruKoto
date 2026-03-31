@@ -84,6 +84,9 @@ class LessonSessionState {
 }
 
 class LessonSessionController extends Notifier<LessonSessionState> {
+  LessonSessionController(this.lessonId);
+  final String lessonId;
+
   @override
   LessonSessionState build() {
     return const LessonSessionState();
@@ -221,7 +224,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 }
 
-final lessonSessionProvider =
-    NotifierProvider<LessonSessionController, LessonSessionState>(
-  LessonSessionController.new,
+final lessonSessionProvider = NotifierProvider.autoDispose
+    .family<LessonSessionController, LessonSessionState, String>(
+  (lessonId) => LessonSessionController(lessonId),
 );

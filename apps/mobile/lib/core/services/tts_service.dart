@@ -23,6 +23,11 @@ class TtsService {
     await _playUrl(() => _fetchKanaUrl(text));
   }
 
+  /// Play audio from a direct URL (e.g. full dialogue audio).
+  Future<void> playUrl(String url) async {
+    await _playUrl(() async => url);
+  }
+
   Future<void> _playUrl(Future<String?> Function() fetcher) async {
     try {
       final url = await fetcher();
