@@ -120,6 +120,9 @@ class _LessonPageState extends ConsumerState<LessonPage> {
         return _VocabLearningStep(
           key: const ValueKey('step-vocab'),
           vocabItems: detail.vocabItems,
+          onBackToPrev: () => ref
+              .read(lessonSessionProvider(widget.lessonId).notifier)
+              .goBack(),
           onNext: () {
             if (detail.grammarItems.isNotEmpty) {
               ref
@@ -136,6 +139,9 @@ class _LessonPageState extends ConsumerState<LessonPage> {
         return _GrammarLearningStep(
           key: const ValueKey('step-grammar'),
           grammarItems: detail.grammarItems,
+          onBackToPrev: () => ref
+              .read(lessonSessionProvider(widget.lessonId).notifier)
+              .goBack(),
           onNext: () => ref
               .read(lessonSessionProvider(widget.lessonId).notifier)
               .goToGuidedReading(),
@@ -2195,10 +2201,12 @@ class _BankToken extends StatelessWidget {
 class _VocabLearningStep extends StatefulWidget {
   final List<VocabItemModel> vocabItems;
   final VoidCallback onNext;
+  final VoidCallback? onBackToPrev;
   const _VocabLearningStep({
     super.key,
     required this.vocabItems,
     required this.onNext,
+    this.onBackToPrev,
   });
 
   @override
@@ -2228,6 +2236,8 @@ class _VocabLearningStepState extends State<_VocabLearningStep> {
   void _prev() {
     if (_currentIndex > 0) {
       setState(() => _currentIndex--);
+    } else {
+      widget.onBackToPrev?.call();
     }
   }
 
@@ -2389,7 +2399,7 @@ class _VocabLearningStepState extends State<_VocabLearningStep> {
             padding: const EdgeInsets.all(AppSizes.md),
             child: Row(
               children: [
-                if (_currentIndex > 0)
+                if (_currentIndex > 0 || widget.onBackToPrev != null)
                   Expanded(
                     child: SizedBox(
                       height: AppSizes.buttonHeight,
@@ -2400,7 +2410,8 @@ class _VocabLearningStepState extends State<_VocabLearningStep> {
                       ),
                     ),
                   ),
-                if (_currentIndex > 0) const SizedBox(width: AppSizes.sm),
+                if (_currentIndex > 0 || widget.onBackToPrev != null)
+                  const SizedBox(width: AppSizes.sm),
                 Expanded(
                   flex: 2,
                   child: SizedBox(
@@ -2428,10 +2439,12 @@ class _VocabLearningStepState extends State<_VocabLearningStep> {
 class _GrammarLearningStep extends StatefulWidget {
   final List<GrammarItemModel> grammarItems;
   final VoidCallback onNext;
+  final VoidCallback? onBackToPrev;
   const _GrammarLearningStep({
     super.key,
     required this.grammarItems,
     required this.onNext,
+    this.onBackToPrev,
   });
 
   @override
@@ -2441,8 +2454,15 @@ class _GrammarLearningStep extends StatefulWidget {
 class _GrammarLearningStepState extends State<_GrammarLearningStep> {
   int _currentIndex = 0;
 
+  /// Deduplicated grammar list (by pattern)
+  List<GrammarItemModel> get _uniqueGrammar {
+    final seen = <String>{};
+    return widget.grammarItems.where((g) => seen.add(g.pattern)).toList();
+  }
+
   void _next() {
-    if (_currentIndex < widget.grammarItems.length - 1) {
+    final items = _uniqueGrammar;
+    if (_currentIndex < items.length - 1) {
       setState(() => _currentIndex++);
     } else {
       widget.onNext();
@@ -2452,13 +2472,15 @@ class _GrammarLearningStepState extends State<_GrammarLearningStep> {
   void _prev() {
     if (_currentIndex > 0) {
       setState(() => _currentIndex--);
+    } else {
+      widget.onBackToPrev?.call();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final items = widget.grammarItems;
+    final items = _uniqueGrammar;
     if (items.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.onNext());
       return const SizedBox.shrink();
@@ -2597,18 +2619,19 @@ class _GrammarLearningStepState extends State<_GrammarLearningStep> {
             padding: const EdgeInsets.all(AppSizes.md),
             child: Row(
               children: [
-                if (_currentIndex > 0)
+                if (_currentIndex > 0 || widget.onBackToPrev != null)
                   Expanded(
                     child: SizedBox(
                       height: AppSizes.buttonHeight,
                       child: OutlinedButton.icon(
                         onPressed: _prev,
                         icon: const Icon(LucideIcons.chevronLeft),
-                        label: const Text('이전'),
+                        label: Text(_currentIndex > 0 ? '이전' : '단어 학습으로'),
                       ),
                     ),
                   ),
-                if (_currentIndex > 0) const SizedBox(width: AppSizes.sm),
+                if (_currentIndex > 0 || widget.onBackToPrev != null)
+                  const SizedBox(width: AppSizes.sm),
                 Expanded(
                   flex: 2,
                   child: SizedBox(
