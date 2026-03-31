@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import {
   fetchTtsAudio,
   regenerateTts,
-  type TtsAudioResponse,
+  type TtsAudioMapResponse,
 } from '@/lib/api/admin-content';
 import { type ContentType } from '@/lib/tts-fields';
 
@@ -28,16 +28,16 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
     };
   }, []);
 
-  const ttsQuery = useQuery<TtsAudioResponse>({
+  const ttsQuery = useQuery<TtsAudioMapResponse>({
     queryKey: ['admin-tts', contentType, itemId],
     queryFn: () => fetchTtsAudio(contentType, itemId),
     staleTime: 60_000,
   });
 
-  const data = ttsQuery.data;
+  const audios = ttsQuery.data?.audios ?? {};
 
   function handlePlayPause(field: string) {
-    const url = data?.audioUrl;
+    const url = audios[field]?.audioUrl;
     if (!url) return;
 
     if (playingField === field) {
@@ -84,7 +84,7 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
   });
 
   return {
-    audioUrl: data?.audioUrl ?? null,
+    audios,
     isLoading: ttsQuery.isLoading,
     playingField,
     confirmField,

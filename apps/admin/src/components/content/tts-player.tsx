@@ -17,7 +17,7 @@ type TtsPlayerProps = {
 export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
   const t = useTranslations('tts');
   const {
-    audioUrl,
+    audios,
     isLoading,
     playingField,
     confirmField,
@@ -47,72 +47,75 @@ export function TtsPlayer({ contentType, itemId, itemLabel }: TtsPlayerProps) {
     );
   }
 
-  const hasAudio = !!audioUrl;
-
   return (
     <>
       <div className="rounded-lg border border-border bg-card">
-        {fields.map((field, index) => (
-          <div
-            key={field.value}
-            className={`flex items-center gap-2 p-3 ${
-              index < fields.length - 1 ? 'border-b border-border' : ''
-            }`}
-          >
-            {/* Status icon */}
-            {hasAudio ? (
-              <CheckCircle2 className="size-4 shrink-0 text-green-500" />
-            ) : (
-              <XCircle className="size-4 shrink-0 text-muted-foreground" />
-            )}
+        {fields.map((field, index) => {
+          const fieldAudio = audios[field.value];
+          const hasFieldAudio = !!fieldAudio;
 
-            {/* Field name label */}
-            <span className="flex-1 text-sm">
-              {t(field.labelKey as Parameters<typeof t>[0])}
-            </span>
+          return (
+            <div
+              key={field.value}
+              className={`flex items-center gap-2 p-3 ${
+                index < fields.length - 1 ? 'border-b border-border' : ''
+              }`}
+            >
+              {/* Status icon — per-field independent */}
+              {hasFieldAudio ? (
+                <CheckCircle2 className="size-4 shrink-0 text-green-500" />
+              ) : (
+                <XCircle className="size-4 shrink-0 text-muted-foreground" />
+              )}
 
-            {/* Action buttons — audio present */}
-            {hasAudio ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePlayPause(field.value)}
-                  aria-label={playingField === field.value ? t('pause') : t('play')}
-                  className="size-8 shrink-0"
-                >
-                  {playingField === field.value ? (
-                    <Pause className="size-4" />
-                  ) : (
-                    <Play className="size-4" />
-                  )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setConfirmField(field.value)}
-                  aria-label={t('regenerateTooltip')}
-                  className="size-8 shrink-0"
-                >
-                  <RotateCcw className="size-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <span className="text-xs text-muted-foreground">
-                  {t('noAudio')}
-                </span>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => setConfirmField(field.value)}
-                >
-                  {t('generate')}
-                </Button>
-              </>
-            )}
-          </div>
-        ))}
+              {/* Field name label */}
+              <span className="flex-1 text-sm">
+                {t(field.labelKey as Parameters<typeof t>[0])}
+              </span>
+
+              {/* Action buttons — per-field state */}
+              {hasFieldAudio ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handlePlayPause(field.value)}
+                    aria-label={playingField === field.value ? t('pause') : t('play')}
+                    className="size-8 shrink-0"
+                  >
+                    {playingField === field.value ? (
+                      <Pause className="size-4" />
+                    ) : (
+                      <Play className="size-4" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setConfirmField(field.value)}
+                    aria-label={t('regenerateTooltip')}
+                    className="size-8 shrink-0"
+                  >
+                    <RotateCcw className="size-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="text-xs text-muted-foreground">
+                    {t('noAudio')}
+                  </span>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => setConfirmField(field.value)}
+                  >
+                    {t('generate')}
+                  </Button>
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <RegenerateConfirmDialog
