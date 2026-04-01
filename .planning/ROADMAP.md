@@ -150,7 +150,7 @@ Plans:
 
 ---
 
-### 🚧 v1.1 Quality & Polish (In Progress)
+### v1.1 Quality & Polish (In Progress)
 
 **Milestone Goal:** v1.0의 품질 미비 사항 해결 — 필드별 TTS, 번역 완성, 접근성 개선
 
@@ -186,7 +186,13 @@ Plans:
   3. 페이지 상단에 "메인 콘텐츠로 건너뛰기" skip link가 존재하고, 키보드 포커스 시 표시된다
   4. nav, aside, main 영역에 스크린 리더가 읽을 수 있는 aria-label이 부여된다
   5. 검색 입력 필드에 연결된 명시적 label 요소가 존재한다
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Locale files: add all new i18n keys (table.col, edit, validation, time, category, a11y) + key parity and hardcoded string detection tests
+- [ ] 07-02-PLAN.md — i18n string replacements: table headers, toasts, Zod errors, placeholders, aria-labels, cancel, audit timeline, categories
+- [ ] 07-03-PLAN.md — Accessibility: aria-current on sidebar, skip link, landmark aria-labels, search input label + a11y tests
+
 **UI hint**: yes
 
 ## Progress
@@ -202,4 +208,4 @@ Phases execute in numeric order: 6 → 7
 | 4. TTS Audio | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 6. TTS Per-Field Audio | v1.1 | 0/2 | Planning | - |
-| 7. i18n Completion & Accessibility | v1.1 | 0/TBD | Not started | - |
+| 7. i18n Completion & Accessibility | v1.1 | 0/3 | Planning | - |
