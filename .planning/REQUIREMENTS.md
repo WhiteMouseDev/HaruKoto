@@ -14,14 +14,14 @@
 ### Internationalization Completion
 
 - [ ] **I18N-04**: 모든 UI 문자열이 i18n 키를 통해 번역된다 (하드코딩 일본어 없음)
-- [ ] **I18N-05**: locale 전환 시 모든 텍스트가 선택된 언어로 표시된다
+- [x] **I18N-05**: locale 전환 시 모든 텍스트가 선택된 언어로 표시된다
 
 ### Accessibility
 
-- [ ] **A11Y-01**: 사이드바 활성 항목에 aria-current="page"가 설정된다
-- [ ] **A11Y-02**: 메인 콘텐츠로 건너뛰는 skip link가 있다
-- [ ] **A11Y-03**: nav, aside, main에 의미 있는 aria-label이 있다
-- [ ] **A11Y-04**: 검색 입력에 명시적 label이 있다
+- [x] **A11Y-01**: 사이드바 활성 항목에 aria-current="page"가 설정된다
+- [x] **A11Y-02**: 메인 콘텐츠로 건너뛰는 skip link가 있다
+- [x] **A11Y-03**: nav, aside, main에 의미 있는 aria-label이 있다
+- [x] **A11Y-04**: 검색 입력에 명시적 label이 있다
 
 ## Future Requirements
 

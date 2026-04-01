@@ -191,7 +191,7 @@ Plans:
 Plans:
 - [x] 07-01-PLAN.md — Locale files: add all new i18n keys (table.col, edit, validation, time, category, a11y) + key parity and hardcoded string detection tests
 - [ ] 07-02-PLAN.md — i18n string replacements: table headers, toasts, Zod errors, placeholders, aria-labels, cancel, audit timeline, categories
-- [ ] 07-03-PLAN.md — Accessibility: aria-current on sidebar, skip link, landmark aria-labels, search input label + a11y tests
+- [x] 07-03-PLAN.md — Accessibility: aria-current on sidebar, skip link, landmark aria-labels, search input label + a11y tests
 
 **UI hint**: yes
 
@@ -208,4 +208,4 @@ Phases execute in numeric order: 6 → 7
 | 4. TTS Audio | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 6. TTS Per-Field Audio | v1.1 | 0/2 | Planning | - |
-| 7. i18n Completion & Accessibility | v1.1 | 1/3 | In Progress|  |
+| 7. i18n Completion & Accessibility | v1.1 | 2/3 | In Progress|  |
