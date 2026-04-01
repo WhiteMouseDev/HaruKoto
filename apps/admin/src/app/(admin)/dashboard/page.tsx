@@ -78,6 +78,7 @@ function SkeletonCard() {
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard');
+  const tError = useTranslations('error');
   const { data, isLoading, isError, refetch } = useDashboardStats();
   const [user, setUser] = useState<User | null>(null);
 
@@ -107,7 +108,7 @@ export default function DashboardPage() {
             onClick={() => void refetch()}
             className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted/50"
           >
-            再試行
+            {tError('retry')}
           </button>
         </div>
       ) : (

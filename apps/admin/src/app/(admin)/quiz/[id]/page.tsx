@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -51,38 +51,20 @@ type SentenceArrangeDetail = {
 
 type QuizDetail = ClozeDetail | SentenceArrangeDetail;
 
-const jsonArraySchema = z
-  .string()
-  .optional()
-  .refine(
-    (val) => {
-      if (!val || val.trim() === '') return true;
-      try {
-        return Array.isArray(JSON.parse(val));
-      } catch {
-        return false;
-      }
-    },
-    { message: '有効なJSON配列を入力してください' },
-  );
+type ClozeFormValues = {
+  sentence: string;
+  translation: string;
+  correctAnswer: string;
+  options?: string;
+  explanation?: string;
+};
 
-const clozeSchema = z.object({
-  sentence: z.string().min(1),
-  translation: z.string().min(1),
-  correctAnswer: z.string().min(1),
-  options: jsonArraySchema,
-  explanation: z.string().optional(),
-});
-
-const sentenceArrangeSchema = z.object({
-  koreanSentence: z.string().min(1),
-  japaneseSentence: z.string().min(1),
-  tokens: jsonArraySchema,
-  explanation: z.string().optional(),
-});
-
-type ClozeFormValues = z.infer<typeof clozeSchema>;
-type SentenceArrangeFormValues = z.infer<typeof sentenceArrangeSchema>;
+type SentenceArrangeFormValues = {
+  koreanSentence: string;
+  japaneseSentence: string;
+  tokens?: string;
+  explanation?: string;
+};
 
 function isCloze(detail: QuizDetail): detail is ClozeDetail {
   return 'sentence' in detail;
@@ -96,6 +78,32 @@ function ClozeForm({
   patchMutation: { mutate: (data: Record<string, unknown>, opts?: { onSuccess?: () => void; onError?: () => void }) => void; isPending: boolean };
 }) {
   const t = useTranslations('edit');
+  const tVal = useTranslations('validation');
+
+  const clozeSchema = useMemo(() => {
+    const jsonArrayField = z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (!val || val.trim() === '') return true;
+          try {
+            return Array.isArray(JSON.parse(val));
+          } catch {
+            return false;
+          }
+        },
+        { message: tVal('invalidJsonArray') },
+      );
+    return z.object({
+      sentence: z.string().min(1),
+      translation: z.string().min(1),
+      correctAnswer: z.string().min(1),
+      options: jsonArrayField,
+      explanation: z.string().optional(),
+    });
+  }, [tVal]);
+
   const { register, handleSubmit, formState: { dirtyFields }, reset } = useForm<ClozeFormValues>({
     resolver: zodResolver(clozeSchema),
     values: {
@@ -117,7 +125,7 @@ function ClozeForm({
         changed[key] = values[key];
       }
     });
-    if (Object.keys(changed).length === 0) { toast.info('変更がありません'); return; }
+    if (Object.keys(changed).length === 0) { toast.info(t('noChanges')); return; }
     patchMutation.mutate(changed, {
       onSuccess: () => { toast.success(t('saveSuccess')); reset(values); },
       onError: () => toast.error(t('saveError')),
@@ -141,7 +149,7 @@ function ClozeForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="options">{t('field.options')}</Label>
-          <Textarea id="options" rows={3} placeholder='["選択肢1","選択肢2"]' {...register('options')} />
+          <Textarea id="options" rows={3} placeholder={t('placeholder.options')} {...register('options')} />
         </div>
         <div className="space-y-1.5 md:col-span-2">
           <Label htmlFor="explanation">{t('field.explanation')}</Label>
@@ -163,6 +171,31 @@ function SentenceArrangeForm({
   patchMutation: { mutate: (data: Record<string, unknown>, opts?: { onSuccess?: () => void; onError?: () => void }) => void; isPending: boolean };
 }) {
   const t = useTranslations('edit');
+  const tVal = useTranslations('validation');
+
+  const sentenceArrangeSchema = useMemo(() => {
+    const jsonArrayField = z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (!val || val.trim() === '') return true;
+          try {
+            return Array.isArray(JSON.parse(val));
+          } catch {
+            return false;
+          }
+        },
+        { message: tVal('invalidJsonArray') },
+      );
+    return z.object({
+      koreanSentence: z.string().min(1),
+      japaneseSentence: z.string().min(1),
+      tokens: jsonArrayField,
+      explanation: z.string().optional(),
+    });
+  }, [tVal]);
+
   const { register, handleSubmit, formState: { dirtyFields }, reset } = useForm<SentenceArrangeFormValues>({
     resolver: zodResolver(sentenceArrangeSchema),
     values: {
@@ -183,7 +216,7 @@ function SentenceArrangeForm({
         changed[key] = values[key];
       }
     });
-    if (Object.keys(changed).length === 0) { toast.info('変更がありません'); return; }
+    if (Object.keys(changed).length === 0) { toast.info(t('noChanges')); return; }
     patchMutation.mutate(changed, {
       onSuccess: () => { toast.success(t('saveSuccess')); reset(values); },
       onError: () => toast.error(t('saveError')),
@@ -203,7 +236,7 @@ function SentenceArrangeForm({
         </div>
         <div className="space-y-1.5 md:col-span-2">
           <Label htmlFor="tokens">{t('field.tokens')}</Label>
-          <Textarea id="tokens" rows={4} placeholder='["トークン1","トークン2"]' {...register('tokens')} />
+          <Textarea id="tokens" rows={4} placeholder={t('placeholder.tokens')} {...register('tokens')} />
         </div>
         <div className="space-y-1.5 md:col-span-2">
           <Label htmlFor="explanation">{t('field.explanation')}</Label>
@@ -222,6 +255,7 @@ export default function QuizDetailPage() {
   const searchParams = useSearchParams();
   const quizType = searchParams.get('type') ?? 'cloze';
   const t = useTranslations('edit');
+  const tError = useTranslations('error');
   const tReview = useTranslations('review');
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
@@ -300,7 +334,7 @@ export default function QuizDetailPage() {
   if (detailQuery.isError) {
     return (
       <div className="p-6 text-sm text-destructive">
-        データの読み込みに失敗しました
+        {tError('failedToLoad')}
       </div>
     );
   }

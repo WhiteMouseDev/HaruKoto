@@ -80,6 +80,7 @@ export function ContentTable<T extends { id: string }>({
 
   // Clear selection when data changes (page navigation, filter change)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset on page/filter change
     setSelectedIds(new Set());
   }, [data]);
 

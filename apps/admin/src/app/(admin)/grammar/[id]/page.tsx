@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -34,33 +34,44 @@ type GrammarDetail = {
   updatedAt: string | null;
 };
 
-const grammarSchema = z.object({
-  pattern: z.string().min(1),
-  meaningKo: z.string().min(1),
-  explanation: z.string().optional(),
-  exampleSentences: z
-    .string()
-    .optional()
-    .refine(
-      (val) => {
-        if (!val || val.trim() === '') return true;
-        try {
-          const parsed = JSON.parse(val);
-          return Array.isArray(parsed);
-        } catch {
-          return false;
-        }
-      },
-      { message: '有効なJSON配列を入力してください' },
-    ),
-});
-
-type GrammarFormValues = z.infer<typeof grammarSchema>;
+type GrammarFormValues = {
+  pattern: string;
+  meaningKo: string;
+  explanation?: string;
+  exampleSentences?: string;
+};
 
 export default function GrammarDetailPage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations('edit');
+  const tError = useTranslations('error');
+  const tVal = useTranslations('validation');
   const tReview = useTranslations('review');
+
+  const grammarSchema = useMemo(
+    () =>
+      z.object({
+        pattern: z.string().min(1),
+        meaningKo: z.string().min(1),
+        explanation: z.string().optional(),
+        exampleSentences: z
+          .string()
+          .optional()
+          .refine(
+            (val) => {
+              if (!val || val.trim() === '') return true;
+              try {
+                const parsed = JSON.parse(val);
+                return Array.isArray(parsed);
+              } catch {
+                return false;
+              }
+            },
+            { message: tVal('invalidJsonArray') },
+          ),
+      }),
+    [tVal],
+  );
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
   const { detailQuery, patchMutation, reviewMutation, auditQuery } =
@@ -111,7 +122,7 @@ export default function GrammarDetailPage() {
     });
 
     if (Object.keys(changed).length === 0) {
-      toast.info('変更がありません');
+      toast.info(t('noChanges'));
       return;
     }
 
@@ -180,7 +191,7 @@ export default function GrammarDetailPage() {
   if (detailQuery.isError) {
     return (
       <div className="p-6 text-sm text-destructive">
-        データの読み込みに失敗しました
+        {tError('failedToLoad')}
       </div>
     );
   }
@@ -244,7 +255,7 @@ export default function GrammarDetailPage() {
             <Textarea
               id="exampleSentences"
               rows={6}
-              placeholder='[{"ja": "例文", "ko": "예문"}]'
+              placeholder='[{"ja": "...", "ko": "..."}]'
               {...register('exampleSentences')}
             />
           </div>

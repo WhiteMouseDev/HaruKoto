@@ -19,19 +19,21 @@ function getDotClass(action: string): string {
   return 'bg-blue-500';
 }
 
+type TimeTranslator = (key: string, values?: Record<string, unknown>) => string;
+
+function formatRelativeTime(dateStr: string, tTime: TimeTranslator): string {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 1) return tTime('justNow');
+  if (diffMin < 60) return tTime('minutesAgo', { n: diffMin });
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return tTime('hoursAgo', { n: diffH });
+  return tTime('daysAgo', { n: Math.floor(diffH / 24) });
+}
+
 export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
   const t = useTranslations('audit');
   const tTime = useTranslations('time');
-
-  function formatRelativeTime(dateStr: string): string {
-    const diffMs = Date.now() - new Date(dateStr).getTime();
-    const diffMin = Math.floor(diffMs / 60_000);
-    if (diffMin < 1) return tTime('justNow');
-    if (diffMin < 60) return tTime('minutesAgo', { n: diffMin });
-    const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return tTime('hoursAgo', { n: diffH });
-    return tTime('daysAgo', { n: Math.floor(diffH / 24) });
-  }
 
   if (isLoading) {
     return (
@@ -96,7 +98,7 @@ export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
                   {entry.reviewerEmail}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {formatRelativeTime(entry.createdAt)}
+                  {formatRelativeTime(entry.createdAt, tTime)}
                 </span>
               </div>
 

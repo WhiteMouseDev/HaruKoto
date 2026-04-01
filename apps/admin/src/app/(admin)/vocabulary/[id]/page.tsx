@@ -52,6 +52,7 @@ type VocabularyFormValues = z.infer<typeof vocabularySchema>;
 export default function VocabularyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations('edit');
+  const tError = useTranslations('error');
   const tReview = useTranslations('review');
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
@@ -100,7 +101,7 @@ export default function VocabularyDetailPage() {
     });
 
     if (Object.keys(changed).length === 0) {
-      toast.info('変更がありません');
+      toast.info(t('noChanges'));
       return;
     }
 
@@ -169,7 +170,7 @@ export default function VocabularyDetailPage() {
   if (detailQuery.isError) {
     return (
       <div className="p-6 text-sm text-destructive">
-        データの読み込みに失敗しました
+        {tError('failedToLoad')}
       </div>
     );
   }

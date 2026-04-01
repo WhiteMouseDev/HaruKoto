@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -38,38 +38,51 @@ type ConversationDetail = {
   updatedAt: string | null;
 };
 
-const jsonArraySchema = z
-  .string()
-  .optional()
-  .refine(
-    (val) => {
-      if (!val || val.trim() === '') return true;
-      try {
-        return Array.isArray(JSON.parse(val));
-      } catch {
-        return false;
-      }
-    },
-    { message: '有効なJSON配列を入力してください' },
-  );
-
-const conversationSchema = z.object({
-  title: z.string().min(1),
-  titleJa: z.string().optional(),
-  description: z.string().optional(),
-  situation: z.string().optional(),
-  yourRole: z.string().optional(),
-  aiRole: z.string().optional(),
-  systemPrompt: z.string().optional(),
-  keyExpressions: jsonArraySchema,
-});
-
-type ConversationFormValues = z.infer<typeof conversationSchema>;
+type ConversationFormValues = {
+  title: string;
+  titleJa?: string;
+  description?: string;
+  situation?: string;
+  yourRole?: string;
+  aiRole?: string;
+  systemPrompt?: string;
+  keyExpressions?: string;
+};
 
 export default function ConversationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations('edit');
+  const tError = useTranslations('error');
+  const tVal = useTranslations('validation');
   const tReview = useTranslations('review');
+
+  const conversationSchema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1),
+        titleJa: z.string().optional(),
+        description: z.string().optional(),
+        situation: z.string().optional(),
+        yourRole: z.string().optional(),
+        aiRole: z.string().optional(),
+        systemPrompt: z.string().optional(),
+        keyExpressions: z
+          .string()
+          .optional()
+          .refine(
+            (val) => {
+              if (!val || val.trim() === '') return true;
+              try {
+                return Array.isArray(JSON.parse(val));
+              } catch {
+                return false;
+              }
+            },
+            { message: tVal('invalidJsonArray') },
+          ),
+      }),
+    [tVal],
+  );
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
   const { detailQuery, patchMutation, reviewMutation, auditQuery } =
@@ -124,7 +137,7 @@ export default function ConversationDetailPage() {
     });
 
     if (Object.keys(changed).length === 0) {
-      toast.info('変更がありません');
+      toast.info(t('noChanges'));
       return;
     }
 
@@ -193,7 +206,7 @@ export default function ConversationDetailPage() {
   if (detailQuery.isError) {
     return (
       <div className="p-6 text-sm text-destructive">
-        データの読み込みに失敗しました
+        {tError('failedToLoad')}
       </div>
     );
   }
@@ -277,7 +290,7 @@ export default function ConversationDetailPage() {
             <Textarea
               id="keyExpressions"
               rows={4}
-              placeholder='["表現1","表現2"]'
+              placeholder={t('placeholder.keyExpressions')}
               {...register('keyExpressions')}
             />
           </div>
