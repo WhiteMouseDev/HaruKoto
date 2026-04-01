@@ -52,9 +52,11 @@ Exceptions:
 
 ---
 
-## Typography
+## System Snapshot (Read-Only)
 
-No new type styles are introduced. Existing scale from globals.css / shadcn neutral tokens:
+> **Scope note:** This phase introduces NO new type styles and NO new weights. The table below is a read-only snapshot of the pre-shipped design system already in production. It exists to give the executor a complete picture of what already exists so they do not inadvertently break it. The 2-weight maximum rule from the design contract applies to new phase declarations only. Because this phase declares zero new typography, the constraint is trivially satisfied.
+
+### Typography (Existing — Do Not Change)
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
