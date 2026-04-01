@@ -69,7 +69,11 @@ export function FilterBar({ showCategory = false, categories = [], showJlpt = tr
   return (
     <div className="flex items-center gap-4">
       {/* Search input */}
+      <label htmlFor="search-input" className="sr-only">
+        {t('searchLabel')}
+      </label>
       <Input
+        id="search-input"
         type="search"
         placeholder={t('searchPlaceholder')}
         value={searchValue}

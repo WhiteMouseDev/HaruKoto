@@ -15,6 +15,7 @@ import { LogoutButton } from './logout-button';
 export async function Sidebar({ user, locale }: { user: User; locale: string }) {
   const t = await getTranslations('nav');
   const tAuth = await getTranslations('auth');
+  const tA11y = await getTranslations('a11y');
 
   const displayName =
     (user.user_metadata?.full_name as string | undefined) ??
@@ -54,7 +55,10 @@ export async function Sidebar({ user, locale }: { user: User; locale: string }) 
   ];
 
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-background">
+    <aside
+      aria-label={tA11y('sidebarNav')}
+      className="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-background"
+    >
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-border px-4">
         <Image

@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 import { SidebarNavItem } from './sidebar-nav-item';
 
@@ -27,9 +28,10 @@ function getBadgeCount(
 
 export function SidebarNavWithBadges({ navItems }: { navItems: NavItemDef[] }) {
   const { data } = useDashboardStats();
+  const tA11y = useTranslations('a11y');
 
   return (
-    <nav className="flex flex-1 flex-col gap-1 py-4">
+    <nav aria-label={tA11y('primaryNav')} className="flex flex-1 flex-col gap-1 py-4">
       {navItems.map((item) => (
         <SidebarNavItem
           key={item.href}

@@ -21,6 +21,7 @@ export function SidebarNavItem({ href, icon, label, badge }: SidebarNavItemProps
   return (
     <Link
       href={href}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
         'flex h-10 items-center gap-2 px-4 text-sm transition-colors',
         isActive
