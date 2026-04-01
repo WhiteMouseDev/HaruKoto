@@ -39,7 +39,8 @@
     "categoryLabel": "Category",
     "categoryAll": "All Categories",
     "statusLabel": "Status",
-    "statusAll": "All Status"
+    "statusAll": "All Status",
+    "searchLabel": "Search"
   },
   "status": {
     "needsReview": "Needs Review",
@@ -51,7 +52,22 @@
     "paginationPrev": "Previous",
     "paginationNext": "Next",
     "itemsPerPage": "per page",
-    "totalItems": "{n} items"
+    "totalItems": "{n} items",
+    "col": {
+      "word": "Word",
+      "reading": "Reading",
+      "meaningKo": "Meaning",
+      "pattern": "Pattern",
+      "explanation": "Explanation",
+      "sentence": "Sentence",
+      "quizType": "Type",
+      "title": "Title",
+      "category": "Category",
+      "status": "Status",
+      "updatedAt": "Updated"
+    },
+    "selectAll": "Select all",
+    "selectRow": "Select row {id}"
   },
   "empty": {
     "heading": "No data found",
@@ -115,6 +131,12 @@
       "aiRole": "AI Role",
       "systemPrompt": "System Prompt",
       "keyExpressions": "Key Expressions (JSON)"
+    },
+    "noChanges": "No changes to save",
+    "placeholder": {
+      "options": "[\"Option 1\",\"Option 2\"]",
+      "keyExpressions": "[\"Expression 1\",\"Expression 2\"]",
+      "tokens": "[\"Token 1\",\"Token 2\"]"
     }
   },
   "review": {
@@ -137,7 +159,8 @@
     "exitQueue": "Exit Queue",
     "autoAdvance": "Moving to next item",
     "queueComplete": "All items have been reviewed",
-    "queueLoadError": "Failed to load review queue. Please reload the page."
+    "queueLoadError": "Failed to load review queue. Please reload the page.",
+    "cancel": "Cancel"
   },
   "audit": {
     "title": "Change History",
@@ -173,5 +196,30 @@
       "situation": "Situation",
       "exampleSentences": "Example Sentences"
     }
+  },
+  "validation": {
+    "invalidJsonArray": "Please enter a valid JSON array"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{n, plural, one {1 min ago} other {{n} min ago}}",
+    "hoursAgo": "{n, plural, one {1 hr ago} other {{n} hr ago}}",
+    "daysAgo": "{n, plural, one {1 day ago} other {{n} days ago}}"
+  },
+  "category": {
+    "TRAVEL": "Travel",
+    "SHOPPING": "Shopping",
+    "RESTAURANT": "Restaurant",
+    "BUSINESS": "Business",
+    "DAILY_LIFE": "Daily Life",
+    "EMERGENCY": "Emergency",
+    "TRANSPORTATION": "Transportation",
+    "HEALTHCARE": "Healthcare"
+  },
+  "a11y": {
+    "skipToMain": "Skip to main content",
+    "mainContent": "Main content",
+    "sidebarNav": "Sidebar",
+    "primaryNav": "Primary navigation"
   }
 }

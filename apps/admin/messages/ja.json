@@ -39,7 +39,8 @@
     "categoryLabel": "カテゴリ",
     "categoryAll": "すべてのカテゴリ",
     "statusLabel": "ステータス",
-    "statusAll": "すべてのステータス"
+    "statusAll": "すべてのステータス",
+    "searchLabel": "検索"
   },
   "status": {
     "needsReview": "要確認",
@@ -51,7 +52,22 @@
     "paginationPrev": "前へ",
     "paginationNext": "次へ",
     "itemsPerPage": "件 / ページ",
-    "totalItems": "{n}件"
+    "totalItems": "{n}件",
+    "col": {
+      "word": "単語",
+      "reading": "読み方",
+      "meaningKo": "意味",
+      "pattern": "パターン",
+      "explanation": "説明",
+      "sentence": "問題文",
+      "quizType": "種類",
+      "title": "タイトル",
+      "category": "カテゴリ",
+      "status": "ステータス",
+      "updatedAt": "更新日"
+    },
+    "selectAll": "全て選択",
+    "selectRow": "行 {id} を選択"
   },
   "empty": {
     "heading": "データがありません",
@@ -115,6 +131,12 @@
       "aiRole": "AIの役割",
       "systemPrompt": "システムプロンプト",
       "keyExpressions": "重要表現（JSON）"
+    },
+    "noChanges": "変更がありません",
+    "placeholder": {
+      "options": "[\"選択肢1\",\"選択肢2\"]",
+      "keyExpressions": "[\"表現1\",\"表現2\"]",
+      "tokens": "[\"トークン1\",\"トークン2\"]"
     }
   },
   "review": {
@@ -137,7 +159,8 @@
     "exitQueue": "キューを終了",
     "autoAdvance": "次の項目へ移動します",
     "queueComplete": "すべての項目をレビューしました",
-    "queueLoadError": "レビューキューの読み込みに失敗しました。ページを再読み込みしてください。"
+    "queueLoadError": "レビューキューの読み込みに失敗しました。ページを再読み込みしてください。",
+    "cancel": "キャンセル"
   },
   "audit": {
     "title": "変更履歴",
@@ -173,5 +196,30 @@
       "situation": "シチュエーション",
       "exampleSentences": "例文"
     }
+  },
+  "validation": {
+    "invalidJsonArray": "有効なJSON配列を入力してください"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{n}分前",
+    "hoursAgo": "{n}時間前",
+    "daysAgo": "{n}日前"
+  },
+  "category": {
+    "TRAVEL": "旅行",
+    "SHOPPING": "ショッピング",
+    "RESTAURANT": "レストラン",
+    "BUSINESS": "ビジネス",
+    "DAILY_LIFE": "日常生活",
+    "EMERGENCY": "緊急",
+    "TRANSPORTATION": "交通",
+    "HEALTHCARE": "医療"
+  },
+  "a11y": {
+    "skipToMain": "メインコンテンツへスキップ",
+    "mainContent": "メインコンテンツ",
+    "sidebarNav": "サイドバー",
+    "primaryNav": "メインナビゲーション"
   }
 }

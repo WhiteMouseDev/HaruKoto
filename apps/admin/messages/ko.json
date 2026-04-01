@@ -39,7 +39,8 @@
     "categoryLabel": "카테고리",
     "categoryAll": "전체 카테고리",
     "statusLabel": "상태",
-    "statusAll": "전체 상태"
+    "statusAll": "전체 상태",
+    "searchLabel": "검색"
   },
   "status": {
     "needsReview": "검토 필요",
@@ -51,7 +52,22 @@
     "paginationPrev": "이전",
     "paginationNext": "다음",
     "itemsPerPage": "건 / 페이지",
-    "totalItems": "총 {n}건"
+    "totalItems": "총 {n}건",
+    "col": {
+      "word": "단어",
+      "reading": "읽기",
+      "meaningKo": "의미",
+      "pattern": "패턴",
+      "explanation": "설명",
+      "sentence": "문제문",
+      "quizType": "종류",
+      "title": "제목",
+      "category": "카테고리",
+      "status": "상태",
+      "updatedAt": "수정일"
+    },
+    "selectAll": "전체 선택",
+    "selectRow": "{id} 행 선택"
   },
   "empty": {
     "heading": "데이터가 없습니다",
@@ -115,6 +131,12 @@
       "aiRole": "AI 역할",
       "systemPrompt": "시스템 프롬프트",
       "keyExpressions": "핵심 표현 (JSON)"
+    },
+    "noChanges": "변경사항이 없습니다",
+    "placeholder": {
+      "options": "[\"선택지1\",\"선택지2\"]",
+      "keyExpressions": "[\"표현1\",\"표현2\"]",
+      "tokens": "[\"토큰1\",\"토큰2\"]"
     }
   },
   "review": {
@@ -137,7 +159,8 @@
     "exitQueue": "큐 종료",
     "autoAdvance": "다음 항목으로 이동합니다",
     "queueComplete": "모든 항목의 리뷰가 완료되었습니다",
-    "queueLoadError": "리뷰 큐를 불러오지 못했습니다. 페이지를 새로고침해주세요."
+    "queueLoadError": "리뷰 큐를 불러오지 못했습니다. 페이지를 새로고침해주세요.",
+    "cancel": "취소"
   },
   "audit": {
     "title": "변경 이력",
@@ -173,5 +196,30 @@
       "situation": "상황",
       "exampleSentences": "예문"
     }
+  },
+  "validation": {
+    "invalidJsonArray": "유효한 JSON 배열을 입력하세요"
+  },
+  "time": {
+    "justNow": "방금 전",
+    "minutesAgo": "{n}분 전",
+    "hoursAgo": "{n}시간 전",
+    "daysAgo": "{n}일 전"
+  },
+  "category": {
+    "TRAVEL": "여행",
+    "SHOPPING": "쇼핑",
+    "RESTAURANT": "레스토랑",
+    "BUSINESS": "비즈니스",
+    "DAILY_LIFE": "일상생활",
+    "EMERGENCY": "긴급",
+    "TRANSPORTATION": "교통",
+    "HEALTHCARE": "의료"
+  },
+  "a11y": {
+    "skipToMain": "메인 콘텐츠로 건너뛰기",
+    "mainContent": "메인 콘텐츠",
+    "sidebarNav": "사이드바",
+    "primaryNav": "기본 탐색"
   }
 }
