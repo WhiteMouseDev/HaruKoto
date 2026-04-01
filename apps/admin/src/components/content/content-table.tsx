@@ -54,6 +54,7 @@ export function ContentTable<T extends { id: string }>({
   const tEmpty = useTranslations('empty');
   const tError = useTranslations('error');
   const tReview = useTranslations('review');
+  const tTable = useTranslations('table');
 
   const router = useRouter();
   const pathname = usePathname();
@@ -174,7 +175,7 @@ export function ContentTable<T extends { id: string }>({
                       <Checkbox
                         checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                         onCheckedChange={toggleAll}
-                        aria-label="全て選択"
+                        aria-label={tTable('selectAll')}
                       />
                     )}
                   </TableHead>
@@ -272,7 +273,7 @@ export function ContentTable<T extends { id: string }>({
                         <Checkbox
                           checked={selectedIds.has(item.id)}
                           onCheckedChange={() => toggleOne(item.id)}
-                          aria-label={`行 ${item.id} を選択`}
+                          aria-label={tTable('selectRow', { id: item.id })}
                         />
                       </TableCell>
                     ) : (

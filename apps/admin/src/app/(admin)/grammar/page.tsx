@@ -21,12 +21,12 @@ function GrammarContent() {
   const columns: Column<GrammarItem>[] = [
     {
       key: 'pattern',
-      header: 'パターン',
+      header: t('col.pattern'),
       width: '20%',
     },
     {
       key: 'explanation',
-      header: '説明',
+      header: t('col.explanation'),
       width: '30%',
       render: (item) => (
         <span className="truncate text-muted-foreground">{item.explanation}</span>
@@ -43,7 +43,7 @@ function GrammarContent() {
     },
     {
       key: 'reviewStatus',
-      header: 'ステータス',
+      header: t('col.status'),
       width: '15%',
       sortKey: 'review_status',
       render: (item) => (
@@ -54,7 +54,7 @@ function GrammarContent() {
     },
     {
       key: 'updatedAt',
-      header: '更新日',
+      header: t('col.updatedAt'),
       width: '12%',
       sortKey: 'created_at',
       render: (item) => (

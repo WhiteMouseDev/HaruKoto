@@ -67,7 +67,7 @@ export function RejectReasonDialog({
             onClick={() => handleOpenChange(false)}
             disabled={isLoading}
           >
-            キャンセル
+            {t('cancel')}
           </Button>
           <Button
             variant="destructive"

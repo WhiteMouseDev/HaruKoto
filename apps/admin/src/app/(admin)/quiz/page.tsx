@@ -21,7 +21,7 @@ function QuizContent() {
   const columns: Column<QuizItem>[] = [
     {
       key: 'sentence',
-      header: '問題文',
+      header: t('col.sentence'),
       width: '30%',
       render: (item) => (
         <span className="truncate">{item.sentence}</span>
@@ -29,7 +29,7 @@ function QuizContent() {
     },
     {
       key: 'quizType',
-      header: '種類',
+      header: t('col.quizType'),
       width: '12%',
       render: (item) => (
         <span className="text-xs text-muted-foreground">
@@ -48,7 +48,7 @@ function QuizContent() {
     },
     {
       key: 'reviewStatus',
-      header: 'ステータス',
+      header: t('col.status'),
       width: '15%',
       sortKey: 'review_status',
       render: (item) => (
@@ -59,7 +59,7 @@ function QuizContent() {
     },
     {
       key: 'updatedAt',
-      header: '更新日',
+      header: t('col.updatedAt'),
       width: '12%',
       sortKey: 'created_at',
       render: (item) => (

@@ -19,22 +19,19 @@ function getDotClass(action: string): string {
   return 'bg-blue-500';
 }
 
-function formatRelativeTime(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60_000);
-  const diffH = Math.floor(diffMin / 60);
-  const diffD = Math.floor(diffH / 24);
-
-  if (diffMin < 1) return 'たった今';
-  if (diffMin < 60) return `${diffMin}分前`;
-  if (diffH < 24) return `${diffH}時間前`;
-  return `${diffD}日前`;
-}
-
 export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
   const t = useTranslations('audit');
+  const tTime = useTranslations('time');
+
+  function formatRelativeTime(dateStr: string): string {
+    const diffMs = Date.now() - new Date(dateStr).getTime();
+    const diffMin = Math.floor(diffMs / 60_000);
+    if (diffMin < 1) return tTime('justNow');
+    if (diffMin < 60) return tTime('minutesAgo', { n: diffMin });
+    const diffH = Math.floor(diffMin / 60);
+    if (diffH < 24) return tTime('hoursAgo', { n: diffH });
+    return tTime('daysAgo', { n: Math.floor(diffH / 24) });
+  }
 
   if (isLoading) {
     return (

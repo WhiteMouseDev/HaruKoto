@@ -21,17 +21,17 @@ function VocabularyContent() {
   const columns: Column<VocabularyItem>[] = [
     {
       key: 'word',
-      header: '単語',
+      header: t('col.word'),
       width: '15%',
     },
     {
       key: 'reading',
-      header: '読み方',
+      header: t('col.reading'),
       width: '15%',
     },
     {
       key: 'meaningKo',
-      header: '意味',
+      header: t('col.meaningKo'),
       width: '25%',
       render: (item) => (
         <span className="text-muted-foreground">{item.meaningKo}</span>
@@ -48,7 +48,7 @@ function VocabularyContent() {
     },
     {
       key: 'reviewStatus',
-      header: 'ステータス',
+      header: t('col.status'),
       width: '15%',
       sortKey: 'review_status',
       render: (item) => (
@@ -59,7 +59,7 @@ function VocabularyContent() {
     },
     {
       key: 'updatedAt',
-      header: '更新日',
+      header: t('col.updatedAt'),
       width: '12%',
       sortKey: 'created_at',
       render: (item) => (

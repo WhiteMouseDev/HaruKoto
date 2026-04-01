@@ -11,29 +11,24 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { useContentList } from '@/hooks/use-content-list';
 import type { ConversationItem } from '@/lib/api/admin-content';
 
-// ScenarioCategory values from the API
-const SCENARIO_CATEGORIES = [
-  { value: 'TRAVEL', label: '旅行' },
-  { value: 'SHOPPING', label: 'ショッピング' },
-  { value: 'RESTAURANT', label: 'レストラン' },
-  { value: 'BUSINESS', label: 'ビジネス' },
-  { value: 'DAILY_LIFE', label: '日常生活' },
-  { value: 'EMERGENCY', label: '緊急' },
-  { value: 'TRANSPORTATION', label: '交通' },
-  { value: 'HEALTHCARE', label: '医療' },
-];
-
 function ConversationContent() {
   const t = useTranslations('table');
+  const tCat = useTranslations('category');
   const { data, isLoading, isError, error, refetch } =
     useContentList<ConversationItem>('conversation');
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get('page') ?? '1');
 
+  // ScenarioCategory values from the API — labels via i18n
+  const SCENARIO_CATEGORIES = [
+    'TRAVEL', 'SHOPPING', 'RESTAURANT', 'BUSINESS',
+    'DAILY_LIFE', 'EMERGENCY', 'TRANSPORTATION', 'HEALTHCARE',
+  ].map((key) => ({ value: key, label: tCat(key) }));
+
   const columns: Column<ConversationItem>[] = [
     {
       key: 'title',
-      header: 'タイトル',
+      header: t('col.title'),
       width: '25%',
       render: (item) => (
         <span className="truncate">{item.title}</span>
@@ -41,17 +36,14 @@ function ConversationContent() {
     },
     {
       key: 'category',
-      header: 'カテゴリ',
+      header: t('col.category'),
       width: '15%',
       sortKey: 'category',
-      render: (item) => {
-        const cat = SCENARIO_CATEGORIES.find((c) => c.value === item.category);
-        return (
-          <span className="text-sm">
-            {cat?.label ?? item.category}
-          </span>
-        );
-      },
+      render: (item) => (
+        <span className="text-sm">
+          {tCat(item.category)}
+        </span>
+      ),
     },
     {
       key: 'jlptLevel',
@@ -63,7 +55,7 @@ function ConversationContent() {
     },
     {
       key: 'reviewStatus',
-      header: 'ステータス',
+      header: t('col.status'),
       width: '15%',
       sortKey: 'review_status',
       render: (item) => (
@@ -74,7 +66,7 @@ function ConversationContent() {
     },
     {
       key: 'updatedAt',
-      header: '更新日',
+      header: t('col.updatedAt'),
       width: '12%',
       sortKey: 'created_at',
       render: (item) => (
