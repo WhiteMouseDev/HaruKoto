@@ -190,7 +190,7 @@ Plans:
 
 Plans:
 - [x] 07-01-PLAN.md — Locale files: add all new i18n keys (table.col, edit, validation, time, category, a11y) + key parity and hardcoded string detection tests
-- [ ] 07-02-PLAN.md — i18n string replacements: table headers, toasts, Zod errors, placeholders, aria-labels, cancel, audit timeline, categories
+- [x] 07-02-PLAN.md — i18n string replacements: table headers, toasts, Zod errors, placeholders, aria-labels, cancel, audit timeline, categories
 - [x] 07-03-PLAN.md — Accessibility: aria-current on sidebar, skip link, landmark aria-labels, search input label + a11y tests
 
 **UI hint**: yes
