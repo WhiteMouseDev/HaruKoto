@@ -156,7 +156,7 @@ Plans:
 
 - [ ] **Phase 6: TTS Per-Field Audio** - TtsAudio DB 스키마 확장, FastAPI API 변경, 프론트엔드 훅·컴포넌트 업데이트
 - [ ] **Phase 7: i18n Completion & Accessibility** - 하드코딩 일본어 번역 완성, aria-current·skip link·랜드마크·검색 라벨 추가
-- [ ] **Phase 8: i18n Gap Closure — TTS Hook Toast** - useTtsPlayer 하드코딩 일본어 toast를 i18n으로 교체, 테스트 scope 확장
+- [x] **Phase 8: i18n Gap Closure — TTS Hook Toast** - useTtsPlayer 하드코딩 일본어 toast를 i18n으로 교체, 테스트 scope 확장 (completed 2026-04-02)
 
 ## Phase Details
 
@@ -208,7 +208,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md — Replace hardcoded Japanese toast in useTtsPlayer with i18n + extend hardcoded-strings test to .ts files
+- [x] 08-01-PLAN.md — Replace hardcoded Japanese toast in useTtsPlayer with i18n + extend hardcoded-strings test to .ts files
 
 ## Progress
 
@@ -224,4 +224,4 @@ Phases execute in numeric order: 6 → 7 → 8
 | 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 6. TTS Per-Field Audio | v1.1 | 0/2 | Planning | - |
 | 7. i18n Completion & Accessibility | v1.1 | 2/3 | In Progress|  |
-| 8. i18n Gap Closure — TTS Hook Toast | v1.1 | 0/1 | Planning | - |
+| 8. i18n Gap Closure — TTS Hook Toast | v1.1 | 1/1 | Complete   | 2026-04-02 |

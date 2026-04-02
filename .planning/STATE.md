@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality & Polish
 status: verifying
-stopped_at: Phase 8 context gathered
-last_updated: "2026-04-02T02:06:44.631Z"
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-04-02T02:26:31.400Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 3
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-30)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 07 — i18n-completion-accessibility
+**Current focus:** Phase 08 — i18n-gap-closure-tts-hook-toast
 
 ## Current Position
 
-Phase: 07
-Plan: Not started
+Phase: 08 (i18n-gap-closure-tts-hook-toast) — EXECUTING
+Plan: 1 of 1
 Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 07-i18n-completion-accessibility P01 | 3m | 2 tasks | 5 files |
 | Phase 07-i18n-completion-accessibility P03 | 8m | 2 tasks | 8 files |
 | Phase 07-i18n-completion-accessibility P02 | 7m | 2 tasks | 12 files |
+| Phase 08 P01 | 5m | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 07-03]: Used plain HTML label with sr-only class for search input — avoids shadcn Label overhead for a visually hidden element
 - [Phase 07-02]: Zod schemas with i18n errors require useMemo([tVal]) — module-level schemas can't use hooks
 - [Phase 07-02]: formatRelativeTime extracted as pure function with tTime param to satisfy react-hooks/purity rule
+- [Phase 08]: Use flat keys regenerateSuccess/regenerateError (already in all 3 locale files) to avoid key duplication
+- [Phase 08]: Drop err.message from onError in useTtsPlayer — always show i18n message; server error detail not needed by end users
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T02:06:44.628Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-i18n-gap-closure-tts-hook-toast/08-CONTEXT.md
+Last session: 2026-04-02T02:26:31.397Z
+Stopped at: Completed 08-01-PLAN.md
+Resume file: None
