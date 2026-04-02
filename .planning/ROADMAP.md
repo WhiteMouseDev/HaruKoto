@@ -205,7 +205,10 @@ Plans:
   1. TTS 재생성 성공/실패 toast가 선택된 locale(ko/ja/en)에 맞게 표시된다
   2. useTtsPlayer hook에 하드코딩 CJK 문자열이 없다
   3. hardcoded-strings.test.ts가 .tsx + .ts 파일 모두 스캔하고 통과한다
-**Plans**: 0 plans
+**Plans**: 1 plan
+
+Plans:
+- [ ] 08-01-PLAN.md — Replace hardcoded Japanese toast in useTtsPlayer with i18n + extend hardcoded-strings test to .ts files
 
 ## Progress
 
@@ -221,4 +224,4 @@ Phases execute in numeric order: 6 → 7 → 8
 | 5. Reviewer Productivity | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 6. TTS Per-Field Audio | v1.1 | 0/2 | Planning | - |
 | 7. i18n Completion & Accessibility | v1.1 | 2/3 | In Progress|  |
-| 8. i18n Gap Closure — TTS Hook Toast | v1.1 | 0/0 | Not Started | - |
+| 8. i18n Gap Closure — TTS Hook Toast | v1.1 | 0/1 | Planning | - |
