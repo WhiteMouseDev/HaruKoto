@@ -23,6 +23,7 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - 프로덕션 수준 UI (sticky 사이드바, 색상 계층, WCAG 대비)
 
 **Phase 6 complete (2026-03-31)** — 필드별 독립 TTS 오디오 생성·재생·재생성
+**Phase 7 complete (2026-04-02)** — i18n 완성 (173 키, CJK 하드코딩 제거) + 접근성 개선 (aria-current, skip link, 랜드마크, 검색 라벨)
 
 ## Requirements
 
@@ -39,8 +40,8 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 ### Active (v1.1)
 
 - ✓ 필드별 개별 TTS 오디오 (TTS-03~05) — Phase 6
-- [ ] 접근성 개선 (aria-current, skip link, nav 랜드마크, 검색 라벨)
-- [ ] 하드코딩 일본어 번역 누락 수정 (i18n 완성)
+- ✓ 접근성 개선 (A11Y-01~04) — Phase 7
+- ✓ 하드코딩 일본어 번역 완성 (I18N-04~05) — Phase 7
 
 ### Deferred
 
