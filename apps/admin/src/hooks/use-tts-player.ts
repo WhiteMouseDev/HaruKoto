@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
@@ -12,6 +13,7 @@ import {
 import { type ContentType } from '@/lib/tts-fields';
 
 export function useTtsPlayer(contentType: ContentType, itemId: string) {
+  const t = useTranslations('tts');
   const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -75,10 +77,10 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
       }
 
       setConfirmField(null);
-      toast.success('TTSを再生成しました');
+      toast.success(t('regenerateSuccess'));
     },
-    onError: (err: Error) => {
-      toast.error(err.message || '再生成に失敗しました。もう一度お試しください。');
+    onError: () => {
+      toast.error(t('regenerateError'));
       setConfirmField(null);
     },
   });
