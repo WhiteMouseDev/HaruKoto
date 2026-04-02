@@ -24,6 +24,7 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 
 **Phase 6 complete (2026-03-31)** — 필드별 독립 TTS 오디오 생성·재생·재생성
 **Phase 7 complete (2026-04-02)** — i18n 완성 (173 키, CJK 하드코딩 제거) + 접근성 개선 (aria-current, skip link, 랜드마크, 검색 라벨)
+**Phase 8 complete (2026-04-02)** — i18n 갭 클로저: TTS 훅 toast i18n 전환 + hardcoded-strings 테스트 .ts 확장
 
 ## Requirements
 
@@ -41,7 +42,7 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 
 - ✓ 필드별 개별 TTS 오디오 (TTS-03~05) — Phase 6
 - ✓ 접근성 개선 (A11Y-01~04) — Phase 7
-- ✓ 하드코딩 일본어 번역 완성 (I18N-04~05) — Phase 7
+- ✓ 하드코딩 일본어 번역 완성 (I18N-04~05) — Phase 7+8
 
 ### Deferred
 
@@ -113,4 +114,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 after Phase 6 completion*
+*Last updated: 2026-04-02 after Phase 8 completion (v1.1 milestone final phase)*
