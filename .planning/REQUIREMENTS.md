@@ -13,8 +13,8 @@
 
 ### Internationalization Completion
 
-- [ ] **I18N-04**: 모든 UI 문자열이 i18n 키를 통해 번역된다 (하드코딩 일본어 없음)
-- [ ] **I18N-05**: locale 전환 시 모든 텍스트가 선택된 언어로 표시된다
+- [x] **I18N-04**: 모든 UI 문자열이 i18n 키를 통해 번역된다 (하드코딩 일본어 없음)
+- [x] **I18N-05**: locale 전환 시 모든 텍스트가 선택된 언어로 표시된다
 
 ### Accessibility
 
@@ -47,8 +47,8 @@
 | TTS-03 | Phase 6 | Not started |
 | TTS-04 | Phase 6 | Not started |
 | TTS-05 | Phase 6 | Not started |
-| I18N-04 | Phase 8 (gap closure) | Pending |
-| I18N-05 | Phase 8 (gap closure) | Pending |
+| I18N-04 | Phase 8 (gap closure) | Complete |
+| I18N-05 | Phase 8 (gap closure) | Complete |
 | A11Y-01 | Phase 7 | Not started |
 | A11Y-02 | Phase 7 | Not started |
 | A11Y-03 | Phase 7 | Not started |
