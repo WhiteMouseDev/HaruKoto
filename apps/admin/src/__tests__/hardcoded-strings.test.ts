@@ -8,7 +8,7 @@ const ALLOWLIST = ['locale-switcher.tsx'];
 // CJK Unicode ranges: Hiragana, Katakana, CJK Unified Ideographs, Hangul Syllables, Fullwidth Forms
 const CJK_PATTERN = /[\u3000-\u9FFF\uAC00-\uD7AF\uFF00-\uFFEF]/;
 
-function findTsxFiles(dir: string): string[] {
+function findSourceFiles(dir: string): string[] {
   const results: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -17,8 +17,8 @@ function findTsxFiles(dir: string): string[] {
       entry.name !== 'node_modules' &&
       entry.name !== '__tests__'
     ) {
-      results.push(...findTsxFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith('.tsx')) {
+      results.push(...findSourceFiles(fullPath));
+    } else if (entry.isFile() && (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
       results.push(fullPath);
     }
   }
@@ -26,9 +26,9 @@ function findTsxFiles(dir: string): string[] {
 }
 
 describe('hardcoded CJK strings', () => {
-  it('no .tsx source files contain CJK characters outside allowlist', () => {
+  it('no .ts/.tsx source files contain CJK characters outside allowlist', () => {
     const srcDir = path.resolve(__dirname, '..');
-    const files = findTsxFiles(srcDir);
+    const files = findSourceFiles(srcDir);
     const violations: string[] = [];
 
     for (const filePath of files) {
