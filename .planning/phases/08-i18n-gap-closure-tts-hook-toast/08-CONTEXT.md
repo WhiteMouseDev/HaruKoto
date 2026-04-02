@@ -28,7 +28,7 @@ Gap Closure: v1.1 마일스톤 감사에서 발견된 2개 i18n 누락 수정.
 - **D-07:** `__tests__/`, `node_modules/` 디렉토리는 기존대로 제외
 
 ### Claude's Discretion
-- i18n 키 네이밍 세부 구조 (regenerate.success vs tts.regenerateSuccess 등)
+- i18n 키 네이밍 세부 구조 — **User override (2026-04-02):** 기존 flat 키 `regenerateSuccess`/`regenerateError` 사용. D-02/D-03의 nested 키 대신 기존 키 재사용 (중복 방지). locale 파일 수정 불필요.
 - 테스트 함수명 리팩토링 (findTsxFiles → findSourceFiles 등)
 
 </decisions>
