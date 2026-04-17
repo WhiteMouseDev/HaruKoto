@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -36,13 +36,18 @@ from app.schemas.quiz import (
 )
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
+from app.services.quiz_query import (
+    QuizQueryServiceError,
+    get_incomplete_quiz_session,
+    get_quiz_stats_data,
+    resume_quiz_session,
+)
 from app.services.quiz_session import (
     build_response_questions,
     extract_questions_data,
 )
 from app.services.quiz_smart import build_smart_preview_data
 from app.services.quiz_start import QuizStartServiceError, start_quiz_session, start_smart_quiz_session
-from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
 
@@ -116,46 +121,19 @@ async def get_incomplete_quiz(
     - 1문제도 안 푼 세션(좀비)은 자동 완료 처리
     - 24시간 지난 세션은 자동 완료 처리
     """
-    cutoff = datetime.now(UTC) - timedelta(hours=24)
-    result = await db.execute(
-        select(QuizSession)
-        .where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.is_(None),
-        )
-        .order_by(QuizSession.started_at.desc())
-    )
-    sessions = result.scalars().all()
-
-    valid_session = None
-    for session in sessions:
-        # Count answered questions
-        answered_result = await db.execute(select(func.count(QuizAnswer.id)).where(QuizAnswer.session_id == session.id))
-        answered_count = answered_result.scalar() or 0
-
-        # Auto-complete zombie sessions (0 answers) or stale sessions (24h+)
-        if answered_count == 0 or (session.started_at and session.started_at < cutoff):
-            session.completed_at = datetime.now(UTC)
-            continue
-
-        if valid_session is None:
-            valid_session = (session, answered_count)
-
-    await db.commit()
-
-    if not valid_session:
+    session = await get_incomplete_quiz_session(db, user)
+    if session is None:
         return {"session": None}
 
-    session, answered_count = valid_session
     return {
         "session": {
-            "id": str(session.id),
-            "quizType": enum_value(session.quiz_type),
-            "jlptLevel": enum_value(session.jlpt_level),
+            "id": session.id,
+            "quizType": session.quiz_type,
+            "jlptLevel": session.jlpt_level,
             "totalQuestions": session.total_questions,
-            "answeredCount": answered_count,
+            "answeredCount": session.answered_count,
             "correctCount": session.correct_count,
-            "startedAt": session.started_at.isoformat() if session.started_at else "",
+            "startedAt": session.started_at,
         }
     }
 
@@ -166,27 +144,18 @@ async def resume_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    session = await db.get(QuizSession, body.session_id)
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
-    if session.completed_at:
-        raise HTTPException(status_code=400, detail="이미 완료된 세션입니다")
-
-    answered_result = await db.execute(select(QuizAnswer.question_id).where(QuizAnswer.session_id == session.id))
-    answered_ids = [str(qid) for qid in answered_result.scalars().all()]
-
-    questions = extract_questions_data(session.questions_data)
-    response_questions = build_response_questions(questions)
-
-    quiz_type = enum_value(session.quiz_type)
+    try:
+        result = await resume_quiz_session(db, user, body)
+    except QuizQueryServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return {
-        "sessionId": str(session.id),
-        "questions": [q.model_dump(by_alias=True) for q in response_questions],
-        "answeredQuestionIds": answered_ids,
-        "totalQuestions": session.total_questions,
-        "correctCount": session.correct_count,
-        "quizType": quiz_type,
+        "sessionId": result.session_id,
+        "questions": [question.model_dump(by_alias=True) for question in result.questions],
+        "answeredQuestionIds": result.answered_question_ids,
+        "totalQuestions": result.total_questions,
+        "correctCount": result.correct_count,
+        "quizType": result.quiz_type,
     }
 
 
@@ -197,68 +166,24 @@ async def get_quiz_stats(
     level: str | None = None,
     quiz_type: Annotated[str | None, Query(alias="type")] = None,
 ):
-    # If level and type provided, return content-level stats
+    result = await get_quiz_stats_data(
+        db,
+        user,
+        level=level,
+        quiz_type=quiz_type,
+    )
     if level and quiz_type:
-        if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            total_result = await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == level))
-            total_count = total_result.scalar() or 0
-
-            studied_result = await db.execute(
-                select(func.count(UserVocabProgress.id))
-                .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == level,
-                )
-            )
-            studied_count = studied_result.scalar() or 0
-        else:
-            # GRAMMAR
-            total_result = await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == level))
-            total_count = total_result.scalar() or 0
-
-            studied_result = await db.execute(
-                select(func.count(UserGrammarProgress.id))
-                .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == level,
-                )
-            )
-            studied_count = studied_result.scalar() or 0
-
-        progress = round(studied_count / total_count * 100) if total_count > 0 else 0
         return {
-            "totalCount": total_count,
-            "studiedCount": studied_count,
-            "progress": progress,
+            "totalCount": result.total_count,
+            "studiedCount": result.studied_count,
+            "progress": result.progress,
         }
 
-    # Default: overall quiz stats
-    total_result = await db.execute(
-        select(func.count(QuizSession.id)).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.isnot(None),
-        )
-    )
-    total_result2 = await db.execute(
-        select(
-            func.sum(QuizSession.correct_count),
-            func.sum(QuizSession.total_questions),
-        ).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.isnot(None),
-        )
-    )
-    row = total_result2.one()
-    total_correct = row[0] or 0
-    total_questions = row[1] or 0
-
     return {
-        "totalQuizzes": total_result.scalar() or 0,
-        "totalCorrect": total_correct,
-        "totalQuestions": total_questions,
-        "accuracy": (total_correct / total_questions * 100) if total_questions > 0 else 0,
+        "totalQuizzes": result.total_quizzes,
+        "totalCorrect": result.total_correct,
+        "totalQuestions": result.total_questions,
+        "accuracy": result.accuracy,
     }
 
 
