@@ -1,8 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
-import 'package:harukoto_mobile/features/study/data/study_repository.dart';
+import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
@@ -224,9 +223,7 @@ LessonDetailModel _buildDetail({
   );
 }
 
-class _FakeStudyRepository extends StudyRepository {
-  _FakeStudyRepository() : super(Dio());
-
+class _FakeStudyRepository extends Fake implements StudyRepository {
   int startLessonCalls = 0;
   int submitLessonCalls = 0;
   String? submittedLessonId;

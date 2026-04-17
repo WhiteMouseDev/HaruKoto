@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+
+import '../domain/study_repository.dart';
 import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
@@ -10,13 +12,14 @@ import 'models/word_entry_model.dart';
 import 'models/wordbook_entry_model.dart';
 import 'models/recommendation_model.dart';
 
-class StudyRepository {
+class ApiStudyRepository implements StudyRepository {
   final Dio _dio;
 
-  StudyRepository(this._dio);
+  ApiStudyRepository(this._dio);
 
   // ── Stages ──
 
+  @override
   Future<List<StageModel>> fetchStages(
       String category, String jlptLevel) async {
     final response = await _dio.get<List<dynamic>>(
@@ -30,6 +33,7 @@ class StudyRepository {
 
   // ── Quiz ──
 
+  @override
   Future<IncompleteSessionModel?> fetchIncompleteQuiz() async {
     final response = await _dio.get<Map<String, dynamic>>('/quiz/incomplete');
     final session = response.data!['session'];
@@ -37,6 +41,7 @@ class StudyRepository {
     return IncompleteSessionModel.fromJson(session as Map<String, dynamic>);
   }
 
+  @override
   Future<StudyStatsModel> fetchQuizStats(String level, String type) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/quiz/stats',
@@ -45,6 +50,7 @@ class StudyRepository {
     return StudyStatsModel.fromJson(response.data!);
   }
 
+  @override
   Future<RecommendationModel> fetchRecommendations() async {
     final response =
         await _dio.get<Map<String, dynamic>>('/quiz/recommendations');
@@ -53,6 +59,7 @@ class StudyRepository {
 
   // ── Smart Quiz ──
 
+  @override
   Future<SmartPreviewModel> fetchSmartPreview({
     String category = 'VOCABULARY',
     String jlptLevel = 'N5',
@@ -64,6 +71,7 @@ class StudyRepository {
     return SmartPreviewModel.fromJson(response.data!);
   }
 
+  @override
   Future<({String sessionId, List<QuizQuestionModel> questions})>
       startSmartQuiz({
     String category = 'VOCABULARY',
@@ -87,6 +95,7 @@ class StudyRepository {
     );
   }
 
+  @override
   Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
     required String quizType,
     required String jlptLevel,
@@ -133,6 +142,7 @@ class StudyRepository {
     );
   }
 
+  @override
   Future<
       ({
         String sessionId,
@@ -159,6 +169,7 @@ class StudyRepository {
     );
   }
 
+  @override
   Future<void> answerQuestion({
     required String sessionId,
     required String questionId,
@@ -177,6 +188,7 @@ class StudyRepository {
     });
   }
 
+  @override
   Future<QuizResultModel> completeQuiz(
     String sessionId, {
     String? stageId,
@@ -191,6 +203,7 @@ class StudyRepository {
     return QuizResultModel.fromJson(response.data!);
   }
 
+  @override
   Future<List<WrongAnswerModel>> fetchWrongAnswersBySession(
       String sessionId) async {
     final response = await _dio.get<Map<String, dynamic>>(
@@ -205,6 +218,7 @@ class StudyRepository {
 
   // ── Wrong Answers Page ──
 
+  @override
   Future<
       ({
         List<WrongEntryModel> entries,
@@ -234,6 +248,7 @@ class StudyRepository {
 
   // ── Learned Words ──
 
+  @override
   Future<
       ({
         List<LearnedWordModel> entries,
@@ -273,6 +288,7 @@ class StudyRepository {
 
   // ── Wordbook ──
 
+  @override
   Future<
       ({
         List<WordbookEntryModel> entries,
@@ -307,6 +323,7 @@ class StudyRepository {
     );
   }
 
+  @override
   Future<void> addWord({
     required String word,
     required String reading,
@@ -323,12 +340,14 @@ class StudyRepository {
     });
   }
 
+  @override
   Future<void> deleteWord(String id) async {
     await _dio.delete('/wordbook/$id');
   }
 
   // ── TTS ──
 
+  @override
   Future<String> fetchTtsUrl(String vocabId) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/vocab/tts',
@@ -339,6 +358,7 @@ class StudyRepository {
 
   // ── Review Summary ──
 
+  @override
   Future<ReviewSummaryModel> fetchReviewSummary(String jlptLevel) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/lessons/review/summary',
@@ -349,6 +369,7 @@ class StudyRepository {
 
   // ── Lessons ──
 
+  @override
   Future<ChapterListModel> fetchChapters(String jlptLevel) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/lessons/chapters',
@@ -357,6 +378,7 @@ class StudyRepository {
     return ChapterListModel.fromJson(response.data!);
   }
 
+  @override
   Future<LessonDetailModel> fetchLessonDetail(String lessonId) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/lessons/$lessonId',
@@ -364,6 +386,7 @@ class StudyRepository {
     return LessonDetailModel.fromJson(response.data!);
   }
 
+  @override
   Future<LessonProgressModel> startLesson(String lessonId) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/lessons/$lessonId/start',
@@ -371,6 +394,7 @@ class StudyRepository {
     return LessonProgressModel.fromJson(response.data!);
   }
 
+  @override
   Future<LessonSubmitResultModel> submitLesson(
     String lessonId,
     List<Map<String, dynamic>> answers,

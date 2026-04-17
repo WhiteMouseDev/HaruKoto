@@ -300,6 +300,70 @@ async def test_get_quiz_stats(client, mock_user, test_user_id):
 
 
 @pytest.mark.asyncio
+async def test_get_smart_preview_vocabulary(client, mock_user, test_user_id):
+    """Test GET /api/v1/quiz/smart-preview returns the expected smart quiz preview shape."""
+    from app.main import app
+
+    mock_session = AsyncMock()
+
+    mock_studied_ids_result = MagicMock()
+    mock_studied_ids_result.scalars.return_value.all.return_value = [uuid.uuid4(), uuid.uuid4()]
+
+    mock_total_result = MagicMock()
+    mock_total_result.scalar.return_value = 12
+
+    mock_review_result = MagicMock()
+    mock_review_result.scalar.return_value = 3
+
+    mock_retry_result = MagicMock()
+    mock_retry_result.scalar.return_value = 1
+
+    mock_studied_result = MagicMock()
+    mock_studied_result.scalar.return_value = 5
+
+    mock_mastered_result = MagicMock()
+    mock_mastered_result.scalar.return_value = 2
+
+    mock_today_result = MagicMock()
+    mock_today_result.scalar.return_value = 4
+
+    mock_session.execute = AsyncMock(
+        side_effect=[
+            mock_studied_ids_result,
+            mock_total_result,
+            mock_review_result,
+            mock_retry_result,
+            mock_studied_result,
+            mock_mastered_result,
+            mock_today_result,
+        ]
+    )
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get(
+        "/api/v1/quiz/smart-preview",
+        params={"category": "VOCABULARY", "jlptLevel": "N5"},
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["poolSize"] == {"newReady": 10, "reviewDue": 3, "retryDue": 1}
+    assert data["sessionDistribution"] == {"new": 2, "review": 3, "retry": 1, "total": 6}
+    assert data["dailyGoal"] == 10
+    assert data["todayCompleted"] == 4
+    assert data["overallProgress"] == {
+        "total": 12,
+        "studied": 5,
+        "mastered": 2,
+        "percentage": 42,
+    }
+
+
+@pytest.mark.asyncio
 async def test_answer_question_session_not_found(client, mock_user, test_user_id):
     """Test POST /api/v1/quiz/answer returns 404 for missing session."""
     from app.main import app

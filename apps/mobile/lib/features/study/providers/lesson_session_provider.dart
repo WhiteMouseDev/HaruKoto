@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../home/providers/home_provider.dart';
 import '../data/models/lesson_models.dart';
+import '../domain/lesson_flow_policy.dart';
 import 'study_provider.dart';
 
 enum LessonStep {
@@ -13,22 +14,6 @@ enum LessonStep {
   matching,
   sentenceReorder,
   result,
-}
-
-List<LessonQuestionModel> lessonRecognitionQuestions(
-  LessonDetailModel detail,
-) {
-  return detail.content.questions
-      .where((q) => q.type == 'VOCAB_MCQ' || q.type == 'CONTEXT_CLOZE')
-      .toList();
-}
-
-List<LessonQuestionModel> lessonReorderQuestions(
-  LessonDetailModel detail,
-) {
-  return detail.content.questions
-      .where((q) => q.type == 'SENTENCE_REORDER')
-      .toList();
 }
 
 class LessonSessionState {
@@ -119,8 +104,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   Future<void> startPractice(LessonDetailModel detail) async {
-    final hasRecognitionStep = lessonRecognitionQuestions(detail).isNotEmpty;
-    final hasReorderStep = lessonReorderQuestions(detail).isNotEmpty;
+    final practicePlan = buildLessonPracticePlan(detail);
 
     try {
       await ref.read(studyRepositoryProvider).startLesson(detail.id);
@@ -129,9 +113,11 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     }
 
     state = LessonSessionState(
-      step: hasRecognitionStep ? LessonStep.recognition : LessonStep.matching,
-      hasRecognitionStep: hasRecognitionStep,
-      hasReorderStep: hasReorderStep,
+      step: practicePlan.hasRecognitionStep
+          ? LessonStep.recognition
+          : LessonStep.matching,
+      hasRecognitionStep: practicePlan.hasRecognitionStep,
+      hasReorderStep: practicePlan.hasReorderStep,
     );
   }
 

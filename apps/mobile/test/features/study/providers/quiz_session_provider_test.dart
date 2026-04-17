@@ -1,9 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
-import 'package:harukoto_mobile/features/study/data/study_repository.dart';
+import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
@@ -165,9 +164,7 @@ void main() {
   });
 }
 
-class _FakeStudyRepository extends StudyRepository {
-  _FakeStudyRepository() : super(Dio());
-
+class _FakeStudyRepository extends Fake implements StudyRepository {
   final questions = const [
     QuizQuestionModel(
       questionId: 'q1',

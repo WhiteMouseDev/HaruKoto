@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/dio_provider.dart';
+import '../domain/study_repository.dart';
 import '../data/study_repository.dart';
 import '../data/models/lesson_models.dart';
 import '../data/models/quiz_session_model.dart';
@@ -8,8 +9,8 @@ import '../data/models/review_summary_model.dart';
 import '../data/models/smart_preview_model.dart';
 import '../data/models/stage_model.dart';
 
-final studyRepositoryProvider = Provider((ref) {
-  return StudyRepository(ref.watch(dioProvider));
+final studyRepositoryProvider = Provider<StudyRepository>((ref) {
+  return ApiStudyRepository(ref.watch(dioProvider));
 });
 
 final incompleteQuizProvider =

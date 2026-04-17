@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import contextlib
-import random
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
@@ -14,13 +13,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import (
-    ClozeQuestion,
     DailyProgress,
     Grammar,
     QuizAnswer,
     QuizSession,
-    SentenceArrangeQuestion,
-    StudyStage,
     UserGrammarProgress,
     UserStudyStageProgress,
     UserVocabProgress,
@@ -28,15 +24,12 @@ from app.models import (
 )
 from app.models.user import User
 from app.schemas.quiz import (
-    MatchingPair,
     OverallProgress,
     PoolSize,
     QuizAnswerRequest,
     QuizAnswerResponse,
     QuizCompleteRequest,
     QuizCompleteResponse,
-    QuizOption,
-    QuizQuestion,
     QuizResumeRequest,
     QuizStartRequest,
     QuizStartResponse,
@@ -44,397 +37,24 @@ from app.schemas.quiz import (
     SmartPreviewResponse,
     SmartStartRequest,
 )
-from app.services.distractor import generate_distractors
 from app.services.gamification import (
     calculate_level,
     check_and_grant_achievements,
     update_streak,
 )
+from app.services.quiz_policy import apply_srs_update
+from app.services.quiz_session import (
+    build_response_questions,
+    extract_questions_data,
+)
+from app.services.quiz_smart import build_smart_preview_data
+from app.services.quiz_start import QuizStartServiceError, start_quiz_session, start_smart_quiz_session
 from app.services.srs import log_review_event
-from app.utils.constants import QUIZ_CONFIG, REWARDS, SMART_QUIZ, SRS_CONFIG
+from app.utils.constants import REWARDS
 from app.utils.date import get_today_kst
 from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
-
-
-def _shuffle(items: list) -> list:
-    result = items.copy()
-    random.shuffle(result)
-    return result
-
-
-def _apply_srs_update(
-    progress: UserVocabProgress | UserGrammarProgress,
-    is_correct: bool,
-    time_spent_seconds: int,
-    now: datetime,
-) -> None:
-    """SM-2 v2 algorithm with speed-based quality and Lapse Multiplier.
-
-    When FSRS_ENABLED=True, this will be replaced by FSRS scheduling.
-    Currently SM-2 only, with state dual-write for migration preparation.
-    """
-    # TODO: When FSRS_ENABLED, use fsrs.review_card() instead of SM-2
-    # from app.config import settings
-    # if settings.FSRS_ENABLED and getattr(progress, 'scheduler_version', 'SM2') == 'FSRS':
-    #     return _apply_fsrs_update(progress, is_correct, time_spent_seconds, now)
-
-    # Calculate quality rating
-    if is_correct:
-        if time_spent_seconds <= SRS_CONFIG.SPEED_THRESHOLDS.INSTANT:
-            quality = 5
-        elif time_spent_seconds <= SRS_CONFIG.SPEED_THRESHOLDS.QUICK:
-            quality = 4
-        else:
-            quality = 3
-    else:
-        quality = 1 if progress.streak > 0 else 0
-
-    # SM-2 EF update: EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02))
-    ef = progress.ease_factor
-    ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-    ef = max(SRS_CONFIG.MIN_EASE_FACTOR, ef)
-    progress.ease_factor = round(ef, 2)
-
-    if quality < 3:  # Incorrect
-        progress.incorrect_count += 1
-        # Lapse Multiplier: preserve 10% of interval instead of full reset
-        if progress.interval > 0:
-            progress.interval = min(
-                SRS_CONFIG.LAPSE_MAX_INTERVAL,
-                max(1, round(progress.interval * SRS_CONFIG.LAPSE_MULTIPLIER)),
-            )
-        else:
-            progress.interval = 0
-        progress.streak = 0
-    else:  # Correct
-        progress.correct_count += 1
-        progress.streak += 1
-        if progress.streak == 1:
-            progress.interval = SRS_CONFIG.INITIAL_INTERVALS[0]
-        elif progress.streak == 2:
-            progress.interval = SRS_CONFIG.INITIAL_INTERVALS[1]
-        else:
-            progress.interval = round(progress.interval * ef)
-        # Instant response bonus
-        if quality == 5 and progress.interval > 3:
-            progress.interval = round(progress.interval * SRS_CONFIG.INSTANT_BONUS)
-
-    progress.next_review_at = (
-        now + timedelta(days=progress.interval) if progress.interval > 0 else now + timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES)
-    )
-    progress.last_reviewed_at = now
-    progress.mastered = progress.interval >= SRS_CONFIG.MASTERY_INTERVAL
-
-    # ── Dual-write: update state for future SRS engine migration ──
-    # Aligned with srs.py process_answer state transitions
-    current_state = getattr(progress, "state", None) or "UNSEEN"
-    if current_state == "UNSEEN":
-        progress.state = "PROVISIONAL"
-        if not getattr(progress, "introduced_by", None):
-            progress.introduced_by = "QUIZ"
-        progress.learning_step = 1 if is_correct else 0
-    elif current_state == "PROVISIONAL":
-        if is_correct:
-            step = getattr(progress, "learning_step", 0) or 0
-            if step >= 1:
-                progress.state = "LEARNING"
-                progress.learning_step = 1
-            else:
-                progress.learning_step = (step or 0) + 1
-        else:
-            progress.learning_step = 0
-    elif current_state == "LEARNING":
-        if is_correct:
-            step = getattr(progress, "learning_step", 0) or 0
-            if step >= 2 or progress.interval >= 6:
-                progress.state = "REVIEW"
-            else:
-                progress.learning_step = step + 1
-        else:
-            # Stay in LEARNING, reset step (aligned with srs.py)
-            progress.learning_step = 0
-    elif current_state == "RELEARNING":
-        if is_correct:
-            # Immediately return to REVIEW (aligned with srs.py)
-            progress.state = "REVIEW"
-        else:
-            progress.learning_step = 0
-    elif current_state == "REVIEW":
-        if is_correct and progress.mastered:
-            progress.state = "MASTERED"
-        elif not is_correct:
-            progress.state = "RELEARNING"
-            progress.learning_step = 0
-    elif current_state == "MASTERED":
-        if not is_correct:
-            progress.state = "RELEARNING"
-            progress.learning_step = 0
-
-
-def _calculate_smart_distribution(daily_goal: int, review_due: int, retry_due: int) -> dict[str, int]:
-    """Calculate optimal new/review/retry distribution for smart quiz."""
-    goal = daily_goal
-    min_new = max(2, goal // 10)
-
-    # 1. Retry: max 20% of goal
-    retry = min(retry_due, goal // 5)
-    remaining = goal - retry
-
-    # 2. Review: max 75% of remaining
-    review = min(review_due, int(remaining * SMART_QUIZ.MAX_REVIEW_RATIO))
-    remaining -= review
-
-    # 3. New: the rest
-    new = remaining
-
-    # Review debt handling
-    if review_due > review + SMART_QUIZ.DEBT_SEVERE_THRESHOLD:
-        extra = new - min_new
-        review += extra
-        new = min_new
-    elif review_due > review + SMART_QUIZ.DEBT_MILD_THRESHOLD:
-        extra_review = min(review_due - review, new // 2)
-        review += extra_review
-        new -= extra_review
-
-    return {"new": max(new, min_new), "review": review, "retry": retry}
-
-
-async def _auto_complete_sessions(db: AsyncSession, user: User) -> int:
-    """Auto-complete incomplete sessions and return aggregated XP."""
-    result = await db.execute(
-        select(QuizSession).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.is_(None),
-        )
-    )
-    incomplete = result.scalars().all()
-    total_xp = 0
-
-    for session in incomplete:
-        session.completed_at = datetime.now(UTC)
-        xp = session.correct_count * REWARDS.QUIZ_XP_PER_CORRECT
-        total_xp += xp
-
-    if total_xp > 0:
-        user.experience_points += total_xp
-        level_info = calculate_level(user.experience_points)
-        user.level = level_info["level"]
-
-    await db.flush()
-    return total_xp
-
-
-async def _generate_normal_questions(db: AsyncSession, user: User, quiz_type: str, jlpt_level: str, count: int) -> list[dict[str, Any]]:
-    """Generate mixed new + review questions for normal mode."""
-    questions: list[dict[str, Any]] = []
-    review_count = max(1, int(count * 0.2))
-    new_count = count - review_count
-
-    if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-        # Fetch review items first
-        review_result = await db.execute(
-            select(Vocabulary)
-            .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.next_review_at <= datetime.now(UTC),
-            )
-            .order_by(UserVocabProgress.next_review_at)
-            .limit(review_count)
-        )
-        review_items = review_result.scalars().all()
-
-        # Fetch new items (exclude already studied)
-        studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id))
-        studied_ids = set(studied_ids_result.scalars().all())
-
-        new_result = await db.execute(
-            select(Vocabulary)
-            .where(
-                Vocabulary.jlpt_level == jlpt_level,
-                Vocabulary.id.notin_(studied_ids) if studied_ids else True,
-            )
-            .order_by(func.random())
-            .limit(new_count)
-        )
-        new_items = new_result.scalars().all()
-
-        # Combine items
-        all_items = list(review_items) + list(new_items)
-
-        # KANJI mode: filter kanji-containing words BEFORE dedupe
-        is_kanji_mode = quiz_type == "KANJI"
-        if is_kanji_mode:
-            all_items = [v for v in all_items if v.word != v.reading]
-
-        # Deduplicate by meaning_ko (or reading for kanji)
-        seen_keys: set[str] = set()
-        unique_items = []
-        for item in all_items:
-            key = item.reading if is_kanji_mode else item.meaning_ko
-            if key not in seen_keys:
-                seen_keys.add(key)
-                unique_items.append(item)
-
-        # Get wrong options pool
-        if is_kanji_mode:
-            pool_result = await db.execute(
-                select(Vocabulary.reading)
-                .where(Vocabulary.jlpt_level == jlpt_level, Vocabulary.word != Vocabulary.reading)
-                .order_by(func.random())
-                .limit(50)
-            )
-        else:
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-        all_pool = [r for r in pool_result.scalars().all()]
-
-        for vocab in unique_items[:count]:
-            correct_text = vocab.reading if is_kanji_mode else vocab.meaning_ko
-            wrong_options = [m for m in all_pool if m != correct_text]
-            random.shuffle(wrong_options)
-            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-
-            correct_id = str(uuid.uuid4())
-            options = [QuizOption(id=correct_id, text=correct_text).model_dump()]
-            for wo in wrong_options:
-                options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-            random.shuffle(options)
-
-            questions.append(
-                {
-                    "id": str(vocab.id),
-                    "type": quiz_type,
-                    "question": vocab.word,
-                    "reading": vocab.reading if not is_kanji_mode else None,
-                    "questionSubText": None if is_kanji_mode else vocab.reading,
-                    "options": options,
-                    "correctOptionId": correct_id,
-                    "word": vocab.word,
-                    "meaningKo": vocab.meaning_ko,
-                }
-            )
-    else:
-        # Grammar
-        result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
-        items = result.scalars().all()
-
-        pool_result = await db.execute(select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50))
-        all_meanings = list(pool_result.scalars().all())
-
-        for grammar in items:
-            wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
-            random.shuffle(wrong_options)
-            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-
-            correct_id = str(uuid.uuid4())
-            options = [QuizOption(id=correct_id, text=grammar.meaning_ko).model_dump()]
-            for wo in wrong_options:
-                options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-            random.shuffle(options)
-
-            questions.append(
-                {
-                    "id": str(grammar.id),
-                    "type": quiz_type,
-                    "question": grammar.pattern,
-                    "options": options,
-                    "correctOptionId": correct_id,
-                    "pattern": grammar.pattern,
-                    "meaningKo": grammar.meaning_ko,
-                }
-            )
-
-    return questions
-
-
-async def _fetch_stage_content_ids(db: AsyncSession, stage_id: uuid.UUID) -> tuple[StudyStage | None, list[uuid.UUID]]:
-    """Fetch a StudyStage and parse its content_ids as UUIDs."""
-    stage = await db.get(StudyStage, stage_id)
-    if not stage:
-        return None, []
-    raw_ids = stage.content_ids if isinstance(stage.content_ids, list) else []
-    content_uuids = []
-    for cid in raw_ids:
-        with contextlib.suppress(ValueError):
-            content_uuids.append(uuid.UUID(str(cid)))
-    return stage, content_uuids
-
-
-async def _generate_matching_pairs(
-    db: AsyncSession,
-    stage: StudyStage,
-    content_uuids: list[uuid.UUID],
-    jlpt_level: str,
-    count: int,
-) -> tuple[list[dict[str, Any]], list[MatchingPair]]:
-    """Generate matching pairs (word + meaning) for matching quiz mode."""
-    questions: list[dict[str, Any]] = []
-    matching_pairs: list[MatchingPair] = []
-
-    category = stage.category
-
-    if category == "VOCABULARY":
-        result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for vocab in items:
-            pair_id = str(uuid.uuid4())
-            matching_pairs.append(MatchingPair(id=pair_id, word=vocab.word, meaning=vocab.meaning_ko))
-            questions.append(
-                {
-                    "id": str(vocab.id),
-                    "type": "VOCABULARY",
-                    "question": vocab.word,
-                    "questionSubText": vocab.reading,
-                    "options": [],
-                    "correctOptionId": pair_id,
-                    "word": vocab.word,
-                    "meaningKo": vocab.meaning_ko,
-                }
-            )
-
-    elif category == "GRAMMAR":
-        result = await db.execute(select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for grammar in items:
-            pair_id = str(uuid.uuid4())
-            matching_pairs.append(MatchingPair(id=pair_id, word=grammar.pattern, meaning=grammar.meaning_ko))
-            questions.append(
-                {
-                    "id": str(grammar.id),
-                    "type": "GRAMMAR",
-                    "question": grammar.pattern,
-                    "options": [],
-                    "correctOptionId": pair_id,
-                    "pattern": grammar.pattern,
-                    "meaningKo": grammar.meaning_ko,
-                }
-            )
-
-    elif category == "SENTENCE":
-        result = await db.execute(
-            select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id.in_(content_uuids)).order_by(func.random()).limit(count)
-        )
-        items = result.scalars().all()
-        for item in items:
-            pair_id = str(uuid.uuid4())
-            matching_pairs.append(MatchingPair(id=pair_id, word=item.korean_sentence, meaning=item.japanese_sentence))
-            questions.append(
-                {
-                    "id": str(item.id),
-                    "type": "SENTENCE_ARRANGE",
-                    "question": item.korean_sentence,
-                    "options": [],
-                    "correctOptionId": pair_id,
-                }
-            )
-
-    return questions, matching_pairs
 
 
 @router.post("/start", response_model=QuizStartResponse, status_code=200)
@@ -443,315 +63,18 @@ async def start_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Auto-complete incomplete sessions
-    await _auto_complete_sessions(db, user)
-
-    mode = body.mode
-    quiz_type = body.quiz_type.value
-    jlpt_level = body.jlpt_level.value
-    count = body.count
-
-    questions: list[dict[str, Any]] = []
-    matching_pairs: list[MatchingPair] | None = None
-
-    # If stage_id is provided, scope content to that stage
-    stage: StudyStage | None = None
-    stage_content_uuids: list[uuid.UUID] = []
-    if body.stage_id:
-        stage, stage_content_uuids = await _fetch_stage_content_ids(db, body.stage_id)
-        if not stage:
-            raise HTTPException(status_code=404, detail="스테이지를 찾을 수 없습니다")
-        if not stage_content_uuids:
-            raise HTTPException(status_code=400, detail="스테이지에 콘텐츠가 없습니다")
-
-    # Matching mode
-    if mode == "matching":
-        if not stage:
-            raise HTTPException(status_code=400, detail="매칭 모드는 stage_id가 필요합니다")
-        questions, matching_pairs = await _generate_matching_pairs(db, stage, stage_content_uuids, jlpt_level, count)
-
-    elif mode == "cloze":
-        query = select(ClozeQuestion).where(ClozeQuestion.jlpt_level == jlpt_level)
-        if stage_content_uuids:
-            query = query.where(ClozeQuestion.id.in_(stage_content_uuids))
-        result = await db.execute(query.order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for item in items:
-            correct_id = str(uuid.uuid4())
-            opts = []
-            for opt_text in item.options if isinstance(item.options, list) else []:
-                oid = correct_id if opt_text == item.correct_answer else str(uuid.uuid4())
-                opts.append({"id": oid, "text": opt_text})
-            questions.append(
-                {
-                    "id": str(item.id),
-                    "type": "CLOZE",
-                    "question": item.sentence,
-                    "translation": item.translation,
-                    "options": opts,
-                    "correctOptionId": correct_id,
-                    "explanation": item.explanation,
-                }
-            )
-
-    elif mode == "arrange":
-        query = select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.jlpt_level == jlpt_level)
-        if stage_content_uuids:
-            query = query.where(SentenceArrangeQuestion.id.in_(stage_content_uuids))
-        result = await db.execute(query.order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for item in items:
-            questions.append(
-                {
-                    "id": str(item.id),
-                    "type": "SENTENCE_ARRANGE",
-                    "question": item.korean_sentence,
-                    "japaneseSentence": item.japanese_sentence,
-                    "tokens": [t["text"] if isinstance(t, dict) else t for t in (item.tokens or [])],
-                    "explanation": item.explanation,
-                    "correctOptionId": "",
-                    "options": [],
-                }
-            )
-
-    elif mode == "review":
-        if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            query = (
-                select(Vocabulary)
-                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt_level,
-                    UserVocabProgress.next_review_at <= datetime.now(UTC),
-                )
-                .order_by(UserVocabProgress.next_review_at)
-            )
-            if stage_content_uuids:
-                query = query.where(Vocabulary.id.in_(stage_content_uuids))
-            result = await db.execute(query.limit(count))
-            review_items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-
-            for vocab in review_items:
-                wrong = [m for m in all_meanings if m != vocab.meaning_ko][:3]
-                correct_id = str(uuid.uuid4())
-                options = [{"id": correct_id, "text": vocab.meaning_ko}]
-                for w in wrong:
-                    options.append({"id": str(uuid.uuid4()), "text": w})
-                random.shuffle(options)
-                questions.append(
-                    {
-                        "id": str(vocab.id),
-                        "type": quiz_type,
-                        "question": vocab.word,
-                        "questionSubText": vocab.reading,
-                        "options": options,
-                        "correctOptionId": correct_id,
-                        "word": vocab.word,
-                        "meaningKo": vocab.meaning_ko,
-                    }
-                )
-        else:
-            query = (
-                select(Grammar)
-                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt_level,
-                    UserGrammarProgress.next_review_at <= datetime.now(UTC),
-                )
-            )
-            if stage_content_uuids:
-                query = query.where(Grammar.id.in_(stage_content_uuids))
-            result = await db.execute(query.limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for g in items:
-                wrong = [m for m in all_meanings if m != g.meaning_ko][:3]
-                correct_id = str(uuid.uuid4())
-                options = [{"id": correct_id, "text": g.meaning_ko}]
-                for w in wrong:
-                    options.append({"id": str(uuid.uuid4()), "text": w})
-                random.shuffle(options)
-                questions.append(
-                    {
-                        "id": str(g.id),
-                        "type": quiz_type,
-                        "question": g.pattern,
-                        "options": options,
-                        "correctOptionId": correct_id,
-                        "pattern": g.pattern,
-                        "meaningKo": g.meaning_ko,
-                    }
-                )
-    else:
-        # normal mode — optionally scoped to stage content
-        if stage_content_uuids and quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(stage_content_uuids)).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for vocab in items:
-                wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
-                random.shuffle(wrong_options)
-                wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                correct_id = str(uuid.uuid4())
-                options = [QuizOption(id=correct_id, text=vocab.meaning_ko).model_dump()]
-                for wo in wrong_options:
-                    options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-                random.shuffle(options)
-                questions.append(
-                    {
-                        "id": str(vocab.id),
-                        "type": quiz_type,
-                        "question": vocab.word,
-                        "reading": vocab.reading,
-                        "questionSubText": vocab.reading,
-                        "options": options,
-                        "correctOptionId": correct_id,
-                        "word": vocab.word,
-                        "meaningKo": vocab.meaning_ko,
-                    }
-                )
-        elif stage_content_uuids and quiz_type == "GRAMMAR":
-            result = await db.execute(select(Grammar).where(Grammar.id.in_(stage_content_uuids)).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for grammar in items:
-                wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
-                random.shuffle(wrong_options)
-                wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                correct_id = str(uuid.uuid4())
-                options = [QuizOption(id=correct_id, text=grammar.meaning_ko).model_dump()]
-                for wo in wrong_options:
-                    options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-                random.shuffle(options)
-                questions.append(
-                    {
-                        "id": str(grammar.id),
-                        "type": quiz_type,
-                        "question": grammar.pattern,
-                        "options": options,
-                        "correctOptionId": correct_id,
-                        "pattern": grammar.pattern,
-                        "meaningKo": grammar.meaning_ko,
-                    }
-                )
-        else:
-            # Normal mode without stage — random questions from content pool
-            if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-                result = await db.execute(
-                    select(Vocabulary).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(count)
-                )
-                items = result.scalars().all()
-                pool_result = await db.execute(
-                    select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-                )
-                all_meanings = list(pool_result.scalars().all())
-                for vocab in items:
-                    wrong_options = [m for m in all_meanings if m != vocab.meaning_ko]
-                    random.shuffle(wrong_options)
-                    wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                    correct_id = str(uuid.uuid4())
-                    options = [QuizOption(id=correct_id, text=vocab.meaning_ko).model_dump()]
-                    for wo in wrong_options:
-                        options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-                    random.shuffle(options)
-                    questions.append(
-                        {
-                            "id": str(vocab.id),
-                            "type": quiz_type,
-                            "question": vocab.word,
-                            "reading": vocab.reading,
-                            "questionSubText": vocab.reading,
-                            "options": options,
-                            "correctOptionId": correct_id,
-                            "word": vocab.word,
-                            "meaningKo": vocab.meaning_ko,
-                        }
-                    )
-            elif quiz_type == "GRAMMAR":
-                result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
-                items = result.scalars().all()
-                pool_result = await db.execute(
-                    select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-                )
-                all_meanings = list(pool_result.scalars().all())
-                for grammar in items:
-                    wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
-                    random.shuffle(wrong_options)
-                    wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                    correct_id = str(uuid.uuid4())
-                    options = [QuizOption(id=correct_id, text=grammar.meaning_ko).model_dump()]
-                    for wo in wrong_options:
-                        options.append(QuizOption(id=str(uuid.uuid4()), text=wo).model_dump())
-                    random.shuffle(options)
-                    questions.append(
-                        {
-                            "id": str(grammar.id),
-                            "type": quiz_type,
-                            "question": grammar.pattern,
-                            "options": options,
-                            "correctOptionId": correct_id,
-                            "pattern": grammar.pattern,
-                            "meaningKo": grammar.meaning_ko,
-                        }
-                    )
-
-    # Store stage_id in session questions_data metadata
-    session_meta: dict[str, Any] = {}
-    if body.stage_id:
-        session_meta["stage_id"] = str(body.stage_id)
-
-    # Create session
-    session = QuizSession(
-        user_id=user.id,
-        quiz_type=body.quiz_type,
-        jlpt_level=body.jlpt_level,
-        total_questions=len(questions),
-        questions_data={**session_meta, "questions": questions} if session_meta else questions,
-    )
     try:
-        db.add(session)
-        await db.commit()
-        await db.refresh(session)
-    except Exception as exc:
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다") from exc
+        result = await start_quiz_session(db, user, body)
+    except QuizStartServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    # Include correctOptionId for mobile client-side validation
-    response_questions = []
-    for q in questions:
-        response_questions.append(
-            QuizQuestion(
-                question_id=q["id"],
-                question_text=q["question"],
-                question_sub_text=q.get("questionSubText"),
-                hint=q.get("hint"),
-                options=[QuizOption(**o) for o in q["options"]],
-                correct_option_id=q.get("correctOptionId"),
-                tokens=q.get("tokens"),
-                japanese_sentence=q.get("japaneseSentence"),
-                explanation=q.get("explanation"),
-            )
-        )
+    response_questions = build_response_questions(result.questions)
 
     return QuizStartResponse(
-        session_id=session.id,
+        session_id=result.session.id,
         questions=response_questions,
-        total_questions=len(questions),
-        matching_pairs=matching_pairs,
+        total_questions=len(result.questions),
+        matching_pairs=result.matching_pairs,
     )
 
 
@@ -768,8 +91,7 @@ async def answer_quiz(
         raise HTTPException(status_code=400, detail="이미 완료된 세션입니다")
 
     # Verify answer from questionsData (handle both list and dict formats)
-    raw_data = session.questions_data or []
-    questions_data = raw_data.get("questions", raw_data) if isinstance(raw_data, dict) else raw_data
+    questions_data = extract_questions_data(session.questions_data)
     question_data = None
     for q in questions_data:
         if q["id"] == str(body.question_id):
@@ -818,7 +140,7 @@ async def answer_quiz(
             await db.flush()
 
         state_before = getattr(progress, "state", "UNSEEN") or "UNSEEN"
-        _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
+        apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
         with contextlib.suppress(Exception):
             await log_review_event(
                 db,
@@ -857,7 +179,7 @@ async def answer_quiz(
             await db.flush()
 
         state_before_g = getattr(progress, "state", "UNSEEN") or "UNSEEN"
-        _apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
+        apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
         with contextlib.suppress(Exception):
             await log_review_event(
                 db,
@@ -1117,23 +439,8 @@ async def resume_quiz(
     answered_result = await db.execute(select(QuizAnswer.question_id).where(QuizAnswer.session_id == session.id))
     answered_ids = [str(qid) for qid in answered_result.scalars().all()]
 
-    raw_q = session.questions_data or []
-    questions = raw_q.get("questions", raw_q) if isinstance(raw_q, dict) else raw_q
-    response_questions = []
-    for q in questions:
-        response_questions.append(
-            QuizQuestion(
-                question_id=q["id"],
-                question_text=q["question"],
-                question_sub_text=q.get("questionSubText"),
-                hint=q.get("hint"),
-                options=[QuizOption(**o) for o in q["options"]],
-                correct_option_id=q.get("correctOptionId"),
-                tokens=q.get("tokens"),
-                japanese_sentence=q.get("japaneseSentence"),
-                explanation=q.get("explanation"),
-            )
-        )
+    questions = extract_questions_data(session.questions_data)
+    response_questions = build_response_questions(questions)
 
     quiz_type = enum_value(session.quiz_type)
 
@@ -1237,8 +544,7 @@ async def get_wrong_answers(
     )
     wrong_answers = wrong_result.scalars().all()
 
-    raw_data = session.questions_data or []
-    questions_data = raw_data.get("questions", raw_data) if isinstance(raw_data, dict) else raw_data
+    questions_data = extract_questions_data(session.questions_data)
     q_map = {q["id"]: q for q in questions_data}
 
     # Collect vocabulary IDs from wrong answers for example sentences
@@ -1281,147 +587,32 @@ async def smart_preview(
     category: Annotated[str, Query()] = "VOCABULARY",
     jlpt_level: Annotated[str, Query(alias="jlptLevel")] = "N5",
 ):
-    """Get smart quiz preview: pool sizes, distribution, progress."""
-    now = datetime.now(UTC)
-
-    if category == "VOCABULARY":
-        # Pool 1: New words (not yet studied)
-        studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id))
-        studied_ids = set(studied_ids_result.scalars().all())
-
-        total_result = await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == jlpt_level))
-        total = total_result.scalar() or 0
-        new_ready = max(0, total - len(studied_ids))
-
-        # Pool 2: Review due (interval > 0, next_review_at <= now)
-        review_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.next_review_at <= now,
-                UserVocabProgress.interval > 0,
-            )
-        )
-        review_due = review_result.scalar() or 0
-
-        # Pool 3: Retry (interval=0, incorrect_count > 0, delay passed)
-        retry_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.interval == 0,
-                UserVocabProgress.incorrect_count > 0,
-                UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-            )
-        )
-        retry_due = retry_result.scalar() or 0
-
-        # Studied & mastered counts
-        studied_at_level_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == jlpt_level)
-        )
-        studied = studied_at_level_result.scalar() or 0
-
-        mastered_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.mastered.is_(True),
-            )
-        )
-        mastered = mastered_result.scalar() or 0
-    else:
-        # Grammar
-        studied_ids_result = await db.execute(select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id))
-        studied_ids = set(studied_ids_result.scalars().all())
-
-        total_result = await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == jlpt_level))
-        total = total_result.scalar() or 0
-        new_ready = max(0, total - len(studied_ids))
-
-        review_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(
-                UserGrammarProgress.user_id == user.id,
-                Grammar.jlpt_level == jlpt_level,
-                UserGrammarProgress.next_review_at <= now,
-                UserGrammarProgress.interval > 0,
-            )
-        )
-        review_due = review_result.scalar() or 0
-
-        retry_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(
-                UserGrammarProgress.user_id == user.id,
-                Grammar.jlpt_level == jlpt_level,
-                UserGrammarProgress.interval == 0,
-                UserGrammarProgress.incorrect_count > 0,
-                UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-            )
-        )
-        retry_due = retry_result.scalar() or 0
-
-        studied_at_level_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == jlpt_level)
-        )
-        studied = studied_at_level_result.scalar() or 0
-
-        mastered_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(
-                UserGrammarProgress.user_id == user.id,
-                Grammar.jlpt_level == jlpt_level,
-                UserGrammarProgress.mastered.is_(True),
-            )
-        )
-        mastered = mastered_result.scalar() or 0
-
-    # Today's completed count
-    today = get_today_kst()
-    today_result = await db.execute(
-        select(func.count(QuizAnswer.id))
-        .join(QuizSession, QuizSession.id == QuizAnswer.session_id)
-        .where(
-            QuizSession.user_id == user.id,
-            QuizAnswer.answered_at >= today,
-        )
+    preview = await build_smart_preview_data(
+        db,
+        user,
+        category=category,
+        jlpt_level=jlpt_level,
     )
-    today_completed = today_result.scalar() or 0
-
-    raw_goal = getattr(user, "daily_goal", None) or SMART_QUIZ.DAILY_GOAL
-    goal = max(1, raw_goal)  # Guard against 0/negative
-    remaining = max(1, goal - today_completed)
-    dist = _calculate_smart_distribution(remaining, review_due, retry_due)
 
     return SmartPreviewResponse(
-        pool_size=PoolSize(new_ready=new_ready, review_due=review_due, retry_due=retry_due),
-        session_distribution=SessionDistribution(
-            new=dist["new"],
-            review=dist["review"],
-            retry=dist["retry"],
-            total=dist["new"] + dist["review"] + dist["retry"],
+        pool_size=PoolSize(
+            new_ready=preview.pool_stats.new_ready,
+            review_due=preview.pool_stats.review_due,
+            retry_due=preview.pool_stats.retry_due,
         ),
-        daily_goal=goal,
-        today_completed=today_completed,
+        session_distribution=SessionDistribution(
+            new=preview.distribution["new"],
+            review=preview.distribution["review"],
+            retry=preview.distribution["retry"],
+            total=preview.distribution["new"] + preview.distribution["review"] + preview.distribution["retry"],
+        ),
+        daily_goal=preview.daily_goal,
+        today_completed=preview.today_completed,
         overall_progress=OverallProgress(
-            total=total,
-            studied=studied,
-            mastered=mastered,
-            percentage=round(studied / total * 100) if total > 0 else 0,
+            total=preview.pool_stats.total,
+            studied=preview.pool_stats.studied,
+            mastered=preview.pool_stats.mastered,
+            percentage=round(preview.pool_stats.studied / preview.pool_stats.total * 100) if preview.pool_stats.total > 0 else 0,
         ),
     )
 
@@ -1432,313 +623,17 @@ async def smart_start(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Start a smart quiz session with optimal new/review/retry mix."""
-    await _auto_complete_sessions(db, user)
-
-    now = datetime.now(UTC)
-    category = body.category
-    jlpt_level = body.jlpt_level.value
-    quiz_type = "VOCABULARY" if category == "VOCABULARY" else "GRAMMAR"
-
-    # Get pool sizes for distribution
-    if category == "VOCABULARY":
-        review_due_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.next_review_at <= now,
-                UserVocabProgress.interval > 0,
-            )
-        )
-        review_due = review_due_result.scalar() or 0
-
-        retry_due_result = await db.execute(
-            select(func.count(UserVocabProgress.id))
-            .join(Vocabulary, Vocabulary.id == UserVocabProgress.vocabulary_id)
-            .where(
-                UserVocabProgress.user_id == user.id,
-                Vocabulary.jlpt_level == jlpt_level,
-                UserVocabProgress.interval == 0,
-                UserVocabProgress.incorrect_count > 0,
-                UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-            )
-        )
-        retry_due = retry_due_result.scalar() or 0
-    else:
-        review_due_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(
-                UserGrammarProgress.user_id == user.id,
-                Grammar.jlpt_level == jlpt_level,
-                UserGrammarProgress.next_review_at <= now,
-                UserGrammarProgress.interval > 0,
-            )
-        )
-        review_due = review_due_result.scalar() or 0
-
-        retry_due_result = await db.execute(
-            select(func.count(UserGrammarProgress.id))
-            .join(Grammar, Grammar.id == UserGrammarProgress.grammar_id)
-            .where(
-                UserGrammarProgress.user_id == user.id,
-                Grammar.jlpt_level == jlpt_level,
-                UserGrammarProgress.interval == 0,
-                UserGrammarProgress.incorrect_count > 0,
-                UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-            )
-        )
-        retry_due = retry_due_result.scalar() or 0
-
-    dist = _calculate_smart_distribution(body.count, review_due, retry_due)
-    questions: list[dict[str, Any]] = []
-
-    if category == "VOCABULARY":
-        # Pool 2: Review items
-        if dist["review"] > 0:
-            review_result = await db.execute(
-                select(Vocabulary)
-                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt_level,
-                    UserVocabProgress.next_review_at <= now,
-                    UserVocabProgress.interval > 0,
-                )
-                .order_by(UserVocabProgress.next_review_at)
-                .limit(dist["review"])
-            )
-            review_items = list(review_result.scalars().all())
-        else:
-            review_items = []
-
-        # Pool 3: Retry items
-        if dist["retry"] > 0:
-            retry_result = await db.execute(
-                select(Vocabulary)
-                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt_level,
-                    UserVocabProgress.interval == 0,
-                    UserVocabProgress.incorrect_count > 0,
-                    UserVocabProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-                )
-                .order_by(UserVocabProgress.last_reviewed_at)
-                .limit(dist["retry"])
-            )
-            retry_items = list(retry_result.scalars().all())
-        else:
-            retry_items = []
-
-        # Pool 1: New items
-        studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id))
-        studied_ids = set(studied_ids_result.scalars().all())
-        # Exclude items already in review/retry pools
-        exclude_ids = studied_ids | {v.id for v in review_items} | {v.id for v in retry_items}
-
-        new_count_needed = dist["new"]
-        # Fallback: if review/retry pools were short, add more new
-        actual_review = len(review_items)
-        actual_retry = len(retry_items)
-        shortfall = (dist["review"] - actual_review) + (dist["retry"] - actual_retry)
-        new_count_needed += shortfall
-
-        if new_count_needed > 0:
-            new_query = select(Vocabulary).where(
-                Vocabulary.jlpt_level == jlpt_level,
-                Vocabulary.id.notin_(exclude_ids) if exclude_ids else True,
-            )
-            new_result = await db.execute(new_query.order_by(Vocabulary.id).limit(new_count_needed))
-            new_items = list(new_result.scalars().all())
-        else:
-            new_items = []
-
-        all_items = list(review_items) + list(retry_items) + list(new_items)
-
-        # Pre-fetch random pool for fallback (1 query)
-        fallback_pool_result = await db.execute(
-            select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-        )
-        fallback_meanings = list(fallback_pool_result.scalars().all())
-
-        # Deduplicate by meaning
-        seen_meanings: set[str] = set()
-        for vocab in all_items:
-            if vocab.meaning_ko in seen_meanings:
-                continue
-            seen_meanings.add(vocab.meaning_ko)
-
-            # Use distractor service for quality options
-            distractors = await generate_distractors(
-                db,
-                correct_item_id=vocab.id,
-                item_type="WORD",
-                jlpt_level=jlpt_level,
-                count=QUIZ_CONFIG.WRONG_OPTIONS_COUNT,
-                user_id=user.id,
-            )
-
-            correct_id = str(uuid.uuid4())
-            options = [{"id": correct_id, "text": vocab.meaning_ko}]
-            used_texts = {vocab.meaning_ko}
-            for d in distractors:
-                options.append({"id": str(uuid.uuid4()), "text": d["text"]})
-                used_texts.add(d["text"])
-            # Fallback: fill remaining from random pool if distractors < 3
-            if len(options) - 1 < QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
-                for m in fallback_meanings:
-                    if m not in used_texts:
-                        options.append({"id": str(uuid.uuid4()), "text": m})
-                        used_texts.add(m)
-                        if len(options) - 1 >= QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
-                            break
-            random.shuffle(options)
-
-            questions.append(
-                {
-                    "id": str(vocab.id),
-                    "type": quiz_type,
-                    "question": vocab.word,
-                    "reading": vocab.reading,
-                    "questionSubText": vocab.reading,
-                    "options": options,
-                    "correctOptionId": correct_id,
-                    "word": vocab.word,
-                    "meaningKo": vocab.meaning_ko,
-                }
-            )
-    else:
-        # Grammar pools (same logic)
-        if dist["review"] > 0:
-            review_result = await db.execute(
-                select(Grammar)
-                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt_level,
-                    UserGrammarProgress.next_review_at <= now,
-                    UserGrammarProgress.interval > 0,
-                )
-                .order_by(UserGrammarProgress.next_review_at)
-                .limit(dist["review"])
-            )
-            review_items = list(review_result.scalars().all())
-        else:
-            review_items = []
-
-        if dist["retry"] > 0:
-            retry_result = await db.execute(
-                select(Grammar)
-                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt_level,
-                    UserGrammarProgress.interval == 0,
-                    UserGrammarProgress.incorrect_count > 0,
-                    UserGrammarProgress.last_reviewed_at <= now - timedelta(minutes=SRS_CONFIG.REVIEW_DELAY_MINUTES),
-                )
-                .order_by(UserGrammarProgress.last_reviewed_at)
-                .limit(dist["retry"])
-            )
-            retry_items = list(retry_result.scalars().all())
-        else:
-            retry_items = []
-
-        studied_ids_result = await db.execute(select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id))
-        studied_ids = set(studied_ids_result.scalars().all())
-        exclude_ids = studied_ids | {g.id for g in review_items} | {g.id for g in retry_items}
-
-        new_count_needed = dist["new"] + (dist["review"] - len(review_items)) + (dist["retry"] - len(retry_items))
-
-        if new_count_needed > 0:
-            new_result = await db.execute(
-                select(Grammar)
-                .where(Grammar.jlpt_level == jlpt_level, Grammar.id.notin_(exclude_ids) if exclude_ids else True)
-                .order_by(Grammar.id)
-                .limit(new_count_needed)
-            )
-            new_items = list(new_result.scalars().all())
-        else:
-            new_items = []
-
-        all_items = list(review_items) + list(retry_items) + list(new_items)
-
-        pool_result = await db.execute(select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50))
-        all_meanings = list(pool_result.scalars().all())
-
-        seen_meanings: set[str] = set()
-        for grammar in all_items:
-            if grammar.meaning_ko in seen_meanings:
-                continue
-            seen_meanings.add(grammar.meaning_ko)
-
-            wrong_options = [m for m in all_meanings if m != grammar.meaning_ko]
-            random.shuffle(wrong_options)
-            wrong_options = wrong_options[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-
-            correct_id = str(uuid.uuid4())
-            options = [{"id": correct_id, "text": grammar.meaning_ko}]
-            for wo in wrong_options:
-                options.append({"id": str(uuid.uuid4()), "text": wo})
-            random.shuffle(options)
-
-            questions.append(
-                {
-                    "id": str(grammar.id),
-                    "type": quiz_type,
-                    "question": grammar.pattern,
-                    "options": options,
-                    "correctOptionId": correct_id,
-                    "pattern": grammar.pattern,
-                    "meaningKo": grammar.meaning_ko,
-                }
-            )
-
-    # Shuffle all questions (interleaving)
-    random.shuffle(questions)
-
-    if not questions:
-        raise HTTPException(status_code=400, detail="학습할 콘텐츠가 없습니다")
-
-    # Create session with smart mode metadata
-    session = QuizSession(
-        user_id=user.id,
-        quiz_type=body.category,
-        jlpt_level=body.jlpt_level,
-        total_questions=len(questions),
-        questions_data={"mode": "smart", "questions": questions},
-    )
     try:
-        db.add(session)
-        await db.commit()
-        await db.refresh(session)
-    except Exception as exc:
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="퀴즈 세션 생성에 실패했습니다") from exc
+        result = await start_smart_quiz_session(db, user, body)
+    except QuizStartServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    response_questions = []
-    for q in questions:
-        response_questions.append(
-            QuizQuestion(
-                question_id=q["id"],
-                question_text=q["question"],
-                question_sub_text=q.get("questionSubText"),
-                hint=q.get("hint"),
-                options=[QuizOption(**o) for o in q["options"]],
-                correct_option_id=q.get("correctOptionId"),
-                tokens=q.get("tokens"),
-                japanese_sentence=q.get("japaneseSentence"),
-                explanation=q.get("explanation"),
-            )
-        )
+    response_questions = build_response_questions(result.questions)
 
     return QuizStartResponse(
-        session_id=session.id,
+        session_id=result.session.id,
         questions=response_questions,
-        total_questions=len(questions),
+        total_questions=len(result.questions),
         matching_pairs=None,
     )
 
