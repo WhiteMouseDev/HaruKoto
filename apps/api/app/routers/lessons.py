@@ -14,24 +14,20 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-import sqlalchemy as sa
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import cast, func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models.content import Grammar, Vocabulary
-from app.models.lesson import Chapter, Lesson, LessonItemLink, UserLessonProgress
-from app.models.progress import UserGrammarProgress, UserVocabProgress
+from app.models.lesson import Lesson, LessonItemLink, UserLessonProgress
 from app.models.user import User
 from app.schemas.lesson import (
     AnswerSubmission,
     ChapterListResponse,
     ChapterResponse,
     GrammarItem,
-    LessonContent,
     LessonDetailResponse,
     LessonProgressResponse,
     LessonSubmitRequest,
@@ -40,6 +36,11 @@ from app.schemas.lesson import (
     QuestionResult,
     ReviewSummaryResponse,
     VocabItem,
+)
+from app.services.lesson_query import (
+    get_chapters_data,
+    get_lesson_detail_data,
+    get_review_summary_data,
 )
 from app.services.srs import process_answer, register_items_from_lesson
 
@@ -58,72 +59,41 @@ async def get_chapters(
     db: AsyncSession = Depends(get_db),
 ):
     """챕터 목록 + 각 레슨의 유저 진도를 반환한다."""
-    # ABSOLUTE_ZERO → N5 매핑
-    effective_level = "N5" if jlpt_level == "ABSOLUTE_ZERO" else jlpt_level
-
-    result = await db.execute(
-        select(Chapter)
-        .where(cast(Chapter.jlpt_level, sa.Text()) == effective_level, Chapter.is_published.is_(True))
-        .options(selectinload(Chapter.lessons))
-        .order_by(Chapter.part_no, Chapter.chapter_no)
+    chapters = await get_chapters_data(
+        db,
+        user,
+        jlpt_level=jlpt_level,
     )
-    chapters = result.scalars().unique().all()
 
-    # Fetch user progress for all lessons at once
-    lesson_ids = [ls.id for ch in chapters for ls in ch.lessons]
-    progress_map: dict[UUID, UserLessonProgress] = {}
-    if lesson_ids:
-        prog_result = await db.execute(
-            select(UserLessonProgress).where(
-                UserLessonProgress.user_id == user.id,
-                UserLessonProgress.lesson_id.in_(lesson_ids),
-            )
-        )
-        for p in prog_result.scalars().all():
-            progress_map[p.lesson_id] = p
-
-    chapter_responses = []
-    for ch in chapters:
-        published_lessons = sorted(
-            [ls for ls in ch.lessons if ls.is_published],
-            key=lambda ls: ls.chapter_lesson_no,
-        )
-        lesson_summaries = []
-        completed = 0
-        for ls in published_lessons:
-            prog = progress_map.get(ls.id)
-            status = prog.status if prog else "NOT_STARTED"
-            if status == "COMPLETED":
-                completed += 1
-            lesson_summaries.append(
-                LessonSummary(
-                    id=ls.id,
-                    lesson_no=ls.lesson_no,
-                    chapter_lesson_no=ls.chapter_lesson_no,
-                    title=ls.title,
-                    topic=ls.topic,
-                    estimated_minutes=ls.estimated_minutes,
-                    status=status,
-                    score_correct=prog.score_correct if prog else 0,
-                    score_total=prog.score_total if prog else 0,
-                )
-            )
-
-        chapter_responses.append(
+    return ChapterListResponse(
+        chapters=[
             ChapterResponse(
-                id=ch.id,
-                jlpt_level=str(ch.jlpt_level),
-                part_no=ch.part_no,
-                chapter_no=ch.chapter_no,
-                title=ch.title,
-                topic=ch.topic,
-                lessons=lesson_summaries,
-                completed_lessons=completed,
-                total_lessons=len(published_lessons),
+                id=chapter.id,
+                jlpt_level=chapter.jlpt_level,
+                part_no=chapter.part_no,
+                chapter_no=chapter.chapter_no,
+                title=chapter.title,
+                topic=chapter.topic,
+                lessons=[
+                    LessonSummary(
+                        id=lesson.id,
+                        lesson_no=lesson.lesson_no,
+                        chapter_lesson_no=lesson.chapter_lesson_no,
+                        title=lesson.title,
+                        topic=lesson.topic,
+                        estimated_minutes=lesson.estimated_minutes,
+                        status=lesson.status,
+                        score_correct=lesson.score_correct,
+                        score_total=lesson.score_total,
+                    )
+                    for lesson in chapter.lessons
+                ],
+                completed_lessons=chapter.completed_lessons,
+                total_lessons=chapter.total_lessons,
             )
-        )
-
-    return ChapterListResponse(chapters=chapter_responses)
+            for chapter in chapters
+        ]
+    )
 
 
 # ── GET /review/summary ──
@@ -136,97 +106,18 @@ async def get_review_summary(
     db: AsyncSession = Depends(get_db),
 ):
     """SRS 복습 요약: due 카드 수 + 새 카드 수를 반환한다."""
-    # ABSOLUTE_ZERO maps to N5 for content queries
-    effective_level = "N5" if jlpt_level == "ABSOLUTE_ZERO" else jlpt_level
-    now = datetime.now(UTC)
-
-    due_states = ("RELEARNING", "LEARNING", "REVIEW", "PROVISIONAL")
-
-    # ── Due WORD items ──
-    word_due_result = await db.execute(
-        select(func.count())
-        .select_from(UserVocabProgress)
-        .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
-        .where(
-            UserVocabProgress.user_id == user.id,
-            UserVocabProgress.state.in_(due_states),
-            UserVocabProgress.next_review_at <= now,
-            Vocabulary.jlpt_level == effective_level,
-        )
+    summary = await get_review_summary_data(
+        db,
+        user,
+        jlpt_level=jlpt_level,
     )
-    word_due = word_due_result.scalar() or 0
-
-    # ── Due GRAMMAR items ──
-    grammar_due_result = await db.execute(
-        select(func.count())
-        .select_from(UserGrammarProgress)
-        .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
-        .where(
-            UserGrammarProgress.user_id == user.id,
-            UserGrammarProgress.state.in_(due_states),
-            UserGrammarProgress.next_review_at <= now,
-            Grammar.jlpt_level == effective_level,
-        )
-    )
-    grammar_due = grammar_due_result.scalar() or 0
-
-    # ── New WORD items: UNSEEN state + no progress record ──
-    word_unseen_result = await db.execute(
-        select(func.count())
-        .select_from(UserVocabProgress)
-        .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
-        .where(
-            UserVocabProgress.user_id == user.id,
-            UserVocabProgress.state == "UNSEEN",
-            Vocabulary.jlpt_level == effective_level,
-        )
-    )
-    word_unseen = word_unseen_result.scalar() or 0
-
-    # Words with no progress record at all
-    existing_vocab_ids = select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user.id).scalar_subquery()
-    word_no_record_result = await db.execute(
-        select(func.count())
-        .select_from(Vocabulary)
-        .where(
-            Vocabulary.jlpt_level == effective_level,
-            Vocabulary.id.notin_(existing_vocab_ids),
-        )
-    )
-    word_no_record = word_no_record_result.scalar() or 0
-    word_new = word_unseen + word_no_record
-
-    # ── New GRAMMAR items: UNSEEN state + no progress record ──
-    grammar_unseen_result = await db.execute(
-        select(func.count())
-        .select_from(UserGrammarProgress)
-        .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
-        .where(
-            UserGrammarProgress.user_id == user.id,
-            UserGrammarProgress.state == "UNSEEN",
-            Grammar.jlpt_level == effective_level,
-        )
-    )
-    grammar_unseen = grammar_unseen_result.scalar() or 0
-
-    existing_grammar_ids = select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user.id).scalar_subquery()
-    grammar_no_record_result = await db.execute(
-        select(func.count())
-        .select_from(Grammar)
-        .where(
-            Grammar.jlpt_level == effective_level,
-            Grammar.id.notin_(existing_grammar_ids),
-        )
-    )
-    grammar_no_record = grammar_no_record_result.scalar() or 0
-    grammar_new = grammar_unseen + grammar_no_record
 
     return ReviewSummaryResponse(
-        word_due=word_due,
-        grammar_due=grammar_due,
-        total_due=word_due + grammar_due,
-        word_new=word_new,
-        grammar_new=grammar_new,
+        word_due=summary.word_due,
+        grammar_due=summary.grammar_due,
+        total_due=summary.total_due,
+        word_new=summary.word_new,
+        grammar_new=summary.grammar_new,
     )
 
 
@@ -240,82 +131,13 @@ async def get_lesson_detail(
     db: AsyncSession = Depends(get_db),
 ):
     """레슨 상세: 대화문 + 문제 (정답은 제거하여 클라이언트에 전달)."""
-    result = await db.execute(
-        select(Lesson).where(Lesson.id == lesson_id, Lesson.is_published.is_(True)).options(selectinload(Lesson.item_links))
+    lesson = await get_lesson_detail_data(
+        db,
+        user,
+        lesson_id=lesson_id,
     )
-    lesson = result.scalar_one_or_none()
     if lesson is None:
         raise HTTPException(status_code=404, detail="레슨을 찾을 수 없습니다")
-
-    # Parse content_jsonb
-    content_raw = lesson.content_jsonb or {}
-    content = LessonContent.model_validate(content_raw)
-
-    # Strip correct answers from questions (prevent cheating)
-    for q in content.questions:
-        q.correct_answer = None
-        q.correct_order = None
-
-    # Fetch linked vocab/grammar items (batch query to avoid N+1)
-    vocab_ids = [lk.vocabulary_id for lk in lesson.item_links if lk.item_type == "WORD" and lk.vocabulary_id]
-    grammar_ids = [lk.grammar_id for lk in lesson.item_links if lk.item_type == "GRAMMAR" and lk.grammar_id]
-
-    vocab_map: dict[UUID, Vocabulary] = {}
-    if vocab_ids:
-        vr = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(vocab_ids)))
-        vocab_map = {v.id: v for v in vr.scalars().all()}
-
-    grammar_map: dict[UUID, Grammar] = {}
-    if grammar_ids:
-        gr = await db.execute(select(Grammar).where(Grammar.id.in_(grammar_ids)))
-        grammar_map = {g.id: g for g in gr.scalars().all()}
-
-    vocab_items: list[VocabItem] = []
-    grammar_items: list[GrammarItem] = []
-    for link in sorted(lesson.item_links, key=lambda x: x.item_order):
-        if link.item_type == "WORD" and link.vocabulary_id:
-            vocab = vocab_map.get(link.vocabulary_id)
-            if vocab:
-                vocab_items.append(
-                    VocabItem(
-                        id=vocab.id,
-                        word=vocab.word,
-                        reading=vocab.reading,
-                        meaning_ko=vocab.meaning_ko,
-                        part_of_speech=str(vocab.part_of_speech),
-                    )
-                )
-        elif link.item_type == "GRAMMAR" and link.grammar_id:
-            grammar = grammar_map.get(link.grammar_id)
-            if grammar:
-                grammar_items.append(
-                    GrammarItem(
-                        id=grammar.id,
-                        pattern=grammar.pattern,
-                        meaning_ko=grammar.meaning_ko,
-                        explanation=grammar.explanation,
-                    )
-                )
-
-    # Fetch user progress
-    prog_result = await db.execute(
-        select(UserLessonProgress).where(
-            UserLessonProgress.user_id == user.id,
-            UserLessonProgress.lesson_id == lesson.id,
-        )
-    )
-    prog = prog_result.scalar_one_or_none()
-    progress = None
-    if prog:
-        progress = LessonProgressResponse(
-            status=prog.status,
-            attempts=prog.attempts,
-            score_correct=prog.score_correct,
-            score_total=prog.score_total,
-            started_at=prog.started_at,
-            completed_at=prog.completed_at,
-            srs_registered_at=getattr(prog, "srs_registered_at", None),
-        )
 
     return LessonDetailResponse(
         id=lesson.id,
@@ -324,10 +146,39 @@ async def get_lesson_detail(
         title=lesson.title,
         topic=lesson.topic,
         estimated_minutes=lesson.estimated_minutes,
-        content=content,
-        vocab_items=vocab_items,
-        grammar_items=grammar_items,
-        progress=progress,
+        content=lesson.content,
+        vocab_items=[
+            VocabItem(
+                id=item.id,
+                word=item.word,
+                reading=item.reading,
+                meaning_ko=item.meaning_ko,
+                part_of_speech=item.part_of_speech,
+            )
+            for item in lesson.vocab_items
+        ],
+        grammar_items=[
+            GrammarItem(
+                id=item.id,
+                pattern=item.pattern,
+                meaning_ko=item.meaning_ko,
+                explanation=item.explanation,
+            )
+            for item in lesson.grammar_items
+        ],
+        progress=(
+            LessonProgressResponse(
+                status=lesson.progress.status,
+                attempts=lesson.progress.attempts,
+                score_correct=lesson.progress.score_correct,
+                score_total=lesson.progress.score_total,
+                started_at=lesson.progress.started_at,
+                completed_at=lesson.progress.completed_at,
+                srs_registered_at=lesson.progress.srs_registered_at,
+            )
+            if lesson.progress
+            else None
+        ),
     )
 
 

@@ -1,0 +1,291 @@
+import uuid
+from datetime import UTC, datetime
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from app.db.session import get_db
+
+
+@pytest.mark.asyncio
+async def test_get_chapters(client, mock_user):
+    """Test GET /api/v1/lessons/chapters returns chapter summaries with progress."""
+    from app.main import app
+
+    chapter_id = uuid.uuid4()
+    lesson_one_id = uuid.uuid4()
+    lesson_two_id = uuid.uuid4()
+
+    lesson_one = MagicMock()
+    lesson_one.id = lesson_one_id
+    lesson_one.lesson_no = 10
+    lesson_one.chapter_lesson_no = 2
+    lesson_one.title = "인사 응용"
+    lesson_one.topic = "응용"
+    lesson_one.estimated_minutes = 12
+    lesson_one.is_published = True
+
+    lesson_two = MagicMock()
+    lesson_two.id = lesson_two_id
+    lesson_two.lesson_no = 9
+    lesson_two.chapter_lesson_no = 1
+    lesson_two.title = "인사 기초"
+    lesson_two.topic = "기초"
+    lesson_two.estimated_minutes = 8
+    lesson_two.is_published = True
+
+    chapter = MagicMock()
+    chapter.id = chapter_id
+    chapter.jlpt_level = "N5"
+    chapter.part_no = 1
+    chapter.chapter_no = 1
+    chapter.title = "첫 인사"
+    chapter.topic = "일상"
+    chapter.lessons = [lesson_one, lesson_two]
+
+    chapter_scalars = MagicMock()
+    chapter_scalars.unique.return_value.all.return_value = [chapter]
+    chapter_result = MagicMock()
+    chapter_result.scalars.return_value = chapter_scalars
+
+    progress = MagicMock()
+    progress.lesson_id = lesson_two_id
+    progress.status = "COMPLETED"
+    progress.score_correct = 4
+    progress.score_total = 5
+
+    progress_scalars = MagicMock()
+    progress_scalars.all.return_value = [progress]
+    progress_result = MagicMock()
+    progress_result.scalars.return_value = progress_scalars
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=[chapter_result, progress_result])
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get("/api/v1/lessons/chapters", params={"jlptLevel": "N5"})
+    assert response.status_code == 200
+
+    assert response.json() == {
+        "chapters": [
+            {
+                "id": str(chapter_id),
+                "jlptLevel": "N5",
+                "partNo": 1,
+                "chapterNo": 1,
+                "title": "첫 인사",
+                "topic": "일상",
+                "completedLessons": 1,
+                "totalLessons": 2,
+                "lessons": [
+                    {
+                        "id": str(lesson_two_id),
+                        "lessonNo": 9,
+                        "chapterLessonNo": 1,
+                        "title": "인사 기초",
+                        "topic": "기초",
+                        "estimatedMinutes": 8,
+                        "status": "COMPLETED",
+                        "scoreCorrect": 4,
+                        "scoreTotal": 5,
+                    },
+                    {
+                        "id": str(lesson_one_id),
+                        "lessonNo": 10,
+                        "chapterLessonNo": 2,
+                        "title": "인사 응용",
+                        "topic": "응용",
+                        "estimatedMinutes": 12,
+                        "status": "NOT_STARTED",
+                        "scoreCorrect": 0,
+                        "scoreTotal": 0,
+                    },
+                ],
+            }
+        ]
+    }
+
+
+@pytest.mark.asyncio
+async def test_get_review_summary(client, mock_user):
+    """Test GET /api/v1/lessons/review/summary returns due and new counts."""
+    from app.main import app
+
+    def scalar_result(value: int) -> MagicMock:
+        return MagicMock(scalar=MagicMock(return_value=value))
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(
+        side_effect=[
+            scalar_result(3),
+            scalar_result(2),
+            scalar_result(4),
+            scalar_result(5),
+            scalar_result(1),
+            scalar_result(6),
+        ]
+    )
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get("/api/v1/lessons/review/summary", params={"jlptLevel": "N5"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "wordDue": 3,
+        "grammarDue": 2,
+        "totalDue": 5,
+        "wordNew": 9,
+        "grammarNew": 7,
+    }
+
+
+@pytest.mark.asyncio
+async def test_get_lesson_detail(client, mock_user):
+    """Test GET /api/v1/lessons/{lesson_id} strips answer keys and returns linked items."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    vocab_id = uuid.uuid4()
+    grammar_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.lesson_no = 11
+    lesson.chapter_lesson_no = 2
+    lesson.title = "카페 주문"
+    lesson.topic = "카페"
+    lesson.estimated_minutes = 15
+    lesson.is_published = True
+    lesson.content_jsonb = {
+        "reading": {
+            "type": "dialogue",
+            "scene": "cafe",
+            "script": [
+                {
+                    "speaker": "A",
+                    "voice_id": "voice-a",
+                    "text": "커피 한 잔 주세요.",
+                    "translation": "커피 한 잔 주세요.",
+                }
+            ],
+            "highlights": ["コーヒー"],
+            "audio_url": None,
+        },
+        "questions": [
+            {
+                "order": 1,
+                "type": "VOCAB_MCQ",
+                "prompt": "コーヒー",
+                "options": [{"id": "a", "text": "커피"}],
+                "correct_answer": "a",
+                "explanation": "커피를 뜻합니다.",
+            },
+            {
+                "order": 2,
+                "type": "SENTENCE_REORDER",
+                "prompt": "문장을 순서대로 배열하세요.",
+                "tokens": ["です", "学生", "私", "は"],
+                "correct_order": ["私", "は", "学生", "です"],
+            },
+        ],
+    }
+
+    vocab_link = MagicMock()
+    vocab_link.item_type = "WORD"
+    vocab_link.vocabulary_id = vocab_id
+    vocab_link.grammar_id = None
+    vocab_link.item_order = 1
+
+    grammar_link = MagicMock()
+    grammar_link.item_type = "GRAMMAR"
+    grammar_link.vocabulary_id = None
+    grammar_link.grammar_id = grammar_id
+    grammar_link.item_order = 2
+
+    lesson.item_links = [grammar_link, vocab_link]
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    vocab = MagicMock()
+    vocab.id = vocab_id
+    vocab.word = "コーヒー"
+    vocab.reading = "コーヒー"
+    vocab.meaning_ko = "커피"
+    vocab.part_of_speech = "NOUN"
+
+    vocab_scalars = MagicMock()
+    vocab_scalars.all.return_value = [vocab]
+    vocab_result = MagicMock()
+    vocab_result.scalars.return_value = vocab_scalars
+
+    grammar = MagicMock()
+    grammar.id = grammar_id
+    grammar.pattern = "〜ください"
+    grammar.meaning_ko = "~주세요"
+    grammar.explanation = "정중한 요청 표현"
+
+    grammar_scalars = MagicMock()
+    grammar_scalars.all.return_value = [grammar]
+    grammar_result = MagicMock()
+    grammar_result.scalars.return_value = grammar_scalars
+
+    progress = MagicMock()
+    progress.status = "IN_PROGRESS"
+    progress.attempts = 1
+    progress.score_correct = 0
+    progress.score_total = 0
+    progress.started_at = datetime.now(UTC)
+    progress.completed_at = None
+    progress.srs_registered_at = None
+
+    progress_result = MagicMock()
+    progress_result.scalar_one_or_none.return_value = progress
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(
+        side_effect=[
+            lesson_result,
+            vocab_result,
+            grammar_result,
+            progress_result,
+        ]
+    )
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get(f"/api/v1/lessons/{lesson_id}")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["id"] == str(lesson_id)
+    assert data["vocabItems"] == [
+        {
+            "id": str(vocab_id),
+            "word": "コーヒー",
+            "reading": "コーヒー",
+            "meaningKo": "커피",
+            "partOfSpeech": "NOUN",
+        }
+    ]
+    assert data["grammarItems"] == [
+        {
+            "id": str(grammar_id),
+            "pattern": "〜ください",
+            "meaningKo": "~주세요",
+            "explanation": "정중한 요청 표현",
+        }
+    ]
+    assert data["content"]["questions"][0]["correctAnswer"] is None
+    assert data["content"]["questions"][1]["correctOrder"] is None
+    assert data["progress"]["status"] == "IN_PROGRESS"
