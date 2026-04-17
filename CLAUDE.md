@@ -8,7 +8,7 @@
 ## Purpose
 
 - This file is a thin Claude Code index. Keep durable repo rules in `AGENTS.md` and durable product/domain knowledge in `docs/`.
-- Use `.claude/rules/web.md`, `.claude/rules/api.md`, and `.claude/rules/mobile.md` only when working in those surfaces.
+- Use `.claude/rules/web.md`, `.claude/rules/admin.md`, `.claude/rules/api.md`, and `.claude/rules/mobile.md` only when working in those surfaces.
 - Slash commands live in `.claude/commands/*.md`.
 
 ## Repo Map

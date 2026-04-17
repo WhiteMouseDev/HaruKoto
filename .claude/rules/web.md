@@ -2,10 +2,9 @@
 paths:
   - "apps/web/**"
   - "apps/landing/**"
-  - "packages/ui/**"
 ---
 
-# Web (Next.js 16.1) 규칙
+# Web/Landing (Next.js 16.1) 규칙
 
 ## App Router
 - Server Components 기본, 필요 시에만 `"use client"`
@@ -20,17 +19,18 @@ paths:
 - 모바일 퍼스트 반응형 (sm → md → lg)
 - semantic HTML + aria 속성 + 키보드 네비게이션
 - 에러/로딩 처리: `error.tsx`, `loading.tsx` 활용
+- learner-facing web과 marketing landing은 공통 UI 패턴보다 각 surface 목적에 맞는 정보 구조를 우선
 
 ## 디렉토리 구조
 ```
 src/
 ├── app/                  # App Router 페이지
-│   ├── (auth)/           # 인증 관련 그룹
-│   ├── (main)/           # 메인 앱 그룹
+│   ├── (auth)/           # 인증 관련 그룹 (web)
+│   ├── (main)/           # 메인 앱 그룹 (web)
 │   └── api/              # API Route Handlers
 ├── components/
 │   ├── ui/               # 기본 UI (shadcn)
-│   ├── features/         # 기능별 컴포넌트
+│   ├── features/         # 기능별 컴포넌트 (web)
 │   └── layouts/          # 레이아웃
 ├── hooks/                # 커스텀 훅
 ├── lib/                  # 유틸리티
@@ -48,6 +48,7 @@ src/
 - 이미지: Next.js Image 컴포넌트
 - 번들 크기: dynamic import 활용
 - 렌더링: ISR/SSG 우선, 필요 시 SSR
+- landing은 정적 우선, web은 auth/data 경계를 고려한 server-first 렌더링 우선
 
 ## Monorepo 임포트
 ```typescript

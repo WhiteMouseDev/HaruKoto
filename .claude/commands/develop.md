@@ -11,7 +11,7 @@ $ARGUMENTS 에 지정된 기능을 구현합니다.
 
 ### 1. 사전 확인
 
-- `docs/PRD.md` 에서 해당 기능의 요구사항 확인
+- `docs/product/prd.md` 에서 해당 기능의 요구사항 확인
 - `CLAUDE.md` 에서 코딩 컨벤션 확인
 - 관련 기존 코드 파악
 
@@ -40,6 +40,8 @@ apps/web/src/app/api/[resource]/route.ts
 # 새 공유 패키지
 packages/[package-name]/src/index.ts
 ```
+
+관리자 기능이면 기본 생성 위치를 `apps/admin/src/app/`, `apps/admin/src/components/`, `apps/admin/src/lib/` 아래에서 찾습니다.
 
 ### 4. 구현 순서
 
