@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/user_preferences_provider.dart';
-import '../../home/providers/home_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_flow_policy.dart';
-import 'study_provider.dart';
+import 'lesson_session_service.dart';
 
 enum LessonStep {
   contextPreview,
@@ -116,7 +114,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final practicePlan = buildLessonPracticePlan(detail);
 
     try {
-      await ref.read(studyRepositoryProvider).startLesson(detail.id);
+      await ref.read(lessonSessionServiceProvider).startLesson(detail.id);
     } catch (_) {
       // Ignore already-started lessons. UI state should still advance.
     }
@@ -205,20 +203,15 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       submissionErrorMessage: null,
     );
 
-    final resolvedJlptLevel =
-        jlptLevel ?? ref.read(userPreferencesProvider).jlptLevel;
-
     try {
       final orderedAnswers = state.answers.keys.toList()..sort();
-      final result = await ref.read(studyRepositoryProvider).submitLesson(
-        lessonId,
-        [
+      final result = await ref.read(lessonSessionServiceProvider).submitLesson(
+        lessonId: lessonId,
+        jlptLevel: jlptLevel,
+        answers: [
           for (final key in orderedAnswers) state.answers[key]!,
         ],
       );
-      ref.invalidate(chaptersProvider(resolvedJlptLevel));
-      ref.invalidate(reviewSummaryProvider(resolvedJlptLevel));
-      ref.invalidate(dashboardProvider);
       state = state.copyWith(
         step: LessonStep.result,
         result: result,
