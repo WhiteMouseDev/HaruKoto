@@ -266,6 +266,98 @@ async def test_complete_quiz_success(mock_achievements, client, mock_user, mock_
 
 
 @pytest.mark.asyncio
+async def test_get_incomplete_quiz_returns_session_banner(client):
+    """Test GET /api/v1/quiz/incomplete serializes the banner session payload."""
+    from app.services.quiz_query import IncompleteQuizSessionResult
+
+    started_at = datetime(2026, 4, 17, 6, 30, tzinfo=UTC).isoformat()
+
+    with patch("app.routers.quiz.get_incomplete_quiz_session", new=AsyncMock()) as mock_get_incomplete:
+        mock_get_incomplete.return_value = IncompleteQuizSessionResult(
+            id=str(uuid.uuid4()),
+            quiz_type="VOCABULARY",
+            jlpt_level="N5",
+            total_questions=10,
+            answered_count=3,
+            correct_count=2,
+            started_at=started_at,
+        )
+
+        response = await client.get("/api/v1/quiz/incomplete")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "session": {
+            "id": mock_get_incomplete.return_value.id,
+            "quizType": "VOCABULARY",
+            "jlptLevel": "N5",
+            "totalQuestions": 10,
+            "answeredCount": 3,
+            "correctCount": 2,
+            "startedAt": started_at,
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_resume_quiz_returns_response_model_shape(client):
+    """Test POST /api/v1/quiz/resume preserves the expected camelCase response contract."""
+    from app.schemas.quiz import QuizOption, QuizQuestion
+    from app.services.quiz_query import ResumeQuizResult
+
+    session_id = str(uuid.uuid4())
+    question_id = str(uuid.uuid4())
+
+    with patch("app.routers.quiz.resume_quiz_session", new=AsyncMock()) as mock_resume_quiz:
+        mock_resume_quiz.return_value = ResumeQuizResult(
+            session_id=session_id,
+            questions=[
+                QuizQuestion(
+                    question_id=question_id,
+                    question_text="食べる",
+                    question_sub_text="たべる",
+                    options=[
+                        QuizOption(id="correct-1", text="먹다"),
+                        QuizOption(id="wrong-1", text="마시다"),
+                    ],
+                    correct_option_id=None,
+                )
+            ],
+            answered_question_ids=[question_id],
+            total_questions=10,
+            correct_count=7,
+            quiz_type="VOCABULARY",
+        )
+
+        response = await client.post("/api/v1/quiz/resume", json={"sessionId": session_id})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "sessionId": session_id,
+        "questions": [
+            {
+                "questionId": question_id,
+                "questionText": "食べる",
+                "questionSubText": "たべる",
+                "hint": None,
+                "options": [
+                    {"id": "correct-1", "text": "먹다"},
+                    {"id": "wrong-1", "text": "마시다"},
+                ],
+                "correctOptionId": None,
+                "tokens": None,
+                "japaneseSentence": None,
+                "explanation": None,
+            }
+        ],
+        "answeredQuestionIds": [question_id],
+        "totalQuestions": 10,
+        "correctCount": 7,
+        "quizType": "VOCABULARY",
+    }
+
+
+@pytest.mark.asyncio
 async def test_get_quiz_stats(client, mock_user, test_user_id):
     """Test GET /api/v1/quiz/stats returns aggregated quiz statistics."""
     from app.main import app

@@ -9,6 +9,9 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.quiz import (
+    ContentQuizStatsResponse,
+    IncompleteQuizResponse,
+    IncompleteQuizSession,
     OverallProgress,
     PoolSize,
     QuizAnswerRequest,
@@ -16,11 +19,16 @@ from app.schemas.quiz import (
     QuizCompleteRequest,
     QuizCompleteResponse,
     QuizResumeRequest,
+    QuizResumeResponse,
     QuizStartRequest,
     QuizStartResponse,
+    QuizStatsResponse,
+    RecommendationsResponse,
     SessionDistribution,
     SmartPreviewResponse,
     SmartStartRequest,
+    WrongAnswer,
+    WrongAnswersResponse,
 )
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
@@ -34,7 +42,11 @@ from app.services.quiz_query import (
 )
 from app.services.quiz_session import build_response_questions
 from app.services.quiz_smart import build_smart_preview_data
-from app.services.quiz_start import QuizStartServiceError, start_quiz_session, start_smart_quiz_session
+from app.services.quiz_start import (
+    QuizStartServiceError,
+    start_quiz_session,
+    start_smart_quiz_session,
+)
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
 
@@ -98,7 +110,7 @@ async def complete_quiz(
     )
 
 
-@router.get("/incomplete", status_code=200)
+@router.get("/incomplete", response_model=IncompleteQuizResponse, status_code=200)
 async def get_incomplete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -110,22 +122,22 @@ async def get_incomplete_quiz(
     """
     session = await get_incomplete_quiz_session(db, user)
     if session is None:
-        return {"session": None}
+        return IncompleteQuizResponse(session=None)
 
-    return {
-        "session": {
-            "id": session.id,
-            "quizType": session.quiz_type,
-            "jlptLevel": session.jlpt_level,
-            "totalQuestions": session.total_questions,
-            "answeredCount": session.answered_count,
-            "correctCount": session.correct_count,
-            "startedAt": session.started_at,
-        }
-    }
+    return IncompleteQuizResponse(
+        session=IncompleteQuizSession(
+            id=session.id,
+            quiz_type=session.quiz_type,
+            jlpt_level=session.jlpt_level,
+            total_questions=session.total_questions,
+            answered_count=session.answered_count,
+            correct_count=session.correct_count,
+            started_at=session.started_at,
+        )
+    )
 
 
-@router.post("/resume", status_code=200)
+@router.post("/resume", response_model=QuizResumeResponse, status_code=200)
 async def resume_quiz(
     body: QuizResumeRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -136,17 +148,17 @@ async def resume_quiz(
     except QuizQueryServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    return {
-        "sessionId": result.session_id,
-        "questions": [question.model_dump(by_alias=True) for question in result.questions],
-        "answeredQuestionIds": result.answered_question_ids,
-        "totalQuestions": result.total_questions,
-        "correctCount": result.correct_count,
-        "quizType": result.quiz_type,
-    }
+    return QuizResumeResponse(
+        session_id=result.session_id,
+        questions=result.questions,
+        answered_question_ids=result.answered_question_ids,
+        total_questions=result.total_questions,
+        correct_count=result.correct_count,
+        quiz_type=result.quiz_type,
+    )
 
 
-@router.get("/stats", status_code=200)
+@router.get("/stats", response_model=QuizStatsResponse | ContentQuizStatsResponse, status_code=200)
 async def get_quiz_stats(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -160,21 +172,21 @@ async def get_quiz_stats(
         quiz_type=quiz_type,
     )
     if level and quiz_type:
-        return {
-            "totalCount": result.total_count,
-            "studiedCount": result.studied_count,
-            "progress": result.progress,
-        }
+        return ContentQuizStatsResponse(
+            total_count=result.total_count,
+            studied_count=result.studied_count,
+            progress=result.progress,
+        )
 
-    return {
-        "totalQuizzes": result.total_quizzes,
-        "totalCorrect": result.total_correct,
-        "totalQuestions": result.total_questions,
-        "accuracy": result.accuracy,
-    }
+    return QuizStatsResponse(
+        total_quizzes=result.total_quizzes,
+        total_correct=result.total_correct,
+        total_questions=result.total_questions,
+        accuracy=result.accuracy,
+    )
 
 
-@router.get("/wrong-answers", status_code=200)
+@router.get("/wrong-answers", response_model=WrongAnswersResponse, status_code=200)
 async def get_wrong_answers(
     session_id: str,
     user: Annotated[User, Depends(get_current_user)],
@@ -189,19 +201,19 @@ async def get_wrong_answers(
     except QuizQueryServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    return {
-        "wrongAnswers": [
-            {
-                "questionId": item.question_id,
-                "word": item.word,
-                "reading": item.reading,
-                "meaningKo": item.meaning_ko,
-                "exampleSentence": item.example_sentence,
-                "exampleTranslation": item.example_translation,
-            }
+    return WrongAnswersResponse(
+        wrong_answers=[
+            WrongAnswer(
+                question_id=item.question_id,
+                word=item.word,
+                reading=item.reading,
+                meaning_ko=item.meaning_ko,
+                example_sentence=item.example_sentence,
+                example_translation=item.example_translation,
+            )
             for item in results
         ]
-    }
+    )
 
 
 @router.get("/smart-preview", response_model=SmartPreviewResponse, status_code=200)
@@ -262,7 +274,7 @@ async def smart_start(
     )
 
 
-@router.get("/recommendations", status_code=200)
+@router.get("/recommendations", response_model=RecommendationsResponse, status_code=200)
 async def get_recommendations(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -274,9 +286,9 @@ async def get_recommendations(
         category=category,
     )
 
-    return {
-        "reviewDueCount": result.review_due_count,
-        "newWordsCount": result.new_words_count,
-        "wrongCount": result.wrong_count,
-        "lastReviewedAt": result.last_reviewed_at,
-    }
+    return RecommendationsResponse(
+        review_due_count=result.review_due_count,
+        new_words_count=result.new_words_count,
+        wrong_count=result.wrong_count,
+        last_reviewed_at=result.last_reviewed_at,
+    )

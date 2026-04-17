@@ -11,6 +11,20 @@ class QuizResumeRequest(CamelModel):
     session_id: UUID
 
 
+class IncompleteQuizSession(CamelModel):
+    id: str
+    quiz_type: str
+    jlpt_level: str
+    total_questions: int
+    answered_count: int
+    correct_count: int
+    started_at: str
+
+
+class IncompleteQuizResponse(CamelModel):
+    session: IncompleteQuizSession | None
+
+
 class QuizOption(CamelModel):
     id: str
     text: str
@@ -86,6 +100,39 @@ class QuizCompleteResponse(CamelModel):
     current_xp: int
     xp_for_next: int
     events: list[dict[str, Any]]
+
+
+class QuizResumeResponse(CamelModel):
+    session_id: str
+    questions: list[QuizQuestion]
+    answered_question_ids: list[str]
+    total_questions: int
+    correct_count: int
+    quiz_type: str
+
+
+class QuizStatsResponse(CamelModel):
+    total_quizzes: int
+    total_correct: int
+    total_questions: int
+    accuracy: float
+
+
+class ContentQuizStatsResponse(CamelModel):
+    total_count: int
+    studied_count: int
+    progress: int
+
+
+class WrongAnswersResponse(CamelModel):
+    wrong_answers: list[WrongAnswer]
+
+
+class RecommendationsResponse(CamelModel):
+    review_due_count: int
+    new_words_count: int
+    wrong_count: int
+    last_reviewed_at: str | None = None
 
 
 # ── Smart Quiz ──
