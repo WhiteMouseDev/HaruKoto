@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
-import 'study_provider.dart';
+import 'quiz_session_service.dart';
 
 class QuizSessionRequest {
   const QuizSessionRequest({
@@ -144,54 +144,22 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       sessionQuizType: request.quizType,
     );
 
-    final repository = ref.read(studyRepositoryProvider);
-
     try {
-      if (request.resumeSessionId != null) {
-        final data = await repository.resumeQuiz(request.resumeSessionId!);
-        state = QuizSessionState(
-          loading: false,
-          sessionId: data.sessionId,
-          sessionQuizType: data.quizType ?? request.quizType,
-          questions: data.questions,
-          currentIndex: data.answeredQuestionIds.length,
-          resolvedMode: _resolveMode(
-            resumeQuizType: data.quizType,
-            fallbackMode: request.mode,
-          ),
-        );
-        return;
-      }
-
-      if (request.mode == 'smart') {
-        final data = await repository.startSmartQuiz(
-          category: request.quizType,
-          jlptLevel: request.jlptLevel,
-          count: request.count,
-        );
-        state = QuizSessionState(
-          loading: false,
-          sessionId: data.sessionId,
-          sessionQuizType: request.quizType,
-          questions: data.questions,
-          resolvedMode: request.mode,
-        );
-        return;
-      }
-
-      final data = await repository.startQuiz(
-        quizType: request.quizType,
-        jlptLevel: request.jlptLevel,
-        count: request.count,
-        mode: request.mode,
-        stageId: request.stageId,
-      );
+      final data = await ref.read(quizSessionServiceProvider).initializeSession(
+            quizType: request.quizType,
+            jlptLevel: request.jlptLevel,
+            count: request.count,
+            mode: request.mode,
+            resumeSessionId: request.resumeSessionId,
+            stageId: request.stageId,
+          );
       state = QuizSessionState(
         loading: false,
         sessionId: data.sessionId,
-        sessionQuizType: request.quizType,
+        sessionQuizType: data.sessionQuizType,
         questions: data.questions,
-        resolvedMode: request.mode,
+        currentIndex: data.currentIndex,
+        resolvedMode: data.resolvedMode,
       );
     } catch (_) {
       state = QuizSessionState(
@@ -232,7 +200,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     );
 
     unawaited(
-      ref.read(studyRepositoryProvider).answerQuestion(
+      ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: question.questionId,
             selectedOptionId: optionId,
@@ -268,7 +236,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     final question =
         state.questions.firstWhere((q) => q.questionId == questionId);
     unawaited(
-      ref.read(studyRepositoryProvider).answerQuestion(
+      ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: questionId,
             selectedOptionId:
@@ -288,7 +256,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
 
     state = state.copyWith(completing: true);
     try {
-      final result = await ref.read(studyRepositoryProvider).completeQuiz(
+      final result = await ref.read(quizSessionServiceProvider).completeQuiz(
             sessionId,
             stageId: stageId,
           );
@@ -298,19 +266,6 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       state = state.copyWith(completing: false);
       rethrow;
     }
-  }
-
-  String? _resolveMode({
-    required String? resumeQuizType,
-    required String? fallbackMode,
-  }) {
-    const modeMap = {
-      'CLOZE': 'cloze',
-      'SENTENCE_ARRANGE': 'arrange',
-      'TYPING': 'typing',
-      'MATCHING': 'matching',
-    };
-    return modeMap[resumeQuizType] ?? fallbackMode;
   }
 }
 

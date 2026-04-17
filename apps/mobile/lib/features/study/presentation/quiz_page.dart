@@ -1,19 +1,12 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/haptic_service.dart';
 import '../../../core/services/sound_service.dart';
-import '../../../core/providers/quiz_settings_provider.dart';
 import '../providers/quiz_session_provider.dart';
 import 'quiz_result_page.dart';
-import 'widgets/four_choice_quiz.dart';
-import 'widgets/matching_quiz.dart';
-import 'widgets/cloze_quiz.dart';
-import 'widgets/sentence_arrange_quiz.dart';
-import 'widgets/typing_quiz.dart';
-import 'widgets/quiz_progress_bar.dart';
-import 'widgets/quiz_header.dart';
-import 'widgets/quiz_feedback_bar.dart';
+import 'widgets/quiz_page_content.dart';
 
 /// No-transition route for quiz pages (avoids distracting slide animation).
 Route<T> quizRoute<T>(Widget child) => PageRouteBuilder<T>(
@@ -91,7 +84,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
   }
 
-  Future<void> _handleAnswer(String optionId) async {
+  void _handleAnswer(String optionId) {
     _timer?.cancel();
     final session = ref.read(quizSessionProvider);
     final isCorrect =
@@ -114,10 +107,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     }
   }
 
-  Future<void> _handleNext() async {
+  void _handleNext() {
     final session = ref.read(quizSessionProvider);
     if (session.isLastQuestion) {
-      await _completeQuiz();
+      unawaited(_completeQuiz());
       return;
     }
 
@@ -154,6 +147,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     }
   }
 
+  Future<void> _requestPop() async {
+    final shouldPop = await _onWillPop();
+    if (shouldPop && mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   Future<bool> _onWillPop() async {
     final shouldPop = await showDialog<bool>(
       context: context,
@@ -175,77 +175,30 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     return shouldPop ?? false;
   }
 
-  String _headerTitle(QuizSessionState session) => session.resolvedMode ==
-          'review'
-      ? '오답 복습'
-      : '${widget.jlptLevel} ${widget.quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final session = ref.watch(quizSessionProvider);
+    final content = QuizPageContent(
+      session: session,
+      quizType: widget.quizType,
+      jlptLevel: widget.jlptLevel,
+      onBackRequested: () {
+        unawaited(_requestPop());
+      },
+      onExit: () => Navigator.of(context).pop(),
+      onAnswer: _handleAnswer,
+      onNext: _handleNext,
+      onComplete: () {
+        unawaited(_completeQuiz());
+      },
+      onSubmitSpecialAnswer: _submitSpecialAnswer,
+    );
 
-    if (session.loading) {
-      return _buildLoadingState(theme);
+    if (session.loading || session.questions.isEmpty) {
+      return content;
     }
 
-    if (session.questions.isEmpty) {
-      return _buildEmptyState(theme);
-    }
-
-    final unanswered = session.unansweredQuestions;
-
-    if (session.resolvedMode == 'matching') {
-      final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
-      return _buildSpecialMode(
-        MatchingQuiz(
-          questions: unanswered,
-          showFurigana: showFurigana,
-          onMatchResult: (qId, isCorrect) {
-            _submitSpecialAnswer(qId, isCorrect, widget.quizType);
-          },
-          onComplete: _completeQuiz,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'cloze') {
-      return _buildSpecialMode(
-        ClozeQuiz(
-          questions: unanswered,
-          onAnswer: (qId, optionId, isCorrect) {
-            _submitSpecialAnswer(qId, isCorrect, 'CLOZE', optionId: optionId);
-          },
-          onComplete: _completeQuiz,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'arrange') {
-      return _buildSpecialMode(
-        SentenceArrangeQuiz(
-          questions: unanswered,
-          onAnswer: (qId, isCorrect) {
-            _submitSpecialAnswer(qId, isCorrect, 'SENTENCE_ARRANGE');
-          },
-          onComplete: _completeQuiz,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'typing') {
-      return _buildSpecialMode(
-        TypingQuiz(
-          questions: unanswered,
-          onAnswer: (qId, isCorrect) {
-            _submitSpecialAnswer(qId, isCorrect, 'VOCABULARY');
-          },
-          onComplete: _completeQuiz,
-        ),
-      );
-    }
-
-    return _buildDefaultQuiz(theme, session);
+    return _buildPopScope(child: content);
   }
 
   void _submitSpecialAnswer(
@@ -267,162 +220,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
         if (!didPop) {
-          final shouldPop = await _onWillPop();
-          if (shouldPop && mounted) {
-            Navigator.of(context).pop();
-          }
+          await _requestPop();
         }
       },
       child: child,
-    );
-  }
-
-  Widget _buildSpecialMode(Widget quizWidget) {
-    final session = ref.read(quizSessionProvider);
-    return _buildPopScope(
-      child: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              QuizHeader(
-                title: _headerTitle(session),
-                count: session.headerCount,
-                onBack: () async {
-                  final shouldPop = await _onWillPop();
-                  if (shouldPop && mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: quizWidget,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingState(ThemeData theme) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              '퀴즈를 준비하고 있어요...',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(ThemeData theme) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              ref.watch(quizSessionProvider).resolvedMode == 'review'
-                  ? Icons.celebration
-                  : Icons.sentiment_dissatisfied,
-              size: 48,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              ref.watch(quizSessionProvider).resolvedMode == 'review'
-                  ? '복습할 문제가 없어요!'
-                  : '이 레벨의 콘텐츠를 준비하고 있어요',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('학습으로 돌아가기'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDefaultQuiz(ThemeData theme, QuizSessionState session) {
-    final question = session.currentQuestion!;
-    final progress = session.progress;
-
-    return _buildPopScope(
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  QuizHeader(
-                    title: _headerTitle(session),
-                    count: session.headerCount,
-                    onBack: () async {
-                      final shouldPop = await _onWillPop();
-                      if (shouldPop && mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: QuizProgressBar(
-                      progress: progress,
-                      streak: session.streak,
-                      showStreak: session.answered,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: FourChoiceQuiz(
-                        question: question,
-                        selectedOptionId: session.selectedOptionId,
-                        answered: session.answered,
-                        isCorrect: session.isCorrect,
-                        showFurigana:
-                            ref.watch(quizSettingsProvider).showFurigana,
-                        onSelect: _handleAnswer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              if (session.answered)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: QuizFeedbackBar(
-                    question: question,
-                    isCorrect: session.isCorrect,
-                    streak: session.streak,
-                    isLastQuestion: session.isLastQuestion,
-                    onNext: _handleNext,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
