@@ -1,10 +1,18 @@
 import uuid
 from datetime import UTC, datetime
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.db.session import get_db
+
+
+class _AsyncNullContext:
+    async def __aenter__(self):
+        return None
+
+    async def __aexit__(self, exc_type, exc, tb):
+        return False
 
 
 @pytest.mark.asyncio
@@ -289,3 +297,137 @@ async def test_get_lesson_detail(client, mock_user):
     assert data["content"]["questions"][0]["correctAnswer"] is None
     assert data["content"]["questions"][1]["correctOrder"] is None
     assert data["progress"]["status"] == "IN_PROGRESS"
+
+
+@pytest.mark.asyncio
+async def test_start_lesson(client, mock_user):
+    """Test POST /api/v1/lessons/{lesson_id}/start returns in-progress status."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.is_published = True
+
+    progress = MagicMock()
+    progress.status = "IN_PROGRESS"
+    progress.attempts = 0
+    progress.score_correct = 0
+    progress.score_total = 0
+    progress.started_at = datetime.now(UTC)
+    progress.completed_at = None
+    progress.srs_registered_at = None
+
+    progress_result = MagicMock()
+    progress_result.scalar_one_or_none.return_value = progress
+
+    mock_session = AsyncMock()
+    mock_session.get = AsyncMock(return_value=lesson)
+    mock_session.execute = AsyncMock(return_value=progress_result)
+    mock_session.commit = AsyncMock()
+    mock_session.refresh = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(f"/api/v1/lessons/{lesson_id}/start")
+    assert response.status_code == 200
+    assert response.json()["status"] == "IN_PROGRESS"
+
+
+@pytest.mark.asyncio
+@patch("app.services.lesson_command.register_items_from_lesson", new_callable=AsyncMock)
+@patch("app.services.lesson_command.process_answer", new_callable=AsyncMock)
+async def test_submit_lesson(mock_process_answer, mock_register_items, client, mock_user):
+    """Test POST /api/v1/lessons/{lesson_id}/submit returns graded results and progress."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    vocab_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {
+                "order": 1,
+                "type": "VOCAB_MCQ",
+                "correct_answer": "a",
+                "explanation": "정답 설명",
+            }
+        ]
+    }
+
+    vocab_link = MagicMock()
+    vocab_link.item_type = "WORD"
+    vocab_link.vocabulary_id = vocab_id
+    vocab_link.grammar_id = None
+    vocab_link.item_order = 1
+    lesson.item_links = [vocab_link]
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    progress = MagicMock()
+    progress.attempts = 0
+    progress.score_correct = 0
+    progress.score_total = 0
+    progress.status = "IN_PROGRESS"
+    progress.srs_registered_at = None
+    progress.completed_at = None
+
+    progress_result = MagicMock()
+    progress_result.scalar_one_or_none.return_value = progress
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=[lesson_result, progress_result])
+    mock_session.begin_nested = MagicMock(return_value=_AsyncNullContext())
+    mock_session.commit = AsyncMock()
+
+    mock_process_answer.return_value = {
+        "state_before": "LEARNING",
+        "state_after": "REVIEW",
+        "next_review_at": "2026-04-18T00:00:00+00:00",
+        "is_provisional_phase": False,
+    }
+    mock_register_items.return_value = 1
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 1200,
+                }
+            ]
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "scoreCorrect": 1,
+        "scoreTotal": 1,
+        "results": [
+            {
+                "order": 1,
+                "isCorrect": True,
+                "correctAnswer": "a",
+                "correctOrder": None,
+                "explanation": "정답 설명",
+                "stateBefore": "LEARNING",
+                "stateAfter": "REVIEW",
+                "nextReviewAt": "2026-04-18T00:00:00+00:00",
+                "isProvisionalPhase": False,
+            }
+        ],
+        "status": "COMPLETED",
+        "srsItemsRegistered": 1,
+    }
