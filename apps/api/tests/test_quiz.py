@@ -228,7 +228,7 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
 
 
 @pytest.mark.asyncio
-@patch("app.routers.quiz.check_and_grant_achievements")
+@patch("app.services.quiz_complete.check_and_grant_achievements")
 async def test_complete_quiz_success(mock_achievements, client, mock_user, mock_quiz_session, test_user_id):
     """Test POST /api/v1/quiz/complete completes the session and awards XP."""
     from app.main import app

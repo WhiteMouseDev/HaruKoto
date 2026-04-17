@@ -7,18 +7,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import (
-    DailyProgress,
     Grammar,
     QuizAnswer,
     QuizSession,
     UserGrammarProgress,
-    UserStudyStageProgress,
     UserVocabProgress,
     Vocabulary,
 )
@@ -37,21 +34,14 @@ from app.schemas.quiz import (
     SmartPreviewResponse,
     SmartStartRequest,
 )
-from app.services.gamification import (
-    calculate_level,
-    check_and_grant_achievements,
-    update_streak,
-)
-from app.services.quiz_policy import apply_srs_update
+from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
+from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
 from app.services.quiz_session import (
     build_response_questions,
     extract_questions_data,
 )
 from app.services.quiz_smart import build_smart_preview_data
 from app.services.quiz_start import QuizStartServiceError, start_quiz_session, start_smart_quiz_session
-from app.services.srs import log_review_event
-from app.utils.constants import REWARDS
-from app.utils.date import get_today_kst
 from app.utils.helpers import enum_value
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
@@ -84,124 +74,12 @@ async def answer_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    session = await db.get(QuizSession, body.session_id)
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
-    if session.completed_at:
-        raise HTTPException(status_code=400, detail="이미 완료된 세션입니다")
+    try:
+        result = await submit_quiz_answer(db, user, body)
+    except QuizAnswerServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    # Verify answer from questionsData (handle both list and dict formats)
-    questions_data = extract_questions_data(session.questions_data)
-    question_data = None
-    for q in questions_data:
-        if q["id"] == str(body.question_id):
-            question_data = q
-            break
-
-    if not question_data:
-        raise HTTPException(status_code=400, detail="질문을 찾을 수 없습니다")
-
-    correct_option_id = question_data.get("correctOptionId", "")
-    is_correct = body.selected_option_id == correct_option_id
-
-    # Create answer record
-    answer = QuizAnswer(
-        session_id=session.id,
-        question_id=body.question_id,
-        question_type=body.question_type,
-        selected_option_id=body.selected_option_id,
-        is_correct=is_correct,
-        time_spent_seconds=body.time_spent_seconds,
-    )
-    db.add(answer)
-
-    if is_correct:
-        session.correct_count += 1
-
-    # Update spaced repetition progress
-    question_type = body.question_type.value
-    now = datetime.now(UTC)
-
-    if question_type in ("VOCABULARY", "KANJI", "LISTENING"):
-        progress_result = await db.execute(
-            select(UserVocabProgress).where(
-                UserVocabProgress.user_id == user.id,
-                UserVocabProgress.vocabulary_id == body.question_id,
-            )
-        )
-        progress = progress_result.scalar_one_or_none()
-
-        if progress is None:
-            progress = UserVocabProgress(
-                user_id=user.id,
-                vocabulary_id=body.question_id,
-            )
-            db.add(progress)
-            await db.flush()
-
-        state_before = getattr(progress, "state", "UNSEEN") or "UNSEEN"
-        apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
-        with contextlib.suppress(Exception):
-            await log_review_event(
-                db,
-                user.id,
-                "WORD",
-                body.question_id,
-                session.id,
-                None,
-                "JP_KR",
-                is_correct,
-                body.time_spent_seconds * 1000,
-                3 if is_correct else 1,
-                state_before,
-                getattr(progress, "state", state_before) or state_before,
-                None,
-                getattr(progress, "state", "") == "PROVISIONAL",
-                state_before == "UNSEEN",
-                now.date(),
-            )
-
-    elif question_type == "GRAMMAR":
-        progress_result = await db.execute(
-            select(UserGrammarProgress).where(
-                UserGrammarProgress.user_id == user.id,
-                UserGrammarProgress.grammar_id == body.question_id,
-            )
-        )
-        progress = progress_result.scalar_one_or_none()
-
-        if progress is None:
-            progress = UserGrammarProgress(
-                user_id=user.id,
-                grammar_id=body.question_id,
-            )
-            db.add(progress)
-            await db.flush()
-
-        state_before_g = getattr(progress, "state", "UNSEEN") or "UNSEEN"
-        apply_srs_update(progress, is_correct, body.time_spent_seconds, now)
-        with contextlib.suppress(Exception):
-            await log_review_event(
-                db,
-                user.id,
-                "GRAMMAR",
-                body.question_id,
-                session.id,
-                None,
-                "JP_KR",
-                is_correct,
-                body.time_spent_seconds * 1000,
-                3 if is_correct else 1,
-                state_before_g,
-                getattr(progress, "state", state_before_g) or state_before_g,
-                None,
-                getattr(progress, "state", "") == "PROVISIONAL",
-                state_before_g == "UNSEEN",
-                now.date(),
-            )
-
-    await db.commit()
-    return QuizAnswerResponse(success=True)
+    return QuizAnswerResponse(success=result.success)
 
 
 @router.post("/complete", response_model=QuizCompleteResponse, status_code=200)
@@ -210,163 +88,21 @@ async def complete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    session = await db.get(QuizSession, body.session_id)
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
-
-    # Idempotency
-    if session.completed_at:
-        level_info = calculate_level(user.experience_points)
-        accuracy = (session.correct_count / session.total_questions * 100) if session.total_questions > 0 else 0
-        return QuizCompleteResponse(
-            session_id=session.id,
-            correct_count=session.correct_count,
-            total_questions=session.total_questions,
-            accuracy=accuracy,
-            xp_earned=0,
-            level=level_info["level"],
-            current_xp=level_info["current_xp"],
-            xp_for_next=level_info["xp_for_next"],
-            events=[],
-        )
-
-    session.completed_at = datetime.now(UTC)
-    xp_earned = session.correct_count * REWARDS.QUIZ_XP_PER_CORRECT
-    old_level = user.level
-    user.experience_points += xp_earned
-    level_info = calculate_level(user.experience_points)
-    user.level = level_info["level"]
-
-    # Update streak
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = datetime.now(UTC)
-
-    # Calculate study duration in minutes from session start
-    study_duration_minutes = 0
-    if session.started_at:
-        started = session.started_at.replace(tzinfo=UTC) if session.started_at.tzinfo is None else session.started_at
-        delta = datetime.now(UTC) - started
-        study_duration_minutes = max(0, int(delta.total_seconds() / 60))
-
-    # Determine per-category counters based on quiz_type
-    quiz_type_val = enum_value(session.quiz_type)
-    words_increment = session.correct_count if quiz_type_val in ("VOCABULARY", "KANJI", "LISTENING") else 0
-    grammar_increment = session.correct_count if quiz_type_val == "GRAMMAR" else 0
-    sentences_increment = session.total_questions if quiz_type_val in ("CLOZE", "SENTENCE_ARRANGE") else 0
-
-    # Update daily progress
-    stmt = pg_insert(DailyProgress).values(
-        user_id=user.id,
-        date=today,
-        quizzes_completed=1,
-        correct_answers=session.correct_count,
-        total_answers=session.total_questions,
-        xp_earned=xp_earned,
-        words_studied=words_increment,
-        grammar_studied=grammar_increment,
-        sentences_studied=sentences_increment,
-        study_minutes=study_duration_minutes,
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={
-            "quizzes_completed": DailyProgress.quizzes_completed + 1,
-            "correct_answers": DailyProgress.correct_answers + session.correct_count,
-            "total_answers": DailyProgress.total_answers + session.total_questions,
-            "xp_earned": DailyProgress.xp_earned + xp_earned,
-            "words_studied": DailyProgress.words_studied + words_increment,
-            "grammar_studied": func.coalesce(DailyProgress.grammar_studied, 0) + grammar_increment,
-            "sentences_studied": func.coalesce(DailyProgress.sentences_studied, 0) + sentences_increment,
-            "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + study_duration_minutes,
-        },
-    )
-    await db.execute(stmt)
-
-    # Count total quizzes for achievements
-    quiz_count_result = await db.execute(
-        select(func.count(QuizSession.id)).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.isnot(None),
-        )
-    )
-    quiz_count = quiz_count_result.scalar() or 0
-
-    words_count_result = await db.execute(select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id))
-    words_count = words_count_result.scalar() or 0
-
-    accuracy = (session.correct_count / session.total_questions * 100) if session.total_questions > 0 else 0
-    is_perfect = session.correct_count == session.total_questions and session.total_questions > 0
-
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": user.level,
-            "old_level": old_level,
-            "streak_count": user.streak_count,
-            "quiz_count": quiz_count,
-            "is_perfect_quiz": is_perfect,
-            "total_words_studied": words_count,
-        },
-    )
-
-    # Update stage progress if stage_id is provided
-    stage_id = body.stage_id
-    # Also check if stage_id was stored in session metadata
-    if not stage_id:
-        qdata = session.questions_data
-        if isinstance(qdata, dict) and "stage_id" in qdata:
-            with contextlib.suppress(ValueError):
-                stage_id = uuid.UUID(qdata["stage_id"])
-
-    if stage_id:
-        now = datetime.now(UTC)
-        score_pct = round(accuracy)
-
-        stage_progress_result = await db.execute(
-            select(UserStudyStageProgress).where(
-                UserStudyStageProgress.user_id == user.id,
-                UserStudyStageProgress.stage_id == stage_id,
-            )
-        )
-        stage_progress = stage_progress_result.scalar_one_or_none()
-
-        if stage_progress is None:
-            stage_progress = UserStudyStageProgress(
-                user_id=user.id,
-                stage_id=stage_id,
-                best_score=score_pct,
-                attempts=1,
-                completed=score_pct >= 70,
-                completed_at=now if score_pct >= 70 else None,
-                last_attempted_at=now,
-            )
-            db.add(stage_progress)
-        else:
-            stage_progress.attempts = (stage_progress.attempts or 0) + 1
-            stage_progress.last_attempted_at = now
-            if score_pct > (stage_progress.best_score or 0):
-                stage_progress.best_score = score_pct
-            if score_pct >= 70 and not stage_progress.completed:
-                stage_progress.completed = True
-                stage_progress.completed_at = now
-
-    await db.commit()
+    try:
+        result = await complete_quiz_session(db, user, body)
+    except QuizCompleteServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return QuizCompleteResponse(
-        session_id=session.id,
-        correct_count=session.correct_count,
-        total_questions=session.total_questions,
-        accuracy=accuracy,
-        xp_earned=xp_earned,
-        level=level_info["level"],
-        current_xp=level_info["current_xp"],
-        xp_for_next=level_info["xp_for_next"],
-        events=events,
+        session_id=result.session_id,
+        correct_count=result.correct_count,
+        total_questions=result.total_questions,
+        accuracy=result.accuracy,
+        xp_earned=result.xp_earned,
+        level=result.level,
+        current_xp=result.current_xp,
+        xp_for_next=result.xp_for_next,
+        events=result.events,
     )
 
 

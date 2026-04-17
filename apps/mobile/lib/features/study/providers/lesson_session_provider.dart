@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../home/providers/home_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_flow_policy.dart';
@@ -26,9 +27,11 @@ class LessonSessionState {
     this.hasReorderStep = false,
     this.result,
     this.submitting = false,
+    this.submissionErrorMessage,
   });
 
   static const _noResultChange = Object();
+  static const _noSubmissionErrorChange = Object();
 
   final LessonStep step;
   final int recognitionIndex;
@@ -38,6 +41,7 @@ class LessonSessionState {
   final bool hasReorderStep;
   final LessonSubmitResultModel? result;
   final bool submitting;
+  final String? submissionErrorMessage;
 
   bool get canPop => step == LessonStep.contextPreview;
 
@@ -54,6 +58,7 @@ class LessonSessionState {
     bool? hasReorderStep,
     Object? result = _noResultChange,
     bool? submitting,
+    Object? submissionErrorMessage = _noSubmissionErrorChange,
   }) {
     return LessonSessionState(
       step: step ?? this.step,
@@ -66,6 +71,10 @@ class LessonSessionState {
           ? this.result
           : result as LessonSubmitResultModel?,
       submitting: submitting ?? this.submitting,
+      submissionErrorMessage:
+          identical(submissionErrorMessage, _noSubmissionErrorChange)
+              ? this.submissionErrorMessage
+              : submissionErrorMessage as String?,
     );
   }
 }
@@ -149,7 +158,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   Future<void> completeMatching({
     required LessonDetailModel detail,
-    required String jlptLevel,
+    String? jlptLevel,
   }) async {
     if (!state.hasReorderStep) {
       await submitAnswers(
@@ -164,8 +173,8 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   Future<void> answerReorder({
     required LessonDetailModel detail,
-    required String jlptLevel,
     required Map<String, dynamic> answer,
+    String? jlptLevel,
   }) async {
     final reorderQuestions = lessonReorderQuestions(detail);
     final answers = Map<int, Map<String, dynamic>>.from(state.answers);
@@ -188,10 +197,16 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   Future<void> submitAnswers({
     required String lessonId,
-    required String jlptLevel,
+    String? jlptLevel,
   }) async {
     if (state.submitting) return;
-    state = state.copyWith(submitting: true);
+    state = state.copyWith(
+      submitting: true,
+      submissionErrorMessage: null,
+    );
+
+    final resolvedJlptLevel =
+        jlptLevel ?? ref.read(userPreferencesProvider).jlptLevel;
 
     try {
       final orderedAnswers = state.answers.keys.toList()..sort();
@@ -201,18 +216,26 @@ class LessonSessionController extends Notifier<LessonSessionState> {
           for (final key in orderedAnswers) state.answers[key]!,
         ],
       );
-      ref.invalidate(chaptersProvider(jlptLevel));
-      ref.invalidate(reviewSummaryProvider(jlptLevel));
+      ref.invalidate(chaptersProvider(resolvedJlptLevel));
+      ref.invalidate(reviewSummaryProvider(resolvedJlptLevel));
       ref.invalidate(dashboardProvider);
       state = state.copyWith(
         step: LessonStep.result,
         result: result,
         submitting: false,
+        submissionErrorMessage: null,
       );
-    } catch (_) {
-      state = state.copyWith(submitting: false);
-      rethrow;
+    } catch (error) {
+      state = state.copyWith(
+        submitting: false,
+        submissionErrorMessage: '제출 실패: $error',
+      );
     }
+  }
+
+  void clearSubmissionError() {
+    if (state.submissionErrorMessage == null) return;
+    state = state.copyWith(submissionErrorMessage: null);
   }
 
   void reset() {

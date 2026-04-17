@@ -199,6 +199,36 @@ void main() {
       expect(repository.submittedAnswers!.map((e) => e['order']), [3, 4]);
       expect(state.step, LessonStep.result);
     });
+
+    test('submit failure is exposed through submissionErrorMessage', () async {
+      final repository = _FakeStudyRepository()
+        ..submitError = Exception('network down');
+      final container = ProviderContainer(
+        overrides: [
+          studyRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      final detail = _buildDetail(
+        questions: const [],
+      );
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
+      await notifier.startPractice(detail);
+      await notifier.completeMatching(
+        detail: detail,
+        jlptLevel: 'N4',
+      );
+
+      final state = container.read(lessonSessionProvider('lesson-1'));
+      expect(state.step, LessonStep.matching);
+      expect(state.submitting, isFalse);
+      expect(state.submissionErrorMessage, contains('network down'));
+    });
   });
 }
 
@@ -228,6 +258,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
   int submitLessonCalls = 0;
   String? submittedLessonId;
   List<Map<String, dynamic>>? submittedAnswers;
+  Object? submitError;
 
   @override
   Future<LessonProgressModel> startLesson(String lessonId) async {
@@ -248,6 +279,9 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     submitLessonCalls++;
     submittedLessonId = lessonId;
     submittedAnswers = answers;
+    if (submitError != null) {
+      throw submitError!;
+    }
     return const LessonSubmitResultModel(
       scoreCorrect: 2,
       scoreTotal: 2,
