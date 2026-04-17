@@ -9,16 +9,18 @@ JLPT 시험 대비 + AI 실전 회화를 제공하는 한국인을 위한 일본
 ```
 harukoto/
 ├── apps/
-│   ├── web/          # Next.js 학습 앱 (PWA, Flutter WebView)
+│   ├── admin/        # Next.js 리뷰어/운영 어드민 앱
+│   ├── api/          # FastAPI 백엔드
 │   ├── landing/      # Next.js 서비스 소개 페이지 (SSG)
-│   └── mobile/       # Flutter 모바일 앱
+│   ├── mobile/       # Flutter 모바일 앱
+│   └── web/          # Next.js 학습 앱 (PWA, Flutter WebView)
 ├── packages/
-│   ├── ui/           # 공유 UI 컴포넌트 (shadcn 기반)
-│   ├── types/        # 공유 타입 정의
-│   ├── database/     # Prisma 스키마 + 클라이언트
 │   ├── ai/           # AI Provider 추상화 레이어
-│   └── config/       # ESLint, TS, Tailwind 공유 설정
-└── docs/             # 기획 문서 (PRD 등)
+│   ├── config/       # ESLint, TS, Tailwind 공유 설정
+│   ├── database/     # Prisma 스키마 + 클라이언트
+│   ├── types/        # 공유 타입 정의
+├── docs/             # 기획/설계/운영 문서
+└── .planning/        # 로드맵, milestone, phase 상태 산출물
 ```
 
 ## 기술 스택
@@ -44,6 +46,8 @@ harukoto/
 
 - Node.js >= 20.9.0
 - pnpm 10.x
+- Python 3.12 + uv
+- Flutter stable (모바일 작업 시)
 
 ### 설치 및 실행
 
@@ -51,36 +55,48 @@ harukoto/
 # 의존성 설치
 pnpm install
 
-# 환경 변수 설정
+# 웹 앱 환경 변수 설정
 cp apps/web/.env.example apps/web/.env.local
 
 # 개발 서버 실행
-pnpm dev              # 전체 (web + landing)
+pnpm dev              # 전체 Next.js 앱 (web + landing + admin)
 pnpm dev:web          # 학습 앱만 (localhost:3000)
 pnpm dev:landing      # 랜딩 페이지만 (localhost:3001)
+pnpm dev:admin        # 어드민 앱만 (Next.js 기본 포트)
 ```
 
 ### 빌드
 
 ```bash
-pnpm build            # 전체 빌드
+pnpm build            # 전체 Node.js 워크스페이스 빌드
 pnpm build:web        # web만
 pnpm build:landing    # landing만 (정적 빌드)
+pnpm build:admin      # admin만
 ```
 
 ### 기타 명령어
 
 ```bash
 pnpm lint             # ESLint 검사
+pnpm typecheck        # TypeScript 워크스페이스 타입 검사
 pnpm test             # 테스트 실행
 pnpm format           # Prettier 포맷팅
 pnpm clean            # 빌드 캐시 정리
+```
+
+## 백엔드
+
+```bash
+cd apps/api
+uv sync --frozen --extra dev
+uv run pytest
 ```
 
 ## 배포 구성
 
 | 앱 | URL | 설명 |
 |----|-----|------|
+| admin | admin.harukoto.com | 리뷰어/운영 어드민 |
 | landing | harukoto.com | 서비스 소개 (정적) |
 | web | app.harukoto.com | 학습 앱 (SSR) |
 | mobile | App Store / Play Store | Flutter 앱 |
@@ -94,6 +110,11 @@ cd apps/mobile
 flutter pub get
 flutter run
 ```
+
+## 계획 문서
+
+- 기능 설계/구현 계획: `docs/operations/plans/`
+- 로드맵/마일스톤/phase 상태: `.planning/`
 
 ## 라이선스
 

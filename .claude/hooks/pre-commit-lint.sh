@@ -2,14 +2,17 @@
 # Pre-commit lint hook: 변경된 앱에 맞는 lint를 자동 실행
 # git commit 명령 감지 시 실행됨
 
+set -euo pipefail
+
 CMD=$(jq -r '.tool_input.command // ""' 2>/dev/null)
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
 # git commit이 아니면 패스
 if ! echo "$CMD" | grep -q "git commit"; then
   exit 0
 fi
 
-cd /Users/kimkunwoo/WhiteMouseDev/japanese || exit 0
+cd "$PROJECT_DIR" || exit 0
 
 CHANGED=$(git diff --cached --name-only 2>/dev/null)
 if [ -z "$CHANGED" ]; then
@@ -49,20 +52,32 @@ if echo "$CHANGED" | grep -q "^apps/api/"; then
   cd ../..
 fi
 
-# Web/Packages 변경 감지
-if echo "$CHANGED" | grep -qE "^(apps/web/|packages/)"; then
+# Web/Admin/Landing/Packages 변경 감지
+if echo "$CHANGED" | grep -qE "^(apps/admin/|apps/web/|apps/landing/|packages/)"; then
   LINT_OUT=$(pnpm lint 2>&1)
   if [ $? -ne 0 ]; then
     ERRORS=1
-    MESSAGES="${MESSAGES}[web] pnpm lint 에러 발견\n"
+    MESSAGES="${MESSAGES}[frontend] pnpm lint 에러 발견\n"
   fi
 fi
 
 if [ $ERRORS -ne 0 ]; then
-  echo "{\"continue\":false,\"stopReason\":\"Lint 실패:\\n${MESSAGES}수정 후 다시 커밋하세요\"}"
-  exit 1
+  jq -Rn --arg reason "Lint 실패:\n${MESSAGES}수정 후 다시 커밋하세요" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: $reason
+    }
+  }'
+  exit 0
 fi
 
 if [ -n "$MESSAGES" ]; then
-  echo "{\"systemMessage\":\"${MESSAGES}변경 사항을 git add 후 다시 커밋하세요\"}"
+  jq -Rn --arg reason "${MESSAGES}변경 사항을 git add 후 다시 커밋하세요" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: $reason
+    }
+  }'
 fi

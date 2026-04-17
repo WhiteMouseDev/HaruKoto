@@ -16,7 +16,8 @@
     "vocab:review:compile": "node scripts/compile-vocab-reviewed-final.mjs",
     "vocab:recorrect:priority": "node scripts/recorrect-priority-vocab-v3.mjs",
     "build": "prisma generate",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0"

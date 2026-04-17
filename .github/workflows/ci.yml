@@ -28,9 +28,13 @@ jobs:
         with:
           filters: |
             frontend:
+              - 'apps/admin/**'
+              - 'apps/landing/**'
               - 'apps/web/**'
               - 'packages/**'
+              - 'package.json'
               - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
               - 'turbo.json'
             backend:
               - 'apps/api/**'
@@ -68,6 +72,9 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Build
         run: pnpm build

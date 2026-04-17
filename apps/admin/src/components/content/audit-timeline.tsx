@@ -19,7 +19,8 @@ function getDotClass(action: string): string {
   return 'bg-blue-500';
 }
 
-type TimeTranslator = (key: string, values?: Record<string, unknown>) => string;
+type TimeTranslatorValues = Record<string, string | number | Date>;
+type TimeTranslator = (key: string, values?: TimeTranslatorValues) => string;
 
 function formatRelativeTime(dateStr: string, tTime: TimeTranslator): string {
   const diffMs = Date.now() - new Date(dateStr).getTime();

@@ -10,6 +10,7 @@ HaruKoto is a monorepo for a Japanese learning product for Korean speakers.
 
 ## Repository Shape
 
+- `apps/admin`: internal reviewer/admin Next.js app
 - `apps/web`: main Next.js learning app
 - `apps/landing`: public landing site
 - `apps/api`: FastAPI backend
@@ -35,12 +36,19 @@ HaruKoto is a monorepo for a Japanese learning product for Korean speakers.
 - Run the narrowest useful checks while iterating, then run all affected checks before finishing.
 - Root shortcuts:
   - `pnpm lint`
+  - `pnpm typecheck` for TypeScript workspaces
   - `pnpm test`
   - `pnpm build`
   - `pnpm format`
 - If only one workspace changed, prefer `pnpm --filter <workspace> <script>`.
 - Changes in `packages/*` must be validated in at least one direct consumer app.
 - If a required tool is unavailable or a check cannot run, call that out explicitly.
+
+## Planning Artifacts
+
+- Use `docs/operations/plans/*.md` for feature design and implementation plans that should stay human-readable in repo docs.
+- Use `.planning/` for roadmap, milestone, phase, and GSD state artifacts.
+- Avoid introducing ad hoc top-level planning files when one of the two homes above fits.
 
 ## Monorepo Guardrails
 
@@ -74,6 +82,7 @@ HaruKoto is a monorepo for a Japanese learning product for Korean speakers.
 
 ## Path-Specific Instructions
 
+- `apps/admin/**`: follow the local `AGENTS.md` for admin app conventions and validation.
 - `apps/web/**` and `apps/landing/**`: follow the local `AGENTS.md` for Next.js conventions and validation.
 - `apps/api/**`: follow the local `AGENTS.md` for FastAPI and API contract rules.
 - `apps/mobile/**`: follow the local `AGENTS.md` for Flutter-specific build and validation rules.
@@ -81,4 +90,4 @@ HaruKoto is a monorepo for a Japanese learning product for Korean speakers.
 
 ## Existing Team Context
 
-`CLAUDE.md` and `.claude/rules/*.md` contain prior team guidance. Keep Codex instructions consistent with those documents when extending this setup.
+`CLAUDE.md`, `.claude/rules/*.md`, and `.claude/settings.json` contain prior team guidance. Keep Codex instructions consistent with those documents when extending this setup.

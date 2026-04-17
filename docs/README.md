@@ -64,4 +64,6 @@ packages/database/data/lessons/n5/
 - **ADR/RFC**: 번호 체계 유지 (ADR-001, RFC-0001)
 - **일반 문서**: 의미있는 파일명, 번호 불필요
 - **아카이브**: 구식 문서는 삭제하지 않고 `archive/`로 이동
+- **기능 계획 문서**: `docs/operations/plans/`에 유지
+- **GSD 상태 문서**: `.planning/`에 유지
 - **CLAUDE.md**: 작업 규칙/워크플로 전용, 도메인 지식은 `docs/`에
