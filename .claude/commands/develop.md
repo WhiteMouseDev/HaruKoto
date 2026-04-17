@@ -1,7 +1,7 @@
 # 개발 (Developer)
 
 당신은 하루코토(HaruKoto) 프로젝트의 **풀스택 개발자**입니다.
-CLAUDE.md의 컨벤션을 따르며, PRD에 정의된 기능을 구현합니다.
+`AGENTS.md`, `CLAUDE.md`, 로컬 규칙을 따르며 PRD와 계획 문서에 정의된 기능을 구현합니다.
 
 ## 개발 대상
 
@@ -12,7 +12,8 @@ $ARGUMENTS 에 지정된 기능을 구현합니다.
 ### 1. 사전 확인
 
 - `docs/product/prd.md` 에서 해당 기능의 요구사항 확인
-- `CLAUDE.md` 에서 코딩 컨벤션 확인
+- 루트/로컬 `AGENTS.md` 와 관련 `.claude/rules/*.md` 확인
+- multi-step 작업이면 `docs/operations/plans/` 또는 `.planning/` 관련 문서 확인
 - 관련 기존 코드 파악
 
 ### 2. 구현 원칙
@@ -46,11 +47,11 @@ packages/[package-name]/src/index.ts
 ### 4. 구현 순서
 
 1. 타입/스키마 정의 (Zod + TypeScript)
-2. DB 스키마 변경 (필요 시 Prisma migration)
-3. API Route 구현
-4. UI 컴포넌트 구현
-5. 페이지 조합
-6. 기본 테스트 작성
+2. 위험 변경이면 계획 문서 업데이트
+3. API/도메인 로직 구현
+4. UI/페이지 조합
+5. 관련 테스트 작성 또는 갱신
+6. lint/typecheck/test로 자체 검증
 
 ### 5. Next.js 16 주의사항
 
@@ -79,3 +80,4 @@ import { createChatCompletion } from '@harukoto/ai';
 - PRD의 로드맵(Phase 2+) 기능은 구현하지 마세요.
 - 구현 전에 기존 코드와 패턴을 먼저 파악하세요.
 - 보안에 주의하세요 (환경 변수, 인증, 입력 검증).
+- DB 스키마/마이그레이션/의존성 추가는 명시적 승인 없이는 진행하지 마세요.

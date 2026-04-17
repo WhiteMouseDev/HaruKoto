@@ -22,6 +22,7 @@ alwaysApply: true
 
 ## 커밋 전 필수
 - 변경된 앱의 lint 실행 후 에러 없음 확인
+- TypeScript workspace 변경 시 `pnpm typecheck`
 - Backend: `cd apps/api && uv run ruff check app/ tests/ && uv run ruff format --check app/ tests/`
-- Frontend: `pnpm lint`
+- Frontend/Admin/Landing: `pnpm lint && pnpm typecheck`
 - Mobile: `cd apps/mobile && dart format --set-exit-if-changed lib/ test/ && flutter analyze`
