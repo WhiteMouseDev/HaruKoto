@@ -364,6 +364,108 @@ async def test_get_smart_preview_vocabulary(client, mock_user, test_user_id):
 
 
 @pytest.mark.asyncio
+async def test_get_wrong_answers(client, mock_user, mock_quiz_session, test_user_id):
+    """Test GET /api/v1/quiz/wrong-answers returns enriched wrong answer data."""
+    from app.main import app
+
+    question_id = uuid.UUID(mock_quiz_session.questions_data[0]["id"])
+    mock_wrong_answer = MagicMock()
+    mock_wrong_answer.question_id = question_id
+
+    mock_vocab = MagicMock()
+    mock_vocab.id = question_id
+    mock_vocab.reading = "たべる"
+    mock_vocab.example_sentence = "ごはんを食べる。"
+    mock_vocab.example_translation = "밥을 먹다."
+
+    wrong_result = MagicMock()
+    wrong_result.scalars.return_value.all.return_value = [mock_wrong_answer]
+
+    vocab_result = MagicMock()
+    vocab_result.scalars.return_value.all.return_value = [mock_vocab]
+
+    mock_session = AsyncMock()
+    mock_session.get = AsyncMock(return_value=mock_quiz_session)
+    mock_session.execute = AsyncMock(side_effect=[wrong_result, vocab_result])
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get(
+        "/api/v1/quiz/wrong-answers",
+        params={"session_id": str(mock_quiz_session.id)},
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["wrongAnswers"] == [
+        {
+            "questionId": str(question_id),
+            "word": "食べる",
+            "reading": "たべる",
+            "meaningKo": "먹다",
+            "exampleSentence": "ごはんを食べる。",
+            "exampleTranslation": "밥을 먹다.",
+        }
+    ]
+
+
+@pytest.mark.asyncio
+async def test_get_recommendations_vocabulary(client, mock_user, test_user_id):
+    """Test GET /api/v1/quiz/recommendations for vocabulary category."""
+    from app.main import app
+
+    mock_session = AsyncMock()
+
+    due_result = MagicMock()
+    due_result.scalar.return_value = 3
+
+    studied_result = MagicMock()
+    studied_result.scalar.return_value = 5
+
+    total_result = MagicMock()
+    total_result.scalar.return_value = 12
+
+    wrong_result = MagicMock()
+    wrong_result.scalar.return_value = 2
+
+    last_reviewed = datetime(2026, 4, 17, 6, 30, tzinfo=UTC)
+    last_reviewed_result = MagicMock()
+    last_reviewed_result.scalar.return_value = last_reviewed
+
+    mock_session.execute = AsyncMock(
+        side_effect=[
+            due_result,
+            studied_result,
+            total_result,
+            wrong_result,
+            last_reviewed_result,
+        ]
+    )
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get(
+        "/api/v1/quiz/recommendations",
+        params={"category": "VOCABULARY"},
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data == {
+        "reviewDueCount": 3,
+        "newWordsCount": 7,
+        "wrongCount": 2,
+        "lastReviewedAt": last_reviewed.isoformat(),
+    }
+
+
+@pytest.mark.asyncio
 async def test_answer_question_session_not_found(client, mock_user, test_user_id):
     """Test POST /api/v1/quiz/answer returns 404 for missing session."""
     from app.main import app

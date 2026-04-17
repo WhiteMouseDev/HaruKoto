@@ -1,24 +1,12 @@
 from __future__ import annotations
 
-import contextlib
-import uuid
-from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models import (
-    Grammar,
-    QuizAnswer,
-    QuizSession,
-    UserGrammarProgress,
-    UserVocabProgress,
-    Vocabulary,
-)
 from app.models.user import User
 from app.schemas.quiz import (
     OverallProgress,
@@ -40,12 +28,11 @@ from app.services.quiz_query import (
     QuizQueryServiceError,
     get_incomplete_quiz_session,
     get_quiz_stats_data,
+    get_recommendations_data,
+    get_wrong_answers_data,
     resume_quiz_session,
 )
-from app.services.quiz_session import (
-    build_response_questions,
-    extract_questions_data,
-)
+from app.services.quiz_session import build_response_questions
 from app.services.quiz_smart import build_smart_preview_data
 from app.services.quiz_start import QuizStartServiceError, start_quiz_session, start_smart_quiz_session
 
@@ -193,52 +180,28 @@ async def get_wrong_answers(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    session = await db.get(QuizSession, uuid.UUID(session_id))
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
-
-    wrong_result = await db.execute(
-        select(QuizAnswer).where(
-            QuizAnswer.session_id == session.id,
-            QuizAnswer.is_correct.is_(False),
+    try:
+        results = await get_wrong_answers_data(
+            db,
+            user,
+            session_id=session_id,
         )
-    )
-    wrong_answers = wrong_result.scalars().all()
+    except QuizQueryServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    questions_data = extract_questions_data(session.questions_data)
-    q_map = {q["id"]: q for q in questions_data}
-
-    # Collect vocabulary IDs from wrong answers for example sentences
-    wrong_vocab_ids = []
-    for wa in wrong_answers:
-        q = q_map.get(str(wa.question_id))
-        if q and q.get("type") in ("VOCABULARY", "KANJI", "LISTENING"):
-            with contextlib.suppress(ValueError):
-                wrong_vocab_ids.append(uuid.UUID(str(wa.question_id)))
-
-    # Fetch vocabulary details for example sentences
-    vocab_map: dict[str, Vocabulary] = {}
-    if wrong_vocab_ids:
-        vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids)))
-        for v in vocab_result.scalars().all():
-            vocab_map[str(v.id)] = v
-
-    result_list = []
-    for wa in wrong_answers:
-        q = q_map.get(str(wa.question_id), {})
-        vocab = vocab_map.get(str(wa.question_id))
-        result_list.append(
+    return {
+        "wrongAnswers": [
             {
-                "questionId": str(wa.question_id),
-                "word": q.get("word"),
-                "reading": q.get("reading") or (vocab.reading if vocab else None),
-                "meaningKo": q.get("meaningKo"),
-                "exampleSentence": vocab.example_sentence if vocab else None,
-                "exampleTranslation": vocab.example_translation if vocab else None,
+                "questionId": item.question_id,
+                "word": item.word,
+                "reading": item.reading,
+                "meaningKo": item.meaning_ko,
+                "exampleSentence": item.example_sentence,
+                "exampleTranslation": item.example_translation,
             }
-        )
-
-    return {"wrongAnswers": result_list}
+            for item in results
+        ]
+    }
 
 
 @router.get("/smart-preview", response_model=SmartPreviewResponse, status_code=200)
@@ -305,132 +268,15 @@ async def get_recommendations(
     db: Annotated[AsyncSession, Depends(get_db)],
     category: Annotated[str | None, Query()] = None,
 ):
-    now = datetime.now(UTC)
-
-    if category == "VOCABULARY":
-        # Vocabulary-only recommendations
-        due_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(
-                UserVocabProgress.user_id == user.id,
-                UserVocabProgress.next_review_at <= now,
-            )
-        )
-        review_due = due_result.scalar() or 0
-
-        studied_count_result = await db.execute(select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id))
-        studied_count = studied_count_result.scalar() or 0
-        total_result = await db.execute(select(func.count(Vocabulary.id)))
-        total = total_result.scalar() or 0
-        new_count = max(0, total - studied_count)
-
-        wrong_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(
-                UserVocabProgress.user_id == user.id,
-                UserVocabProgress.incorrect_count > 0,
-            )
-        )
-        wrong_count = wrong_result.scalar() or 0
-
-        last_reviewed_result = await db.execute(
-            select(func.max(UserVocabProgress.last_reviewed_at)).where(UserVocabProgress.user_id == user.id)
-        )
-        last_reviewed = last_reviewed_result.scalar()
-
-        return {
-            "reviewDueCount": review_due,
-            "newWordsCount": new_count,
-            "wrongCount": wrong_count,
-            "lastReviewedAt": last_reviewed.isoformat() if last_reviewed else None,
-        }
-
-    elif category == "GRAMMAR":
-        # Grammar-only recommendations
-        due_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(
-                UserGrammarProgress.user_id == user.id,
-                UserGrammarProgress.next_review_at <= now,
-            )
-        )
-        review_due = due_result.scalar() or 0
-
-        studied_count_result = await db.execute(select(func.count(UserGrammarProgress.id)).where(UserGrammarProgress.user_id == user.id))
-        studied_count = studied_count_result.scalar() or 0
-        total_result = await db.execute(select(func.count(Grammar.id)))
-        total = total_result.scalar() or 0
-        new_count = max(0, total - studied_count)
-
-        wrong_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(
-                UserGrammarProgress.user_id == user.id,
-                UserGrammarProgress.incorrect_count > 0,
-            )
-        )
-        wrong_count = wrong_result.scalar() or 0
-
-        last_reviewed_result = await db.execute(
-            select(func.max(UserGrammarProgress.last_reviewed_at)).where(UserGrammarProgress.user_id == user.id)
-        )
-        last_reviewed = last_reviewed_result.scalar()
-
-        return {
-            "reviewDueCount": review_due,
-            "newWordsCount": new_count,
-            "wrongCount": wrong_count,
-            "lastReviewedAt": last_reviewed.isoformat() if last_reviewed else None,
-        }
-
-    elif category == "SENTENCE":
-        # Sentence-based quizzes (cloze + arrange) — no SRS progress tracking yet
-        return {
-            "reviewDueCount": 0,
-            "newWordsCount": 0,
-            "wrongCount": 0,
-            "lastReviewedAt": None,
-        }
-
-    # Default: overall (backward compatible)
-    due_vocab_result = await db.execute(
-        select(func.count(UserVocabProgress.id)).where(
-            UserVocabProgress.user_id == user.id,
-            UserVocabProgress.next_review_at <= now,
-        )
+    result = await get_recommendations_data(
+        db,
+        user,
+        category=category,
     )
-    due_grammar_result = await db.execute(
-        select(func.count(UserGrammarProgress.id)).where(
-            UserGrammarProgress.user_id == user.id,
-            UserGrammarProgress.next_review_at <= now,
-        )
-    )
-    vocab_due = due_vocab_result.scalar() or 0
-    grammar_due = due_grammar_result.scalar() or 0
-
-    # Count new words (vocab not yet studied by user)
-    studied_count_result = await db.execute(select(func.count(UserVocabProgress.id)).where(UserVocabProgress.user_id == user.id))
-    studied_count = studied_count_result.scalar() or 0
-    total_vocab_result = await db.execute(select(func.count(Vocabulary.id)))
-    total_vocab = total_vocab_result.scalar() or 0
-    new_words_count = max(0, total_vocab - studied_count)
-
-    # Count wrong answers
-    wrong_count_result = await db.execute(
-        select(func.count(UserVocabProgress.id)).where(
-            UserVocabProgress.user_id == user.id,
-            UserVocabProgress.incorrect_count > 0,
-        )
-    )
-    wrong_count = wrong_count_result.scalar() or 0
-
-    # Last reviewed at
-    last_reviewed_result = await db.execute(
-        select(func.max(UserVocabProgress.last_reviewed_at)).where(
-            UserVocabProgress.user_id == user.id,
-        )
-    )
-    last_reviewed = last_reviewed_result.scalar()
 
     return {
-        "reviewDueCount": vocab_due + grammar_due,
-        "newWordsCount": new_words_count,
-        "wrongCount": wrong_count,
-        "lastReviewedAt": last_reviewed.isoformat() if last_reviewed else None,
+        "reviewDueCount": result.review_due_count,
+        "newWordsCount": result.new_words_count,
+        "wrongCount": result.wrong_count,
+        "lastReviewedAt": result.last_reviewed_at,
     }
