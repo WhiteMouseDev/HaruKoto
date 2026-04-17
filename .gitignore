@@ -13,6 +13,7 @@ build/
 # Environment
 .env
 .env.local
+.env.vercel.local
 credentials/
 .env.development.local
 .env.test.local
@@ -30,6 +31,7 @@ credentials/
 # Claude Code (local only)
 .claude/settings.local.json
 .claude/worktrees/
+.claude/hooks/stitch-proxy.sh
 
 # TypeScript build info
 *.tsbuildinfo
