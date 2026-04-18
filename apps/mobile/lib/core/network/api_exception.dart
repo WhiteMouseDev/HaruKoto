@@ -32,8 +32,13 @@ class ApiException implements Exception {
         if (msg is String && msg.isNotEmpty) message = msg;
         details = error['details'];
       }
+      // 레거시 형식: {"detail": "...", "errorCode": "..."}
+      final legacyErrorCode = data['errorCode'] ?? data['code'];
+      if (legacyErrorCode is String && legacyErrorCode.isNotEmpty) {
+        errorCode ??= legacyErrorCode;
+      }
       // 레거시 형식: {"detail": "..."}
-      else if (data.containsKey('detail')) {
+      if (data.containsKey('detail')) {
         final detail = data['detail'];
         if (detail is String && detail.isNotEmpty) {
           message = detail;
@@ -95,5 +100,7 @@ class ApiException implements Exception {
   }
 
   @override
-  String toString() => 'ApiException($statusCode, $errorCode): $message';
+  String toString() => errorCode == null
+      ? 'ApiException($statusCode): $message'
+      : 'ApiException($statusCode, $errorCode): $message';
 }
