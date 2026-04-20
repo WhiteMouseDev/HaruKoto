@@ -7,7 +7,6 @@ from typing import Annotated, Any
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
-from sqlalchemy import delete as sa_delete
 from sqlalchemy import func, literal, or_, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -49,6 +48,14 @@ from app.schemas.admin_content import (
 )
 from app.schemas.common import PaginatedResponse
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
+from app.services.admin_tts import (
+    TTS_FIELDS,
+    AdminTtsServiceError,
+    regenerate_admin_tts_audio,
+)
+from app.services.admin_tts import (
+    resolve_tts_text as resolve_tts_text,
+)
 from app.services.ai import generate_tts
 
 router = APIRouter(prefix="/api/v1/admin/content", tags=["admin-content"])
@@ -1026,40 +1033,6 @@ async def batch_review(
     return OkResponse(ok=True, count=len(body.ids))
 
 
-# ==========================================
-# TTS endpoints (Phase 4 + Phase 6 per-field TTS)
-# ==========================================
-
-TTS_FIELDS: dict[str, list[str]] = {
-    "vocabulary": ["reading", "word", "example_sentence"],
-    "grammar": ["pattern", "example_sentences"],
-    "cloze": ["sentence"],
-    "sentence_arrange": ["japanese_sentence"],
-    "conversation": ["situation"],
-}
-
-_CONTENT_MODEL_MAP: dict[str, type] = {
-    "vocabulary": Vocabulary,
-    "grammar": Grammar,
-    "cloze": ClozeQuestion,
-    "sentence_arrange": SentenceArrangeQuestion,
-    "conversation": ConversationScenario,
-}
-
-
-def resolve_tts_text(content_type: str, field: str, obj: object) -> str:
-    """Extract text value for TTS from a content model instance by field name."""
-    if content_type == "grammar" and field == "example_sentences":
-        sentences = getattr(obj, "example_sentences", None) or []
-        if sentences and isinstance(sentences[0], dict):
-            return str(sentences[0].get("japanese") or sentences[0].get("sentence") or "")
-        return getattr(obj, "pattern", "") or ""
-    value = getattr(obj, field, None)
-    if not value:
-        raise HTTPException(status_code=422, detail=f"Field '{field}' is empty or unavailable")
-    return str(value)
-
-
 @router.post("/tts/regenerate", response_model=AdminTtsResponse)
 async def regenerate_admin_tts(
     body: AdminTtsRegenerateRequest,
@@ -1067,57 +1040,19 @@ async def regenerate_admin_tts(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> AdminTtsResponse:
     """Regenerate TTS for a content item (no cooldown — admin tool for 1-3 reviewers)."""
-    # 1. Validate field against TTS_FIELDS
-    valid_fields = TTS_FIELDS.get(body.content_type, [])
-    if body.field not in valid_fields:
-        raise HTTPException(status_code=422, detail=f"Invalid field '{body.field}' for {body.content_type}")
-
-    # 2. Fetch the content item
-    model_cls = _CONTENT_MODEL_MAP.get(body.content_type)
-    if not model_cls:
-        raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")
-    result: Any = await db.execute(select(model_cls).where(model_cls.id == body.item_id))  # type: ignore[attr-defined]
-    obj = result.scalar_one_or_none()
-    if not obj:
-        raise HTTPException(status_code=404, detail="Content item not found")
-
-    # 3. Resolve text from field
-    text = resolve_tts_text(body.content_type, body.field, obj)
-
-    # 4. Delete existing TtsAudio row for this specific field (field-scoped delete)
-    await db.execute(
-        sa_delete(TtsAudio).where(
-            TtsAudio.target_type == body.content_type,
-            TtsAudio.target_id == body.item_id,
-            TtsAudio.speed == 1.0,
-            TtsAudio.field == body.field,
-        )
-    )
-
-    # 5. Generate TTS + upload to GCS
     try:
-        tts_result = await generate_tts(text)
-    except RuntimeError:
-        raise HTTPException(status_code=502, detail="TTS生成に失敗しました") from None
-    gcs_path = f"tts/admin/{body.content_type}/{body.item_id}/{body.field}.mp3"
-    audio_url = await _upload_to_gcs(gcs_path, tts_result.audio)
-
-    # 6. Save new TtsAudio row with field
-    db.add(
-        TtsAudio(
-            target_type=body.content_type,
-            target_id=body.item_id,
-            text=text,
-            speed=1.0,
-            provider=tts_result.provider,
-            model=tts_result.model,
-            audio_url=audio_url,
+        result = await regenerate_admin_tts_audio(
+            db,
+            content_type=body.content_type,
+            item_id=body.item_id,
             field=body.field,
+            tts_generator=generate_tts,
+            upload_to_gcs=_upload_to_gcs,
         )
-    )
-    await db.commit()
+    except AdminTtsServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    return AdminTtsResponse(audio_url=audio_url, field=body.field, provider=tts_result.provider)
+    return AdminTtsResponse(audio_url=result.audio_url, field=result.field, provider=result.provider)
 
 
 @router.get("/review-queue/{content_type}", response_model=ReviewQueueResponse)

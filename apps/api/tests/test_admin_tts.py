@@ -48,6 +48,7 @@ async def client(reviewer_user):
     from app.main import app
 
     mock_db = AsyncMock()
+    mock_db.add = MagicMock()
 
     async def override_require_reviewer():
         return reviewer_user
