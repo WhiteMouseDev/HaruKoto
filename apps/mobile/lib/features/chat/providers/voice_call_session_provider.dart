@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,9 +8,11 @@ import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
+import 'voice_call_session_resources.dart';
 
 export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
+export 'voice_call_session_resources.dart';
 
 enum VoiceCallStatus {
   connecting,
@@ -96,42 +97,8 @@ class VoiceCallSessionState {
   }
 }
 
-abstract class VoiceCallRingtonePlayer {
-  Future<void> startLoop();
-  Future<void> stop();
-  Future<void> dispose();
-}
-
-class AudioVoiceCallRingtonePlayer implements VoiceCallRingtonePlayer {
-  AudioVoiceCallRingtonePlayer() : _player = AudioPlayer();
-
-  final AudioPlayer _player;
-
-  @override
-  Future<void> startLoop() async {
-    await _player.setReleaseMode(ReleaseMode.loop);
-    await _player.setVolume(0.5);
-    await _player.play(AssetSource('sounds/ringtone.wav'));
-  }
-
-  @override
-  Future<void> stop() => _player.stop();
-
-  @override
-  Future<void> dispose() => _player.dispose();
-}
-
-typedef VoiceCallRingtonePlayerFactory = VoiceCallRingtonePlayer Function();
-
-final voiceCallRingtonePlayerFactoryProvider =
-    Provider<VoiceCallRingtonePlayerFactory>(
-  (ref) => AudioVoiceCallRingtonePlayer.new,
-);
-
 class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
-  GeminiLiveService? _service;
-  Timer? _timer;
-  VoiceCallRingtonePlayer? _ringtone;
+  VoiceCallSessionResources? _resources;
   VoiceCallSessionRequest? _request;
   bool _disposed = false;
   bool _isEnding = false;
@@ -139,11 +106,13 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
 
   @override
   VoiceCallSessionState build() {
-    _ringtone ??= ref.read(voiceCallRingtonePlayerFactoryProvider)();
+    _resources ??= VoiceCallSessionResources(
+      ref.read(voiceCallRingtonePlayerFactoryProvider)(),
+    );
     ref.onDispose(() {
       _disposed = true;
       _generation++;
-      unawaited(_disposeResources());
+      unawaited(_resources?.dispose());
     });
     return const VoiceCallSessionState();
   }
@@ -153,7 +122,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     final generation = ++_generation;
     _isEnding = false;
 
-    await _cancelActiveSession();
+    await _resources?.cancelActiveSession();
     if (_isStale(generation)) return;
 
     final preferences = ref.read(userPreferencesProvider);
@@ -166,7 +135,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
       showSubtitle: preferences.callSettings.subtitleEnabled,
     );
 
-    await _playRingtone();
+    await _resources?.playRingtone();
     if (_isStale(generation)) return;
 
     try {
@@ -184,12 +153,12 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
         return;
       }
 
-      _service = service;
+      _resources?.attachService(service);
       _bindService(service, generation);
       await service.start();
     } on VoiceCallConnectionException catch (e) {
       if (_isStale(generation)) return;
-      await _stopRingtone();
+      await _resources?.stopRingtone();
       state = state.copyWith(
         status: VoiceCallStatus.error,
         errorMessage: e.message,
@@ -197,7 +166,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     } catch (e) {
       debugPrint('[VoiceCallSession] Start failed: $e');
       if (_isStale(generation)) return;
-      await _stopRingtone();
+      await _resources?.stopRingtone();
       state = state.copyWith(
         status: VoiceCallStatus.error,
         errorMessage: '연결에 실패했습니다: $e',
@@ -214,7 +183,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   void toggleMute() {
     final nextMuted = !state.isMuted;
     state = state.copyWith(isMuted: nextMuted);
-    _service?.isMuted = nextMuted;
+    _resources?.setMuted(nextMuted);
   }
 
   void toggleSubtitle() {
@@ -227,14 +196,13 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     }
 
     _isEnding = true;
-    _timer?.cancel();
-    _timer = null;
+    _resources?.stopTimer();
 
-    final transcript = _service?.transcript ?? const <TranscriptEntry>[];
+    final transcript = _resources?.transcript ?? const <TranscriptEntry>[];
     final duration = state.callDurationSeconds;
     final request = _request;
 
-    await _service?.end();
+    await _resources?.endService();
 
     final analysisRequest =
         ref.read(voiceCallAnalysisRequestFactoryProvider).build(
@@ -262,19 +230,19 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
             status: VoiceCallStatus.connected,
             errorMessage: null,
           );
-          unawaited(_stopRingtone());
+          unawaited(_resources?.stopRingtone());
           _startTimer();
           return;
         case GeminiLiveState.ending:
           state = state.copyWith(status: VoiceCallStatus.ending);
-          unawaited(_stopRingtone());
+          unawaited(_resources?.stopRingtone());
           return;
         case GeminiLiveState.ended:
           state = state.copyWith(status: VoiceCallStatus.ended);
           return;
         case GeminiLiveState.error:
           state = state.copyWith(status: VoiceCallStatus.error);
-          unawaited(_stopRingtone());
+          unawaited(_resources?.stopRingtone());
           return;
       }
     };
@@ -298,50 +266,12 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   void _startTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _resources?.startTimer(() {
       if (_disposed) return;
       state = state.copyWith(
         callDurationSeconds: state.callDurationSeconds + 1,
       );
     });
-  }
-
-  Future<void> _playRingtone() async {
-    try {
-      await _ringtone?.startLoop();
-    } catch (e) {
-      debugPrint('[VoiceCallSession] Ringtone play failed: $e');
-    }
-  }
-
-  Future<void> _stopRingtone() async {
-    try {
-      await _ringtone?.stop();
-    } catch (_) {}
-  }
-
-  Future<void> _cancelActiveSession() async {
-    _timer?.cancel();
-    _timer = null;
-    await _stopRingtone();
-    final service = _service;
-    _service = null;
-    if (service == null) return;
-    try {
-      await service.dispose();
-    } catch (e) {
-      debugPrint('[VoiceCallSession] Service dispose failed: $e');
-    }
-  }
-
-  Future<void> _disposeResources() async {
-    await _cancelActiveSession();
-    final ringtone = _ringtone;
-    _ringtone = null;
-    try {
-      await ringtone?.dispose();
-    } catch (_) {}
   }
 
   bool _isStale(int generation) => _disposed || generation != _generation;
