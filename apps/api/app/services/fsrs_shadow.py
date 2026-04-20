@@ -7,6 +7,7 @@ without affecting actual SRS state. Used for data-driven migration decisions.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
 from fsrs import Card, Rating, Scheduler
@@ -27,12 +28,16 @@ _RATING_MAP = {
 _fsrs = Scheduler()
 
 
+def _round_optional(value: float | None, digits: int) -> float:
+    return round(value, digits) if value is not None else 0.0
+
+
 async def compute_shadow_for_user(
     db: AsyncSession,
     user_id: UUID,
     item_type: str = "WORD",
     limit: int = 100,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Compute FSRS shadow scheduling for a user's review history.
 
     Returns list of items with SM-2 vs FSRS interval comparison.
@@ -55,7 +60,7 @@ async def compute_shadow_for_user(
         return []
 
     # Group events by item
-    item_events: dict[str, list] = {}
+    item_events: dict[str, list[Any]] = {}
     for row in rows:
         iid = str(row.item_id)
         if iid not in item_events:
@@ -63,7 +68,7 @@ async def compute_shadow_for_user(
         item_events[iid].append(row)
 
     # For each item, replay through FSRS
-    comparisons = []
+    comparisons: list[dict[str, Any]] = []
     for item_id, events in list(item_events.items())[:limit]:
         card = Card()
         fsrs_interval = 0
@@ -84,15 +89,15 @@ async def compute_shadow_for_user(
                 "item_type": item_type,
                 "review_count": len(events),
                 "fsrs_interval_days": fsrs_interval,
-                "fsrs_stability": round(card.stability, 2),
-                "fsrs_difficulty": round(card.difficulty, 2),
+                "fsrs_stability": _round_optional(card.stability, 2),
+                "fsrs_difficulty": _round_optional(card.difficulty, 2),
             }
         )
 
     return comparisons
 
 
-async def get_shadow_report(db: AsyncSession, user_id: UUID) -> dict:
+async def get_shadow_report(db: AsyncSession, user_id: UUID) -> dict[str, Any]:
     """Generate a summary report comparing SM-2 and FSRS scheduling."""
     vocab_shadows = await compute_shadow_for_user(db, user_id, "WORD", limit=50)
     grammar_shadows = await compute_shadow_for_user(db, user_id, "GRAMMAR", limit=50)

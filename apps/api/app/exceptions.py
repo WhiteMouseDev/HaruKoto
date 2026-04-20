@@ -7,6 +7,9 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Any
+
+type ErrorDetails = dict[str, Any] | list[Any]
 
 
 class ErrorCode(StrEnum):
@@ -77,7 +80,7 @@ class AppError(Exception):
         code: ErrorCode,
         message: str,
         status_code: int = 400,
-        details: dict | list | None = None,
+        details: ErrorDetails | None = None,
     ) -> None:
         self.code = code
         self.message = message

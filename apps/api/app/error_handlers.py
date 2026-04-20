@@ -9,14 +9,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.exceptions import AppError, ErrorCode
+from app.exceptions import AppError, ErrorCode, ErrorDetails
 
 
 def _error_response(
     status_code: int,
     code: str,
     message: str,
-    details: dict | list | None = None,
+    details: ErrorDetails | None = None,
     request_id: str | None = None,
 ) -> JSONResponse:
     return JSONResponse(
@@ -36,8 +36,9 @@ def _get_request_id(request: Request) -> str:
     return request.headers.get("X-Request-Id") or str(uuid.uuid4())
 
 
-async def app_exception_handler(request: Request, exc: AppError) -> JSONResponse:
+async def app_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """AppError → 표준 에러 응답."""
+    assert isinstance(exc, AppError)
     return _error_response(
         status_code=exc.status_code,
         code=exc.code.value,
@@ -60,11 +61,9 @@ _STATUS_TO_CODE: dict[int, str] = {
 }
 
 
-async def http_exception_handler(
-    request: Request,
-    exc: StarletteHTTPException,
-) -> JSONResponse:
+async def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """기존 HTTPException → 표준 에러 응답으로 래핑."""
+    assert isinstance(exc, StarletteHTTPException)
     code = _STATUS_TO_CODE.get(exc.status_code, ErrorCode.SYSTEM_ERROR)
     message = exc.detail if isinstance(exc.detail, str) else str(exc.detail)
 
@@ -85,16 +84,14 @@ async def http_exception_handler(
     )
 
 
-async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError,
-) -> JSONResponse:
+async def validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Pydantic 422 → 표준 에러 응답."""
+    assert isinstance(exc, RequestValidationError)
     return _error_response(
         status_code=422,
         code=ErrorCode.VALIDATION_ERROR,
         message="요청 검증에 실패했습니다",
-        details=exc.errors(),
+        details=list(exc.errors()),
         request_id=_get_request_id(request),
     )
 
