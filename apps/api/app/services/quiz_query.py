@@ -76,6 +76,26 @@ class RecommendationsResult:
     last_reviewed_at: str | None
 
 
+type RecommendationProgressModel = type[UserVocabProgress] | type[UserGrammarProgress]
+type RecommendationContentModel = type[Vocabulary] | type[Grammar]
+
+
+@dataclass(frozen=True, slots=True)
+class RecommendationQueryScope:
+    progress_model: RecommendationProgressModel
+    content_model: RecommendationContentModel
+
+
+VOCABULARY_RECOMMENDATION_SCOPE = RecommendationQueryScope(
+    progress_model=UserVocabProgress,
+    content_model=Vocabulary,
+)
+GRAMMAR_RECOMMENDATION_SCOPE = RecommendationQueryScope(
+    progress_model=UserGrammarProgress,
+    content_model=Grammar,
+)
+
+
 async def get_incomplete_quiz_session(
     db: AsyncSession,
     user: User,
@@ -273,83 +293,19 @@ async def get_recommendations_data(
     now = datetime.now(UTC)
 
     if category == "VOCABULARY":
-        due_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(
-                UserVocabProgress.user_id == user.id,
-                UserVocabProgress.next_review_at <= now,
-            )
-        )
-        review_due = due_result.scalar() or 0
-
-        studied_count_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(
-                UserVocabProgress.user_id == user.id,
-            )
-        )
-        studied_count = studied_count_result.scalar() or 0
-        total_result = await db.execute(select(func.count(Vocabulary.id)))
-        total = total_result.scalar() or 0
-        new_count = max(0, total - studied_count)
-
-        wrong_result = await db.execute(
-            select(func.count(UserVocabProgress.id)).where(
-                UserVocabProgress.user_id == user.id,
-                UserVocabProgress.incorrect_count > 0,
-            )
-        )
-        wrong_count = wrong_result.scalar() or 0
-
-        last_reviewed_result = await db.execute(
-            select(func.max(UserVocabProgress.last_reviewed_at)).where(
-                UserVocabProgress.user_id == user.id,
-            )
-        )
-        last_reviewed = last_reviewed_result.scalar()
-        return RecommendationsResult(
-            review_due_count=review_due,
-            new_words_count=new_count,
-            wrong_count=wrong_count,
-            last_reviewed_at=last_reviewed.isoformat() if last_reviewed else None,
+        return await _get_category_recommendations(
+            db,
+            user,
+            scope=VOCABULARY_RECOMMENDATION_SCOPE,
+            now=now,
         )
 
     if category == "GRAMMAR":
-        due_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(
-                UserGrammarProgress.user_id == user.id,
-                UserGrammarProgress.next_review_at <= now,
-            )
-        )
-        review_due = due_result.scalar() or 0
-
-        studied_count_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(
-                UserGrammarProgress.user_id == user.id,
-            )
-        )
-        studied_count = studied_count_result.scalar() or 0
-        total_result = await db.execute(select(func.count(Grammar.id)))
-        total = total_result.scalar() or 0
-        new_count = max(0, total - studied_count)
-
-        wrong_result = await db.execute(
-            select(func.count(UserGrammarProgress.id)).where(
-                UserGrammarProgress.user_id == user.id,
-                UserGrammarProgress.incorrect_count > 0,
-            )
-        )
-        wrong_count = wrong_result.scalar() or 0
-
-        last_reviewed_result = await db.execute(
-            select(func.max(UserGrammarProgress.last_reviewed_at)).where(
-                UserGrammarProgress.user_id == user.id,
-            )
-        )
-        last_reviewed = last_reviewed_result.scalar()
-        return RecommendationsResult(
-            review_due_count=review_due,
-            new_words_count=new_count,
-            wrong_count=wrong_count,
-            last_reviewed_at=last_reviewed.isoformat() if last_reviewed else None,
+        return await _get_category_recommendations(
+            db,
+            user,
+            scope=GRAMMAR_RECOMMENDATION_SCOPE,
+            now=now,
         )
 
     if category == "SENTENCE":
@@ -403,6 +359,58 @@ async def get_recommendations_data(
     return RecommendationsResult(
         review_due_count=vocab_due + grammar_due,
         new_words_count=new_words_count,
+        wrong_count=wrong_count,
+        last_reviewed_at=last_reviewed.isoformat() if last_reviewed else None,
+    )
+
+
+async def _get_category_recommendations(
+    db: AsyncSession,
+    user: User,
+    *,
+    scope: RecommendationQueryScope,
+    now: datetime,
+) -> RecommendationsResult:
+    progress_model = scope.progress_model
+    content_model = scope.content_model
+
+    due_result = await db.execute(
+        select(func.count(progress_model.id)).where(
+            progress_model.user_id == user.id,
+            progress_model.next_review_at <= now,
+        )
+    )
+    review_due = due_result.scalar() or 0
+
+    studied_count_result = await db.execute(
+        select(func.count(progress_model.id)).where(
+            progress_model.user_id == user.id,
+        )
+    )
+    studied_count = studied_count_result.scalar() or 0
+
+    total_result = await db.execute(select(func.count(content_model.id)))
+    total = total_result.scalar() or 0
+    new_count = max(0, total - studied_count)
+
+    wrong_result = await db.execute(
+        select(func.count(progress_model.id)).where(
+            progress_model.user_id == user.id,
+            progress_model.incorrect_count > 0,
+        )
+    )
+    wrong_count = wrong_result.scalar() or 0
+
+    last_reviewed_result = await db.execute(
+        select(func.max(progress_model.last_reviewed_at)).where(
+            progress_model.user_id == user.id,
+        )
+    )
+    last_reviewed = last_reviewed_result.scalar()
+
+    return RecommendationsResult(
+        review_due_count=review_due,
+        new_words_count=new_count,
         wrong_count=wrong_count,
         last_reviewed_at=last_reviewed.isoformat() if last_reviewed else None,
     )

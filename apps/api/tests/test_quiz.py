@@ -558,6 +558,59 @@ async def test_get_recommendations_vocabulary(client, mock_user, test_user_id):
 
 
 @pytest.mark.asyncio
+async def test_get_recommendations_grammar(client, mock_user, test_user_id):
+    """Test GET /api/v1/quiz/recommendations for grammar category."""
+    from app.main import app
+
+    mock_session = AsyncMock()
+
+    due_result = MagicMock()
+    due_result.scalar.return_value = 4
+
+    studied_result = MagicMock()
+    studied_result.scalar.return_value = 6
+
+    total_result = MagicMock()
+    total_result.scalar.return_value = 15
+
+    wrong_result = MagicMock()
+    wrong_result.scalar.return_value = 1
+
+    last_reviewed = datetime(2026, 4, 18, 9, 15, tzinfo=UTC)
+    last_reviewed_result = MagicMock()
+    last_reviewed_result.scalar.return_value = last_reviewed
+
+    mock_session.execute = AsyncMock(
+        side_effect=[
+            due_result,
+            studied_result,
+            total_result,
+            wrong_result,
+            last_reviewed_result,
+        ]
+    )
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.get(
+        "/api/v1/quiz/recommendations",
+        params={"category": "GRAMMAR"},
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data == {
+        "reviewDueCount": 4,
+        "newWordsCount": 9,
+        "wrongCount": 1,
+        "lastReviewedAt": last_reviewed.isoformat(),
+    }
+
+
+@pytest.mark.asyncio
 async def test_answer_question_session_not_found(client, mock_user, test_user_id):
     """Test POST /api/v1/quiz/answer returns 404 for missing session."""
     from app.main import app
