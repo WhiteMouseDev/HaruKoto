@@ -3,17 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
+import 'gemini_live_message_handler.dart';
 import 'gemini_live_protocol.dart';
 import 'gemini_live_reconnect_coordinator.dart';
+import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
-/// Transcript entry for a single turn.
-class TranscriptEntry {
-  final String role; // 'user' or 'assistant'
-  final String text;
-  const TranscriptEntry({required this.role, required this.text});
-  Map<String, String> toJson() => {'role': role, 'text': text};
-}
+export 'gemini_live_transcript.dart' show TranscriptEntry;
 
 /// Callbacks for voice call UI.
 typedef OnStateChange = void Function(GeminiLiveState state);
@@ -42,16 +38,12 @@ class GeminiLiveService {
   OnError? onError;
 
   final GeminiLiveAudioAdapter _audioAdapter;
+  final GeminiLiveMessageHandler _messageHandler;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveTransport _transport;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
   bool isMuted = false;
-
-  // Transcript accumulation
-  final List<TranscriptEntry> _transcript = [];
-  final StringBuffer _currentUserText = StringBuffer();
-  final StringBuffer _currentAiText = StringBuffer();
 
   GeminiLiveService({
     required this.wsUri,
@@ -65,16 +57,18 @@ class GeminiLiveService {
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
     GeminiLiveAudioAdapter? audioAdapter,
+    GeminiLiveMessageHandler? messageHandler,
     GeminiLiveReconnectCoordinator? reconnectCoordinator,
     GeminiLiveTransport? transport,
   })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
+        _messageHandler = messageHandler ?? GeminiLiveMessageHandler(),
         _reconnectCoordinator =
             reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
         _transport = transport ?? DefaultGeminiLiveTransport();
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
-    return List.unmodifiable(_transcript);
+    return _messageHandler.transcript;
   }
 
   /// Start the voice call: connect WebSocket, send setup, start mic.
@@ -187,80 +181,31 @@ class GeminiLiveService {
       return;
     }
 
-    // Setup complete → start mic + send greeting
-    if (msg.containsKey('setupComplete')) {
-      _reconnectCoordinator.markConnected();
-      _setState(GeminiLiveState.connected);
-      _sendGreeting();
-      _startRecording();
-      return;
+    for (final action in _messageHandler.handle(msg)) {
+      _applyMessageAction(action);
     }
+  }
 
-    // Session resumption handle
-    if (msg.containsKey('sessionResumptionUpdate')) {
-      final update = msg['sessionResumptionUpdate'] as Map<String, dynamic>?;
-      _reconnectCoordinator.updateResumptionHandle(
-        update?['newHandle'] as String?,
-      );
-      return;
-    }
-
-    // GoAway → proactive reconnect
-    if (msg.containsKey('goAway')) {
-      _attemptReconnect();
-      return;
-    }
-
-    // Server content (audio, transcriptions, turn management)
-    final serverContent = msg['serverContent'] as Map<String, dynamic>?;
-    if (serverContent == null) return;
-
-    // Input transcription (user speech → text)
-    final inputTranscription =
-        serverContent['inputTranscription'] as Map<String, dynamic>?;
-    if (inputTranscription != null) {
-      final text = inputTranscription['text'] as String? ?? '';
-      if (text.isNotEmpty) _currentUserText.write(text);
-    }
-
-    // Output transcription (AI speech → text)
-    final outputTranscription =
-        serverContent['outputTranscription'] as Map<String, dynamic>?;
-    if (outputTranscription != null) {
-      final text = outputTranscription['text'] as String? ?? '';
-      if (text.isNotEmpty) {
-        _currentAiText.write(text);
-        onAiTextDelta?.call(text);
-      }
-    }
-
-    // Audio data
-    final modelTurn = serverContent['modelTurn'] as Map<String, dynamic>?;
-    if (modelTurn != null) {
-      // Flush user transcript when AI starts speaking
-      _flushUserTranscript();
-
-      final parts = modelTurn['parts'] as List<dynamic>? ?? [];
-      for (final part in parts) {
-        if (part is! Map<String, dynamic>) continue;
-        final inlineData = part['inlineData'] as Map<String, dynamic>?;
-        if (inlineData != null) {
-          final b64 = inlineData['data'] as String?;
-          if (b64 != null && b64.isNotEmpty) {
-            _playAudioChunk(b64);
-          }
-        }
-      }
-    }
-
-    // Turn complete
-    if (serverContent['turnComplete'] == true) {
-      _flushAiTranscript();
-    }
-
-    // Interrupted (barge-in)
-    if (serverContent['interrupted'] == true) {
-      _flushAiTranscript();
+  void _applyMessageAction(GeminiLiveMessageAction action) {
+    switch (action.type) {
+      case GeminiLiveMessageActionType.setupComplete:
+        _reconnectCoordinator.markConnected();
+        _setState(GeminiLiveState.connected);
+        _sendGreeting();
+        _startRecording();
+      case GeminiLiveMessageActionType.updateResumptionHandle:
+        _reconnectCoordinator.updateResumptionHandle(action.text);
+      case GeminiLiveMessageActionType.reconnect:
+        _attemptReconnect();
+      case GeminiLiveMessageActionType.aiTextDelta:
+        final text = action.text;
+        if (text != null) onAiTextDelta?.call(text);
+      case GeminiLiveMessageActionType.transcriptEntry:
+        final entry = action.transcriptEntry;
+        if (entry != null) onTranscriptEntry?.call(entry);
+      case GeminiLiveMessageActionType.audioChunk:
+        final base64Data = action.text;
+        if (base64Data != null) _playAudioChunk(base64Data);
     }
   }
 
@@ -314,31 +259,10 @@ class GeminiLiveService {
 
   // ──────── Transcripts ────────
 
-  void _flushUserTranscript() {
-    if (_currentUserText.isEmpty) return;
-    final entry =
-        TranscriptEntry(role: 'user', text: _currentUserText.toString().trim());
-    if (entry.text.isNotEmpty) {
-      _transcript.add(entry);
-      onTranscriptEntry?.call(entry);
-    }
-    _currentUserText.clear();
-  }
-
-  void _flushAiTranscript() {
-    if (_currentAiText.isEmpty) return;
-    final entry = TranscriptEntry(
-        role: 'assistant', text: _currentAiText.toString().trim());
-    if (entry.text.isNotEmpty) {
-      _transcript.add(entry);
-      onTranscriptEntry?.call(entry);
-    }
-    _currentAiText.clear();
-  }
-
   void _flushTranscripts() {
-    _flushUserTranscript();
-    _flushAiTranscript();
+    for (final entry in _messageHandler.flushPendingTranscript()) {
+      onTranscriptEntry?.call(entry);
+    }
   }
 
   // ──────── Reconnection ────────
