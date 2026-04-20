@@ -3,9 +3,9 @@ from __future__ import annotations
 import math
 import uuid
 from datetime import UTC, date, datetime
-from typing import Literal
+from typing import Literal, NotRequired, TypedDict, cast
 
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta  # type: ignore[import-untyped]
 from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +13,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import DailyAiUsage, Payment, Subscription, User
 from app.models.enums import PaymentStatus, SubscriptionPlan, SubscriptionStatus
 from app.utils.constants import AI_LIMITS
+
+type PlanSlug = Literal["monthly", "yearly"]
+
+
+class SubscriptionStatusResult(TypedDict):
+    is_premium: bool
+    plan: SubscriptionPlan
+    expires_at: str | None
+    cancelled_at: str | None
+    subscription: Subscription | None
+
+
+class DailyAiUsageResult(TypedDict):
+    chat_count: int
+    chat_seconds: int
+    call_count: int
+    call_seconds: int
+
+
+class AiLimitResult(TypedDict):
+    allowed: bool
+    reason: NotRequired[str]
+
+
+class PaymentHistoryItem(TypedDict):
+    id: str
+    amount: int
+    currency: str
+    status: str
+    plan: str
+    paidAt: str | None
+    createdAt: str
+
+
+class PaymentHistoryResult(TypedDict):
+    payments: list[PaymentHistoryItem]
+    total: int
+    page: int
+    pageSize: int
+    totalPages: int
 
 
 def _ensure_aware(dt: datetime) -> datetime:
@@ -28,14 +68,14 @@ def _ensure_aware(dt: datetime) -> datetime:
 
 
 def get_subscription_period_end(
-    plan: Literal["monthly", "yearly"],
+    plan: PlanSlug,
     from_date: datetime | None = None,
 ) -> datetime:
     """구독 기간 종료일 계산."""
     base = from_date or datetime.now(tz=UTC)
     if plan == "monthly":
-        return base + relativedelta(months=1)
-    return base + relativedelta(years=1)
+        return cast(datetime, base + relativedelta(months=1))
+    return cast(datetime, base + relativedelta(years=1))
 
 
 # ==========================================
@@ -43,7 +83,7 @@ def get_subscription_period_end(
 # ==========================================
 
 
-async def get_subscription_status(db: AsyncSession, user_id: uuid.UUID) -> dict:
+async def get_subscription_status(db: AsyncSession, user_id: uuid.UUID) -> SubscriptionStatusResult:
     """활성/취소 구독 조회 및 프리미엄 여부 반환."""
     result = await db.execute(
         select(Subscription)
@@ -80,7 +120,7 @@ async def get_subscription_status(db: AsyncSession, user_id: uuid.UUID) -> dict:
 # ==========================================
 
 
-async def get_daily_ai_usage(db: AsyncSession, user_id: uuid.UUID) -> dict:
+async def get_daily_ai_usage(db: AsyncSession, user_id: uuid.UUID) -> DailyAiUsageResult:
     """오늘 AI 사용량 조회."""
     today = date.today()
 
@@ -104,7 +144,7 @@ async def check_ai_limit(
     db: AsyncSession,
     user_id: uuid.UUID,
     usage_type: Literal["chat", "call"],
-) -> dict:
+) -> AiLimitResult:
     """AI 사용 제한 체크."""
     status = await get_subscription_status(db, user_id)
     limits = AI_LIMITS.PREMIUM if status["is_premium"] else AI_LIMITS.FREE
@@ -159,7 +199,7 @@ async def track_ai_usage(
 async def activate_subscription(
     db: AsyncSession,
     user_id: uuid.UUID,
-    plan: Literal["monthly", "yearly"],
+    plan: PlanSlug,
     portone_payment_id: str,
     amount: int,
     billing_key: str | None = None,
@@ -176,8 +216,8 @@ async def activate_subscription(
     existing_payment = result.scalar_one_or_none()
 
     if existing_payment and existing_payment.subscription_id:
-        result = await db.execute(select(Subscription).where(Subscription.id == existing_payment.subscription_id))
-        existing_sub = result.scalar_one_or_none()
+        subscription_result = await db.execute(select(Subscription).where(Subscription.id == existing_payment.subscription_id))
+        existing_sub = subscription_result.scalar_one_or_none()
         if existing_sub:
             return existing_sub
 
@@ -290,7 +330,7 @@ async def get_payment_history(
     user_id: str,
     page: int = 1,
     page_size: int = 10,
-) -> dict:
+) -> PaymentHistoryResult:
     """결제 내역 조회 (페이지네이션)."""
     offset = (page - 1) * page_size
 

@@ -28,6 +28,7 @@ from app.schemas.subscription import (
 )
 from app.services.portone import verify_payment_amount
 from app.services.subscription import (
+    PlanSlug,
     activate_subscription,
     cancel_subscription,
     get_daily_ai_usage,
@@ -44,9 +45,9 @@ router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
 async def get_status(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
-    sub_status = await get_subscription_status(db, str(user.id))
-    usage = await get_daily_ai_usage(db, str(user.id))
+) -> SubscriptionStatusResponse:
+    sub_status = await get_subscription_status(db, user.id)
+    usage = await get_daily_ai_usage(db, user.id)
     limits = AI_LIMITS.PREMIUM if sub_status["is_premium"] else AI_LIMITS.FREE
 
     return SubscriptionStatusResponse(
@@ -74,9 +75,13 @@ async def create_checkout(
     body: CheckoutRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
-    plan = body.plan.lower()
-    if plan not in ("monthly", "yearly"):
+) -> CheckoutResponse:
+    plan_value = body.plan.lower()
+    if plan_value == "monthly":
+        plan: PlanSlug = "monthly"
+    elif plan_value == "yearly":
+        plan = "yearly"
+    else:
         raise HTTPException(status_code=400, detail="유효하지 않은 플랜입니다")
 
     amount = PRICES.MONTHLY if plan == "monthly" else PRICES.YEARLY
@@ -110,7 +115,7 @@ async def activate(
     body: ActivateRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, bool | str]:
     from sqlalchemy import select
 
     result = await db.execute(
@@ -128,7 +133,10 @@ async def activate(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
 
-    plan = enum_value(payment.plan).lower()
+    plan_value = enum_value(payment.plan).lower()
+    if plan_value not in ("monthly", "yearly"):
+        raise HTTPException(status_code=400, detail="유효하지 않은 플랜입니다")
+    plan: PlanSlug = "monthly" if plan_value == "monthly" else "yearly"
     logger.info(
         "Subscription activation started",
         extra={
@@ -140,7 +148,7 @@ async def activate(
     )
     subscription = await activate_subscription(
         db,
-        str(user.id),
+        user.id,
         plan,
         body.payment_id,
         payment.amount,
@@ -166,7 +174,7 @@ async def activate(
 async def verify_store_purchase(
     body: StoreVerifyRequest,
     user: Annotated[User, Depends(get_current_user)],
-):
+) -> StoreVerifyResponse:
     logger.info(
         "Store verification requested",
         extra={
@@ -197,9 +205,9 @@ async def cancel(
     body: CancelRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, bool]:
     try:
-        await cancel_subscription(db, str(user.id), body.reason)
+        await cancel_subscription(db, user.id, body.reason)
         await db.commit()
         logger.info("Subscription cancelled", extra={"user_id": str(user.id), "reason": body.reason})
         return {"ok": True}
@@ -211,9 +219,9 @@ async def cancel(
 async def resume(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, bool]:
     try:
-        await resume_subscription(db, str(user.id))
+        await resume_subscription(db, user.id)
         await db.commit()
         logger.info("Subscription resumed", extra={"user_id": str(user.id)})
         return {"ok": True}

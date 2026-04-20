@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 import jwt
@@ -48,7 +48,7 @@ def _get_jwks_client() -> PyJWKClient:
 # ==========================================
 
 
-def _decode_token(token: str) -> dict:
+def _decode_token(token: str) -> dict[str, Any]:
     """Supabase JWT 토큰 검증. JWKS(ES256) 우선, SUPABASE_JWT_SECRET 있으면 HS256 폴백."""
 
     # 1) JWKS (ES256) — Supabase 신규 방식
