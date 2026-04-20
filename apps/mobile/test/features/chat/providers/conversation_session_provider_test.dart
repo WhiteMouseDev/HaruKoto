@@ -83,6 +83,36 @@ void main() {
       expect(state.isTyping, isFalse);
     });
 
+    test('sendMessage reports an error when repository fails', () async {
+      final repository = _FakeChatRepository(failSendMessage: true);
+      final container = ProviderContainer(
+        overrides: [
+          chatRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final notifier = container.read(conversationSessionProvider.notifier);
+      await notifier.initialize(
+        const ConversationLaunchRequest(
+          conversationId: 'conversation-2',
+          firstMessage: FirstMessage(
+            messageJa: 'こんにちは',
+            messageKo: '안녕하세요',
+          ),
+        ),
+      );
+
+      await notifier.sendMessage('コーヒーをください');
+
+      final state = container.read(conversationSessionProvider);
+      expect(repository.sendMessageCalls, 1);
+      expect(state.messages, hasLength(2));
+      expect(state.messages.last.role, 'user');
+      expect(state.errorMessage, '메시지 전송에 실패했습니다.');
+      expect(state.isTyping, isFalse);
+    });
+
     test('endConversation returns feedback summary and clears ending state',
         () async {
       final repository = _FakeChatRepository();
@@ -117,6 +147,10 @@ void main() {
 }
 
 class _FakeChatRepository extends ChatRepository {
+  _FakeChatRepository({this.failSendMessage = false});
+
+  final bool failSendMessage;
+
   int fetchConversationCalls = 0;
   int sendMessageCalls = 0;
   int endConversationCalls = 0;
@@ -155,6 +189,9 @@ class _FakeChatRepository extends ChatRepository {
     required String message,
   }) async {
     sendMessageCalls++;
+    if (failSendMessage) {
+      throw Exception('send failed');
+    }
     return const MessageResponse(
       messageJa: 'コーヒーですね',
       messageKo: '커피시군요',

@@ -6,9 +6,9 @@ import '../data/chat_repository.dart' as chat_data;
 import '../data/models/chat_message_model.dart';
 import '../data/models/scenario_model.dart';
 import '../presentation/conversation_launch.dart';
-import 'chat_provider.dart';
 import 'conversation_bootstrap_provider.dart';
 import 'conversation_end_provider.dart';
+import 'conversation_message_service.dart';
 
 enum ConversationSessionStatus {
   loading,
@@ -164,7 +164,7 @@ class ConversationSessionController extends Notifier<ConversationSessionState> {
     }
 
     final userMessage = ChatMessageModel(
-      id: 'user-${DateTime.now().millisecondsSinceEpoch}',
+      id: _newMessageId('user'),
       role: 'user',
       messageJa: text,
     );
@@ -176,9 +176,10 @@ class ConversationSessionController extends Notifier<ConversationSessionState> {
     );
 
     try {
-      final data = await ref.read(chatRepositoryProvider).sendMessage(
+      final reply = await ref.read(conversationMessageServiceProvider).send(
             conversationId: request.conversationId,
             message: text,
+            aiMessageId: _newMessageId('ai'),
           );
       if (_disposed) return;
 
@@ -187,22 +188,15 @@ class ConversationSessionController extends Notifier<ConversationSessionState> {
           updatedMessages.indexWhere((item) => item.id == userMessage.id);
       if (userIndex >= 0) {
         updatedMessages[userIndex] = updatedMessages[userIndex].copyWith(
-          feedback: data.feedback,
+          feedback: reply.userFeedback,
         );
       }
-      updatedMessages.add(
-        ChatMessageModel(
-          id: 'ai-${DateTime.now().millisecondsSinceEpoch}',
-          role: 'ai',
-          messageJa: data.messageJa,
-          messageKo: data.messageKo,
-        ),
-      );
+      updatedMessages.add(reply.aiMessage);
 
       state = state.copyWith(
         messages: updatedMessages,
-        currentHint: data.hint,
-        allVocabulary: [...state.allVocabulary, ...data.newVocabulary],
+        currentHint: reply.hint,
+        allVocabulary: [...state.allVocabulary, ...reply.newVocabulary],
         isTyping: false,
       );
     } catch (_) {
@@ -241,6 +235,10 @@ class ConversationSessionController extends Notifier<ConversationSessionState> {
   }
 
   bool _isStale(int generation) => _disposed || generation != _generation;
+
+  String _newMessageId(String prefix) {
+    return '$prefix-${DateTime.now().millisecondsSinceEpoch}';
+  }
 }
 
 final conversationSessionProvider =
