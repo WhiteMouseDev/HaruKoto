@@ -4,19 +4,18 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import func, select, update
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.rate_limit import rate_limit
-from app.models import Conversation, DailyProgress, Notification, User
+from app.models import Conversation, User
 from app.models.enums import ConversationType
 from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest
 from app.services.ai import generate_live_feedback, generate_live_token, generate_tts, transcribe_audio
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
-from app.services.subscription import check_ai_limit, track_ai_usage
-from app.utils.constants import RATE_LIMITS, REWARDS
-from app.utils.date import get_now_kst, get_today_kst
+from app.services.conversation_rewards import grant_conversation_completion_rewards
+from app.services.subscription import check_ai_limit
+from app.utils.constants import RATE_LIMITS
+from app.utils.date import get_now_kst
 
 logger = logging.getLogger(__name__)
 
@@ -75,13 +74,6 @@ async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest
     return await generate_live_token()
 
 
-async def _count_completed_conversations(db: AsyncSession, *, user_id: Any) -> int:
-    result = await db.execute(
-        select(func.count()).select_from(Conversation).where(Conversation.user_id == user_id, Conversation.ended_at.isnot(None))
-    )
-    return result.scalar() or 0
-
-
 async def submit_live_conversation_feedback(
     db: AsyncSession,
     user: User,
@@ -129,60 +121,15 @@ async def submit_live_conversation_feedback(
     xp = 0
     events: list[dict[str, Any]] = []
     try:
-        xp = REWARDS.CONVERSATION_COMPLETE_XP
-        old_level = calculate_level(user.experience_points)["level"]
-
-        await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
-        await db.refresh(user)
-
-        new_level = calculate_level(user.experience_points)["level"]
-        if new_level != user.level:
-            user.level = new_level
-
-        streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-        user.streak_count = streak["streak_count"]
-        user.longest_streak = streak["longest_streak"]
-        user.last_study_date = now
-
-        live_study_minutes = max(0, body.duration_seconds // 60)
-        await db.execute(
-            insert(DailyProgress)
-            .values(
-                user_id=user.id,
-                date=get_today_kst(),
-                xp_earned=xp,
-                quizzes_completed=0,
-                words_studied=0,
-                study_minutes=live_study_minutes,
-                conversation_count=1,
-            )
-            .on_conflict_do_update(
-                index_elements=["user_id", "date"],
-                set_={
-                    "xp_earned": DailyProgress.xp_earned + xp,
-                    "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + live_study_minutes,
-                    "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
-                },
-            )
-        )
-
-        await track_ai_usage(db, str(user.id), "call", body.duration_seconds)
-
-        conversation_count = await _count_completed_conversations(db, user_id=user.id)
-        events = await check_and_grant_achievements(
+        rewards = await grant_conversation_completion_rewards(
             db,
-            user.id,
-            {
-                "total_xp": user.experience_points,
-                "new_level": new_level,
-                "old_level": old_level,
-                "streak_count": streak["streak_count"],
-                "conversation_count": conversation_count,
-            },
+            user,
+            now=now,
+            duration_seconds=body.duration_seconds,
+            usage_type="call",
         )
-
-        for event in events:
-            db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
+        xp = rewards.xp_earned
+        events = rewards.events
     except Exception:
         logger.exception("Live feedback gamification failed")
         try:

@@ -4,12 +4,11 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import func, select, update
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.rate_limit import rate_limit
-from app.models import Conversation, ConversationScenario, DailyProgress, Notification, User
+from app.models import Conversation, ConversationScenario, User
 from app.models.enums import ConversationType
 from app.schemas.chat import (
     ChatEndRequest,
@@ -21,10 +20,10 @@ from app.schemas.chat import (
 )
 from app.schemas.chat import ChatMessage as ChatMessageSchema
 from app.services.ai import generate_chat_response, generate_feedback_summary
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
-from app.services.subscription import check_ai_limit, track_ai_usage
-from app.utils.constants import RATE_LIMITS, REWARDS
-from app.utils.date import get_now_kst, get_today_kst
+from app.services.conversation_rewards import grant_conversation_completion_rewards
+from app.services.subscription import check_ai_limit
+from app.utils.constants import RATE_LIMITS
+from app.utils.date import get_now_kst
 from app.utils.prompts import SYSTEM_PROMPTS, build_system_prompt
 
 logger = logging.getLogger(__name__)
@@ -178,43 +177,6 @@ async def send_chat_message(db: AsyncSession, user: User, body: ChatMessageReque
     )
 
 
-async def _update_chat_daily_progress(
-    db: AsyncSession,
-    *,
-    user_id: Any,
-    xp: int,
-    study_minutes: int,
-) -> None:
-    today = get_today_kst()
-    await db.execute(
-        insert(DailyProgress)
-        .values(
-            user_id=user_id,
-            date=today,
-            xp_earned=xp,
-            quizzes_completed=0,
-            words_studied=0,
-            study_minutes=study_minutes,
-            conversation_count=1,
-        )
-        .on_conflict_do_update(
-            index_elements=["user_id", "date"],
-            set_={
-                "xp_earned": DailyProgress.xp_earned + xp,
-                "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + study_minutes,
-                "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
-            },
-        )
-    )
-
-
-async def _count_completed_conversations(db: AsyncSession, *, user_id: Any) -> int:
-    result = await db.execute(
-        select(func.count()).select_from(Conversation).where(Conversation.user_id == user_id, Conversation.ended_at.isnot(None))
-    )
-    return result.scalar() or 0
-
-
 async def end_chat_session(db: AsyncSession, user: User, body: ChatEndRequest) -> ChatEndResponse:
     conversation = await _load_user_conversation(db, user_id=user.id, conversation_id=body.conversation_id)
     if conversation.ended_at:
@@ -235,53 +197,20 @@ async def end_chat_session(db: AsyncSession, user: User, body: ChatEndRequest) -
     conversation.ended_at = now
     conversation.feedback_summary = feedback
 
-    xp = REWARDS.CONVERSATION_COMPLETE_XP
-    logger.info("AI chat end - awarding XP", extra={"user_id": str(user.id), "xp": xp})
-    old_level = calculate_level(user.experience_points)["level"]
-
-    await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
-    await db.refresh(user)
-
-    new_level_info = calculate_level(user.experience_points)
-    new_level = new_level_info["level"]
-    if new_level != user.level:
-        user.level = new_level
-
-    streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-    user.streak_count = streak["streak_count"]
-    user.longest_streak = streak["longest_streak"]
-    user.last_study_date = now
-
     duration = int((now - conversation.created_at).total_seconds()) if conversation.created_at else 0
-    await _update_chat_daily_progress(
+    rewards = await grant_conversation_completion_rewards(
         db,
-        user_id=user.id,
-        xp=xp,
-        study_minutes=max(0, duration // 60),
+        user,
+        now=now,
+        duration_seconds=duration,
+        usage_type="chat",
     )
-
-    await track_ai_usage(db, str(user.id), "chat", duration)
-    conversation_count = await _count_completed_conversations(db, user_id=user.id)
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": new_level,
-            "old_level": old_level,
-            "streak_count": streak["streak_count"],
-            "conversation_count": conversation_count,
-        },
-    )
-
-    for event in events:
-        db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
 
     await db.commit()
 
     return ChatEndResponse(
         success=True,
         feedback_summary=feedback,
-        xp_earned=xp,
-        events=events,
+        xp_earned=rewards.xp_earned,
+        events=rewards.events,
     )

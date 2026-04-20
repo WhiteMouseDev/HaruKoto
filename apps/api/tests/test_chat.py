@@ -140,9 +140,9 @@ async def test_send_message_conversation_not_found(client, mock_user, test_user_
 
 
 @pytest.mark.asyncio
-@patch("app.services.chat_session.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
-@patch("app.services.chat_session.check_and_grant_achievements")
-@patch("app.services.chat_session.track_ai_usage")
+@patch("app.services.conversation_rewards.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
+@patch("app.services.conversation_rewards.check_and_grant_achievements")
+@patch("app.services.conversation_rewards.track_ai_usage")
 @patch("app.services.chat_session.generate_feedback_summary")
 async def test_end_chat_success(mock_feedback, mock_track, mock_achievements, client, mock_user, mock_conversation, test_user_id):
     """Test POST /api/v1/chat/end ends conversation and awards XP."""
@@ -300,9 +300,9 @@ async def test_live_token_success(mock_rate_limit, mock_ai_limit, mock_generate_
 
 
 @pytest.mark.asyncio
-@patch("app.services.chat_voice.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
-@patch("app.services.chat_voice.check_and_grant_achievements")
-@patch("app.services.chat_voice.track_ai_usage")
+@patch("app.services.conversation_rewards.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
+@patch("app.services.conversation_rewards.check_and_grant_achievements")
+@patch("app.services.conversation_rewards.track_ai_usage")
 @patch("app.services.chat_voice.generate_live_feedback")
 async def test_live_feedback_creates_voice_conversation(
     mock_feedback,
