@@ -1,6 +1,8 @@
 import logging
 import time
+from collections.abc import Awaitable
 from dataclasses import dataclass
+from typing import cast
 
 import redis.asyncio as redis
 
@@ -16,7 +18,7 @@ async def _get_redis() -> redis.Redis | None:
     if _redis_client is None:
         try:
             _redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
-            await _redis_client.ping()
+            await cast(Awaitable[bool], _redis_client.ping())
         except Exception:
             logger.warning("Redis unavailable, rate limiting disabled")
             _redis_client = None

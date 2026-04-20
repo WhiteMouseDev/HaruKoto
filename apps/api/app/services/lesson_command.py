@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 from app.models.lesson import Lesson, LessonItemLink, UserLessonProgress
 from app.models.user import User
 from app.schemas.lesson import AnswerSubmission
-from app.services.srs import process_answer, register_items_from_lesson
+from app.services.srs import AnswerResult, process_answer, register_items_from_lesson
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +106,8 @@ async def start_lesson_progress(
 def _grade_answer(answer: AnswerSubmission, question_data: dict[str, Any]) -> bool:
     question_type = question_data.get("type", "")
     if question_type == "SENTENCE_REORDER":
-        return answer.submitted_order == question_data.get("correct_order", [])
-    return answer.selected_answer == question_data.get("correct_answer", "")
+        return bool(answer.submitted_order == question_data.get("correct_order", []))
+    return bool(answer.selected_answer == question_data.get("correct_answer", ""))
 
 
 def _map_questions_to_links(lesson: Lesson, questions_raw: list[dict[str, Any]]) -> dict[int, LessonItemLink]:
@@ -163,7 +163,7 @@ async def submit_lesson_attempt(
         if is_correct:
             correct_count += 1
 
-        srs_result: dict[str, Any] | None = None
+        srs_result: AnswerResult | None = None
         link = question_to_link.get(answer.order)
         if link is not None:
             item_id = link.vocabulary_id if link.item_type == "WORD" else link.grammar_id
