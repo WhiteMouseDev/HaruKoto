@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
+import 'gemini_live_audio_session.dart';
 import 'gemini_live_connection_runner.dart';
 import 'gemini_live_inbound_dispatcher.dart';
 import 'gemini_live_message_handler.dart';
@@ -46,6 +47,7 @@ class GeminiLiveService {
   final GeminiLivePromptBuilder _promptBuilder;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveReconnectRunner _reconnectRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
@@ -83,6 +85,15 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
+    _audioSession = GeminiLiveAudioSession(
+      audioAdapter: _audioAdapter,
+      outboundSender: _outboundSender,
+      isActive: () => !_disposed && !_ended,
+      isTransportConnected: () => _transport.isConnected,
+      isMuted: () => isMuted,
+      onError: (message) => onError?.call(message),
+      onUnavailable: () => _setState(GeminiLiveState.error),
+    );
     _connectionRunner = GeminiLiveConnectionRunner(
       transport: _transport,
       reconnectCoordinator: _reconnectCoordinator,
@@ -142,7 +153,7 @@ class GeminiLiveService {
     _ended = true; // 재연결 방지 플래그
     _setState(GeminiLiveState.ending);
     _flushTranscripts();
-    await _stopRecording();
+    await _audioSession.stopRecording();
     unawaited(_transport.close());
     _setState(GeminiLiveState.ended);
   }
@@ -151,7 +162,7 @@ class GeminiLiveService {
   Future<void> dispose() async {
     _disposed = true;
     _ended = true;
-    await _audioAdapter.dispose();
+    await _audioSession.dispose();
     unawaited(_transport.close());
   }
 
@@ -191,7 +202,7 @@ class GeminiLiveService {
     _reconnectCoordinator.markConnected();
     _setState(GeminiLiveState.connected);
     _sendGreeting();
-    _startRecording();
+    _audioSession.startRecording();
   }
 
   void _emitAiTextDelta(String text) {
@@ -211,41 +222,10 @@ class GeminiLiveService {
     );
   }
 
-  // ──────── Recording ────────
-
-  Future<void> _startRecording() async {
-    if (_disposed || _ended) return;
-
-    final result = await _audioAdapter.startRecording(
-      onData: (data) {
-        if (_disposed || !_transport.isConnected || isMuted) return;
-        _outboundSender.sendRealtimeAudio(data);
-      },
-    );
-
-    switch (result) {
-      case GeminiLiveAudioStartResult.started:
-        return;
-      case GeminiLiveAudioStartResult.permissionDenied:
-        onError?.call('마이크 권한이 필요합니다');
-        return;
-      case GeminiLiveAudioStartResult.permissionCheckFailed:
-        // 시뮬레이터 등에서 마이크 접근 불가 시 녹음 없이 계속
-        return;
-      case GeminiLiveAudioStartResult.unavailable:
-        onError?.call('마이크를 사용할 수 없습니다. 기기를 확인해주세요.');
-        _setState(GeminiLiveState.error);
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    await _audioAdapter.stopRecording();
-  }
-
   // ──────── Audio playback ────────
 
   void _playAudioChunk(String base64Data) {
-    _audioAdapter.playBase64Pcm(base64Data);
+    _audioSession.playBase64Pcm(base64Data);
   }
 
   // ──────── Transcripts ────────
