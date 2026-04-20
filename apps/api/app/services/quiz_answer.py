@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
@@ -30,7 +31,7 @@ class QuizAnswerResult:
 async def _update_vocab_progress(
     db: AsyncSession,
     *,
-    user_id,
+    user_id: uuid.UUID,
     body: QuizAnswerRequest,
     session: QuizSession,
     is_correct: bool,
@@ -78,7 +79,7 @@ async def _update_vocab_progress(
 async def _update_grammar_progress(
     db: AsyncSession,
     *,
-    user_id,
+    user_id: uuid.UUID,
     body: QuizAnswerRequest,
     session: QuizSession,
     is_correct: bool,

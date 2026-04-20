@@ -109,4 +109,4 @@ async def grant_conversation_completion_rewards(
     for event in events:
         db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
 
-    return ConversationRewardResult(xp_earned=xp, events=events)
+    return ConversationRewardResult(xp_earned=xp, events=[dict(event) for event in events])

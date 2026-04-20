@@ -33,7 +33,9 @@ from app.schemas.quiz import (
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
 from app.services.quiz_query import (
+    ContentQuizStatsResult,
     QuizQueryServiceError,
+    QuizStatsResult,
     get_incomplete_quiz_session,
     get_quiz_stats_data,
     get_recommendations_data,
@@ -56,7 +58,7 @@ async def start_quiz(
     body: QuizStartRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> QuizStartResponse:
     try:
         result = await start_quiz_session(db, user, body)
     except QuizStartServiceError as exc:
@@ -77,7 +79,7 @@ async def answer_quiz(
     body: QuizAnswerRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> QuizAnswerResponse:
     try:
         result = await submit_quiz_answer(db, user, body)
     except QuizAnswerServiceError as exc:
@@ -91,7 +93,7 @@ async def complete_quiz(
     body: QuizCompleteRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> QuizCompleteResponse:
     try:
         result = await complete_quiz_session(db, user, body)
     except QuizCompleteServiceError as exc:
@@ -114,7 +116,7 @@ async def complete_quiz(
 async def get_incomplete_quiz(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> IncompleteQuizResponse:
     """미완료 퀴즈 세션 조회 (배너용).
 
     - 1문제도 안 푼 세션(좀비)은 자동 완료 처리
@@ -142,7 +144,7 @@ async def resume_quiz(
     body: QuizResumeRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> QuizResumeResponse:
     try:
         result = await resume_quiz_session(db, user, body)
     except QuizQueryServiceError as exc:
@@ -164,19 +166,22 @@ async def get_quiz_stats(
     db: Annotated[AsyncSession, Depends(get_db)],
     level: str | None = None,
     quiz_type: Annotated[str | None, Query(alias="type")] = None,
-):
+) -> QuizStatsResponse | ContentQuizStatsResponse:
     result = await get_quiz_stats_data(
         db,
         user,
         level=level,
         quiz_type=quiz_type,
     )
-    if level and quiz_type:
+    if isinstance(result, ContentQuizStatsResult):
         return ContentQuizStatsResponse(
             total_count=result.total_count,
             studied_count=result.studied_count,
             progress=result.progress,
         )
+
+    if not isinstance(result, QuizStatsResult):
+        raise HTTPException(status_code=500, detail="퀴즈 통계 응답을 생성할 수 없습니다")
 
     return QuizStatsResponse(
         total_quizzes=result.total_quizzes,
@@ -191,7 +196,7 @@ async def get_wrong_answers(
     session_id: str,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> WrongAnswersResponse:
     try:
         results = await get_wrong_answers_data(
             db,
@@ -222,7 +227,7 @@ async def smart_preview(
     db: Annotated[AsyncSession, Depends(get_db)],
     category: Annotated[str, Query()] = "VOCABULARY",
     jlpt_level: Annotated[str, Query(alias="jlptLevel")] = "N5",
-):
+) -> SmartPreviewResponse:
     preview = await build_smart_preview_data(
         db,
         user,
@@ -258,7 +263,7 @@ async def smart_start(
     body: SmartStartRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> QuizStartResponse:
     try:
         result = await start_smart_quiz_session(db, user, body)
     except QuizStartServiceError as exc:
@@ -279,7 +284,7 @@ async def get_recommendations(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     category: Annotated[str | None, Query()] = None,
-):
+) -> RecommendationsResponse:
     result = await get_recommendations_data(
         db,
         user,

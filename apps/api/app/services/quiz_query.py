@@ -244,21 +244,21 @@ async def get_wrong_answers_data(
     vocab_map: dict[str, Vocabulary] = {}
     if wrong_vocab_ids:
         vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids)))
-        for vocab in vocab_result.scalars().all():
-            vocab_map[str(vocab.id)] = vocab
+        for vocab_item in vocab_result.scalars().all():
+            vocab_map[str(vocab_item.id)] = vocab_item
 
     results: list[WrongAnswerResult] = []
     for wrong_answer in wrong_answers:
         question = question_map.get(str(wrong_answer.question_id), {})
-        vocab = vocab_map.get(str(wrong_answer.question_id))
+        vocab_entry = vocab_map.get(str(wrong_answer.question_id))
         results.append(
             WrongAnswerResult(
                 question_id=str(wrong_answer.question_id),
                 word=question.get("word"),
-                reading=question.get("reading") or (vocab.reading if vocab else None),
+                reading=question.get("reading") or (vocab_entry.reading if vocab_entry else None),
                 meaning_ko=question.get("meaningKo"),
-                example_sentence=vocab.example_sentence if vocab else None,
-                example_translation=vocab.example_translation if vocab else None,
+                example_sentence=vocab_entry.example_sentence if vocab_entry else None,
+                example_translation=vocab_entry.example_translation if vocab_entry else None,
             )
         )
     return results

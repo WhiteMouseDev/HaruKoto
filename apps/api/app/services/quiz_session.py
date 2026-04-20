@@ -110,9 +110,9 @@ async def generate_matching_pairs(
     matching_pairs: list[MatchingPair] = []
 
     if stage.category == "VOCABULARY":
-        result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for vocab in items:
+        vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count))
+        vocab_items = vocab_result.scalars().all()
+        for vocab in vocab_items:
             pair_id = str(uuid.uuid4())
             matching_pairs.append(MatchingPair(id=pair_id, word=vocab.word, meaning=vocab.meaning_ko))
             questions.append(
@@ -128,9 +128,9 @@ async def generate_matching_pairs(
                 }
             )
     elif stage.category == "GRAMMAR":
-        result = await db.execute(select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for grammar in items:
+        grammar_result = await db.execute(select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count))
+        grammar_items = grammar_result.scalars().all()
+        for grammar in grammar_items:
             pair_id = str(uuid.uuid4())
             matching_pairs.append(MatchingPair(id=pair_id, word=grammar.pattern, meaning=grammar.meaning_ko))
             questions.append(
@@ -145,11 +145,11 @@ async def generate_matching_pairs(
                 }
             )
     elif stage.category == "SENTENCE":
-        result = await db.execute(
+        sentence_result = await db.execute(
             select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id.in_(content_uuids)).order_by(func.random()).limit(count)
         )
-        items = result.scalars().all()
-        for item in items:
+        sentence_items = sentence_result.scalars().all()
+        for item in sentence_items:
             pair_id = str(uuid.uuid4())
             matching_pairs.append(MatchingPair(id=pair_id, word=item.korean_sentence, meaning=item.japanese_sentence))
             questions.append(

@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import DailyProgress, QuizSession, UserStudyStageProgress, UserVocabProgress
 from app.models.user import User
 from app.schemas.quiz import QuizCompleteRequest
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
+from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
 from app.utils.constants import REWARDS
 from app.utils.date import get_today_kst
 from app.utils.helpers import enum_value
@@ -44,7 +44,7 @@ def _build_complete_result(
     session: QuizSession,
     accuracy: float,
     xp_earned: int,
-    level_info: dict[str, int],
+    level_info: LevelInfo,
     events: list[dict[str, Any]],
 ) -> QuizCompleteResult:
     return QuizCompleteResult(
@@ -148,7 +148,7 @@ async def _build_achievement_events(
 
     is_perfect = session.correct_count == session.total_questions and session.total_questions > 0
 
-    return await check_and_grant_achievements(
+    events = await check_and_grant_achievements(
         db,
         user.id,
         {
@@ -161,6 +161,7 @@ async def _build_achievement_events(
             "total_words_studied": words_count,
         },
     )
+    return [dict(event) for event in events]
 
 
 async def _update_stage_progress(
