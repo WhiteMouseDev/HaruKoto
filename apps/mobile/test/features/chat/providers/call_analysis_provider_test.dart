@@ -84,6 +84,36 @@ void main() {
       expect(state.status, CallAnalysisStatus.completed);
       expect(state.conversationId, 'conversation-2');
     });
+
+    test('analyze reports an error when backend returns no conversation id',
+        () async {
+      final repository = _FakeChatRepository(
+        response: const LiveFeedbackResponse(
+          conversationId: '',
+          xpEarned: 0,
+          events: [],
+        ),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          chatRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(callAnalysisProvider.notifier).analyze(
+            const VoiceCallAnalysisRequest(
+              transcript: [
+                {'role': 'user', 'text': 'こんにちは'},
+              ],
+              durationSeconds: 12,
+            ),
+          );
+
+      final state = container.read(callAnalysisProvider);
+      expect(state.status, CallAnalysisStatus.error);
+      expect(state.errorMessage, '분석 결과를 불러오지 못했습니다.');
+    });
   });
 }
 

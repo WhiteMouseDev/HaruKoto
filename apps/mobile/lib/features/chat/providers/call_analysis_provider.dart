@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/feedback_model.dart';
-import 'chat_provider.dart';
+import 'call_analysis_service.dart';
 import 'voice_call_session_provider.dart';
 
 enum CallAnalysisStatus {
@@ -105,25 +105,9 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
     );
 
     try {
-      final result = await ref.read(chatRepositoryProvider).sendLiveFeedback(
-            transcript: request.transcript,
-            durationSeconds: request.durationSeconds,
-            characterId: request.characterId,
-            scenarioId: request.scenarioId,
-          );
+      final result =
+          await ref.read(callAnalysisServiceProvider).analyze(request);
       if (_isStale(generation)) return;
-
-      if (result.conversationId.isEmpty) {
-        state = state.copyWith(
-          status: CallAnalysisStatus.error,
-          statusMessage: '분석에 실패했습니다',
-          progress: 0.0,
-          errorMessage: '분석 결과를 불러오지 못했습니다.',
-          conversationId: null,
-          feedbackSummary: null,
-        );
-        return;
-      }
 
       state = state.copyWith(
         status: CallAnalysisStatus.completed,
@@ -133,6 +117,16 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
         conversationId: result.conversationId,
         feedbackSummary: result.feedbackSummary,
         errorMessage: null,
+      );
+    } on CallAnalysisServiceException catch (error) {
+      if (_isStale(generation)) return;
+      state = state.copyWith(
+        status: CallAnalysisStatus.error,
+        statusMessage: '분석에 실패했습니다',
+        progress: 0.0,
+        errorMessage: error.message,
+        conversationId: null,
+        feedbackSummary: null,
       );
     } catch (_) {
       if (_isStale(generation)) return;
