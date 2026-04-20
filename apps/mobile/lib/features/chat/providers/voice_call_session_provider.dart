@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/user_preferences_provider.dart';
-import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
-import 'voice_call_live_event_binder.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
+import 'voice_call_live_event_binder.dart';
 import 'voice_call_session_resources.dart';
+import 'voice_call_start_context_reader.dart';
 
 export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
@@ -126,14 +126,11 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     await _resources?.cancelActiveSession();
     if (_isStale(generation)) return;
 
-    final preferences = ref.read(userPreferencesProvider);
-    final profileAsync = ref.read(profileDetailProvider);
-    final nickname =
-        profileAsync.hasValue ? profileAsync.value!.profile.nickname : '학습자';
+    final startContext = ref.read(voiceCallStartContextReaderProvider).read();
 
     state = VoiceCallSessionState(
       status: VoiceCallStatus.connecting,
-      showSubtitle: preferences.callSettings.subtitleEnabled,
+      showSubtitle: startContext.callSettings.subtitleEnabled,
     );
 
     await _resources?.playRingtone();
@@ -142,12 +139,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     try {
       final service =
           await ref.read(voiceCallConnectionServiceProvider).prepare(
-                VoiceCallConnectionInput(
-                  request: request,
-                  callSettings: preferences.callSettings,
-                  userNickname: nickname,
-                  jlptLevel: preferences.jlptLevel,
-                ),
+                startContext.toConnectionInput(request),
               );
       if (_isStale(generation)) {
         await service.dispose();
