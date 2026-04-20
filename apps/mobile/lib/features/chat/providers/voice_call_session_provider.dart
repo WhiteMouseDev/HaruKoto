@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/user_preferences_provider.dart';
 import '../data/gemini_live_service.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
+import 'voice_call_end_flow_coordinator.dart';
 import 'voice_call_live_event_binder.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_start_context_reader.dart';
@@ -189,22 +189,12 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     }
 
     _isEnding = true;
-    _resources?.stopTimer();
-
-    final transcript = _resources?.transcript ?? const <TranscriptEntry>[];
-    final duration = state.callDurationSeconds;
-    final request = _request;
-
-    await _resources?.endService();
-
     final analysisRequest =
-        ref.read(voiceCallAnalysisRequestFactoryProvider).build(
-              VoiceCallAnalysisRequestInput(
-                request: request,
-                transcript: transcript,
-                durationSeconds: duration,
-                autoAnalysis:
-                    ref.read(userPreferencesProvider).callSettings.autoAnalysis,
+        await ref.read(voiceCallEndFlowCoordinatorProvider).end(
+              VoiceCallEndFlowInput(
+                resources: _resources,
+                request: _request,
+                durationSeconds: state.callDurationSeconds,
               ),
             );
 
