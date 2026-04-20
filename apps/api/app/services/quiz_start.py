@@ -19,7 +19,12 @@ from app.models import (
 from app.models.user import User
 from app.schemas.quiz import MatchingPair, QuizStartRequest, SmartStartRequest
 from app.services.distractor import generate_distractors
-from app.services.quiz_mode_questions import load_cloze_questions, load_sentence_arrange_questions
+from app.services.quiz_mode_questions import (
+    load_cloze_questions,
+    load_normal_questions,
+    load_review_questions,
+    load_sentence_arrange_questions,
+)
 from app.services.quiz_policy import calculate_smart_distribution
 from app.services.quiz_question_builder import build_grammar_question, build_options, build_vocab_question
 from app.services.quiz_session import (
@@ -106,101 +111,22 @@ async def start_quiz_session(
     elif mode == "arrange":
         questions = await load_sentence_arrange_questions(db, jlpt_level=jlpt_level, count=count, stage_content_ids=stage_content_ids)
     elif mode == "review":
-        if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            query = (
-                select(Vocabulary)
-                .join(UserVocabProgress, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == jlpt_level,
-                    UserVocabProgress.next_review_at <= datetime.now(UTC),
-                )
-                .order_by(UserVocabProgress.next_review_at)
-            )
-            if stage_content_ids:
-                query = query.where(Vocabulary.id.in_(stage_content_ids))
-            result = await db.execute(query.limit(count))
-            review_items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-
-            for vocab in review_items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko][: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                options, correct_id = build_options(vocab.meaning_ko, wrong_texts)
-                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
-        else:
-            query = (
-                select(Grammar)
-                .join(UserGrammarProgress, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == jlpt_level,
-                    UserGrammarProgress.next_review_at <= datetime.now(UTC),
-                )
-            )
-            if stage_content_ids:
-                query = query.where(Grammar.id.in_(stage_content_ids))
-            result = await db.execute(query.limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for grammar in items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko][: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                options, correct_id = build_options(grammar.meaning_ko, wrong_texts)
-                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
+        questions = await load_review_questions(
+            db,
+            user_id=user.id,
+            quiz_type=quiz_type,
+            jlpt_level=jlpt_level,
+            count=count,
+            stage_content_ids=stage_content_ids,
+        )
     else:
-        if stage_content_ids and quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(stage_content_ids)).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for vocab in items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko]
-                random.shuffle(wrong_texts)
-                options, correct_id = build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
-        elif stage_content_ids and quiz_type == "GRAMMAR":
-            result = await db.execute(select(Grammar).where(Grammar.id.in_(stage_content_ids)).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for grammar in items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
-                random.shuffle(wrong_texts)
-                options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
-        elif quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            result = await db.execute(select(Vocabulary).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Vocabulary.meaning_ko).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for vocab in items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko]
-                random.shuffle(wrong_texts)
-                options, correct_id = build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
-        elif quiz_type == "GRAMMAR":
-            result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
-            items = result.scalars().all()
-            pool_result = await db.execute(
-                select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50)
-            )
-            all_meanings = list(pool_result.scalars().all())
-            for grammar in items:
-                wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
-                random.shuffle(wrong_texts)
-                options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
+        questions = await load_normal_questions(
+            db,
+            quiz_type=quiz_type,
+            jlpt_level=jlpt_level,
+            count=count,
+            stage_content_ids=stage_content_ids,
+        )
 
     session = await _create_quiz_session(
         db,
