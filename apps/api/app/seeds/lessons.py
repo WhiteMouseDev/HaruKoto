@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+from typing import Any
 
 import sqlalchemy as sa
 from sqlalchemy import cast, select
@@ -39,7 +40,7 @@ def _jlpt_str(level: object) -> str:
     return level.value if hasattr(level, "value") else str(level)
 
 
-async def _upsert_chapter(db: AsyncSession, meta: dict) -> Chapter:
+async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
     """Create or update chapter record."""
     stmt = pg_insert(Chapter).values(
         jlpt_level=meta["jlpt_level"],
@@ -69,7 +70,7 @@ async def _upsert_chapter(db: AsyncSession, meta: dict) -> Chapter:
     return result.scalar_one()
 
 
-async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict) -> Lesson:
+async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[str, Any]) -> Lesson:
     """Create or update lesson record."""
     stmt = pg_insert(Lesson).values(
         chapter_id=chapter.id,

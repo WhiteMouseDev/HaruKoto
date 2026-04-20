@@ -11,8 +11,10 @@ Usage:
 from __future__ import annotations
 
 import asyncio
+from typing import Any, cast
 
 from sqlalchemy import text
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import settings
@@ -71,19 +73,19 @@ async def backfill_srs_state() -> None:
         # --- 1. state backfill ---
         print("=== SRS state backfill ===")
         for table in PROGRESS_TABLES:
-            result = await db.execute(text(STATE_UPDATE_SQL.format(table=table)))
+            result = cast(CursorResult[Any], await db.execute(text(STATE_UPDATE_SQL.format(table=table))))
             print(f"  {table}: {result.rowcount} rows updated (state)")
 
         # --- 2. introduced_by backfill ---
         print("\n=== introduced_by backfill ===")
         for table in PROGRESS_TABLES:
-            result = await db.execute(text(INTRODUCED_BY_SQL.format(table=table)))
+            result = cast(CursorResult[Any], await db.execute(text(INTRODUCED_BY_SQL.format(table=table))))
             print(f"  {table}: {result.rowcount} rows updated (introduced_by)")
 
         # --- 3. meaning_glosses_ko backfill ---
         print("\n=== meaning_glosses_ko backfill ===")
         for table in CONTENT_TABLES:
-            result = await db.execute(text(GLOSSES_UPDATE_SQL.format(table=table)))
+            result = cast(CursorResult[Any], await db.execute(text(GLOSSES_UPDATE_SQL.format(table=table))))
             print(f"  {table}: {result.rowcount} rows updated (meaning_glosses_ko)")
 
         await db.commit()

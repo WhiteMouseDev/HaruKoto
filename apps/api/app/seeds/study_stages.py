@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import math
 import uuid
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -65,7 +66,7 @@ ITEMS_PER_STAGE = 12
 
 async def _chunk_and_create_stages(
     db: AsyncSession,
-    items: list,
+    items: list[Any],
     category: str,
     jlpt_level: str,
     stage_defs: list[tuple[str, str]],
