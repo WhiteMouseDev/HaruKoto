@@ -31,12 +31,13 @@ async def test_load_smart_questions_vocabulary_builds_distractor_options(monkeyp
     user_id = uuid.uuid4()
     review_vocab = SimpleNamespace(id=uuid.uuid4(), word="食べる", reading="たべる", meaning_ko="먹다")
     new_vocab = SimpleNamespace(id=uuid.uuid4(), word="見る", reading="みる", meaning_ko="보다")
+    duplicate_new_vocab = SimpleNamespace(id=uuid.uuid4(), word="観る", reading="みる", meaning_ko="보다")
     db = AsyncMock()
     db.execute = AsyncMock(
         side_effect=[
             _scalars_result([review_vocab]),
             _scalars_result([review_vocab.id]),
-            _scalars_result([new_vocab]),
+            _scalars_result([new_vocab, duplicate_new_vocab]),
             _scalars_result(["먹다", "보다", "마시다", "자다", "읽다"]),
         ]
     )
@@ -46,7 +47,7 @@ async def test_load_smart_questions_vocabulary_builds_distractor_options(monkeyp
         user_id=user_id,
         category="VOCABULARY",
         jlpt_level="N5",
-        distribution={"review": 1, "retry": 0, "new": 1},
+        distribution={"review": 1, "retry": 0, "new": 2},
         now=datetime(2026, 4, 20, tzinfo=UTC),
     )
 
