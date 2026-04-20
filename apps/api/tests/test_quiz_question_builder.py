@@ -4,7 +4,13 @@ import uuid
 from types import SimpleNamespace
 
 from app.services import quiz_question_builder
-from app.services.quiz_question_builder import build_grammar_question, build_options, build_vocab_question
+from app.services.quiz_question_builder import (
+    build_cloze_question,
+    build_grammar_question,
+    build_options,
+    build_sentence_arrange_question,
+    build_vocab_question,
+)
 
 
 def test_build_options_marks_correct_option(monkeypatch):
@@ -61,4 +67,54 @@ def test_build_grammar_question_keeps_api_payload_shape():
         "correctOptionId": "correct",
         "pattern": "〜てもいい",
         "meaningKo": "~해도 된다",
+    }
+
+
+def test_build_cloze_question_keeps_api_payload_shape(monkeypatch):
+    item_id = uuid.uuid4()
+    ids = iter(["correct", "wrong"])
+    monkeypatch.setattr(quiz_question_builder.uuid, "uuid4", lambda: next(ids))
+    item = SimpleNamespace(
+        id=item_id,
+        sentence="これは___です。",
+        translation="이것은 책입니다.",
+        correct_answer="本",
+        options=["本", "水"],
+        explanation="명사 보충 문제",
+    )
+
+    question = build_cloze_question(item)
+
+    assert question == {
+        "id": str(item_id),
+        "type": "CLOZE",
+        "question": "これは___です。",
+        "translation": "이것은 책입니다.",
+        "options": [{"id": "correct", "text": "本"}, {"id": "wrong", "text": "水"}],
+        "correctOptionId": "correct",
+        "explanation": "명사 보충 문제",
+    }
+
+
+def test_build_sentence_arrange_question_keeps_api_payload_shape():
+    item_id = uuid.uuid4()
+    item = SimpleNamespace(
+        id=item_id,
+        korean_sentence="저는 학생입니다.",
+        japanese_sentence="私は学生です。",
+        tokens=[{"text": "私"}, "は", {"text": "学生"}, "です"],
+        explanation="기본 문장 배열",
+    )
+
+    question = build_sentence_arrange_question(item)
+
+    assert question == {
+        "id": str(item_id),
+        "type": "SENTENCE_ARRANGE",
+        "question": "저는 학생입니다.",
+        "japaneseSentence": "私は学生です。",
+        "tokens": ["私", "は", "学生", "です"],
+        "explanation": "기본 문장 배열",
+        "correctOptionId": "",
+        "options": [],
     }

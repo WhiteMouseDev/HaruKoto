@@ -10,10 +10,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import (
-    ClozeQuestion,
     Grammar,
     QuizSession,
-    SentenceArrangeQuestion,
     UserGrammarProgress,
     UserVocabProgress,
     Vocabulary,
@@ -21,6 +19,7 @@ from app.models import (
 from app.models.user import User
 from app.schemas.quiz import MatchingPair, QuizStartRequest, SmartStartRequest
 from app.services.distractor import generate_distractors
+from app.services.quiz_mode_questions import load_cloze_questions, load_sentence_arrange_questions
 from app.services.quiz_policy import calculate_smart_distribution
 from app.services.quiz_question_builder import build_grammar_question, build_options, build_vocab_question
 from app.services.quiz_session import (
@@ -103,47 +102,9 @@ async def start_quiz_session(
             raise QuizStartServiceError(status_code=400, detail="매칭 모드는 stage_id가 필요합니다")
         questions, matching_pairs = await generate_matching_pairs(db, stage, stage_content_ids, count)
     elif mode == "cloze":
-        query = select(ClozeQuestion).where(ClozeQuestion.jlpt_level == jlpt_level)
-        if stage_content_ids:
-            query = query.where(ClozeQuestion.id.in_(stage_content_ids))
-        result = await db.execute(query.order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for item in items:
-            correct_id = str(uuid.uuid4())
-            options = []
-            for option_text in item.options if isinstance(item.options, list) else []:
-                option_id = correct_id if option_text == item.correct_answer else str(uuid.uuid4())
-                options.append({"id": option_id, "text": option_text})
-            questions.append(
-                {
-                    "id": str(item.id),
-                    "type": "CLOZE",
-                    "question": item.sentence,
-                    "translation": item.translation,
-                    "options": options,
-                    "correctOptionId": correct_id,
-                    "explanation": item.explanation,
-                }
-            )
+        questions = await load_cloze_questions(db, jlpt_level=jlpt_level, count=count, stage_content_ids=stage_content_ids)
     elif mode == "arrange":
-        query = select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.jlpt_level == jlpt_level)
-        if stage_content_ids:
-            query = query.where(SentenceArrangeQuestion.id.in_(stage_content_ids))
-        result = await db.execute(query.order_by(func.random()).limit(count))
-        items = result.scalars().all()
-        for item in items:
-            questions.append(
-                {
-                    "id": str(item.id),
-                    "type": "SENTENCE_ARRANGE",
-                    "question": item.korean_sentence,
-                    "japaneseSentence": item.japanese_sentence,
-                    "tokens": [token["text"] if isinstance(token, dict) else token for token in (item.tokens or [])],
-                    "explanation": item.explanation,
-                    "correctOptionId": "",
-                    "options": [],
-                }
-            )
+        questions = await load_sentence_arrange_questions(db, jlpt_level=jlpt_level, count=count, stage_content_ids=stage_content_ids)
     elif mode == "review":
         if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
             query = (
