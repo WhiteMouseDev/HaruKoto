@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_protocol.dart';
+import 'gemini_live_transport.dart';
 
 /// Transcript entry for a single turn.
 class TranscriptEntry {
@@ -40,9 +40,9 @@ class GeminiLiveService {
   OnTranscriptEntry? onTranscriptEntry;
   OnError? onError;
 
-  WebSocketChannel? _channel;
   int _channelGeneration = 0; // 채널 세대 추적 (이전 소켓 콜백 구분)
   final GeminiLiveAudioAdapter _audioAdapter;
+  final GeminiLiveTransport _transport;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
   bool _reconnecting = false; // 재연결 중복 방지
@@ -70,7 +70,9 @@ class GeminiLiveService {
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
     GeminiLiveAudioAdapter? audioAdapter,
-  }) : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter();
+    GeminiLiveTransport? transport,
+  })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
+        _transport = transport ?? DefaultGeminiLiveTransport();
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
@@ -104,8 +106,7 @@ class GeminiLiveService {
     _setState(GeminiLiveState.ending);
     _flushTranscripts();
     await _stopRecording();
-    unawaited(_channel?.sink.close());
-    _channel = null;
+    unawaited(_transport.close());
     _setState(GeminiLiveState.ended);
   }
 
@@ -114,8 +115,7 @@ class GeminiLiveService {
     _disposed = true;
     _ended = true;
     await _audioAdapter.dispose();
-    unawaited(_channel?.sink.close());
-    _channel = null;
+    unawaited(_transport.close());
   }
 
   // ──────── Connection ────────
@@ -132,11 +132,9 @@ class GeminiLiveService {
     _channelGeneration++;
     final gen = _channelGeneration;
 
-    _channel = WebSocketChannel.connect(uri);
-    await _channel!.ready;
-
-    _channel!.stream.listen(
-      _onMessage,
+    await _transport.connect(
+      uri,
+      onMessage: _onMessage,
       onError: (e) {
         debugPrint('[GeminiLive] WebSocket error: $e');
         // 현재 세대의 채널에서만 재연결
@@ -146,7 +144,6 @@ class GeminiLiveService {
         debugPrint('[GeminiLive] WebSocket closed');
         // 현재 세대의 채널만 null 처리 (새 소켓이 있으면 건드리지 않음)
         if (gen == _channelGeneration) {
-          _channel = null;
           if (!_disposed && !_ended) _attemptReconnect();
         }
       },
@@ -285,7 +282,7 @@ class GeminiLiveService {
 
     final result = await _audioAdapter.startRecording(
       onData: (data) {
-        if (_disposed || _channel == null || isMuted) return;
+        if (_disposed || !_transport.isConnected || isMuted) return;
         _safeSend(GeminiLiveProtocol.encodeRealtimeAudio(data));
       },
     );
@@ -383,7 +380,7 @@ class GeminiLiveService {
   /// WebSocket sink에 안전하게 전송 (sink 닫힌 상태 보호)
   void _safeSend(String data) {
     try {
-      _channel?.sink.add(data);
+      _transport.send(data);
     } catch (e) {
       debugPrint('[GeminiLive] sink.add failed: $e');
     }
