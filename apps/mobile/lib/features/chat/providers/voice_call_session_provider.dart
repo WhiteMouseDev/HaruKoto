@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
+import 'voice_call_live_event_binder.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_session_resources.dart';
@@ -219,50 +220,55 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   void _bindService(GeminiLiveService service, int generation) {
-    service.onStateChange = (liveState) {
-      if (_isStale(generation)) return;
-      switch (liveState) {
-        case GeminiLiveState.connecting:
-          state = state.copyWith(status: VoiceCallStatus.connecting);
-          return;
-        case GeminiLiveState.connected:
-          state = state.copyWith(
-            status: VoiceCallStatus.connected,
-            errorMessage: null,
-          );
-          unawaited(_resources?.stopRingtone());
-          _startTimer();
-          return;
-        case GeminiLiveState.ending:
-          state = state.copyWith(status: VoiceCallStatus.ending);
-          unawaited(_resources?.stopRingtone());
-          return;
-        case GeminiLiveState.ended:
-          state = state.copyWith(status: VoiceCallStatus.ended);
-          return;
-        case GeminiLiveState.error:
-          state = state.copyWith(status: VoiceCallStatus.error);
-          unawaited(_resources?.stopRingtone());
-          return;
-      }
-    };
+    VoiceCallLiveEventBinder(
+      service: service,
+      isActive: () => !_isStale(generation),
+      onStateChange: _handleLiveStateChange,
+      onAiTextDelta: _appendAiTextDelta,
+      onTranscriptEntry: _handleTranscriptEntry,
+      onError: _setErrorMessage,
+    ).bind();
+  }
 
-    service.onAiTextDelta = (text) {
-      if (_isStale(generation)) return;
-      state = state.copyWith(currentAiText: state.currentAiText + text);
-    };
+  void _handleLiveStateChange(GeminiLiveState liveState) {
+    switch (liveState) {
+      case GeminiLiveState.connecting:
+        state = state.copyWith(status: VoiceCallStatus.connecting);
+        return;
+      case GeminiLiveState.connected:
+        state = state.copyWith(
+          status: VoiceCallStatus.connected,
+          errorMessage: null,
+        );
+        unawaited(_resources?.stopRingtone());
+        _startTimer();
+        return;
+      case GeminiLiveState.ending:
+        state = state.copyWith(status: VoiceCallStatus.ending);
+        unawaited(_resources?.stopRingtone());
+        return;
+      case GeminiLiveState.ended:
+        state = state.copyWith(status: VoiceCallStatus.ended);
+        return;
+      case GeminiLiveState.error:
+        state = state.copyWith(status: VoiceCallStatus.error);
+        unawaited(_resources?.stopRingtone());
+        return;
+    }
+  }
 
-    service.onTranscriptEntry = (entry) {
-      if (_isStale(generation)) return;
-      if (entry.role == 'assistant') {
-        state = state.copyWith(currentAiText: '');
-      }
-    };
+  void _appendAiTextDelta(String text) {
+    state = state.copyWith(currentAiText: state.currentAiText + text);
+  }
 
-    service.onError = (message) {
-      if (_isStale(generation)) return;
-      state = state.copyWith(errorMessage: message);
-    };
+  void _handleTranscriptEntry(TranscriptEntry entry) {
+    if (entry.role == 'assistant') {
+      state = state.copyWith(currentAiText: '');
+    }
+  }
+
+  void _setErrorMessage(String message) {
+    state = state.copyWith(errorMessage: message);
   }
 
   void _startTimer() {
