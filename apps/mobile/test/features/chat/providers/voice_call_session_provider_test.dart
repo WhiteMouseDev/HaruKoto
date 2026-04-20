@@ -118,6 +118,49 @@ void main() {
       expect(liveService.isMuted, isTrue);
     });
 
+    test('initialize reports an error when bootstrap misses live credentials',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var factoryCalls = 0;
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWith((ref) => prefs),
+          profileDetailProvider.overrideWith(
+            (ref) => Future.value(_profileDetail()),
+          ),
+          voiceCallBootstrapServiceProvider.overrideWith(
+            (ref) => _FakeVoiceCallBootstrapService(token: '', model: ''),
+          ),
+          voiceCallLiveServiceFactoryProvider.overrideWith(
+            (ref) => (_, __) {
+              factoryCalls++;
+              return _FakeGeminiLiveService();
+            },
+          ),
+          voiceCallRingtonePlayerFactoryProvider.overrideWith(
+            (ref) => _FakeVoiceCallRingtonePlayer.new,
+          ),
+        ],
+      );
+      addTearDown(() async {
+        await container.read(voiceCallSessionProvider.notifier).endCall();
+        container.dispose();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      final notifier = container.read(voiceCallSessionProvider.notifier);
+      await container.read(profileDetailProvider.future);
+      await notifier.initialize(
+        const VoiceCallSessionRequest(characterId: 'char-1'),
+      );
+
+      final state = container.read(voiceCallSessionProvider);
+      expect(state.status, VoiceCallStatus.error);
+      expect(state.errorMessage, '연결에 실패했습니다');
+      expect(factoryCalls, 0);
+    });
+
     test(
         'endCall returns analysis request when transcript and duration qualify',
         () async {
@@ -226,7 +269,13 @@ void main() {
 }
 
 class _FakeVoiceCallBootstrapService extends VoiceCallBootstrapService {
-  _FakeVoiceCallBootstrapService() : super(_UnusedChatRepository());
+  _FakeVoiceCallBootstrapService({
+    this.token = 'token',
+    this.model = 'gemini-live',
+  }) : super(_UnusedChatRepository());
+
+  final String token;
+  final String model;
 
   int prepareCalls = 0;
   VoiceCallBootstrapInput? lastInput;
@@ -237,8 +286,8 @@ class _FakeVoiceCallBootstrapService extends VoiceCallBootstrapService {
     lastInput = input;
     return VoiceCallBootstrapData(
       wsUri: 'wss://example.com/live',
-      token: 'token',
-      model: 'gemini-live',
+      token: token,
+      model: model,
       userNickname: input.userNickname,
       jlptLevel: input.jlptLevel,
       silenceDurationMs: input.callSettings.silenceDurationMs,

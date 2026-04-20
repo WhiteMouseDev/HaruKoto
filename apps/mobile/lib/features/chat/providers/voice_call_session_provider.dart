@@ -7,8 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
-import '../data/voice_call_bootstrap_service.dart';
-import 'chat_provider.dart';
+import 'voice_call_connection_service.dart';
+
+export 'voice_call_connection_service.dart';
 
 enum VoiceCallStatus {
   connecting,
@@ -16,18 +17,6 @@ enum VoiceCallStatus {
   ending,
   ended,
   error,
-}
-
-class VoiceCallSessionRequest {
-  const VoiceCallSessionRequest({
-    this.scenarioId,
-    this.characterId,
-    this.characterName,
-  });
-
-  final String? scenarioId;
-  final String? characterId;
-  final String? characterName;
 }
 
 class VoiceCallAnalysisRequest {
@@ -121,11 +110,6 @@ class VoiceCallSessionState {
   }
 }
 
-typedef VoiceCallLiveServiceFactory = GeminiLiveService Function(
-  VoiceCallBootstrapData bootstrap,
-  VoiceCallSessionRequest request,
-);
-
 abstract class VoiceCallRingtonePlayer {
   Future<void> startLoop();
   Future<void> stop();
@@ -152,27 +136,6 @@ class AudioVoiceCallRingtonePlayer implements VoiceCallRingtonePlayer {
 }
 
 typedef VoiceCallRingtonePlayerFactory = VoiceCallRingtonePlayer Function();
-
-final voiceCallBootstrapServiceProvider = Provider<VoiceCallBootstrapService>(
-  (ref) => VoiceCallBootstrapService(ref.watch(chatRepositoryProvider)),
-);
-
-final voiceCallLiveServiceFactoryProvider =
-    Provider<VoiceCallLiveServiceFactory>(
-  (ref) {
-    return (bootstrap, request) => GeminiLiveService(
-          wsUri: bootstrap.wsUri,
-          token: bootstrap.token,
-          model: bootstrap.model,
-          characterName: request.characterName,
-          voiceName: bootstrap.voiceName,
-          systemInstruction: bootstrap.systemInstruction,
-          userNickname: bootstrap.userNickname,
-          silenceDurationMs: bootstrap.silenceDurationMs,
-          jlptLevel: bootstrap.jlptLevel,
-        );
-  },
-);
 
 final voiceCallRingtonePlayerFactoryProvider =
     Provider<VoiceCallRingtonePlayerFactory>(
@@ -221,31 +184,30 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     if (_isStale(generation)) return;
 
     try {
-      final bootstrap =
-          await ref.read(voiceCallBootstrapServiceProvider).prepare(
-                VoiceCallBootstrapInput(
-                  characterId: request.characterId,
+      final service =
+          await ref.read(voiceCallConnectionServiceProvider).prepare(
+                VoiceCallConnectionInput(
+                  request: request,
                   callSettings: preferences.callSettings,
                   userNickname: nickname,
                   jlptLevel: preferences.jlptLevel,
                 ),
               );
-      if (_isStale(generation)) return;
-
-      if (bootstrap.token.isEmpty || bootstrap.model.isEmpty) {
-        await _stopRingtone();
-        state = state.copyWith(
-          status: VoiceCallStatus.error,
-          errorMessage: '연결에 실패했습니다',
-        );
+      if (_isStale(generation)) {
+        await service.dispose();
         return;
       }
 
-      final service =
-          ref.read(voiceCallLiveServiceFactoryProvider)(bootstrap, request);
       _service = service;
       _bindService(service, generation);
       await service.start();
+    } on VoiceCallConnectionException catch (e) {
+      if (_isStale(generation)) return;
+      await _stopRingtone();
+      state = state.copyWith(
+        status: VoiceCallStatus.error,
+        errorMessage: e.message,
+      );
     } catch (e) {
       debugPrint('[VoiceCallSession] Start failed: $e');
       if (_isStale(generation)) return;
