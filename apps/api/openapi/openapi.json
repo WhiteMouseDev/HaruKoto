@@ -1624,7 +1624,7 @@
           "admin-content"
         ],
         "summary": "Get Admin Tts",
-        "description": "Return existing TTS audio URL for a content item, or null if none exists.",
+        "description": "Return per-field TTS audio map for a content item.",
         "operationId": "get_admin_tts_api_v1_admin_content__content_type___item_id__tts_get",
         "security": [
           {
@@ -1657,7 +1657,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminTtsResponse"
+                  "$ref": "#/components/schemas/AdminTtsMapResponse"
                 }
               }
             }
@@ -2285,7 +2285,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/IncompleteQuizResponse"
+                }
               }
             }
           }
@@ -2319,7 +2321,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResumeResponse"
+                }
               }
             }
           },
@@ -2392,7 +2396,17 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/QuizStatsResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ContentQuizStatsResponse"
+                    }
+                  ],
+                  "title": "Response Get Quiz Stats Api V1 Quiz Stats Get"
+                }
               }
             }
           },
@@ -2437,7 +2451,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/WrongAnswersResponse"
+                }
               }
             }
           },
@@ -2460,7 +2476,6 @@
           "quiz"
         ],
         "summary": "Smart Preview",
-        "description": "Get smart quiz preview: pool sizes, distribution, progress.",
         "operationId": "smart_preview_api_v1_quiz_smart_preview_get",
         "security": [
           {
@@ -2519,7 +2534,6 @@
           "quiz"
         ],
         "summary": "Smart Start",
-        "description": "Start a smart quiz session with optimal new/review/retry mix.",
         "operationId": "smart_start_api_v1_quiz_smart_start_post",
         "requestBody": {
           "content": {
@@ -2595,7 +2609,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsResponse"
+                }
               }
             }
           },
@@ -5110,7 +5126,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/LearnedWordsResponse"
+                }
               }
             }
           },
@@ -5194,7 +5212,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/StudyWrongAnswersResponse"
+                }
               }
             }
           },
@@ -5258,7 +5278,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudyStageResponse"
+                  },
+                  "title": "Response Get Stages Api V1 Study Stages Get"
+                }
               }
             }
           },
@@ -5358,7 +5384,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/StudyCapabilitiesResponse"
+                }
               }
             }
           },
@@ -5690,6 +5718,29 @@
         ],
         "title": "ActivateRequest"
       },
+      "AdminTtsMapResponse": {
+        "properties": {
+          "audios": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AudioFieldInfo"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Audios"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audios"
+        ],
+        "title": "AdminTtsMapResponse"
+      },
       "AdminTtsRegenerateRequest": {
         "properties": {
           "contentType": {
@@ -5854,6 +5905,30 @@
           "order"
         ],
         "title": "AnswerSubmission"
+      },
+      "AudioFieldInfo": {
+        "properties": {
+          "audioUrl": {
+            "type": "string",
+            "title": "Audiourl"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audioUrl",
+          "provider",
+          "createdAt"
+        ],
+        "title": "AudioFieldInfo"
       },
       "AuditLogItem": {
         "properties": {
@@ -6584,6 +6659,29 @@
         },
         "type": "object",
         "title": "ClozeQuestionUpdateRequest"
+      },
+      "ContentQuizStatsResponse": {
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "title": "Totalcount"
+          },
+          "studiedCount": {
+            "type": "integer",
+            "title": "Studiedcount"
+          },
+          "progress": {
+            "type": "integer",
+            "title": "Progress"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalCount",
+          "studiedCount",
+          "progress"
+        ],
+        "title": "ContentQuizStatsResponse"
       },
       "ContentStatsItem": {
         "properties": {
@@ -7413,6 +7511,68 @@
         ],
         "title": "HistoryResponse"
       },
+      "IncompleteQuizResponse": {
+        "properties": {
+          "session": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IncompleteQuizSession"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "session"
+        ],
+        "title": "IncompleteQuizResponse"
+      },
+      "IncompleteQuizSession": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "quizType": {
+            "type": "string",
+            "title": "Quiztype"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "title": "Totalquestions"
+          },
+          "answeredCount": {
+            "type": "integer",
+            "title": "Answeredcount"
+          },
+          "correctCount": {
+            "type": "integer",
+            "title": "Correctcount"
+          },
+          "startedAt": {
+            "type": "string",
+            "title": "Startedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "quizType",
+          "jlptLevel",
+          "totalQuestions",
+          "answeredCount",
+          "correctCount",
+          "startedAt"
+        ],
+        "title": "IncompleteQuizSession"
+      },
       "JlptLevel": {
         "type": "string",
         "enum": [
@@ -7810,6 +7970,161 @@
           "KATAKANA"
         ],
         "title": "KanaType"
+      },
+      "LearnedWordEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "vocabularyId": {
+            "type": "string",
+            "title": "Vocabularyid"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          },
+          "correctCount": {
+            "type": "integer",
+            "title": "Correctcount"
+          },
+          "incorrectCount": {
+            "type": "integer",
+            "title": "Incorrectcount"
+          },
+          "streak": {
+            "type": "integer",
+            "title": "Streak"
+          },
+          "mastered": {
+            "type": "boolean",
+            "title": "Mastered"
+          },
+          "lastReviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastreviewedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vocabularyId",
+          "word",
+          "meaningKo",
+          "jlptLevel",
+          "correctCount",
+          "incorrectCount",
+          "streak",
+          "mastered"
+        ],
+        "title": "LearnedWordEntry"
+      },
+      "LearnedWordsResponse": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/LearnedWordEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/LearnedWordsSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries",
+          "total",
+          "page",
+          "totalPages",
+          "summary"
+        ],
+        "title": "LearnedWordsResponse"
+      },
+      "LearnedWordsSummary": {
+        "properties": {
+          "totalLearned": {
+            "type": "integer",
+            "title": "Totallearned"
+          },
+          "mastered": {
+            "type": "integer",
+            "title": "Mastered"
+          },
+          "learning": {
+            "type": "integer",
+            "title": "Learning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalLearned",
+          "mastered",
+          "learning"
+        ],
+        "title": "LearnedWordsSummary"
       },
       "LessonContent": {
         "properties": {
@@ -9028,6 +9343,49 @@
         ],
         "title": "QuizAnswerResponse"
       },
+      "QuizCapabilitiesResponse": {
+        "properties": {
+          "VOCABULARY": {
+            "type": "boolean",
+            "title": "Vocabulary"
+          },
+          "GRAMMAR": {
+            "type": "boolean",
+            "title": "Grammar"
+          },
+          "KANJI": {
+            "type": "boolean",
+            "title": "Kanji"
+          },
+          "LISTENING": {
+            "type": "boolean",
+            "title": "Listening"
+          },
+          "KANA": {
+            "type": "boolean",
+            "title": "Kana"
+          },
+          "CLOZE": {
+            "type": "boolean",
+            "title": "Cloze"
+          },
+          "SENTENCE_ARRANGE": {
+            "type": "boolean",
+            "title": "Sentence Arrange"
+          }
+        },
+        "type": "object",
+        "required": [
+          "VOCABULARY",
+          "GRAMMAR",
+          "KANJI",
+          "LISTENING",
+          "KANA",
+          "CLOZE",
+          "SENTENCE_ARRANGE"
+        ],
+        "title": "QuizCapabilitiesResponse"
+      },
       "QuizCompleteRequest": {
         "properties": {
           "sessionId": {
@@ -9239,6 +9597,50 @@
         ],
         "title": "QuizResumeRequest"
       },
+      "QuizResumeResponse": {
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "title": "Sessionid"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuizQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "answeredQuestionIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Answeredquestionids"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "title": "Totalquestions"
+          },
+          "correctCount": {
+            "type": "integer",
+            "title": "Correctcount"
+          },
+          "quizType": {
+            "type": "string",
+            "title": "Quiztype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sessionId",
+          "questions",
+          "answeredQuestionIds",
+          "totalQuestions",
+          "correctCount",
+          "quizType"
+        ],
+        "title": "QuizResumeResponse"
+      },
       "QuizStartRequest": {
         "properties": {
           "quizType": {
@@ -9318,6 +9720,34 @@
         ],
         "title": "QuizStartResponse"
       },
+      "QuizStatsResponse": {
+        "properties": {
+          "totalQuizzes": {
+            "type": "integer",
+            "title": "Totalquizzes"
+          },
+          "totalCorrect": {
+            "type": "integer",
+            "title": "Totalcorrect"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "title": "Totalquestions"
+          },
+          "accuracy": {
+            "type": "number",
+            "title": "Accuracy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalQuizzes",
+          "totalCorrect",
+          "totalQuestions",
+          "accuracy"
+        ],
+        "title": "QuizStatsResponse"
+      },
       "QuizType": {
         "type": "string",
         "enum": [
@@ -9381,6 +9811,40 @@
           "script"
         ],
         "title": "Reading"
+      },
+      "RecommendationsResponse": {
+        "properties": {
+          "reviewDueCount": {
+            "type": "integer",
+            "title": "Reviewduecount"
+          },
+          "newWordsCount": {
+            "type": "integer",
+            "title": "Newwordscount"
+          },
+          "wrongCount": {
+            "type": "integer",
+            "title": "Wrongcount"
+          },
+          "lastReviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastreviewedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewDueCount",
+          "newWordsCount",
+          "wrongCount"
+        ],
+        "title": "RecommendationsResponse"
       },
       "ReviewQueueItem": {
         "properties": {
@@ -9701,6 +10165,40 @@
         ],
         "title": "SessionDistribution"
       },
+      "SmartCapabilitiesResponse": {
+        "properties": {
+          "VOCABULARY": {
+            "$ref": "#/components/schemas/SmartCategoryCapability"
+          },
+          "GRAMMAR": {
+            "$ref": "#/components/schemas/SmartCategoryCapability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "VOCABULARY",
+          "GRAMMAR"
+        ],
+        "title": "SmartCapabilitiesResponse"
+      },
+      "SmartCategoryCapability": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "hasPool": {
+            "type": "boolean",
+            "title": "Haspool"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "hasPool"
+        ],
+        "title": "SmartCategoryCapability"
+      },
       "SmartPreviewResponse": {
         "properties": {
           "poolSize": {
@@ -9750,6 +10248,29 @@
         },
         "type": "object",
         "title": "SmartStartRequest"
+      },
+      "StageCapabilitiesResponse": {
+        "properties": {
+          "VOCABULARY": {
+            "type": "boolean",
+            "title": "Vocabulary"
+          },
+          "GRAMMAR": {
+            "type": "boolean",
+            "title": "Grammar"
+          },
+          "SENTENCE": {
+            "type": "boolean",
+            "title": "Sentence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "VOCABULARY",
+          "GRAMMAR",
+          "SENTENCE"
+        ],
+        "title": "StageCapabilitiesResponse"
       },
       "StoreNotificationAck": {
         "properties": {
@@ -9907,6 +10428,300 @@
           "longest"
         ],
         "title": "StreakInfo"
+      },
+      "StudyCapabilitiesResponse": {
+        "properties": {
+          "requestedJlptLevel": {
+            "type": "string",
+            "title": "Requestedjlptlevel"
+          },
+          "effectiveJlptLevel": {
+            "type": "string",
+            "title": "Effectivejlptlevel"
+          },
+          "quiz": {
+            "$ref": "#/components/schemas/QuizCapabilitiesResponse"
+          },
+          "smart": {
+            "$ref": "#/components/schemas/SmartCapabilitiesResponse"
+          },
+          "lesson": {
+            "type": "boolean",
+            "title": "Lesson"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageCapabilitiesResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requestedJlptLevel",
+          "effectiveJlptLevel",
+          "quiz",
+          "smart",
+          "lesson",
+          "stage"
+        ],
+        "title": "StudyCapabilitiesResponse"
+      },
+      "StudyStageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "stageNumber": {
+            "type": "integer",
+            "title": "Stagenumber"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "contentCount": {
+            "type": "integer",
+            "title": "Contentcount"
+          },
+          "isLocked": {
+            "type": "boolean",
+            "title": "Islocked"
+          },
+          "userProgress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudyStageUserProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "jlptLevel",
+          "stageNumber",
+          "title",
+          "contentCount",
+          "isLocked"
+        ],
+        "title": "StudyStageResponse"
+      },
+      "StudyStageUserProgress": {
+        "properties": {
+          "bestScore": {
+            "type": "integer",
+            "title": "Bestscore"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completedat"
+          },
+          "lastAttemptedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastattemptedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bestScore",
+          "attempts",
+          "completed"
+        ],
+        "title": "StudyStageUserProgress"
+      },
+      "StudyWrongAnswerEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "vocabularyId": {
+            "type": "string",
+            "title": "Vocabularyid"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          },
+          "correctCount": {
+            "type": "integer",
+            "title": "Correctcount"
+          },
+          "incorrectCount": {
+            "type": "integer",
+            "title": "Incorrectcount"
+          },
+          "mastered": {
+            "type": "boolean",
+            "title": "Mastered"
+          },
+          "lastReviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastreviewedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vocabularyId",
+          "word",
+          "meaningKo",
+          "jlptLevel",
+          "correctCount",
+          "incorrectCount",
+          "mastered"
+        ],
+        "title": "StudyWrongAnswerEntry"
+      },
+      "StudyWrongAnswersResponse": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/StudyWrongAnswerEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/StudyWrongAnswersSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries",
+          "total",
+          "page",
+          "totalPages",
+          "summary"
+        ],
+        "title": "StudyWrongAnswersResponse"
+      },
+      "StudyWrongAnswersSummary": {
+        "properties": {
+          "totalWrong": {
+            "type": "integer",
+            "title": "Totalwrong"
+          },
+          "mastered": {
+            "type": "integer",
+            "title": "Mastered"
+          },
+          "remaining": {
+            "type": "integer",
+            "title": "Remaining"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalWrong",
+          "mastered",
+          "remaining"
+        ],
+        "title": "StudyWrongAnswersSummary"
       },
       "SubscriptionInfo": {
         "properties": {
@@ -10919,6 +11734,90 @@
         },
         "type": "object",
         "title": "WordbookUpdateRequest"
+      },
+      "WrongAnswer": {
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "title": "Questionid"
+          },
+          "word": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Word"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meaningko"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questionId"
+        ],
+        "title": "WrongAnswer"
+      },
+      "WrongAnswersResponse": {
+        "properties": {
+          "wrongAnswers": {
+            "items": {
+              "$ref": "#/components/schemas/WrongAnswer"
+            },
+            "type": "array",
+            "title": "Wronganswers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "wrongAnswers"
+        ],
+        "title": "WrongAnswersResponse"
       },
       "app__schemas__stats__AchievementItem": {
         "properties": {

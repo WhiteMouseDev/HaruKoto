@@ -148,9 +148,22 @@ jobs:
         run: uv sync --frozen
         working-directory: apps/api
 
-      - name: Export current OpenAPI spec
+      - name: Check OpenAPI snapshot freshness
         working-directory: apps/api
-        run: uv run python scripts/export_openapi.py
+        run: |
+          cp openapi/openapi.json /tmp/committed-openapi.json
+          uv run python scripts/export_openapi.py
+          if ! diff -q /tmp/committed-openapi.json openapi/openapi.json > /dev/null; then
+            echo "::error::openapi.json is stale — regenerate it locally and commit."
+            echo ""
+            echo "Fix:"
+            echo "  cd apps/api && uv run python scripts/export_openapi.py"
+            echo "  git add apps/api/openapi/openapi.json && git commit"
+            echo ""
+            echo "Diff preview (committed → current code):"
+            diff /tmp/committed-openapi.json openapi/openapi.json | head -100 || true
+            exit 1
+          fi
 
       - name: Load base OpenAPI from main
         run: |
