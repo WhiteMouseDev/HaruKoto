@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_message_handler.dart';
+import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_protocol.dart';
 import 'gemini_live_reconnect_coordinator.dart';
@@ -42,10 +43,12 @@ class GeminiLiveService {
   final GeminiLiveMessageHandler _messageHandler;
   final GeminiLivePromptBuilder _promptBuilder;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
-  final GeminiLiveTransport _transport;
+  final GeminiLiveOutboundSender _outboundSender;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
   bool isMuted = false;
+
+  GeminiLiveTransport get _transport => _outboundSender.transport;
 
   GeminiLiveService({
     required this.wsUri,
@@ -72,7 +75,9 @@ class GeminiLiveService {
             ),
         _reconnectCoordinator =
             reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
-        _transport = transport ?? DefaultGeminiLiveTransport();
+        _outboundSender = GeminiLiveOutboundSender(
+          transport: transport ?? DefaultGeminiLiveTransport(),
+        );
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
@@ -154,18 +159,14 @@ class GeminiLiveService {
   }
 
   void _sendSetup({String? handle}) {
-    _safeSend(
-      GeminiLiveProtocol.encodeSetup(
-        GeminiLiveSetupConfig(
-          model: model,
-          voiceName: voiceName,
-          instruction: _promptBuilder.instruction,
-          userNickname: userNickname,
-          jlptSection: _promptBuilder.jlptSection,
-          silenceDurationMs: silenceDurationMs,
-          resumptionHandle: handle,
-        ),
-      ),
+    _outboundSender.sendSetup(
+      model: model,
+      voiceName: voiceName,
+      instruction: _promptBuilder.instruction,
+      userNickname: userNickname,
+      jlptSection: _promptBuilder.jlptSection,
+      silenceDurationMs: silenceDurationMs,
+      resumptionHandle: handle,
     );
   }
 
@@ -219,11 +220,9 @@ class GeminiLiveService {
   // ──────── Greeting ────────
 
   void _sendGreeting() {
-    _safeSend(
-      GeminiLiveProtocol.encodeGreeting(
-        characterName: characterName,
-        scenarioGreeting: scenarioGreeting,
-      ),
+    _outboundSender.sendGreeting(
+      characterName: characterName,
+      scenarioGreeting: scenarioGreeting,
     );
   }
 
@@ -235,7 +234,7 @@ class GeminiLiveService {
     final result = await _audioAdapter.startRecording(
       onData: (data) {
         if (_disposed || !_transport.isConnected || isMuted) return;
-        _safeSend(GeminiLiveProtocol.encodeRealtimeAudio(data));
+        _outboundSender.sendRealtimeAudio(data);
       },
     );
 
@@ -309,17 +308,6 @@ class GeminiLiveService {
         if (!_disposed && !_ended) _attemptReconnect();
       }
     });
-  }
-
-  // ──────── Safe send ────────
-
-  /// WebSocket sink에 안전하게 전송 (sink 닫힌 상태 보호)
-  void _safeSend(String data) {
-    try {
-      _transport.send(data);
-    } catch (e) {
-      debugPrint('[GeminiLive] sink.add failed: $e');
-    }
   }
 
   // ──────── State ────────
