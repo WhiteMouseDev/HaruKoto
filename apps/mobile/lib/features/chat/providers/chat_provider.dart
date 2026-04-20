@@ -5,8 +5,8 @@ import '../data/models/scenario_model.dart';
 import '../data/models/character_model.dart';
 import '../data/models/conversation_model.dart';
 
-final chatRepositoryProvider = Provider((ref) {
-  return ChatRepository(ref.watch(dioProvider));
+final chatRepositoryProvider = Provider<ChatRepository>((ref) {
+  return DioChatRepository(ref.watch(dioProvider));
 });
 
 final scenariosProvider =

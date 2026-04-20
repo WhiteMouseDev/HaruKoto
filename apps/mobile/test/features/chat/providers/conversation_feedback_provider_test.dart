@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
@@ -61,7 +60,7 @@ class _FakeChatRepository extends ChatRepository {
   _FakeChatRepository({
     required this.detail,
     this.throwOnFetch = false,
-  }) : super(Dio());
+  });
 
   final ConversationDetail detail;
   final bool throwOnFetch;

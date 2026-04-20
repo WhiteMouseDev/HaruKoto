@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
@@ -118,8 +117,6 @@ void main() {
 }
 
 class _FakeChatRepository extends ChatRepository {
-  _FakeChatRepository() : super(Dio());
-
   int fetchConversationCalls = 0;
   int sendMessageCalls = 0;
   int endConversationCalls = 0;

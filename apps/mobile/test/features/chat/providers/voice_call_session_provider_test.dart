@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
@@ -227,7 +226,7 @@ void main() {
 }
 
 class _FakeVoiceCallBootstrapService extends VoiceCallBootstrapService {
-  _FakeVoiceCallBootstrapService() : super(ChatRepository(Dio()));
+  _FakeVoiceCallBootstrapService() : super(_UnusedChatRepository());
 
   int prepareCalls = 0;
   VoiceCallBootstrapInput? lastInput;
@@ -249,6 +248,8 @@ class _FakeVoiceCallBootstrapService extends VoiceCallBootstrapService {
     );
   }
 }
+
+class _UnusedChatRepository extends ChatRepository {}
 
 class _FakeGeminiLiveService extends GeminiLiveService {
   _FakeGeminiLiveService()
