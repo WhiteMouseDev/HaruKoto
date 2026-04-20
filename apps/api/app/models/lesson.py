@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (
     Boolean,
@@ -26,6 +27,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import JlptLevel
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Chapter(Base):
@@ -58,7 +62,7 @@ class Lesson(Base):
     title: Mapped[str] = mapped_column(Text, nullable=False)
     topic: Mapped[str] = mapped_column(Text, nullable=False)
     estimated_minutes: Mapped[int] = mapped_column(SmallInteger, default=10)
-    content_jsonb: Mapped[dict] = mapped_column(JSONB, default=dict)
+    content_jsonb: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Boolean, DateTime, Integer, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
@@ -9,6 +10,18 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import JlptLevel, UserGoal
+
+if TYPE_CHECKING:
+    from app.models.conversation import Conversation
+    from app.models.gamification import DailyMission, DailyProgress, UserAchievement
+    from app.models.kana import UserKanaProgress, UserKanaStage
+    from app.models.lesson import UserLessonProgress
+    from app.models.notification import Notification, PushSubscription
+    from app.models.progress import UserGrammarProgress, UserVocabProgress
+    from app.models.quiz import QuizSession
+    from app.models.social import UserCharacterUnlock, UserFavoriteCharacter, WordbookEntry
+    from app.models.stage import UserStudyStageProgress
+    from app.models.subscription import DailyAiUsage, Payment, Subscription
 
 
 class User(Base):
@@ -29,9 +42,9 @@ class User(Base):
     last_study_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
     subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    call_settings: Mapped[dict | None] = mapped_column(JSON, default=dict)
+    call_settings: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)
     show_kana: Mapped[bool] = mapped_column(Boolean, default=False)
-    app_settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    app_settings: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

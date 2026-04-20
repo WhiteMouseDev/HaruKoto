@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
@@ -10,6 +11,10 @@ from sqlalchemy.orm import relationship as sa_relationship
 
 from app.db.base import Base
 from app.models.enums import ConversationType, Difficulty, ReviewStatus, ScenarioCategory
+
+if TYPE_CHECKING:
+    from app.models.social import UserCharacterUnlock, UserFavoriteCharacter
+    from app.models.user import User
 
 
 class ConversationScenario(Base):
@@ -76,8 +81,8 @@ class Conversation(Base):
     scenario_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("conversation_scenarios.id"), nullable=True)
     character_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("ai_characters.id"), nullable=True)
     type: Mapped[ConversationType] = mapped_column(default=ConversationType.TEXT)
-    messages: Mapped[dict | list] = mapped_column(JSON, default=list)
-    feedback_summary: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    messages: Mapped[dict[str, Any] | list[Any]] = mapped_column(JSON, default=list)
+    feedback_summary: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     message_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

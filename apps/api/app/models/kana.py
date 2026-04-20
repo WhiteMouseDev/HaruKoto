@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
@@ -9,6 +10,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import KanaType
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class KanaCharacter(Base):
@@ -22,7 +26,7 @@ class KanaCharacter(Base):
     row: Mapped[str] = mapped_column(Text, nullable=False)
     column: Mapped[str] = mapped_column(Text, nullable=False)
     stroke_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    stroke_order: Mapped[dict | list | None] = mapped_column(JSON, nullable=True)
+    stroke_order: Mapped[dict[str, Any] | list[Any] | None] = mapped_column(JSON, nullable=True)
     audio_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     example_word: Mapped[str | None] = mapped_column(Text, nullable=True)
     example_reading: Mapped[str | None] = mapped_column(Text, nullable=True)

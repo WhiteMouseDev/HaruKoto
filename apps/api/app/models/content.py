@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import DateTime, Integer, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
@@ -9,6 +10,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import JlptLevel, PartOfSpeech, ReviewStatus
+
+if TYPE_CHECKING:
+    from app.models.progress import UserGrammarProgress, UserVocabProgress
 
 
 class Vocabulary(Base):
@@ -45,7 +49,7 @@ class Grammar(Base):
     pattern: Mapped[str] = mapped_column(Text, nullable=False)
     meaning_ko: Mapped[str] = mapped_column(Text, nullable=False)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
-    example_sentences: Mapped[dict | list] = mapped_column(JSON, default=list)
+    example_sentences: Mapped[dict[str, Any] | list[Any]] = mapped_column(JSON, default=list)
     related_grammar_ids: Mapped[list[uuid.UUID]] = mapped_column(ARRAY(UUID(as_uuid=True)), default=list)
     order: Mapped[int] = mapped_column(Integer, default=0)
     meaning_glosses_ko: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
@@ -65,7 +69,7 @@ class ClozeQuestion(Base):
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     translation: Mapped[str] = mapped_column(Text, nullable=False)
     correct_answer: Mapped[str] = mapped_column(Text, nullable=False)
-    options: Mapped[dict | list] = mapped_column(JSON, nullable=False)
+    options: Mapped[dict[str, Any] | list[Any]] = mapped_column(JSON, nullable=False)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
     grammar_point: Mapped[str | None] = mapped_column(Text, nullable=True)
     jlpt_level: Mapped[JlptLevel] = mapped_column(nullable=False)
@@ -83,7 +87,7 @@ class SentenceArrangeQuestion(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     korean_sentence: Mapped[str] = mapped_column(Text, nullable=False)
     japanese_sentence: Mapped[str] = mapped_column(Text, nullable=False)
-    tokens: Mapped[dict | list] = mapped_column(JSON, nullable=False)
+    tokens: Mapped[dict[str, Any] | list[Any]] = mapped_column(JSON, nullable=False)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
     grammar_point: Mapped[str | None] = mapped_column(Text, nullable=True)
     jlpt_level: Mapped[JlptLevel] = mapped_column(nullable=False)

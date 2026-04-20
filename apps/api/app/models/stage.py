@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 import sqlalchemy as sa
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, UniqueConstraint, func
@@ -10,6 +11,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import JlptLevel
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class StudyStage(Base):
@@ -25,7 +29,7 @@ class StudyStage(Base):
     stage_number: Mapped[int] = mapped_column(Integer, nullable=False)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    content_ids: Mapped[list | dict] = mapped_column(JSONB, nullable=False, server_default=sa.text("'[]'::jsonb"))
+    content_ids: Mapped[list[Any] | dict[str, Any]] = mapped_column(JSONB, nullable=False, server_default=sa.text("'[]'::jsonb"))
     unlock_after: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("study_stages.id"), nullable=True)
     order: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, server_default=func.now())
