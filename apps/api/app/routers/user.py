@@ -50,7 +50,7 @@ class AccountUpdateRequest(CamelModel):
 async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> UserProfileResponse:
     words_sq = (
         select(func.count())
         .select_from(UserVocabProgress)
@@ -115,7 +115,7 @@ async def update_profile(
     body: UserProfileUpdate,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> UserProfile:
     update_data = body.model_dump(exclude_unset=True)
 
     # Merge call_settings — 새 dict 할당 (SQLAlchemy JSON 변경 감지용)
@@ -155,7 +155,7 @@ async def upload_avatar(
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, str]:
     """Upload avatar image to GCS and update user profile."""
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
         raise HTTPException(status_code=400, detail="지원하지 않는 이미지 형식입니다. JPEG, PNG, WEBP만 가능합니다.")
@@ -174,7 +174,7 @@ async def upload_avatar(
     file_path = f"avatars/{user.id}.{ext}"
 
     try:
-        from google.cloud import storage
+        from google.cloud import storage  # type: ignore[import-untyped]
 
         client = storage.Client()
         bucket = client.bucket(settings.GCS_BUCKET_NAME)
@@ -198,7 +198,7 @@ async def update_avatar(
     body: AvatarUpdateRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, str | None]:
     user.avatar_url = body.avatar_url
     await db.commit()
     await db.refresh(user)
@@ -209,7 +209,7 @@ async def update_avatar(
 async def delete_account(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, bool]:
     """Delete user account: GCS avatar, DB cascade, Supabase Auth."""
     # 1. Delete GCS avatar (best-effort)
     if user.avatar_url:
@@ -253,7 +253,7 @@ async def update_account(
     body: AccountUpdateRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, str | None]:
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(user, field, value)
