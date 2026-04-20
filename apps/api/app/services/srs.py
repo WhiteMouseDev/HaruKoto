@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
-from typing import TypedDict
+from typing import Any, TypedDict, cast
 from uuid import UUID
 
 from sqlalchemy import case, func, select, text
@@ -20,6 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.content import Grammar, Vocabulary
 from app.models.lesson import LessonItemLink
 from app.models.progress import UserGrammarProgress, UserVocabProgress
+
+type ProgressRecord = UserVocabProgress | UserGrammarProgress
+type ProgressModel = type[UserVocabProgress] | type[UserGrammarProgress]
+type ContentModel = type[Vocabulary] | type[Grammar]
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -92,7 +96,7 @@ def _sm2_update_incorrect(ease_factor: float) -> tuple[float, int]:
     return new_ef, 1
 
 
-def _get_progress_model(item_type: str) -> type[UserVocabProgress] | type[UserGrammarProgress]:
+def _get_progress_model(item_type: str) -> ProgressModel:
     """Return the correct progress model class for the given item type."""
     if item_type == "WORD":
         return UserVocabProgress
@@ -148,7 +152,7 @@ async def register_items_from_lesson(
             getattr(model, fk_col) == item_id,
         )
         result = await db.execute(stmt)
-        progress = result.scalar_one_or_none()
+        progress = cast(ProgressRecord | None, result.scalar_one_or_none())
 
         if progress is not None:
             # Already registered — upgrade if UNSEEN, otherwise skip
@@ -261,7 +265,7 @@ async def process_answer(
         getattr(model, fk_col) == item_id,
     )
     result = await db.execute(stmt)
-    progress = result.scalar_one_or_none()
+    progress = cast(ProgressRecord | None, result.scalar_one_or_none())
 
     # If no progress record exists, create one (quiz tab first encounter)
     if progress is None:
@@ -345,7 +349,7 @@ async def process_answer(
 
 
 def _apply_transition(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     rating: int,
     now: datetime,
@@ -367,7 +371,7 @@ def _apply_transition(
 
 
 def _transition_provisional(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     now: datetime,
 ) -> None:
@@ -395,7 +399,7 @@ def _transition_provisional(
 
 
 def _transition_learning(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     rating: int,
     now: datetime,
@@ -429,7 +433,7 @@ def _transition_learning(
 
 
 def _transition_review(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     rating: int,
     now: datetime,
@@ -460,7 +464,7 @@ def _transition_review(
 
 
 def _transition_mastered(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     rating: int,
     now: datetime,
@@ -487,7 +491,7 @@ def _transition_mastered(
 
 
 def _transition_relearning(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     is_correct: bool,
     now: datetime,
 ) -> None:
@@ -507,7 +511,7 @@ def _transition_relearning(
 
 
 def _update_direction_stats(
-    progress: UserVocabProgress | UserGrammarProgress,
+    progress: ProgressRecord,
     direction: str,
     is_correct: bool,
 ) -> None:
@@ -534,7 +538,7 @@ class SessionCard(TypedDict):
     is_new: bool
 
 
-def _get_content_model(item_type: str) -> type[Vocabulary] | type[Grammar]:
+def _get_content_model(item_type: str) -> ContentModel:
     """Return the content model for joining jlpt_level."""
     if item_type == "WORD":
         return Vocabulary
@@ -544,15 +548,11 @@ def _get_content_model(item_type: str) -> type[Vocabulary] | type[Grammar]:
     raise ValueError(msg)
 
 
-def _get_content_join_col(
-    item_type: str,
-    progress_model: type[UserVocabProgress] | type[UserGrammarProgress],
-    content_model: type[Vocabulary] | type[Grammar],
-) -> tuple:
+def _get_content_join_col(item_type: str) -> tuple[Any, Any]:
     """Return (progress_fk_column, content_pk_column) for joining."""
     if item_type == "WORD":
-        return progress_model.vocabulary_id, content_model.id  # type: ignore[attr-defined]
-    return progress_model.grammar_id, content_model.id  # type: ignore[attr-defined]
+        return UserVocabProgress.vocabulary_id, Vocabulary.id
+    return UserGrammarProgress.grammar_id, Grammar.id
 
 
 def _assign_direction(index: int) -> str:
@@ -607,12 +607,10 @@ async def build_smart_session(
 
     model = _get_progress_model(item_type)
     content_model = _get_content_model(item_type)
-    fk_col, content_pk = _get_content_join_col(item_type, model, content_model)
+    fk_col, content_pk = _get_content_join_col(item_type)
 
     # Shared filter: exclude items already presented today
-    not_presented_today = (
-        (model.last_presented_on.is_(None)) | (model.last_presented_on < today)  # type: ignore[union-attr]
-    )
+    not_presented_today = (model.last_presented_on.is_(None)) | (model.last_presented_on < today)
 
     # -------------------------------------------------------------------
     # 1. Due cards: RELEARNING > LEARNING > REVIEW/PROVISIONAL, then by
