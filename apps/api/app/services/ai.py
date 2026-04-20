@@ -117,11 +117,12 @@ class TtsResult:
     model: str  # e.g. 'eleven_multilingual_v2', 'gemini-2.5-flash-preview-tts'
 
 
-async def generate_tts(text: str) -> TtsResult:
+async def generate_tts(text: str, voice: str = "Kore") -> TtsResult:
     """Generate TTS audio, trying ElevenLabs first with Gemini fallback.
 
     Args:
         text: Japanese text to synthesise.
+        voice: Gemini fallback voice name.
 
     Returns:
         TtsResult with MP3 bytes and provider metadata.
@@ -135,7 +136,7 @@ async def generate_tts(text: str) -> TtsResult:
             logger.warning("ElevenLabs TTS failed for text=%r, falling back to Gemini", text, exc_info=True)
 
     # Fallback to Gemini
-    audio = await _generate_tts_gemini(text)
+    audio = await _generate_tts_gemini(text, voice=voice)
     return TtsResult(audio=audio, provider="gemini", model="gemini-2.5-flash-preview-tts")
 
 

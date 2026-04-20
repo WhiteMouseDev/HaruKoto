@@ -29,9 +29,9 @@ def mock_conversation(test_user_id):
 
 
 @pytest.mark.asyncio
-@patch("app.routers.chat.rate_limit")
-@patch("app.routers.chat.check_ai_limit")
-@patch("app.routers.chat.generate_chat_response")
+@patch("app.services.chat_session.rate_limit")
+@patch("app.services.chat_session.check_ai_limit")
+@patch("app.services.chat_session.generate_chat_response")
 async def test_start_chat_success(mock_generate, mock_ai_limit, mock_rate_limit, client, mock_user):
     """Test POST /api/v1/chat/start successfully starts a conversation."""
     from app.main import app
@@ -74,7 +74,7 @@ async def test_start_chat_success(mock_generate, mock_ai_limit, mock_rate_limit,
 
 
 @pytest.mark.asyncio
-@patch("app.routers.chat.generate_chat_response")
+@patch("app.services.chat_session.generate_chat_response")
 async def test_send_message_success(mock_generate, client, mock_user, mock_conversation, test_user_id):
     """Test POST /api/v1/chat/message sends a message and returns AI response."""
     from app.main import app
@@ -140,10 +140,10 @@ async def test_send_message_conversation_not_found(client, mock_user, test_user_
 
 
 @pytest.mark.asyncio
-@patch("app.routers.chat.REWARDS", MagicMock(conversation_complete=20))
-@patch("app.routers.chat.check_and_grant_achievements")
-@patch("app.routers.chat.track_ai_usage")
-@patch("app.routers.chat.generate_feedback_summary")
+@patch("app.services.chat_session.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
+@patch("app.services.chat_session.check_and_grant_achievements")
+@patch("app.services.chat_session.track_ai_usage")
+@patch("app.services.chat_session.generate_feedback_summary")
 async def test_end_chat_success(mock_feedback, mock_track, mock_achievements, client, mock_user, mock_conversation, test_user_id):
     """Test POST /api/v1/chat/end ends conversation and awards XP."""
     from app.main import app
@@ -231,24 +231,25 @@ async def test_end_chat_already_ended(client, mock_user, mock_conversation, test
 
 
 @pytest.mark.asyncio
-@patch("app.routers.chat.rate_limit")
-@patch("app.routers.chat.generate_tts")
+@patch("app.services.chat_voice.rate_limit")
+@patch("app.services.chat_voice.generate_tts")
 async def test_tts_success(mock_tts, mock_rate_limit, client, mock_user):
     """Test POST /api/v1/chat/tts returns audio bytes."""
     mock_rate_limit.return_value = MagicMock(success=True, remaining=10, reset=0)
-    mock_tts.return_value = b"\x00\x01\x02\x03"  # fake wav bytes
+    mock_tts.return_value = MagicMock(audio=b"\x00\x01\x02\x03", provider="gemini", model="test")
 
     response = await client.post(
         "/api/v1/chat/tts",
         json={"text": "こんにちは"},
     )
     assert response.status_code == 200
-    assert response.headers["content-type"] == "audio/wav"
+    assert response.headers["content-type"] == "audio/mpeg"
     assert response.content == b"\x00\x01\x02\x03"
+    mock_tts.assert_awaited_once_with("こんにちは", voice="Kore")
 
 
 @pytest.mark.asyncio
-@patch("app.routers.chat.transcribe_audio")
+@patch("app.services.chat_voice.transcribe_audio")
 async def test_transcribe_success(mock_transcribe, client, mock_user):
     """Test POST /api/v1/chat/voice/transcribe returns transcription."""
     mock_transcribe.return_value = "こんにちは"
@@ -272,3 +273,88 @@ async def test_transcribe_file_too_large(client, mock_user):
     )
     assert response.status_code == 400
     assert "4.5MB" in response.json()["error"]["message"]
+
+
+@pytest.mark.asyncio
+@patch("app.services.chat_voice.generate_live_token")
+@patch("app.services.chat_voice.check_ai_limit")
+@patch("app.services.chat_voice.rate_limit")
+async def test_live_token_success(mock_rate_limit, mock_ai_limit, mock_generate_token, client, mock_user):
+    """Test POST /api/v1/chat/live-token returns Live API token data."""
+    mock_rate_limit.return_value = MagicMock(success=True, remaining=10, reset=0)
+    mock_ai_limit.return_value = {"allowed": True}
+    mock_generate_token.return_value = {
+        "token": "test-token",
+        "wsUri": "wss://example.test/live",
+        "model": "models/test",
+    }
+
+    response = await client.post("/api/v1/chat/live-token", json={})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "token": "test-token",
+        "wsUri": "wss://example.test/live",
+        "model": "models/test",
+    }
+
+
+@pytest.mark.asyncio
+@patch("app.services.chat_voice.REWARDS", MagicMock(CONVERSATION_COMPLETE_XP=20))
+@patch("app.services.chat_voice.check_and_grant_achievements")
+@patch("app.services.chat_voice.track_ai_usage")
+@patch("app.services.chat_voice.generate_live_feedback")
+async def test_live_feedback_creates_voice_conversation(
+    mock_feedback,
+    mock_track,
+    mock_achievements,
+    client,
+    mock_user,
+):
+    """Test POST /api/v1/chat/live-feedback stores a voice conversation and awards XP."""
+    from app.main import app
+
+    mock_feedback.return_value = {"overallScore": 90, "summary": "좋아요"}
+    mock_track.return_value = None
+    mock_achievements.return_value = []
+
+    added_conversations = []
+
+    def capture_add(obj):
+        if isinstance(obj, Conversation):
+            obj.id = uuid.uuid4()
+            added_conversations.append(obj)
+
+    mock_count_result = MagicMock()
+    mock_count_result.scalar.return_value = 1
+
+    mock_session = AsyncMock()
+    mock_session.add = MagicMock(side_effect=capture_add)
+    mock_session.flush = AsyncMock()
+    mock_session.refresh = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=[MagicMock(), MagicMock(), mock_count_result])
+    mock_session.commit = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        "/api/v1/chat/live-feedback",
+        json={
+            "durationSeconds": 120,
+            "transcript": [
+                {"role": "user", "text": "こんにちは"},
+                {"role": "assistant", "text": "こんにちは！"},
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["feedbackSummary"] == {"overallScore": 90, "summary": "좋아요"}
+    assert data["xpEarned"] == 20
+    assert data["events"] == []
+    assert len(added_conversations) == 1
+    assert added_conversations[0].type == ConversationType.VOICE

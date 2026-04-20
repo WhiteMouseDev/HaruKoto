@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import Response
-from sqlalchemy import func, select, update
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.middleware.rate_limit import rate_limit
-from app.models import Conversation, ConversationScenario, DailyProgress, Notification, User
-from app.models.enums import ConversationType
+from app.models import User
 from app.schemas.chat import (
     ChatEndRequest,
     ChatEndResponse,
@@ -25,22 +20,14 @@ from app.schemas.chat import (
     LiveFeedbackRequest,
     LiveTokenRequest,
 )
-from app.schemas.chat import ChatMessage as ChatMessageSchema
-from app.services.ai import (
-    generate_chat_response,
-    generate_feedback_summary,
-    generate_live_feedback,
-    generate_live_token,
-    generate_tts,
-    transcribe_audio,
+from app.services.chat_session import ChatSessionServiceError, end_chat_session, send_chat_message, start_chat_session
+from app.services.chat_voice import (
+    ChatVoiceServiceError,
+    create_live_token,
+    submit_live_conversation_feedback,
+    synthesize_chat_tts,
+    transcribe_chat_voice,
 )
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
-from app.services.subscription import check_ai_limit, track_ai_usage
-from app.utils.constants import RATE_LIMITS, REWARDS
-from app.utils.date import get_now_kst, get_today_kst
-from app.utils.prompts import SYSTEM_PROMPTS, build_system_prompt
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/chat", tags=["chat"])
 
@@ -56,68 +43,10 @@ async def start_chat(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Rate limit + AI usage limit
-    limit_check = await check_ai_limit(db, str(user.id), "chat")
-    if not limit_check["allowed"]:
-        raise HTTPException(status_code=429, detail=limit_check["reason"])
-
-    rl = await rate_limit(f"chat:{user.id}", RATE_LIMITS.AI.max_requests, RATE_LIMITS.AI.window_seconds)
-    if not rl.success:
-        raise HTTPException(status_code=429, detail="요청이 너무 많습니다", headers={"Retry-After": str(int(rl.reset))})
-
-    # Load scenario if provided
-    scenario = None
-    if body.scenario_id:
-        result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == body.scenario_id))
-        scenario = result.scalar_one_or_none()
-        if not scenario:
-            raise HTTPException(status_code=404, detail="시나리오를 찾을 수 없습니다")
-
-    # Build system prompt
-    system_prompt = build_system_prompt(user.jlpt_level or "N5", scenario=scenario)
-
-    # Generate first AI message
-    logger.info(
-        "AI chat start",
-        extra={
-            "user_id": str(user.id),
-            "scenario_id": str(body.scenario_id),
-            "type": str(body.type),
-        },
-    )
-    ai_response = await generate_chat_response(system_prompt, [], SYSTEM_PROMPTS["first_message_prompt"])
-    logger.info(
-        "AI chat start response received",
-        extra={
-            "user_id": str(user.id),
-            "response_length": len(ai_response.get("messageJa", "")),
-        },
-    )
-
-    # Store conversation
-    initial_messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "assistant", "content": ai_response.get("messageJa", "")},
-    ]
-    conversation = Conversation(
-        user_id=user.id,
-        scenario_id=body.scenario_id,
-        character_id=body.character_id,
-        type=body.type or ConversationType.TEXT,
-        messages=initial_messages,
-        message_count=1,
-    )
-    db.add(conversation)
-    await db.flush()
-
-    return ChatStartResponse(
-        conversation_id=conversation.id,
-        first_message=ChatMessageSchema(
-            message_ja=ai_response.get("messageJa", ""),
-            message_ko=ai_response.get("messageKo", ""),
-            hint=ai_response.get("hint"),
-        ),
-    )
+    try:
+        return await start_chat_session(db, user, body)
+    except ChatSessionServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
 
 # ==========================================
@@ -131,59 +60,10 @@ async def send_message(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Load conversation
-    result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
-    conversation = result.scalar_one_or_none()
-    if not conversation:
-        raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다")
-    if conversation.ended_at:
-        raise HTTPException(status_code=400, detail="이미 종료된 대화입니다")
-
-    # Extract system prompt and history
-    messages = conversation.messages or []
-    system_prompt = ""
-    history: list[dict[str, str]] = []
-    for msg in messages:
-        if msg.get("role") == "system":
-            system_prompt = msg.get("content", "")
-        elif msg.get("role") in ("user", "assistant"):
-            history.append(msg)
-
-    # Generate AI response
-    logger.info(
-        "AI chat message",
-        extra={
-            "user_id": str(user.id),
-            "conversation_id": str(body.conversation_id),
-            "history_length": len(history),
-        },
-    )
-    ai_response = await generate_chat_response(system_prompt, history, body.message)
-    logger.info(
-        "AI chat message response",
-        extra={
-            "user_id": str(user.id),
-            "conversation_id": str(body.conversation_id),
-            "response_length": len(ai_response.get("messageJa", "")),
-        },
-    )
-
-    # Append messages atomically
-    new_messages = messages + [
-        {"role": "user", "content": body.message},
-        {"role": "assistant", "content": ai_response.get("messageJa", "")},
-    ]
-    conversation.messages = new_messages
-    conversation.message_count = len([m for m in new_messages if m.get("role") in ("user", "assistant")])
-    await db.flush()
-
-    return ChatMessageResponse(
-        message_ja=ai_response.get("messageJa", ""),
-        message_ko=ai_response.get("messageKo", ""),
-        feedback=ai_response.get("feedback"),
-        hint=ai_response.get("hint"),
-        new_vocabulary=ai_response.get("newVocabulary"),
-    )
+    try:
+        return await send_chat_message(db, user, body)
+    except ChatSessionServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
 
 # ==========================================
@@ -197,108 +77,10 @@ async def end_chat(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
-    conversation = result.scalar_one_or_none()
-    if not conversation:
-        raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다")
-    if conversation.ended_at:
-        return ChatEndResponse(success=True, feedback_summary=conversation.feedback_summary, xp_earned=0, events=[])
-
-    # Generate feedback summary
-    messages = [m for m in (conversation.messages or []) if m.get("role") in ("user", "assistant")]
-    logger.info(
-        "AI chat end - generating feedback",
-        extra={
-            "user_id": str(user.id),
-            "conversation_id": str(body.conversation_id),
-            "message_count": len(messages),
-        },
-    )
-    feedback = await generate_feedback_summary(messages)
-
-    # Update conversation
-    now = get_now_kst()
-    conversation.ended_at = now
-    conversation.feedback_summary = feedback
-
-    # Gamification — award XP
-    xp = REWARDS.CONVERSATION_COMPLETE_XP
-    logger.info("AI chat end - awarding XP", extra={"user_id": str(user.id), "xp": xp})
-    old_level = calculate_level(user.experience_points)["level"]
-
-    await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
-    await db.refresh(user)
-
-    new_level_info = calculate_level(user.experience_points)
-    new_level = new_level_info["level"]
-    if new_level != user.level:
-        user.level = new_level
-
-    # Streak
-    streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-    user.streak_count = streak["streak_count"]
-    user.longest_streak = streak["longest_streak"]
-    user.last_study_date = now
-
-    # Daily progress
-    today = get_today_kst()
-    duration = int((now - conversation.created_at).total_seconds()) if conversation.created_at else 0
-    chat_study_minutes = max(0, duration // 60)
-    await db.execute(
-        insert(DailyProgress)
-        .values(
-            user_id=user.id,
-            date=today,
-            xp_earned=xp,
-            quizzes_completed=0,
-            words_studied=0,
-            study_minutes=chat_study_minutes,
-            conversation_count=1,
-        )
-        .on_conflict_do_update(
-            index_elements=["user_id", "date"],
-            set_={
-                "xp_earned": DailyProgress.xp_earned + xp,
-                "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + chat_study_minutes,
-                "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
-            },
-        )
-    )
-
-    # Track AI usage
-    await track_ai_usage(db, str(user.id), "chat", duration)
-
-    # Achievements
-    conv_count = (
-        await db.execute(
-            select(func.count()).select_from(Conversation).where(Conversation.user_id == user.id, Conversation.ended_at.isnot(None))
-        )
-    ).scalar() or 0
-
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": new_level,
-            "old_level": old_level,
-            "streak_count": streak["streak_count"],
-            "conversation_count": conv_count,
-        },
-    )
-
-    # Create notifications for events
-    for event in events:
-        db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
-
-    await db.commit()
-
-    return ChatEndResponse(
-        success=True,
-        feedback_summary=feedback,
-        xp_earned=xp,
-        events=events,
-    )
+    try:
+        return await end_chat_session(db, user, body)
+    except ChatSessionServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
 
 # ==========================================
@@ -310,39 +92,31 @@ async def end_chat(
 async def text_to_speech(
     body: ChatTTSRequest,
     user: Annotated[User, Depends(get_current_user)],
-    db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    rl = await rate_limit(f"tts:{user.id}", RATE_LIMITS.AI.max_requests, RATE_LIMITS.AI.window_seconds)
-    if not rl.success:
-        raise HTTPException(status_code=429, detail="요청이 너무 많습니다")
+    try:
+        tts = await synthesize_chat_tts(user, body)
+    except ChatVoiceServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
-    wav_bytes = await generate_tts(body.text, voice=body.voice_name or "Kore")
-    return Response(content=wav_bytes, media_type="audio/wav")
+    return Response(content=tts.audio, media_type=tts.media_type)
 
 
 # ==========================================
 # POST /voice/transcribe — 음성 인식
 # ==========================================
 
-ALLOWED_AUDIO_TYPES = {"audio/webm", "audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/flac", "audio/m4a"}
-MAX_AUDIO_SIZE = 4_500_000  # 4.5MB
-
 
 @router.post("/voice/transcribe", status_code=200)
 async def transcribe_voice(
     file: UploadFile = File(...),
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    _user: User = Depends(get_current_user),
 ):
-    if file.content_type and file.content_type not in ALLOWED_AUDIO_TYPES:
-        raise HTTPException(status_code=400, detail=f"지원하지 않는 오디오 형식입니다: {file.content_type}")
-
     audio_bytes = await file.read()
-    if len(audio_bytes) > MAX_AUDIO_SIZE:
-        raise HTTPException(status_code=400, detail="파일 크기가 4.5MB를 초과합니다")
+    try:
+        text = await transcribe_chat_voice(audio_bytes, file.content_type)
+    except ChatVoiceServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
-    mime_type = file.content_type or "audio/webm"
-    text = await transcribe_audio(audio_bytes, mime_type)
     return {"transcription": text}
 
 
@@ -357,16 +131,10 @@ async def get_live_token_endpoint(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    rl = await rate_limit(f"live:{user.id}", RATE_LIMITS.LIVE_TOKEN.max_requests, RATE_LIMITS.LIVE_TOKEN.window_seconds)
-    if not rl.success:
-        raise HTTPException(status_code=429, detail="요청이 너무 많습니다")
-
-    limit_check = await check_ai_limit(db, str(user.id), "call")
-    if not limit_check["allowed"]:
-        raise HTTPException(status_code=429, detail=limit_check["reason"])
-
-    token_data = await generate_live_token()
-    return token_data
+    try:
+        return await create_live_token(db, user, body)
+    except ChatVoiceServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
 
 
 # ==========================================
@@ -380,140 +148,7 @@ async def submit_live_feedback(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    now = get_now_kst()
-    conversation = None
-
-    # Load existing conversation if provided
-    if body.conversation_id:
-        result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
-        conversation = result.scalar_one_or_none()
-
-    # Get transcript: from conversation messages or request body
-    if conversation and conversation.messages:
-        transcript = [
-            {"role": m.get("role", "user"), "text": m.get("content", "")} for m in conversation.messages if m.get("role") != "system"
-        ]
-    elif body.transcript:
-        transcript = body.transcript
-    else:
-        transcript = []
-
-    # Generate feedback (503 등 일시 오류 시 null 반환)
-    feedback = None
-    if transcript:
-        try:
-            feedback = await generate_live_feedback(transcript)
-        except Exception:
-            logger.exception("Live feedback generation failed")
-            # 피드백 실패해도 통화 기록은 저장
-
-    # Create conversation record if it doesn't exist (voice call without pre-existing conversation)
-    if not conversation:
-        conversation = Conversation(
-            user_id=user.id,
-            type=ConversationType.VOICE,
-            scenario_id=body.scenario_id,
-            character_id=body.character_id,
-            messages=[{"role": e.get("role", "user"), "content": e.get("text", "")} for e in transcript],
-        )
-        db.add(conversation)
-        await db.flush()
-
-    # Update conversation
-    conversation.ended_at = now
-    conversation.feedback_summary = feedback
-
-    # Gamification — DB 에러 시에도 피드백은 반환
-    xp = 0
-    events: list[dict] = []
-    new_level = user.level
     try:
-        xp = REWARDS.CONVERSATION_COMPLETE_XP
-        old_level = calculate_level(user.experience_points)["level"]
-
-        await db.execute(update(User).where(User.id == user.id).values(experience_points=User.experience_points + xp))
-        await db.refresh(user)
-
-        new_level = calculate_level(user.experience_points)["level"]
-        if new_level != user.level:
-            user.level = new_level
-
-        streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-        user.streak_count = streak["streak_count"]
-        user.longest_streak = streak["longest_streak"]
-        user.last_study_date = now
-
-        today = get_today_kst()
-        live_study_minutes = max(0, body.duration_seconds // 60)
-        await db.execute(
-            insert(DailyProgress)
-            .values(
-                user_id=user.id,
-                date=today,
-                xp_earned=xp,
-                quizzes_completed=0,
-                words_studied=0,
-                study_minutes=live_study_minutes,
-                conversation_count=1,
-            )
-            .on_conflict_do_update(
-                index_elements=["user_id", "date"],
-                set_={
-                    "xp_earned": DailyProgress.xp_earned + xp,
-                    "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + live_study_minutes,
-                    "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,
-                },
-            )
-        )
-
-        # Track voice usage
-        await track_ai_usage(db, str(user.id), "call", body.duration_seconds)
-
-        # Achievements
-        conv_count = (
-            await db.execute(
-                select(func.count()).select_from(Conversation).where(Conversation.user_id == user.id, Conversation.ended_at.isnot(None))
-            )
-        ).scalar() or 0
-
-        events = await check_and_grant_achievements(
-            db,
-            user.id,
-            {
-                "total_xp": user.experience_points,
-                "new_level": new_level,
-                "old_level": old_level,
-                "streak_count": streak["streak_count"],
-                "conversation_count": conv_count,
-            },
-        )
-
-        for event in events:
-            db.add(Notification(user_id=user.id, title=event["title"], body=event["body"], type="achievement"))
-    except Exception:
-        logger.exception("Live feedback gamification failed")
-        # gamification 실패 시 conversation 저장만이라도 보장
-        try:
-            await db.rollback()
-            # conversation + feedback만 재저장
-            if conversation not in db:
-                db.add(conversation)
-            conversation.ended_at = now
-            conversation.feedback_summary = feedback
-            await db.commit()
-        except Exception:
-            logger.exception("Live feedback conversation save also failed")
-            await db.rollback()
-    else:
-        try:
-            await db.commit()
-        except Exception:
-            logger.exception("Live feedback commit failed")
-            await db.rollback()
-
-    return {
-        "conversationId": str(conversation.id),
-        "feedbackSummary": feedback,
-        "xpEarned": xp,
-        "events": events,
-    }
+        return await submit_live_conversation_feedback(db, user, body)
+    except ChatVoiceServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
