@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
+import 'gemini_live_connection_runner.dart';
 import 'gemini_live_inbound_dispatcher.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_outbound_sender.dart';
@@ -44,6 +45,7 @@ class GeminiLiveService {
   final GeminiLivePromptBuilder _promptBuilder;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
@@ -79,6 +81,13 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
+    _connectionRunner = GeminiLiveConnectionRunner(
+      transport: _transport,
+      reconnectCoordinator: _reconnectCoordinator,
+      isActive: () => !_disposed && !_ended,
+      onMessage: _onMessage,
+      onReconnect: _attemptReconnect,
+    );
     _inboundDispatcher = GeminiLiveInboundDispatcher(
       messageHandler: _messageHandler,
       isActive: () => !_disposed && !_ended,
@@ -138,33 +147,12 @@ class GeminiLiveService {
   // ──────── Connection ────────
 
   Future<void> _connect({String? handle}) async {
-    // 토큰에 / 가 포함되어 있으므로 인코딩하지 않고 그대로 사용
-    final uri = Uri.parse('$wsUri?access_token=$token');
-    debugPrint(
-        '[GeminiLive] Connecting to: ${uri.scheme}://${uri.host}${uri.path}');
-    debugPrint(
-        '[GeminiLive] Token prefix: ${token.substring(0, token.length.clamp(0, 30))}...');
-    debugPrint('[GeminiLive] Model: $model');
-
-    final gen = _reconnectCoordinator.beginConnection();
-
-    await _transport.connect(
-      uri,
-      onMessage: _onMessage,
-      onError: (e) {
-        debugPrint('[GeminiLive] WebSocket error: $e');
-        // 현재 세대의 채널에서만 재연결
-        if (_reconnectCoordinator.isCurrentConnection(gen)) {
-          _attemptReconnect();
-        }
-      },
-      onDone: () {
-        debugPrint('[GeminiLive] WebSocket closed');
-        // 현재 세대의 채널만 null 처리 (새 소켓이 있으면 건드리지 않음)
-        if (_reconnectCoordinator.isCurrentConnection(gen)) {
-          if (!_disposed && !_ended) _attemptReconnect();
-        }
-      },
+    await _connectionRunner.connect(
+      GeminiLiveConnectionInput(
+        wsUri: wsUri,
+        token: token,
+        model: model,
+      ),
     );
 
     _sendSetup(handle: handle ?? _reconnectCoordinator.resumptionHandle);
