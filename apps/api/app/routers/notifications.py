@@ -31,7 +31,7 @@ async def get_notifications(
     limit: int = Query(default=20, le=50),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> NotificationsListResponse:
     result = await db.execute(
         select(Notification)
         .where(Notification.user_id == user.id)
@@ -53,7 +53,7 @@ async def mark_notifications_read(
     body: MarkReadRequest | None = None,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, bool]:
     if body and body.id:
         await db.execute(update(Notification).where(Notification.id == body.id, Notification.user_id == user.id).values(is_read=True))
     else:

@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import sentry_sdk
@@ -16,7 +17,7 @@ if settings.SENTRY_DSN and settings.SENTRY_DSN.startswith("https://"):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
     await engine.dispose()
 

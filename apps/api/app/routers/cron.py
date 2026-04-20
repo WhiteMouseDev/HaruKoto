@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select, text, update
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/api/v1/cron", tags=["cron"])
 
 
 @router.post("/subscription-renewal", status_code=200)
-async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_db)):
+async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_db)) -> dict[str, int]:
     # Verify cron secret
     auth = request.headers.get("authorization", "")
     if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":
@@ -48,13 +49,13 @@ async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_
 
 
 @router.post("/ensure-partitions", status_code=200)
-async def ensure_review_event_partitions(request: Request, db: AsyncSession = Depends(get_db)):
+async def ensure_review_event_partitions(request: Request, db: AsyncSession = Depends(get_db)) -> dict[str, list[str]]:
     """Ensure review_events partitions exist for the next 3 months."""
     auth = request.headers.get("authorization", "")
     if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    created = []
+    created: list[str] = []
     now = datetime.utcnow()
     for offset in range(4):  # current month + next 3
         # Calendar-accurate month arithmetic
@@ -100,7 +101,7 @@ async def fsrs_shadow_report(
     request: Request,
     db: AsyncSession = Depends(get_db),
     user_id: str | None = None,
-):
+) -> dict[str, Any]:
     """Generate FSRS shadow report for a user (admin/cron only)."""
     auth = request.headers.get("authorization", "")
     if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.services.subscription import get_payment_history
+from app.services.subscription import PaymentHistoryResult, get_payment_history
 
 router = APIRouter(prefix="/api/v1/payments", tags=["payments"])
 
@@ -17,5 +17,5 @@ async def list_payments(
     page_size: int = Query(default=10, le=50),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> PaymentHistoryResult:
     return await get_payment_history(db, str(user.id), page, page_size)

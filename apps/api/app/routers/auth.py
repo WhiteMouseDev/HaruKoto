@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 import httpx
@@ -33,7 +33,7 @@ class KakaoTokenExchangeRequest(BaseModel):
 
 
 @router.post("/kakao/exchange", status_code=200)
-async def kakao_token_exchange(body: KakaoTokenExchangeRequest):
+async def kakao_token_exchange(body: KakaoTokenExchangeRequest) -> dict[str, str]:
     """카카오 인가 코드를 id_token으로 교환 (모바일 네이티브 SDK용)."""
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -69,7 +69,7 @@ async def kakao_token_exchange(body: KakaoTokenExchangeRequest):
 async def ensure_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, dict[str, Any]]:
     """Supabase JWT에서 유저 ID/email 추출, DB에 없으면 자동 생성."""
     try:
         payload = _decode_token(credentials.credentials)
@@ -113,7 +113,7 @@ async def onboarding(
     body: OnboardingRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> OnboardingResponse:
     user.nickname = body.nickname
     user.jlpt_level = body.jlpt_level
     user.daily_goal = body.daily_goal

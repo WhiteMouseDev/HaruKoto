@@ -18,7 +18,7 @@ async def subscribe_push(
     body: PushSubscribeRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, bool]:
     stmt = pg_insert(PushSubscription).values(
         user_id=user.id,
         endpoint=body.endpoint,

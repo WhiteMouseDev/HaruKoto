@@ -31,7 +31,7 @@ async def list_wordbook(
     source: str | None = None,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> WordbookListResponse:
     query = select(WordbookEntry).where(WordbookEntry.user_id == user.id)
     count_query = select(func.count(WordbookEntry.id)).where(WordbookEntry.user_id == user.id)
 
@@ -70,7 +70,7 @@ async def create_wordbook_entry(
     body: WordbookCreateRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> WordbookEntryResponse:
     stmt = pg_insert(WordbookEntry).values(
         user_id=user.id,
         word=body.word,
@@ -96,7 +96,7 @@ async def get_wordbook_entry(
     entry_id: uuid.UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> WordbookEntryResponse:
     entry = await db.get(WordbookEntry, entry_id)
     if not entry or entry.user_id != user.id:
         raise HTTPException(status_code=404, detail="단어장 항목을 찾을 수 없습니다")
@@ -109,7 +109,7 @@ async def update_wordbook_entry(
     body: WordbookUpdateRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> WordbookEntryResponse:
     entry = await db.get(WordbookEntry, entry_id)
     if not entry or entry.user_id != user.id:
         raise HTTPException(status_code=404, detail="단어장 항목을 찾을 수 없습니다")
@@ -127,7 +127,7 @@ async def delete_wordbook_entry(
     entry_id: uuid.UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, bool]:
     entry = await db.get(WordbookEntry, entry_id)
     if not entry or entry.user_id != user.id:
         raise HTTPException(status_code=404, detail="단어장 항목을 찾을 수 없습니다")
