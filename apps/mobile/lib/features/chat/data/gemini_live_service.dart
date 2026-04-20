@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
-import 'package:record/record.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_protocol.dart';
 
 /// Transcript entry for a single turn.
@@ -44,8 +42,7 @@ class GeminiLiveService {
 
   WebSocketChannel? _channel;
   int _channelGeneration = 0; // 채널 세대 추적 (이전 소켓 콜백 구분)
-  final AudioRecorder _recorder = AudioRecorder();
-  StreamSubscription<Uint8List>? _recorderSub;
+  final GeminiLiveAudioAdapter _audioAdapter;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
   bool _reconnecting = false; // 재연결 중복 방지
@@ -72,7 +69,8 @@ class GeminiLiveService {
     this.userNickname = '학습자',
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
-  });
+    GeminiLiveAudioAdapter? audioAdapter,
+  }) : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter();
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
@@ -115,11 +113,9 @@ class GeminiLiveService {
   Future<void> dispose() async {
     _disposed = true;
     _ended = true;
-    await _stopRecording();
+    await _audioAdapter.dispose();
     unawaited(_channel?.sink.close());
     _channel = null;
-    unawaited(_recorder.dispose());
-    unawaited(FlutterPcmSound.release());
   }
 
   // ──────── Connection ────────
@@ -287,72 +283,36 @@ class GeminiLiveService {
   Future<void> _startRecording() async {
     if (_disposed || _ended) return;
 
-    // 기존 녹음이 진행 중이면 먼저 정리
-    await _stopRecording();
-
-    try {
-      if (!await _recorder.hasPermission()) {
-        onError?.call('마이크 권한이 필요합니다');
-        return;
-      }
-    } catch (e) {
-      debugPrint('[GeminiLive] Microphone permission check failed: $e');
-      // 시뮬레이터 등에서 마이크 접근 불가 시 녹음 없이 계속
-      return;
-    }
-
-    // Initialize PCM player for output
-    try {
-      await FlutterPcmSound.setup(sampleRate: 24000, channelCount: 1);
-      unawaited(FlutterPcmSound.setFeedThreshold(8000));
-
-      final stream = await _recorder.startStream(
-        const RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
-          sampleRate: 16000,
-          numChannels: 1,
-          autoGain: true,
-          echoCancel: true,
-          noiseSuppress: true,
-        ),
-      );
-
-      _recorderSub = stream.listen((data) {
+    final result = await _audioAdapter.startRecording(
+      onData: (data) {
         if (_disposed || _channel == null || isMuted) return;
         _safeSend(GeminiLiveProtocol.encodeRealtimeAudio(data));
-      });
-    } catch (e) {
-      debugPrint('[GeminiLive] Recording start failed: $e');
-      onError?.call('마이크를 사용할 수 없습니다. 기기를 확인해주세요.');
-      _setState(GeminiLiveState.error);
+      },
+    );
+
+    switch (result) {
+      case GeminiLiveAudioStartResult.started:
+        return;
+      case GeminiLiveAudioStartResult.permissionDenied:
+        onError?.call('마이크 권한이 필요합니다');
+        return;
+      case GeminiLiveAudioStartResult.permissionCheckFailed:
+        // 시뮬레이터 등에서 마이크 접근 불가 시 녹음 없이 계속
+        return;
+      case GeminiLiveAudioStartResult.unavailable:
+        onError?.call('마이크를 사용할 수 없습니다. 기기를 확인해주세요.');
+        _setState(GeminiLiveState.error);
     }
   }
 
   Future<void> _stopRecording() async {
-    await _recorderSub?.cancel();
-    _recorderSub = null;
-    if (await _recorder.isRecording()) {
-      await _recorder.stop();
-    }
+    await _audioAdapter.stopRecording();
   }
 
   // ──────── Audio playback ────────
 
   void _playAudioChunk(String base64Data) {
-    try {
-      final bytes = base64Decode(base64Data);
-      // Convert raw PCM bytes to Int16 samples for flutter_pcm_sound
-      final byteData = ByteData.sublistView(Uint8List.fromList(bytes));
-      final sampleCount = byteData.lengthInBytes ~/ 2;
-      final samples = List<int>.generate(
-        sampleCount,
-        (i) => byteData.getInt16(i * 2, Endian.little),
-      );
-      final buffer = PcmArrayInt16.fromList(samples);
-      FlutterPcmSound.feed(buffer);
-    } catch (e) {
-      debugPrint('[GeminiLive] Audio playback error: $e');
-    }
+    _audioAdapter.playBase64Pcm(base64Data);
   }
 
   // ──────── Transcripts ────────
