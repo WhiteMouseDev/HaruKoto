@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Any
 
 from google.genai import types
 
@@ -12,15 +13,21 @@ from app.utils.prompts import SYSTEM_PROMPTS
 logger = logging.getLogger(__name__)
 
 
+def _require_response_text(text: str | None, context: str) -> str:
+    if text is None:
+        raise RuntimeError(f"{context} returned no text")
+    return text
+
+
 async def generate_chat_response(
     system_prompt: str,
     messages: list[dict[str, str]],
     user_message: str,
-) -> dict:
+) -> dict[str, Any]:
     """Generate an AI chat response."""
     client = ensure_google_client()
 
-    history: list[types.Content] = []
+    history: list[types.Content | types.ContentDict] = []
     for message in messages:
         role = "user" if message.get("role") == "user" else "model"
         history.append(types.Content(role=role, parts=[types.Part.from_text(text=message["content"])]))
@@ -32,10 +39,10 @@ async def generate_chat_response(
     )
     response = await chat.send_message(user_message)
 
-    return parse_json_response(response.text)
+    return parse_json_response(_require_response_text(response.text, "Chat response"))
 
 
-async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict:
+async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict[str, Any]:
     """Generate a structured evaluation of a completed conversation."""
     client = ensure_google_client()
 
@@ -48,7 +55,7 @@ async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict:
         ),
     )
 
-    return parse_json_response(response.text)
+    return parse_json_response(_require_response_text(response.text, "Feedback summary"))
 
 
 async def transcribe_audio(audio_bytes: bytes, mime_type: str) -> str:
@@ -62,13 +69,13 @@ async def transcribe_audio(audio_bytes: bytes, mime_type: str) -> str:
             types.Part.from_bytes(data=audio_bytes, mime_type=mime_type),
         ],
     )
-    return response.text.strip()
+    return _require_response_text(response.text, "Transcription").strip()
 
 
 async def generate_live_feedback(
     transcript: list[dict[str, str]],
     scenario_info: str = "",
-) -> dict:
+) -> dict[str, Any]:
     """Generate structured feedback from a voice conversation transcript."""
     client = ensure_google_client()
 
@@ -87,7 +94,7 @@ async def generate_live_feedback(
                     system_instruction=str(SYSTEM_PROMPTS["live_feedback"]),
                 ),
             )
-            return parse_json_response(response.text)
+            return parse_json_response(_require_response_text(response.text, "Live feedback"))
         except Exception as exc:
             last_error = exc
             logger.warning("Live feedback attempt %d/%d failed: %s", attempt + 1, 3, exc)

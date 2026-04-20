@@ -48,7 +48,7 @@ async def kana_tts(
     body: KanaTTSRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, str]:
     rl = await rate_limit(f"tts:{user.id}", RATE_LIMITS.AI.max_requests, RATE_LIMITS.AI.window_seconds)
     if not rl.success:
         raise HTTPException(status_code=429, detail="요청이 너무 많습니다")
@@ -104,7 +104,7 @@ async def kana_tts(
 async def _upload_to_gcs(gcs_path: str, mp3_bytes: bytes) -> str:
     """Upload MP3 to Google Cloud Storage and return CDN URL."""
     try:
-        from google.cloud import storage
+        from google.cloud import storage  # type: ignore[import-untyped]
 
         client = storage.Client()
         bucket = client.bucket(settings.GCS_BUCKET_NAME)

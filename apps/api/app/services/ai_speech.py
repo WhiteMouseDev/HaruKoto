@@ -5,7 +5,7 @@ import logging
 import struct
 from dataclasses import dataclass
 
-import lameenc
+import lameenc  # type: ignore[import-not-found]
 from google.genai import types
 
 from app.config import settings
@@ -110,7 +110,11 @@ async def _generate_tts_gemini(text: str, voice: str = "Kore", _max_retries: int
             logger.warning("TTS attempt %d/%d: no inline_data for text=%r", attempt + 1, _max_retries, text)
             continue
 
-        pcm_data: bytes = part.inline_data.data
+        pcm_data = part.inline_data.data
+        if pcm_data is None:
+            last_error = RuntimeError("TTS generation failed: empty audio data in response")
+            logger.warning("TTS attempt %d/%d: empty inline_data for text=%r", attempt + 1, _max_retries, text)
+            continue
         return _pcm_to_mp3(pcm_data, sample_rate=24000, channels=1, bitrate=128)
 
     logger.error("TTS failed after %d attempts for text=%r", _max_retries, text)

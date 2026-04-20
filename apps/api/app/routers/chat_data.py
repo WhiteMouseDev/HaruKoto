@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
@@ -26,7 +27,7 @@ async def get_scenarios(
     category: str | None = Query(default=None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> list[dict[str, Any]]:
     query = select(ConversationScenario).where(ConversationScenario.is_active.is_(True))
     if category:
         query = query.where(ConversationScenario.category == category)
@@ -58,7 +59,7 @@ async def get_history(
     limit: int = Query(default=20, le=30),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, Any]:
     query = (
         select(Conversation)
         .options(selectinload(Conversation.scenario), selectinload(Conversation.character))
@@ -78,7 +79,7 @@ async def get_history(
     if has_more:
         conversations = conversations[:limit]
 
-    history = []
+    history: list[dict[str, Any]] = []
     for c in conversations:
         scenario = c.scenario if c.scenario_id else None
         character = c.character if c.character_id else None
@@ -121,7 +122,7 @@ async def get_characters(
     character_id: str | None = Query(default=None, alias="id"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, Any]:
     # Single character detail
     if character_id:
         char = await db.get(AiCharacter, uuid.UUID(character_id))
@@ -191,7 +192,7 @@ async def get_characters(
 async def get_character_stats(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, dict[str, int]]:
     result = await db.execute(
         select(Conversation.character_id, func.count(Conversation.id))
         .where(Conversation.user_id == user.id, Conversation.character_id.isnot(None))
@@ -205,18 +206,21 @@ async def get_character_stats(
 async def get_favorite_characters(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, list[str]]:
     result = await db.execute(select(UserFavoriteCharacter.character_id).where(UserFavoriteCharacter.user_id == user.id))
     return {"favoriteIds": [str(cid) for cid in result.scalars().all()]}
 
 
 @router.post("/characters/favorites", status_code=200)
 async def toggle_favorite(
-    body: dict,
+    body: dict[str, Any],
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
-    character_id = uuid.UUID(body["characterId"])
+) -> dict[str, bool]:
+    raw_character_id = body.get("characterId")
+    if not isinstance(raw_character_id, str):
+        raise HTTPException(status_code=400, detail="characterId가 필요합니다")
+    character_id = uuid.UUID(raw_character_id)
     existing = await db.execute(
         select(UserFavoriteCharacter).where(
             UserFavoriteCharacter.user_id == user.id,
@@ -240,7 +244,7 @@ async def get_conversation(
     conversation_id: uuid.UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, Any]:
     conv = await db.get(Conversation, conversation_id)
     if not conv or conv.user_id != user.id:
         raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다")
@@ -261,7 +265,7 @@ async def delete_conversation(
     conversation_id: uuid.UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, bool]:
     conv = await db.get(Conversation, conversation_id)
     if not conv or conv.user_id != user.id:
         raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다")
