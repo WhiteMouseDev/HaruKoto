@@ -88,6 +88,22 @@ HaruKoto is a monorepo for a Japanese learning product for Korean speakers.
 - `apps/mobile/**`: follow the local `AGENTS.md` for Flutter-specific build and validation rules.
 - `packages/**`: follow the local `AGENTS.md` for shared-library constraints.
 
+## Domain-Isolated Sub-agents
+
+Four sub-agents in `.claude/agents/` enforce domain boundaries. Non-trivial code changes should route through the matching agent rather than editing cross-domain files in one pass.
+
+| Agent | Owns (WRITE) | Must not touch |
+|-------|-------------|----------------|
+| `web-agent` | `apps/web`, `apps/admin`, `apps/landing` | `apps/api`, `apps/mobile`, `packages/*` |
+| `backend-agent` | `apps/api` (incl. Alembic) | frontend apps, mobile, `packages/*` |
+| `mobile-agent` | `apps/mobile` | all other apps, `packages/*` |
+| `shared-packages-agent` | `packages/*` | any `apps/*`, `apps/api/alembic` |
+
+Escalation rules:
+- API contract changes: `backend-agent` publishes → `web-agent` / `mobile-agent` consume.
+- DDL changes: `backend-agent` owns Alembic → `shared-packages-agent` mirrors via `pnpm db:sync`.
+- Shared type breaking change: `shared-packages-agent` flags → orchestrator dispatches consumers in the same wave.
+
 ## Existing Team Context
 
 `CLAUDE.md`, `.claude/rules/*.md`, and `.claude/settings.json` contain prior team guidance. Keep Codex instructions consistent with those documents when extending this setup.
