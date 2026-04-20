@@ -7,8 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../my/providers/my_provider.dart';
 import '../data/gemini_live_service.dart';
+import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
 
+export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
 
 enum VoiceCallStatus {
@@ -17,22 +19,6 @@ enum VoiceCallStatus {
   ending,
   ended,
   error,
-}
-
-class VoiceCallAnalysisRequest {
-  const VoiceCallAnalysisRequest({
-    required this.transcript,
-    required this.durationSeconds,
-    this.characterId,
-    this.characterName,
-    this.scenarioId,
-  });
-
-  final List<Map<String, String>> transcript;
-  final int durationSeconds;
-  final String? characterId;
-  final String? characterName;
-  final String? scenarioId;
 }
 
 class VoiceCallEndResult {
@@ -250,24 +236,18 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
 
     await _service?.end();
 
-    final autoAnalysis =
-        ref.read(userPreferencesProvider).callSettings.autoAnalysis;
-    if (request == null ||
-        !autoAnalysis ||
-        duration < 15 ||
-        transcript.isEmpty) {
-      return const VoiceCallEndResult();
-    }
+    final analysisRequest =
+        ref.read(voiceCallAnalysisRequestFactoryProvider).build(
+              VoiceCallAnalysisRequestInput(
+                request: request,
+                transcript: transcript,
+                durationSeconds: duration,
+                autoAnalysis:
+                    ref.read(userPreferencesProvider).callSettings.autoAnalysis,
+              ),
+            );
 
-    return VoiceCallEndResult(
-      analysisRequest: VoiceCallAnalysisRequest(
-        transcript: transcript.map((entry) => entry.toJson()).toList(),
-        durationSeconds: duration,
-        characterId: request.characterId,
-        characterName: request.characterName,
-        scenarioId: request.scenarioId,
-      ),
-    );
+    return VoiceCallEndResult(analysisRequest: analysisRequest);
   }
 
   void _bindService(GeminiLiveService service, int generation) {
