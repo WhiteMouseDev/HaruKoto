@@ -53,7 +53,7 @@ async def get_chapters(
     jlpt_level: str = Query(default="N5", alias="jlptLevel"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> ChapterListResponse:
     """챕터 목록 + 각 레슨의 유저 진도를 반환한다."""
     chapters = await get_chapters_data(
         db,
@@ -100,7 +100,7 @@ async def get_review_summary(
     jlpt_level: Annotated[str, Query(alias="jlptLevel")] = "N5",
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> ReviewSummaryResponse:
     """SRS 복습 요약: due 카드 수 + 새 카드 수를 반환한다."""
     summary = await get_review_summary_data(
         db,
@@ -125,7 +125,7 @@ async def get_lesson_detail(
     lesson_id: UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> LessonDetailResponse:
     """레슨 상세: 대화문 + 문제 (정답은 제거하여 클라이언트에 전달)."""
     lesson = await get_lesson_detail_data(
         db,
@@ -186,7 +186,7 @@ async def start_lesson(
     lesson_id: UUID,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> LessonProgressResponse:
     """레슨 시작: 진도를 IN_PROGRESS로 업데이트한다."""
     try:
         progress = await start_lesson_progress(
@@ -217,7 +217,7 @@ async def submit_lesson(
     body: LessonSubmitRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> LessonSubmitResponse:
     """퀴즈 결과 제출: 채점 → SRS 처리 → 진도 업데이트."""
     try:
         result = await submit_lesson_attempt(

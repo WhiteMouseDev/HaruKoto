@@ -41,7 +41,7 @@ async def get_learned_words(
     filter_by: str = Query(default="ALL", alias="filter"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> LearnedWordsResponse:
     result = await get_learned_words_data(
         db,
         user,
@@ -90,7 +90,7 @@ async def get_study_wrong_answers(
     level: str | None = Query(default=None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> StudyWrongAnswersResponse:
     result = await get_study_wrong_answers_data(
         db,
         user,
@@ -135,7 +135,7 @@ async def get_stages(
     jlpt_level: str | None = Query(default=None, alias="jlptLevel"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> list[StudyStageResponse]:
     """카테고리별 스테이지 목록과 유저 진행 상황 조회."""
     stages = await get_stages_data(
         db,
@@ -175,7 +175,7 @@ async def update_daily_goal(
     body: DailyGoalRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> DailyGoalResponse:
     """3-12: Update user's daily goal."""
     if body.daily_goal < 5 or body.daily_goal > 50:
         raise HTTPException(
@@ -195,7 +195,7 @@ async def get_capabilities(
     jlpt_level: str | None = Query(default=None, alias="jlptLevel"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> StudyCapabilitiesResponse:
     """레벨별 기능 가용성 매트릭스. 모든 진입/가드 화면의 단일 소스."""
     capabilities = await get_study_capabilities_data(
         db,
