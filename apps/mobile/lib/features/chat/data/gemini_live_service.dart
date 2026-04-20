@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_protocol.dart';
+import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_transport.dart';
 
 /// Transcript entry for a single turn.
@@ -40,23 +41,17 @@ class GeminiLiveService {
   OnTranscriptEntry? onTranscriptEntry;
   OnError? onError;
 
-  int _channelGeneration = 0; // 채널 세대 추적 (이전 소켓 콜백 구분)
   final GeminiLiveAudioAdapter _audioAdapter;
+  final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveTransport _transport;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
-  bool _reconnecting = false; // 재연결 중복 방지
   bool isMuted = false;
 
   // Transcript accumulation
   final List<TranscriptEntry> _transcript = [];
   final StringBuffer _currentUserText = StringBuffer();
   final StringBuffer _currentAiText = StringBuffer();
-
-  // Session resumption
-  String? _resumptionHandle;
-  int _reconnectAttempts = 0;
-  static const _maxReconnectAttempts = 3;
 
   GeminiLiveService({
     required this.wsUri,
@@ -70,8 +65,11 @@ class GeminiLiveService {
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
     GeminiLiveAudioAdapter? audioAdapter,
+    GeminiLiveReconnectCoordinator? reconnectCoordinator,
     GeminiLiveTransport? transport,
   })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
+        _reconnectCoordinator =
+            reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
         _transport = transport ?? DefaultGeminiLiveTransport();
 
   List<TranscriptEntry> get transcript {
@@ -89,7 +87,7 @@ class GeminiLiveService {
     }
 
     _ended = false;
-    _reconnecting = false;
+    _reconnectCoordinator.resetForStart();
     _setState(GeminiLiveState.connecting);
     try {
       await _connect();
@@ -129,8 +127,7 @@ class GeminiLiveService {
         '[GeminiLive] Token prefix: ${token.substring(0, token.length.clamp(0, 30))}...');
     debugPrint('[GeminiLive] Model: $model');
 
-    _channelGeneration++;
-    final gen = _channelGeneration;
+    final gen = _reconnectCoordinator.beginConnection();
 
     await _transport.connect(
       uri,
@@ -138,18 +135,20 @@ class GeminiLiveService {
       onError: (e) {
         debugPrint('[GeminiLive] WebSocket error: $e');
         // 현재 세대의 채널에서만 재연결
-        if (gen == _channelGeneration) _attemptReconnect();
+        if (_reconnectCoordinator.isCurrentConnection(gen)) {
+          _attemptReconnect();
+        }
       },
       onDone: () {
         debugPrint('[GeminiLive] WebSocket closed');
         // 현재 세대의 채널만 null 처리 (새 소켓이 있으면 건드리지 않음)
-        if (gen == _channelGeneration) {
+        if (_reconnectCoordinator.isCurrentConnection(gen)) {
           if (!_disposed && !_ended) _attemptReconnect();
         }
       },
     );
 
-    _sendSetup(handle: handle ?? _resumptionHandle);
+    _sendSetup(handle: handle ?? _reconnectCoordinator.resumptionHandle);
   }
 
   void _sendSetup({String? handle}) {
@@ -190,8 +189,7 @@ class GeminiLiveService {
 
     // Setup complete → start mic + send greeting
     if (msg.containsKey('setupComplete')) {
-      _reconnectAttempts = 0;
-      _reconnecting = false; // 연결 완료 시점에 해제
+      _reconnectCoordinator.markConnected();
       _setState(GeminiLiveState.connected);
       _sendGreeting();
       _startRecording();
@@ -201,7 +199,9 @@ class GeminiLiveService {
     // Session resumption handle
     if (msg.containsKey('sessionResumptionUpdate')) {
       final update = msg['sessionResumptionUpdate'] as Map<String, dynamic>?;
-      _resumptionHandle = update?['newHandle'] as String?;
+      _reconnectCoordinator.updateResumptionHandle(
+        update?['newHandle'] as String?,
+      );
       return;
     }
 
@@ -344,31 +344,36 @@ class GeminiLiveService {
   // ──────── Reconnection ────────
 
   void _attemptReconnect() {
-    if (_disposed || _ended || _reconnecting) return;
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
-      onError?.call('연결이 끊어졌습니다');
-      _setState(GeminiLiveState.error);
-      return;
+    if (_disposed || _ended) return;
+
+    final decision = _reconnectCoordinator.requestReconnect();
+    switch (decision.status) {
+      case GeminiLiveReconnectDecisionStatus.alreadyInProgress:
+        return;
+      case GeminiLiveReconnectDecisionStatus.exhausted:
+        onError?.call('연결이 끊어졌습니다');
+        _setState(GeminiLiveState.error);
+        return;
+      case GeminiLiveReconnectDecisionStatus.scheduled:
+        break;
     }
 
-    _reconnecting = true;
-    _reconnectAttempts++;
-    final delay =
-        Duration(milliseconds: 1000 * (1 << (_reconnectAttempts - 1)));
+    final delay = decision.delay!;
+    final attempt = decision.attempt!;
     debugPrint(
-        '[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $_reconnectAttempts)');
+        '[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $attempt)');
 
     Future<void>.delayed(delay, () async {
       if (_disposed || _ended) {
-        _reconnecting = false;
+        _reconnectCoordinator.markReconnectIdle();
         return;
       }
       try {
-        await _connect(handle: _resumptionHandle);
+        await _connect(handle: _reconnectCoordinator.resumptionHandle);
         // _reconnecting은 setupComplete 이벤트에서 해제됨
       } catch (e) {
         debugPrint('[GeminiLive] Reconnect failed: $e');
-        _reconnecting = false;
+        _reconnectCoordinator.markReconnectIdle();
         // 연결 실패 시 다음 재시도
         if (!_disposed && !_ended) _attemptReconnect();
       }
