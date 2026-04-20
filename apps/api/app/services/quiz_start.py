@@ -19,9 +19,10 @@ from app.models import (
     Vocabulary,
 )
 from app.models.user import User
-from app.schemas.quiz import MatchingPair, QuizOption, QuizStartRequest, SmartStartRequest
+from app.schemas.quiz import MatchingPair, QuizStartRequest, SmartStartRequest
 from app.services.distractor import generate_distractors
 from app.services.quiz_policy import calculate_smart_distribution
+from app.services.quiz_question_builder import build_grammar_question, build_options, build_vocab_question
 from app.services.quiz_session import (
     auto_complete_sessions,
     build_session_questions_data,
@@ -44,41 +45,6 @@ class QuizStartResult:
     session: QuizSession
     questions: list[dict[str, Any]]
     matching_pairs: list[MatchingPair] | None = None
-
-
-def _build_options(correct_text: str, wrong_texts: list[str]) -> tuple[list[dict[str, str]], str]:
-    correct_id = str(uuid.uuid4())
-    options = [QuizOption(id=correct_id, text=correct_text).model_dump()]
-    for wrong_text in wrong_texts:
-        options.append(QuizOption(id=str(uuid.uuid4()), text=wrong_text).model_dump())
-    random.shuffle(options)
-    return options, correct_id
-
-
-def _build_vocab_question(vocab: Vocabulary, quiz_type: str, options: list[dict[str, str]], correct_id: str) -> dict[str, Any]:
-    return {
-        "id": str(vocab.id),
-        "type": quiz_type,
-        "question": vocab.word,
-        "reading": vocab.reading,
-        "questionSubText": vocab.reading,
-        "options": options,
-        "correctOptionId": correct_id,
-        "word": vocab.word,
-        "meaningKo": vocab.meaning_ko,
-    }
-
-
-def _build_grammar_question(grammar: Grammar, quiz_type: str, options: list[dict[str, str]], correct_id: str) -> dict[str, Any]:
-    return {
-        "id": str(grammar.id),
-        "type": quiz_type,
-        "question": grammar.pattern,
-        "options": options,
-        "correctOptionId": correct_id,
-        "pattern": grammar.pattern,
-        "meaningKo": grammar.meaning_ko,
-    }
 
 
 async def _create_quiz_session(
@@ -201,8 +167,8 @@ async def start_quiz_session(
 
             for vocab in review_items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko][: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                options, correct_id = _build_options(vocab.meaning_ko, wrong_texts)
-                questions.append(_build_vocab_question(vocab, quiz_type, options, correct_id))
+                options, correct_id = build_options(vocab.meaning_ko, wrong_texts)
+                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
         else:
             query = (
                 select(Grammar)
@@ -223,8 +189,8 @@ async def start_quiz_session(
             all_meanings = list(pool_result.scalars().all())
             for grammar in items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko][: QUIZ_CONFIG.WRONG_OPTIONS_COUNT]
-                options, correct_id = _build_options(grammar.meaning_ko, wrong_texts)
-                questions.append(_build_grammar_question(grammar, quiz_type, options, correct_id))
+                options, correct_id = build_options(grammar.meaning_ko, wrong_texts)
+                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
     else:
         if stage_content_ids and quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
             result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(stage_content_ids)).order_by(func.random()).limit(count))
@@ -236,8 +202,8 @@ async def start_quiz_session(
             for vocab in items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko]
                 random.shuffle(wrong_texts)
-                options, correct_id = _build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(_build_vocab_question(vocab, quiz_type, options, correct_id))
+                options, correct_id = build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
+                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
         elif stage_content_ids and quiz_type == "GRAMMAR":
             result = await db.execute(select(Grammar).where(Grammar.id.in_(stage_content_ids)).order_by(func.random()).limit(count))
             items = result.scalars().all()
@@ -248,8 +214,8 @@ async def start_quiz_session(
             for grammar in items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
                 random.shuffle(wrong_texts)
-                options, correct_id = _build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(_build_grammar_question(grammar, quiz_type, options, correct_id))
+                options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
+                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
         elif quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
             result = await db.execute(select(Vocabulary).where(Vocabulary.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
             items = result.scalars().all()
@@ -260,8 +226,8 @@ async def start_quiz_session(
             for vocab in items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != vocab.meaning_ko]
                 random.shuffle(wrong_texts)
-                options, correct_id = _build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(_build_vocab_question(vocab, quiz_type, options, correct_id))
+                options, correct_id = build_options(vocab.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
+                questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
         elif quiz_type == "GRAMMAR":
             result = await db.execute(select(Grammar).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(count))
             items = result.scalars().all()
@@ -272,8 +238,8 @@ async def start_quiz_session(
             for grammar in items:
                 wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
                 random.shuffle(wrong_texts)
-                options, correct_id = _build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-                questions.append(_build_grammar_question(grammar, quiz_type, options, correct_id))
+                options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
+                questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
 
     session = await _create_quiz_session(
         db,
@@ -397,7 +363,7 @@ async def start_smart_quiz_session(
                         if len(options) - 1 >= QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
                             break
             random.shuffle(options)
-            questions.append(_build_vocab_question(vocab, quiz_type, options, correct_id))
+            questions.append(build_vocab_question(vocab, quiz_type, options, correct_id))
     else:
         if distribution["review"] > 0:
             review_result = await db.execute(
@@ -462,8 +428,8 @@ async def start_smart_quiz_session(
 
             wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
             random.shuffle(wrong_texts)
-            options, correct_id = _build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-            questions.append(_build_grammar_question(grammar, quiz_type, options, correct_id))
+            options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
+            questions.append(build_grammar_question(grammar, quiz_type, options, correct_id))
 
     random.shuffle(questions)
 
