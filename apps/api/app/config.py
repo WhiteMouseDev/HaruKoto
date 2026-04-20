@@ -66,4 +66,4 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
 
-settings = Settings()  # type: ignore[call-arg]
+settings = Settings()

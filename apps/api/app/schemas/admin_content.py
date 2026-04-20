@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from app.schemas.common import CamelModel
 
@@ -86,7 +86,7 @@ class GrammarDetailResponse(CamelModel):
     pattern: str
     meaning_ko: str
     explanation: str | None
-    example_sentences: list | None  # JSON
+    example_sentences: list[Any] | None  # JSON
     jlpt_level: str
     review_status: str
     created_at: datetime
@@ -98,7 +98,7 @@ class ClozeQuestionDetailResponse(CamelModel):
     sentence: str
     translation: str
     correct_answer: str
-    options: list | None  # JSON
+    options: list[Any] | None  # JSON
     explanation: str | None
     jlpt_level: str
     review_status: str
@@ -110,7 +110,7 @@ class SentenceArrangeDetailResponse(CamelModel):
     id: uuid.UUID
     korean_sentence: str
     japanese_sentence: str
-    tokens: list | None  # JSON
+    tokens: list[Any] | None  # JSON
     explanation: str | None
     jlpt_level: str
     review_status: str
@@ -127,7 +127,7 @@ class ConversationDetailResponse(CamelModel):
     your_role: str | None
     ai_role: str | None
     system_prompt: str | None
-    key_expressions: list | None  # JSON
+    key_expressions: list[Any] | None  # JSON
     category: str
     review_status: str
     created_at: datetime
@@ -159,14 +159,14 @@ class ClozeQuestionUpdateRequest(CamelModel):
     sentence: str | None = None
     translation: str | None = None
     correct_answer: str | None = None
-    options: list | None = None
+    options: list[Any] | None = None
     explanation: str | None = None
 
 
 class SentenceArrangeUpdateRequest(CamelModel):
     korean_sentence: str | None = None
     japanese_sentence: str | None = None
-    tokens: list | None = None
+    tokens: list[Any] | None = None
     explanation: str | None = None
 
 
@@ -178,7 +178,7 @@ class ConversationUpdateRequest(CamelModel):
     your_role: str | None = None
     ai_role: str | None = None
     system_prompt: str | None = None
-    key_expressions: list | None = None
+    key_expressions: list[Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -201,7 +201,7 @@ class BatchReviewRequest(CamelModel):
 class AuditLogItem(CamelModel):
     id: uuid.UUID
     action: str
-    changes: dict | None
+    changes: dict[str, Any] | None
     reason: str | None
     reviewer_id: uuid.UUID
     created_at: datetime
