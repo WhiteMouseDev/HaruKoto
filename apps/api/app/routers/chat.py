@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import Response
@@ -42,7 +42,7 @@ async def start_chat(
     body: ChatStartRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> ChatStartResponse:
     try:
         return await start_chat_session(db, user, body)
     except ChatSessionServiceError as exc:
@@ -59,7 +59,7 @@ async def send_message(
     body: ChatMessageRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> ChatMessageResponse:
     try:
         return await send_chat_message(db, user, body)
     except ChatSessionServiceError as exc:
@@ -76,7 +76,7 @@ async def end_chat(
     body: ChatEndRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> ChatEndResponse:
     try:
         return await end_chat_session(db, user, body)
     except ChatSessionServiceError as exc:
@@ -92,7 +92,7 @@ async def end_chat(
 async def text_to_speech(
     body: ChatTTSRequest,
     user: Annotated[User, Depends(get_current_user)],
-):
+) -> Response:
     try:
         tts = await synthesize_chat_tts(user, body)
     except ChatVoiceServiceError as exc:
@@ -110,7 +110,7 @@ async def text_to_speech(
 async def transcribe_voice(
     file: UploadFile = File(...),
     _user: User = Depends(get_current_user),
-):
+) -> dict[str, str]:
     audio_bytes = await file.read()
     try:
         text = await transcribe_chat_voice(audio_bytes, file.content_type)
@@ -130,7 +130,7 @@ async def get_live_token_endpoint(
     body: LiveTokenRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, str]:
     try:
         return await create_live_token(db, user, body)
     except ChatVoiceServiceError as exc:
@@ -147,7 +147,7 @@ async def submit_live_feedback(
     body: LiveFeedbackRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> dict[str, Any]:
     try:
         return await submit_live_conversation_feedback(db, user, body)
     except ChatVoiceServiceError as exc:

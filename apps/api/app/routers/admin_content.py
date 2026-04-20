@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import math
 import uuid
-from typing import Annotated
+from datetime import datetime
+from typing import Annotated, Any
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -223,7 +224,7 @@ async def patch_vocabulary(
         raise HTTPException(status_code=404, detail="Not found")
 
     updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict = {}
+    changes: dict[str, dict[str, Any]] = {}
     for field, new_value in updates.items():
         old_value = getattr(item, field, None)
         if old_value != new_value:
@@ -397,7 +398,7 @@ async def patch_grammar(
         raise HTTPException(status_code=404, detail="Not found")
 
     updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict = {}
+    changes: dict[str, dict[str, Any]] = {}
     for field, new_value in updates.items():
         old_value = getattr(item, field, None)
         if old_value != new_value:
@@ -604,7 +605,7 @@ async def patch_cloze(
         raise HTTPException(status_code=404, detail="Not found")
 
     updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict = {}
+    changes: dict[str, dict[str, Any]] = {}
     for field, new_value in updates.items():
         old_value = getattr(item, field, None)
         if old_value != new_value:
@@ -716,7 +717,7 @@ async def patch_sentence_arrange(
         raise HTTPException(status_code=404, detail="Not found")
 
     updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict = {}
+    changes: dict[str, dict[str, Any]] = {}
     for field, new_value in updates.items():
         old_value = getattr(item, field, None)
         if old_value != new_value:
@@ -905,7 +906,7 @@ async def patch_conversation(
         raise HTTPException(status_code=404, detail="Not found")
 
     updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict = {}
+    changes: dict[str, dict[str, Any]] = {}
     for field, new_value in updates.items():
         old_value = getattr(item, field, None)
         if old_value != new_value:
@@ -1007,7 +1008,7 @@ async def batch_review(
     new_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
 
     for item_id in body.ids:
-        result = await db.execute(select(model_class).where(model_class.id == item_id))  # type: ignore[attr-defined]
+        result: Any = await db.execute(select(model_class).where(model_class.id == item_id))  # type: ignore[attr-defined]
         item = result.scalar_one_or_none()
         if item is None:
             raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
@@ -1051,7 +1052,7 @@ def resolve_tts_text(content_type: str, field: str, obj: object) -> str:
     if content_type == "grammar" and field == "example_sentences":
         sentences = getattr(obj, "example_sentences", None) or []
         if sentences and isinstance(sentences[0], dict):
-            return sentences[0].get("japanese", "") or sentences[0].get("sentence", "")
+            return str(sentences[0].get("japanese") or sentences[0].get("sentence") or "")
         return getattr(obj, "pattern", "") or ""
     value = getattr(obj, field, None)
     if not value:
@@ -1075,7 +1076,7 @@ async def regenerate_admin_tts(
     model_cls = _CONTENT_MODEL_MAP.get(body.content_type)
     if not model_cls:
         raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")
-    result = await db.execute(select(model_cls).where(model_cls.id == body.item_id))  # type: ignore[attr-defined]
+    result: Any = await db.execute(select(model_cls).where(model_cls.id == body.item_id))  # type: ignore[attr-defined]
     obj = result.scalar_one_or_none()
     if not obj:
         raise HTTPException(status_code=404, detail="Content item not found")
@@ -1171,7 +1172,7 @@ async def _get_quiz_review_queue(
     jlpt_level: JlptLevel | None,
 ) -> ReviewQueueResponse:
     """Build review queue for quiz by merging cloze + sentence_arrange, sorted by created_at ASC."""
-    items: list[tuple[str, str, object]] = []  # (id, quiz_type, created_at)
+    items: list[tuple[str, str, datetime]] = []  # (id, quiz_type, created_at)
 
     # Cloze questions
     cq = select(ClozeQuestion.id, ClozeQuestion.created_at).where(ClozeQuestion.review_status == ReviewStatus.NEEDS_REVIEW)

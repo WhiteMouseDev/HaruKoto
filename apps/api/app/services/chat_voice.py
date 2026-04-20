@@ -67,11 +67,26 @@ async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest
     if not rl.success:
         raise ChatVoiceServiceError(status_code=429, detail="요청이 너무 많습니다")
 
-    limit_check = await check_ai_limit(db, str(user.id), "call")
+    limit_check = await check_ai_limit(db, user.id, "call")
     if not limit_check["allowed"]:
         raise ChatVoiceServiceError(status_code=429, detail=limit_check["reason"])
 
     return await generate_live_token()
+
+
+def _transcript_from_messages(raw_messages: Any) -> list[dict[str, str]]:
+    if not isinstance(raw_messages, list):
+        return []
+
+    transcript: list[dict[str, str]] = []
+    for message in raw_messages:
+        if not isinstance(message, dict):
+            continue
+        role = str(message.get("role", "user"))
+        if role == "system":
+            continue
+        transcript.append({"role": role, "text": str(message.get("content", ""))})
+    return transcript
 
 
 async def submit_live_conversation_feedback(
@@ -87,11 +102,7 @@ async def submit_live_conversation_feedback(
         conversation = result.scalar_one_or_none()
 
     if conversation and conversation.messages:
-        transcript = [
-            {"role": message.get("role", "user"), "text": message.get("content", "")}
-            for message in conversation.messages
-            if message.get("role") != "system"
-        ]
+        transcript = _transcript_from_messages(conversation.messages)
     elif body.transcript:
         transcript = body.transcript
     else:

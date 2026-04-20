@@ -58,6 +58,12 @@ def _extract_conversation_history(messages: list[dict[str, Any]]) -> Conversatio
     return ConversationHistory(system_prompt=system_prompt, history=history)
 
 
+def _message_list(raw_messages: Any) -> list[dict[str, Any]]:
+    if not isinstance(raw_messages, list):
+        return []
+    return [message for message in raw_messages if isinstance(message, dict)]
+
+
 async def _load_user_conversation(
     db: AsyncSession,
     *,
@@ -72,7 +78,7 @@ async def _load_user_conversation(
 
 
 async def start_chat_session(db: AsyncSession, user: User, body: ChatStartRequest) -> ChatStartResponse:
-    limit_check = await check_ai_limit(db, str(user.id), "chat")
+    limit_check = await check_ai_limit(db, user.id, "chat")
     if not limit_check["allowed"]:
         raise ChatSessionServiceError(status_code=429, detail=limit_check["reason"])
 
@@ -91,7 +97,16 @@ async def start_chat_session(db: AsyncSession, user: User, body: ChatStartReques
         if not scenario:
             raise ChatSessionServiceError(status_code=404, detail="시나리오를 찾을 수 없습니다")
 
-    system_prompt = build_system_prompt(user.jlpt_level or "N5", scenario=scenario)
+    scenario_prompt = (
+        {
+            "title": scenario.title,
+            "description": scenario.description,
+            "situation": scenario.situation,
+        }
+        if scenario
+        else None
+    )
+    system_prompt = build_system_prompt(str(user.jlpt_level or "N5"), scenario=scenario_prompt)
 
     logger.info(
         "AI chat start",
@@ -101,7 +116,7 @@ async def start_chat_session(db: AsyncSession, user: User, body: ChatStartReques
             "type": str(body.type),
         },
     )
-    ai_response = await generate_chat_response(system_prompt, [], SYSTEM_PROMPTS["first_message_prompt"])
+    ai_response = await generate_chat_response(system_prompt, [], str(SYSTEM_PROMPTS["first_message_prompt"]))
     logger.info(
         "AI chat start response received",
         extra={
@@ -139,7 +154,7 @@ async def send_chat_message(db: AsyncSession, user: User, body: ChatMessageReque
     if conversation.ended_at:
         raise ChatSessionServiceError(status_code=400, detail="이미 종료된 대화입니다")
 
-    messages = conversation.messages or []
+    messages = _message_list(conversation.messages)
     conversation_history = _extract_conversation_history(messages)
 
     logger.info(
@@ -182,7 +197,7 @@ async def end_chat_session(db: AsyncSession, user: User, body: ChatEndRequest) -
     if conversation.ended_at:
         return ChatEndResponse(success=True, feedback_summary=conversation.feedback_summary, xp_earned=0, events=[])
 
-    messages = [message for message in (conversation.messages or []) if message.get("role") in ("user", "assistant")]
+    messages = [message for message in _message_list(conversation.messages) if message.get("role") in ("user", "assistant")]
     logger.info(
         "AI chat end - generating feedback",
         extra={
