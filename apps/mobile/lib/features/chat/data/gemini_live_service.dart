@@ -6,6 +6,8 @@ import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:record/record.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'gemini_live_protocol.dart';
+
 /// Transcript entry for a single turn.
 class TranscriptEntry {
   final String role; // 'user' or 'assistant'
@@ -159,43 +161,19 @@ class GeminiLiveService {
 
   void _sendSetup({String? handle}) {
     final instruction = systemInstruction ?? _defaultSystemInstruction();
-    final setup = <String, dynamic>{
-      'setup': {
-        'model': model,
-        'generationConfig': {
-          'responseModalities': ['AUDIO'],
-          'speechConfig': {
-            'voiceConfig': {
-              'prebuiltVoiceConfig': {
-                'voiceName': voiceName ?? 'Kore',
-              },
-            },
-          },
-        },
-        'systemInstruction': {
-          'parts': [
-            {
-              'text':
-                  '$instruction\n\n## ユーザー情報\n- 名前: $userNickname\n\n${_jlptSection()}'
-            },
-          ],
-        },
-        'realtimeInputConfig': {
-          'automaticActivityDetection': {
-            'startOfSpeechSensitivity': 'START_SENSITIVITY_HIGH',
-            'endOfSpeechSensitivity': 'END_SENSITIVITY_HIGH',
-            'prefixPaddingMs': 200,
-            'silenceDurationMs': silenceDurationMs,
-          },
-        },
-        // 자막: setup 최상위에 배치해야 동작 (generationConfig 안 아님)
-        'inputAudioTranscription': {},
-        'outputAudioTranscription': {},
-        // 세션 재개: handle 없어도 빈 객체로 명시 (웹과 동일)
-        'sessionResumption': handle != null ? {'handle': handle} : {},
-      },
-    };
-    _safeSend(jsonEncode(setup));
+    _safeSend(
+      GeminiLiveProtocol.encodeSetup(
+        GeminiLiveSetupConfig(
+          model: model,
+          voiceName: voiceName,
+          instruction: instruction,
+          userNickname: userNickname,
+          jlptSection: _jlptSection(),
+          silenceDurationMs: silenceDurationMs,
+          resumptionHandle: handle,
+        ),
+      ),
+    );
   }
 
   // ──────── Message handling ────────
@@ -206,16 +184,12 @@ class GeminiLiveService {
     // 메시지 파싱을 try-catch로 보호 (텍스트 + 바이너리 모두 처리)
     final Map<String, dynamic> msg;
     try {
-      final String text;
-      if (raw is String) {
-        text = raw;
-      } else if (raw is List<int>) {
-        text = utf8.decode(raw);
-      } else {
+      final parsed = GeminiLiveProtocol.parseMessage(raw);
+      if (parsed == null) {
         debugPrint('[GeminiLive] Unknown message type: ${raw.runtimeType}');
         return;
       }
-      msg = jsonDecode(text) as Map<String, dynamic>;
+      msg = parsed;
     } catch (e) {
       debugPrint('[GeminiLive] Failed to parse message: $e');
       return;
@@ -300,24 +274,12 @@ class GeminiLiveService {
   // ──────── Greeting ────────
 
   void _sendGreeting() {
-    final name = characterName ?? 'ハル';
-    final greeting =
-        scenarioGreeting ?? '[システム] $nameから電話がかかってきました。電話に出て「もしもし」から始めてください。';
-
-    final msg = {
-      'clientContent': {
-        'turns': [
-          {
-            'role': 'user',
-            'parts': [
-              {'text': greeting},
-            ],
-          },
-        ],
-        'turnComplete': true,
-      },
-    };
-    _safeSend(jsonEncode(msg));
+    _safeSend(
+      GeminiLiveProtocol.encodeGreeting(
+        characterName: characterName,
+        scenarioGreeting: scenarioGreeting,
+      ),
+    );
   }
 
   // ──────── Recording ────────
@@ -357,18 +319,7 @@ class GeminiLiveService {
 
       _recorderSub = stream.listen((data) {
         if (_disposed || _channel == null || isMuted) return;
-        final b64 = base64Encode(data);
-        final msg = {
-          'realtimeInput': {
-            'mediaChunks': [
-              {
-                'mimeType': 'audio/pcm;rate=16000',
-                'data': b64,
-              },
-            ],
-          },
-        };
-        _safeSend(jsonEncode(msg));
+        _safeSend(GeminiLiveProtocol.encodeRealtimeAudio(data));
       });
     } catch (e) {
       debugPrint('[GeminiLive] Recording start failed: $e');
