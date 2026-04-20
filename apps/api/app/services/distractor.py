@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import logging
 import random
+from typing import Any, TypedDict
 from uuid import UUID
 
 from sqlalchemy import select
@@ -27,6 +28,15 @@ from app.models.content import Grammar, Vocabulary
 from app.models.progress import UserGrammarProgress, UserVocabProgress
 
 logger = logging.getLogger(__name__)
+
+
+class DistractorOption(TypedDict):
+    id: str
+    text: str
+
+
+type ContentItem = Vocabulary | Grammar
+type SafeCandidate = tuple[ContentItem, bool, bool, set[str]]
 
 # ---------------------------------------------------------------------------
 # Token extraction
@@ -75,7 +85,7 @@ async def generate_distractors(
     jlpt_level: str,
     count: int = 3,
     user_id: UUID | None = None,
-) -> list[dict]:
+) -> list[DistractorOption]:
     """Generate safe distractor options for a quiz question.
 
     Returns list of {id, text} dicts for wrong answer options.
@@ -89,9 +99,9 @@ async def generate_distractors(
     5. Never include the correct answer itself
     """
     if item_type == "WORD":
-        model = Vocabulary
-        progress_model = UserVocabProgress
-        fk_col = UserVocabProgress.vocabulary_id
+        model: Any = Vocabulary
+        progress_model: Any = UserVocabProgress
+        fk_col: Any = UserVocabProgress.vocabulary_id
     elif item_type == "GRAMMAR":
         model = Grammar
         progress_model = UserGrammarProgress
@@ -136,7 +146,7 @@ async def generate_distractors(
         seen_ids = {row[0] for row in seen_result.all()}
 
     # ── 4. Filter out candidates with meaning overlap ──
-    safe_candidates: list[tuple] = []  # (item, is_same_category, is_seen)
+    safe_candidates: list[SafeCandidate] = []  # (item, is_same_category, is_seen, tokens)
     accepted_token_sets: list[set[str]] = [correct_tokens]  # track to avoid inter-distractor overlap
 
     for candidate in candidates:
@@ -169,7 +179,7 @@ async def generate_distractors(
     safe_candidates.sort(key=lambda x: (not x[1], not x[2]))
 
     # ── 6. Select top `count`, ensuring no inter-distractor overlap ──
-    selected: list[dict] = []
+    selected: list[DistractorOption] = []
 
     for candidate, _is_cat, _is_seen, candidate_tokens in safe_candidates:
         if len(selected) >= count:
