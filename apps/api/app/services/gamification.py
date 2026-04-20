@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import uuid
 from datetime import UTC, date, datetime
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -320,6 +320,8 @@ async def check_character_unlocks(
     for char in all_characters:
         if char.id in unlocked_ids:
             continue
+        if char.unlock_condition is None:
+            continue
         try:
             required_level = int(char.unlock_condition)
         except (ValueError, TypeError):
@@ -346,7 +348,7 @@ async def check_character_unlocks(
 async def check_and_grant_achievements(
     db: AsyncSession,
     user_id: uuid.UUID,
-    context: dict,
+    context: dict[str, Any],
 ) -> list[GameEvent]:
     """사용자의 현재 상태를 기반으로 새 업적을 확인하고 부여.
 
@@ -397,7 +399,7 @@ async def check_and_grant_achievements(
 
         if category == "kana":
             a_type = achievement.get("type")
-            if (
+            if isinstance(a_type, str) and (
                 a_type == "kana_first_char"
                 and context.get("kana_first_char")
                 or a_type == "kana_hiragana_complete"
@@ -408,7 +410,7 @@ async def check_and_grant_achievements(
                 to_grant.append(a_type)
             continue
 
-        value = context_map.get(category)
+        value = context_map.get(category) if category is not None else None
         threshold = achievement.get("threshold")
         if value is not None and threshold is not None and value >= threshold:
             to_grant.append(achievement["type"])

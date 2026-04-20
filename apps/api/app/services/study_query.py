@@ -405,7 +405,7 @@ async def get_study_capabilities_data(
     stage_result = await db.execute(
         select(StudyStage.category, func.count()).where(StudyStage.jlpt_level == effective).group_by(StudyStage.category)
     )
-    stage_map = dict(stage_result.all())
+    stage_map: dict[str, int] = {row[0]: row[1] for row in stage_result.all()}
 
     return StudyCapabilitiesResult(
         requested_jlpt_level=requested,
