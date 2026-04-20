@@ -20,40 +20,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.content import Grammar, Vocabulary
 from app.models.lesson import LessonItemLink
 from app.models.progress import UserGrammarProgress, UserVocabProgress
+from app.services.srs_transition import (
+    AGAIN,
+    HARD,
+    LEARNING,
+    LEARNING_INTERVALS,
+    PROVISIONAL,
+    RELEARNING,
+    REVIEW,
+    UNSEEN,
+    apply_transition,
+    calculate_rating,
+)
 
 type ProgressRecord = UserVocabProgress | UserGrammarProgress
 type ProgressModel = type[UserVocabProgress] | type[UserGrammarProgress]
 type ContentModel = type[Vocabulary] | type[Grammar]
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-PROVISIONAL_STEPS_REQUIRED = 2
-PROVISIONAL_INTERVALS = [1, 3]  # days: step 0→1 = 1d, step 1→LEARNING = 3d
-LEARNING_INTERVALS = [1, 3]  # days: step 0→1 = 1d, step 1→REVIEW = 3d
-MASTERED_THRESHOLD_DAYS = 21
-DEFAULT_EASE_FACTOR = 2.5
-MIN_EASE_FACTOR = 1.3
-
-# Rating thresholds (response time in ms)
-FAST_THRESHOLD_MS = 3_000
-SLOW_THRESHOLD_MS = 10_000
-
-# States
-UNSEEN = "UNSEEN"
-PROVISIONAL = "PROVISIONAL"
-LEARNING = "LEARNING"
-REVIEW = "REVIEW"
-MASTERED = "MASTERED"
-RELEARNING = "RELEARNING"
-
-# Ratings
-AGAIN = 1
-HARD = 2
-GOOD = 3
-EASY = 4
-
 
 # ---------------------------------------------------------------------------
 # Return types
@@ -65,35 +47,6 @@ class AnswerResult(TypedDict):
     state_after: str
     next_review_at: str | None
     is_provisional_phase: bool
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _calculate_rating(is_correct: bool, response_ms: int) -> int:
-    """Determine rating 1-4 based on correctness and response time."""
-    if not is_correct:
-        return AGAIN
-    if response_ms < FAST_THRESHOLD_MS:
-        return EASY
-    if response_ms <= SLOW_THRESHOLD_MS:
-        return GOOD
-    return HARD
-
-
-def _sm2_update_correct(ease_factor: float, interval: int) -> tuple[float, int]:
-    """SM-2 correct answer: increase ease_factor, multiply interval."""
-    new_ef = ease_factor + 0.1
-    new_interval = max(int(interval * new_ef), 1) if interval > 0 else 1
-    return new_ef, new_interval
-
-
-def _sm2_update_incorrect(ease_factor: float) -> tuple[float, int]:
-    """SM-2 incorrect answer: decrease ease_factor, reset interval."""
-    new_ef = max(ease_factor - 0.2, MIN_EASE_FACTOR)
-    return new_ef, 1
 
 
 def _get_progress_model(item_type: str) -> ProgressModel:
@@ -282,7 +235,7 @@ async def process_answer(
     state_before = progress.state
 
     # 2. Calculate rating
-    rating = _calculate_rating(is_correct, response_ms)
+    rating = calculate_rating(is_correct, response_ms)
 
     # For PROVISIONAL first correct answer, force rating to HARD (찍기 방지)
     if state_before == UNSEEN:
@@ -297,7 +250,7 @@ async def process_answer(
 
     # 3. Apply state transition
     now = datetime.now(UTC)
-    _apply_transition(progress, is_correct, rating, now)
+    apply_transition(progress, is_correct, rating, now)
 
     # 4. Update directional stats
     _update_direction_stats(progress, direction, is_correct)
@@ -346,168 +299,6 @@ async def process_answer(
         next_review_at=progress.next_review_at.isoformat() if progress.next_review_at else None,
         is_provisional_phase=progress.state == PROVISIONAL,
     )
-
-
-def _apply_transition(
-    progress: ProgressRecord,
-    is_correct: bool,
-    rating: int,
-    now: datetime,
-) -> None:
-    """Apply SRS state transition based on current state and answer correctness."""
-    state = progress.state
-
-    if state == PROVISIONAL:
-        _transition_provisional(progress, is_correct, now)
-    elif state == LEARNING:
-        _transition_learning(progress, is_correct, rating, now)
-    elif state == REVIEW:
-        _transition_review(progress, is_correct, rating, now)
-    elif state == MASTERED:
-        _transition_mastered(progress, is_correct, rating, now)
-    elif state == RELEARNING:
-        _transition_relearning(progress, is_correct, now)
-    # UNSEEN is handled before this function is called
-
-
-def _transition_provisional(
-    progress: ProgressRecord,
-    is_correct: bool,
-    now: datetime,
-) -> None:
-    """PROVISIONAL phase: must pass 2 consecutive correct answers.
-
-    Step 0 → correct → step 1, review in 1 day
-    Step 1 → correct → LEARNING (step 0), review in 3 days
-    Any wrong → reset step to 0, review in 1 day
-    """
-    if is_correct:
-        progress.learning_step += 1
-        if progress.learning_step >= PROVISIONAL_STEPS_REQUIRED:
-            # Passed PROVISIONAL → move to LEARNING
-            progress.state = LEARNING
-            progress.learning_step = 0
-            progress.next_review_at = now + timedelta(days=LEARNING_INTERVALS[0])
-        else:
-            # Still in PROVISIONAL, schedule next check
-            step_idx = min(progress.learning_step, len(PROVISIONAL_INTERVALS) - 1)
-            progress.next_review_at = now + timedelta(days=PROVISIONAL_INTERVALS[step_idx])
-    else:
-        # Wrong → reset
-        progress.learning_step = 0
-        progress.next_review_at = now + timedelta(days=1)
-
-
-def _transition_learning(
-    progress: ProgressRecord,
-    is_correct: bool,
-    rating: int,
-    now: datetime,
-) -> None:
-    """LEARNING phase: pass learning steps then move to REVIEW.
-
-    Correct → increment step. If step >= 2 → REVIEW with SM-2 interval.
-    Wrong → stay LEARNING, reset streak.
-    """
-    if is_correct:
-        progress.learning_step += 1
-        if progress.learning_step >= len(LEARNING_INTERVALS):
-            # Graduated to REVIEW
-            progress.state = REVIEW
-            progress.learning_step = 0
-            # Set initial interval based on SM-2
-            progress.interval = LEARNING_INTERVALS[-1]
-            ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
-            progress.ease_factor = ef
-            progress.interval = new_interval
-            progress.next_review_at = now + timedelta(days=new_interval)
-        else:
-            # Next learning step
-            step_idx = min(progress.learning_step, len(LEARNING_INTERVALS) - 1)
-            progress.next_review_at = now + timedelta(days=LEARNING_INTERVALS[step_idx])
-    else:
-        # Wrong → stay in LEARNING, reset step
-        progress.learning_step = 0
-        progress.streak = 0
-        progress.next_review_at = now + timedelta(days=1)
-
-
-def _transition_review(
-    progress: ProgressRecord,
-    is_correct: bool,
-    rating: int,
-    now: datetime,
-) -> None:
-    """REVIEW phase: SM-2 interval scheduling.
-
-    Correct → update interval, check MASTERED threshold.
-    Wrong → RELEARNING.
-    """
-    if is_correct:
-        ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
-        progress.ease_factor = ef
-        progress.interval = new_interval
-        progress.next_review_at = now + timedelta(days=new_interval)
-
-        # Check if mastered
-        if new_interval >= MASTERED_THRESHOLD_DAYS:
-            progress.state = MASTERED
-            progress.mastered = True
-    else:
-        # Wrong → RELEARNING
-        ef, new_interval = _sm2_update_incorrect(progress.ease_factor)
-        progress.state = RELEARNING
-        progress.ease_factor = ef
-        progress.interval = new_interval
-        progress.learning_step = 0
-        progress.next_review_at = now + timedelta(days=1)
-
-
-def _transition_mastered(
-    progress: ProgressRecord,
-    is_correct: bool,
-    rating: int,
-    now: datetime,
-) -> None:
-    """MASTERED phase: long-term review.
-
-    Correct → extend interval further.
-    Wrong → RELEARNING (lapse).
-    """
-    if is_correct:
-        ef, new_interval = _sm2_update_correct(progress.ease_factor, progress.interval)
-        progress.ease_factor = ef
-        progress.interval = new_interval
-        progress.next_review_at = now + timedelta(days=new_interval)
-    else:
-        # Lapse → RELEARNING
-        ef, new_interval = _sm2_update_incorrect(progress.ease_factor)
-        progress.state = RELEARNING
-        progress.ease_factor = ef
-        progress.interval = new_interval
-        progress.learning_step = 0
-        progress.mastered = False
-        progress.next_review_at = now + timedelta(days=1)
-
-
-def _transition_relearning(
-    progress: ProgressRecord,
-    is_correct: bool,
-    now: datetime,
-) -> None:
-    """RELEARNING phase: re-study after a lapse.
-
-    Correct → back to REVIEW with interval=1.
-    Wrong → stay RELEARNING.
-    """
-    if is_correct:
-        progress.state = REVIEW
-        progress.interval = 1
-        progress.learning_step = 0
-        progress.next_review_at = now + timedelta(days=1)
-    else:
-        # Stay in RELEARNING
-        progress.next_review_at = now + timedelta(days=1)
 
 
 def _update_direction_stats(
