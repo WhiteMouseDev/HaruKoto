@@ -48,7 +48,7 @@ def update_streak(
     last_study_date: datetime | None,
     current_streak: int,
     longest_streak: int,
-    today_kst: datetime | None = None,
+    today_kst: datetime | date | None = None,
 ) -> StreakResult:
     """연속 학습일(스트릭) 업데이트."""
     if today_kst is not None:

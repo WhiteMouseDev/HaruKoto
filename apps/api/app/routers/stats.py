@@ -21,7 +21,7 @@ from app.models import (
 )
 from app.models.enums import JlptLevel, KanaType
 from app.models.user import User
-from app.schemas.kana import KanaStat
+from app.schemas.kana import KanaProgressResponse, KanaStat
 from app.schemas.stats import (
     ByCategoryResponse,
     CategoryStat,
@@ -33,7 +33,6 @@ from app.schemas.stats import (
     JlptLevelProgress,
     JlptProgressResponse,
     JlptProgressStat,
-    KanaProgressResponse,
     LevelProgress,
     ProgressStat,
     StreakInfo,
@@ -59,7 +58,7 @@ router = APIRouter(prefix="/api/v1/stats", tags=["stats"])
 async def get_dashboard(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> DashboardResponse:
     today = get_today_kst()
 
     # Today's progress
@@ -182,7 +181,7 @@ async def get_history(
     db: Annotated[AsyncSession, Depends(get_db)],
     year: int | None = Query(default=None),
     month: int | None = Query(default=None),
-):
+) -> HistoryResponse:
     today = get_today_kst()
 
     if year is None:
@@ -241,7 +240,7 @@ async def get_heatmap(
     db: Annotated[AsyncSession, Depends(get_db)],
     year: int = Query(...),
     month: int | None = Query(default=None),
-):
+) -> HeatmapResponse:
     """3-6: Daily study data for heatmap visualization."""
     if month is not None:
         start_date = date(year, month, 1)
@@ -285,7 +284,7 @@ async def get_heatmap(
 async def get_jlpt_progress(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> JlptProgressResponse:
     """3-7: JLPT level progress across all levels the user has studied."""
 
     # Batch: total vocab/grammar counts per JLPT level (2 queries instead of N*6)
@@ -302,7 +301,7 @@ async def get_jlpt_progress(
         .where(UserVocabProgress.user_id == user.id)
         .group_by(Vocabulary.jlpt_level, UserVocabProgress.mastered)
     )
-    vocab_progress: dict[tuple, int] = {}
+    vocab_progress: dict[tuple[JlptLevel, bool], int] = {}
     for row in vocab_progress_result.all():
         vocab_progress[(row[0], row[1])] = row[2]
 
@@ -313,7 +312,7 @@ async def get_jlpt_progress(
         .where(UserGrammarProgress.user_id == user.id)
         .group_by(Grammar.jlpt_level, UserGrammarProgress.mastered)
     )
-    grammar_progress: dict[tuple, int] = {}
+    grammar_progress: dict[tuple[JlptLevel, bool], int] = {}
     for row in grammar_progress_result.all():
         grammar_progress[(row[0], row[1])] = row[2]
 
@@ -347,7 +346,7 @@ async def get_time_chart(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     days: int = Query(default=7, ge=1, le=90),
-):
+) -> TimeChartResponse:
     """3-8: Daily study time for chart."""
     today = get_today_kst()
     start_date = today - timedelta(days=days - 1)
@@ -383,7 +382,7 @@ async def get_volume_chart(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     days: int = Query(default=7, ge=1, le=90),
-):
+) -> VolumeChartResponse:
     """3-9: Daily study volume (items studied)."""
     today = get_today_kst()
     start_date = today - timedelta(days=days - 1)
@@ -420,7 +419,7 @@ async def get_volume_chart(
 async def get_by_category(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> ByCategoryResponse:
     """3-10: 7-day breakdown per category."""
     today = get_today_kst()
     start_date = today - timedelta(days=6)

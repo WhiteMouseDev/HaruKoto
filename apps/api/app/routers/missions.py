@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Annotated
+from typing import Annotated, TypedDict
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -17,7 +17,16 @@ from app.utils.date import get_today_kst
 
 router = APIRouter(prefix="/api/v1/missions", tags=["missions"])
 
-MISSION_POOL = [
+
+class MissionDefinition(TypedDict):
+    type: str
+    category: str
+    targetCount: int
+    xpReward: int
+    progressField: str
+
+
+MISSION_POOL: list[MissionDefinition] = [
     {"type": "words_5", "category": "words", "targetCount": 5, "xpReward": 15, "progressField": "words_studied"},
     {"type": "words_10", "category": "words", "targetCount": 10, "xpReward": 30, "progressField": "words_studied"},
     {"type": "quiz_1", "category": "quiz", "targetCount": 1, "xpReward": 10, "progressField": "quizzes_completed"},
@@ -42,20 +51,20 @@ MISSION_TEXT: dict[str, tuple[str, str]] = {
     "kana_learn_5": ("가나 5개 학습", "히라가나/카타카나를 5개 학습하세요"),
 }
 
-XP_REWARDS = {m["type"]: m["xpReward"] for m in MISSION_POOL}
+XP_REWARDS: dict[str, int] = {m["type"]: m["xpReward"] for m in MISSION_POOL}
 
 
-def _select_missions(user_id: str, date_str: str) -> list[dict]:
+def _select_missions(user_id: str, date_str: str) -> list[MissionDefinition]:
     """Deterministic 3 missions per day using date+userId as seed."""
     seed = hashlib.md5(f"{date_str}:{user_id}".encode(), usedforsecurity=False).hexdigest()
     seed_int = int(seed, 16)
 
-    categories = {}
+    categories: dict[str, list[MissionDefinition]] = {}
     for m in MISSION_POOL:
         categories.setdefault(m["category"], []).append(m)
 
     cat_keys = sorted(categories.keys())
-    selected = []
+    selected: list[MissionDefinition] = []
     for i in range(3):
         cat_idx = (seed_int + i) % len(cat_keys)
         cat = cat_keys[cat_idx]
@@ -70,7 +79,7 @@ def _select_missions(user_id: str, date_str: str) -> list[dict]:
 async def get_today_missions(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> list[MissionResponse]:
     today = get_today_kst()
     date_str = str(today)
 
@@ -98,7 +107,7 @@ async def get_today_missions(
     dp_result = await db.execute(select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date == today))
     dp = dp_result.scalar_one_or_none()
 
-    progress_map = {}
+    progress_map: dict[str, int] = {}
     if dp:
         progress_map = {
             "words_studied": dp.words_studied,
@@ -108,7 +117,7 @@ async def get_today_missions(
             "kana_learned": dp.kana_learned,
         }
 
-    missions_response = []
+    missions_response: list[MissionResponse] = []
     for mission in existing:
         pool_def = next((m for m in MISSION_POOL if m["type"] == mission.mission_type), None)
         progress_field = pool_def["progressField"] if pool_def else ""
@@ -150,7 +159,7 @@ async def claim_mission(
     body: MissionClaimRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> MissionClaimResponse:
     mission = await db.get(DailyMission, body.mission_id)
     if not mission or mission.user_id != user.id:
         raise HTTPException(status_code=404, detail="미션을 찾을 수 없습니다")
@@ -183,5 +192,5 @@ async def claim_mission(
     return MissionClaimResponse(
         xp_reward=xp_reward,
         total_xp=user.experience_points,
-        events=events,
+        events=[dict(event) for event in events],
     )

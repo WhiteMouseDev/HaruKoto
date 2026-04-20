@@ -54,7 +54,7 @@ async def get_characters(
     category: str | None = None,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> list[dict[str, Any]]:
     query = select(KanaCharacter).order_by(KanaCharacter.order)
     if kana_type:
         query = query.where(KanaCharacter.kana_type == kana_type)
@@ -67,9 +67,9 @@ async def get_characters(
     progress_result = await db.execute(select(UserKanaProgress).where(UserKanaProgress.user_id == user.id))
     progress_map: dict[str, UserKanaProgress] = {str(p.kana_id): p for p in progress_result.scalars().all()}
 
-    resp = []
+    resp: list[dict[str, Any]] = []
     for c in characters:
-        item: dict = {
+        item: dict[str, Any] = {
             "id": str(c.id),
             "kanaType": c.kana_type.value,
             "character": c.character,
@@ -106,7 +106,7 @@ async def get_stages(
     kana_type: KanaType | None = None,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> list[dict[str, Any]]:
     query = select(KanaLearningStage).order_by(KanaLearningStage.order)
     if kana_type:
         query = query.where(KanaLearningStage.kana_type == kana_type)
@@ -117,7 +117,7 @@ async def get_stages(
     stage_progress_result = await db.execute(select(UserKanaStage).where(UserKanaStage.user_id == user.id))
     user_stages = {str(us.stage_id): us for us in stage_progress_result.scalars().all()}
 
-    response = []
+    response: list[dict[str, Any]] = []
     for stage in stages:
         us = user_stages.get(str(stage.id))
         response.append(
@@ -141,7 +141,7 @@ async def get_stages(
 async def get_progress(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> KanaProgressResponse:
     # Batch: totals per kana_type (1 query instead of 2)
     total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
     totals = {row[0]: row[1] for row in total_result.all()}
@@ -182,7 +182,7 @@ async def record_kana_learning(
     body: KanaProgressRecord,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> dict[str, bool]:
     stmt = pg_insert(UserKanaProgress).values(
         user_id=user.id,
         kana_id=body.kana_id,
@@ -220,7 +220,7 @@ async def start_kana_quiz(
     body: KanaQuizStartRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> KanaQuizStartResponse:
     # Get characters: stage-specific or all (master quiz)
     if body.stage_number is not None:
         stage_numbers = [body.stage_number - 2, body.stage_number - 1, body.stage_number]
@@ -247,7 +247,7 @@ async def start_kana_quiz(
         # Master quiz: all characters of this kana type
         chars_result = await db.execute(select(KanaCharacter).where(KanaCharacter.kana_type == body.kana_type))
 
-    characters = chars_result.scalars().all()
+    characters = list(chars_result.scalars().all())
 
     if not characters:
         raise HTTPException(status_code=400, detail="가나 문자를 찾을 수 없습니다")
@@ -307,7 +307,7 @@ async def start_kana_quiz(
     await db.refresh(session)
 
     # Strip correctOptionId from response
-    resp_questions = []
+    resp_questions: list[dict[str, Any]] = []
     for q in questions:
         resp_questions.append(
             {
@@ -329,15 +329,16 @@ async def answer_kana_quiz(
     body: KanaQuizAnswerRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> KanaQuizAnswerResponse:
     session = await db.get(QuizSession, body.session_id)
     if not session or session.user_id != user.id:
         raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
 
-    questions_data = session.questions_data or []
-    question_data = None
+    raw_questions_data = session.questions_data
+    questions_data = [q for q in raw_questions_data if isinstance(q, dict)] if isinstance(raw_questions_data, list) else []
+    question_data: dict[str, Any] | None = None
     for q in questions_data:
-        if q["id"] == str(body.question_id):
+        if q.get("id") == str(body.question_id):
             question_data = q
             break
 
@@ -345,6 +346,8 @@ async def answer_kana_quiz(
         raise HTTPException(status_code=400, detail="질문을 찾을 수 없습니다")
 
     correct_option_id = question_data.get("correctOptionId", "")
+    if not isinstance(correct_option_id, str):
+        correct_option_id = ""
     is_correct = body.selected_option_id == correct_option_id
 
     # Update kana progress
@@ -392,7 +395,7 @@ async def complete_kana_quiz(
     body: KanaQuizCompleteRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> KanaQuizCompleteResponse:
     session = await db.get(QuizSession, body.session_id)
     if not session or session.user_id != user.id:
         raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
@@ -453,7 +456,7 @@ async def complete_kana_quiz(
         level=user.level,
         current_xp=level_info["current_xp"],
         xp_for_next=level_info["xp_for_next"],
-        events=events,
+        events=[dict(event) for event in events],
     )
 
 
@@ -462,7 +465,7 @@ async def complete_stage(
     body: KanaStageCompleteRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> KanaStageCompleteResponse:
     # Find stage by ID
     stage = await db.get(KanaLearningStage, body.stage_id)
     if not stage:
@@ -574,6 +577,6 @@ async def complete_stage(
         level=level_info["level"],
         current_xp=level_info["current_xp"],
         xp_for_next=level_info["xp_for_next"],
-        events=events,
+        events=[dict(event) for event in events],
         next_stage_unlocked=next_stage_unlocked,
     )
