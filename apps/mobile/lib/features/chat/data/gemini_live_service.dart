@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'gemini_live_audio_adapter.dart';
+import 'gemini_live_inbound_dispatcher.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
-import 'gemini_live_protocol.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
@@ -44,6 +44,7 @@ class GeminiLiveService {
   final GeminiLivePromptBuilder _promptBuilder;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveInboundDispatcher _inboundDispatcher;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
   bool isMuted = false;
@@ -77,7 +78,18 @@ class GeminiLiveService {
             reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
-        );
+        ) {
+    _inboundDispatcher = GeminiLiveInboundDispatcher(
+      messageHandler: _messageHandler,
+      isActive: () => !_disposed && !_ended,
+      onSetupComplete: _handleSetupComplete,
+      onUpdateResumptionHandle: _reconnectCoordinator.updateResumptionHandle,
+      onReconnect: _attemptReconnect,
+      onAiTextDelta: _emitAiTextDelta,
+      onTranscriptEntry: _emitTranscriptEntry,
+      onAudioChunk: _playAudioChunk,
+    );
+  }
 
   List<TranscriptEntry> get transcript {
     _flushTranscripts();
@@ -173,48 +185,22 @@ class GeminiLiveService {
   // ──────── Message handling ────────
 
   void _onMessage(dynamic raw) {
-    if (_disposed || _ended) return;
-
-    // 메시지 파싱을 try-catch로 보호 (텍스트 + 바이너리 모두 처리)
-    final Map<String, dynamic> msg;
-    try {
-      final parsed = GeminiLiveProtocol.parseMessage(raw);
-      if (parsed == null) {
-        debugPrint('[GeminiLive] Unknown message type: ${raw.runtimeType}');
-        return;
-      }
-      msg = parsed;
-    } catch (e) {
-      debugPrint('[GeminiLive] Failed to parse message: $e');
-      return;
-    }
-
-    for (final action in _messageHandler.handle(msg)) {
-      _applyMessageAction(action);
-    }
+    _inboundDispatcher.dispatch(raw);
   }
 
-  void _applyMessageAction(GeminiLiveMessageAction action) {
-    switch (action.type) {
-      case GeminiLiveMessageActionType.setupComplete:
-        _reconnectCoordinator.markConnected();
-        _setState(GeminiLiveState.connected);
-        _sendGreeting();
-        _startRecording();
-      case GeminiLiveMessageActionType.updateResumptionHandle:
-        _reconnectCoordinator.updateResumptionHandle(action.text);
-      case GeminiLiveMessageActionType.reconnect:
-        _attemptReconnect();
-      case GeminiLiveMessageActionType.aiTextDelta:
-        final text = action.text;
-        if (text != null) onAiTextDelta?.call(text);
-      case GeminiLiveMessageActionType.transcriptEntry:
-        final entry = action.transcriptEntry;
-        if (entry != null) onTranscriptEntry?.call(entry);
-      case GeminiLiveMessageActionType.audioChunk:
-        final base64Data = action.text;
-        if (base64Data != null) _playAudioChunk(base64Data);
-    }
+  void _handleSetupComplete() {
+    _reconnectCoordinator.markConnected();
+    _setState(GeminiLiveState.connected);
+    _sendGreeting();
+    _startRecording();
+  }
+
+  void _emitAiTextDelta(String text) {
+    onAiTextDelta?.call(text);
+  }
+
+  void _emitTranscriptEntry(TranscriptEntry entry) {
+    onTranscriptEntry?.call(entry);
   }
 
   // ──────── Greeting ────────
