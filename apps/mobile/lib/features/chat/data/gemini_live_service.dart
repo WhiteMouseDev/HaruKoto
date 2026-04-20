@@ -9,6 +9,7 @@ import 'gemini_live_message_handler.dart';
 import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
+import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
@@ -46,6 +47,7 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveOutboundSender _outboundSender;
   late final GeminiLiveConnectionRunner _connectionRunner;
+  late final GeminiLiveReconnectRunner _reconnectRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
   bool _disposed = false;
   bool _ended = false; // end()가 호출되었는지 추적
@@ -87,6 +89,15 @@ class GeminiLiveService {
       isActive: () => !_disposed && !_ended,
       onMessage: _onMessage,
       onReconnect: _attemptReconnect,
+    );
+    _reconnectRunner = GeminiLiveReconnectRunner(
+      coordinator: _reconnectCoordinator,
+      isActive: () => !_disposed && !_ended,
+      onConnect: (handle) => _connect(handle: handle),
+      onExhausted: () {
+        onError?.call('연결이 끊어졌습니다');
+        _setState(GeminiLiveState.error);
+      },
     );
     _inboundDispatcher = GeminiLiveInboundDispatcher(
       messageHandler: _messageHandler,
@@ -248,40 +259,7 @@ class GeminiLiveService {
   // ──────── Reconnection ────────
 
   void _attemptReconnect() {
-    if (_disposed || _ended) return;
-
-    final decision = _reconnectCoordinator.requestReconnect();
-    switch (decision.status) {
-      case GeminiLiveReconnectDecisionStatus.alreadyInProgress:
-        return;
-      case GeminiLiveReconnectDecisionStatus.exhausted:
-        onError?.call('연결이 끊어졌습니다');
-        _setState(GeminiLiveState.error);
-        return;
-      case GeminiLiveReconnectDecisionStatus.scheduled:
-        break;
-    }
-
-    final delay = decision.delay!;
-    final attempt = decision.attempt!;
-    debugPrint(
-        '[GeminiLive] Reconnecting in ${delay.inMilliseconds}ms (attempt $attempt)');
-
-    Future<void>.delayed(delay, () async {
-      if (_disposed || _ended) {
-        _reconnectCoordinator.markReconnectIdle();
-        return;
-      }
-      try {
-        await _connect(handle: _reconnectCoordinator.resumptionHandle);
-        // _reconnecting은 setupComplete 이벤트에서 해제됨
-      } catch (e) {
-        debugPrint('[GeminiLive] Reconnect failed: $e');
-        _reconnectCoordinator.markReconnectIdle();
-        // 연결 실패 시 다음 재시도
-        if (!_disposed && !_ended) _attemptReconnect();
-      }
-    });
+    _reconnectRunner.attemptReconnect();
   }
 
   // ──────── State ────────
