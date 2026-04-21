@@ -14,6 +14,7 @@ import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_session_connector.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
+import 'gemini_live_session_shutdown_runner.dart';
 import 'gemini_live_setup_complete_handler.dart';
 import 'gemini_live_setup_sender.dart';
 import 'gemini_live_transcript.dart';
@@ -159,18 +160,22 @@ class GeminiLiveService {
       onTranscriptEntry: _emitTranscriptEntry,
       onAudioChunk: _playAudioChunk,
     );
-    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
+    final shutdownRunner = GeminiLiveSessionShutdownRunner(
       lifecycleController: _lifecycleController,
-      reconnectCoordinator: _reconnectCoordinator,
-      connect: _connect,
       stopRecording: _audioSession.stopRecording,
       disposeAudio: _audioSession.dispose,
       closeTransport: _transport.close,
       flushTranscripts: _flushTranscripts,
-      emitConnectingState: () => _setState(GeminiLiveState.connecting),
-      emitErrorState: () => _setState(GeminiLiveState.error),
       emitEndingState: () => _setState(GeminiLiveState.ending),
       emitEndedState: () => _setState(GeminiLiveState.ended),
+    );
+    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
+      lifecycleController: _lifecycleController,
+      reconnectCoordinator: _reconnectCoordinator,
+      connect: _connect,
+      shutdownRunner: shutdownRunner,
+      emitConnectingState: () => _setState(GeminiLiveState.connecting),
+      emitErrorState: () => _setState(GeminiLiveState.error),
       emitError: (message) => onError?.call(message),
     );
   }

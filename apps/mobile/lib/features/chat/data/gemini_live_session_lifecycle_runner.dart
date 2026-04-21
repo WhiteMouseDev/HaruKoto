@@ -1,52 +1,33 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
+import 'gemini_live_lifecycle_actions.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_reconnect_coordinator.dart';
-
-typedef GeminiLiveLifecycleAsyncAction = Future<void> Function();
-typedef GeminiLiveLifecycleSyncAction = void Function();
-typedef GeminiLiveLifecycleErrorEmitter = void Function(String message);
+import 'gemini_live_session_shutdown_runner.dart';
 
 class GeminiLiveSessionLifecycleRunner {
   const GeminiLiveSessionLifecycleRunner({
     required GeminiLiveLifecycleController lifecycleController,
     required GeminiLiveReconnectCoordinator reconnectCoordinator,
     required GeminiLiveLifecycleAsyncAction connect,
-    required GeminiLiveLifecycleAsyncAction stopRecording,
-    required GeminiLiveLifecycleAsyncAction disposeAudio,
-    required GeminiLiveLifecycleAsyncAction closeTransport,
-    required GeminiLiveLifecycleSyncAction flushTranscripts,
+    required GeminiLiveSessionShutdownRunner shutdownRunner,
     required GeminiLiveLifecycleSyncAction emitConnectingState,
     required GeminiLiveLifecycleSyncAction emitErrorState,
-    required GeminiLiveLifecycleSyncAction emitEndingState,
-    required GeminiLiveLifecycleSyncAction emitEndedState,
     required GeminiLiveLifecycleErrorEmitter emitError,
   })  : _lifecycleController = lifecycleController,
         _reconnectCoordinator = reconnectCoordinator,
         _connect = connect,
-        _stopRecording = stopRecording,
-        _disposeAudio = disposeAudio,
-        _closeTransport = closeTransport,
-        _flushTranscripts = flushTranscripts,
+        _shutdownRunner = shutdownRunner,
         _emitConnectingState = emitConnectingState,
         _emitErrorState = emitErrorState,
-        _emitEndingState = emitEndingState,
-        _emitEndedState = emitEndedState,
         _emitError = emitError;
 
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleAsyncAction _connect;
-  final GeminiLiveLifecycleAsyncAction _stopRecording;
-  final GeminiLiveLifecycleAsyncAction _disposeAudio;
-  final GeminiLiveLifecycleAsyncAction _closeTransport;
-  final GeminiLiveLifecycleSyncAction _flushTranscripts;
+  final GeminiLiveSessionShutdownRunner _shutdownRunner;
   final GeminiLiveLifecycleSyncAction _emitConnectingState;
   final GeminiLiveLifecycleSyncAction _emitErrorState;
-  final GeminiLiveLifecycleSyncAction _emitEndingState;
-  final GeminiLiveLifecycleSyncAction _emitEndedState;
   final GeminiLiveLifecycleErrorEmitter _emitError;
 
   Future<void> start({required String model}) async {
@@ -69,18 +50,7 @@ class GeminiLiveSessionLifecycleRunner {
     }
   }
 
-  Future<void> end() async {
-    _lifecycleController.markEnding();
-    _emitEndingState();
-    _flushTranscripts();
-    await _stopRecording();
-    unawaited(_closeTransport());
-    _emitEndedState();
-  }
+  Future<void> end() => _shutdownRunner.end();
 
-  Future<void> dispose() async {
-    _lifecycleController.markDisposed();
-    await _disposeAudio();
-    unawaited(_closeTransport());
-  }
+  Future<void> dispose() => _shutdownRunner.dispose();
 }
