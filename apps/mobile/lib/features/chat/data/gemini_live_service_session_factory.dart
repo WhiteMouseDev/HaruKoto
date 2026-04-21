@@ -6,6 +6,7 @@ import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_session_components_factory.dart';
+import 'gemini_live_session_event_sink.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_session_lifecycle_runner_factory.dart';
 import 'gemini_live_session_runtime_factory.dart';
@@ -67,15 +68,17 @@ class GeminiLiveServiceSessionFactory {
     final outboundSender = GeminiLiveOutboundSender(
       transport: liveTransport,
     );
-
-    void emitStateIfActive(GeminiLiveState state) {
-      if (liveLifecycleController.isDisposed) return;
-      emitState(state);
-    }
+    final eventSink = GeminiLiveSessionEventSink(
+      lifecycleController: liveLifecycleController,
+      emitState: emitState,
+      emitAiTextDelta: emitAiTextDelta,
+      emitTranscriptEntry: emitTranscriptEntry,
+      emitError: emitError,
+    );
 
     final transcriptEmitter = GeminiLiveTranscriptEmitter(
       messageHandler: liveMessageHandler,
-      emitEntry: emitTranscriptEntry,
+      emitEntry: eventSink.emitTranscriptEntry,
     );
     final sessionComponents =
         (sessionComponentsFactory ?? const GeminiLiveSessionComponentsFactory())
@@ -88,8 +91,8 @@ class GeminiLiveServiceSessionFactory {
       promptBuilder: livePromptBuilder,
       lifecycleController: liveLifecycleController,
       transport: liveTransport,
-      emitError: emitError,
-      emitAudioUnavailable: () => emitStateIfActive(GeminiLiveState.error),
+      emitError: eventSink.emitError,
+      emitAudioUnavailable: eventSink.emitErrorState,
       voiceName: voiceName,
       characterName: characterName,
       scenarioGreeting: scenarioGreeting,
@@ -106,9 +109,9 @@ class GeminiLiveServiceSessionFactory {
       audioSession: audioSession,
       messageHandler: liveMessageHandler,
       lifecycleController: liveLifecycleController,
-      emitState: emitStateIfActive,
-      emitError: emitError,
-      onAiTextDelta: emitAiTextDelta,
+      emitState: eventSink.emitStateIfActive,
+      emitError: eventSink.emitError,
+      onAiTextDelta: eventSink.emitAiTextDelta,
       onTranscriptEntry: transcriptEmitter.emit,
       onAudioChunk: audioSession.playBase64Pcm,
     );
@@ -122,11 +125,11 @@ class GeminiLiveServiceSessionFactory {
       disposeAudio: audioSession.dispose,
       closeTransport: liveTransport.close,
       flushTranscripts: transcriptEmitter.flush,
-      emitConnectingState: () => emitStateIfActive(GeminiLiveState.connecting),
-      emitErrorState: () => emitStateIfActive(GeminiLiveState.error),
-      emitEndingState: () => emitStateIfActive(GeminiLiveState.ending),
-      emitEndedState: () => emitStateIfActive(GeminiLiveState.ended),
-      emitError: emitError,
+      emitConnectingState: eventSink.emitConnectingState,
+      emitErrorState: eventSink.emitErrorState,
+      emitEndingState: eventSink.emitEndingState,
+      emitEndedState: eventSink.emitEndedState,
+      emitError: eventSink.emitError,
     );
 
     return GeminiLiveServiceSession(
