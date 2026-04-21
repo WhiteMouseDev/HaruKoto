@@ -1,19 +1,17 @@
 from __future__ import annotations
 
-import math
 import uuid
 from typing import Annotated, Any
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
-from sqlalchemy import func, or_, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
-from app.models import ConversationScenario
 from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.tts import _upload_to_gcs
@@ -59,6 +57,7 @@ from app.services.admin_content_responses import (
 )
 from app.services.admin_content_review import AdminContentReviewServiceError, review_admin_content_item
 from app.services.admin_content_stats import get_admin_content_stats
+from app.services.admin_conversation_list import list_admin_conversation
 from app.services.admin_grammar_list import list_admin_grammar
 from app.services.admin_quiz_list import list_admin_quiz
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
@@ -509,13 +508,6 @@ async def review_sentence_arrange(
 # ==========================================
 
 
-_CONVERSATION_SORT_COLS = {
-    "created_at": ConversationScenario.created_at,
-    "review_status": ConversationScenario.review_status,
-    "category": ConversationScenario.category,
-}
-
-
 @router.get("/conversation", response_model=PaginatedResponse[ConversationAdminItem])
 async def list_conversation(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -534,48 +526,34 @@ async def list_conversation(
     Note: ConversationScenario has no jlpt_level column; jlpt_level filter is ignored.
     jlpt_level in response is always None.
     """
-    q = select(ConversationScenario)
-
-    # jlpt_level filter not applicable to conversation_scenarios
-    if category is not None:
-        q = q.where(ConversationScenario.category == category)
-    if review_status is not None:
-        q = q.where(ConversationScenario.review_status == review_status)
-    if search:
-        q = q.where(
-            or_(
-                ConversationScenario.title.ilike(f"%{search}%"),
-                ConversationScenario.title_ja.ilike(f"%{search}%"),
-                ConversationScenario.description.ilike(f"%{search}%"),
-            )
-        )
-
-    total_result = await db.execute(select(func.count()).select_from(q.subquery()))
-    total = total_result.scalar_one()
-
-    sort_col = _CONVERSATION_SORT_COLS.get(sort_by or "", ConversationScenario.created_at)
-    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
-
-    offset = (page - 1) * page_size
-    items_result = await db.execute(q.order_by(order_expr).offset(offset).limit(page_size))
-    items = items_result.scalars().all()
+    result = await list_admin_conversation(
+        db,
+        page=page,
+        page_size=page_size,
+        jlpt_level=jlpt_level,
+        review_status=review_status,
+        search=search,
+        category=category,
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
 
     return PaginatedResponse(
         items=[
             ConversationAdminItem(
                 id=item.id,
                 title=item.title,
-                category=item.category.value,
-                jlpt_level=None,  # no jlpt_level on conversation_scenarios
-                review_status=item.review_status.value,
+                category=item.category,
+                jlpt_level=item.jlpt_level,
+                review_status=item.review_status,
                 created_at=item.created_at,
             )
-            for item in items
+            for item in result.items
         ],
-        total=total,
-        page=page,
-        page_size=page_size,
-        total_pages=math.ceil(total / page_size) if total > 0 else 1,
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
     )
 
 
