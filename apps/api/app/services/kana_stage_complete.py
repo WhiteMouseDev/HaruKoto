@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import DailyProgress, KanaCharacter, KanaLearningStage, UserKanaProgress, UserKanaStage
+from app.models import KanaCharacter, KanaLearningStage, UserKanaProgress, UserKanaStage
 from app.models.enums import KanaType
 from app.models.user import User
 from app.schemas.kana import KanaStageCompleteRequest
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.kana_daily_progress import apply_daily_progress_increment
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
 
@@ -87,7 +88,7 @@ async def complete_kana_stage(
     user.longest_streak = streak_info["longest_streak"]
     user.last_study_date = now
 
-    await update_kana_stage_daily_progress(db, user_id=user.id, today=today, xp_earned=xp_earned)
+    await apply_daily_progress_increment(db, user_id=user.id, today=today, xp_earned=xp_earned)
 
     completion_status = await get_kana_completion_status(db, user_id=user.id)
     events = await grant_kana_stage_achievements(
@@ -155,25 +156,6 @@ async def unlock_next_kana_stage(db: AsyncSession, *, user_id: uuid.UUID, stage:
     )
     await db.execute(unlock_stmt)
     return True
-
-
-async def update_kana_stage_daily_progress(
-    db: AsyncSession,
-    *,
-    user_id: uuid.UUID,
-    today: date,
-    xp_earned: int,
-) -> None:
-    stmt = pg_insert(DailyProgress).values(
-        user_id=user_id,
-        date=today,
-        xp_earned=xp_earned,
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={"xp_earned": DailyProgress.xp_earned + xp_earned},
-    )
-    await db.execute(stmt)
 
 
 async def get_kana_completion_status(db: AsyncSession, *, user_id: uuid.UUID) -> KanaCompletionStatus:

@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import uuid
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import DailyProgress, QuizSession
+from app.models import QuizSession
 from app.models.user import User
 from app.schemas.kana import KanaQuizCompleteRequest
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.kana_daily_progress import apply_daily_progress_increment
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
 
@@ -57,12 +56,12 @@ async def complete_kana_quiz_session(
     user.longest_streak = streak_info["longest_streak"]
     user.last_study_date = now
 
-    await update_kana_quiz_daily_progress(
+    await apply_daily_progress_increment(
         db,
         user_id=user.id,
         today=today,
         xp_earned=xp_earned,
-        correct_count=correct_count,
+        kana_learned=correct_count,
     )
     events = await grant_kana_quiz_achievements(db, user=user, old_level=old_level)
     session.completed_at = now
@@ -82,30 +81,6 @@ def calculate_kana_quiz_accuracy(*, correct_count: int, total_questions: int) ->
 
 def resolve_kana_quiz_xp(accuracy: int) -> int:
     return KANA_REWARDS.QUIZ_PERFECT_XP if accuracy == 100 else KANA_REWARDS.QUIZ_PASS_XP
-
-
-async def update_kana_quiz_daily_progress(
-    db: AsyncSession,
-    *,
-    user_id: uuid.UUID,
-    today: date,
-    xp_earned: int,
-    correct_count: int,
-) -> None:
-    stmt = pg_insert(DailyProgress).values(
-        user_id=user_id,
-        date=today,
-        xp_earned=xp_earned,
-        kana_learned=correct_count,
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={
-            "xp_earned": DailyProgress.xp_earned + xp_earned,
-            "kana_learned": DailyProgress.kana_learned + correct_count,
-        },
-    )
-    await db.execute(stmt)
 
 
 async def grant_kana_quiz_achievements(

@@ -10,7 +10,6 @@ import pytest
 from app.schemas.kana import KanaProgressRecord
 from app.services import kana_progress
 from app.services.kana_progress import (
-    build_daily_kana_increment_statement,
     build_kana_progress_upsert_statement,
     record_kana_learning_progress,
 )
@@ -45,12 +44,3 @@ def test_build_kana_progress_upsert_statement_returns_executable_statement():
     )
 
     assert "user_kana_progress" in str(stmt)
-
-
-def test_build_daily_kana_increment_statement_returns_executable_statement():
-    stmt = build_daily_kana_increment_statement(
-        user_id=uuid.uuid4(),
-        today=date(2026, 4, 21),
-    )
-
-    assert "daily_progress" in str(stmt)

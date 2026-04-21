@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import DailyProgress, UserKanaProgress
+from app.models import UserKanaProgress
 from app.models.user import User
 from app.schemas.kana import KanaProgressRecord
+from app.services.kana_daily_progress import apply_daily_progress_increment
 from app.utils.date import get_today_kst
 
 
@@ -31,11 +32,11 @@ async def record_kana_learning_progress(
             reviewed_at=datetime.now(UTC),
         )
     )
-    await db.execute(
-        build_daily_kana_increment_statement(
-            user_id=user.id,
-            today=get_today_kst(),
-        )
+    await apply_daily_progress_increment(
+        db,
+        user_id=user.id,
+        today=get_today_kst(),
+        kana_learned=1,
     )
     await db.commit()
     return KanaProgressRecordResult(ok=True)
@@ -60,20 +61,4 @@ def build_kana_progress_upsert_statement(
             "streak": UserKanaProgress.streak + 1,
             "last_reviewed_at": reviewed_at,
         },
-    )
-
-
-def build_daily_kana_increment_statement(
-    *,
-    user_id: uuid.UUID,
-    today: date,
-) -> Any:
-    stmt = pg_insert(DailyProgress).values(
-        user_id=user_id,
-        date=today,
-        kana_learned=1,
-    )
-    return stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={"kana_learned": DailyProgress.kana_learned + 1},
     )
