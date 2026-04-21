@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_service.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_end_flow_coordinator.dart';
-import 'voice_call_live_event_binder.dart';
+import 'voice_call_live_session_starter.dart';
 import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_session_state.dart';
@@ -83,17 +82,25 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
       return;
     }
 
-    try {
-      _resources?.attachService(service);
-      _bindService(service, generation);
-      await service.start();
-    } catch (e) {
-      debugPrint('[VoiceCallSession] Start failed: $e');
-      if (_isStale(generation)) return;
-      await _resources?.stopRingtone();
+    final startLiveResult =
+        await ref.read(voiceCallLiveSessionStarterProvider).start(
+              VoiceCallLiveSessionStartInput(
+                service: service,
+                resources: _resources,
+                isActive: () => !_isStale(generation),
+                callbacks: VoiceCallLiveSessionCallbacks(
+                  onStateChange: _handleLiveStateChange,
+                  onAiTextDelta: _appendAiTextDelta,
+                  onTranscriptEntry: _handleTranscriptEntry,
+                  onError: _setErrorMessage,
+                ),
+              ),
+            );
+    if (startLiveResult.stale) return;
+    if (startLiveResult.hasError) {
       state = state.copyWith(
         status: VoiceCallStatus.error,
-        errorMessage: '연결에 실패했습니다: $e',
+        errorMessage: startLiveResult.errorMessage,
       );
     }
   }
@@ -130,17 +137,6 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
             );
 
     return VoiceCallEndResult(analysisRequest: analysisRequest);
-  }
-
-  void _bindService(GeminiLiveService service, int generation) {
-    VoiceCallLiveEventBinder(
-      service: service,
-      isActive: () => !_isStale(generation),
-      onStateChange: _handleLiveStateChange,
-      onAiTextDelta: _appendAiTextDelta,
-      onTranscriptEntry: _handleTranscriptEntry,
-      onError: _setErrorMessage,
-    ).bind();
   }
 
   void _handleLiveStateChange(GeminiLiveState liveState) {
