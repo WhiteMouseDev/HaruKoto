@@ -27,7 +27,7 @@ from app.services.chat_history import (
     message_list,
 )
 from app.services.conversation_rewards import grant_conversation_completion_rewards
-from app.services.subscription import check_ai_limit
+from app.services.subscription_ai_usage import check_ai_limit
 from app.utils.constants import RATE_LIMITS
 from app.utils.date import get_now_kst
 from app.utils.prompts import SYSTEM_PROMPTS, build_system_prompt

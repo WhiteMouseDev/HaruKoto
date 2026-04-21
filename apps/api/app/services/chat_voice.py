@@ -13,7 +13,7 @@ from app.models.enums import ConversationType
 from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest
 from app.services.ai import generate_live_feedback, generate_live_token, generate_tts, transcribe_audio
 from app.services.conversation_rewards import grant_conversation_completion_rewards
-from app.services.subscription import check_ai_limit
+from app.services.subscription_ai_usage import check_ai_limit
 from app.utils.constants import RATE_LIMITS
 from app.utils.date import get_now_kst
 

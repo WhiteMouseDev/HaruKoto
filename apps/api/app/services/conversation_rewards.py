@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Conversation, DailyProgress, Notification, User
 from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
-from app.services.subscription import track_ai_usage
+from app.services.subscription_ai_usage import track_ai_usage
 from app.utils.constants import REWARDS
 from app.utils.date import get_today_kst
 

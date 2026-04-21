@@ -31,10 +31,10 @@ from app.services.subscription import (
     PlanSlug,
     activate_subscription,
     cancel_subscription,
-    get_daily_ai_usage,
     get_subscription_status,
     resume_subscription,
 )
+from app.services.subscription_ai_usage import get_daily_ai_usage
 from app.utils.constants import AI_LIMITS, PRICES
 from app.utils.helpers import enum_value
 
