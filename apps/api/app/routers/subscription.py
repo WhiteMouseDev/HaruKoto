@@ -8,8 +8,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-logger = logging.getLogger(__name__)
-
 from app.config import settings
 from app.db.session import get_db
 from app.dependencies import get_current_user
@@ -27,16 +25,17 @@ from app.schemas.subscription import (
     SubscriptionStatusResponse,
 )
 from app.services.portone import verify_payment_amount
-from app.services.subscription import (
-    PlanSlug,
+from app.services.subscription import PlanSlug, get_subscription_status
+from app.services.subscription_ai_usage import get_daily_ai_usage
+from app.services.subscription_lifecycle import (
     activate_subscription,
     cancel_subscription,
-    get_subscription_status,
     resume_subscription,
 )
-from app.services.subscription_ai_usage import get_daily_ai_usage
 from app.utils.constants import AI_LIMITS, PRICES
 from app.utils.helpers import enum_value
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
 

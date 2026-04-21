@@ -14,7 +14,8 @@ from app.config import settings
 from app.db.session import get_db
 from app.models import Payment
 from app.schemas.subscription import StoreNotificationAck, StoreNotificationRequest
-from app.services.subscription import PlanSlug, activate_subscription
+from app.services.subscription import PlanSlug
+from app.services.subscription_lifecycle import activate_subscription
 from app.utils.helpers import enum_value
 
 logger = logging.getLogger(__name__)
