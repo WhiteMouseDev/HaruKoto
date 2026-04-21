@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import random
 import uuid
-from collections.abc import Iterable
 from datetime import datetime, timedelta
-from typing import Protocol
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,13 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Grammar, UserGrammarProgress, UserVocabProgress, Vocabulary
 from app.services.distractor import generate_distractors
 from app.services.quiz_question_builder import QuestionPayload
+from app.services.quiz_smart_item_selection import build_exclude_ids, calculate_new_count_needed, dedupe_by_meaning, merge_smart_items
 from app.services.quiz_smart_question_payloads import build_smart_grammar_questions, build_smart_vocab_question
 from app.utils.constants import SRS_CONFIG
-
-
-class SmartContentItem(Protocol):
-    id: uuid.UUID
-    meaning_ko: str
 
 
 async def load_smart_questions(
@@ -64,11 +58,11 @@ async def _load_smart_vocab_questions(
 
     studied_ids_result = await db.execute(select(UserVocabProgress.vocabulary_id).where(UserVocabProgress.user_id == user_id))
     studied_ids = set(studied_ids_result.scalars().all())
-    exclude_ids = _build_exclude_ids(studied_ids, review_items, retry_items)
+    exclude_ids = build_exclude_ids(studied_ids, review_items, retry_items)
 
-    new_count_needed = _calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
+    new_count_needed = calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
     new_items = await _load_new_vocab_items(db, jlpt_level=jlpt_level, count=new_count_needed, exclude_ids=exclude_ids)
-    all_items = _dedupe_by_meaning(_merge_smart_items(review_items, retry_items, new_items))
+    all_items = dedupe_by_meaning(merge_smart_items(review_items, retry_items, new_items))
 
     fallback_meanings = await _load_vocab_meanings(db, jlpt_level)
     questions: list[QuestionPayload] = []
@@ -100,11 +94,11 @@ async def _load_smart_grammar_questions(
 
     studied_ids_result = await db.execute(select(UserGrammarProgress.grammar_id).where(UserGrammarProgress.user_id == user_id))
     studied_ids = set(studied_ids_result.scalars().all())
-    exclude_ids = _build_exclude_ids(studied_ids, review_items, retry_items)
+    exclude_ids = build_exclude_ids(studied_ids, review_items, retry_items)
 
-    new_count_needed = _calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
+    new_count_needed = calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
     new_items = await _load_new_grammar_items(db, jlpt_level=jlpt_level, count=new_count_needed, exclude_ids=exclude_ids)
-    all_items = _dedupe_by_meaning(_merge_smart_items(review_items, retry_items, new_items))
+    all_items = dedupe_by_meaning(merge_smart_items(review_items, retry_items, new_items))
 
     all_meanings = await _load_grammar_meanings(db, jlpt_level)
     return build_smart_grammar_questions(all_items, all_meanings=all_meanings, shuffle=random.shuffle)
@@ -252,36 +246,3 @@ async def _load_vocab_meanings(db: AsyncSession, jlpt_level: str) -> list[str]:
 async def _load_grammar_meanings(db: AsyncSession, jlpt_level: str) -> list[str]:
     result = await db.execute(select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50))
     return list(result.scalars().all())
-
-
-def _calculate_new_count_needed(distribution: dict[str, int], *, review_count: int, retry_count: int) -> int:
-    review_shortfall = distribution["review"] - review_count
-    retry_shortfall = distribution["retry"] - retry_count
-    return distribution["new"] + review_shortfall + retry_shortfall
-
-
-def _build_exclude_ids(
-    studied_ids: Iterable[uuid.UUID],
-    review_items: Iterable[SmartContentItem],
-    retry_items: Iterable[SmartContentItem],
-) -> set[uuid.UUID]:
-    return set(studied_ids) | {item.id for item in review_items} | {item.id for item in retry_items}
-
-
-def _merge_smart_items[SmartItem: SmartContentItem](
-    review_items: Iterable[SmartItem],
-    retry_items: Iterable[SmartItem],
-    new_items: Iterable[SmartItem],
-) -> list[SmartItem]:
-    return [*review_items, *retry_items, *new_items]
-
-
-def _dedupe_by_meaning[SmartItem: SmartContentItem](items: Iterable[SmartItem]) -> list[SmartItem]:
-    deduped: list[SmartItem] = []
-    seen_meanings: set[str] = set()
-    for item in items:
-        if item.meaning_ko in seen_meanings:
-            continue
-        seen_meanings.add(item.meaning_ko)
-        deduped.append(item)
-    return deduped
