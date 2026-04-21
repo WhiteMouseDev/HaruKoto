@@ -11,7 +11,7 @@ import 'voice_call_live_event_binder.dart';
 import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_session_state.dart';
-import 'voice_call_start_context_reader.dart';
+import 'voice_call_start_flow_coordinator.dart';
 
 export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
@@ -55,39 +55,38 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     final generation = ++_generation;
     _isEnding = false;
 
-    await _resources?.cancelActiveSession();
-    if (_isStale(generation)) return;
+    final startResult =
+        await ref.read(voiceCallStartFlowCoordinatorProvider).prepare(
+              VoiceCallStartFlowInput(
+                request: request,
+                resources: _resources,
+                isStale: () => _isStale(generation),
+                setState: (nextState) => state = nextState,
+              ),
+            );
+    if (startResult.stale) return;
 
-    final startContext = ref.read(voiceCallStartContextReaderProvider).read();
+    if (startResult.hasError) {
+      state = state.copyWith(
+        status: VoiceCallStatus.error,
+        errorMessage: startResult.errorMessage,
+      );
+      return;
+    }
 
-    state = VoiceCallSessionState(
-      status: VoiceCallStatus.connecting,
-      showSubtitle: startContext.callSettings.subtitleEnabled,
-    );
-
-    await _resources?.playRingtone();
-    if (_isStale(generation)) return;
+    final service = startResult.service;
+    if (service == null) {
+      state = state.copyWith(
+        status: VoiceCallStatus.error,
+        errorMessage: '연결에 실패했습니다',
+      );
+      return;
+    }
 
     try {
-      final service =
-          await ref.read(voiceCallConnectionServiceProvider).prepare(
-                startContext.toConnectionInput(request),
-              );
-      if (_isStale(generation)) {
-        await service.dispose();
-        return;
-      }
-
       _resources?.attachService(service);
       _bindService(service, generation);
       await service.start();
-    } on VoiceCallConnectionException catch (e) {
-      if (_isStale(generation)) return;
-      await _resources?.stopRingtone();
-      state = state.copyWith(
-        status: VoiceCallStatus.error,
-        errorMessage: e.message,
-      );
     } catch (e) {
       debugPrint('[VoiceCallSession] Start failed: $e');
       if (_isStale(generation)) return;
