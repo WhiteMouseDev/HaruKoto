@@ -48,6 +48,7 @@ from app.schemas.admin_content import (
 from app.schemas.common import PaginatedResponse
 from app.services.admin_audit_logs import list_admin_audit_logs
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
+from app.services.admin_content_detail import AdminContentDetailServiceError, get_admin_content_item
 from app.services.admin_content_edit import AdminContentEditServiceError, edit_admin_content_item
 from app.services.admin_content_responses import (
     to_cloze_detail_response,
@@ -150,6 +151,22 @@ async def _review_admin_content_or_http(
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
+async def _get_admin_content_or_http(
+    db: AsyncSession,
+    *,
+    content_type: str,
+    item_id: uuid.UUID,
+) -> Any:
+    try:
+        return await get_admin_content_item(
+            db,
+            content_type=content_type,
+            item_id=item_id,
+        )
+    except AdminContentDetailServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
 async def _edit_admin_content_or_http(
     db: AsyncSession,
     *,
@@ -236,10 +253,7 @@ async def get_vocabulary_detail(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> VocabularyDetailResponse:
     """Return full detail for a single vocabulary item."""
-    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
+    item = await _get_admin_content_or_http(db, content_type="vocabulary", item_id=item_id)
     return to_vocabulary_detail_response(item)
 
 
@@ -344,10 +358,7 @@ async def get_grammar_detail(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> GrammarDetailResponse:
     """Return full detail for a single grammar item."""
-    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
+    item = await _get_admin_content_or_http(db, content_type="grammar", item_id=item_id)
     return to_grammar_detail_response(item)
 
 
@@ -490,10 +501,7 @@ async def get_cloze_detail(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ClozeQuestionDetailResponse:
     """Return full detail for a single cloze question."""
-    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
+    item = await _get_admin_content_or_http(db, content_type="cloze", item_id=item_id)
     return to_cloze_detail_response(item)
 
 
@@ -540,10 +548,7 @@ async def get_sentence_arrange_detail(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> SentenceArrangeDetailResponse:
     """Return full detail for a single sentence arrange question."""
-    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
+    item = await _get_admin_content_or_http(db, content_type="sentence_arrange", item_id=item_id)
     return to_sentence_arrange_detail_response(item)
 
 
@@ -665,10 +670,7 @@ async def get_conversation_detail(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ConversationDetailResponse:
     """Return full detail for a single conversation scenario."""
-    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
+    item = await _get_admin_content_or_http(db, content_type="conversation", item_id=item_id)
     return to_conversation_detail_response(item)
 
 
