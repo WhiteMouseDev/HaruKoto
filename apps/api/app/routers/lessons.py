@@ -31,15 +31,13 @@ from app.schemas.lesson import (
     ReviewSummaryResponse,
     VocabItem,
 )
+from app.services.lesson_chapter_query import get_chapters_data
 from app.services.lesson_command import (
     LessonServiceError,
     start_lesson_progress,
     submit_lesson_attempt,
 )
 from app.services.lesson_detail_query import get_lesson_detail_data
-from app.services.lesson_query import (
-    get_chapters_data,
-)
 from app.services.lesson_review_summary_query import get_review_summary_data
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
