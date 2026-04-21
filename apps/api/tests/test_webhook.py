@@ -38,7 +38,7 @@ def make_webhook_request(webhook_secret):
 
 
 @pytest.mark.asyncio
-@patch("app.routers.webhook.activate_subscription")
+@patch("app.services.portone_webhook.activate_subscription")
 @patch("app.routers.webhook.settings")
 async def test_valid_webhook_activates_subscription(
     mock_settings, mock_activate, client, mock_user, test_user_id, webhook_secret, make_webhook_request

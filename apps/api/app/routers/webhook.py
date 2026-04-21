@@ -1,22 +1,19 @@
 from __future__ import annotations
 
-import hashlib
-import hmac
 import logging
-import time
-from typing import Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.session import get_db
-from app.models import Payment
 from app.schemas.subscription import StoreNotificationAck, StoreNotificationRequest
-from app.services.subscription import PlanSlug
-from app.services.subscription_lifecycle import activate_subscription
-from app.utils.helpers import enum_value
+from app.services.portone_webhook import (
+    PortoneWebhookError,
+    extract_portone_payment_id,
+    handle_portone_payment_event,
+    verify_portone_signature,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,62 +26,28 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)) 
     signature = request.headers.get("x-portone-signature", "")
     timestamp = request.headers.get("x-portone-timestamp", "")
 
-    # Verify HMAC signature
-    if settings.PORTONE_WEBHOOK_SECRET:
-        expected = hmac.new(
-            settings.PORTONE_WEBHOOK_SECRET.encode(),
-            f"{timestamp}.{body.decode()}".encode(),
-            hashlib.sha256,
-        ).hexdigest()
-        if not hmac.compare_digest(signature, expected):
-            raise HTTPException(status_code=401, detail="Invalid signature")
+    try:
+        verify_portone_signature(
+            body=body,
+            signature=signature,
+            timestamp=timestamp,
+            secret=settings.PORTONE_WEBHOOK_SECRET,
+        )
+    except PortoneWebhookError as err:
+        raise HTTPException(status_code=err.status_code, detail=err.detail) from err
 
-        # Check timestamp tolerance (60 seconds)
-        try:
-            ts = int(timestamp)
-            if abs(time.time() - ts) > 60:
-                raise HTTPException(status_code=401, detail="Timestamp expired")
-        except ValueError as err:
-            raise HTTPException(status_code=401, detail="Invalid timestamp") from err
-
-    data = cast(dict[str, Any], await request.json())
-    event_data = cast(dict[str, Any], data.get("data", {}))
-    payment_id = event_data.get("paymentId")
-    if not isinstance(payment_id, str) or not payment_id:
+    payment_id = extract_portone_payment_id(await request.json())
+    if payment_id is None:
         logger.info("Webhook received without paymentId, skipping")
         return {"ok": True}
 
     logger.info("Webhook received", extra={"payment_id": payment_id})
 
-    # Find payment
-    result = await db.execute(select(Payment).where(Payment.portone_payment_id == payment_id))
-    payment = result.scalar_one_or_none()
-    if not payment or payment.status.value != "PENDING":
-        logger.info(
-            "Webhook skipped (idempotent)",
-            extra={
-                "payment_id": payment_id,
-                "status": payment.status.value if payment else "not_found",
-            },
-        )
-        return {"ok": True}  # Idempotent
+    try:
+        await handle_portone_payment_event(db, payment_id)
+    except PortoneWebhookError as err:
+        raise HTTPException(status_code=err.status_code, detail=err.detail) from err
 
-    plan_value = enum_value(payment.plan).lower()
-    if plan_value not in ("monthly", "yearly"):
-        raise HTTPException(status_code=400, detail="유효하지 않은 플랜입니다")
-    plan: PlanSlug = "monthly" if plan_value == "monthly" else "yearly"
-    logger.info(
-        "Webhook activating subscription",
-        extra={
-            "payment_id": payment_id,
-            "user_id": str(payment.user_id),
-            "plan": plan,
-            "amount": payment.amount,
-        },
-    )
-    await activate_subscription(db, payment.user_id, plan, payment_id, payment.amount)
-    await db.commit()
-    logger.info("Webhook subscription activated", extra={"payment_id": payment_id, "user_id": str(payment.user_id)})
     return {"ok": True}
 
 
