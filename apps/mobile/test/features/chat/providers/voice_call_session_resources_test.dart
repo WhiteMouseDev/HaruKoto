@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_resources.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_session_service_lifecycle.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_timer.dart';
 
 void main() {
@@ -45,6 +46,18 @@ void main() {
       await resources.endService();
 
       expect(service.endCalls, 1);
+    });
+
+    test('setMuted delegates to the live service lifecycle', () {
+      final lifecycle = _FakeVoiceCallSessionServiceLifecycle();
+      final resources = VoiceCallSessionResources(
+        _FakeVoiceCallRingtonePlayer(),
+        serviceLifecycle: lifecycle,
+      );
+
+      resources.setMuted(true);
+
+      expect(lifecycle.mutedValues, [true]);
     });
 
     test('dispose cancels session and disposes ringtone', () async {
@@ -125,4 +138,29 @@ class _FakeVoiceCallSessionTimer implements VoiceCallSessionTimer {
   void dispose() {
     disposed = true;
   }
+}
+
+class _FakeVoiceCallSessionServiceLifecycle
+    implements VoiceCallSessionServiceLifecycle {
+  final List<bool> mutedValues = [];
+
+  @override
+  GeminiLiveService? get service => null;
+
+  @override
+  List<TranscriptEntry> get transcript => const <TranscriptEntry>[];
+
+  @override
+  void attach(GeminiLiveService service) {}
+
+  @override
+  void setMuted(bool isMuted) {
+    mutedValues.add(isMuted);
+  }
+
+  @override
+  Future<void> end() async {}
+
+  @override
+  Future<void> disposeActive() async {}
 }
