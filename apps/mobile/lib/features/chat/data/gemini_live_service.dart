@@ -1,16 +1,15 @@
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_audio_session.dart';
 import 'gemini_live_events.dart';
-import 'gemini_live_greeting_sender.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
+import 'gemini_live_session_components_factory.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_session_lifecycle_runner_factory.dart';
 import 'gemini_live_session_runtime_factory.dart';
-import 'gemini_live_setup_sender.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
@@ -47,7 +46,6 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
-  late final GeminiLiveSetupSender _setupSender;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveSessionRuntime _sessionRuntime;
   late final GeminiLiveSessionLifecycleRunner _sessionLifecycleRunner;
@@ -77,6 +75,7 @@ class GeminiLiveService {
     GeminiLiveReconnectCoordinator? reconnectCoordinator,
     GeminiLiveLifecycleController? lifecycleController,
     GeminiLiveTransport? transport,
+    GeminiLiveSessionComponentsFactory? sessionComponentsFactory,
     GeminiLiveSessionLifecycleRunnerFactory? lifecycleRunnerFactory,
   })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
         _messageHandler = messageHandler ?? GeminiLiveMessageHandler(),
@@ -92,36 +91,32 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
-    final greetingSender = GeminiLiveGreetingSender(
+    final sessionComponents =
+        (sessionComponentsFactory ?? const GeminiLiveSessionComponentsFactory())
+            .build(
+      model: model,
+      userNickname: userNickname,
+      silenceDurationMs: silenceDurationMs,
+      audioAdapter: _audioAdapter,
       outboundSender: _outboundSender,
+      promptBuilder: _promptBuilder,
+      lifecycleController: _lifecycleController,
+      transport: _transport,
+      emitError: (message) => onError?.call(message),
+      emitAudioUnavailable: () => _setState(GeminiLiveState.error),
+      voiceName: voiceName,
       characterName: characterName,
       scenarioGreeting: scenarioGreeting,
     );
-    _setupSender = GeminiLiveSetupSender(
-      outboundSender: _outboundSender,
-      promptBuilder: _promptBuilder,
-      model: model,
-      voiceName: voiceName,
-      userNickname: userNickname,
-      silenceDurationMs: silenceDurationMs,
-    );
-    _audioSession = GeminiLiveAudioSession(
-      audioAdapter: _audioAdapter,
-      outboundSender: _outboundSender,
-      isActive: () => _lifecycleController.isActive,
-      isTransportConnected: () => _transport.isConnected,
-      isMuted: () => _lifecycleController.isMuted,
-      onError: (message) => onError?.call(message),
-      onUnavailable: () => _setState(GeminiLiveState.error),
-    );
+    _audioSession = sessionComponents.audioSession;
     _sessionRuntime = const GeminiLiveSessionRuntimeFactory().build(
       wsUri: wsUri,
       token: token,
       model: model,
       transport: _transport,
       reconnectCoordinator: _reconnectCoordinator,
-      setupSender: _setupSender,
-      greetingSender: greetingSender,
+      setupSender: sessionComponents.setupSender,
+      greetingSender: sessionComponents.greetingSender,
       audioSession: _audioSession,
       messageHandler: _messageHandler,
       lifecycleController: _lifecycleController,
