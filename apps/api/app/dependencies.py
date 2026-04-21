@@ -95,30 +95,31 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from err
 
-    sub = payload.get("sub")
-    if sub is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token missing subject claim",
-        )
+    return await _load_required_user(db, _required_user_id_from_payload(payload))
 
+
+async def require_reviewer(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """Decode JWT and verify app_metadata.reviewer == True."""
     try:
-        user_id = UUID(sub)
-    except ValueError as err:
+        payload = _decode_token(credentials.credentials)
+    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid subject claim",
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
         ) from err
 
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if user is None:
+    app_metadata = payload.get("app_metadata", {})
+    if not app_metadata.get("reviewer", False):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Reviewer role required",
         )
 
-    return user
+    return await _load_required_user(db, _required_user_id_from_payload(payload))
 
 
 async def get_optional_user(
@@ -133,14 +134,39 @@ async def get_optional_user(
     except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError):
         return None
 
-    sub = payload.get("sub")
-    if sub is None:
-        return None
-
     try:
-        user_id = UUID(sub)
-    except ValueError:
+        user_id = _required_user_id_from_payload(payload)
+    except HTTPException:
         return None
 
     result = await db.execute(select(User).where(User.id == user_id))
     return result.scalar_one_or_none()
+
+
+def _required_user_id_from_payload(payload: dict[str, Any]) -> UUID:
+    sub = payload.get("sub")
+    if sub is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token missing subject claim",
+        )
+
+    try:
+        return UUID(sub)
+    except ValueError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid subject claim",
+        ) from err
+
+
+async def _load_required_user(db: AsyncSession, user_id: UUID) -> User:
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    return user

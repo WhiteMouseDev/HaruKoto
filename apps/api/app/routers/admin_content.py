@@ -3,13 +3,11 @@ from __future__ import annotations
 import uuid
 from typing import Annotated, Any
 
-import jwt
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.dependencies import _decode_token, bearer_scheme
+from app.dependencies import require_reviewer
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
 from app.models.user import User
 from app.schemas.admin_content import (
@@ -68,63 +66,6 @@ from app.services.ai import generate_tts
 from app.services.tts_storage import upload_tts_to_gcs
 
 router = APIRouter(prefix="/api/v1/admin/content", tags=["admin-content"])
-
-
-# ==========================================
-# require_reviewer dependency
-# ==========================================
-
-
-async def require_reviewer(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
-    db: Annotated[AsyncSession, Depends(get_db)],
-) -> User:
-    """Decode JWT and verify app_metadata.reviewer == True. Returns User or raises 403."""
-    try:
-        payload = _decode_token(credentials.credentials)
-    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as err:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from err
-
-    # Check reviewer flag in app_metadata
-    app_metadata = payload.get("app_metadata", {})
-    if not app_metadata.get("reviewer", False):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Reviewer role required",
-        )
-
-    sub = payload.get("sub")
-    if sub is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token missing subject claim",
-        )
-
-    from uuid import UUID
-
-    try:
-        user_id = UUID(sub)
-    except ValueError as err:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid subject claim",
-        ) from err
-
-    from sqlalchemy import select as sa_select
-
-    result = await db.execute(sa_select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-
-    return user
 
 
 async def _review_admin_content_or_http(
