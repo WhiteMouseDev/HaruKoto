@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/gemini_live_service.dart';
+import '../data/gemini_live_events.dart';
+import '../data/gemini_live_transcript.dart';
 import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_end_flow_coordinator.dart';

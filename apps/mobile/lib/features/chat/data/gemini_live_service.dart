@@ -3,6 +3,7 @@ import 'dart:async';
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_audio_session.dart';
 import 'gemini_live_connection_runner.dart';
+import 'gemini_live_events.dart';
 import 'gemini_live_inbound_dispatcher.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
@@ -14,15 +15,14 @@ import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
+export 'gemini_live_events.dart'
+    show
+        GeminiLiveState,
+        OnAiTextDelta,
+        OnError,
+        OnStateChange,
+        OnTranscriptEntry;
 export 'gemini_live_transcript.dart' show TranscriptEntry;
-
-/// Callbacks for voice call UI.
-typedef OnStateChange = void Function(GeminiLiveState state);
-typedef OnAiTextDelta = void Function(String text);
-typedef OnTranscriptEntry = void Function(TranscriptEntry entry);
-typedef OnError = void Function(String message);
-
-enum GeminiLiveState { connecting, connected, ending, ended, error }
 
 /// Service that manages a Gemini Live voice call session.
 class GeminiLiveService {

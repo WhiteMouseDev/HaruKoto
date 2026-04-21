@@ -1,4 +1,4 @@
-import '../data/gemini_live_service.dart';
+import '../data/gemini_live_transcript.dart';
 import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_state.dart';
 

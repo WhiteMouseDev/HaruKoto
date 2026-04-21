@@ -1,4 +1,4 @@
-import '../data/gemini_live_service.dart';
+import '../data/gemini_live_events.dart';
 import 'voice_call_session_state.dart';
 
 class VoiceCallLiveStateTransition {
