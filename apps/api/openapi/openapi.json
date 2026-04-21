@@ -18,7 +18,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
               }
             }
           }
@@ -1814,7 +1820,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Kakao Token Exchange Api V1 Auth Kakao Exchange Post"
+                }
               }
             }
           },
@@ -1844,7 +1856,14 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "object",
+                  "title": "Response Ensure User Api V1 Auth Ensure User Post"
+                }
               }
             }
           }
@@ -1995,7 +2014,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Upload Avatar Api V1 User Avatar Post"
+                }
               }
             }
           },
@@ -2076,7 +2101,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Delete Account Api V1 User Account Delete"
+                }
               }
             }
           }
@@ -2679,7 +2710,14 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Characters Api V1 Kana Characters Get"
+                }
               }
             }
           },
@@ -2731,7 +2769,14 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Stages Api V1 Kana Stages Get"
+                }
               }
             }
           },
@@ -2794,7 +2839,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Record Kana Learning Api V1 Kana Progress Post"
+                }
               }
             }
           },
@@ -3022,7 +3073,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Kana Tts Api V1 Kana Tts Post"
+                }
               }
             }
           },
@@ -3248,7 +3305,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Transcribe Voice Api V1 Chat Voice Transcribe Post"
+                }
               }
             }
           },
@@ -3292,7 +3355,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get Live Token Endpoint Api V1 Chat Live Token Post"
+                }
               }
             }
           },
@@ -3336,7 +3405,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Submit Live Feedback Api V1 Chat Live Feedback Post"
+                }
               }
             }
           },
@@ -3393,7 +3466,14 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Scenarios Api V1 Chat Scenarios Get"
+                }
               }
             }
           },
@@ -3456,7 +3536,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get History Api V1 Chat History Get"
+                }
               }
             }
           },
@@ -3508,7 +3592,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Characters Api V1 Chat Characters Get"
+                }
               }
             }
           },
@@ -3537,7 +3625,16 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "additionalProperties": {
+                      "type": "integer"
+                    },
+                    "type": "object"
+                  },
+                  "type": "object",
+                  "title": "Response Get Character Stats Api V1 Chat Characters Stats Get"
+                }
               }
             }
           }
@@ -3561,7 +3658,16 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "type": "object",
+                  "title": "Response Get Favorite Characters Api V1 Chat Characters Favorites Get"
+                }
               }
             }
           }
@@ -3595,7 +3701,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Toggle Favorite Api V1 Chat Characters Favorites Post"
+                }
               }
             }
           },
@@ -3646,7 +3758,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Conversation Api V1 Chat  Conversation Id  Get"
+                }
               }
             }
           },
@@ -3690,7 +3806,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Delete Conversation Api V1 Chat  Conversation Id  Delete"
+                }
               }
             }
           },
@@ -4376,7 +4498,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Delete Wordbook Entry Api V1 Wordbook  Entry Id  Delete"
+                }
               }
             }
           },
@@ -4487,7 +4615,20 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "type": "object",
+                  "title": "Response Activate Api V1 Subscription Activate Post"
+                }
               }
             }
           },
@@ -4577,7 +4718,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Cancel Api V1 Subscription Cancel Post"
+                }
               }
             }
           },
@@ -4611,7 +4758,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Resume Api V1 Subscription Resume Post"
+                }
               }
             }
           }
@@ -4664,7 +4817,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentHistoryResult"
+                }
               }
             }
           },
@@ -4693,7 +4848,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Portone Webhook Api V1 Webhook Portone Post"
+                }
               }
             }
           }
@@ -4794,7 +4955,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "type": "object",
+                  "title": "Response Subscription Renewal Api V1 Cron Subscription Renewal Post"
+                }
               }
             }
           }
@@ -4814,7 +4981,16 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "type": "object",
+                  "title": "Response Ensure Review Event Partitions Api V1 Cron Ensure Partitions Post"
+                }
               }
             }
           }
@@ -4852,7 +5028,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Fsrs Shadow Report Api V1 Cron Fsrs Shadow Report Post"
+                }
               }
             }
           },
@@ -4891,7 +5071,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Subscribe Push Api V1 Push Subscribe Post"
+                }
               }
             }
           },
@@ -4994,7 +5180,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Mark Notifications Read Api V1 Notifications  Patch"
+                }
               }
             }
           },
@@ -5033,7 +5225,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Vocab Tts Api V1 Vocab Tts Post"
+                }
               }
             }
           },
@@ -8978,6 +9176,92 @@
           "totalPages"
         ],
         "title": "PaginatedResponse[VocabularyAdminItem]"
+      },
+      "PaymentHistoryItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "plan": {
+            "type": "string",
+            "title": "Plan"
+          },
+          "paidAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paidat"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "amount",
+          "currency",
+          "status",
+          "plan",
+          "paidAt",
+          "createdAt"
+        ],
+        "title": "PaymentHistoryItem"
+      },
+      "PaymentHistoryResult": {
+        "properties": {
+          "payments": {
+            "items": {
+              "$ref": "#/components/schemas/PaymentHistoryItem"
+            },
+            "type": "array",
+            "title": "Payments"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "totalPages": {
+            "type": "integer",
+            "title": "Totalpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payments",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "title": "PaymentHistoryResult"
       },
       "PoolSize": {
         "properties": {
