@@ -4,11 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/gemini_live_service.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_session_resources.dart';
-import 'voice_call_session_state.dart';
 import 'voice_call_start_context_reader.dart';
-
-typedef VoiceCallStaleCheck = bool Function();
-typedef VoiceCallStateSetter = void Function(VoiceCallSessionState state);
+import 'voice_call_start_preparation_step.dart';
 
 final voiceCallStartFlowCoordinatorProvider =
     Provider<VoiceCallStartFlowCoordinator>((ref) {
@@ -55,31 +52,33 @@ class VoiceCallStartFlowResult {
 }
 
 class VoiceCallStartFlowCoordinator {
-  const VoiceCallStartFlowCoordinator({
+  VoiceCallStartFlowCoordinator({
     required VoiceCallStartContextReader startContextReader,
     required VoiceCallConnectionService connectionService,
-  })  : _startContextReader = startContextReader,
+    VoiceCallStartPreparationStep? preparationStep,
+  })  : _preparationStep = preparationStep ??
+            VoiceCallStartPreparationStep(
+              startContextReader: startContextReader,
+            ),
         _connectionService = connectionService;
 
-  final VoiceCallStartContextReader _startContextReader;
+  final VoiceCallStartPreparationStep _preparationStep;
   final VoiceCallConnectionService _connectionService;
 
   Future<VoiceCallStartFlowResult> prepare(
     VoiceCallStartFlowInput input,
   ) async {
-    await input.resources?.cancelActiveSession();
-    if (input.isStale()) return const VoiceCallStartFlowResult.stale();
-
-    final startContext = _startContextReader.read();
-    input.setState(
-      VoiceCallSessionState(
-        status: VoiceCallStatus.connecting,
-        showSubtitle: startContext.callSettings.subtitleEnabled,
+    final preparation = await _preparationStep.prepare(
+      VoiceCallStartPreparationInput(
+        resources: input.resources,
+        isStale: input.isStale,
+        setState: input.setState,
       ),
     );
-
-    await input.resources?.playRingtone();
-    if (input.isStale()) return const VoiceCallStartFlowResult.stale();
+    final startContext = preparation.context;
+    if (preparation.stale || startContext == null) {
+      return const VoiceCallStartFlowResult.stale();
+    }
 
     try {
       final service = await _connectionService.prepare(
