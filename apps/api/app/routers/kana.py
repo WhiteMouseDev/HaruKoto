@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import random
-import uuid
 from datetime import UTC, datetime
 from typing import Any
 
@@ -36,6 +34,7 @@ from app.schemas.kana import (
     KanaStat,
 )
 from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
+from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
 
@@ -252,47 +251,11 @@ async def start_kana_quiz(
     if not characters:
         raise HTTPException(status_code=400, detail="가나 문자를 찾을 수 없습니다")
 
-    # Generate questions
-    questions: list[dict[str, Any]] = []
-    quiz_chars = characters.copy()
-    random.shuffle(quiz_chars)
-    quiz_chars = quiz_chars[: body.count]
-
-    for char in quiz_chars:
-        wrong_pool = [c for c in characters if c.id != char.id]
-        random.shuffle(wrong_pool)
-        wrong_pool = wrong_pool[:3]
-
-        correct_id = str(uuid.uuid4())
-
-        if body.quiz_mode == "recognition":
-            # Show kana -> pick romaji
-            question_text = char.character
-            options = [{"id": correct_id, "text": char.romaji}]
-            for w in wrong_pool:
-                options.append({"id": str(uuid.uuid4()), "text": w.romaji})
-        elif body.quiz_mode == "sound_matching":
-            # Show romaji -> pick kana
-            question_text = char.romaji
-            options = [{"id": correct_id, "text": char.character}]
-            for w in wrong_pool:
-                options.append({"id": str(uuid.uuid4()), "text": w.character})
-        else:
-            # kana_matching - default to recognition
-            question_text = char.character
-            options = [{"id": correct_id, "text": char.romaji}]
-            for w in wrong_pool:
-                options.append({"id": str(uuid.uuid4()), "text": w.romaji})
-
-        random.shuffle(options)
-        questions.append(
-            {
-                "id": str(char.id),
-                "question": question_text,
-                "options": options,
-                "correctOptionId": correct_id,
-            }
-        )
+    questions = build_kana_quiz_questions(
+        characters,
+        count=body.count,
+        quiz_mode=body.quiz_mode,
+    )
 
     # Create quiz session
     session = QuizSession(
@@ -306,20 +269,9 @@ async def start_kana_quiz(
     await db.commit()
     await db.refresh(session)
 
-    # Strip correctOptionId from response
-    resp_questions: list[dict[str, Any]] = []
-    for q in questions:
-        resp_questions.append(
-            {
-                "id": q["id"],
-                "question": q["question"],
-                "options": q["options"],
-            }
-        )
-
     return KanaQuizStartResponse(
         session_id=session.id,
-        questions=resp_questions,
+        questions=strip_kana_quiz_answers(questions),
         total_questions=len(questions),
     )
 
