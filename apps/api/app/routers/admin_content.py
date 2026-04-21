@@ -49,6 +49,13 @@ from app.schemas.admin_content import (
 from app.schemas.common import PaginatedResponse
 from app.services.admin_audit_logs import list_admin_audit_logs
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
+from app.services.admin_content_responses import (
+    to_cloze_detail_response,
+    to_conversation_detail_response,
+    to_grammar_detail_response,
+    to_sentence_arrange_detail_response,
+    to_vocabulary_detail_response,
+)
 from app.services.admin_content_review import AdminContentReviewServiceError, review_admin_content_item
 from app.services.admin_content_stats import get_admin_content_stats
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
@@ -213,20 +220,7 @@ async def get_vocabulary_detail(
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return VocabularyDetailResponse(
-        id=item.id,
-        word=item.word,
-        reading=item.reading,
-        meaning_ko=item.meaning_ko,
-        jlpt_level=item.jlpt_level.value,
-        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
-        example_sentence=item.example_sentence,
-        example_reading=item.example_reading,
-        example_translation=item.example_translation,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_vocabulary_detail_response(item)
 
 
 @router.patch("/vocabulary/{item_id}", response_model=VocabularyDetailResponse)
@@ -262,20 +256,7 @@ async def patch_vocabulary(
 
     await db.commit()
     await db.refresh(item)
-    return VocabularyDetailResponse(
-        id=item.id,
-        word=item.word,
-        reading=item.reading,
-        meaning_ko=item.meaning_ko,
-        jlpt_level=item.jlpt_level.value,
-        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
-        example_sentence=item.example_sentence,
-        example_reading=item.example_reading,
-        example_translation=item.example_translation,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_vocabulary_detail_response(item)
 
 
 @router.post("/vocabulary/{item_id}/review", response_model=VocabularyDetailResponse)
@@ -293,20 +274,7 @@ async def review_vocabulary(
         body=body,
         reviewer_id=reviewer.id,
     )
-    return VocabularyDetailResponse(
-        id=item.id,
-        word=item.word,
-        reading=item.reading,
-        meaning_ko=item.meaning_ko,
-        jlpt_level=item.jlpt_level.value,
-        part_of_speech=item.part_of_speech.value if item.part_of_speech else None,
-        example_sentence=item.example_sentence,
-        example_reading=item.example_reading,
-        example_translation=item.example_translation,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_vocabulary_detail_response(item)
 
 
 # ==========================================
@@ -378,17 +346,7 @@ async def get_grammar_detail(
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return GrammarDetailResponse(
-        id=item.id,
-        pattern=item.pattern,
-        meaning_ko=item.meaning_ko,
-        explanation=item.explanation,
-        example_sentences=item.example_sentences,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_grammar_detail_response(item)
 
 
 @router.patch("/grammar/{item_id}", response_model=GrammarDetailResponse)
@@ -424,17 +382,7 @@ async def patch_grammar(
 
     await db.commit()
     await db.refresh(item)
-    return GrammarDetailResponse(
-        id=item.id,
-        pattern=item.pattern,
-        meaning_ko=item.meaning_ko,
-        explanation=item.explanation,
-        example_sentences=item.example_sentences,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_grammar_detail_response(item)
 
 
 @router.post("/grammar/{item_id}/review", response_model=GrammarDetailResponse)
@@ -452,17 +400,7 @@ async def review_grammar(
         body=body,
         reviewer_id=reviewer.id,
     )
-    return GrammarDetailResponse(
-        id=item.id,
-        pattern=item.pattern,
-        meaning_ko=item.meaning_ko,
-        explanation=item.explanation,
-        example_sentences=item.example_sentences,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_grammar_detail_response(item)
 
 
 # ==========================================
@@ -572,18 +510,7 @@ async def get_cloze_detail(
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return ClozeQuestionDetailResponse(
-        id=item.id,
-        sentence=item.sentence,
-        translation=item.translation,
-        correct_answer=item.correct_answer,
-        options=item.options,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_cloze_detail_response(item)
 
 
 @router.patch("/quiz/cloze/{item_id}", response_model=ClozeQuestionDetailResponse)
@@ -619,18 +546,7 @@ async def patch_cloze(
 
     await db.commit()
     await db.refresh(item)
-    return ClozeQuestionDetailResponse(
-        id=item.id,
-        sentence=item.sentence,
-        translation=item.translation,
-        correct_answer=item.correct_answer,
-        options=item.options,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_cloze_detail_response(item)
 
 
 @router.post("/quiz/cloze/{item_id}/review", response_model=ClozeQuestionDetailResponse)
@@ -648,18 +564,7 @@ async def review_cloze(
         body=body,
         reviewer_id=reviewer.id,
     )
-    return ClozeQuestionDetailResponse(
-        id=item.id,
-        sentence=item.sentence,
-        translation=item.translation,
-        correct_answer=item.correct_answer,
-        options=item.options,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_cloze_detail_response(item)
 
 
 @router.get("/quiz/sentence-arrange/{item_id}", response_model=SentenceArrangeDetailResponse)
@@ -673,17 +578,7 @@ async def get_sentence_arrange_detail(
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return SentenceArrangeDetailResponse(
-        id=item.id,
-        korean_sentence=item.korean_sentence,
-        japanese_sentence=item.japanese_sentence,
-        tokens=item.tokens,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_sentence_arrange_detail_response(item)
 
 
 @router.patch("/quiz/sentence-arrange/{item_id}", response_model=SentenceArrangeDetailResponse)
@@ -719,17 +614,7 @@ async def patch_sentence_arrange(
 
     await db.commit()
     await db.refresh(item)
-    return SentenceArrangeDetailResponse(
-        id=item.id,
-        korean_sentence=item.korean_sentence,
-        japanese_sentence=item.japanese_sentence,
-        tokens=item.tokens,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_sentence_arrange_detail_response(item)
 
 
 @router.post("/quiz/sentence-arrange/{item_id}/review", response_model=SentenceArrangeDetailResponse)
@@ -747,17 +632,7 @@ async def review_sentence_arrange(
         body=body,
         reviewer_id=reviewer.id,
     )
-    return SentenceArrangeDetailResponse(
-        id=item.id,
-        korean_sentence=item.korean_sentence,
-        japanese_sentence=item.japanese_sentence,
-        tokens=item.tokens,
-        explanation=item.explanation,
-        jlpt_level=item.jlpt_level.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_sentence_arrange_detail_response(item)
 
 
 # ==========================================
@@ -846,21 +721,7 @@ async def get_conversation_detail(
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return ConversationDetailResponse(
-        id=item.id,
-        title=item.title,
-        title_ja=item.title_ja,
-        description=item.description,
-        situation=item.situation,
-        your_role=item.your_role,
-        ai_role=item.ai_role,
-        system_prompt=item.system_prompt,
-        key_expressions=list(item.key_expressions) if item.key_expressions else None,
-        category=item.category.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_conversation_detail_response(item)
 
 
 @router.patch("/conversation/{item_id}", response_model=ConversationDetailResponse)
@@ -896,21 +757,7 @@ async def patch_conversation(
 
     await db.commit()
     await db.refresh(item)
-    return ConversationDetailResponse(
-        id=item.id,
-        title=item.title,
-        title_ja=item.title_ja,
-        description=item.description,
-        situation=item.situation,
-        your_role=item.your_role,
-        ai_role=item.ai_role,
-        system_prompt=item.system_prompt,
-        key_expressions=list(item.key_expressions) if item.key_expressions else None,
-        category=item.category.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_conversation_detail_response(item)
 
 
 @router.post("/conversation/{item_id}/review", response_model=ConversationDetailResponse)
@@ -928,21 +775,7 @@ async def review_conversation(
         body=body,
         reviewer_id=reviewer.id,
     )
-    return ConversationDetailResponse(
-        id=item.id,
-        title=item.title,
-        title_ja=item.title_ja,
-        description=item.description,
-        situation=item.situation,
-        your_role=item.your_role,
-        ai_role=item.ai_role,
-        system_prompt=item.system_prompt,
-        key_expressions=list(item.key_expressions) if item.key_expressions else None,
-        category=item.category.value,
-        review_status=item.review_status.value,
-        created_at=item.created_at,
-        updated_at=None,
-    )
+    return to_conversation_detail_response(item)
 
 
 # ==========================================
