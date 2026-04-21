@@ -11,6 +11,7 @@ import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_session_lifecycle_runner_factory.dart';
 import 'gemini_live_session_runtime_factory.dart';
 import 'gemini_live_transcript.dart';
+import 'gemini_live_transcript_emitter.dart';
 import 'gemini_live_transport.dart';
 
 export 'gemini_live_events.dart'
@@ -46,6 +47,7 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveTranscriptEmitter _transcriptEmitter;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveSessionRuntime _sessionRuntime;
   late final GeminiLiveSessionLifecycleRunner _sessionLifecycleRunner;
@@ -91,6 +93,10 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
+    _transcriptEmitter = GeminiLiveTranscriptEmitter(
+      messageHandler: _messageHandler,
+      emitEntry: (entry) => onTranscriptEntry?.call(entry),
+    );
     final sessionComponents =
         (sessionComponentsFactory ?? const GeminiLiveSessionComponentsFactory())
             .build(
@@ -123,7 +129,7 @@ class GeminiLiveService {
       emitState: _setState,
       emitError: (message) => onError?.call(message),
       onAiTextDelta: _emitAiTextDelta,
-      onTranscriptEntry: _emitTranscriptEntry,
+      onTranscriptEntry: _transcriptEmitter.emit,
       onAudioChunk: _playAudioChunk,
     );
     _sessionLifecycleRunner = (lifecycleRunnerFactory ??
@@ -135,7 +141,7 @@ class GeminiLiveService {
       stopRecording: _audioSession.stopRecording,
       disposeAudio: _audioSession.dispose,
       closeTransport: _transport.close,
-      flushTranscripts: _flushTranscripts,
+      flushTranscripts: _transcriptEmitter.flush,
       emitConnectingState: () => _setState(GeminiLiveState.connecting),
       emitErrorState: () => _setState(GeminiLiveState.error),
       emitEndingState: () => _setState(GeminiLiveState.ending),
@@ -145,8 +151,7 @@ class GeminiLiveService {
   }
 
   List<TranscriptEntry> get transcript {
-    _flushTranscripts();
-    return _messageHandler.transcript;
+    return _transcriptEmitter.transcript;
   }
 
   /// Start the voice call: connect WebSocket, send setup, start mic.
@@ -168,22 +173,10 @@ class GeminiLiveService {
     onAiTextDelta?.call(text);
   }
 
-  void _emitTranscriptEntry(TranscriptEntry entry) {
-    onTranscriptEntry?.call(entry);
-  }
-
   // ──────── Audio playback ────────
 
   void _playAudioChunk(String base64Data) {
     _audioSession.playBase64Pcm(base64Data);
-  }
-
-  // ──────── Transcripts ────────
-
-  void _flushTranscripts() {
-    for (final entry in _messageHandler.flushPendingTranscript()) {
-      onTranscriptEntry?.call(entry);
-    }
   }
 
   // ──────── State ────────
