@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -23,7 +23,7 @@ async def subscription_renewal(request: Request, db: AsyncSession = Depends(get_
     if settings.CRON_SECRET and auth != f"Bearer {settings.CRON_SECRET}":
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     # Expire subscriptions past their period end
     result = await db.execute(
         select(Subscription).where(
@@ -56,7 +56,7 @@ async def ensure_review_event_partitions(request: Request, db: AsyncSession = De
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     created: list[str] = []
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     for offset in range(4):  # current month + next 3
         # Calendar-accurate month arithmetic
         month = now.month + offset
