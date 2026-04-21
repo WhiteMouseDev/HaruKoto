@@ -6,6 +6,7 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models import Grammar, Vocabulary
 from app.services.distractor import generate_distractors
 from app.services.quiz_question_builder import QuestionPayload
 from app.services.quiz_smart_item_queries import (
@@ -20,8 +21,22 @@ from app.services.quiz_smart_item_queries import (
     load_vocab_review_items,
     load_vocab_studied_ids,
 )
-from app.services.quiz_smart_item_selection import build_exclude_ids, calculate_new_count_needed, dedupe_by_meaning, merge_smart_items
+from app.services.quiz_smart_item_session import SmartItemLoaders, load_selected_smart_items
 from app.services.quiz_smart_question_payloads import build_smart_grammar_questions, build_smart_vocab_question
+
+VOCAB_ITEM_LOADERS = SmartItemLoaders[Vocabulary](
+    load_review_items=load_vocab_review_items,
+    load_retry_items=load_vocab_retry_items,
+    load_studied_ids=load_vocab_studied_ids,
+    load_new_items=load_new_vocab_items,
+)
+
+GRAMMAR_ITEM_LOADERS = SmartItemLoaders[Grammar](
+    load_review_items=load_grammar_review_items,
+    load_retry_items=load_grammar_retry_items,
+    load_studied_ids=load_grammar_studied_ids,
+    load_new_items=load_new_grammar_items,
+)
 
 
 async def load_smart_questions(
@@ -62,15 +77,14 @@ async def _load_smart_vocab_questions(
     distribution: dict[str, int],
     now: datetime,
 ) -> list[QuestionPayload]:
-    review_items = await load_vocab_review_items(db, user_id=user_id, jlpt_level=jlpt_level, count=distribution["review"], now=now)
-    retry_items = await load_vocab_retry_items(db, user_id=user_id, jlpt_level=jlpt_level, count=distribution["retry"], now=now)
-
-    studied_ids = await load_vocab_studied_ids(db, user_id=user_id)
-    exclude_ids = build_exclude_ids(studied_ids, review_items, retry_items)
-
-    new_count_needed = calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
-    new_items = await load_new_vocab_items(db, jlpt_level=jlpt_level, count=new_count_needed, exclude_ids=exclude_ids)
-    all_items = dedupe_by_meaning(merge_smart_items(review_items, retry_items, new_items))
+    all_items = await load_selected_smart_items(
+        db,
+        user_id=user_id,
+        jlpt_level=jlpt_level,
+        distribution=distribution,
+        now=now,
+        loaders=VOCAB_ITEM_LOADERS,
+    )
 
     fallback_meanings = await load_vocab_meanings(db, jlpt_level)
     questions: list[QuestionPayload] = []
@@ -97,15 +111,14 @@ async def _load_smart_grammar_questions(
     distribution: dict[str, int],
     now: datetime,
 ) -> list[QuestionPayload]:
-    review_items = await load_grammar_review_items(db, user_id=user_id, jlpt_level=jlpt_level, count=distribution["review"], now=now)
-    retry_items = await load_grammar_retry_items(db, user_id=user_id, jlpt_level=jlpt_level, count=distribution["retry"], now=now)
-
-    studied_ids = await load_grammar_studied_ids(db, user_id=user_id)
-    exclude_ids = build_exclude_ids(studied_ids, review_items, retry_items)
-
-    new_count_needed = calculate_new_count_needed(distribution, review_count=len(review_items), retry_count=len(retry_items))
-    new_items = await load_new_grammar_items(db, jlpt_level=jlpt_level, count=new_count_needed, exclude_ids=exclude_ids)
-    all_items = dedupe_by_meaning(merge_smart_items(review_items, retry_items, new_items))
+    all_items = await load_selected_smart_items(
+        db,
+        user_id=user_id,
+        jlpt_level=jlpt_level,
+        distribution=distribution,
+        now=now,
+        loaders=GRAMMAR_ITEM_LOADERS,
+    )
 
     all_meanings = await load_grammar_meanings(db, jlpt_level)
     return build_smart_grammar_questions(all_items, all_meanings=all_meanings, shuffle=random.shuffle)
