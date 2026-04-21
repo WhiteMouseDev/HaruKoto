@@ -12,6 +12,7 @@ import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
+import 'gemini_live_session_connector.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_setup_complete_handler.dart';
 import 'gemini_live_setup_sender.dart';
@@ -55,6 +56,7 @@ class GeminiLiveService {
   late final GeminiLiveSetupCompleteHandler _setupCompleteHandler;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
+  late final GeminiLiveSessionConnector _sessionConnector;
   late final GeminiLiveReconnectRunner _reconnectRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
   late final GeminiLiveSessionLifecycleRunner _sessionLifecycleRunner;
@@ -133,6 +135,11 @@ class GeminiLiveService {
       onMessage: _onMessage,
       onReconnect: _attemptReconnect,
     );
+    _sessionConnector = GeminiLiveSessionConnector(
+      connectionRunner: _connectionRunner,
+      reconnectCoordinator: _reconnectCoordinator,
+      setupSender: _setupSender,
+    );
     _reconnectRunner = GeminiLiveReconnectRunner(
       coordinator: _reconnectCoordinator,
       isActive: () => _lifecycleController.isActive,
@@ -191,19 +198,14 @@ class GeminiLiveService {
   // ──────── Connection ────────
 
   Future<void> _connect({String? handle}) async {
-    await _connectionRunner.connect(
+    await _sessionConnector.connect(
       GeminiLiveConnectionInput(
         wsUri: wsUri,
         token: token,
         model: model,
       ),
+      resumptionHandle: handle,
     );
-
-    _sendSetup(handle: handle ?? _reconnectCoordinator.resumptionHandle);
-  }
-
-  void _sendSetup({String? handle}) {
-    _setupSender.send(resumptionHandle: handle);
   }
 
   // ──────── Message handling ────────
