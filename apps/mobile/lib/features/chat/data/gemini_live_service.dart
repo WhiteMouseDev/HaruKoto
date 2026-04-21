@@ -12,6 +12,7 @@ import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
+import 'gemini_live_setup_sender.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
@@ -48,6 +49,7 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveSetupSender _setupSender;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveReconnectRunner _reconnectRunner;
@@ -93,6 +95,14 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
+    _setupSender = GeminiLiveSetupSender(
+      outboundSender: _outboundSender,
+      promptBuilder: _promptBuilder,
+      model: model,
+      voiceName: voiceName,
+      userNickname: userNickname,
+      silenceDurationMs: silenceDurationMs,
+    );
     _audioSession = GeminiLiveAudioSession(
       audioAdapter: _audioAdapter,
       outboundSender: _outboundSender,
@@ -179,15 +189,7 @@ class GeminiLiveService {
   }
 
   void _sendSetup({String? handle}) {
-    _outboundSender.sendSetup(
-      model: model,
-      voiceName: voiceName,
-      instruction: _promptBuilder.instruction,
-      userNickname: userNickname,
-      jlptSection: _promptBuilder.jlptSection,
-      silenceDurationMs: silenceDurationMs,
-      resumptionHandle: handle,
-    );
+    _setupSender.send(resumptionHandle: handle);
   }
 
   // ──────── Message handling ────────
