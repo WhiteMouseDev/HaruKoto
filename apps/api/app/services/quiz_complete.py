@@ -14,9 +14,9 @@ from app.models import DailyProgress, QuizSession, UserStudyStageProgress, UserV
 from app.models.user import User
 from app.schemas.quiz import QuizCompleteRequest
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.quiz_complete_metrics import calculate_accuracy, calculate_daily_progress_increments, calculate_study_minutes
 from app.utils.constants import REWARDS
 from app.utils.date import get_today_kst
-from app.utils.helpers import enum_value
 
 
 class QuizCompleteServiceError(Exception):
@@ -60,20 +60,6 @@ def _build_complete_result(
     )
 
 
-def _calculate_accuracy(session: QuizSession) -> float:
-    if session.total_questions <= 0:
-        return 0
-    return session.correct_count / session.total_questions * 100
-
-
-def _calculate_study_minutes(session: QuizSession, now: datetime) -> int:
-    if not session.started_at:
-        return 0
-    started = session.started_at.replace(tzinfo=UTC) if session.started_at.tzinfo is None else session.started_at
-    delta = now - started
-    return max(0, int(delta.total_seconds() / 60))
-
-
 def _resolve_stage_id(body: QuizCompleteRequest, session: QuizSession) -> uuid.UUID | None:
     stage_id = body.stage_id
     if stage_id:
@@ -95,10 +81,7 @@ async def _update_daily_progress(
     xp_earned: int,
     study_duration_minutes: int,
 ) -> None:
-    quiz_type_val = enum_value(session.quiz_type)
-    words_increment = session.correct_count if quiz_type_val in ("VOCABULARY", "KANJI", "LISTENING") else 0
-    grammar_increment = session.correct_count if quiz_type_val == "GRAMMAR" else 0
-    sentences_increment = session.total_questions if quiz_type_val in ("CLOZE", "SENTENCE_ARRANGE") else 0
+    increments = calculate_daily_progress_increments(session)
 
     stmt = pg_insert(DailyProgress).values(
         user_id=user_id,
@@ -107,9 +90,9 @@ async def _update_daily_progress(
         correct_answers=session.correct_count,
         total_answers=session.total_questions,
         xp_earned=xp_earned,
-        words_studied=words_increment,
-        grammar_studied=grammar_increment,
-        sentences_studied=sentences_increment,
+        words_studied=increments.words_studied,
+        grammar_studied=increments.grammar_studied,
+        sentences_studied=increments.sentences_studied,
         study_minutes=study_duration_minutes,
     )
     stmt = stmt.on_conflict_do_update(
@@ -119,9 +102,9 @@ async def _update_daily_progress(
             "correct_answers": DailyProgress.correct_answers + session.correct_count,
             "total_answers": DailyProgress.total_answers + session.total_questions,
             "xp_earned": DailyProgress.xp_earned + xp_earned,
-            "words_studied": DailyProgress.words_studied + words_increment,
-            "grammar_studied": func.coalesce(DailyProgress.grammar_studied, 0) + grammar_increment,
-            "sentences_studied": func.coalesce(DailyProgress.sentences_studied, 0) + sentences_increment,
+            "words_studied": DailyProgress.words_studied + increments.words_studied,
+            "grammar_studied": func.coalesce(DailyProgress.grammar_studied, 0) + increments.grammar_studied,
+            "sentences_studied": func.coalesce(DailyProgress.sentences_studied, 0) + increments.sentences_studied,
             "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + study_duration_minutes,
         },
     )
@@ -215,7 +198,7 @@ async def complete_quiz_session(
     if not session or session.user_id != user.id:
         raise QuizCompleteServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
 
-    accuracy = _calculate_accuracy(session)
+    accuracy = calculate_accuracy(session)
 
     if session.completed_at:
         level_info = calculate_level(user.experience_points)
@@ -247,7 +230,7 @@ async def complete_quiz_session(
         today=today,
         session=session,
         xp_earned=xp_earned,
-        study_duration_minutes=_calculate_study_minutes(session, now),
+        study_duration_minutes=calculate_study_minutes(session, now),
     )
     events = await _build_achievement_events(
         db,
