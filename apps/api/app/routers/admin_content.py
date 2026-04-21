@@ -49,6 +49,7 @@ from app.schemas.admin_content import (
 from app.schemas.common import PaginatedResponse
 from app.services.admin_audit_logs import list_admin_audit_logs
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
+from app.services.admin_content_review import AdminContentReviewServiceError, review_admin_content_item
 from app.services.admin_content_stats import get_admin_content_stats
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
 from app.services.admin_tts import (
@@ -119,6 +120,27 @@ async def require_reviewer(
         )
 
     return user
+
+
+async def _review_admin_content_or_http(
+    db: AsyncSession,
+    *,
+    content_type: str,
+    item_id: uuid.UUID,
+    body: ReviewRequest,
+    reviewer_id: uuid.UUID,
+) -> Any:
+    try:
+        return await review_admin_content_item(
+            db,
+            content_type=content_type,
+            item_id=item_id,
+            action=body.action,
+            reviewer_id=reviewer_id,
+            reason=body.reason,
+        )
+    except AdminContentReviewServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
 # ==========================================
@@ -264,25 +286,13 @@ async def review_vocabulary(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> VocabularyDetailResponse:
     """Approve or reject a vocabulary item."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-    audit = AuditLog(
+    item = await _review_admin_content_or_http(
+        db,
         content_type="vocabulary",
-        content_id=item_id,
-        action=body.action,
-        reason=body.reason,
+        item_id=item_id,
+        body=body,
         reviewer_id=reviewer.id,
     )
-    db.add(audit)
-    await db.commit()
-    await db.refresh(item)
     return VocabularyDetailResponse(
         id=item.id,
         word=item.word,
@@ -435,25 +445,13 @@ async def review_grammar(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> GrammarDetailResponse:
     """Approve or reject a grammar item."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-    audit = AuditLog(
+    item = await _review_admin_content_or_http(
+        db,
         content_type="grammar",
-        content_id=item_id,
-        action=body.action,
-        reason=body.reason,
+        item_id=item_id,
+        body=body,
         reviewer_id=reviewer.id,
     )
-    db.add(audit)
-    await db.commit()
-    await db.refresh(item)
     return GrammarDetailResponse(
         id=item.id,
         pattern=item.pattern,
@@ -643,25 +641,13 @@ async def review_cloze(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ClozeQuestionDetailResponse:
     """Approve or reject a cloze question."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-    audit = AuditLog(
+    item = await _review_admin_content_or_http(
+        db,
         content_type="cloze",
-        content_id=item_id,
-        action=body.action,
-        reason=body.reason,
+        item_id=item_id,
+        body=body,
         reviewer_id=reviewer.id,
     )
-    db.add(audit)
-    await db.commit()
-    await db.refresh(item)
     return ClozeQuestionDetailResponse(
         id=item.id,
         sentence=item.sentence,
@@ -754,25 +740,13 @@ async def review_sentence_arrange(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> SentenceArrangeDetailResponse:
     """Approve or reject a sentence arrange question."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-    audit = AuditLog(
+    item = await _review_admin_content_or_http(
+        db,
         content_type="sentence_arrange",
-        content_id=item_id,
-        action=body.action,
-        reason=body.reason,
+        item_id=item_id,
+        body=body,
         reviewer_id=reviewer.id,
     )
-    db.add(audit)
-    await db.commit()
-    await db.refresh(item)
     return SentenceArrangeDetailResponse(
         id=item.id,
         korean_sentence=item.korean_sentence,
@@ -947,25 +921,13 @@ async def review_conversation(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ConversationDetailResponse:
     """Approve or reject a conversation scenario."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    item.review_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-    audit = AuditLog(
+    item = await _review_admin_content_or_http(
+        db,
         content_type="conversation",
-        content_id=item_id,
-        action=body.action,
-        reason=body.reason,
+        item_id=item_id,
+        body=body,
         reviewer_id=reviewer.id,
     )
-    db.add(audit)
-    await db.commit()
-    await db.refresh(item)
     return ConversationDetailResponse(
         id=item.id,
         title=item.title,
