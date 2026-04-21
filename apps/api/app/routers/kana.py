@@ -3,17 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models import (
-    KanaCharacter,
-    KanaLearningStage,
-    QuizSession,
-)
-from app.models.enums import KanaType, QuizType
+from app.models.enums import KanaType
 from app.models.user import User
 from app.schemas.kana import (
     KanaProgressRecord,
@@ -31,7 +25,7 @@ from app.services.kana_progress import record_kana_learning_progress
 from app.services.kana_query import get_kana_characters_data, get_kana_progress_data, get_kana_stages_data
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
-from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
+from app.services.kana_quiz_start import KanaQuizStartServiceError, start_kana_quiz_session
 from app.services.kana_stage_complete import KanaStageCompleteServiceError, complete_kana_stage
 
 router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
@@ -80,59 +74,15 @@ async def start_kana_quiz(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KanaQuizStartResponse:
-    # Get characters: stage-specific or all (master quiz)
-    if body.stage_number is not None:
-        stage_numbers = [body.stage_number - 2, body.stage_number - 1, body.stage_number]
-        stage_numbers = [s for s in stage_numbers if s >= 1]
-
-        stages_result = await db.execute(
-            select(KanaLearningStage).where(
-                KanaLearningStage.kana_type == body.kana_type,
-                KanaLearningStage.stage_number.in_(stage_numbers),
-            )
-        )
-        stages = stages_result.scalars().all()
-        all_chars_list: list[str] = []
-        for s in stages:
-            all_chars_list.extend(s.characters)
-
-        chars_result = await db.execute(
-            select(KanaCharacter).where(
-                KanaCharacter.kana_type == body.kana_type,
-                KanaCharacter.character.in_(all_chars_list),
-            )
-        )
-    else:
-        # Master quiz: all characters of this kana type
-        chars_result = await db.execute(select(KanaCharacter).where(KanaCharacter.kana_type == body.kana_type))
-
-    characters = list(chars_result.scalars().all())
-
-    if not characters:
-        raise HTTPException(status_code=400, detail="가나 문자를 찾을 수 없습니다")
-
-    questions = build_kana_quiz_questions(
-        characters,
-        count=body.count,
-        quiz_mode=body.quiz_mode,
-    )
-
-    # Create quiz session
-    session = QuizSession(
-        user_id=user.id,
-        quiz_type=QuizType.KANA,
-        jlpt_level=user.jlpt_level,
-        total_questions=len(questions),
-        questions_data=questions,
-    )
-    db.add(session)
-    await db.commit()
-    await db.refresh(session)
+    try:
+        result = await start_kana_quiz_session(db, user, body)
+    except KanaQuizStartServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return KanaQuizStartResponse(
-        session_id=session.id,
-        questions=strip_kana_quiz_answers(questions),
-        total_questions=len(questions),
+        session_id=result.session_id,
+        questions=result.questions,
+        total_questions=result.total_questions,
     )
 
 
