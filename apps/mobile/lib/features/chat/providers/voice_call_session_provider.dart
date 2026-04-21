@@ -8,20 +8,15 @@ import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_end_flow_coordinator.dart';
 import 'voice_call_live_event_binder.dart';
+import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
+import 'voice_call_session_state.dart';
 import 'voice_call_start_context_reader.dart';
 
 export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
 export 'voice_call_session_resources.dart';
-
-enum VoiceCallStatus {
-  connecting,
-  connected,
-  ending,
-  ended,
-  error,
-}
+export 'voice_call_session_state.dart';
 
 class VoiceCallEndResult {
   const VoiceCallEndResult({
@@ -33,72 +28,9 @@ class VoiceCallEndResult {
   final bool ignored;
 }
 
-class VoiceCallSessionState {
-  const VoiceCallSessionState({
-    this.status = VoiceCallStatus.connecting,
-    this.callDurationSeconds = 0,
-    this.isMuted = false,
-    this.showSubtitle = true,
-    this.currentAiText = '',
-    this.errorMessage,
-  });
-
-  static const _unset = Object();
-
-  final VoiceCallStatus status;
-  final int callDurationSeconds;
-  final bool isMuted;
-  final bool showSubtitle;
-  final String currentAiText;
-  final String? errorMessage;
-
-  String get formattedDuration {
-    final mins = (callDurationSeconds ~/ 60).toString().padLeft(2, '0');
-    final secs = (callDurationSeconds % 60).toString().padLeft(2, '0');
-    return '$mins:$secs';
-  }
-
-  String get statusLabel {
-    switch (status) {
-      case VoiceCallStatus.connecting:
-        return '연결 중...';
-      case VoiceCallStatus.ending:
-        return '통화 종료 중...';
-      case VoiceCallStatus.error:
-        return '연결 실패';
-      case VoiceCallStatus.connected:
-        return formattedDuration;
-      case VoiceCallStatus.ended:
-        return '통화 종료';
-    }
-  }
-
-  bool get isConnected => status == VoiceCallStatus.connected;
-
-  bool get canRetry => status == VoiceCallStatus.error;
-
-  VoiceCallSessionState copyWith({
-    VoiceCallStatus? status,
-    int? callDurationSeconds,
-    bool? isMuted,
-    bool? showSubtitle,
-    String? currentAiText,
-    Object? errorMessage = _unset,
-  }) {
-    return VoiceCallSessionState(
-      status: status ?? this.status,
-      callDurationSeconds: callDurationSeconds ?? this.callDurationSeconds,
-      isMuted: isMuted ?? this.isMuted,
-      showSubtitle: showSubtitle ?? this.showSubtitle,
-      currentAiText: currentAiText ?? this.currentAiText,
-      errorMessage: identical(errorMessage, _unset)
-          ? this.errorMessage
-          : errorMessage as String?,
-    );
-  }
-}
-
 class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
+  static const _liveStateCoordinator = VoiceCallLiveStateCoordinator();
+
   VoiceCallSessionResources? _resources;
   VoiceCallSessionRequest? _request;
   bool _disposed = false;
@@ -213,29 +145,19 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   void _handleLiveStateChange(GeminiLiveState liveState) {
-    switch (liveState) {
-      case GeminiLiveState.connecting:
-        state = state.copyWith(status: VoiceCallStatus.connecting);
-        return;
-      case GeminiLiveState.connected:
-        state = state.copyWith(
-          status: VoiceCallStatus.connected,
-          errorMessage: null,
-        );
-        unawaited(_resources?.stopRingtone());
-        _startTimer();
-        return;
-      case GeminiLiveState.ending:
-        state = state.copyWith(status: VoiceCallStatus.ending);
-        unawaited(_resources?.stopRingtone());
-        return;
-      case GeminiLiveState.ended:
-        state = state.copyWith(status: VoiceCallStatus.ended);
-        return;
-      case GeminiLiveState.error:
-        state = state.copyWith(status: VoiceCallStatus.error);
-        unawaited(_resources?.stopRingtone());
-        return;
+    final transition = _liveStateCoordinator.resolve(liveState);
+    state = transition.clearErrorMessage
+        ? state.copyWith(
+            status: transition.status,
+            errorMessage: null,
+          )
+        : state.copyWith(status: transition.status);
+
+    if (transition.stopRingtone) {
+      unawaited(_resources?.stopRingtone());
+    }
+    if (transition.startTimer) {
+      _startTimer();
     }
   }
 
