@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_events.dart';
 import '../data/gemini_live_transcript.dart';
-import 'voice_call_analysis_request_factory.dart';
 import 'voice_call_connection_service.dart';
-import 'voice_call_end_flow_coordinator.dart';
+import 'voice_call_end_call_handler.dart';
 import 'voice_call_live_session_starter.dart';
 import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
@@ -16,27 +15,18 @@ import 'voice_call_start_flow_coordinator.dart';
 
 export 'voice_call_analysis_request_factory.dart';
 export 'voice_call_connection_service.dart';
+export 'voice_call_end_call_handler.dart';
 export 'voice_call_session_resources.dart';
 export 'voice_call_session_state.dart';
-
-class VoiceCallEndResult {
-  const VoiceCallEndResult({
-    this.analysisRequest,
-    this.ignored = false,
-  });
-
-  final VoiceCallAnalysisRequest? analysisRequest;
-  final bool ignored;
-}
 
 class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   static const _liveStateCoordinator = VoiceCallLiveStateCoordinator();
   static const _stateReducer = VoiceCallSessionStateReducer();
 
   VoiceCallSessionResources? _resources;
+  VoiceCallEndCallHandler? _endCallHandler;
   VoiceCallSessionRequest? _request;
   bool _disposed = false;
-  bool _isEnding = false;
   int _generation = 0;
 
   @override
@@ -44,6 +34,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     _resources ??= VoiceCallSessionResources(
       ref.read(voiceCallRingtonePlayerFactoryProvider)(),
     );
+    _endCallHandler ??= ref.read(voiceCallEndCallHandlerProvider);
     ref.onDispose(() {
       _disposed = true;
       _generation++;
@@ -55,7 +46,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   Future<void> initialize(VoiceCallSessionRequest request) async {
     _request = request;
     final generation = ++_generation;
-    _isEnding = false;
+    _endCallHandler?.reset();
 
     final startResult =
         await ref.read(voiceCallStartFlowCoordinatorProvider).prepare(
@@ -115,21 +106,13 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   Future<VoiceCallEndResult> endCall() async {
-    if (_isEnding) {
-      return const VoiceCallEndResult(ignored: true);
-    }
-
-    _isEnding = true;
-    final analysisRequest =
-        await ref.read(voiceCallEndFlowCoordinatorProvider).end(
-              VoiceCallEndFlowInput(
-                resources: _resources,
-                request: _request,
-                durationSeconds: state.callDurationSeconds,
-              ),
-            );
-
-    return VoiceCallEndResult(analysisRequest: analysisRequest);
+    return _endCallHandler!.end(
+      VoiceCallEndCallInput(
+        resources: _resources,
+        request: _request,
+        durationSeconds: state.callDurationSeconds,
+      ),
+    );
   }
 
   void _handleLiveStateChange(GeminiLiveState liveState) {
