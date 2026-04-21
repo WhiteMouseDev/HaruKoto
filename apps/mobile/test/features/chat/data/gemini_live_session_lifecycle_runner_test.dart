@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_lifecycle_controller.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_reconnect_coordinator.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_session_lifecycle_runner.dart';
+import 'package:harukoto_mobile/features/chat/data/gemini_live_session_start_runner.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_session_shutdown_runner.dart';
 
 void main() {
@@ -123,6 +124,15 @@ GeminiLiveSessionLifecycleRunner _buildRunner({
   final stateEvents = states ?? <String>[];
   final errorEvents = errors ?? <String>[];
   final lifecycle = lifecycleController ?? GeminiLiveLifecycleController();
+  final startRunner = GeminiLiveSessionStartRunner(
+    lifecycleController: lifecycle,
+    reconnectCoordinator:
+        reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
+    connect: connect ?? () async {},
+    emitConnectingState: () => stateEvents.add('connecting'),
+    emitErrorState: () => stateEvents.add('error'),
+    emitError: errorEvents.add,
+  );
   final shutdownRunner = GeminiLiveSessionShutdownRunner(
     lifecycleController: lifecycle,
     stopRecording: stopRecording ?? () async {},
@@ -134,13 +144,7 @@ GeminiLiveSessionLifecycleRunner _buildRunner({
   );
 
   return GeminiLiveSessionLifecycleRunner(
-    lifecycleController: lifecycle,
-    reconnectCoordinator:
-        reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
-    connect: connect ?? () async {},
+    startRunner: startRunner,
     shutdownRunner: shutdownRunner,
-    emitConnectingState: () => stateEvents.add('connecting'),
-    emitErrorState: () => stateEvents.add('error'),
-    emitError: errorEvents.add,
   );
 }

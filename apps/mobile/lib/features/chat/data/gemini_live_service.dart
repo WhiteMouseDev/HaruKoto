@@ -14,6 +14,7 @@ import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_session_connector.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
+import 'gemini_live_session_start_runner.dart';
 import 'gemini_live_session_shutdown_runner.dart';
 import 'gemini_live_setup_complete_handler.dart';
 import 'gemini_live_setup_sender.dart';
@@ -169,14 +170,17 @@ class GeminiLiveService {
       emitEndingState: () => _setState(GeminiLiveState.ending),
       emitEndedState: () => _setState(GeminiLiveState.ended),
     );
-    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
+    final startRunner = GeminiLiveSessionStartRunner(
       lifecycleController: _lifecycleController,
       reconnectCoordinator: _reconnectCoordinator,
       connect: _connect,
-      shutdownRunner: shutdownRunner,
       emitConnectingState: () => _setState(GeminiLiveState.connecting),
       emitErrorState: () => _setState(GeminiLiveState.error),
       emitError: (message) => onError?.call(message),
+    );
+    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
+      startRunner: startRunner,
+      shutdownRunner: shutdownRunner,
     );
   }
 
