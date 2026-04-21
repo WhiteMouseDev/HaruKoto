@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_resources.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_session_timer.dart';
 
 void main() {
   group('VoiceCallSessionResources', () {
@@ -19,7 +20,8 @@ void main() {
         () async {
       final ringtone = _FakeVoiceCallRingtonePlayer();
       final service = _FakeGeminiLiveService();
-      final resources = VoiceCallSessionResources(ringtone);
+      final timer = _FakeVoiceCallSessionTimer();
+      final resources = VoiceCallSessionResources(ringtone, timer: timer);
       var tickCount = 0;
 
       resources.attachService(service);
@@ -27,6 +29,8 @@ void main() {
       await resources.cancelActiveSession();
 
       expect(resources.service, isNull);
+      expect(timer.startCalls, 1);
+      expect(timer.stopCalls, 1);
       expect(ringtone.stopCalls, 1);
       expect(service.disposed, isTrue);
       expect(tickCount, 0);
@@ -46,12 +50,14 @@ void main() {
     test('dispose cancels session and disposes ringtone', () async {
       final ringtone = _FakeVoiceCallRingtonePlayer();
       final service = _FakeGeminiLiveService();
-      final resources = VoiceCallSessionResources(ringtone);
+      final timer = _FakeVoiceCallSessionTimer();
+      final resources = VoiceCallSessionResources(ringtone, timer: timer);
 
       resources.attachService(service);
       await resources.dispose();
 
       expect(service.disposed, isTrue);
+      expect(timer.disposed, isTrue);
       expect(ringtone.disposed, isTrue);
     });
   });
@@ -96,6 +102,27 @@ class _FakeVoiceCallRingtonePlayer implements VoiceCallRingtonePlayer {
 
   @override
   Future<void> dispose() async {
+    disposed = true;
+  }
+}
+
+class _FakeVoiceCallSessionTimer implements VoiceCallSessionTimer {
+  int startCalls = 0;
+  int stopCalls = 0;
+  bool disposed = false;
+
+  @override
+  void start(void Function() onTick) {
+    startCalls++;
+  }
+
+  @override
+  void stop() {
+    stopCalls++;
+  }
+
+  @override
+  void dispose() {
     disposed = true;
   }
 }

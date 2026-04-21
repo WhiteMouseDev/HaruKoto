@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_service.dart';
+import 'voice_call_session_timer.dart';
 
 abstract class VoiceCallRingtonePlayer {
   Future<void> startLoop();
@@ -39,12 +38,14 @@ final voiceCallRingtonePlayerFactoryProvider =
 );
 
 class VoiceCallSessionResources {
-  VoiceCallSessionResources(this._ringtone);
+  VoiceCallSessionResources(
+    this._ringtone, {
+    VoiceCallSessionTimer? timer,
+  }) : _timer = timer ?? PeriodicVoiceCallSessionTimer();
 
   final VoiceCallRingtonePlayer _ringtone;
+  final VoiceCallSessionTimer _timer;
   GeminiLiveService? _service;
-  Timer? _timer;
-  bool _disposed = false;
 
   GeminiLiveService? get service => _service;
 
@@ -74,16 +75,11 @@ class VoiceCallSessionResources {
   }
 
   void startTimer(void Function() onTick) {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_disposed) return;
-      onTick();
-    });
+    _timer.start(onTick);
   }
 
   void stopTimer() {
-    _timer?.cancel();
-    _timer = null;
+    _timer.stop();
   }
 
   Future<void> endService() async {
@@ -104,8 +100,8 @@ class VoiceCallSessionResources {
   }
 
   Future<void> dispose() async {
-    _disposed = true;
     await cancelActiveSession();
+    _timer.dispose();
     try {
       await _ringtone.dispose();
     } catch (_) {}
