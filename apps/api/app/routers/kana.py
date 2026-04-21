@@ -33,11 +33,10 @@ from app.schemas.kana import (
     KanaStageCompleteResponse,
     KanaStat,
 )
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
 from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
-from app.utils.constants import KANA_REWARDS
+from app.services.kana_stage_complete import KanaStageCompleteServiceError, complete_kana_stage
 from app.utils.date import get_today_kst
 
 # ---------------------------------------------------------------------------
@@ -318,117 +317,17 @@ async def complete_stage(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KanaStageCompleteResponse:
-    # Find stage by ID
-    stage = await db.get(KanaLearningStage, body.stage_id)
-    if not stage:
-        raise HTTPException(status_code=404, detail="스테이지를 찾을 수 없습니다")
-
-    # Mark stage complete
-    now = datetime.now(UTC)
-    stmt = pg_insert(UserKanaStage).values(
-        user_id=user.id,
-        stage_id=stage.id,
-        is_unlocked=True,
-        is_completed=True,
-        quiz_score=body.quiz_score,
-        completed_at=now,
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "stage_id"],
-        set_={"is_completed": True, "quiz_score": body.quiz_score, "completed_at": now},
-    )
-    await db.execute(stmt)
-
-    # Unlock next stage
-    next_stage_result = await db.execute(
-        select(KanaLearningStage).where(
-            KanaLearningStage.kana_type == stage.kana_type,
-            KanaLearningStage.stage_number == stage.stage_number + 1,
-        )
-    )
-    next_stage = next_stage_result.scalar_one_or_none()
-    next_stage_unlocked = False
-
-    if next_stage:
-        unlock_stmt = pg_insert(UserKanaStage).values(
-            user_id=user.id,
-            stage_id=next_stage.id,
-            is_unlocked=True,
-        )
-        unlock_stmt = unlock_stmt.on_conflict_do_update(
-            index_elements=["user_id", "stage_id"],
-            set_={"is_unlocked": True},
-        )
-        await db.execute(unlock_stmt)
-        next_stage_unlocked = True
-
-    # Award XP
-    xp_earned = KANA_REWARDS.STAGE_COMPLETE_XP
-    old_level = user.level
-    user.experience_points += xp_earned
-    level_info = calculate_level(user.experience_points)
-    user.level = level_info["level"]
-
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = now
-
-    # Update daily progress
-    dp_stmt = pg_insert(DailyProgress).values(
-        user_id=user.id,
-        date=today,
-        xp_earned=xp_earned,
-    )
-    dp_stmt = dp_stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={"xp_earned": DailyProgress.xp_earned + xp_earned},
-    )
-    await db.execute(dp_stmt)
-
-    # Check kana achievements — batch queries
-    kana_total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
-    kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
-    hiragana_total = kana_totals.get(KanaType.HIRAGANA, 0)
-    katakana_total = kana_totals.get(KanaType.KATAKANA, 0)
-
-    kana_mastered_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
-        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
-        .group_by(KanaCharacter.kana_type)
-    )
-    kana_mastered_counts = {row[0]: row[1] for row in kana_mastered_result.all()}
-    hiragana_mastered = kana_mastered_counts.get(KanaType.HIRAGANA, 0)
-    katakana_mastered = kana_mastered_counts.get(KanaType.KATAKANA, 0)
-
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": user.level,
-            "old_level": old_level,
-            "streak_count": user.streak_count,
-            "kana_first_char": True,
-            "kana_hiragana_complete": hiragana_mastered >= hiragana_total and hiragana_total > 0,
-            "kana_katakana_complete": katakana_mastered >= katakana_total and katakana_total > 0,
-        },
-    )
-
-    # Auto-disable showKana when both complete
-    if hiragana_mastered >= hiragana_total and katakana_mastered >= katakana_total and hiragana_total > 0 and katakana_total > 0:
-        user.show_kana = False
-
-    await db.commit()
+    try:
+        result = await complete_kana_stage(db, user, body)
+    except KanaStageCompleteServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return KanaStageCompleteResponse(
-        success=True,
-        xp_earned=xp_earned,
-        level=level_info["level"],
-        current_xp=level_info["current_xp"],
-        xp_for_next=level_info["xp_for_next"],
-        events=[dict(event) for event in events],
-        next_stage_unlocked=next_stage_unlocked,
+        success=result.success,
+        xp_earned=result.xp_earned,
+        level=result.level,
+        current_xp=result.current_xp,
+        xp_for_next=result.xp_for_next,
+        events=result.events,
+        next_stage_unlocked=result.next_stage_unlocked,
     )
