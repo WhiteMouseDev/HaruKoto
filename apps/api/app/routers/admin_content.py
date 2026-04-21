@@ -47,6 +47,7 @@ from app.schemas.admin_content import (
     VocabularyUpdateRequest,
 )
 from app.schemas.common import PaginatedResponse
+from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
 from app.services.admin_tts import (
     TTS_FIELDS,
@@ -116,19 +117,6 @@ async def require_reviewer(
         )
 
     return user
-
-
-# ==========================================
-# Content type model map (for batch operations)
-# ==========================================
-
-MODEL_MAP: dict[str, type] = {
-    "vocabulary": Vocabulary,
-    "grammar": Grammar,
-    "cloze": ClozeQuestion,
-    "sentence_arrange": SentenceArrangeQuestion,
-    "conversation": ConversationScenario,
-}
 
 
 # ==========================================
@@ -1005,32 +993,19 @@ async def batch_review(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> OkResponse:
     """Batch approve or reject multiple content items in a single transaction."""
-    if body.action == "reject" and not body.reason:
-        raise HTTPException(status_code=422, detail="reason required for reject")
-
-    model_class = MODEL_MAP.get(body.content_type)
-    if model_class is None:
-        raise HTTPException(status_code=400, detail=f"Unknown content_type: {body.content_type}")
-
-    new_status = ReviewStatus.APPROVED if body.action == "approve" else ReviewStatus.REJECTED
-
-    for item_id in body.ids:
-        result: Any = await db.execute(select(model_class).where(model_class.id == item_id))  # type: ignore[attr-defined]
-        item = result.scalar_one_or_none()
-        if item is None:
-            raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
-        item.review_status = new_status
-        audit = AuditLog(
+    try:
+        result = await batch_review_content(
+            db,
             content_type=body.content_type,
-            content_id=item_id,
+            item_ids=body.ids,
             action=body.action,
-            reason=body.reason,
             reviewer_id=reviewer.id,
+            reason=body.reason,
         )
-        db.add(audit)
+    except AdminBatchReviewServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    await db.commit()
-    return OkResponse(ok=True, count=len(body.ids))
+    return OkResponse(ok=True, count=result.count)
 
 
 @router.post("/tts/regenerate", response_model=AdminTtsResponse)
