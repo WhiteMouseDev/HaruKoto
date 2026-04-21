@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_audio_session.dart';
 import 'gemini_live_connection_runner.dart';
@@ -12,6 +10,7 @@ import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
+import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
 
@@ -53,6 +52,7 @@ class GeminiLiveService {
   late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveReconnectRunner _reconnectRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
+  late final GeminiLiveSessionLifecycleRunner _sessionLifecycleRunner;
 
   GeminiLiveTransport get _transport => _outboundSender.transport;
 
@@ -128,6 +128,20 @@ class GeminiLiveService {
       onTranscriptEntry: _emitTranscriptEntry,
       onAudioChunk: _playAudioChunk,
     );
+    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
+      lifecycleController: _lifecycleController,
+      reconnectCoordinator: _reconnectCoordinator,
+      connect: _connect,
+      stopRecording: _audioSession.stopRecording,
+      disposeAudio: _audioSession.dispose,
+      closeTransport: _transport.close,
+      flushTranscripts: _flushTranscripts,
+      emitConnectingState: () => _setState(GeminiLiveState.connecting),
+      emitErrorState: () => _setState(GeminiLiveState.error),
+      emitEndingState: () => _setState(GeminiLiveState.ending),
+      emitEndedState: () => _setState(GeminiLiveState.ended),
+      emitError: (message) => onError?.call(message),
+    );
   }
 
   List<TranscriptEntry> get transcript {
@@ -136,41 +150,18 @@ class GeminiLiveService {
   }
 
   /// Start the voice call: connect WebSocket, send setup, start mic.
-  Future<void> start() async {
-    // model 유효성 검증
-    if (model.isEmpty) {
-      onError?.call('음성 모델이 설정되지 않았습니다');
-      _setState(GeminiLiveState.error);
-      return;
-    }
-
-    _lifecycleController.markStarted();
-    _reconnectCoordinator.resetForStart();
-    _setState(GeminiLiveState.connecting);
-    try {
-      await _connect();
-    } catch (e) {
-      debugPrint('[GeminiLive] Start failed: $e');
-      onError?.call('연결에 실패했습니다');
-      _setState(GeminiLiveState.error);
-    }
+  Future<void> start() {
+    return _sessionLifecycleRunner.start(model: model);
   }
 
   /// End the voice call gracefully.
-  Future<void> end() async {
-    _lifecycleController.markEnding();
-    _setState(GeminiLiveState.ending);
-    _flushTranscripts();
-    await _audioSession.stopRecording();
-    unawaited(_transport.close());
-    _setState(GeminiLiveState.ended);
+  Future<void> end() {
+    return _sessionLifecycleRunner.end();
   }
 
   /// Dispose all resources.
-  Future<void> dispose() async {
-    _lifecycleController.markDisposed();
-    await _audioSession.dispose();
-    unawaited(_transport.close());
+  Future<void> dispose() {
+    return _sessionLifecycleRunner.dispose();
   }
 
   // ──────── Connection ────────
