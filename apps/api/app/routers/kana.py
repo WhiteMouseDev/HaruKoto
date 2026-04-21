@@ -35,6 +35,7 @@ from app.schemas.kana import (
 )
 from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
+from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
 from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
@@ -296,67 +297,18 @@ async def complete_kana_quiz(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KanaQuizCompleteResponse:
-    session = await db.get(QuizSession, body.session_id)
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
-
-    total = session.total_questions or 0
-    correct = session.correct_count or 0
-    accuracy = round(correct / total * 100) if total > 0 else 0
-
-    # Award XP
-    xp_earned = KANA_REWARDS.QUIZ_PERFECT_XP if accuracy == 100 else KANA_REWARDS.QUIZ_PASS_XP
-    old_level = user.level
-    user.experience_points += xp_earned
-    level_info = calculate_level(user.experience_points)
-    user.level = level_info["level"]
-
-    # Update streak
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = datetime.now(UTC)
-
-    # Update daily progress
-    dp_stmt = pg_insert(DailyProgress).values(
-        user_id=user.id,
-        date=today,
-        xp_earned=xp_earned,
-        kana_learned=correct,
-    )
-    dp_stmt = dp_stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={
-            "xp_earned": DailyProgress.xp_earned + xp_earned,
-            "kana_learned": DailyProgress.kana_learned + correct,
-        },
-    )
-    await db.execute(dp_stmt)
-
-    # Check achievements
-    events = await check_and_grant_achievements(
-        db,
-        user.id,
-        {
-            "total_xp": user.experience_points,
-            "new_level": user.level,
-            "old_level": old_level,
-            "streak_count": user.streak_count,
-        },
-    )
-
-    # Mark session completed
-    session.completed_at = datetime.now(UTC)
-    await db.commit()
+    try:
+        result = await complete_kana_quiz_session(db, user, body)
+    except KanaQuizCompleteServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return KanaQuizCompleteResponse(
-        accuracy=accuracy,
-        xp_earned=xp_earned,
-        level=user.level,
-        current_xp=level_info["current_xp"],
-        xp_for_next=level_info["xp_for_next"],
-        events=[dict(event) for event in events],
+        accuracy=result.accuracy,
+        xp_earned=result.xp_earned,
+        level=result.level,
+        current_xp=result.current_xp,
+        xp_for_next=result.xp_for_next,
+        events=result.events,
     )
 
 
