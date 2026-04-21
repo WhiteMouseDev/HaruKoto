@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_service.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_session_resources.dart';
+import 'voice_call_start_connection_step.dart';
 import 'voice_call_start_context_reader.dart';
 import 'voice_call_start_preparation_step.dart';
 
@@ -56,14 +56,18 @@ class VoiceCallStartFlowCoordinator {
     required VoiceCallStartContextReader startContextReader,
     required VoiceCallConnectionService connectionService,
     VoiceCallStartPreparationStep? preparationStep,
+    VoiceCallStartConnectionStep? connectionStep,
   })  : _preparationStep = preparationStep ??
             VoiceCallStartPreparationStep(
               startContextReader: startContextReader,
             ),
-        _connectionService = connectionService;
+        _connectionStep = connectionStep ??
+            VoiceCallStartConnectionStep(
+              connectionService: connectionService,
+            );
 
   final VoiceCallStartPreparationStep _preparationStep;
-  final VoiceCallConnectionService _connectionService;
+  final VoiceCallStartConnectionStep _connectionStep;
 
   Future<VoiceCallStartFlowResult> prepare(
     VoiceCallStartFlowInput input,
@@ -80,25 +84,24 @@ class VoiceCallStartFlowCoordinator {
       return const VoiceCallStartFlowResult.stale();
     }
 
-    try {
-      final service = await _connectionService.prepare(
-        startContext.toConnectionInput(input.request),
-      );
-      if (input.isStale()) {
-        await service.dispose();
-        return const VoiceCallStartFlowResult.stale();
-      }
-
-      return VoiceCallStartFlowResult.ready(service);
-    } on VoiceCallConnectionException catch (e) {
-      if (input.isStale()) return const VoiceCallStartFlowResult.stale();
-      await input.resources?.stopRingtone();
-      return VoiceCallStartFlowResult.failure(e.message);
-    } catch (e) {
-      debugPrint('[VoiceCallSession] Start failed: $e');
-      if (input.isStale()) return const VoiceCallStartFlowResult.stale();
-      await input.resources?.stopRingtone();
-      return VoiceCallStartFlowResult.failure('연결에 실패했습니다: $e');
+    final connection = await _connectionStep.connect(
+      VoiceCallStartConnectionInput(
+        request: input.request,
+        startContext: startContext,
+        resources: input.resources,
+        isStale: input.isStale,
+      ),
+    );
+    if (connection.stale) {
+      return const VoiceCallStartFlowResult.stale();
     }
+    final errorMessage = connection.errorMessage;
+    if (errorMessage != null) {
+      return VoiceCallStartFlowResult.failure(errorMessage);
+    }
+    final service = connection.service;
+    if (service == null) return const VoiceCallStartFlowResult.stale();
+
+    return VoiceCallStartFlowResult.ready(service);
   }
 }
