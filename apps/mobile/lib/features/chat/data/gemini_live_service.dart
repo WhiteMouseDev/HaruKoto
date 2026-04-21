@@ -1,17 +1,13 @@
 import 'gemini_live_audio_adapter.dart';
-import 'gemini_live_audio_session.dart';
 import 'gemini_live_events.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
-import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_session_components_factory.dart';
-import 'gemini_live_session_lifecycle_runner.dart';
 import 'gemini_live_session_lifecycle_runner_factory.dart';
-import 'gemini_live_session_runtime_factory.dart';
+import 'gemini_live_service_session_factory.dart';
 import 'gemini_live_transcript.dart';
-import 'gemini_live_transcript_emitter.dart';
 import 'gemini_live_transport.dart';
 
 export 'gemini_live_events.dart'
@@ -41,15 +37,12 @@ class GeminiLiveService {
   OnTranscriptEntry? onTranscriptEntry;
   OnError? onError;
 
-  final GeminiLiveLifecycleController _lifecycleController;
-  late final GeminiLiveTranscriptEmitter _transcriptEmitter;
-  late final GeminiLiveAudioSession _audioSession;
-  late final GeminiLiveSessionLifecycleRunner _sessionLifecycleRunner;
+  late final GeminiLiveServiceSession _session;
 
-  bool get isMuted => _lifecycleController.isMuted;
+  bool get isMuted => _session.lifecycleController.isMuted;
 
   set isMuted(bool value) {
-    _lifecycleController.isMuted = value;
+    _session.lifecycleController.isMuted = value;
   }
 
   GeminiLiveService({
@@ -71,112 +64,49 @@ class GeminiLiveService {
     GeminiLiveTransport? transport,
     GeminiLiveSessionComponentsFactory? sessionComponentsFactory,
     GeminiLiveSessionLifecycleRunnerFactory? lifecycleRunnerFactory,
-  }) : _lifecycleController =
-            lifecycleController ?? GeminiLiveLifecycleController() {
-    final liveAudioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter();
-    final liveMessageHandler = messageHandler ?? GeminiLiveMessageHandler();
-    final livePromptBuilder = promptBuilder ??
-        GeminiLivePromptBuilder(
-          jlptLevel: jlptLevel,
-          systemInstruction: systemInstruction,
-        );
-    final liveReconnectCoordinator =
-        reconnectCoordinator ?? GeminiLiveReconnectCoordinator();
-    final liveTransport = transport ?? DefaultGeminiLiveTransport();
-    final outboundSender = GeminiLiveOutboundSender(
-      transport: liveTransport,
-    );
-
-    _transcriptEmitter = GeminiLiveTranscriptEmitter(
-      messageHandler: liveMessageHandler,
-      emitEntry: (entry) => onTranscriptEntry?.call(entry),
-    );
-    final sessionComponents =
-        (sessionComponentsFactory ?? const GeminiLiveSessionComponentsFactory())
-            .build(
-      model: model,
-      userNickname: userNickname,
-      silenceDurationMs: silenceDurationMs,
-      audioAdapter: liveAudioAdapter,
-      outboundSender: outboundSender,
-      promptBuilder: livePromptBuilder,
-      lifecycleController: _lifecycleController,
-      transport: liveTransport,
-      emitError: (message) => onError?.call(message),
-      emitAudioUnavailable: () => _setState(GeminiLiveState.error),
-      voiceName: voiceName,
-      characterName: characterName,
-      scenarioGreeting: scenarioGreeting,
-    );
-    _audioSession = sessionComponents.audioSession;
-    final sessionRuntime = const GeminiLiveSessionRuntimeFactory().build(
+  }) {
+    _session = const GeminiLiveServiceSessionFactory().build(
       wsUri: wsUri,
       token: token,
       model: model,
-      transport: liveTransport,
-      reconnectCoordinator: liveReconnectCoordinator,
-      setupSender: sessionComponents.setupSender,
-      greetingSender: sessionComponents.greetingSender,
-      audioSession: _audioSession,
-      messageHandler: liveMessageHandler,
-      lifecycleController: _lifecycleController,
-      emitState: _setState,
+      userNickname: userNickname,
+      silenceDurationMs: silenceDurationMs,
+      jlptLevel: jlptLevel,
+      emitState: (state) => onStateChange?.call(state),
+      emitAiTextDelta: (text) => onAiTextDelta?.call(text),
+      emitTranscriptEntry: (entry) => onTranscriptEntry?.call(entry),
       emitError: (message) => onError?.call(message),
-      onAiTextDelta: _emitAiTextDelta,
-      onTranscriptEntry: _transcriptEmitter.emit,
-      onAudioChunk: _playAudioChunk,
-    );
-    _sessionLifecycleRunner = (lifecycleRunnerFactory ??
-            const GeminiLiveSessionLifecycleRunnerFactory())
-        .build(
-      lifecycleController: _lifecycleController,
-      reconnectCoordinator: liveReconnectCoordinator,
-      connect: sessionRuntime.connect,
-      stopRecording: _audioSession.stopRecording,
-      disposeAudio: _audioSession.dispose,
-      closeTransport: liveTransport.close,
-      flushTranscripts: _transcriptEmitter.flush,
-      emitConnectingState: () => _setState(GeminiLiveState.connecting),
-      emitErrorState: () => _setState(GeminiLiveState.error),
-      emitEndingState: () => _setState(GeminiLiveState.ending),
-      emitEndedState: () => _setState(GeminiLiveState.ended),
-      emitError: (message) => onError?.call(message),
+      characterName: characterName,
+      voiceName: voiceName,
+      systemInstruction: systemInstruction,
+      scenarioGreeting: scenarioGreeting,
+      audioAdapter: audioAdapter,
+      messageHandler: messageHandler,
+      promptBuilder: promptBuilder,
+      reconnectCoordinator: reconnectCoordinator,
+      lifecycleController: lifecycleController,
+      transport: transport,
+      sessionComponentsFactory: sessionComponentsFactory,
+      lifecycleRunnerFactory: lifecycleRunnerFactory,
     );
   }
 
   List<TranscriptEntry> get transcript {
-    return _transcriptEmitter.transcript;
+    return _session.transcriptEmitter.transcript;
   }
 
   /// Start the voice call: connect WebSocket, send setup, start mic.
   Future<void> start() {
-    return _sessionLifecycleRunner.start(model: model);
+    return _session.lifecycleRunner.start(model: model);
   }
 
   /// End the voice call gracefully.
   Future<void> end() {
-    return _sessionLifecycleRunner.end();
+    return _session.lifecycleRunner.end();
   }
 
   /// Dispose all resources.
   Future<void> dispose() {
-    return _sessionLifecycleRunner.dispose();
-  }
-
-  void _emitAiTextDelta(String text) {
-    onAiTextDelta?.call(text);
-  }
-
-  // ──────── Audio playback ────────
-
-  void _playAudioChunk(String base64Data) {
-    _audioSession.playBase64Pcm(base64Data);
-  }
-
-  // ──────── State ────────
-
-  void _setState(GeminiLiveState state) {
-    if (_lifecycleController.isDisposed) return;
-    onStateChange?.call(state);
+    return _session.lifecycleRunner.dispose();
   }
 }
