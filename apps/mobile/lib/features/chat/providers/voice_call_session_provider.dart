@@ -6,6 +6,7 @@ import 'voice_call_connection_service.dart';
 import 'voice_call_end_call_handler.dart';
 import 'voice_call_live_event_handler.dart';
 import 'voice_call_live_session_starter.dart';
+import 'voice_call_session_lifecycle.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_session_state.dart';
 import 'voice_call_session_state_reducer.dart';
@@ -23,9 +24,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   VoiceCallSessionResources? _resources;
   VoiceCallEndCallHandler? _endCallHandler;
   VoiceCallLiveEventHandler? _liveEventHandler;
-  VoiceCallSessionRequest? _request;
-  bool _disposed = false;
-  int _generation = 0;
+  final VoiceCallSessionLifecycle _lifecycle = VoiceCallSessionLifecycle();
 
   @override
   VoiceCallSessionState build() {
@@ -37,19 +36,17 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
       getState: () => state,
       setState: (nextState) => state = nextState,
       getResources: () => _resources,
-      isDisposed: () => _disposed,
+      isDisposed: () => _lifecycle.isDisposed,
     );
     ref.onDispose(() {
-      _disposed = true;
-      _generation++;
+      _lifecycle.markDisposed();
       unawaited(_resources?.dispose());
     });
     return const VoiceCallSessionState();
   }
 
   Future<void> initialize(VoiceCallSessionRequest request) async {
-    _request = request;
-    final generation = ++_generation;
+    final generation = _lifecycle.begin(request);
     _endCallHandler?.reset();
 
     final startResult =
@@ -57,7 +54,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
               VoiceCallStartFlowInput(
                 request: request,
                 resources: _resources,
-                isStale: () => _isStale(generation),
+                isStale: () => _lifecycle.isStale(generation),
                 setState: (nextState) => state = nextState,
               ),
             );
@@ -79,7 +76,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
               VoiceCallLiveSessionStartInput(
                 service: service,
                 resources: _resources,
-                isActive: () => !_isStale(generation),
+                isActive: () => !_lifecycle.isStale(generation),
                 callbacks: VoiceCallLiveSessionCallbacks(
                   onStateChange: _liveEventHandler!.handleStateChange,
                   onAiTextDelta: _liveEventHandler!.appendAiTextDelta,
@@ -95,7 +92,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   Future<void> retry() async {
-    final request = _request;
+    final request = _lifecycle.request;
     if (request == null) return;
     await initialize(request);
   }
@@ -113,13 +110,11 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     return _endCallHandler!.end(
       VoiceCallEndCallInput(
         resources: _resources,
-        request: _request,
+        request: _lifecycle.request,
         durationSeconds: state.callDurationSeconds,
       ),
     );
   }
-
-  bool _isStale(int generation) => _disposed || generation != _generation;
 }
 
 final voiceCallSessionProvider =
