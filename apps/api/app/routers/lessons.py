@@ -36,9 +36,9 @@ from app.services.lesson_command import (
     start_lesson_progress,
     submit_lesson_attempt,
 )
+from app.services.lesson_detail_query import get_lesson_detail_data
 from app.services.lesson_query import (
     get_chapters_data,
-    get_lesson_detail_data,
     get_review_summary_data,
 )
 
