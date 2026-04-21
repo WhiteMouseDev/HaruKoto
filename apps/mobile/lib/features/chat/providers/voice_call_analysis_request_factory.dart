@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_service.dart';
+import 'voice_call_analysis_eligibility_policy.dart';
 import 'voice_call_connection_service.dart';
 
 class VoiceCallAnalysisRequest {
@@ -35,18 +36,28 @@ class VoiceCallAnalysisRequestInput {
 
 final voiceCallAnalysisRequestFactoryProvider =
     Provider<VoiceCallAnalysisRequestFactory>(
-  (ref) => const VoiceCallAnalysisRequestFactory(),
+  (ref) => VoiceCallAnalysisRequestFactory(
+    eligibilityPolicy: ref.watch(voiceCallAnalysisEligibilityPolicyProvider),
+  ),
 );
 
 class VoiceCallAnalysisRequestFactory {
-  const VoiceCallAnalysisRequestFactory();
+  const VoiceCallAnalysisRequestFactory({
+    VoiceCallAnalysisEligibilityPolicy eligibilityPolicy =
+        const VoiceCallAnalysisEligibilityPolicy(),
+  }) : _eligibilityPolicy = eligibilityPolicy;
+
+  final VoiceCallAnalysisEligibilityPolicy _eligibilityPolicy;
 
   VoiceCallAnalysisRequest? build(VoiceCallAnalysisRequestInput input) {
     final request = input.request;
-    if (request == null ||
-        !input.autoAnalysis ||
-        input.durationSeconds < 15 ||
-        input.transcript.isEmpty) {
+    if (!_eligibilityPolicy.allows(
+          request: request,
+          transcript: input.transcript,
+          durationSeconds: input.durationSeconds,
+          autoAnalysis: input.autoAnalysis,
+        ) ||
+        request == null) {
       return null;
     }
 
