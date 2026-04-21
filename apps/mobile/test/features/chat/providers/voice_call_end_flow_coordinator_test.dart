@@ -3,6 +3,7 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_analysis_request_factory.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_connection_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_end_flow_coordinator.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_session_ender.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_resources.dart';
 
 void main() {
@@ -19,6 +20,7 @@ void main() {
             ..attachService(service);
       final coordinator = VoiceCallEndFlowCoordinator(
         analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
         readAutoAnalysis: () => true,
       );
 
@@ -56,6 +58,7 @@ void main() {
             ..attachService(service);
       final coordinator = VoiceCallEndFlowCoordinator(
         analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
         readAutoAnalysis: () => false,
       );
 
