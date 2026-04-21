@@ -34,6 +34,7 @@ from app.schemas.kana import (
     KanaStat,
 )
 from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
+from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
 from app.utils.constants import KANA_REWARDS
 from app.utils.date import get_today_kst
@@ -42,7 +43,6 @@ from app.utils.date import get_today_kst
 # Constants
 # ---------------------------------------------------------------------------
 FIRST_STAGE_NUMBER = 1
-KANA_MASTERY_STREAK = 3
 
 router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 
@@ -282,64 +282,12 @@ async def answer_kana_quiz(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KanaQuizAnswerResponse:
-    session = await db.get(QuizSession, body.session_id)
-    if not session or session.user_id != user.id:
-        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
+    try:
+        result = await submit_kana_quiz_answer(db, user, body)
+    except KanaQuizAnswerServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    raw_questions_data = session.questions_data
-    questions_data = [q for q in raw_questions_data if isinstance(q, dict)] if isinstance(raw_questions_data, list) else []
-    question_data: dict[str, Any] | None = None
-    for q in questions_data:
-        if q.get("id") == str(body.question_id):
-            question_data = q
-            break
-
-    if not question_data:
-        raise HTTPException(status_code=400, detail="질문을 찾을 수 없습니다")
-
-    correct_option_id = question_data.get("correctOptionId", "")
-    if not isinstance(correct_option_id, str):
-        correct_option_id = ""
-    is_correct = body.selected_option_id == correct_option_id
-
-    # Update kana progress
-    now = datetime.now(UTC)
-    stmt = pg_insert(UserKanaProgress).values(
-        user_id=user.id,
-        kana_id=body.question_id,
-        correct_count=1 if is_correct else 0,
-        incorrect_count=0 if is_correct else 1,
-        streak=1 if is_correct else 0,
-        mastered=False,
-        last_reviewed_at=now,
-    )
-    if is_correct:
-        stmt = stmt.on_conflict_do_update(
-            index_elements=["user_id", "kana_id"],
-            set_={
-                "correct_count": UserKanaProgress.correct_count + 1,
-                "streak": UserKanaProgress.streak + 1,
-                "mastered": UserKanaProgress.streak + 1 >= KANA_MASTERY_STREAK,
-                "last_reviewed_at": now,
-            },
-        )
-    else:
-        stmt = stmt.on_conflict_do_update(
-            index_elements=["user_id", "kana_id"],
-            set_={
-                "incorrect_count": UserKanaProgress.incorrect_count + 1,
-                "streak": 0,
-                "last_reviewed_at": now,
-            },
-        )
-    await db.execute(stmt)
-
-    if is_correct:
-        session.correct_count += 1
-
-    await db.commit()
-
-    return KanaQuizAnswerResponse(is_correct=is_correct, correct_option_id=correct_option_id)
+    return KanaQuizAnswerResponse(is_correct=result.is_correct, correct_option_id=result.correct_option_id)
 
 
 @router.post("/quiz/complete", response_model=KanaQuizCompleteResponse, status_code=200)
