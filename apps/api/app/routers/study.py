@@ -23,11 +23,10 @@ from app.schemas.study import (
     StudyWrongAnswersSummary,
 )
 from app.services.study_query import (
-    get_learned_words_data,
     get_stages_data,
     get_study_capabilities_data,
-    get_study_wrong_answers_data,
 )
+from app.services.study_word_progress import get_learned_words_data, get_study_wrong_answers_data
 
 router = APIRouter(prefix="/api/v1/study", tags=["study"])
 
