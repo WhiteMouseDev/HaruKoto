@@ -14,8 +14,7 @@ import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_session_connector.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
-import 'gemini_live_session_start_runner.dart';
-import 'gemini_live_session_shutdown_runner.dart';
+import 'gemini_live_session_lifecycle_runner_factory.dart';
 import 'gemini_live_setup_complete_handler.dart';
 import 'gemini_live_setup_sender.dart';
 import 'gemini_live_transcript.dart';
@@ -88,6 +87,7 @@ class GeminiLiveService {
     GeminiLiveReconnectCoordinator? reconnectCoordinator,
     GeminiLiveLifecycleController? lifecycleController,
     GeminiLiveTransport? transport,
+    GeminiLiveSessionLifecycleRunnerFactory? lifecycleRunnerFactory,
   })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
         _messageHandler = messageHandler ?? GeminiLiveMessageHandler(),
         _promptBuilder = promptBuilder ??
@@ -161,26 +161,21 @@ class GeminiLiveService {
       onTranscriptEntry: _emitTranscriptEntry,
       onAudioChunk: _playAudioChunk,
     );
-    final shutdownRunner = GeminiLiveSessionShutdownRunner(
+    _sessionLifecycleRunner = (lifecycleRunnerFactory ??
+            const GeminiLiveSessionLifecycleRunnerFactory())
+        .build(
       lifecycleController: _lifecycleController,
+      reconnectCoordinator: _reconnectCoordinator,
+      connect: _connect,
       stopRecording: _audioSession.stopRecording,
       disposeAudio: _audioSession.dispose,
       closeTransport: _transport.close,
       flushTranscripts: _flushTranscripts,
-      emitEndingState: () => _setState(GeminiLiveState.ending),
-      emitEndedState: () => _setState(GeminiLiveState.ended),
-    );
-    final startRunner = GeminiLiveSessionStartRunner(
-      lifecycleController: _lifecycleController,
-      reconnectCoordinator: _reconnectCoordinator,
-      connect: _connect,
       emitConnectingState: () => _setState(GeminiLiveState.connecting),
       emitErrorState: () => _setState(GeminiLiveState.error),
+      emitEndingState: () => _setState(GeminiLiveState.ending),
+      emitEndedState: () => _setState(GeminiLiveState.ended),
       emitError: (message) => onError?.call(message),
-    );
-    _sessionLifecycleRunner = GeminiLiveSessionLifecycleRunner(
-      startRunner: startRunner,
-      shutdownRunner: shutdownRunner,
     );
   }
 
