@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
-from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion, Vocabulary
+from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion
 from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.tts import _upload_to_gcs
@@ -68,6 +68,7 @@ from app.services.admin_tts import (
 from app.services.admin_tts import (
     resolve_tts_text as resolve_tts_text,
 )
+from app.services.admin_vocabulary_list import list_admin_vocabulary
 from app.services.ai import generate_tts
 
 router = APIRouter(prefix="/api/v1/admin/content", tags=["admin-content"])
@@ -192,13 +193,6 @@ async def _edit_admin_content_or_http(
 # ==========================================
 
 
-_VOCAB_SORT_COLS = {
-    "created_at": Vocabulary.created_at,
-    "review_status": Vocabulary.review_status,
-    "jlpt_level": Vocabulary.jlpt_level,
-}
-
-
 @router.get("/vocabulary", response_model=PaginatedResponse[VocabularyAdminItem])
 async def list_vocabulary(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -212,37 +206,23 @@ async def list_vocabulary(
     sort_order: str = Query(default="desc", description="Sort direction: asc or desc"),
 ) -> PaginatedResponse[VocabularyAdminItem]:
     """List vocabulary items with optional filters and search."""
-    q = select(Vocabulary)
-
-    if jlpt_level is not None:
-        q = q.where(Vocabulary.jlpt_level == jlpt_level)
-    if review_status is not None:
-        q = q.where(Vocabulary.review_status == review_status)
-    if search:
-        q = q.where(
-            or_(
-                Vocabulary.word.ilike(f"%{search}%"),
-                Vocabulary.reading.ilike(f"%{search}%"),
-                Vocabulary.meaning_ko.ilike(f"%{search}%"),
-            )
-        )
-
-    total_result = await db.execute(select(func.count()).select_from(q.subquery()))
-    total = total_result.scalar_one()
-
-    sort_col = _VOCAB_SORT_COLS.get(sort_by or "", Vocabulary.created_at)
-    order_expr = sort_col.asc() if sort_order == "asc" else sort_col.desc()
-
-    offset = (page - 1) * page_size
-    items_result = await db.execute(q.order_by(order_expr).offset(offset).limit(page_size))
-    items = items_result.scalars().all()
-
-    return PaginatedResponse(
-        items=[VocabularyAdminItem.model_validate(item) for item in items],
-        total=total,
+    result = await list_admin_vocabulary(
+        db,
         page=page,
         page_size=page_size,
-        total_pages=math.ceil(total / page_size) if total > 0 else 1,
+        jlpt_level=jlpt_level,
+        review_status=review_status,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
+
+    return PaginatedResponse(
+        items=[VocabularyAdminItem.model_validate(item) for item in result.items],
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
     )
 
 
