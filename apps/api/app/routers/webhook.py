@@ -14,6 +14,7 @@ from app.services.portone_webhook import (
     handle_portone_payment_event,
     verify_portone_signature,
 )
+from app.services.store_notifications import acknowledge_store_notification
 
 logger = logging.getLogger(__name__)
 
@@ -53,17 +54,9 @@ async def portone_webhook(request: Request, db: AsyncSession = Depends(get_db)) 
 
 @router.post("/apple/app-store-server", response_model=StoreNotificationAck, status_code=202)
 async def apple_app_store_server_notification(body: StoreNotificationRequest) -> StoreNotificationAck:
-    logger.info(
-        "Apple App Store Server notification received",
-        extra={"has_signed_payload": bool(body.signed_payload), "payload_size": len(body.signed_payload)},
-    )
-    return StoreNotificationAck(ok=True, accepted=True, source="apple")
+    return acknowledge_store_notification("apple", body.signed_payload)
 
 
 @router.post("/google/play", response_model=StoreNotificationAck, status_code=202)
 async def google_play_notification(body: StoreNotificationRequest) -> StoreNotificationAck:
-    logger.info(
-        "Google Play subscription notification received",
-        extra={"has_signed_payload": bool(body.signed_payload), "payload_size": len(body.signed_payload)},
-    )
-    return StoreNotificationAck(ok=True, accepted=True, source="google")
+    return acknowledge_store_notification("google", body.signed_payload)
