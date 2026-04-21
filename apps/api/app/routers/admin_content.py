@@ -12,7 +12,6 @@ from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
 from app.models.user import User
-from app.routers.tts import _upload_to_gcs
 from app.schemas.admin_content import (
     AdminTtsMapResponse,
     AdminTtsRegenerateRequest,
@@ -66,6 +65,7 @@ from app.services.admin_tts import (
 )
 from app.services.admin_vocabulary_list import list_admin_vocabulary
 from app.services.ai import generate_tts
+from app.services.tts_storage import upload_tts_to_gcs
 
 router = APIRouter(prefix="/api/v1/admin/content", tags=["admin-content"])
 
@@ -640,7 +640,7 @@ async def regenerate_admin_tts(
             item_id=body.item_id,
             field=body.field,
             tts_generator=generate_tts,
-            upload_to_gcs=_upload_to_gcs,
+            upload_to_gcs=upload_tts_to_gcs,
         )
     except AdminTtsServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc

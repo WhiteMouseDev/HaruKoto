@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.middleware.rate_limit import rate_limit
@@ -15,6 +14,7 @@ from app.models import Vocabulary
 from app.models.tts import TtsAudio
 from app.models.user import User
 from app.services.ai import generate_tts
+from app.services.tts_storage import upload_tts_to_gcs
 from app.utils.constants import RATE_LIMITS
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ async def vocab_tts(
             raise HTTPException(status_code=502, detail="TTS 음성 생성에 실패했습니다") from None
 
         # Upload to GCS
-        audio_url = await _upload_to_gcs(f"tts/vocab/{vocab_id_str}.mp3", tts_result.audio)
+        audio_url = await upload_tts_to_gcs(f"tts/vocab/{vocab_id_str}.mp3", tts_result.audio)
 
         # Save to tts_audio table
         tts_audio = TtsAudio(
@@ -104,19 +104,3 @@ async def vocab_tts(
         return {"audioUrl": audio_url}
     finally:
         _generating.discard(vocab_id_str)
-
-
-async def _upload_to_gcs(gcs_path: str, mp3_bytes: bytes) -> str:
-    """Upload MP3 to Google Cloud Storage and return CDN URL."""
-    try:
-        from google.cloud import storage  # type: ignore[import-untyped]
-
-        client = storage.Client()
-        bucket = client.bucket(settings.GCS_BUCKET_NAME)
-        blob = bucket.blob(gcs_path)
-        blob.upload_from_string(mp3_bytes, content_type="audio/mpeg")
-
-        return f"{settings.GCS_CDN_BASE_URL}/{gcs_path}"
-    except Exception:
-        logger.exception("Failed to upload TTS to GCS for %s", gcs_path)
-        raise HTTPException(status_code=500, detail="TTS 파일 업로드에 실패했습니다") from None

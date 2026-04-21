@@ -211,7 +211,7 @@ async def test_regenerate_tts_success(client):
 
     with (
         patch("app.routers.admin_content.generate_tts") as mock_tts,
-        patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
+        patch("app.routers.admin_content.upload_tts_to_gcs") as mock_upload,
     ):
         mock_tts.return_value = fake_tts
         mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
@@ -307,7 +307,7 @@ async def test_regenerate_tts_field_scoped_delete(client):
 
     with (
         patch("app.routers.admin_content.generate_tts") as mock_tts,
-        patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
+        patch("app.routers.admin_content.upload_tts_to_gcs") as mock_upload,
     ):
         mock_tts.return_value = fake_tts
         mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
@@ -346,7 +346,7 @@ async def test_regenerate_tts_adds_field_to_tts_audio(client):
 
     with (
         patch("app.routers.admin_content.generate_tts") as mock_tts,
-        patch("app.routers.admin_content._upload_to_gcs") as mock_upload,
+        patch("app.routers.admin_content.upload_tts_to_gcs") as mock_upload,
     ):
         mock_tts.return_value = fake_tts
         mock_upload.return_value = "https://cdn.example.com/tts/admin/vocabulary/test-id/reading.mp3"
