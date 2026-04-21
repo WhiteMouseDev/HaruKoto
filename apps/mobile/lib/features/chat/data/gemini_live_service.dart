@@ -6,6 +6,7 @@ import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_audio_session.dart';
 import 'gemini_live_connection_runner.dart';
 import 'gemini_live_inbound_dispatcher.dart';
+import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_outbound_sender.dart';
 import 'gemini_live_prompt_builder.dart';
@@ -46,16 +47,20 @@ class GeminiLiveService {
   final GeminiLiveMessageHandler _messageHandler;
   final GeminiLivePromptBuilder _promptBuilder;
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
+  final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveReconnectRunner _reconnectRunner;
   late final GeminiLiveInboundDispatcher _inboundDispatcher;
-  bool _disposed = false;
-  bool _ended = false; // end()가 호출되었는지 추적
-  bool isMuted = false;
 
   GeminiLiveTransport get _transport => _outboundSender.transport;
+
+  bool get isMuted => _lifecycleController.isMuted;
+
+  set isMuted(bool value) {
+    _lifecycleController.isMuted = value;
+  }
 
   GeminiLiveService({
     required this.wsUri,
@@ -72,6 +77,7 @@ class GeminiLiveService {
     GeminiLiveMessageHandler? messageHandler,
     GeminiLivePromptBuilder? promptBuilder,
     GeminiLiveReconnectCoordinator? reconnectCoordinator,
+    GeminiLiveLifecycleController? lifecycleController,
     GeminiLiveTransport? transport,
   })  : _audioAdapter = audioAdapter ?? DefaultGeminiLiveAudioAdapter(),
         _messageHandler = messageHandler ?? GeminiLiveMessageHandler(),
@@ -82,28 +88,30 @@ class GeminiLiveService {
             ),
         _reconnectCoordinator =
             reconnectCoordinator ?? GeminiLiveReconnectCoordinator(),
+        _lifecycleController =
+            lifecycleController ?? GeminiLiveLifecycleController(),
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
     _audioSession = GeminiLiveAudioSession(
       audioAdapter: _audioAdapter,
       outboundSender: _outboundSender,
-      isActive: () => !_disposed && !_ended,
+      isActive: () => _lifecycleController.isActive,
       isTransportConnected: () => _transport.isConnected,
-      isMuted: () => isMuted,
+      isMuted: () => _lifecycleController.isMuted,
       onError: (message) => onError?.call(message),
       onUnavailable: () => _setState(GeminiLiveState.error),
     );
     _connectionRunner = GeminiLiveConnectionRunner(
       transport: _transport,
       reconnectCoordinator: _reconnectCoordinator,
-      isActive: () => !_disposed && !_ended,
+      isActive: () => _lifecycleController.isActive,
       onMessage: _onMessage,
       onReconnect: _attemptReconnect,
     );
     _reconnectRunner = GeminiLiveReconnectRunner(
       coordinator: _reconnectCoordinator,
-      isActive: () => !_disposed && !_ended,
+      isActive: () => _lifecycleController.isActive,
       onConnect: (handle) => _connect(handle: handle),
       onExhausted: () {
         onError?.call('연결이 끊어졌습니다');
@@ -112,7 +120,7 @@ class GeminiLiveService {
     );
     _inboundDispatcher = GeminiLiveInboundDispatcher(
       messageHandler: _messageHandler,
-      isActive: () => !_disposed && !_ended,
+      isActive: () => _lifecycleController.isActive,
       onSetupComplete: _handleSetupComplete,
       onUpdateResumptionHandle: _reconnectCoordinator.updateResumptionHandle,
       onReconnect: _attemptReconnect,
@@ -136,7 +144,7 @@ class GeminiLiveService {
       return;
     }
 
-    _ended = false;
+    _lifecycleController.markStarted();
     _reconnectCoordinator.resetForStart();
     _setState(GeminiLiveState.connecting);
     try {
@@ -150,7 +158,7 @@ class GeminiLiveService {
 
   /// End the voice call gracefully.
   Future<void> end() async {
-    _ended = true; // 재연결 방지 플래그
+    _lifecycleController.markEnding();
     _setState(GeminiLiveState.ending);
     _flushTranscripts();
     await _audioSession.stopRecording();
@@ -160,8 +168,7 @@ class GeminiLiveService {
 
   /// Dispose all resources.
   Future<void> dispose() async {
-    _disposed = true;
-    _ended = true;
+    _lifecycleController.markDisposed();
     await _audioSession.dispose();
     unawaited(_transport.close());
   }
@@ -245,7 +252,7 @@ class GeminiLiveService {
   // ──────── State ────────
 
   void _setState(GeminiLiveState state) {
-    if (_disposed) return;
+    if (_lifecycleController.isDisposed) return;
     onStateChange?.call(state);
   }
 }
