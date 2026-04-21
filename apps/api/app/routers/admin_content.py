@@ -14,7 +14,6 @@ from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
 from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion, Vocabulary
-from app.models.admin import AuditLog
 from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.tts import _upload_to_gcs
@@ -49,6 +48,7 @@ from app.schemas.admin_content import (
 from app.schemas.common import PaginatedResponse
 from app.services.admin_audit_logs import list_admin_audit_logs
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
+from app.services.admin_content_edit import AdminContentEditServiceError, edit_admin_content_item
 from app.services.admin_content_responses import (
     to_cloze_detail_response,
     to_conversation_detail_response,
@@ -150,6 +150,26 @@ async def _review_admin_content_or_http(
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
+async def _edit_admin_content_or_http(
+    db: AsyncSession,
+    *,
+    content_type: str,
+    item_id: uuid.UUID,
+    updates: dict[str, Any],
+    reviewer_id: uuid.UUID,
+) -> Any:
+    try:
+        return await edit_admin_content_item(
+            db,
+            content_type=content_type,
+            item_id=item_id,
+            updates=updates,
+            reviewer_id=reviewer_id,
+        )
+    except AdminContentEditServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
 # ==========================================
 # Vocabulary endpoints
 # ==========================================
@@ -231,31 +251,13 @@ async def patch_vocabulary(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> VocabularyDetailResponse:
     """Partial update vocabulary item. Only sent fields are updated."""
-    result = await db.execute(select(Vocabulary).where(Vocabulary.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict[str, dict[str, Any]] = {}
-    for field, new_value in updates.items():
-        old_value = getattr(item, field, None)
-        if old_value != new_value:
-            changes[field] = {"before": old_value, "after": new_value}
-            setattr(item, field, new_value)
-
-    if changes:
-        audit = AuditLog(
-            content_type="vocabulary",
-            content_id=item_id,
-            action="edit",
-            changes=changes,
-            reviewer_id=reviewer.id,
-        )
-        db.add(audit)
-
-    await db.commit()
-    await db.refresh(item)
+    item = await _edit_admin_content_or_http(
+        db,
+        content_type="vocabulary",
+        item_id=item_id,
+        updates=body.model_dump(exclude_unset=True, by_alias=False),
+        reviewer_id=reviewer.id,
+    )
     return to_vocabulary_detail_response(item)
 
 
@@ -357,31 +359,13 @@ async def patch_grammar(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> GrammarDetailResponse:
     """Partial update grammar item. Only sent fields are updated."""
-    result = await db.execute(select(Grammar).where(Grammar.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict[str, dict[str, Any]] = {}
-    for field, new_value in updates.items():
-        old_value = getattr(item, field, None)
-        if old_value != new_value:
-            changes[field] = {"before": old_value, "after": new_value}
-            setattr(item, field, new_value)
-
-    if changes:
-        audit = AuditLog(
-            content_type="grammar",
-            content_id=item_id,
-            action="edit",
-            changes=changes,
-            reviewer_id=reviewer.id,
-        )
-        db.add(audit)
-
-    await db.commit()
-    await db.refresh(item)
+    item = await _edit_admin_content_or_http(
+        db,
+        content_type="grammar",
+        item_id=item_id,
+        updates=body.model_dump(exclude_unset=True, by_alias=False),
+        reviewer_id=reviewer.id,
+    )
     return to_grammar_detail_response(item)
 
 
@@ -521,31 +505,13 @@ async def patch_cloze(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ClozeQuestionDetailResponse:
     """Partial update cloze question. Only sent fields are updated."""
-    result = await db.execute(select(ClozeQuestion).where(ClozeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict[str, dict[str, Any]] = {}
-    for field, new_value in updates.items():
-        old_value = getattr(item, field, None)
-        if old_value != new_value:
-            changes[field] = {"before": old_value, "after": new_value}
-            setattr(item, field, new_value)
-
-    if changes:
-        audit = AuditLog(
-            content_type="cloze",
-            content_id=item_id,
-            action="edit",
-            changes=changes,
-            reviewer_id=reviewer.id,
-        )
-        db.add(audit)
-
-    await db.commit()
-    await db.refresh(item)
+    item = await _edit_admin_content_or_http(
+        db,
+        content_type="cloze",
+        item_id=item_id,
+        updates=body.model_dump(exclude_unset=True, by_alias=False),
+        reviewer_id=reviewer.id,
+    )
     return to_cloze_detail_response(item)
 
 
@@ -589,31 +555,13 @@ async def patch_sentence_arrange(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> SentenceArrangeDetailResponse:
     """Partial update sentence arrange question. Only sent fields are updated."""
-    result = await db.execute(select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict[str, dict[str, Any]] = {}
-    for field, new_value in updates.items():
-        old_value = getattr(item, field, None)
-        if old_value != new_value:
-            changes[field] = {"before": old_value, "after": new_value}
-            setattr(item, field, new_value)
-
-    if changes:
-        audit = AuditLog(
-            content_type="sentence_arrange",
-            content_id=item_id,
-            action="edit",
-            changes=changes,
-            reviewer_id=reviewer.id,
-        )
-        db.add(audit)
-
-    await db.commit()
-    await db.refresh(item)
+    item = await _edit_admin_content_or_http(
+        db,
+        content_type="sentence_arrange",
+        item_id=item_id,
+        updates=body.model_dump(exclude_unset=True, by_alias=False),
+        reviewer_id=reviewer.id,
+    )
     return to_sentence_arrange_detail_response(item)
 
 
@@ -732,31 +680,13 @@ async def patch_conversation(
     reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ConversationDetailResponse:
     """Partial update conversation scenario. Only sent fields are updated."""
-    result = await db.execute(select(ConversationScenario).where(ConversationScenario.id == item_id))
-    item = result.scalar_one_or_none()
-    if item is None:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    updates = body.model_dump(exclude_unset=True, by_alias=False)
-    changes: dict[str, dict[str, Any]] = {}
-    for field, new_value in updates.items():
-        old_value = getattr(item, field, None)
-        if old_value != new_value:
-            changes[field] = {"before": old_value, "after": new_value}
-            setattr(item, field, new_value)
-
-    if changes:
-        audit = AuditLog(
-            content_type="conversation",
-            content_id=item_id,
-            action="edit",
-            changes=changes,
-            reviewer_id=reviewer.id,
-        )
-        db.add(audit)
-
-    await db.commit()
-    await db.refresh(item)
+    item = await _edit_admin_content_or_http(
+        db,
+        content_type="conversation",
+        item_id=item_id,
+        updates=body.model_dump(exclude_unset=True, by_alias=False),
+        reviewer_id=reviewer.id,
+    )
     return to_conversation_detail_response(item)
 
 
