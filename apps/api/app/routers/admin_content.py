@@ -47,6 +47,7 @@ from app.schemas.admin_content import (
     VocabularyUpdateRequest,
 )
 from app.schemas.common import PaginatedResponse
+from app.services.admin_audit_logs import list_admin_audit_logs
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
 from app.services.admin_content_stats import get_admin_content_stats
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
@@ -1108,10 +1109,7 @@ async def get_audit_logs(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> list[AuditLogItem]:
     """Return audit log entries for a content item, ordered by created_at DESC."""
-    result = await db.execute(
-        select(AuditLog).where(AuditLog.content_type == content_type, AuditLog.content_id == item_id).order_by(AuditLog.created_at.desc())
-    )
-    logs = result.scalars().all()
+    logs = await list_admin_audit_logs(db, content_type=content_type, item_id=item_id)
     return [AuditLogItem.model_validate(log) for log in logs]
 
 
