@@ -4,6 +4,7 @@ import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_audio_session.dart';
 import 'gemini_live_connection_runner.dart';
 import 'gemini_live_events.dart';
+import 'gemini_live_greeting_sender.dart';
 import 'gemini_live_inbound_dispatcher.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
@@ -49,6 +50,7 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
+  late final GeminiLiveGreetingSender _greetingSender;
   late final GeminiLiveSetupSender _setupSender;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
@@ -95,6 +97,11 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
+    _greetingSender = GeminiLiveGreetingSender(
+      outboundSender: _outboundSender,
+      characterName: characterName,
+      scenarioGreeting: scenarioGreeting,
+    );
     _setupSender = GeminiLiveSetupSender(
       outboundSender: _outboundSender,
       promptBuilder: _promptBuilder,
@@ -216,10 +223,7 @@ class GeminiLiveService {
   // ──────── Greeting ────────
 
   void _sendGreeting() {
-    _outboundSender.sendGreeting(
-      characterName: characterName,
-      scenarioGreeting: scenarioGreeting,
-    );
+    _greetingSender.send();
   }
 
   // ──────── Audio playback ────────
