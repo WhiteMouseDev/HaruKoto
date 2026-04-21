@@ -1,21 +1,17 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import (
-    DailyProgress,
     KanaCharacter,
     KanaLearningStage,
     QuizSession,
-    UserKanaProgress,
 )
 from app.models.enums import KanaType, QuizType
 from app.models.user import User
@@ -31,12 +27,12 @@ from app.schemas.kana import (
     KanaStageCompleteRequest,
     KanaStageCompleteResponse,
 )
+from app.services.kana_progress import record_kana_learning_progress
 from app.services.kana_query import get_kana_characters_data, get_kana_progress_data, get_kana_stages_data
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
 from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
 from app.services.kana_stage_complete import KanaStageCompleteServiceError, complete_kana_stage
-from app.utils.date import get_today_kst
 
 router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 
@@ -74,36 +70,8 @@ async def record_kana_learning(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, bool]:
-    stmt = pg_insert(UserKanaProgress).values(
-        user_id=user.id,
-        kana_id=body.kana_id,
-        correct_count=1,
-        streak=1,
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "kana_id"],
-        set_={
-            "correct_count": UserKanaProgress.correct_count + 1,
-            "streak": UserKanaProgress.streak + 1,
-            "last_reviewed_at": datetime.now(UTC),
-        },
-    )
-    await db.execute(stmt)
-
-    today = get_today_kst()
-    dp_stmt = pg_insert(DailyProgress).values(
-        user_id=user.id,
-        date=today,
-        kana_learned=1,
-    )
-    dp_stmt = dp_stmt.on_conflict_do_update(
-        index_elements=["user_id", "date"],
-        set_={"kana_learned": DailyProgress.kana_learned + 1},
-    )
-    await db.execute(dp_stmt)
-    await db.commit()
-
-    return {"ok": True}
+    result = await record_kana_learning_progress(db, user, body)
+    return {"ok": result.ok}
 
 
 @router.post("/quiz/start", response_model=KanaQuizStartResponse, status_code=200)
