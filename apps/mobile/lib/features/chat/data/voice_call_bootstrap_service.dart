@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
-
 import '../../../core/settings/call_settings.dart';
 import 'chat_repository.dart';
+import 'voice_call_character_voice_context_loader.dart';
 
 class VoiceCallBootstrapInput {
   const VoiceCallBootstrapInput({
@@ -42,35 +41,28 @@ class VoiceCallBootstrapData {
 }
 
 class VoiceCallBootstrapService {
-  VoiceCallBootstrapService(this._repository);
+  VoiceCallBootstrapService(
+    this._repository, {
+    VoiceCallCharacterVoiceContextLoader? characterContextLoader,
+  }) : _characterContextLoader = characterContextLoader ??
+            VoiceCallCharacterVoiceContextLoader(_repository);
 
   final ChatRepository _repository;
+  final VoiceCallCharacterVoiceContextLoader _characterContextLoader;
 
   Future<VoiceCallBootstrapData> prepare(VoiceCallBootstrapInput input) async {
     final tokenResp = await _repository.fetchLiveToken(
       characterId: input.characterId,
     );
-
-    String? voiceName;
-    String? personality;
-
-    if (input.characterId != null) {
-      try {
-        final detail =
-            await _repository.fetchCharacterDetail(input.characterId!);
-        voiceName = detail.voiceName;
-        personality = detail.personality;
-      } catch (e) {
-        debugPrint('[VoiceCallBootstrap] Character detail fetch failed: $e');
-      }
-    }
+    final characterContext =
+        await _characterContextLoader.load(input.characterId);
 
     return VoiceCallBootstrapData(
       wsUri: tokenResp.wsUri,
       token: tokenResp.token,
       model: tokenResp.model,
-      voiceName: voiceName,
-      systemInstruction: personality,
+      voiceName: characterContext.voiceName,
+      systemInstruction: characterContext.systemInstruction,
       userNickname: input.userNickname,
       silenceDurationMs: input.callSettings.silenceDurationMs,
       subtitleEnabled: input.callSettings.subtitleEnabled,
