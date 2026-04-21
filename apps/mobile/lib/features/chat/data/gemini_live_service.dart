@@ -13,6 +13,7 @@ import 'gemini_live_prompt_builder.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 import 'gemini_live_reconnect_runner.dart';
 import 'gemini_live_session_lifecycle_runner.dart';
+import 'gemini_live_setup_complete_handler.dart';
 import 'gemini_live_setup_sender.dart';
 import 'gemini_live_transcript.dart';
 import 'gemini_live_transport.dart';
@@ -50,8 +51,8 @@ class GeminiLiveService {
   final GeminiLiveReconnectCoordinator _reconnectCoordinator;
   final GeminiLiveLifecycleController _lifecycleController;
   final GeminiLiveOutboundSender _outboundSender;
-  late final GeminiLiveGreetingSender _greetingSender;
   late final GeminiLiveSetupSender _setupSender;
+  late final GeminiLiveSetupCompleteHandler _setupCompleteHandler;
   late final GeminiLiveAudioSession _audioSession;
   late final GeminiLiveConnectionRunner _connectionRunner;
   late final GeminiLiveReconnectRunner _reconnectRunner;
@@ -97,7 +98,7 @@ class GeminiLiveService {
         _outboundSender = GeminiLiveOutboundSender(
           transport: transport ?? DefaultGeminiLiveTransport(),
         ) {
-    _greetingSender = GeminiLiveGreetingSender(
+    final greetingSender = GeminiLiveGreetingSender(
       outboundSender: _outboundSender,
       characterName: characterName,
       scenarioGreeting: scenarioGreeting,
@@ -119,6 +120,12 @@ class GeminiLiveService {
       onError: (message) => onError?.call(message),
       onUnavailable: () => _setState(GeminiLiveState.error),
     );
+    _setupCompleteHandler = GeminiLiveSetupCompleteHandler(
+      reconnectCoordinator: _reconnectCoordinator,
+      greetingSender: greetingSender,
+      startRecording: _audioSession.startRecording,
+      emitState: _setState,
+    );
     _connectionRunner = GeminiLiveConnectionRunner(
       transport: _transport,
       reconnectCoordinator: _reconnectCoordinator,
@@ -138,7 +145,7 @@ class GeminiLiveService {
     _inboundDispatcher = GeminiLiveInboundDispatcher(
       messageHandler: _messageHandler,
       isActive: () => _lifecycleController.isActive,
-      onSetupComplete: _handleSetupComplete,
+      onSetupComplete: _setupCompleteHandler.handle,
       onUpdateResumptionHandle: _reconnectCoordinator.updateResumptionHandle,
       onReconnect: _attemptReconnect,
       onAiTextDelta: _emitAiTextDelta,
@@ -205,25 +212,12 @@ class GeminiLiveService {
     _inboundDispatcher.dispatch(raw);
   }
 
-  void _handleSetupComplete() {
-    _reconnectCoordinator.markConnected();
-    _setState(GeminiLiveState.connected);
-    _sendGreeting();
-    _audioSession.startRecording();
-  }
-
   void _emitAiTextDelta(String text) {
     onAiTextDelta?.call(text);
   }
 
   void _emitTranscriptEntry(TranscriptEntry entry) {
     onTranscriptEntry?.call(entry);
-  }
-
-  // ──────── Greeting ────────
-
-  void _sendGreeting() {
-    _greetingSender.send();
   }
 
   // ──────── Audio playback ────────
