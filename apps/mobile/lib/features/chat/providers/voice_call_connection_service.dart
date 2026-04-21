@@ -69,10 +69,14 @@ class VoiceCallConnectionService {
   const VoiceCallConnectionService({
     required VoiceCallBootstrapService bootstrapService,
     required VoiceCallLiveServiceFactory liveServiceFactory,
+    VoiceCallConnectionValidator validator =
+        const VoiceCallConnectionValidator(),
   })  : _bootstrapService = bootstrapService,
+        _validator = validator,
         _liveServiceFactory = liveServiceFactory;
 
   final VoiceCallBootstrapService _bootstrapService;
+  final VoiceCallConnectionValidator _validator;
   final VoiceCallLiveServiceFactory _liveServiceFactory;
 
   Future<GeminiLiveService> prepare(VoiceCallConnectionInput input) async {
@@ -85,11 +89,18 @@ class VoiceCallConnectionService {
       ),
     );
 
+    _validator.ensureReady(bootstrap);
+    return _liveServiceFactory(bootstrap, input.request);
+  }
+}
+
+class VoiceCallConnectionValidator {
+  const VoiceCallConnectionValidator();
+
+  void ensureReady(VoiceCallBootstrapData bootstrap) {
     if (bootstrap.token.isEmpty || bootstrap.model.isEmpty) {
       throw const VoiceCallConnectionException('연결에 실패했습니다');
     }
-
-    return _liveServiceFactory(bootstrap, input.request);
   }
 }
 
