@@ -48,6 +48,7 @@ from app.schemas.admin_content import (
 )
 from app.schemas.common import PaginatedResponse
 from app.services.admin_batch_review import AdminBatchReviewServiceError, batch_review_content
+from app.services.admin_content_stats import get_admin_content_stats
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
 from app.services.admin_tts import (
     TTS_FIELDS,
@@ -1125,33 +1126,16 @@ async def get_content_stats(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> ContentStatsResponse:
     """Return review_status counts for all content types."""
-    stats: list[ContentStatsItem] = []
-
-    content_types: list[tuple[str, type]] = [
-        ("vocabulary", Vocabulary),
-        ("grammar", Grammar),
-        ("cloze", ClozeQuestion),
-        ("sentence_arrange", SentenceArrangeQuestion),
-        ("conversation", ConversationScenario),
-    ]
-
-    for content_type, model in content_types:
-        count_q = select(model.review_status, func.count().label("cnt")).group_by(model.review_status)  # type: ignore[attr-defined]
-        result = await db.execute(count_q)
-        counts: dict[str, int] = {row[0].value: row[1] for row in result.all()}
-
-        needs_review = counts.get(ReviewStatus.NEEDS_REVIEW.value, 0)
-        approved = counts.get(ReviewStatus.APPROVED.value, 0)
-        rejected = counts.get(ReviewStatus.REJECTED.value, 0)
-
-        stats.append(
+    stats = await get_admin_content_stats(db)
+    return ContentStatsResponse(
+        stats=[
             ContentStatsItem(
-                content_type=content_type,
-                needs_review=needs_review,
-                approved=approved,
-                rejected=rejected,
-                total=needs_review + approved + rejected,
+                content_type=item.content_type,
+                needs_review=item.needs_review,
+                approved=item.approved,
+                rejected=item.rejected,
+                total=item.total,
             )
-        )
-
-    return ContentStatsResponse(stats=stats)
+            for item in stats
+        ]
+    )
