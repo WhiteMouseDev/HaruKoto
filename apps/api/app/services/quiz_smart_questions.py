@@ -11,8 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Grammar, UserGrammarProgress, UserVocabProgress, Vocabulary
 from app.services.distractor import generate_distractors
-from app.services.quiz_question_builder import QuestionPayload, build_grammar_question, build_options, build_vocab_question
-from app.utils.constants import QUIZ_CONFIG, SRS_CONFIG
+from app.services.quiz_question_builder import QuestionPayload
+from app.services.quiz_smart_question_payloads import build_smart_grammar_questions, build_smart_vocab_question
+from app.utils.constants import SRS_CONFIG
 
 
 class SmartContentItem(Protocol):
@@ -73,12 +74,14 @@ async def _load_smart_vocab_questions(
     questions: list[QuestionPayload] = []
     for vocab in all_items:
         questions.append(
-            await _build_smart_vocab_question(
+            await build_smart_vocab_question(
                 db,
                 vocab,
                 jlpt_level=jlpt_level,
                 user_id=user_id,
                 fallback_meanings=fallback_meanings,
+                distractor_generator=generate_distractors,
+                shuffle=random.shuffle,
             )
         )
     return questions
@@ -104,13 +107,7 @@ async def _load_smart_grammar_questions(
     all_items = _dedupe_by_meaning(_merge_smart_items(review_items, retry_items, new_items))
 
     all_meanings = await _load_grammar_meanings(db, jlpt_level)
-    questions: list[QuestionPayload] = []
-    for grammar in all_items:
-        wrong_texts = [meaning for meaning in all_meanings if meaning != grammar.meaning_ko]
-        random.shuffle(wrong_texts)
-        options, correct_id = build_options(grammar.meaning_ko, wrong_texts[: QUIZ_CONFIG.WRONG_OPTIONS_COUNT])
-        questions.append(build_grammar_question(grammar, "GRAMMAR", options, correct_id))
-    return questions
+    return build_smart_grammar_questions(all_items, all_meanings=all_meanings, shuffle=random.shuffle)
 
 
 async def _load_vocab_review_items(
@@ -255,41 +252,6 @@ async def _load_vocab_meanings(db: AsyncSession, jlpt_level: str) -> list[str]:
 async def _load_grammar_meanings(db: AsyncSession, jlpt_level: str) -> list[str]:
     result = await db.execute(select(Grammar.meaning_ko).where(Grammar.jlpt_level == jlpt_level).order_by(func.random()).limit(50))
     return list(result.scalars().all())
-
-
-async def _build_smart_vocab_question(
-    db: AsyncSession,
-    vocab: Vocabulary,
-    *,
-    jlpt_level: str,
-    user_id: uuid.UUID,
-    fallback_meanings: list[str],
-) -> QuestionPayload:
-    distractors = await generate_distractors(
-        db,
-        correct_item_id=vocab.id,
-        item_type="WORD",
-        jlpt_level=jlpt_level,
-        count=QUIZ_CONFIG.WRONG_OPTIONS_COUNT,
-        user_id=user_id,
-    )
-
-    correct_id = str(uuid.uuid4())
-    options = [{"id": correct_id, "text": vocab.meaning_ko}]
-    used_texts = {vocab.meaning_ko}
-    for distractor in distractors:
-        options.append({"id": str(uuid.uuid4()), "text": distractor["text"]})
-        used_texts.add(distractor["text"])
-
-    if len(options) - 1 < QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
-        for meaning in fallback_meanings:
-            if meaning not in used_texts:
-                options.append({"id": str(uuid.uuid4()), "text": meaning})
-                used_texts.add(meaning)
-                if len(options) - 1 >= QUIZ_CONFIG.WRONG_OPTIONS_COUNT:
-                    break
-    random.shuffle(options)
-    return build_vocab_question(vocab, "VOCABULARY", options, correct_id)
 
 
 def _calculate_new_count_needed(distribution: dict[str, int], *, review_count: int, retry_count: int) -> int:
