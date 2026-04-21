@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 from typing import Any
 
 from sqlalchemy import select
@@ -20,6 +19,13 @@ from app.schemas.chat import (
 )
 from app.schemas.chat import ChatMessage as ChatMessageSchema
 from app.services.ai import generate_chat_response, generate_feedback_summary
+from app.services.chat_history import (
+    append_chat_exchange,
+    conversation_messages,
+    count_conversation_messages,
+    extract_conversation_history,
+    message_list,
+)
 from app.services.conversation_rewards import grant_conversation_completion_rewards
 from app.services.subscription import check_ai_limit
 from app.utils.constants import RATE_LIMITS
@@ -35,33 +41,6 @@ class ChatSessionServiceError(Exception):
         self.detail = detail
         self.headers = headers
         super().__init__(detail)
-
-
-@dataclass(slots=True)
-class ConversationHistory:
-    system_prompt: str
-    history: list[dict[str, str]]
-
-
-def _extract_conversation_history(messages: list[dict[str, Any]]) -> ConversationHistory:
-    system_prompt = ""
-    history: list[dict[str, str]] = []
-
-    for message in messages:
-        role = message.get("role")
-        content = str(message.get("content", ""))
-        if role == "system":
-            system_prompt = content
-        elif role in ("user", "assistant"):
-            history.append({"role": role, "content": content})
-
-    return ConversationHistory(system_prompt=system_prompt, history=history)
-
-
-def _message_list(raw_messages: Any) -> list[dict[str, Any]]:
-    if not isinstance(raw_messages, list):
-        return []
-    return [message for message in raw_messages if isinstance(message, dict)]
 
 
 async def _load_user_conversation(
@@ -154,8 +133,8 @@ async def send_chat_message(db: AsyncSession, user: User, body: ChatMessageReque
     if conversation.ended_at:
         raise ChatSessionServiceError(status_code=400, detail="이미 종료된 대화입니다")
 
-    messages = _message_list(conversation.messages)
-    conversation_history = _extract_conversation_history(messages)
+    messages = message_list(conversation.messages)
+    conversation_history = extract_conversation_history(messages)
 
     logger.info(
         "AI chat message",
@@ -175,12 +154,13 @@ async def send_chat_message(db: AsyncSession, user: User, body: ChatMessageReque
         },
     )
 
-    new_messages = messages + [
-        {"role": "user", "content": body.message},
-        {"role": "assistant", "content": ai_response.get("messageJa", "")},
-    ]
+    new_messages = append_chat_exchange(
+        messages,
+        user_message=body.message,
+        assistant_message=ai_response.get("messageJa", ""),
+    )
     conversation.messages = new_messages
-    conversation.message_count = len([message for message in new_messages if message.get("role") in ("user", "assistant")])
+    conversation.message_count = count_conversation_messages(new_messages)
     await db.flush()
 
     return ChatMessageResponse(
@@ -197,7 +177,7 @@ async def end_chat_session(db: AsyncSession, user: User, body: ChatEndRequest) -
     if conversation.ended_at:
         return ChatEndResponse(success=True, feedback_summary=conversation.feedback_summary, xp_earned=0, events=[])
 
-    messages = [message for message in _message_list(conversation.messages) if message.get("role") in ("user", "assistant")]
+    messages = conversation_messages(message_list(conversation.messages))
     logger.info(
         "AI chat end - generating feedback",
         extra={
