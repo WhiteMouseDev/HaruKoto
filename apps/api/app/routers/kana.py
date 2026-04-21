@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,7 +16,6 @@ from app.models import (
     KanaLearningStage,
     QuizSession,
     UserKanaProgress,
-    UserKanaStage,
 )
 from app.models.enums import KanaType, QuizType
 from app.models.user import User
@@ -31,18 +30,13 @@ from app.schemas.kana import (
     KanaQuizStartResponse,
     KanaStageCompleteRequest,
     KanaStageCompleteResponse,
-    KanaStat,
 )
+from app.services.kana_query import get_kana_characters_data, get_kana_progress_data, get_kana_stages_data
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
 from app.services.kana_quiz_questions import build_kana_quiz_questions, strip_kana_quiz_answers
 from app.services.kana_stage_complete import KanaStageCompleteServiceError, complete_kana_stage
 from app.utils.date import get_today_kst
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-FIRST_STAGE_NUMBER = 1
 
 router = APIRouter(prefix="/api/v1/kana", tags=["kana"])
 
@@ -54,50 +48,7 @@ async def get_characters(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict[str, Any]]:
-    query = select(KanaCharacter).order_by(KanaCharacter.order)
-    if kana_type:
-        query = query.where(KanaCharacter.kana_type == kana_type)
-    if category:
-        query = query.where(KanaCharacter.category == category)
-    result = await db.execute(query)
-    characters = result.scalars().all()
-
-    # Fetch user progress for all kana characters
-    progress_result = await db.execute(select(UserKanaProgress).where(UserKanaProgress.user_id == user.id))
-    progress_map: dict[str, UserKanaProgress] = {str(p.kana_id): p for p in progress_result.scalars().all()}
-
-    resp: list[dict[str, Any]] = []
-    for c in characters:
-        item: dict[str, Any] = {
-            "id": str(c.id),
-            "kanaType": c.kana_type.value,
-            "character": c.character,
-            "romaji": c.romaji,
-            "pronunciation": c.pronunciation,
-            "row": c.row,
-            "column": c.column,
-            "strokeCount": c.stroke_count,
-            "strokeOrder": c.stroke_order,
-            "audioUrl": c.audio_url,
-            "exampleWord": c.example_word,
-            "exampleReading": c.example_reading,
-            "exampleMeaning": c.example_meaning,
-            "category": c.category,
-            "order": c.order,
-        }
-        p = progress_map.get(str(c.id))
-        if p:
-            item["progress"] = {
-                "correctCount": p.correct_count,
-                "streak": p.streak,
-                "mastered": p.mastered,
-                "lastReviewedAt": p.last_reviewed_at.isoformat() if p.last_reviewed_at else None,
-            }
-        else:
-            item["progress"] = None
-        resp.append(item)
-
-    return resp
+    return await get_kana_characters_data(db, user_id=user.id, kana_type=kana_type, category=category)
 
 
 @router.get("/stages", status_code=200)
@@ -106,34 +57,7 @@ async def get_stages(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict[str, Any]]:
-    query = select(KanaLearningStage).order_by(KanaLearningStage.order)
-    if kana_type:
-        query = query.where(KanaLearningStage.kana_type == kana_type)
-    result = await db.execute(query)
-    stages = result.scalars().all()
-
-    # Get user stage progress
-    stage_progress_result = await db.execute(select(UserKanaStage).where(UserKanaStage.user_id == user.id))
-    user_stages = {str(us.stage_id): us for us in stage_progress_result.scalars().all()}
-
-    response: list[dict[str, Any]] = []
-    for stage in stages:
-        us = user_stages.get(str(stage.id))
-        response.append(
-            {
-                "id": str(stage.id),
-                "kanaType": stage.kana_type.value,
-                "stageNumber": stage.stage_number,
-                "title": stage.title,
-                "description": stage.description,
-                "characters": stage.characters,
-                "isUnlocked": us.is_unlocked if us else (stage.stage_number == FIRST_STAGE_NUMBER),
-                "isCompleted": us.is_completed if us else False,
-                "quizScore": us.quiz_score if us else None,
-            }
-        )
-
-    return response
+    return await get_kana_stages_data(db, user_id=user.id, kana_type=kana_type)
 
 
 @router.get("/progress", response_model=KanaProgressResponse, status_code=200)
@@ -141,39 +65,7 @@ async def get_progress(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KanaProgressResponse:
-    # Batch: totals per kana_type (1 query instead of 2)
-    total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
-    totals = {row[0]: row[1] for row in total_result.all()}
-
-    # Batch: learned per kana_type (1 query instead of 2)
-    learned_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
-        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-        .where(UserKanaProgress.user_id == user.id)
-        .group_by(KanaCharacter.kana_type)
-    )
-    learned_map = {row[0]: row[1] for row in learned_result.all()}
-
-    # Batch: mastered per kana_type (1 query instead of 2)
-    mastered_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
-        .join(KanaCharacter, KanaCharacter.id == UserKanaProgress.kana_id)
-        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
-        .group_by(KanaCharacter.kana_type)
-    )
-    mastered_map = {row[0]: row[1] for row in mastered_result.all()}
-
-    def _stat(kt: KanaType) -> KanaStat:
-        return KanaStat(
-            learned=learned_map.get(kt, 0),
-            mastered=mastered_map.get(kt, 0),
-            total=totals.get(kt, 0),
-        )
-
-    return KanaProgressResponse(
-        hiragana=_stat(KanaType.HIRAGANA),
-        katakana=_stat(KanaType.KATAKANA),
-    )
+    return await get_kana_progress_data(db, user_id=user.id)
 
 
 @router.post("/progress", status_code=200)
