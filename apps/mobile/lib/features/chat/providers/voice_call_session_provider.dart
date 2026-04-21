@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/gemini_live_events.dart';
-import '../data/gemini_live_transcript.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_end_call_handler.dart';
+import 'voice_call_live_event_handler.dart';
 import 'voice_call_live_session_starter.dart';
-import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_session_state.dart';
 import 'voice_call_session_state_reducer.dart';
@@ -20,11 +18,11 @@ export 'voice_call_session_resources.dart';
 export 'voice_call_session_state.dart';
 
 class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
-  static const _liveStateCoordinator = VoiceCallLiveStateCoordinator();
   static const _stateReducer = VoiceCallSessionStateReducer();
 
   VoiceCallSessionResources? _resources;
   VoiceCallEndCallHandler? _endCallHandler;
+  VoiceCallLiveEventHandler? _liveEventHandler;
   VoiceCallSessionRequest? _request;
   bool _disposed = false;
   int _generation = 0;
@@ -35,6 +33,12 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
       ref.read(voiceCallRingtonePlayerFactoryProvider)(),
     );
     _endCallHandler ??= ref.read(voiceCallEndCallHandlerProvider);
+    _liveEventHandler ??= VoiceCallLiveEventHandler(
+      getState: () => state,
+      setState: (nextState) => state = nextState,
+      getResources: () => _resources,
+      isDisposed: () => _disposed,
+    );
     ref.onDispose(() {
       _disposed = true;
       _generation++;
@@ -77,10 +81,10 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
                 resources: _resources,
                 isActive: () => !_isStale(generation),
                 callbacks: VoiceCallLiveSessionCallbacks(
-                  onStateChange: _handleLiveStateChange,
-                  onAiTextDelta: _appendAiTextDelta,
-                  onTranscriptEntry: _handleTranscriptEntry,
-                  onError: _setErrorMessage,
+                  onStateChange: _liveEventHandler!.handleStateChange,
+                  onAiTextDelta: _liveEventHandler!.appendAiTextDelta,
+                  onTranscriptEntry: _liveEventHandler!.handleTranscriptEntry,
+                  onError: _liveEventHandler!.setErrorMessage,
                 ),
               ),
             );
@@ -113,37 +117,6 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
         durationSeconds: state.callDurationSeconds,
       ),
     );
-  }
-
-  void _handleLiveStateChange(GeminiLiveState liveState) {
-    final transition = _liveStateCoordinator.resolve(liveState);
-    state = _stateReducer.applyLiveTransition(state, transition);
-
-    if (transition.stopRingtone) {
-      unawaited(_resources?.stopRingtone());
-    }
-    if (transition.startTimer) {
-      _startTimer();
-    }
-  }
-
-  void _appendAiTextDelta(String text) {
-    state = _stateReducer.appendAiTextDelta(state, text);
-  }
-
-  void _handleTranscriptEntry(TranscriptEntry entry) {
-    state = _stateReducer.applyTranscriptEntry(state, entry);
-  }
-
-  void _setErrorMessage(String message) {
-    state = _stateReducer.setErrorMessage(state, message);
-  }
-
-  void _startTimer() {
-    _resources?.startTimer(() {
-      if (_disposed) return;
-      state = _stateReducer.incrementDuration(state);
-    });
   }
 
   bool _isStale(int generation) => _disposed || generation != _generation;
