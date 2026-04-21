@@ -6,13 +6,11 @@ from typing import Annotated, Any
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import _decode_token, bearer_scheme
 from app.enums import JlptLevel, ReviewStatus, ScenarioCategory
-from app.models.tts import TtsAudio
 from app.models.user import User
 from app.routers.tts import _upload_to_gcs
 from app.schemas.admin_content import (
@@ -62,12 +60,9 @@ from app.services.admin_grammar_list import list_admin_grammar
 from app.services.admin_quiz_list import list_admin_quiz
 from app.services.admin_review_queue import AdminReviewQueueServiceError, get_admin_review_queue
 from app.services.admin_tts import (
-    TTS_FIELDS,
     AdminTtsServiceError,
+    get_admin_tts_map,
     regenerate_admin_tts_audio,
-)
-from app.services.admin_tts import (
-    resolve_tts_text as resolve_tts_text,
 )
 from app.services.admin_vocabulary_list import list_admin_vocabulary
 from app.services.ai import generate_tts
@@ -687,34 +682,29 @@ async def get_review_queue(
 async def get_admin_tts(
     content_type: str,
     item_id: str,
-    reviewer: Annotated[User, Depends(require_reviewer)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> AdminTtsMapResponse:
     """Return per-field TTS audio map for a content item."""
-    fields = TTS_FIELDS.get(content_type)
-    if fields is None:
-        raise HTTPException(status_code=400, detail=f"Unknown content_type: {content_type}")
+    try:
+        result = await get_admin_tts_map(db, content_type=content_type, item_id=item_id)
+    except AdminTtsServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    result = await db.execute(
-        select(TtsAudio).where(
-            TtsAudio.target_type == content_type,
-            TtsAudio.target_id == item_id,
-            TtsAudio.speed == 1.0,
-        )
-    )
-    records = result.scalars().all()
-
-    # Build audios map: all fields default to None, then populate from records
-    audios: dict[str, AudioFieldInfo | None] = {f: None for f in fields}
-    for record in records:
-        if record.field in audios:
-            audios[record.field] = AudioFieldInfo(
-                audio_url=record.audio_url,
-                provider=record.provider,
-                created_at=record.created_at,
+    return AdminTtsMapResponse(
+        audios={
+            field: (
+                AudioFieldInfo(
+                    audio_url=audio.audio_url,
+                    provider=audio.provider,
+                    created_at=audio.created_at,
+                )
+                if audio is not None
+                else None
             )
-
-    return AdminTtsMapResponse(audios=audios)
+            for field, audio in result.audios.items()
+        }
+    )
 
 
 # ==========================================

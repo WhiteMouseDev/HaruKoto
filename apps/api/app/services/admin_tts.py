@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Protocol
 
 from sqlalchemy import delete as sa_delete
@@ -50,6 +51,18 @@ class AdminTtsRegenerateResult:
     audio_url: str
     field: str
     provider: str
+
+
+@dataclass(frozen=True, slots=True)
+class AdminTtsAudioInfo:
+    audio_url: str
+    provider: str
+    created_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class AdminTtsMapResult:
+    audios: dict[str, AdminTtsAudioInfo | None]
 
 
 async def regenerate_admin_tts_audio(
@@ -112,6 +125,37 @@ async def regenerate_admin_tts_audio(
         field=field,
         provider=tts_result.provider,
     )
+
+
+async def get_admin_tts_map(
+    db: AsyncSession,
+    *,
+    content_type: str,
+    item_id: str,
+) -> AdminTtsMapResult:
+    fields = TTS_FIELDS.get(content_type)
+    if fields is None:
+        raise AdminTtsServiceError(status_code=400, detail=f"Unknown content_type: {content_type}")
+
+    result = await db.execute(
+        select(TtsAudio).where(
+            TtsAudio.target_type == content_type,
+            TtsAudio.target_id == item_id,
+            TtsAudio.speed == 1.0,
+        )
+    )
+    records = result.scalars().all()
+
+    audios: dict[str, AdminTtsAudioInfo | None] = {field: None for field in fields}
+    for record in records:
+        if record.field in audios:
+            audios[record.field] = AdminTtsAudioInfo(
+                audio_url=record.audio_url,
+                provider=record.provider,
+                created_at=record.created_at,
+            )
+
+    return AdminTtsMapResult(audios=audios)
 
 
 def resolve_tts_text(content_type: str, field: str, obj: object) -> str:

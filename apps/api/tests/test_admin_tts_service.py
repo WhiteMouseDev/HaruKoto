@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 
 from app.models.tts import TtsAudio
-from app.services.admin_tts import AdminTtsServiceError, regenerate_admin_tts_audio, resolve_tts_text
+from app.services.admin_tts import (
+    AdminTtsServiceError,
+    get_admin_tts_map,
+    regenerate_admin_tts_audio,
+    resolve_tts_text,
+)
 
 
 @dataclass(frozen=True)
@@ -21,6 +28,57 @@ def _scalar_result(obj: object | None) -> MagicMock:
     result = MagicMock()
     result.scalar_one_or_none.return_value = obj
     return result
+
+
+@pytest.mark.asyncio
+async def test_get_admin_tts_map_returns_all_supported_fields() -> None:
+    created_at = datetime(2026, 4, 21, 12, 0, tzinfo=UTC)
+    records = [
+        SimpleNamespace(
+            field="reading",
+            audio_url="https://cdn.example.com/reading.mp3",
+            provider="elevenlabs",
+            created_at=created_at,
+        ),
+        SimpleNamespace(
+            field="unsupported_field",
+            audio_url="https://cdn.example.com/ignored.mp3",
+            provider="elevenlabs",
+            created_at=created_at,
+        ),
+    ]
+    db = _FakeDb([_ScalarsResult(records)])
+
+    result = await get_admin_tts_map(
+        db,  # type: ignore[arg-type]
+        content_type="vocabulary",
+        item_id="item-1",
+    )
+
+    assert set(result.audios) == {"reading", "word", "example_sentence"}
+    assert result.audios["reading"] is not None
+    assert result.audios["reading"].audio_url == "https://cdn.example.com/reading.mp3"
+    assert result.audios["reading"].provider == "elevenlabs"
+    assert result.audios["word"] is None
+    assert result.audios["example_sentence"] is None
+    assert "unsupported_field" not in result.audios
+    assert db.execute_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_get_admin_tts_map_rejects_unknown_content_type() -> None:
+    db = _FakeDb([])
+
+    with pytest.raises(AdminTtsServiceError) as exc_info:
+        await get_admin_tts_map(
+            db,  # type: ignore[arg-type]
+            content_type="unknown",
+            item_id="item-1",
+        )
+
+    assert exc_info.value.status_code == 400
+    assert "Unknown content_type" in exc_info.value.detail
+    assert db.execute_calls == 0
 
 
 def test_resolve_tts_text_uses_first_grammar_example_sentence() -> None:
@@ -134,3 +192,14 @@ class _FakeDb:
 
     async def commit(self) -> None:
         self.commit_calls += 1
+
+
+class _ScalarsResult:
+    def __init__(self, items: list[Any]) -> None:
+        self._items = items
+
+    def scalars(self) -> _ScalarsResult:
+        return self
+
+    def all(self) -> list[Any]:
+        return self._items
