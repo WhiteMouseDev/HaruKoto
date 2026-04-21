@@ -10,6 +10,7 @@ import 'voice_call_live_session_starter.dart';
 import 'voice_call_live_state_coordinator.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_session_state.dart';
+import 'voice_call_session_state_reducer.dart';
 import 'voice_call_start_flow_coordinator.dart';
 
 export 'voice_call_analysis_request_factory.dart';
@@ -29,6 +30,7 @@ class VoiceCallEndResult {
 
 class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   static const _liveStateCoordinator = VoiceCallLiveStateCoordinator();
+  static const _stateReducer = VoiceCallSessionStateReducer();
 
   VoiceCallSessionResources? _resources;
   VoiceCallSessionRequest? _request;
@@ -66,19 +68,13 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
     if (startResult.stale) return;
 
     if (startResult.hasError) {
-      state = state.copyWith(
-        status: VoiceCallStatus.error,
-        errorMessage: startResult.errorMessage,
-      );
+      state = _stateReducer.fail(state, startResult.errorMessage);
       return;
     }
 
     final service = startResult.service;
     if (service == null) {
-      state = state.copyWith(
-        status: VoiceCallStatus.error,
-        errorMessage: '연결에 실패했습니다',
-      );
+      state = _stateReducer.fail(state, '연결에 실패했습니다');
       return;
     }
 
@@ -98,10 +94,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
             );
     if (startLiveResult.stale) return;
     if (startLiveResult.hasError) {
-      state = state.copyWith(
-        status: VoiceCallStatus.error,
-        errorMessage: startLiveResult.errorMessage,
-      );
+      state = _stateReducer.fail(state, startLiveResult.errorMessage);
     }
   }
 
@@ -112,13 +105,12 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   void toggleMute() {
-    final nextMuted = !state.isMuted;
-    state = state.copyWith(isMuted: nextMuted);
-    _resources?.setMuted(nextMuted);
+    state = _stateReducer.toggleMute(state);
+    _resources?.setMuted(state.isMuted);
   }
 
   void toggleSubtitle() {
-    state = state.copyWith(showSubtitle: !state.showSubtitle);
+    state = _stateReducer.toggleSubtitle(state);
   }
 
   Future<VoiceCallEndResult> endCall() async {
@@ -141,12 +133,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
 
   void _handleLiveStateChange(GeminiLiveState liveState) {
     final transition = _liveStateCoordinator.resolve(liveState);
-    state = transition.clearErrorMessage
-        ? state.copyWith(
-            status: transition.status,
-            errorMessage: null,
-          )
-        : state.copyWith(status: transition.status);
+    state = _stateReducer.applyLiveTransition(state, transition);
 
     if (transition.stopRingtone) {
       unawaited(_resources?.stopRingtone());
@@ -157,25 +144,21 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
   }
 
   void _appendAiTextDelta(String text) {
-    state = state.copyWith(currentAiText: state.currentAiText + text);
+    state = _stateReducer.appendAiTextDelta(state, text);
   }
 
   void _handleTranscriptEntry(TranscriptEntry entry) {
-    if (entry.role == 'assistant') {
-      state = state.copyWith(currentAiText: '');
-    }
+    state = _stateReducer.applyTranscriptEntry(state, entry);
   }
 
   void _setErrorMessage(String message) {
-    state = state.copyWith(errorMessage: message);
+    state = _stateReducer.setErrorMessage(state, message);
   }
 
   void _startTimer() {
     _resources?.startTimer(() {
       if (_disposed) return;
-      state = state.copyWith(
-        callDurationSeconds: state.callDurationSeconds + 1,
-      );
+      state = _stateReducer.incrementDuration(state);
     });
   }
 
