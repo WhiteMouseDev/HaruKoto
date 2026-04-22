@@ -2,6 +2,8 @@
 name: mobile-agent
 description: Flutter/Dart 모바일 전문가. apps/mobile만 수정 가능. 백엔드 API 계약 변경은 backend-agent에게 위임.
 tools: Read, Edit, Write, Glob, Grep, Bash
+isolation: worktree
+color: orange
 ---
 
 # Mobile Agent (Flutter / Dart)

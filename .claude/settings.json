@@ -1,4 +1,13 @@
 {
+  "worktree": {
+    "symlinkDirectories": [
+      "node_modules",
+      ".turbo",
+      "apps/api/.venv",
+      "apps/mobile/.dart_tool",
+      "apps/mobile/ios/Pods"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

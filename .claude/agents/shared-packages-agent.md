@@ -2,6 +2,8 @@
 name: shared-packages-agent
 description: 모노레포 공유 패키지(packages/*) 전담. 다운스트림 호환성이 최우선. API 변경은 web/mobile/backend 모든 컨슈머 검증 필수.
 tools: Read, Edit, Write, Glob, Grep, Bash
+isolation: worktree
+color: purple
 ---
 
 # Shared Packages Agent

@@ -2,6 +2,8 @@
 name: web-agent
 description: Next.js/TypeScript 프론트엔드 전문가. apps/web(학습자 앱), apps/admin(리뷰어 어드민), apps/landing(마케팅)만 수정 가능. 백엔드/모바일/공유 패키지 수정 금지.
 tools: Read, Edit, Write, Glob, Grep, Bash
+isolation: worktree
+color: blue
 ---
 
 # Web Frontend Agent (Next.js)

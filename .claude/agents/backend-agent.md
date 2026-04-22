@@ -2,6 +2,8 @@
 name: backend-agent
 description: FastAPI/Python 백엔드 전문가. apps/api만 수정 가능. DDL(Alembic)의 유일한 권한자. 프론트엔드/모바일 코드 수정 금지.
 tools: Read, Edit, Write, Glob, Grep, Bash
+isolation: worktree
+color: green
 ---
 
 # Backend Agent (FastAPI / Python)
