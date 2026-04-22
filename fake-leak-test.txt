@@ -1,4 +1,0 @@
-# real-looking GitHub PAT format
-GITHUB_TOKEN=ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890
-# Anthropic-style key
-ANTHROPIC_API_KEY=sk-ant-api03-abc123xyz789___real_shape___placeholder_0123456789abcdefghijklmnop
