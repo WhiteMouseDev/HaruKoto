@@ -11,11 +11,4 @@ class SubscriptionRepository {
         await _dio.get<Map<String, dynamic>>('/subscription/status');
     return SubscriptionStatus.fromJson(response.data!);
   }
-
-  Future<void> subscribe(String planId) async {
-    await _dio.post<Map<String, dynamic>>(
-      '/subscription/subscribe',
-      data: {'plan': planId},
-    );
-  }
 }

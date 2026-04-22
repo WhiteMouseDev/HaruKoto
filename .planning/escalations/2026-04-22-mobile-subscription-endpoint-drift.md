@@ -1,10 +1,20 @@
 ---
 raised_by: mobile-contract-validator
 raised_at: 2026-04-22T14:00:00+09:00
+resolved_at: 2026-04-22T17:00:00+09:00
 phase: harness-setup
 severity: blocker
-status: open
+status: resolved
 ---
+
+## Resolution
+
+조사 결과 `SubscriptionRepository.subscribe(String planId)`는 **dead code** — 어디서도 호출되지 않음. 실제 결제 UI(`checkout_page.dart`)는 "결제 기능은 준비 중입니다" 플레이스홀더 상태.
+
+- **선택**: 옵션 1~4 모두 기각. 실제 호출자 없이 엔드포인트를 배선하는 건 premature implementation.
+- **조치**: `subscribe()` 메서드와 `/subscription/subscribe` 호출 **삭제**. 실제 결제 UI 구현 시점에 올바른 플로우(`/subscription/checkout` → 결제 → `/subscription/activate`)를 설계.
+- **검증**: `validate_mobile_contracts.py` 재실행 → 드리프트 0건. `flutter analyze` 통과.
+- **시스템 검증**: 하네스의 end-to-end 흐름이 실제 버그를 잡아냄 (정확히는 "잠재적 runtime 404"). 검출 → 조사 → 수정 → 재검증 한 사이클 완주.
 
 ## What happened
 
