@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/services/haptic_service.dart';
-import '../../../core/services/sound_service.dart';
+import '../providers/quiz_runtime_coordinators.dart';
 import '../providers/quiz_session_provider.dart';
 import 'quiz_result_page.dart';
 import 'widgets/quiz_page_content.dart';
@@ -38,17 +37,20 @@ class QuizPage extends ConsumerStatefulWidget {
 }
 
 class _QuizPageState extends ConsumerState<QuizPage> {
-  Timer? _timer;
+  late final QuizTimerCoordinator _timerCoordinator;
+  late final QuizFeedbackPlayer _feedbackPlayer;
 
   @override
   void initState() {
     super.initState();
+    _timerCoordinator = QuizTimerCoordinator();
+    _feedbackPlayer = QuizFeedbackPlayer.defaultServices();
     Future(_initializeQuiz);
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _timerCoordinator.dispose();
     final container = ProviderScope.containerOf(context, listen: false);
     Future(() => container.invalidate(quizSessionProvider));
     super.dispose();
@@ -70,22 +72,17 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   void _restartTimerIfNeeded() {
-    _timer?.cancel();
+    final notifier = ref.read(quizSessionProvider.notifier);
     final session = ref.read(quizSessionProvider);
-    if (session.loading ||
-        session.questions.isEmpty ||
-        session.answered ||
-        session.isSpecialMode) {
-      return;
-    }
-    ref.read(quizSessionProvider.notifier).resetTimer();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      ref.read(quizSessionProvider.notifier).incrementTimer();
-    });
+    _timerCoordinator.restartIfNeeded(
+      session: session,
+      resetTimer: notifier.resetTimer,
+      incrementTimer: notifier.incrementTimer,
+    );
   }
 
   void _handleAnswer(String optionId) {
-    _timer?.cancel();
+    _timerCoordinator.stop();
     final session = ref.read(quizSessionProvider);
     final isCorrect =
         ref.read(quizSessionProvider.notifier).answerCurrentQuestion(
@@ -95,16 +92,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     if (isCorrect == null) return;
     final streak = ref.read(quizSessionProvider).streak;
 
-    // Haptic + sound feedback (fire-and-forget)
-    final haptic = HapticService();
-    final sound = SoundService();
-    if (isCorrect) {
-      unawaited(streak >= 3 ? haptic.heavy() : haptic.medium());
-      unawaited(sound.play(streak >= 3 ? SoundType.combo : SoundType.correct));
-    } else {
-      unawaited(haptic.heavy());
-      unawaited(sound.play(SoundType.wrong));
-    }
+    _feedbackPlayer.playAnswerFeedback(
+      isCorrect: isCorrect,
+      streak: streak,
+    );
   }
 
   void _handleNext() {
@@ -119,7 +110,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Future<void> _completeQuiz() async {
-    _timer?.cancel();
+    _timerCoordinator.stop();
     try {
       final result = await ref.read(quizSessionProvider.notifier).completeQuiz(
             stageId: widget.stageId,
@@ -127,8 +118,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       if (result == null || !mounted) return;
       final latestSession = ref.read(quizSessionProvider);
       if (!mounted) return;
-      unawaited(HapticService().heavy());
-      unawaited(SoundService().play(SoundType.complete));
+      _feedbackPlayer.playCompletionFeedback();
       unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
         quizRoute(QuizResultPage(
           result: result,
