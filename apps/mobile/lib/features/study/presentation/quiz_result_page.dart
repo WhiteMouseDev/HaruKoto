@@ -5,10 +5,10 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../core/constants/colors.dart';
 import '../../home/providers/home_provider.dart';
 import '../data/models/quiz_result_model.dart';
+import '../providers/quiz_result_provider.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/result_score_display.dart';
@@ -39,9 +39,6 @@ class QuizResultPage extends ConsumerStatefulWidget {
 }
 
 class _QuizResultPageState extends ConsumerState<QuizResultPage> {
-  List<WrongAnswerModel> _wrongAnswers = [];
-  final Set<String> _savedWords = {};
-  bool _loadingWrong = true;
   late final ConfettiController _confettiController;
   ProviderContainer? _container;
 
@@ -53,7 +50,17 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     if (widget.result.accuracy >= 80) {
       _confettiController.play();
     }
-    _loadWrongAnswers();
+    _scheduleLoadWrongAnswers();
+  }
+
+  @override
+  void didUpdateWidget(covariant QuizResultPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sessionId != widget.sessionId ||
+        oldWidget.result.correctCount != widget.result.correctCount ||
+        oldWidget.result.totalQuestions != widget.result.totalQuestions) {
+      _scheduleLoadWrongAnswers();
+    }
   }
 
   @override
@@ -81,53 +88,38 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     super.dispose();
   }
 
+  void _scheduleLoadWrongAnswers() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(_loadWrongAnswers());
+    });
+  }
+
   Future<void> _loadWrongAnswers() async {
-    if (widget.result.totalQuestions - widget.result.correctCount <= 0) {
-      setState(() => _loadingWrong = false);
-      return;
-    }
-    final repo = ref.read(studyRepositoryProvider);
-    try {
-      final answers = await repo.fetchWrongAnswersBySession(widget.sessionId);
-      if (!mounted) return;
-      setState(() {
-        _wrongAnswers = answers;
-        _loadingWrong = false;
-      });
-    } catch (e, stackTrace) {
-      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
-      if (!mounted) return;
-      setState(() => _loadingWrong = false);
-    }
+    await ref.read(quizResultProvider.notifier).loadWrongAnswers(
+          sessionId: widget.sessionId,
+          wrongCount: _wrongCount,
+        );
   }
 
   Future<void> _saveToWordbook(WrongAnswerModel item) async {
-    if (_savedWords.contains(item.questionId)) return;
-    final repo = ref.read(studyRepositoryProvider);
-    try {
-      await repo.addWord(
-        word: item.word,
-        reading: item.reading ?? item.word,
-        meaningKo: item.meaningKo,
-        source: 'QUIZ',
-      );
-      setState(() => _savedWords.add(item.questionId));
-    } catch (e, stackTrace) {
-      unawaited(Sentry.captureException(e, stackTrace: stackTrace));
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('단어장에 저장하지 못했습니다')),
-        );
-      }
-    }
+    final saved =
+        await ref.read(quizResultProvider.notifier).saveToWordbook(item);
+    if (!mounted || saved) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('단어장에 저장하지 못했습니다')),
+    );
   }
 
   Future<void> _saveAllToWordbook() async {
-    final unsaved =
-        _wrongAnswers.where((w) => !_savedWords.contains(w.questionId));
-    for (final item in unsaved) {
-      await _saveToWordbook(item);
-    }
+    final saved =
+        await ref.read(quizResultProvider.notifier).saveAllToWordbook();
+    if (!mounted || saved) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('일부 단어를 저장하지 못했습니다')),
+    );
   }
 
   String get _resultMessage {
@@ -141,6 +133,9 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
     if (widget.result.accuracy >= 50) return LucideIcons.thumbsUp;
     return LucideIcons.dumbbell;
   }
+
+  int get _wrongCount =>
+      widget.result.totalQuestions - widget.result.correctCount;
 
   Future<void> _openReview(BuildContext context) {
     final launcher = widget.reviewLauncher;
@@ -173,7 +168,8 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final r = widget.result;
-    final wrongCount = r.totalQuestions - r.correctCount;
+    final resultState = ref.watch(quizResultProvider);
+    final wrongCount = _wrongCount;
 
     return Scaffold(
       body: Stack(
@@ -217,11 +213,12 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                 const SizedBox(height: 16),
 
                 // Wrong answers
-                if (!_loadingWrong && _wrongAnswers.isNotEmpty)
+                if (!resultState.loadingWrong &&
+                    resultState.wrongAnswers.isNotEmpty)
                   WrongAnswerList(
-                    wrongAnswers: _wrongAnswers,
+                    wrongAnswers: resultState.wrongAnswers,
                     quizType: widget.quizType,
-                    savedWords: _savedWords,
+                    savedWords: resultState.savedWords,
                     onSaveToWordbook: _saveToWordbook,
                     onSaveAll: _saveAllToWordbook,
                   ),
