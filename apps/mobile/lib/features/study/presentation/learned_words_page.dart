@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
 import 'widgets/learned_words_content.dart';
+import 'widgets/learned_words_filter_chips.dart';
+import 'widgets/learned_words_overview.dart';
+import 'widgets/learned_words_search_field.dart';
 import 'widgets/learned_words_sort_tabs.dart';
-import 'widgets/learned_words_summary_tile.dart';
 
 class LearnedWordsPage extends ConsumerStatefulWidget {
   const LearnedWordsPage({super.key});
@@ -91,11 +92,23 @@ class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
     ('most-studied', '많이 푼 순'),
   ];
 
-  static const _filterOptions = [
-    ('ALL', '전체'),
-    ('MASTERED', '마스터'),
-    ('LEARNING', '학습중'),
-  ];
+  void _changeSort(String sort) {
+    if (_sort == sort) return;
+    setState(() {
+      _sort = sort;
+      _page = 1;
+    });
+    _fetchData();
+  }
+
+  void _changeFilter(String filter) {
+    if (_filter == filter) return;
+    setState(() {
+      _filter = filter;
+      _page = 1;
+    });
+    _fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,45 +138,11 @@ class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
               ),
             ),
             const SizedBox(height: 16),
-            if (_summary != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    LearnedWordsSummaryTile(
-                        label: '전체',
-                        value: '${_summary!.totalLearned}',
-                        theme: theme),
-                    const SizedBox(width: 8),
-                    LearnedWordsSummaryTile(
-                        label: '마스터',
-                        value: '${_summary!.mastered}',
-                        theme: theme,
-                        valueColor: theme.colorScheme.primary),
-                    const SizedBox(width: 8),
-                    LearnedWordsSummaryTile(
-                        label: '학습중',
-                        value: '${_summary!.learning}',
-                        theme: theme,
-                        valueColor: AppColors.info(theme.brightness)),
-                  ],
-                ),
-              ),
+            if (_summary != null) LearnedWordsOverview(summary: _summary!),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _onSearchChanged,
-                decoration: InputDecoration(
-                  hintText: '단어 검색...',
-                  prefixIcon: const Icon(LucideIcons.search, size: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.inputRadius),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                ),
-              ),
+            LearnedWordsSearchField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
             ),
             const SizedBox(height: 12),
             Padding(
@@ -171,61 +150,13 @@ class _LearnedWordsPageState extends ConsumerState<LearnedWordsPage> {
               child: LearnedWordsSortTabs(
                 sortOptions: _sortOptions,
                 activeSort: _sort,
-                onSortChanged: (sort) {
-                  setState(() {
-                    _sort = sort;
-                    _page = 1;
-                  });
-                  _fetchData();
-                },
+                onSortChanged: _changeSort,
               ),
             ),
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: _filterOptions.map((f) {
-                  final isActive = _filter == f.$1;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _filter = f.$1;
-                          _page = 1;
-                        });
-                        _fetchData();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: isActive
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline,
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.chipRadius),
-                        ),
-                        child: Text(
-                          f.$2,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isActive
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+            LearnedWordsFilterChips(
+              activeFilter: _filter,
+              onFilterChanged: _changeFilter,
             ),
             const SizedBox(height: 12),
             Expanded(
