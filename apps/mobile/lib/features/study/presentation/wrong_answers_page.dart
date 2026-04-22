@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/wrong_answers_content.dart';
-import 'widgets/wrong_answers_summary_card.dart';
+import 'widgets/wrong_answers_overview.dart';
+import 'widgets/wrong_answers_sort_chips.dart';
 
 class WrongAnswersPage extends ConsumerStatefulWidget {
   const WrongAnswersPage({super.key});
@@ -86,11 +86,28 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
     }
   }
 
-  static const _sortOptions = [
-    ('most-wrong', '많이 틀린 순'),
-    ('recent', '최근 순'),
-    ('alphabetical', '가나다 순'),
-  ];
+  void _changeSort(String sort) {
+    if (_sort == sort) return;
+    setState(() {
+      _sort = sort;
+      _page = 1;
+    });
+    _fetchData();
+  }
+
+  void _startReviewQuiz() {
+    final summary = _summary;
+    if (summary == null || summary.remaining <= 0) return;
+
+    final level = ref.read(userPreferencesProvider).jlptLevel;
+    openQuizPageForSession(
+      context,
+      quizType: 'VOCABULARY',
+      jlptLevel: level,
+      count: summary.remaining.clamp(1, 20),
+      mode: 'review',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,91 +137,13 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
               ),
             ),
             if (_summary != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    WrongAnswersSummaryCard(
-                        label: '전체',
-                        value: '${_summary!.totalWrong}',
-                        theme: theme),
-                    const SizedBox(width: 8),
-                    WrongAnswersSummaryCard(
-                        label: '아직 학습중',
-                        value: '${_summary!.remaining}',
-                        theme: theme,
-                        valueColor: AppColors.error(theme.brightness)),
-                    const SizedBox(width: 8),
-                    WrongAnswersSummaryCard(
-                        label: '극복 완료',
-                        value: '${_summary!.mastered}',
-                        theme: theme,
-                        valueColor: theme.colorScheme.primary),
-                  ],
-                ),
+              WrongAnswersOverview(
+                summary: _summary!,
+                onStartReview: _startReviewQuiz,
               ),
-            if (_summary != null && _summary!.remaining > 0)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      final level = ref.read(userPreferencesProvider).jlptLevel;
-                      openQuizPageForSession(
-                        context,
-                        quizType: 'VOCABULARY',
-                        jlptLevel: level,
-                        count: _summary!.remaining.clamp(1, 20),
-                        mode: 'review',
-                      );
-                    },
-                    icon: const Icon(LucideIcons.rotateCcw, size: 16),
-                    label: const Text('오답 복습 퀴즈 시작'),
-                  ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Row(
-                children: _sortOptions.map((opt) {
-                  final isActive = _sort == opt.$1;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _sort = opt.$1;
-                          _page = 1;
-                        });
-                        _fetchData();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.surfaceContainerHigh,
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.chipRadius),
-                        ),
-                        child: Text(
-                          opt.$2,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isActive
-                                ? theme.colorScheme.onPrimary
-                                : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+            WrongAnswersSortChips(
+              activeSort: _sort,
+              onSortChanged: _changeSort,
             ),
             Expanded(
               child: WrongAnswersContent(

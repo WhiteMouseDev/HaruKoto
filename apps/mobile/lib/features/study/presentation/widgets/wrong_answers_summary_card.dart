@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 class WrongAnswersSummaryCard extends StatelessWidget {
   final String label;
   final String value;
-  final ThemeData theme;
   final Color? valueColor;
 
   const WrongAnswersSummaryCard({
     super.key,
     required this.label,
     required this.value,
-    required this.theme,
     this.valueColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
