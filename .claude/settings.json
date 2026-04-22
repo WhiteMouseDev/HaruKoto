@@ -8,6 +8,26 @@
       "apps/mobile/ios/Pods"
     ]
   },
+  "permissions": {
+    "//": "Shared deny rules. Moved from settings.local.json so Codex/other clients inherit them too. Claude Code surfaces these as approval prompts — they are not hard blocks, but they require a human click instead of auto-approval.",
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -f:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git checkout --:*)",
+      "Edit(.github/workflows/**)",
+      "Write(.github/workflows/**)",
+      "Edit(pnpm-lock.yaml)",
+      "Edit(**/pnpm-lock.yaml)",
+      "Edit(apps/api/uv.lock)",
+      "Edit(apps/mobile/pubspec.lock)",
+      "Edit(apps/mobile/ios/Podfile.lock)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

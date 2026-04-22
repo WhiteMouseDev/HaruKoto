@@ -1,0 +1,52 @@
+# gitleaks configuration for HaruKoto
+#
+# Scope: cross-tool secret scanning. Runs in pre-commit (staged diff only) and
+# optionally in CI against the full history. Designed to be tight — a real
+# secret must not slip through — while tolerating the few legitimate sources
+# of SHA-256 and placeholder text that would otherwise trigger the generic
+# api-key rule.
+
+title = "harukoto-gitleaks"
+
+# Inherit the default ruleset. We rely on upstream detection for AWS keys,
+# Google service-account JSON, Anthropic/OpenAI tokens, JWTs, PKCS8 private
+# keys, etc. — the whole reason to use gitleaks. We only ADD allowlist
+# entries; we never subtract detection rules.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "project-wide exemptions"
+paths = [
+    # CocoaPods lockfile contains SHA-256 checksums that the generic-api-key
+    # rule mistakes for secrets. Verified 2026-04-22: no real secrets shipped
+    # through this file.
+    '''apps/mobile/ios/Podfile\.lock''',
+    # Placeholder-only template files. Contents are literally "your-xxx-key"
+    # or "[project-ref]" and do not leak real credentials. The
+    # security-guard.sh hook and the secret-scan rules still apply to every
+    # real .env (which is what we actually care about).
+    '''(^|/)\.env\.example$''',
+    '''(^|/)\.env\.template$''',
+    '''(^|/)\.env\.sample$''',
+    # Documentation directory — markdown can contain "example" tokens that
+    # match patterns. Real secrets in docs are already a policy violation
+    # enforced elsewhere (security.md rules).
+    '''^docs/.*\.md$''',
+    # gitleaks's own snapshot output, if we ever commit one
+    '''^\.gitleaks-report\.json$''',
+]
+
+# Explicit regex allowlist for well-known placeholder patterns. Even inside
+# files that are NOT on the path allowlist (e.g. a real source file that
+# quotes an example value), these strings should not trip detection.
+regexes = [
+    # Supabase placeholder URLs and tokens that appear across the monorepo
+    '''\[project-ref\]''',
+    '''your-[a-z-]+-key''',
+    '''your-[a-z-]+-secret''',
+    '''your-anon-key''',
+    '''your-service-role-key''',
+    # Generic "example.com" stubs
+    '''https://(?:placeholder|example)\.[a-z.]+''',
+]

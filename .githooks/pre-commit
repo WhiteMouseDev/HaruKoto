@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Pre-commit hook — cross-tool secret scan.
+#
+# Runs gitleaks against the staged diff only (fast; no full history scan).
+# Applies to *every* git client: Claude Code, Codex CLI, manual git commits,
+# other IDE integrations. This is the last line of defense below the
+# Claude-Code-only hooks in .claude/hooks/.
+#
+# Activated automatically via `git config core.hooksPath .githooks`, which is
+# set by `pnpm run setup:git-hooks` (also run from postinstall).
+#
+# Bypass in emergency: `git commit --no-verify`. Do not make this routine.
+
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  cat >&2 <<'EOF'
+❌ gitleaks is not installed on PATH.
+
+Install it locally to enable secret scanning:
+    brew install gitleaks        # macOS
+    go install github.com/zricethezav/gitleaks/v8@latest
+
+To bypass this hook once (not recommended), use: git commit --no-verify
+EOF
+  exit 1
+fi
+
+# Scan staged changes only. `protect --staged` detects secrets in what's
+# about to be committed, not the whole tree. Exit code 1 on findings.
+if ! gitleaks protect --staged --config .gitleaks.toml --redact 2>&1; then
+  cat >&2 <<'EOF'
+
+❌ gitleaks detected potential secrets in staged changes.
+
+If this is a false positive, extend the allowlist in .gitleaks.toml rather
+than bypassing the check. Legitimate secret rotations happen outside this
+repo (Secret Manager, Vercel env, local .env not tracked by git).
+EOF
+  exit 1
+fi
+
+exit 0

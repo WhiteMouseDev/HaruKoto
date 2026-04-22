@@ -15,7 +15,10 @@
     "test": "turbo test",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "clean": "turbo clean",
-    "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma"
+    "verify:fast": "turbo lint typecheck",
+    "verify": "turbo lint typecheck test",
+    "setup:git-hooks": "git config core.hooksPath .githooks",
+    "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma && pnpm run setup:git-hooks"
   },
   "devDependencies": {
     "prettier": "^3.5.0",
