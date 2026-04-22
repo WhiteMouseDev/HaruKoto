@@ -69,7 +69,19 @@ async def get_status(
     )
 
 
-@router.post("/checkout", response_model=CheckoutResponse, status_code=200)
+@router.post(
+    "/checkout",
+    response_model=CheckoutResponse,
+    status_code=200,
+    summary="Start a PortOne checkout session",
+    description=(
+        "Creates a pending Payment row and returns the fields needed to launch "
+        "PortOne's browser SDK (`store_id`, `channel_key`, `payment_id`, "
+        "`order_name`, `total_amount`). The client drives the external flow, "
+        "then calls `POST /subscription/activate` with the resulting `payment_id` "
+        "to verify the charge and grant access."
+    ),
+)
 async def create_checkout(
     body: CheckoutRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -109,7 +121,18 @@ async def create_checkout(
     )
 
 
-@router.post("/activate", status_code=200)
+@router.post(
+    "/activate",
+    status_code=200,
+    summary="Verify PortOne payment and activate subscription",
+    description=(
+        "Called after the client completes the PortOne browser flow from "
+        "`POST /subscription/checkout`. Verifies the reported amount matches the "
+        "pending Payment row, then creates or extends the user's subscription "
+        "for the plan period. Returns the new `subscription_id` and "
+        "`current_period_end` (ISO 8601)."
+    ),
+)
 async def activate(
     body: ActivateRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -169,7 +192,20 @@ async def activate(
     }
 
 
-@router.post("/store/verify", response_model=StoreVerifyResponse, status_code=202)
+@router.post(
+    "/store/verify",
+    response_model=StoreVerifyResponse,
+    status_code=202,
+    summary="Verify mobile store (iOS/Android) purchase",
+    description=(
+        "Scaffolding endpoint for in-app purchase validation. Currently returns "
+        "`status: PENDING` and `grant_state: PENDING_VALIDATION` without "
+        "external calls. Real implementation will use App Store Server API "
+        "(iOS signed transactions) or Google Play Developer API (Android "
+        "purchase tokens). Clients should not rely on subscription activation "
+        "via this route yet."
+    ),
+)
 async def verify_store_purchase(
     body: StoreVerifyRequest,
     user: Annotated[User, Depends(get_current_user)],

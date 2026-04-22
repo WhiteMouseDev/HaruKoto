@@ -1351,7 +1351,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Checkout */
+        /**
+         * Start a PortOne checkout session
+         * @description Creates a pending Payment row and returns the fields needed to launch PortOne's browser SDK (`store_id`, `channel_key`, `payment_id`, `order_name`, `total_amount`). The client drives the external flow, then calls `POST /subscription/activate` with the resulting `payment_id` to verify the charge and grant access.
+         */
         post: operations["create_checkout_api_v1_subscription_checkout_post"];
         delete?: never;
         options?: never;
@@ -1368,7 +1371,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Activate */
+        /**
+         * Verify PortOne payment and activate subscription
+         * @description Called after the client completes the PortOne browser flow from `POST /subscription/checkout`. Verifies the reported amount matches the pending Payment row, then creates or extends the user's subscription for the plan period. Returns the new `subscription_id` and `current_period_end` (ISO 8601).
+         */
         post: operations["activate_api_v1_subscription_activate_post"];
         delete?: never;
         options?: never;
@@ -1385,7 +1391,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Verify Store Purchase */
+        /**
+         * Verify mobile store (iOS/Android) purchase
+         * @description Scaffolding endpoint for in-app purchase validation. Currently returns `status: PENDING` and `grant_state: PENDING_VALIDATION` without external calls. Real implementation will use App Store Server API (iOS signed transactions) or Google Play Developer API (Android purchase tokens). Clients should not rely on subscription activation via this route yet.
+         */
         post: operations["verify_store_purchase_api_v1_subscription_store_verify_post"];
         delete?: never;
         options?: never;
