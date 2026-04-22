@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
+import '../../data/models/lesson_models.dart';
+import 'lesson_tile.dart';
+
+/// A card displaying a single chapter with accordion expand/collapse.
+class ChapterCard extends StatelessWidget {
+  final ChapterModel chapter;
+  final bool isExpanded;
+  final VoidCallback onToggle;
+
+  const ChapterCard({
+    super.key,
+    required this.chapter,
+    required this.isExpanded,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final progress = chapter.totalLessons > 0
+        ? chapter.completedLessons / chapter.totalLessons
+        : 0.0;
+    final isComplete = progress >= 1.0;
+    final percentText = '${(progress * 100).round()}%';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: AppColors.lightBorder),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: onToggle,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.16),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radiusFull),
+                        ),
+                        child: Text(
+                          'Ch.${chapter.chapterNo}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.primaryStrong,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          chapter.title,
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Text(
+                        percentText,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: isComplete
+                              ? AppColors.success(brightness)
+                              : AppColors.primaryStrong,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      AnimatedRotation(
+                        turns: isExpanded ? 0.5 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        child: const Icon(
+                          LucideIcons.chevronDown,
+                          size: 18,
+                          color: AppColors.lightSubtext,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(AppSizes.progressRadius),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      minHeight: AppSizes.progressHeight,
+                      backgroundColor:
+                          AppColors.primary.withValues(alpha: 0.12),
+                      color: isComplete
+                          ? AppColors.success(brightness)
+                          : AppColors.primaryStrong,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: isExpanded
+                ? Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+                    child: Column(
+                      children: chapter.lessons
+                          .map((lesson) => LessonTile(lesson: lesson))
+                          .toList(),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+}
