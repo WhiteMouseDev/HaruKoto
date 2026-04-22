@@ -6,10 +6,12 @@
   "types": "./src/index.ts",
   "scripts": {
     "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "gen:api": "openapi-typescript ../../apps/api/openapi/openapi.json -o ./src/generated/api.ts"
   },
   "devDependencies": {
     "@harukoto/config": "workspace:*",
+    "openapi-typescript": "^7.13.0",
     "typescript": "^5.8.0"
   }
 }
