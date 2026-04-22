@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../../shared/widgets/app_error_retry.dart';
-import '../../../../shared/widgets/pagination_footer.dart';
 import '../../data/models/word_entry_model.dart';
-import 'word_card.dart';
+import 'learned_words_empty_state.dart';
+import 'learned_words_list.dart';
+import 'learned_words_loading_list.dart';
 
 class LearnedWordsContent extends StatelessWidget {
   final bool loading;
@@ -37,25 +38,8 @@ class LearnedWordsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (loading) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: List.generate(
-          5,
-          (i) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-      );
+      return const LearnedWordsLoadingList();
     }
 
     if (error != null) {
@@ -66,53 +50,19 @@ class LearnedWordsContent extends StatelessWidget {
     }
 
     if (entries.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(LucideIcons.bookOpen,
-                size: 48,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
-            const SizedBox(height: 12),
-            Text(
-              search.isNotEmpty || filter != 'ALL'
-                  ? '검색 결과가 없어요'
-                  : '아직 학습한 단어가 없어요',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
+      return LearnedWordsEmptyState(
+        hasActiveQuery: search.isNotEmpty || filter != 'ALL',
       );
     }
 
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: entries.length,
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: WordCard(
-                  word: entry,
-                  expanded: expandedId == entry.id,
-                  onTap: () => onToggleExpand(entry.id),
-                ),
-              );
-            },
-          ),
-        ),
-        PaginationFooter(
-          page: page,
-          totalPages: totalPages,
-          onPagePrev: onPagePrev,
-          onPageNext: onPageNext,
-        ),
-      ],
+    return LearnedWordsList(
+      entries: entries,
+      totalPages: totalPages,
+      page: page,
+      expandedId: expandedId,
+      onToggleExpand: onToggleExpand,
+      onPagePrev: onPagePrev,
+      onPageNext: onPageNext,
     );
   }
 }
