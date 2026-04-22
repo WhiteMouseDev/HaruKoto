@@ -33,6 +33,26 @@ if [ -n "$CHANGED_AREAS" ]; then
 [Active areas]${CHANGED_AREAS}"
 fi
 
+# Escalation scan — surface any unresolved decisions from prior sessions.
+# Filters by `status: open` in the frontmatter; ignores README/resolved/.
+ESCALATION_DIR=".planning/escalations"
+if [ -d "$ESCALATION_DIR" ]; then
+  OPEN_ESCALATIONS=$(find "$ESCALATION_DIR" -maxdepth 1 -type f -name "*.md" ! -name "README.md" 2>/dev/null | \
+    while IFS= read -r f; do
+      if grep -q "^status: open" "$f" 2>/dev/null; then
+        slug=$(basename "$f" .md)
+        severity=$(grep -E "^severity:" "$f" | head -1 | sed 's/severity:[[:space:]]*//')
+        echo "  • [${severity:-warn}] ${slug}"
+      fi
+    done)
+  if [ -n "$OPEN_ESCALATIONS" ]; then
+    MSG="${MSG}
+[Escalations — awaiting user decision]
+${OPEN_ESCALATIONS}
+  → review files in .planning/escalations/ and add a ## Resolution section, then set status: resolved"
+  fi
+fi
+
 jq -Rn --arg msg "$MSG" '{
   hookSpecificOutput: {
     hookEventName: "SessionStart",

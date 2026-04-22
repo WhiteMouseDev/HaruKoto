@@ -104,6 +104,17 @@ Escalation rules:
 - DDL changes: `backend-agent` owns Alembic → `shared-packages-agent` mirrors via `pnpm db:sync`.
 - Shared type breaking change: `shared-packages-agent` flags → orchestrator dispatches consumers in the same wave.
 
+## Escalation Inbox
+
+When an agent hits a decision that needs human judgment — unclear product
+requirement, security trade-off, cost/perf decision, or cross-domain contract
+break — it must **not** end the session silently. Write a markdown file to
+`.planning/escalations/` with `status: open` and continue with whatever work
+remains unblocked. See `.planning/escalations/README.md` for the file schema.
+
+The `SessionStart` hook surfaces every open escalation at the top of the next
+session, so the user can triage them without digging through history.
+
 ## Existing Team Context
 
 `CLAUDE.md`, `.claude/rules/*.md`, and `.claude/settings.json` contain prior team guidance. Keep Codex instructions consistent with those documents when extending this setup.
