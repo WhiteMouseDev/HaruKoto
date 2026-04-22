@@ -38,6 +38,7 @@ docs/
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)
+- [**AI Coding Harness**](operations/harness.md) — Claude Code + Codex 운영체계 (도메인 에이전트, 스킬, 훅, 계약 관리, 에스컬레이션)
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
 - [모바일 아키텍처 감사 (2026-03-24)](operations/audits/mobile-architecture-audit-2026-03-24.md) — 모바일 구조 문제점과 개선 우선순위
