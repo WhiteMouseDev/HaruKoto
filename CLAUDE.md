@@ -8,7 +8,11 @@
 ## Purpose
 
 - This file is a thin Claude Code index. Keep durable repo rules in `AGENTS.md` and durable product/domain knowledge in `docs/`.
-- Use `.claude/rules/web.md`, `.claude/rules/admin.md`, `.claude/rules/api.md`, and `.claude/rules/mobile.md` only when working in those surfaces.
+- Domain-specific patterns are now packaged as skills — the relevant domain sub-agent auto-loads its skill at startup:
+  - `web-next16` (apps/web · apps/admin · apps/landing) → loaded by `web-agent`
+  - `fastapi-patterns` (apps/api) → loaded by `backend-agent`
+  - `flutter-riverpod` (apps/mobile) → loaded by `mobile-agent`
+  - `api-plane-governance` (DDL authority + BFF routing) → loaded by `backend-agent`, `web-agent`, `shared-packages-agent`
 - Slash commands live in `.claude/commands/*.md`.
 
 ## Repo Map
@@ -29,4 +33,4 @@
 ## Working Norms
 
 - Prefer reading nearby code, tests, and local AGENTS files before proposing changes.
-- Keep this file short. If a rule needs long explanation, move it into `AGENTS.md`, `docs/`, or `.claude/rules/*.md`.
+- Keep this file short. If a rule needs long explanation, move it into `AGENTS.md`, `docs/`, or `.claude/skills/<skill>/SKILL.md`.

@@ -4,6 +4,7 @@ description: Flutter/Dart 모바일 전문가. apps/mobile만 수정 가능. 백
 tools: Read, Edit, Write, Glob, Grep, Bash
 isolation: worktree
 color: orange
+skills: [flutter-riverpod]
 ---
 
 # Mobile Agent (Flutter / Dart)
@@ -27,7 +28,7 @@ color: orange
 
 ## 필수 준수 규칙
 
-1. `CLAUDE.md`, `apps/mobile/AGENTS.md`, `.claude/rules/mobile.md` 최우선 적용
+1. `CLAUDE.md`, `apps/mobile/AGENTS.md`, `flutter-riverpod` skill (자동 로드됨) 최우선 적용
 2. **Riverpod 3.x** 패턴 준수 (features/{feature}/providers/)
 3. **Repository 패턴**: features/{feature}/data/{feature}_repository.dart
 4. Dio 인증 인터셉터(`lib/core/network/`) 재사용, 직접 http 호출 금지

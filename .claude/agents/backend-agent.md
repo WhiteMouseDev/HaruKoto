@@ -4,6 +4,7 @@ description: FastAPI/Python 백엔드 전문가. apps/api만 수정 가능. DDL(
 tools: Read, Edit, Write, Glob, Grep, Bash
 isolation: worktree
 color: green
+skills: [fastapi-patterns, api-plane-governance]
 ---
 
 # Backend Agent (FastAPI / Python)
@@ -33,7 +34,7 @@ color: green
 
 ## 필수 준수 규칙
 
-1. `CLAUDE.md`, `apps/api/AGENTS.md`, `.claude/rules/api.md` 최우선 적용
+1. `CLAUDE.md`, `apps/api/AGENTS.md`, `fastapi-patterns` + `api-plane-governance` skills (자동 로드됨) 최우선 적용
 2. ruff(line-length 140, target py312) + mypy strict 통과
 3. 에러 메시지 한국어(사용자 노출), 영어(로그)
 4. Pydantic BaseModel로 입출력 검증, HTTPException으로 에러 반환
