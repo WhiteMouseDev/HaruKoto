@@ -176,6 +176,46 @@ jobs:
         with:
           args: breaking apps/api/openapi/base-openapi.json apps/api/openapi/openapi.json
 
+      # ============================
+      # Generated TS types freshness
+      # ============================
+      - uses: pnpm/action-setup@v5.0.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check generated TS types freshness
+        run: |
+          cp packages/types/src/generated/api.ts /tmp/committed-api.ts
+          pnpm --filter @harukoto/types gen:api
+          if ! diff -q /tmp/committed-api.ts packages/types/src/generated/api.ts > /dev/null; then
+            echo "::error::packages/types/src/generated/api.ts is stale — regenerate it locally and commit."
+            echo ""
+            echo "Fix:"
+            echo "  cd apps/api && uv run python scripts/export_openapi.py"
+            echo "  pnpm --filter @harukoto/types gen:api"
+            echo "  git add apps/api/openapi/openapi.json packages/types/src/generated/api.ts && git commit"
+            echo ""
+            echo "Diff preview:"
+            diff /tmp/committed-api.ts packages/types/src/generated/api.ts | head -80 || true
+            exit 1
+          fi
+
+      # ============================
+      # Mobile ↔ OpenAPI contract drift
+      # ============================
+      - name: Validate mobile contracts against OpenAPI
+        # TODO: continue-on-error 제거 — 현재 escalation 한 건(`subscription/subscribe`) 해결 후.
+        # 해결 추적: .planning/escalations/2026-04-22-mobile-subscription-endpoint-drift.md
+        continue-on-error: true
+        working-directory: apps/api
+        run: uv run python scripts/validate_mobile_contracts.py
+
   # ============================
   # Schema Drift Check (Alembic ↔ Prisma)
   # ============================

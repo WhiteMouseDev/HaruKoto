@@ -68,6 +68,31 @@ cd apps/api && uv run alembic upgrade head
 cd apps/api && uv run alembic downgrade -1 && uv run alembic upgrade head  # 왕복 테스트
 ```
 
+## API 변경 시 반드시 실행하는 Contract Sync 체크리스트
+
+엔드포인트 추가/변경/삭제, 요청·응답 스키마 변경이 있었다면 완료 보고 **전에** 다음을 전부 실행합니다. 건너뛴 단계는 downstream 드리프트로 이어집니다.
+
+```
+# 1. OpenAPI snapshot 재생성 (CI의 freshness 체크 통과용)
+cd apps/api && uv run python scripts/export_openapi.py
+
+# 2. TypeScript 타입 재생성 (web / admin 자동 반영용)
+pnpm --filter @harukoto/types gen:api
+
+# 3. Mobile 계약 드리프트 검증
+cd apps/api && uv run python scripts/validate_mobile_contracts.py
+```
+
+결과에 따른 동작:
+
+| validator 결과 | 해야 할 일 |
+|---|---|
+| Orphaned endpoint 발견 | 직접 모바일 파일을 고치지 말고 `.planning/escalations/YYYY-MM-DD-<slug>.md` 에 드리프트 기록 + `mobile-agent`에게 위임할 거리로 Downstream impact 섹션에 명시 |
+| Field drift 발견 | 동일 — escalation + downstream 위임 |
+| 통과 | Downstream impact 섹션에 "mobile: verified clean" 명시 |
+
+TypeScript 쪽 타입은 자동 생성되므로 backend-agent가 별도로 `web-agent`를 호출할 필요 없음. `gen:api` 실행만으로 다운스트림 타입이 최신화됨. 단, 생성된 타입을 실제 사용 코드에 반영(예: 기존 `any` 제거)하는 일은 `web-agent` 영역.
+
 ## 산출물 보고 형식
 
 ```
