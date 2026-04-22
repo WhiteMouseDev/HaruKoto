@@ -1,0 +1,2 @@
+# Real AWS key format (test only)
+AKIAIOSFODNN7EXAMPLE=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
