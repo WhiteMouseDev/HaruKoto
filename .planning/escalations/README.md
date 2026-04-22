@@ -47,10 +47,15 @@ status: open
 
 ## 해결 워크플로우
 
-1. 세션 시작 시 SessionStart 훅이 `status: open` 파일을 스캔해서 리스트업
-2. 사용자가 결정 내림 → 해당 파일 상단에 `## Resolution` 섹션 추가
-3. `status: resolved`로 변경
-4. `resolved/YYYY-MM/`로 이동 (선택, 아카이브용)
+1. 세션 시작 시 SessionStart 훅이 `status: open` 파일을 스캔해서 리스트업 (이 디렉토리 최상위만, `resolved/` 하위는 제외)
+2. 사용자가 결정 내림 → 해당 파일 상단에 `## Resolution` 섹션 추가, `status: resolved`로 변경, `resolved_at` 타임스탬프 기록
+3. 다음 세션 시작 시 inbox가 깨끗해졌는지 확인
+4. **3~5건 쌓이면 `resolved/YYYY-MM/`로 이동해 아카이브**. 예: `git mv 2026-04-22-*.md resolved/2026-04/`
+
+아카이브 원칙:
+- 잘라내는 기준은 "최근 컨텍스트에 필요하지 않음" — 보통 다음 세션이 시작할 때 이미 자명한 문제
+- 삭제하지 않고 보존 — 과거 결정 이력 + 반복 패턴 학습 자료
+- git log로 추적 가능하니 파일 수준 기록은 충분
 
 ## 원칙
 
