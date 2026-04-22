@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../core/services/haptic_service.dart';
 import '../../../core/services/sound_service.dart';
+import '../data/models/quiz_result_model.dart';
 import 'quiz_session_provider.dart';
 
 typedef QuizTimerAction = void Function();
@@ -11,6 +12,21 @@ typedef QuizPeriodicTimerFactory = Timer Function(
 );
 typedef QuizHapticAction = Future<void> Function();
 typedef QuizSoundAction = Future<void> Function(SoundType type);
+typedef QuizCompleteAction = Future<QuizResultModel?> Function({
+  String? stageId,
+});
+typedef QuizSessionReader = QuizSessionState Function();
+typedef QuizCompletionGuard = bool Function();
+typedef QuizCompletionNavigator = void Function(
+  QuizCompletionDestination destination,
+);
+typedef QuizCompletionErrorHandler = void Function(Object error);
+
+enum QuizCompletionOutcome {
+  completed,
+  ignored,
+  failed,
+}
 
 class QuizTimerCoordinator {
   QuizTimerCoordinator({
@@ -92,5 +108,74 @@ class QuizFeedbackPlayer {
   void playCompletionFeedback() {
     unawaited(heavyHaptic());
     unawaited(playSound(SoundType.complete));
+  }
+}
+
+class QuizCompletionDestination {
+  const QuizCompletionDestination({
+    required this.result,
+    required this.quizType,
+    required this.jlptLevel,
+    required this.sessionId,
+  });
+
+  final QuizResultModel result;
+  final String quizType;
+  final String jlptLevel;
+  final String sessionId;
+}
+
+class QuizCompletionCoordinator {
+  const QuizCompletionCoordinator({
+    required QuizTimerCoordinator timerCoordinator,
+    required QuizFeedbackPlayer feedbackPlayer,
+  })  : _timerCoordinator = timerCoordinator,
+        _feedbackPlayer = feedbackPlayer;
+
+  final QuizTimerCoordinator _timerCoordinator;
+  final QuizFeedbackPlayer _feedbackPlayer;
+
+  Future<QuizCompletionOutcome> complete({
+    required QuizCompleteAction completeQuiz,
+    required QuizSessionReader readSession,
+    required QuizCompletionGuard isActive,
+    required QuizCompletionNavigator navigateToResult,
+    required QuizCompletionErrorHandler onError,
+    required String fallbackQuizType,
+    required String jlptLevel,
+    String? stageId,
+  }) async {
+    _timerCoordinator.stop();
+
+    try {
+      final result = await completeQuiz(stageId: stageId);
+      if (result == null || !isActive()) {
+        return QuizCompletionOutcome.ignored;
+      }
+
+      final latestSession = readSession();
+      if (!isActive()) {
+        return QuizCompletionOutcome.ignored;
+      }
+
+      final sessionId = latestSession.sessionId;
+      if (sessionId == null) {
+        return QuizCompletionOutcome.ignored;
+      }
+
+      _feedbackPlayer.playCompletionFeedback();
+      navigateToResult(
+        QuizCompletionDestination(
+          result: result,
+          quizType: latestSession.displayQuizType(fallbackQuizType),
+          jlptLevel: jlptLevel,
+          sessionId: sessionId,
+        ),
+      );
+      return QuizCompletionOutcome.completed;
+    } catch (error) {
+      onError(error);
+      return QuizCompletionOutcome.failed;
+    }
   }
 }

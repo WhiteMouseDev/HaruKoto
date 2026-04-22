@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/services/sound_service.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
+import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_runtime_coordinators.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_session_provider.dart';
 
@@ -107,17 +108,138 @@ void main() {
       ]);
     });
   });
+
+  group('QuizCompletionCoordinator', () {
+    test('stops timer, plays feedback, and opens result destination', () async {
+      final timers = _FakeTimerFactory();
+      final timerCoordinator = QuizTimerCoordinator(createTimer: timers.create);
+      timerCoordinator.restartIfNeeded(
+        session: _session(),
+        resetTimer: () {},
+        incrementTimer: () {},
+      );
+
+      final events = <Object>[];
+      final coordinator = QuizCompletionCoordinator(
+        timerCoordinator: timerCoordinator,
+        feedbackPlayer: _buildFeedbackPlayer(events),
+      );
+      QuizCompletionDestination? destination;
+      String? completedStageId;
+
+      final outcome = await coordinator.complete(
+        completeQuiz: ({String? stageId}) async {
+          completedStageId = stageId;
+          return _result;
+        },
+        readSession: () => _session(sessionQuizType: 'MATCHING'),
+        isActive: () => true,
+        navigateToResult: (value) => destination = value,
+        onError: (_) {},
+        fallbackQuizType: 'VOCABULARY',
+        jlptLevel: 'N4',
+        stageId: 'stage-1',
+      );
+
+      expect(outcome, QuizCompletionOutcome.completed);
+      expect(timerCoordinator.isActive, isFalse);
+      expect(completedStageId, 'stage-1');
+      expect(events, ['heavy', SoundType.complete]);
+      expect(destination, isNotNull);
+      expect(destination!.result, _result);
+      expect(destination!.quizType, 'VOCABULARY');
+      expect(destination!.jlptLevel, 'N4');
+      expect(destination!.sessionId, 'session-1');
+    });
+
+    test('ignores null completion results without feedback or navigation',
+        () async {
+      final events = <Object>[];
+      final coordinator = QuizCompletionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer(events),
+      );
+      var navigated = false;
+
+      final outcome = await coordinator.complete(
+        completeQuiz: ({String? stageId}) async => null,
+        readSession: _session,
+        isActive: () => true,
+        navigateToResult: (_) => navigated = true,
+        onError: (_) {},
+        fallbackQuizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+      );
+
+      expect(outcome, QuizCompletionOutcome.ignored);
+      expect(events, isEmpty);
+      expect(navigated, isFalse);
+    });
+
+    test('reports completion failures', () async {
+      final coordinator = QuizCompletionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer([]),
+      );
+      Object? reportedError;
+
+      final outcome = await coordinator.complete(
+        completeQuiz: ({String? stageId}) async => throw StateError('boom'),
+        readSession: _session,
+        isActive: () => true,
+        navigateToResult: (_) {},
+        onError: (error) => reportedError = error,
+        fallbackQuizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+      );
+
+      expect(outcome, QuizCompletionOutcome.failed);
+      expect(reportedError, isA<StateError>());
+    });
+
+    test('does not read session after completion if the page is inactive',
+        () async {
+      final coordinator = QuizCompletionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer([]),
+      );
+      var readSession = false;
+
+      final outcome = await coordinator.complete(
+        completeQuiz: ({String? stageId}) async => _result,
+        readSession: () {
+          readSession = true;
+          return _session();
+        },
+        isActive: () => false,
+        navigateToResult: (_) {},
+        onError: (_) {},
+        fallbackQuizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+      );
+
+      expect(outcome, QuizCompletionOutcome.ignored);
+      expect(readSession, isFalse);
+    });
+  });
 }
 
 QuizSessionState _session({
   bool loading = false,
   bool answered = false,
+  String sessionQuizType = 'VOCABULARY',
   String? resolvedMode,
 }) {
   return QuizSessionState(
     loading: loading,
     sessionId: 'session-1',
-    sessionQuizType: 'VOCABULARY',
+    sessionQuizType: sessionQuizType,
     questions: const [
       QuizQuestionModel(
         questionId: 'q1',
@@ -133,6 +255,17 @@ QuizSessionState _session({
     resolvedMode: resolvedMode,
   );
 }
+
+const _result = QuizResultModel(
+  correctCount: 1,
+  totalQuestions: 1,
+  xpEarned: 10,
+  accuracy: 100,
+  currentXp: 20,
+  xpForNext: 100,
+  level: 1,
+  events: [],
+);
 
 QuizFeedbackPlayer _buildFeedbackPlayer(List<Object> events) {
   return QuizFeedbackPlayer(

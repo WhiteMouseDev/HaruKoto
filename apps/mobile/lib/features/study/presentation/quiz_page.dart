@@ -39,12 +39,17 @@ class QuizPage extends ConsumerStatefulWidget {
 class _QuizPageState extends ConsumerState<QuizPage> {
   late final QuizTimerCoordinator _timerCoordinator;
   late final QuizFeedbackPlayer _feedbackPlayer;
+  late final QuizCompletionCoordinator _completionCoordinator;
 
   @override
   void initState() {
     super.initState();
     _timerCoordinator = QuizTimerCoordinator();
     _feedbackPlayer = QuizFeedbackPlayer.defaultServices();
+    _completionCoordinator = QuizCompletionCoordinator(
+      timerCoordinator: _timerCoordinator,
+      feedbackPlayer: _feedbackPlayer,
+    );
     Future(_initializeQuiz);
   }
 
@@ -110,31 +115,36 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Future<void> _completeQuiz() async {
-    _timerCoordinator.stop();
-    try {
-      final result = await ref.read(quizSessionProvider.notifier).completeQuiz(
-            stageId: widget.stageId,
-          );
-      if (result == null || !mounted) return;
-      final latestSession = ref.read(quizSessionProvider);
-      if (!mounted) return;
-      _feedbackPlayer.playCompletionFeedback();
-      unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
-        quizRoute(QuizResultPage(
-          result: result,
-          quizType: latestSession.displayQuizType(widget.quizType),
-          jlptLevel: widget.jlptLevel,
-          sessionId: latestSession.sessionId!,
-        )),
-      ));
-    } catch (e) {
-      debugPrint('Failed to complete quiz: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
-        );
-      }
-    }
+    await _completionCoordinator.complete(
+      completeQuiz: ref.read(quizSessionProvider.notifier).completeQuiz,
+      readSession: () => ref.read(quizSessionProvider),
+      isActive: () => mounted,
+      navigateToResult: _openQuizResult,
+      onError: _showCompletionError,
+      fallbackQuizType: widget.quizType,
+      jlptLevel: widget.jlptLevel,
+      stageId: widget.stageId,
+    );
+  }
+
+  void _openQuizResult(QuizCompletionDestination destination) {
+    unawaited(Navigator.of(context, rootNavigator: true).pushReplacement(
+      quizRoute(QuizResultPage(
+        result: destination.result,
+        quizType: destination.quizType,
+        jlptLevel: destination.jlptLevel,
+        sessionId: destination.sessionId,
+      )),
+    ));
+  }
+
+  void _showCompletionError(Object error) {
+    debugPrint('Failed to complete quiz: $error');
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
+    );
   }
 
   Future<void> _requestPop() async {
