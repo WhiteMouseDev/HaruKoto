@@ -57,3 +57,16 @@ status: open
 - **작업을 완료하지 못한다고 세션을 끝내지 않습니다.** 기록하고 다른 할 수 있는 일을 계속합니다.
 - **중복 에스컬레이션 금지.** 비슷한 결정은 기존 파일에 추가 옵션으로 병합합니다.
 - **기한(`deadline` frontmatter)이 있으면 넣습니다.** 일부는 시간 민감.
+
+## 자동 드리프트 감지와 연동
+
+다음 스크립트들은 계약 드리프트를 발견하면 **에스컬레이션 생성 후보**를 출력합니다. 에이전트는 결과를 보고 직접 이 디렉토리에 파일을 만들어야 합니다.
+
+| 스크립트 | 감지 대상 | 기계 판독 가능 |
+|---------|----------|---------------|
+| `apps/api/scripts/validate_mobile_contracts.py` | 모바일 ↔ OpenAPI 드리프트 | `--json` 플래그 |
+| OpenAPI freshness (`api-contract` CI job) | 체크인된 스냅샷이 코드와 불일치 | CI 로그 |
+| TS types freshness (`api-contract` CI job) | 생성된 `packages/types/src/generated/api.ts` 미갱신 | CI 로그 |
+| oasdiff (`api-contract` CI job, warn 모드) | OpenAPI breaking change | CI 로그 |
+
+에이전트 프롬프트의 Contract Sync 체크리스트가 위 스크립트들을 실행 → 드리프트 발견 시 이 디렉토리에 escalation 파일을 만들고 `status: open`으로 설정합니다. 다음 세션 SessionStart 훅이 자동으로 상단에 노출.
