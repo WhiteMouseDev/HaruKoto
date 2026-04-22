@@ -109,6 +109,272 @@ void main() {
     });
   });
 
+  group('QuizInteractionCoordinator', () {
+    test('answers current question, stops timer, and plays updated feedback',
+        () {
+      final timers = _FakeTimerFactory();
+      final timerCoordinator = QuizTimerCoordinator(createTimer: timers.create);
+      timerCoordinator.restartIfNeeded(
+        session: _session(),
+        resetTimer: () {},
+        incrementTimer: () {},
+      );
+
+      final events = <Object>[];
+      final coordinator = QuizInteractionCoordinator(
+        timerCoordinator: timerCoordinator,
+        feedbackPlayer: _buildFeedbackPlayer(events),
+      );
+      String? answeredOptionId;
+      String? answeredQuestionType;
+
+      final outcome = coordinator.answer(
+        optionId: 'o1',
+        session: _session(sessionQuizType: 'MATCHING'),
+        fallbackQuizType: 'VOCABULARY',
+        answerCurrentQuestion: ({
+          required String optionId,
+          required String questionType,
+        }) {
+          answeredOptionId = optionId;
+          answeredQuestionType = questionType;
+          return true;
+        },
+        readSession: () => _session(streak: 3),
+      );
+
+      expect(outcome, QuizAnswerOutcome.answered);
+      expect(timerCoordinator.isActive, isFalse);
+      expect(answeredOptionId, 'o1');
+      expect(answeredQuestionType, 'MATCHING');
+      expect(events, ['heavy', SoundType.combo]);
+    });
+
+    test('ignores unanswered results without reading streak or feedback', () {
+      final timers = _FakeTimerFactory();
+      final timerCoordinator = QuizTimerCoordinator(createTimer: timers.create);
+      timerCoordinator.restartIfNeeded(
+        session: _session(),
+        resetTimer: () {},
+        incrementTimer: () {},
+      );
+
+      final events = <Object>[];
+      final coordinator = QuizInteractionCoordinator(
+        timerCoordinator: timerCoordinator,
+        feedbackPlayer: _buildFeedbackPlayer(events),
+      );
+      var readSession = false;
+
+      final outcome = coordinator.answer(
+        optionId: 'o1',
+        session: _session(),
+        fallbackQuizType: 'VOCABULARY',
+        answerCurrentQuestion: ({
+          required String optionId,
+          required String questionType,
+        }) =>
+            null,
+        readSession: () {
+          readSession = true;
+          return _session(streak: 3);
+        },
+      );
+
+      expect(outcome, QuizAnswerOutcome.ignored);
+      expect(timerCoordinator.isActive, isFalse);
+      expect(readSession, isFalse);
+      expect(events, isEmpty);
+    });
+
+    test('completes instead of advancing from the last question', () {
+      final coordinator = QuizInteractionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer([]),
+      );
+      var advanced = false;
+      var restarted = false;
+      var completed = false;
+
+      final outcome = coordinator.next(
+        session: _session(),
+        advanceToNextQuestion: () {
+          advanced = true;
+        },
+        restartTimer: () {
+          restarted = true;
+        },
+        completeQuiz: () {
+          completed = true;
+        },
+      );
+
+      expect(outcome, QuizProgressionOutcome.completing);
+      expect(advanced, isFalse);
+      expect(restarted, isFalse);
+      expect(completed, isTrue);
+    });
+
+    test('advances and restarts the timer before the last question', () {
+      final coordinator = QuizInteractionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer([]),
+      );
+      var advanced = false;
+      var restarted = false;
+      var completed = false;
+
+      final outcome = coordinator.next(
+        session: _session(questions: const [_question, _secondQuestion]),
+        advanceToNextQuestion: () {
+          advanced = true;
+        },
+        restartTimer: () {
+          restarted = true;
+        },
+        completeQuiz: () {
+          completed = true;
+        },
+      );
+
+      expect(outcome, QuizProgressionOutcome.advanced);
+      expect(advanced, isTrue);
+      expect(restarted, isTrue);
+      expect(completed, isFalse);
+    });
+
+    test('forwards special answers to the session action', () {
+      final coordinator = QuizInteractionCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+        feedbackPlayer: _buildFeedbackPlayer([]),
+      );
+      String? capturedQuestionId;
+      bool? capturedIsCorrect;
+      String? capturedQuestionType;
+      String? capturedOptionId;
+
+      coordinator.submitSpecialAnswer(
+        questionId: 'q1',
+        isCorrect: true,
+        questionType: 'CLOZE',
+        optionId: 'o1',
+        submitSpecialAnswer: ({
+          required String questionId,
+          required bool isCorrect,
+          required String questionType,
+          String? optionId,
+        }) {
+          capturedQuestionId = questionId;
+          capturedIsCorrect = isCorrect;
+          capturedQuestionType = questionType;
+          capturedOptionId = optionId;
+        },
+      );
+
+      expect(capturedQuestionId, 'q1');
+      expect(capturedIsCorrect, isTrue);
+      expect(capturedQuestionType, 'CLOZE');
+      expect(capturedOptionId, 'o1');
+    });
+  });
+
+  group('QuizSessionLifecycleCoordinator', () {
+    test('initializes a session and runs post-initialize work while active',
+        () async {
+      final timerCoordinator = QuizTimerCoordinator(
+        createTimer: _FakeTimerFactory().create,
+      );
+      final coordinator = QuizSessionLifecycleCoordinator(
+        timerCoordinator: timerCoordinator,
+      );
+      const request = QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 10,
+        stageId: 'stage-1',
+      );
+      QuizSessionRequest? capturedRequest;
+      var restarted = false;
+
+      final outcome = await coordinator.initialize(
+        request: request,
+        initializeSession: (value) async {
+          capturedRequest = value;
+        },
+        isActive: () => true,
+        onInitialized: () {
+          restarted = true;
+        },
+      );
+
+      expect(outcome, QuizInitializationOutcome.initialized);
+      expect(capturedRequest, same(request));
+      expect(restarted, isTrue);
+    });
+
+    test('skips post-initialize work after the page becomes inactive',
+        () async {
+      final coordinator = QuizSessionLifecycleCoordinator(
+        timerCoordinator: QuizTimerCoordinator(
+          createTimer: _FakeTimerFactory().create,
+        ),
+      );
+      var restarted = false;
+
+      final outcome = await coordinator.initialize(
+        request: const QuizSessionRequest(
+          quizType: 'VOCABULARY',
+          jlptLevel: 'N5',
+          count: 10,
+        ),
+        initializeSession: (_) async {},
+        isActive: () => false,
+        onInitialized: () {
+          restarted = true;
+        },
+      );
+
+      expect(outcome, QuizInitializationOutcome.inactive);
+      expect(restarted, isFalse);
+    });
+
+    test('disposes the timer and defers session invalidation', () {
+      final timers = _FakeTimerFactory();
+      final timerCoordinator = QuizTimerCoordinator(createTimer: timers.create);
+      timerCoordinator.restartIfNeeded(
+        session: _session(),
+        resetTimer: () {},
+        incrementTimer: () {},
+      );
+      final deferredActions = <void Function()>[];
+      final coordinator = QuizSessionLifecycleCoordinator(
+        timerCoordinator: timerCoordinator,
+        deferAction: deferredActions.add,
+      );
+      var invalidated = false;
+
+      coordinator.dispose(
+        invalidateSession: () {
+          invalidated = true;
+        },
+      );
+
+      expect(timerCoordinator.isActive, isFalse);
+      expect(invalidated, isFalse);
+      expect(deferredActions, hasLength(1));
+
+      deferredActions.single();
+
+      expect(invalidated, isTrue);
+    });
+  });
+
   group('QuizCompletionCoordinator', () {
     test('stops timer, plays feedback, and opens result destination', () async {
       final timers = _FakeTimerFactory();
@@ -228,33 +494,98 @@ void main() {
       expect(readSession, isFalse);
     });
   });
+
+  group('QuizExitCoordinator', () {
+    test('exits after confirmation while active', () async {
+      const coordinator = QuizExitCoordinator();
+      var exited = false;
+
+      final outcome = await coordinator.requestExit(
+        confirmExit: () async => true,
+        isActive: () => true,
+        exit: () {
+          exited = true;
+        },
+      );
+
+      expect(outcome, QuizExitOutcome.exited);
+      expect(exited, isTrue);
+    });
+
+    test('does not exit after cancellation', () async {
+      const coordinator = QuizExitCoordinator();
+      var exited = false;
+
+      final outcome = await coordinator.requestExit(
+        confirmExit: () async => false,
+        isActive: () => true,
+        exit: () {
+          exited = true;
+        },
+      );
+
+      expect(outcome, QuizExitOutcome.cancelled);
+      expect(exited, isFalse);
+    });
+
+    test('does not exit when inactive after confirmation', () async {
+      const coordinator = QuizExitCoordinator();
+      var exited = false;
+
+      final outcome = await coordinator.requestExit(
+        confirmExit: () async => true,
+        isActive: () => false,
+        exit: () {
+          exited = true;
+        },
+      );
+
+      expect(outcome, QuizExitOutcome.inactive);
+      expect(exited, isFalse);
+    });
+  });
 }
 
 QuizSessionState _session({
   bool loading = false,
   bool answered = false,
+  int currentIndex = 0,
   String sessionQuizType = 'VOCABULARY',
+  List<QuizQuestionModel> questions = const [_question],
   String? resolvedMode,
+  int streak = 0,
 }) {
   return QuizSessionState(
     loading: loading,
     sessionId: 'session-1',
     sessionQuizType: sessionQuizType,
-    questions: const [
-      QuizQuestionModel(
-        questionId: 'q1',
-        questionText: 'question',
-        options: [
-          QuizOption(id: 'a', text: 'A'),
-          QuizOption(id: 'b', text: 'B'),
-        ],
-        correctOptionId: 'a',
-      ),
-    ],
+    questions: questions,
+    currentIndex: currentIndex,
     answered: answered,
     resolvedMode: resolvedMode,
+    streak: streak,
   );
 }
+
+const _question = QuizQuestionModel(
+  questionId: 'q1',
+  questionText: 'question',
+  options: [
+    QuizOption(id: 'a', text: 'A'),
+    QuizOption(id: 'b', text: 'B'),
+  ],
+  correctOptionId: 'a',
+);
+
+const _secondQuestion = QuizQuestionModel(
+  questionId: 'q2',
+  questionText: 'question 2',
+  options: [
+    QuizOption(id: 'c', text: 'C'),
+    QuizOption(id: 'd', text: 'D'),
+  ],
+  correctOptionId: 'c',
+);
 
 const _result = QuizResultModel(
   correctCount: 1,

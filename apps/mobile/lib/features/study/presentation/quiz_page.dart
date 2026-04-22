@@ -39,41 +39,54 @@ class QuizPage extends ConsumerStatefulWidget {
 class _QuizPageState extends ConsumerState<QuizPage> {
   late final QuizTimerCoordinator _timerCoordinator;
   late final QuizFeedbackPlayer _feedbackPlayer;
+  late final QuizInteractionCoordinator _interactionCoordinator;
+  late final QuizSessionLifecycleCoordinator _lifecycleCoordinator;
   late final QuizCompletionCoordinator _completionCoordinator;
+  late final QuizExitCoordinator _exitCoordinator;
 
   @override
   void initState() {
     super.initState();
     _timerCoordinator = QuizTimerCoordinator();
     _feedbackPlayer = QuizFeedbackPlayer.defaultServices();
+    _interactionCoordinator = QuizInteractionCoordinator(
+      timerCoordinator: _timerCoordinator,
+      feedbackPlayer: _feedbackPlayer,
+    );
+    _lifecycleCoordinator = QuizSessionLifecycleCoordinator(
+      timerCoordinator: _timerCoordinator,
+    );
     _completionCoordinator = QuizCompletionCoordinator(
       timerCoordinator: _timerCoordinator,
       feedbackPlayer: _feedbackPlayer,
     );
+    _exitCoordinator = const QuizExitCoordinator();
     Future(_initializeQuiz);
   }
 
   @override
   void dispose() {
-    _timerCoordinator.dispose();
     final container = ProviderScope.containerOf(context, listen: false);
-    Future(() => container.invalidate(quizSessionProvider));
+    _lifecycleCoordinator.dispose(
+      invalidateSession: () => container.invalidate(quizSessionProvider),
+    );
     super.dispose();
   }
 
   Future<void> _initializeQuiz() async {
-    await ref.read(quizSessionProvider.notifier).initialize(
-          QuizSessionRequest(
-            quizType: widget.quizType,
-            jlptLevel: widget.jlptLevel,
-            count: widget.count,
-            mode: widget.mode,
-            resumeSessionId: widget.resumeSessionId,
-            stageId: widget.stageId,
-          ),
-        );
-    if (!mounted) return;
-    _restartTimerIfNeeded();
+    await _lifecycleCoordinator.initialize(
+      request: QuizSessionRequest(
+        quizType: widget.quizType,
+        jlptLevel: widget.jlptLevel,
+        count: widget.count,
+        mode: widget.mode,
+        resumeSessionId: widget.resumeSessionId,
+        stageId: widget.stageId,
+      ),
+      initializeSession: ref.read(quizSessionProvider.notifier).initialize,
+      isActive: () => mounted,
+      onInitialized: _restartTimerIfNeeded,
+    );
   }
 
   void _restartTimerIfNeeded() {
@@ -87,31 +100,28 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   void _handleAnswer(String optionId) {
-    _timerCoordinator.stop();
+    final notifier = ref.read(quizSessionProvider.notifier);
     final session = ref.read(quizSessionProvider);
-    final isCorrect =
-        ref.read(quizSessionProvider.notifier).answerCurrentQuestion(
-              optionId: optionId,
-              questionType: session.effectiveQuizType(widget.quizType),
-            );
-    if (isCorrect == null) return;
-    final streak = ref.read(quizSessionProvider).streak;
-
-    _feedbackPlayer.playAnswerFeedback(
-      isCorrect: isCorrect,
-      streak: streak,
+    _interactionCoordinator.answer(
+      optionId: optionId,
+      session: session,
+      fallbackQuizType: widget.quizType,
+      answerCurrentQuestion: notifier.answerCurrentQuestion,
+      readSession: () => ref.read(quizSessionProvider),
     );
   }
 
   void _handleNext() {
+    final notifier = ref.read(quizSessionProvider.notifier);
     final session = ref.read(quizSessionProvider);
-    if (session.isLastQuestion) {
-      unawaited(_completeQuiz());
-      return;
-    }
-
-    ref.read(quizSessionProvider.notifier).advanceToNextQuestion();
-    _restartTimerIfNeeded();
+    _interactionCoordinator.next(
+      session: session,
+      advanceToNextQuestion: notifier.advanceToNextQuestion,
+      restartTimer: _restartTimerIfNeeded,
+      completeQuiz: () {
+        unawaited(_completeQuiz());
+      },
+    );
   }
 
   Future<void> _completeQuiz() async {
@@ -148,13 +158,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Future<void> _requestPop() async {
-    final shouldPop = await _onWillPop();
-    if (shouldPop && mounted) {
-      Navigator.of(context).pop();
-    }
+    await _exitCoordinator.requestExit(
+      confirmExit: _confirmExit,
+      isActive: () => mounted,
+      exit: () => Navigator.of(context).pop(),
+    );
   }
 
-  Future<bool> _onWillPop() async {
+  Future<bool> _confirmExit() async {
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -207,12 +218,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     String questionType, {
     String? optionId,
   }) {
-    ref.read(quizSessionProvider.notifier).submitSpecialAnswer(
-          questionId: qId,
-          isCorrect: isCorrect,
-          questionType: questionType,
-          optionId: optionId,
-        );
+    _interactionCoordinator.submitSpecialAnswer(
+      questionId: qId,
+      isCorrect: isCorrect,
+      questionType: questionType,
+      optionId: optionId,
+      submitSpecialAnswer:
+          ref.read(quizSessionProvider.notifier).submitSpecialAnswer,
+    );
   }
 
   Widget _buildPopScope({required Widget child}) {

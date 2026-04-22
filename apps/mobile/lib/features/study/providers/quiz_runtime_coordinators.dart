@@ -12,20 +12,67 @@ typedef QuizPeriodicTimerFactory = Timer Function(
 );
 typedef QuizHapticAction = Future<void> Function();
 typedef QuizSoundAction = Future<void> Function(SoundType type);
+typedef QuizInitializeAction = Future<void> Function(
+    QuizSessionRequest request);
+typedef QuizPostInitializeAction = void Function();
+typedef QuizSessionInvalidator = void Function();
+typedef QuizDeferredAction = void Function(void Function() action);
+typedef QuizAnswerAction = bool? Function({
+  required String optionId,
+  required String questionType,
+});
+typedef QuizAdvanceAction = void Function();
+typedef QuizCompletionTrigger = void Function();
+typedef QuizRestartTimerAction = void Function();
+typedef QuizSpecialAnswerAction = void Function({
+  required String questionId,
+  required bool isCorrect,
+  required String questionType,
+  String? optionId,
+});
 typedef QuizCompleteAction = Future<QuizResultModel?> Function({
   String? stageId,
 });
 typedef QuizSessionReader = QuizSessionState Function();
-typedef QuizCompletionGuard = bool Function();
+typedef QuizActiveGuard = bool Function();
 typedef QuizCompletionNavigator = void Function(
   QuizCompletionDestination destination,
 );
 typedef QuizCompletionErrorHandler = void Function(Object error);
+typedef QuizExitConfirmation = Future<bool> Function();
+typedef QuizExitAction = void Function();
+
+enum QuizInitializationOutcome {
+  initialized,
+  inactive,
+}
+
+enum QuizAnswerOutcome {
+  answered,
+  ignored,
+}
+
+enum QuizProgressionOutcome {
+  advanced,
+  completing,
+}
 
 enum QuizCompletionOutcome {
   completed,
   ignored,
   failed,
+}
+
+enum QuizExitOutcome {
+  exited,
+  cancelled,
+  inactive,
+}
+
+void _defaultDeferQuizAction(void Function() action) {
+  unawaited(Future<void>(() {
+    action();
+  }));
 }
 
 class QuizTimerCoordinator {
@@ -111,6 +158,104 @@ class QuizFeedbackPlayer {
   }
 }
 
+class QuizInteractionCoordinator {
+  const QuizInteractionCoordinator({
+    required QuizTimerCoordinator timerCoordinator,
+    required QuizFeedbackPlayer feedbackPlayer,
+  })  : _timerCoordinator = timerCoordinator,
+        _feedbackPlayer = feedbackPlayer;
+
+  final QuizTimerCoordinator _timerCoordinator;
+  final QuizFeedbackPlayer _feedbackPlayer;
+
+  QuizAnswerOutcome answer({
+    required String optionId,
+    required QuizSessionState session,
+    required String fallbackQuizType,
+    required QuizAnswerAction answerCurrentQuestion,
+    required QuizSessionReader readSession,
+  }) {
+    _timerCoordinator.stop();
+    final isCorrect = answerCurrentQuestion(
+      optionId: optionId,
+      questionType: session.effectiveQuizType(fallbackQuizType),
+    );
+    if (isCorrect == null) {
+      return QuizAnswerOutcome.ignored;
+    }
+
+    _feedbackPlayer.playAnswerFeedback(
+      isCorrect: isCorrect,
+      streak: readSession().streak,
+    );
+    return QuizAnswerOutcome.answered;
+  }
+
+  QuizProgressionOutcome next({
+    required QuizSessionState session,
+    required QuizAdvanceAction advanceToNextQuestion,
+    required QuizRestartTimerAction restartTimer,
+    required QuizCompletionTrigger completeQuiz,
+  }) {
+    if (session.isLastQuestion) {
+      completeQuiz();
+      return QuizProgressionOutcome.completing;
+    }
+
+    advanceToNextQuestion();
+    restartTimer();
+    return QuizProgressionOutcome.advanced;
+  }
+
+  void submitSpecialAnswer({
+    required String questionId,
+    required bool isCorrect,
+    required String questionType,
+    required QuizSpecialAnswerAction submitSpecialAnswer,
+    String? optionId,
+  }) {
+    submitSpecialAnswer(
+      questionId: questionId,
+      isCorrect: isCorrect,
+      questionType: questionType,
+      optionId: optionId,
+    );
+  }
+}
+
+class QuizSessionLifecycleCoordinator {
+  const QuizSessionLifecycleCoordinator({
+    required QuizTimerCoordinator timerCoordinator,
+    QuizDeferredAction deferAction = _defaultDeferQuizAction,
+  })  : _timerCoordinator = timerCoordinator,
+        _deferAction = deferAction;
+
+  final QuizTimerCoordinator _timerCoordinator;
+  final QuizDeferredAction _deferAction;
+
+  Future<QuizInitializationOutcome> initialize({
+    required QuizSessionRequest request,
+    required QuizInitializeAction initializeSession,
+    required QuizActiveGuard isActive,
+    required QuizPostInitializeAction onInitialized,
+  }) async {
+    await initializeSession(request);
+    if (!isActive()) {
+      return QuizInitializationOutcome.inactive;
+    }
+
+    onInitialized();
+    return QuizInitializationOutcome.initialized;
+  }
+
+  void dispose({
+    required QuizSessionInvalidator invalidateSession,
+  }) {
+    _timerCoordinator.dispose();
+    _deferAction(invalidateSession);
+  }
+}
+
 class QuizCompletionDestination {
   const QuizCompletionDestination({
     required this.result,
@@ -138,7 +283,7 @@ class QuizCompletionCoordinator {
   Future<QuizCompletionOutcome> complete({
     required QuizCompleteAction completeQuiz,
     required QuizSessionReader readSession,
-    required QuizCompletionGuard isActive,
+    required QuizActiveGuard isActive,
     required QuizCompletionNavigator navigateToResult,
     required QuizCompletionErrorHandler onError,
     required String fallbackQuizType,
@@ -177,5 +322,27 @@ class QuizCompletionCoordinator {
       onError(error);
       return QuizCompletionOutcome.failed;
     }
+  }
+}
+
+class QuizExitCoordinator {
+  const QuizExitCoordinator();
+
+  Future<QuizExitOutcome> requestExit({
+    required QuizExitConfirmation confirmExit,
+    required QuizActiveGuard isActive,
+    required QuizExitAction exit,
+  }) async {
+    final shouldExit = await confirmExit();
+    if (!shouldExit) {
+      return QuizExitOutcome.cancelled;
+    }
+
+    if (!isActive()) {
+      return QuizExitOutcome.inactive;
+    }
+
+    exit();
+    return QuizExitOutcome.exited;
   }
 }
