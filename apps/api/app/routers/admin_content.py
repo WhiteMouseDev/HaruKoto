@@ -661,8 +661,19 @@ async def get_audit_logs(
     _reviewer: Annotated[User, Depends(require_reviewer)],
 ) -> list[AuditLogItem]:
     """Return audit log entries for a content item, ordered by created_at DESC."""
-    logs = await list_admin_audit_logs(db, content_type=content_type, item_id=item_id)
-    return [AuditLogItem.model_validate(log) for log in logs]
+    entries = await list_admin_audit_logs(db, content_type=content_type, item_id=item_id)
+    return [
+        AuditLogItem(
+            id=entry.log.id,
+            action=entry.log.action,
+            changes=entry.log.changes,
+            reason=entry.log.reason,
+            reviewer_id=entry.log.reviewer_id,
+            reviewer_email=entry.reviewer_email,
+            created_at=entry.log.created_at,
+        )
+        for entry in entries
+    ]
 
 
 # ==========================================

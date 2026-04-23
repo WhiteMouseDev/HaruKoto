@@ -7,13 +7,14 @@ from typing import Any
 import pytest
 
 from app.models.admin import AuditLog
-from app.services.admin_audit_logs import list_admin_audit_logs
+from app.services.admin_audit_logs import AuditLogWithEmail, list_admin_audit_logs
 
 
 @pytest.mark.asyncio
-async def test_list_admin_audit_logs_returns_query_results() -> None:
+async def test_list_admin_audit_logs_returns_logs_with_reviewer_email() -> None:
     item_id = uuid.uuid4()
     reviewer_id = uuid.uuid4()
+    reviewer_email = "reviewer@example.com"
     now = datetime(2026, 4, 21, 12, 0, tzinfo=UTC)
     logs = [
         AuditLog(
@@ -37,7 +38,8 @@ async def test_list_admin_audit_logs_returns_query_results() -> None:
             created_at=now - timedelta(minutes=1),
         ),
     ]
-    db = _FakeDb(_ScalarsResult(logs))
+    rows = [(log, reviewer_email) for log in logs]
+    db = _FakeDb(_AllResult(rows))
 
     result = await list_admin_audit_logs(
         db,  # type: ignore[arg-type]
@@ -45,7 +47,7 @@ async def test_list_admin_audit_logs_returns_query_results() -> None:
         item_id=item_id,
     )
 
-    assert result == logs
+    assert result == [AuditLogWithEmail(log=log, reviewer_email=reviewer_email) for log in logs]
     assert db.execute_calls == 1
 
 
@@ -59,12 +61,9 @@ class _FakeDb:
         return self._result
 
 
-class _ScalarsResult:
-    def __init__(self, logs: list[AuditLog]) -> None:
-        self._logs = logs
+class _AllResult:
+    def __init__(self, rows: list[tuple[AuditLog, str]]) -> None:
+        self._rows = rows
 
-    def scalars(self) -> _ScalarsResult:
-        return self
-
-    def all(self) -> list[AuditLog]:
-        return self._logs
+    def all(self) -> list[tuple[AuditLog, str]]:
+        return self._rows

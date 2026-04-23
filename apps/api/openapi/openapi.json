@@ -6170,6 +6170,10 @@
             "format": "uuid",
             "title": "Reviewerid"
           },
+          "reviewerEmail": {
+            "type": "string",
+            "title": "Revieweremail"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -6183,6 +6187,7 @@
           "changes",
           "reason",
           "reviewerId",
+          "reviewerEmail",
           "createdAt"
         ],
         "title": "AuditLogItem"

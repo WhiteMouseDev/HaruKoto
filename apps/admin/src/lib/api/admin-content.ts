@@ -109,6 +109,7 @@ export type AuditLogEntry = {
   action: string;
   changes: Record<string, unknown> | null;
   reason: string | null;
+  reviewerId: string;
   reviewerEmail: string;
   createdAt: string;
 };

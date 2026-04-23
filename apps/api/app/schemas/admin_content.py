@@ -204,6 +204,7 @@ class AuditLogItem(CamelModel):
     changes: dict[str, Any] | None
     reason: str | None
     reviewer_id: uuid.UUID
+    reviewer_email: str
     created_at: datetime
 
 

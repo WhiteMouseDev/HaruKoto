@@ -161,6 +161,13 @@ def _scalars_result(objs: list):
     return r
 
 
+def _audit_rows_result(logs: list, reviewer_email: str = "reviewer@example.com"):
+    """Wrap AuditLog list in a mock shaped for list_admin_audit_logs (uses result.all())."""
+    r = MagicMock()
+    r.all.return_value = [(log, reviewer_email) for log in logs]
+    return r
+
+
 # ---------------------------------------------------------------------------
 # EDIT tests (PATCH endpoints)
 # ---------------------------------------------------------------------------
@@ -445,7 +452,7 @@ async def test_review_action_writes_audit_log(admin_client, reviewer_user):
             return _scalar_result(vocab)
         else:
             # Second call: GET audit-logs
-            return _scalars_result([mock_log])
+            return _audit_rows_result([mock_log])
 
     mock_db = AsyncMock()
     mock_db.execute = AsyncMock(side_effect=execute_side_effect)
@@ -519,7 +526,7 @@ async def test_patch_action_writes_audit_log_with_changes(admin_client, reviewer
         if call_count == 1:
             return _scalar_result(vocab)
         else:
-            return _scalars_result([mock_log])
+            return _audit_rows_result([mock_log])
 
     mock_db = AsyncMock()
     mock_db.execute = AsyncMock(side_effect=execute_side_effect)

@@ -1921,6 +1921,8 @@ export interface components {
              * Format: uuid
              */
             reviewerId: string;
+            /** Revieweremail */
+            reviewerEmail: string;
             /**
              * Createdat
              * Format: date-time
