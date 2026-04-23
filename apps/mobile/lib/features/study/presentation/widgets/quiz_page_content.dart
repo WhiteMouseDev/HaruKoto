@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../providers/quiz_session_provider.dart';
-import 'four_choice_quiz.dart';
-import 'quiz_feedback_bar.dart';
 import 'quiz_header.dart';
-import 'quiz_progress_bar.dart';
 import 'quiz_special_mode_builder.dart';
+import 'quiz_standard_mode_content.dart';
 
 export 'quiz_special_mode_builder.dart' show QuizSpecialAnswerHandler;
 
@@ -72,57 +70,20 @@ class QuizPageContent extends ConsumerWidget {
     }
 
     final question = session.currentQuestion!;
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                QuizHeader(
-                  title: _headerTitle,
-                  count: session.headerCount,
-                  onBack: onBackRequested,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: QuizProgressBar(
-                    progress: session.progress,
-                    streak: session.streak,
-                    showStreak: session.answered,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: FourChoiceQuiz(
-                      question: question,
-                      selectedOptionId: session.selectedOptionId,
-                      answered: session.answered,
-                      isCorrect: session.isCorrect,
-                      showFurigana: showFurigana,
-                      onSelect: onAnswer,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (session.answered)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: QuizFeedbackBar(
-                  question: question,
-                  isCorrect: session.isCorrect,
-                  streak: session.streak,
-                  isLastQuestion: session.isLastQuestion,
-                  onNext: onNext,
-                ),
-              ),
-          ],
-        ),
-      ),
+    return QuizStandardModeContent(
+      title: _headerTitle,
+      count: session.headerCount,
+      question: question,
+      progress: session.progress,
+      streak: session.streak,
+      selectedOptionId: session.selectedOptionId,
+      answered: session.answered,
+      isCorrect: session.isCorrect,
+      isLastQuestion: session.isLastQuestion,
+      showFurigana: showFurigana,
+      onBack: onBackRequested,
+      onAnswer: onAnswer,
+      onNext: onNext,
     );
   }
 }

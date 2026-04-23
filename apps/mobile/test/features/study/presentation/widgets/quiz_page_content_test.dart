@@ -6,6 +6,7 @@ import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.d
 import 'package:harukoto_mobile/features/study/presentation/widgets/cloze_quiz.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/four_choice_quiz.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/quiz_page_content.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/quiz_standard_mode_content.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_session_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,6 +60,7 @@ void main() {
       );
 
       expect(find.text('N5 단어 퀴즈'), findsOneWidget);
+      expect(find.byType(QuizStandardModeContent), findsOneWidget);
       expect(find.byType(FourChoiceQuiz), findsOneWidget);
       expect(find.text('食べる'), findsOneWidget);
       expect(find.text('たべる'), findsOneWidget);
