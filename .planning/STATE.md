@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; awaiting next milestone scope
-last_updated: "2026-04-23T15:30:00.000Z"
+last_updated: "2026-04-23T16:00:00.000Z"
 last_activity: 2026-04-23
 progress:
   total_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-04-23 — milestone archive + admin↔api audit cycle
+Last activity: 2026-04-23 — milestone archive + admin↔api audit cycle + carry-over cleanup (voice silent-fail mobile fix, stale branch pruning)
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -40,13 +40,16 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Pending Todos
 
 - Ch.01 파일럿 콘텐츠 제작 (if v1.2 goes that direction) — blueprint → AI generation → admin review → TTS
-- P0-2 음성 통화 리포트 silent-fail: reproduction confirmation still needed (server observability already improved in commit d020b79)
-- `feature/study-path-redesign` WIP branch: decide keep/drop (Duolingo serpentine path UI)
 
 ### Blockers/Concerns
 
-None active. Carry-overs:
-- `feature/study-path-redesign` branch staleness (1 commit not in main)
+None active.
+
+### Resolved Carry-overs (2026-04-23 PM)
+
+- P0-2 음성 통화 리포트 silent-fail: mobile fix shipped (commit 950681d). Backend already classified errors in d020b79; mobile now threads `feedbackError` end-to-end with differentiated no-data UI (no_transcript / generation_failed / generic).
+- `feature/study-path-redesign` branch: dropped. Main already implements frozen lesson design (ChapterCard + LessonTile + 6-step lesson flow). Serpentine experiment had no design-doc backing, 5-week stale, data-model mismatch. Local + remote branch + archive tag all deleted.
+- Branch hygiene: merged `feature/flutter-native` remote deleted; `worktree-agent-a0c31a9c` worktree + branch removed.
 
 ## Session Continuity
 
