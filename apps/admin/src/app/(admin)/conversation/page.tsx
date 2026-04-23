@@ -15,7 +15,9 @@ import type { components } from '@harukoto/types';
 // Source of truth for scenario categories is apps/api/app/enums.py::ScenarioCategory,
 // mirrored in the generated OpenAPI types. The Record below forces every API enum
 // value to appear here — adding a value to the API enum without updating admin
-// triggers a missing-key compile error.
+// triggers a missing-key compile error. The OPENAPI_ENUM annotation opts this
+// file into validate_admin_contracts.py enum drift detection (CI check).
+// OPENAPI_ENUM: ScenarioCategory
 const SCENARIO_CATEGORY_COVERAGE: Record<
   components['schemas']['ScenarioCategory'],
   true

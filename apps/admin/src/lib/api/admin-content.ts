@@ -75,6 +75,22 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+// FastAPI errors come back as { detail: string | ValidationError[] }. Extract the
+// human-readable string when present so toasts surface the real reason (e.g. "TTS
+// 生成に失敗しました") instead of "API error: 500". Falls back to status code when
+// the body is missing or non-JSON.
+async function throwIfNotOk(res: Response): Promise<void> {
+  if (res.ok) return;
+  let detail: string | null = null;
+  try {
+    const body = (await res.clone().json()) as { detail?: unknown };
+    if (typeof body.detail === 'string') detail = body.detail;
+  } catch {
+    // Non-JSON body (HTML error page, empty 502, etc.) — fall through to status.
+  }
+  throw new Error(detail ?? `API error: ${res.status}`);
+}
+
 // ---- API functions ----
 
 export async function fetchAdminContent<T>(
@@ -89,7 +105,7 @@ export async function fetchAdminContent<T>(
   });
 
   const res = await fetch(url.toString(), { headers });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
   return res.json() as Promise<PaginatedResponse<T>>;
 }
 
@@ -98,7 +114,7 @@ export async function fetchContentStats(): Promise<ContentStatsResponse> {
 
   const url = new URL(`${API_URL}/api/v1/admin/content/stats`);
   const res = await fetch(url.toString(), { headers });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
   return res.json() as Promise<ContentStatsResponse>;
 }
 
@@ -121,7 +137,7 @@ export async function fetchAdminContentDetail<T>(
   const headers = await getAuthHeaders();
   const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}`);
   const res = await fetch(url.toString(), { headers });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
   return res.json() as Promise<T>;
 }
 
@@ -137,7 +153,7 @@ export async function patchAdminContent(
     headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
 }
 
 export async function reviewContent(
@@ -153,7 +169,7 @@ export async function reviewContent(
     headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, reason }),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
 }
 
 export async function batchReviewContent(
@@ -169,7 +185,7 @@ export async function batchReviewContent(
     headers: { ...(headers as Record<string, string>), 'Content-Type': 'application/json' },
     body: JSON.stringify({ contentType, ids, action, reason }),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
 }
 
 // Quiz uses compound path (quiz/cloze, quiz/sentence-arrange) for detail/patch/review,
@@ -190,7 +206,7 @@ export async function fetchAuditLogs(
   const auditType = toAuditContentType(contentType);
   const url = new URL(`${API_URL}/api/v1/admin/content/${auditType}/${id}/audit-logs`);
   const res = await fetch(url.toString(), { headers });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
   return res.json() as Promise<AuditLogEntry[]>;
 }
 
@@ -222,7 +238,7 @@ export async function fetchTtsAudio(
     `${API_URL}/api/v1/admin/content/${contentType}/${itemId}/tts`,
     { headers },
   );
-  if (!res.ok) throw new Error('Failed to fetch TTS audio');
+  await throwIfNotOk(res);
   return res.json() as Promise<TtsAudioMapResponse>;
 }
 
@@ -244,11 +260,7 @@ export async function regenerateTts(
       field,
     }),
   });
-  if (res.status === 429) {
-    const data = (await res.json()) as { detail?: string };
-    throw new Error(data.detail ?? 'Cooldown active');
-  }
-  if (!res.ok) throw new Error('TTS regeneration failed');
+  await throwIfNotOk(res);
   return res.json() as Promise<TtsAudioResponse>;
 }
 
@@ -276,6 +288,6 @@ export async function fetchReviewQueue(
   if (params.jlptLevel) url.searchParams.set('jlpt_level', params.jlptLevel);
   if (params.category) url.searchParams.set('category', params.category);
   const res = await fetch(url.toString(), { headers });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  await throwIfNotOk(res);
   return res.json() as Promise<ReviewQueueResponse>;
 }

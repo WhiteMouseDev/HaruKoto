@@ -18,9 +18,12 @@ describe('NavBadge', () => {
     expect(screen.getByText('99+')).toBeInTheDocument();
   });
 
-  it('renders with destructive background class', () => {
+  it('renders with informational primary-tinted background (not alarm-red)', () => {
+    // Per commit f50d797: badge deliberately uses bg-primary/15 + text-primary
+    // so the pending count reads as informational, not as an error state.
     render(<NavBadge count={3} />);
     const badge = screen.getByText('3');
-    expect(badge.className).toContain('bg-destructive');
+    expect(badge.className).toContain('bg-primary/15');
+    expect(badge.className).toContain('text-primary');
   });
 });

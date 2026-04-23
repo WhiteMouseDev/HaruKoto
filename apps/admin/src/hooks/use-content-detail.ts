@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import {
@@ -10,6 +11,26 @@ import {
   reviewContent,
   type AuditLogEntry,
 } from '@/lib/api/admin-content';
+
+// Quiz detail pages address items via the compound type (quiz/cloze,
+// quiz/sentence-arrange) because that's how the FastAPI detail/patch/review
+// routes are keyed. The merged quiz LIST, however, is cached under
+// ['admin-content', 'quiz', params]. Without this step, approving a single
+// quiz item invalidates only the sub-cache and leaves the list stale.
+function parentListContentType(contentType: string): string | null {
+  if (contentType === 'quiz/cloze' || contentType === 'quiz/sentence-arrange') {
+    return 'quiz';
+  }
+  return null;
+}
+
+function invalidateListCaches(queryClient: QueryClient, contentType: string): void {
+  void queryClient.invalidateQueries({ queryKey: ['admin-content', contentType] });
+  const parent = parentListContentType(contentType);
+  if (parent) {
+    void queryClient.invalidateQueries({ queryKey: ['admin-content', parent] });
+  }
+}
 
 export function useContentDetail<T>(contentType: string, id: string) {
   const queryClient = useQueryClient();
@@ -27,9 +48,7 @@ export function useContentDetail<T>(contentType: string, id: string) {
       void queryClient.invalidateQueries({
         queryKey: ['admin-content', contentType, id],
       });
-      void queryClient.invalidateQueries({
-        queryKey: ['admin-content', contentType, 'list'],
-      });
+      invalidateListCaches(queryClient, contentType);
       void queryClient.invalidateQueries({
         queryKey: ['admin-content', contentType, id, 'audit-logs'],
       });
@@ -51,9 +70,7 @@ export function useContentDetail<T>(contentType: string, id: string) {
       void queryClient.invalidateQueries({
         queryKey: ['admin-content', contentType, id],
       });
-      void queryClient.invalidateQueries({
-        queryKey: ['admin-content', contentType],
-      });
+      invalidateListCaches(queryClient, contentType);
       void queryClient.invalidateQueries({
         queryKey: ['admin-content', 'stats'],
       });

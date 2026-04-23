@@ -213,6 +213,13 @@ jobs:
         working-directory: apps/api
         run: uv run python scripts/validate_mobile_contracts.py
 
+      # ============================
+      # Admin ↔ OpenAPI contract drift
+      # ============================
+      - name: Validate admin contracts against OpenAPI
+        working-directory: apps/api
+        run: uv run python scripts/validate_admin_contracts.py
+
   # ============================
   # Schema Drift Check (Alembic ↔ Prisma)
   # ============================

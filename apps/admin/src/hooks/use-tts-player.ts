@@ -79,8 +79,11 @@ export function useTtsPlayer(contentType: ContentType, itemId: string) {
       setConfirmField(null);
       toast.success(t('regenerateSuccess'));
     },
-    onError: () => {
-      toast.error(t('regenerateError'));
+    onError: (err: Error) => {
+      // admin-content.ts extracts { detail } from FastAPI errors, so err.message
+      // carries the real reason (e.g. "TTS生成に失敗しました"). Fall back to the
+      // localized generic message only when the error has no useful text.
+      toast.error(err.message || t('regenerateError'));
       setConfirmField(null);
     },
   });
