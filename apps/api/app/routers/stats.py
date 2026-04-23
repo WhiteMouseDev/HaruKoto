@@ -1,20 +1,15 @@
 from __future__ import annotations
 
-import calendar
-from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models import DailyProgress
 from app.models.user import User
 from app.schemas.stats import (
     ByCategoryResponse,
-    DailyProgressItem,
     DashboardResponse,
     HeatmapResponse,
     HistoryResponse,
@@ -23,6 +18,7 @@ from app.schemas.stats import (
     VolumeChartResponse,
 )
 from app.services.stats_dashboard import get_dashboard_data
+from app.services.stats_history import get_history_data
 from app.services.stats_jlpt_progress import get_jlpt_progress_data
 from app.services.stats_time_series import (
     get_by_category_data,
@@ -30,7 +26,6 @@ from app.services.stats_time_series import (
     get_time_chart_data,
     get_volume_chart_data,
 )
-from app.utils.date import get_today_kst
 
 router = APIRouter(prefix="/api/v1/stats", tags=["stats"])
 
@@ -50,45 +45,7 @@ async def get_history(
     year: int | None = Query(default=None),
     month: int | None = Query(default=None),
 ) -> HistoryResponse:
-    today = get_today_kst()
-
-    if year is None:
-        year = today.year
-    if month is None:
-        month = today.month
-
-    start_date = date(year, month, 1)
-    _, last_day = calendar.monthrange(year, month)
-    end_date = date(year, month, last_day)
-
-    result = await db.execute(
-        select(DailyProgress)
-        .where(
-            DailyProgress.user_id == user.id,
-            DailyProgress.date >= start_date,
-            DailyProgress.date <= end_date,
-        )
-        .order_by(DailyProgress.date)
-    )
-    progress_list = result.scalars().all()
-
-    return HistoryResponse(
-        year=year,
-        month=month,
-        records=[
-            DailyProgressItem(
-                date=str(dp.date),
-                words_studied=dp.words_studied,
-                quizzes_completed=dp.quizzes_completed,
-                correct_answers=dp.correct_answers,
-                total_answers=dp.total_answers,
-                conversation_count=dp.conversation_count,
-                study_time_seconds=dp.study_time_seconds,
-                xp_earned=dp.xp_earned,
-            )
-            for dp in progress_list
-        ],
-    )
+    return await get_history_data(db, user_id=user.id, year=year, month=month)
 
 
 @router.get("/heatmap", response_model=HeatmapResponse, status_code=200)
