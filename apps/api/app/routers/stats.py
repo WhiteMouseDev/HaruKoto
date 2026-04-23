@@ -13,15 +13,12 @@ from app.dependencies import get_current_user
 from app.models import (
     DailyProgress,
     Grammar,
-    KanaCharacter,
     UserGrammarProgress,
-    UserKanaProgress,
     UserVocabProgress,
     Vocabulary,
 )
-from app.models.enums import JlptLevel, KanaType
+from app.models.enums import JlptLevel
 from app.models.user import User
-from app.schemas.kana import KanaProgressResponse, KanaStat
 from app.schemas.stats import (
     ByCategoryResponse,
     CategoryStat,
@@ -33,16 +30,12 @@ from app.schemas.stats import (
     JlptLevelProgress,
     JlptProgressResponse,
     JlptProgressStat,
-    LevelProgress,
-    ProgressStat,
-    StreakInfo,
     TimeChartItem,
     TimeChartResponse,
-    TodayStats,
     VolumeChartItem,
     VolumeChartResponse,
-    WeeklyStatItem,
 )
+from app.services.stats_dashboard import get_dashboard_data
 from app.utils.date import get_today_kst
 
 # ---------------------------------------------------------------------------
@@ -59,120 +52,7 @@ async def get_dashboard(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> DashboardResponse:
-    today = get_today_kst()
-
-    # Today's progress
-    dp_result = await db.execute(select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date == today))
-    dp = dp_result.scalar_one_or_none()
-
-    goal_progress = 0.0
-    if dp and user.daily_goal > 0:
-        goal_progress = min(1.0, dp.xp_earned / (user.daily_goal * 10))
-
-    today_stats = TodayStats(
-        words_studied=dp.words_studied if dp else 0,
-        quizzes_completed=dp.quizzes_completed if dp else 0,
-        correct_answers=dp.correct_answers if dp else 0,
-        total_answers=dp.total_answers if dp else 0,
-        xp_earned=dp.xp_earned if dp else 0,
-        goal_progress=goal_progress,
-    )
-
-    # Streak as object
-    streak = StreakInfo(current=user.streak_count, longest=user.longest_streak)
-
-    # Weekly stats (last 7 days) as array of objects
-    week_start = today - timedelta(days=6)
-    weekly_result = await db.execute(
-        select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date >= week_start).order_by(DailyProgress.date)
-    )
-    weekly_data = {str(dp_row.date): dp_row for dp_row in weekly_result.scalars().all()}
-
-    weekly_stats: list[WeeklyStatItem] = []
-    for i in range(7):
-        d = week_start + timedelta(days=i)
-        dp_day = weekly_data.get(str(d))
-        weekly_stats.append(
-            WeeklyStatItem(
-                date=str(d),
-                words_studied=dp_day.words_studied if dp_day else 0,
-                xp_earned=dp_day.xp_earned if dp_day else 0,
-            )
-        )
-
-    # Level progress — single aggregate query for vocab
-    vocab_total = (await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == user.jlpt_level))).scalar() or 0
-    vocab_agg_result = await db.execute(
-        select(
-            UserVocabProgress.mastered,
-            func.count(UserVocabProgress.id),
-        )
-        .join(Vocabulary)
-        .where(UserVocabProgress.user_id == user.id, Vocabulary.jlpt_level == user.jlpt_level)
-        .group_by(UserVocabProgress.mastered)
-    )
-    vocab_counts = {row[0]: row[1] for row in vocab_agg_result.all()}
-    vocab_mastered = vocab_counts.get(True, 0)
-    vocab_in_progress = vocab_counts.get(False, 0)
-
-    # Level progress — single aggregate query for grammar
-    grammar_total = (await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == user.jlpt_level))).scalar() or 0
-    grammar_agg_result = await db.execute(
-        select(
-            UserGrammarProgress.mastered,
-            func.count(UserGrammarProgress.id),
-        )
-        .join(Grammar)
-        .where(UserGrammarProgress.user_id == user.id, Grammar.jlpt_level == user.jlpt_level)
-        .group_by(UserGrammarProgress.mastered)
-    )
-    grammar_counts = {row[0]: row[1] for row in grammar_agg_result.all()}
-    grammar_mastered = grammar_counts.get(True, 0)
-    grammar_in_progress = grammar_counts.get(False, 0)
-
-    # Kana progress — single batch query for totals per kana_type
-    kana_total_result = await db.execute(select(KanaCharacter.kana_type, func.count(KanaCharacter.id)).group_by(KanaCharacter.kana_type))
-    kana_totals = {row[0]: row[1] for row in kana_total_result.all()}
-
-    # Kana mastered — single query across all types
-    kana_mastered_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
-        .join(KanaCharacter)
-        .where(UserKanaProgress.user_id == user.id, UserKanaProgress.mastered.is_(True))
-        .group_by(KanaCharacter.kana_type)
-    )
-    kana_mastered_map = {row[0]: row[1] for row in kana_mastered_result.all()}
-
-    # Kana learned — single query across all types
-    kana_learned_result = await db.execute(
-        select(KanaCharacter.kana_type, func.count(UserKanaProgress.id))
-        .join(KanaCharacter)
-        .where(UserKanaProgress.user_id == user.id)
-        .group_by(KanaCharacter.kana_type)
-    )
-    kana_learned_map = {row[0]: row[1] for row in kana_learned_result.all()}
-
-    def _kana_stat(kt: KanaType) -> KanaStat:
-        return KanaStat(
-            learned=kana_learned_map.get(kt, 0),
-            mastered=kana_mastered_map.get(kt, 0),
-            total=kana_totals.get(kt, 0),
-        )
-
-    return DashboardResponse(
-        show_kana=user.show_kana,
-        today=today_stats,
-        streak=streak,
-        weekly_stats=weekly_stats,
-        level_progress=LevelProgress(
-            vocabulary=ProgressStat(total=vocab_total, mastered=vocab_mastered, in_progress=vocab_in_progress),
-            grammar=ProgressStat(total=grammar_total, mastered=grammar_mastered, in_progress=grammar_in_progress),
-        ),
-        kana_progress=KanaProgressResponse(
-            hiragana=_kana_stat(KanaType.HIRAGANA),
-            katakana=_kana_stat(KanaType.KATAKANA),
-        ),
-    )
+    return await get_dashboard_data(db, user)
 
 
 @router.get("/history", response_model=HistoryResponse, status_code=200)
