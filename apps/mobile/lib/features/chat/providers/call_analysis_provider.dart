@@ -21,6 +21,7 @@ class CallAnalysisState {
     this.currentStep = 1,
     this.conversationId,
     this.feedbackSummary,
+    this.feedbackError,
     this.errorMessage,
   });
 
@@ -32,6 +33,7 @@ class CallAnalysisState {
   final int currentStep;
   final String? conversationId;
   final FeedbackSummary? feedbackSummary;
+  final String? feedbackError;
   final String? errorMessage;
 
   bool get isCompleted =>
@@ -46,6 +48,7 @@ class CallAnalysisState {
     int? currentStep,
     Object? conversationId = _unset,
     Object? feedbackSummary = _unset,
+    Object? feedbackError = _unset,
     Object? errorMessage = _unset,
   }) {
     return CallAnalysisState(
@@ -59,6 +62,9 @@ class CallAnalysisState {
       feedbackSummary: identical(feedbackSummary, _unset)
           ? this.feedbackSummary
           : feedbackSummary as FeedbackSummary?,
+      feedbackError: identical(feedbackError, _unset)
+          ? this.feedbackError
+          : feedbackError as String?,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
@@ -101,6 +107,7 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
       currentStep: 2,
       conversationId: null,
       feedbackSummary: null,
+      feedbackError: null,
       errorMessage: null,
     );
 
@@ -116,6 +123,7 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
         currentStep: 3,
         conversationId: result.conversationId,
         feedbackSummary: result.feedbackSummary,
+        feedbackError: result.feedbackError,
         errorMessage: null,
       );
     } on CallAnalysisServiceException catch (error) {
@@ -127,6 +135,7 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
         errorMessage: error.message,
         conversationId: null,
         feedbackSummary: null,
+        feedbackError: null,
       );
     } catch (_) {
       if (_isStale(generation)) return;
@@ -137,6 +146,7 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
         errorMessage: '분석에 실패했습니다',
         conversationId: null,
         feedbackSummary: null,
+        feedbackError: null,
       );
     }
   }

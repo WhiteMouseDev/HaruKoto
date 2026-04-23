@@ -17,11 +17,13 @@ class ConversationFeedbackPage extends ConsumerWidget {
     super.key,
     required this.conversationId,
     this.initialFeedback,
+    this.initialFeedbackError,
     this.vocabulary,
   });
 
   final String conversationId;
   final FeedbackSummary? initialFeedback;
+  final String? initialFeedbackError;
   final List<VocabularyItem>? vocabulary;
 
   @override
@@ -55,7 +57,7 @@ class ConversationFeedbackPage extends ConsumerWidget {
         ),
         data: (feedback) {
           if (feedback == null) {
-            return const _FeedbackNoData();
+            return _FeedbackNoData(errorCode: initialFeedbackError);
           }
           return _FeedbackContent(
             feedback: feedback,
@@ -68,31 +70,63 @@ class ConversationFeedbackPage extends ConsumerWidget {
 }
 
 class _FeedbackNoData extends StatelessWidget {
-  const _FeedbackNoData();
+  const _FeedbackNoData({this.errorCode});
+
+  final String? errorCode;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final String title;
+    final String detail;
+    switch (errorCode) {
+      case 'no_transcript':
+        title = '대화가 너무 짧아요';
+        detail = '분석할 내용이 충분하지 않아 리포트를 만들 수 없었어요.\n다음에는 조금 더 길게 이야기해 보세요!';
+        break;
+      case 'generation_failed':
+        title = '피드백 생성에 실패했어요';
+        detail = '일시적인 문제로 리포트를 만들지 못했어요.\n잠시 후 다시 시도해 주세요.';
+        break;
+      default:
+        title = '피드백 데이터를 불러올 수 없어요';
+        detail = '';
+    }
+
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('🦊', style: TextStyle(fontSize: 48)),
-          const SizedBox(height: AppSizes.sm),
-          Text(
-            '피드백 데이터를 불러올 수 없습니다.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🦊', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: AppSizes.sm),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: AppSizes.md),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('대화 목록으로'),
-          ),
-        ],
+            if (detail.isNotEmpty) ...[
+              const SizedBox(height: AppSizes.xs),
+              Text(
+                detail,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSizes.md),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('대화 목록으로'),
+            ),
+          ],
+        ),
       ),
     );
   }

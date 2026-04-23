@@ -83,12 +83,14 @@ class EndConversationResponse {
 class LiveFeedbackResponse {
   final String conversationId;
   final FeedbackSummary? feedbackSummary;
+  final String? feedbackError;
   final int xpEarned;
   final List<ChatGameEvent> events;
 
   const LiveFeedbackResponse({
     required this.conversationId,
     this.feedbackSummary,
+    this.feedbackError,
     required this.xpEarned,
     required this.events,
   });
@@ -101,6 +103,7 @@ class LiveFeedbackResponse {
               json['feedbackSummary'] as Map<String, dynamic>,
             )
           : null,
+      feedbackError: json['feedbackError'] as String?,
       xpEarned: json['xpEarned'] as int? ?? 0,
       events: (json['events'] as List<dynamic>?)
               ?.map((e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))

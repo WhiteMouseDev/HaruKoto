@@ -80,6 +80,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       context,
       conversationId: analysis.conversationId!,
       initialFeedback: analysis.feedbackSummary,
+      initialFeedbackError: analysis.feedbackError,
       replace: true,
     );
   }

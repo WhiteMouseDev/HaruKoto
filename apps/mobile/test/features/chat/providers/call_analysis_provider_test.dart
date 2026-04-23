@@ -85,6 +85,38 @@ void main() {
       expect(state.conversationId, 'conversation-2');
     });
 
+    test('analyze propagates feedbackError when backend classifies failure',
+        () async {
+      final repository = _FakeChatRepository(
+        response: const LiveFeedbackResponse(
+          conversationId: 'conversation-3',
+          feedbackError: 'no_transcript',
+          xpEarned: 0,
+          events: [],
+        ),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          chatRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(callAnalysisProvider.notifier).analyze(
+            const VoiceCallAnalysisRequest(
+              transcript: [
+                {'role': 'user', 'text': ''},
+              ],
+              durationSeconds: 3,
+            ),
+          );
+
+      final state = container.read(callAnalysisProvider);
+      expect(state.status, CallAnalysisStatus.completed);
+      expect(state.feedbackSummary, isNull);
+      expect(state.feedbackError, 'no_transcript');
+    });
+
     test('analyze reports an error when backend returns no conversation id',
         () async {
       final repository = _FakeChatRepository(
