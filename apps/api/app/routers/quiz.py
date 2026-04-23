@@ -38,10 +38,10 @@ from app.services.quiz_query import (
     QuizStatsResult,
     get_incomplete_quiz_session,
     get_quiz_stats_data,
-    get_recommendations_data,
     get_wrong_answers_data,
     resume_quiz_session,
 )
+from app.services.quiz_recommendations import get_recommendations_data
 from app.services.quiz_session import build_response_questions
 from app.services.quiz_smart import build_smart_preview_data
 from app.services.quiz_start import (
