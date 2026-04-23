@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Annotated, Any
-from uuid import UUID
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -10,9 +9,11 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.dependencies import _decode_token, get_current_user
+from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.auth import OnboardingRequest, OnboardingResponse
+from app.services.auth_identity import InvalidSubjectClaimError, MissingSubjectClaimError, required_user_id_from_payload
+from app.services.auth_token import decode_supabase_token
 from app.services.auth_user import complete_onboarding_profile, get_or_create_user_profile
 from app.services.kakao_auth import (
     KakaoIdTokenMissingError,
@@ -59,21 +60,19 @@ async def ensure_user(
 ) -> dict[str, dict[str, Any]]:
     """Supabase JWT에서 유저 ID/email 추출, DB에 없으면 자동 생성."""
     try:
-        payload = _decode_token(credentials.credentials)
+        payload = decode_supabase_token(credentials.credentials)
     except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         ) from err
 
-    sub = payload.get("sub")
     email = payload.get("email", "")
-    if sub is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing subject claim")
-
     try:
-        user_id = UUID(sub)
-    except ValueError as err:
+        user_id = required_user_id_from_payload(payload)
+    except MissingSubjectClaimError as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing subject claim") from err
+    except InvalidSubjectClaimError as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid subject claim") from err
 
     profile = await get_or_create_user_profile(db, user_id=user_id, email=email)
