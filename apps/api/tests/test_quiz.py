@@ -268,7 +268,7 @@ async def test_complete_quiz_success(mock_achievements, client, mock_user, mock_
 @pytest.mark.asyncio
 async def test_get_incomplete_quiz_returns_session_banner(client):
     """Test GET /api/v1/quiz/incomplete serializes the banner session payload."""
-    from app.services.quiz_query import IncompleteQuizSessionResult
+    from app.services.quiz_session_query import IncompleteQuizSessionResult
 
     started_at = datetime(2026, 4, 17, 6, 30, tzinfo=UTC).isoformat()
 
@@ -303,7 +303,7 @@ async def test_get_incomplete_quiz_returns_session_banner(client):
 async def test_resume_quiz_returns_response_model_shape(client):
     """Test POST /api/v1/quiz/resume preserves the expected camelCase response contract."""
     from app.schemas.quiz import QuizOption, QuizQuestion
-    from app.services.quiz_query import ResumeQuizResult
+    from app.services.quiz_session_query import ResumeQuizResult
 
     session_id = str(uuid.uuid4())
     question_id = str(uuid.uuid4())
