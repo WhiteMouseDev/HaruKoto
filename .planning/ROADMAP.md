@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** - Phases 1-5 + 999.x backlog (shipped 2026-03-30)
-- 🚧 **v1.1 Quality & Polish** - Phases 6-7 (in progress)
+- ✅ **v1.1 Quality & Polish** - Phases 6-8 (completed 2026-04-23, all gaps closed)
 
 ## Phases
 
@@ -150,13 +150,13 @@ Plans:
 
 ---
 
-### v1.1 Quality & Polish (In Progress)
+### v1.1 Quality & Polish (Completed 2026-04-23)
 
 **Milestone Goal:** v1.0의 품질 미비 사항 해결 — 필드별 TTS, 번역 완성, 접근성 개선
 
-- [ ] **Phase 6: TTS Per-Field Audio** - TtsAudio DB 스키마 확장, FastAPI API 변경, 프론트엔드 훅·컴포넌트 업데이트
-- [ ] **Phase 7: i18n Completion & Accessibility** - 하드코딩 일본어 번역 완성, aria-current·skip link·랜드마크·검색 라벨 추가
-- [x] **Phase 8: i18n Gap Closure — TTS Hook Toast** - useTtsPlayer 하드코딩 일본어 toast를 i18n으로 교체, 테스트 scope 확장 (completed 2026-04-02)
+- [x] **Phase 6: TTS Per-Field Audio** - TtsAudio DB 스키마 확장, FastAPI API 변경, 프론트엔드 훅·컴포넌트 업데이트 (verified 2026-03-30)
+- [x] **Phase 7: i18n Completion & Accessibility** - 하드코딩 일본어 번역 완성, aria-current·skip link·랜드마크·검색 라벨 추가 (verified 2026-04-01)
+- [x] **Phase 8: i18n Gap Closure — TTS Hook Toast** - useTtsPlayer 하드코딩 일본어 toast를 i18n으로 교체, 테스트 scope 확장 (completed 2026-04-02; re-audited 2026-04-23 — all gaps closed)
 
 ## Phase Details
 

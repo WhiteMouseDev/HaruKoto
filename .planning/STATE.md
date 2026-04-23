@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality & Polish
-status: verifying
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-04-02T02:28:49.457Z"
-last_activity: 2026-04-02
+status: completed
+stopped_at: Milestone audit re-verified 2026-04-23 (all gaps closed, ready for archive)
+last_updated: "2026-04-23T15:15:00.000Z"
+last_activity: 2026-04-23
 progress:
   total_phases: 3
   completed_phases: 3
   total_plans: 6
   completed_plans: 6
-  percent: 0
+  percent: 100
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-30)
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** Phase 08 — i18n-gap-closure-tts-hook-toast
+**Current focus:** v1.1 complete — awaiting user decision on v1.2 scope (Ch.01 pilot content is leading candidate)
 
 ## Current Position
 
-Phase: 08
-Plan: Not started
-Status: Phase complete — ready for verification
+Milestone: v1.1 (Quality & Polish)
+Status: Completed — all 3 phases verified, all audit gaps closed, ready for archive
+Last activity: 2026-04-23 (milestone re-audit + admin↔api consistency batch follow-ups)
 Last activity: 2026-04-02
 
 Progress: [░░░░░░░░░░] 0%
