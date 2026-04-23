@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import calendar
-from datetime import date, timedelta
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -21,28 +21,24 @@ from app.models.enums import JlptLevel
 from app.models.user import User
 from app.schemas.stats import (
     ByCategoryResponse,
-    CategoryStat,
     DailyProgressItem,
     DashboardResponse,
-    HeatmapItem,
     HeatmapResponse,
     HistoryResponse,
     JlptLevelProgress,
     JlptProgressResponse,
     JlptProgressStat,
-    TimeChartItem,
     TimeChartResponse,
-    VolumeChartItem,
     VolumeChartResponse,
 )
 from app.services.stats_dashboard import get_dashboard_data
+from app.services.stats_time_series import (
+    get_by_category_data,
+    get_heatmap_data,
+    get_time_chart_data,
+    get_volume_chart_data,
+)
 from app.utils.date import get_today_kst
-
-# ---------------------------------------------------------------------------
-# Heatmap level thresholds
-# ---------------------------------------------------------------------------
-HEATMAP_LEVEL_LOW = 10
-HEATMAP_LEVEL_MID = 20
 
 router = APIRouter(prefix="/api/v1/stats", tags=["stats"])
 
@@ -103,17 +99,6 @@ async def get_history(
     )
 
 
-def _heatmap_level(words_studied: int) -> int:
-    """Calculate heatmap level: 0 (none), 1 (1-9), 2 (10-19), 3 (20+)."""
-    if words_studied == 0:
-        return 0
-    if words_studied < HEATMAP_LEVEL_LOW:
-        return 1
-    if words_studied < HEATMAP_LEVEL_MID:
-        return 2
-    return 3
-
-
 @router.get("/heatmap", response_model=HeatmapResponse, status_code=200)
 async def get_heatmap(
     user: Annotated[User, Depends(get_current_user)],
@@ -122,42 +107,7 @@ async def get_heatmap(
     month: int | None = Query(default=None),
 ) -> HeatmapResponse:
     """3-6: Daily study data for heatmap visualization."""
-    if month is not None:
-        start_date = date(year, month, 1)
-        _, last_day = calendar.monthrange(year, month)
-        end_date = date(year, month, last_day)
-    else:
-        start_date = date(year, 1, 1)
-        end_date = date(year, 12, 31)
-
-    result = await db.execute(
-        select(DailyProgress)
-        .where(
-            DailyProgress.user_id == user.id,
-            DailyProgress.date >= start_date,
-            DailyProgress.date <= end_date,
-        )
-        .order_by(DailyProgress.date)
-    )
-    progress_map = {dp.date: dp for dp in result.scalars().all()}
-
-    data: list[HeatmapItem] = []
-    current = start_date
-    while current <= end_date:
-        dp = progress_map.get(current)
-        words = (dp.words_studied or 0) if dp else 0
-        minutes = (dp.study_minutes or 0) if dp else 0
-        data.append(
-            HeatmapItem(
-                date=str(current),
-                words_studied=words,
-                study_minutes=minutes,
-                level=_heatmap_level(words),
-            )
-        )
-        current += timedelta(days=1)
-
-    return HeatmapResponse(data=data)
+    return await get_heatmap_data(db, user_id=user.id, year=year, month=month)
 
 
 @router.get("/jlpt-progress", response_model=JlptProgressResponse, status_code=200)
@@ -228,33 +178,7 @@ async def get_time_chart(
     days: int = Query(default=7, ge=1, le=90),
 ) -> TimeChartResponse:
     """3-8: Daily study time for chart."""
-    today = get_today_kst()
-    start_date = today - timedelta(days=days - 1)
-
-    result = await db.execute(
-        select(DailyProgress)
-        .where(
-            DailyProgress.user_id == user.id,
-            DailyProgress.date >= start_date,
-            DailyProgress.date <= today,
-        )
-        .order_by(DailyProgress.date)
-    )
-    progress_map = {dp.date: dp for dp in result.scalars().all()}
-
-    data: list[TimeChartItem] = []
-    current = start_date
-    while current <= today:
-        dp = progress_map.get(current)
-        data.append(
-            TimeChartItem(
-                date=str(current),
-                minutes=(dp.study_minutes or 0) if dp else 0,
-            )
-        )
-        current += timedelta(days=1)
-
-    return TimeChartResponse(data=data)
+    return await get_time_chart_data(db, user_id=user.id, days=days)
 
 
 @router.get("/volume-chart", response_model=VolumeChartResponse, status_code=200)
@@ -264,35 +188,7 @@ async def get_volume_chart(
     days: int = Query(default=7, ge=1, le=90),
 ) -> VolumeChartResponse:
     """3-9: Daily study volume (items studied)."""
-    today = get_today_kst()
-    start_date = today - timedelta(days=days - 1)
-
-    result = await db.execute(
-        select(DailyProgress)
-        .where(
-            DailyProgress.user_id == user.id,
-            DailyProgress.date >= start_date,
-            DailyProgress.date <= today,
-        )
-        .order_by(DailyProgress.date)
-    )
-    progress_map = {dp.date: dp for dp in result.scalars().all()}
-
-    data: list[VolumeChartItem] = []
-    current = start_date
-    while current <= today:
-        dp = progress_map.get(current)
-        data.append(
-            VolumeChartItem(
-                date=str(current),
-                words_studied=(dp.words_studied or 0) if dp else 0,
-                grammar_studied=(dp.grammar_studied or 0) if dp else 0,
-                sentences_studied=(dp.sentences_studied or 0) if dp else 0,
-            )
-        )
-        current += timedelta(days=1)
-
-    return VolumeChartResponse(data=data)
+    return await get_volume_chart_data(db, user_id=user.id, days=days)
 
 
 @router.get("/by-category", response_model=ByCategoryResponse, status_code=200)
@@ -301,33 +197,4 @@ async def get_by_category(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ByCategoryResponse:
     """3-10: 7-day breakdown per category."""
-    today = get_today_kst()
-    start_date = today - timedelta(days=6)
-
-    result = await db.execute(
-        select(DailyProgress)
-        .where(
-            DailyProgress.user_id == user.id,
-            DailyProgress.date >= start_date,
-            DailyProgress.date <= today,
-        )
-        .order_by(DailyProgress.date)
-    )
-    progress_map = {dp.date: dp for dp in result.scalars().all()}
-
-    vocab_daily: list[int] = []
-    grammar_daily: list[int] = []
-    sentences_daily: list[int] = []
-
-    for i in range(7):
-        d = start_date + timedelta(days=i)
-        dp = progress_map.get(d)
-        vocab_daily.append((dp.words_studied or 0) if dp else 0)
-        grammar_daily.append((dp.grammar_studied or 0) if dp else 0)
-        sentences_daily.append((dp.sentences_studied or 0) if dp else 0)
-
-    return ByCategoryResponse(
-        vocabulary=CategoryStat(total=sum(vocab_daily), daily=vocab_daily),
-        grammar=CategoryStat(total=sum(grammar_daily), daily=grammar_daily),
-        sentences=CategoryStat(total=sum(sentences_daily), daily=sentences_daily),
-    )
+    return await get_by_category_data(db, user_id=user.id)
