@@ -23,6 +23,7 @@ from app.schemas.study import (
     StudyWrongAnswersSummary,
 )
 from app.services.study_capabilities import get_study_capabilities_data
+from app.services.study_daily_goal import StudyDailyGoalServiceError, update_daily_goal_data
 from app.services.study_stage_query import get_stages_data
 from app.services.study_word_progress import get_learned_words_data, get_study_wrong_answers_data
 
@@ -174,17 +175,12 @@ async def update_daily_goal(
     db: AsyncSession = Depends(get_db),
 ) -> DailyGoalResponse:
     """3-12: Update user's daily goal."""
-    if body.daily_goal < 5 or body.daily_goal > 50:
-        raise HTTPException(
-            status_code=422,
-            detail="dailyGoal must be between 5 and 50",
-        )
+    try:
+        result = await update_daily_goal_data(db, user, daily_goal=body.daily_goal)
+    except StudyDailyGoalServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
-    user.daily_goal = body.daily_goal
-    await db.commit()
-    await db.refresh(user)
-
-    return DailyGoalResponse(daily_goal=user.daily_goal)
+    return DailyGoalResponse(daily_goal=result.daily_goal)
 
 
 @router.get("/capabilities", response_model=StudyCapabilitiesResponse, status_code=200)
