@@ -8,7 +8,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Grammar, QuizAnswer, QuizSession, UserGrammarProgress, UserVocabProgress, Vocabulary
+from app.models import QuizAnswer, QuizSession, Vocabulary
 from app.models.user import User
 from app.schemas.quiz import QuizQuestion, QuizResumeRequest
 from app.services.quiz_session import build_response_questions, extract_questions_data
@@ -41,21 +41,6 @@ class ResumeQuizResult:
     total_questions: int
     correct_count: int
     quiz_type: str
-
-
-@dataclass(slots=True)
-class QuizStatsResult:
-    total_quizzes: int
-    total_correct: int
-    total_questions: int
-    accuracy: float
-
-
-@dataclass(slots=True)
-class ContentQuizStatsResult:
-    total_count: int
-    studied_count: int
-    progress: int
 
 
 @dataclass(slots=True)
@@ -134,74 +119,6 @@ async def resume_quiz_session(
         total_questions=session.total_questions,
         correct_count=session.correct_count,
         quiz_type=enum_value(session.quiz_type),
-    )
-
-
-async def get_quiz_stats_data(
-    db: AsyncSession,
-    user: User,
-    *,
-    level: str | None,
-    quiz_type: str | None,
-) -> ContentQuizStatsResult | QuizStatsResult:
-    if level and quiz_type:
-        if quiz_type in ("VOCABULARY", "KANJI", "LISTENING"):
-            total_result = await db.execute(select(func.count(Vocabulary.id)).where(Vocabulary.jlpt_level == level))
-            total_count = total_result.scalar() or 0
-
-            studied_result = await db.execute(
-                select(func.count(UserVocabProgress.id))
-                .join(Vocabulary, UserVocabProgress.vocabulary_id == Vocabulary.id)
-                .where(
-                    UserVocabProgress.user_id == user.id,
-                    Vocabulary.jlpt_level == level,
-                )
-            )
-            studied_count = studied_result.scalar() or 0
-        else:
-            total_result = await db.execute(select(func.count(Grammar.id)).where(Grammar.jlpt_level == level))
-            total_count = total_result.scalar() or 0
-
-            studied_result = await db.execute(
-                select(func.count(UserGrammarProgress.id))
-                .join(Grammar, UserGrammarProgress.grammar_id == Grammar.id)
-                .where(
-                    UserGrammarProgress.user_id == user.id,
-                    Grammar.jlpt_level == level,
-                )
-            )
-            studied_count = studied_result.scalar() or 0
-
-        return ContentQuizStatsResult(
-            total_count=total_count,
-            studied_count=studied_count,
-            progress=round(studied_count / total_count * 100) if total_count > 0 else 0,
-        )
-
-    total_result = await db.execute(
-        select(func.count(QuizSession.id)).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.isnot(None),
-        )
-    )
-    totals_result = await db.execute(
-        select(
-            func.sum(QuizSession.correct_count),
-            func.sum(QuizSession.total_questions),
-        ).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.isnot(None),
-        )
-    )
-    row = totals_result.one()
-    total_correct = row[0] or 0
-    total_questions = row[1] or 0
-
-    return QuizStatsResult(
-        total_quizzes=total_result.scalar() or 0,
-        total_correct=total_correct,
-        total_questions=total_questions,
-        accuracy=(total_correct / total_questions * 100) if total_questions > 0 else 0,
     )
 
 

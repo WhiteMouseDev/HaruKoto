@@ -33,11 +33,8 @@ from app.schemas.quiz import (
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
 from app.services.quiz_query import (
-    ContentQuizStatsResult,
     QuizQueryServiceError,
-    QuizStatsResult,
     get_incomplete_quiz_session,
-    get_quiz_stats_data,
     get_wrong_answers_data,
     resume_quiz_session,
 )
@@ -49,6 +46,7 @@ from app.services.quiz_start import (
     start_quiz_session,
     start_smart_quiz_session,
 )
+from app.services.quiz_stats_query import ContentQuizStatsResult, QuizStatsResult, get_quiz_stats_data
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
 
