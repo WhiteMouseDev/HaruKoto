@@ -6,6 +6,7 @@ import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.d
 import 'package:harukoto_mobile/features/study/presentation/widgets/cloze_quiz.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/four_choice_quiz.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/quiz_page_content.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/quiz_special_mode_content.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/quiz_standard_mode_content.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_session_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,6 +102,7 @@ void main() {
       final clozeQuiz = tester.widget<ClozeQuiz>(find.byType(ClozeQuiz));
       clozeQuiz.onAnswer('q-cloze', 'o2', true);
 
+      expect(find.byType(QuizSpecialModeContent), findsOneWidget);
       expect(capturedQuestionId, 'q-cloze');
       expect(capturedIsCorrect, isTrue);
       expect(capturedQuestionType, 'CLOZE');

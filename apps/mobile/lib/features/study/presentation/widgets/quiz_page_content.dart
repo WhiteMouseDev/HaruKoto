@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../providers/quiz_session_provider.dart';
-import 'quiz_header.dart';
 import 'quiz_special_mode_builder.dart';
+import 'quiz_special_mode_content.dart';
 import 'quiz_standard_mode_content.dart';
 
 export 'quiz_special_mode_builder.dart' show QuizSpecialAnswerHandler;
@@ -61,7 +61,7 @@ class QuizPageContent extends ConsumerWidget {
       onSubmitSpecialAnswer: onSubmitSpecialAnswer,
     );
     if (specialModeChild != null) {
-      return _QuizSpecialModeScaffold(
+      return QuizSpecialModeContent(
         title: _headerTitle,
         count: session.headerCount,
         onBack: onBackRequested,
@@ -84,43 +84,6 @@ class QuizPageContent extends ConsumerWidget {
       onBack: onBackRequested,
       onAnswer: onAnswer,
       onNext: onNext,
-    );
-  }
-}
-
-class _QuizSpecialModeScaffold extends StatelessWidget {
-  const _QuizSpecialModeScaffold({
-    required this.title,
-    required this.count,
-    required this.onBack,
-    required this.child,
-  });
-
-  final String title;
-  final String count;
-  final VoidCallback onBack;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            QuizHeader(
-              title: title,
-              count: count,
-              onBack: onBack,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: child,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
