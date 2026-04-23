@@ -209,13 +209,9 @@
   },
   "category": {
     "TRAVEL": "Travel",
-    "SHOPPING": "Shopping",
-    "RESTAURANT": "Restaurant",
+    "DAILY": "Daily",
     "BUSINESS": "Business",
-    "DAILY_LIFE": "Daily Life",
-    "EMERGENCY": "Emergency",
-    "TRANSPORTATION": "Transportation",
-    "HEALTHCARE": "Healthcare"
+    "FREE": "Free Talk"
   },
   "a11y": {
     "skipToMain": "Skip to main content",

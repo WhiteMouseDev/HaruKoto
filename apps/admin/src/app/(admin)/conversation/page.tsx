@@ -10,6 +10,25 @@ import { ReviewStartButton } from '@/components/content/review-start-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useContentList } from '@/hooks/use-content-list';
 import type { ConversationItem } from '@/lib/api/admin-content';
+import type { components } from '@harukoto/types';
+
+// Source of truth for scenario categories is apps/api/app/enums.py::ScenarioCategory,
+// mirrored in the generated OpenAPI types. The Record below forces every API enum
+// value to appear here — adding a value to the API enum without updating admin
+// triggers a missing-key compile error.
+const SCENARIO_CATEGORY_COVERAGE: Record<
+  components['schemas']['ScenarioCategory'],
+  true
+> = {
+  TRAVEL: true,
+  DAILY: true,
+  BUSINESS: true,
+  FREE: true,
+};
+
+const SCENARIO_CATEGORY_VALUES = Object.keys(SCENARIO_CATEGORY_COVERAGE) as Array<
+  components['schemas']['ScenarioCategory']
+>;
 
 function ConversationContent() {
   const t = useTranslations('table');
@@ -19,11 +38,10 @@ function ConversationContent() {
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get('page') ?? '1');
 
-  // ScenarioCategory values from the API — labels via i18n
-  const SCENARIO_CATEGORIES = [
-    'TRAVEL', 'SHOPPING', 'RESTAURANT', 'BUSINESS',
-    'DAILY_LIFE', 'EMERGENCY', 'TRANSPORTATION', 'HEALTHCARE',
-  ].map((key) => ({ value: key, label: tCat(key) }));
+  const SCENARIO_CATEGORIES = SCENARIO_CATEGORY_VALUES.map((key) => ({
+    value: key,
+    label: tCat(key),
+  }));
 
   const columns: Column<ConversationItem>[] = [
     {

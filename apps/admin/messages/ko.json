@@ -209,13 +209,9 @@
   },
   "category": {
     "TRAVEL": "여행",
-    "SHOPPING": "쇼핑",
-    "RESTAURANT": "레스토랑",
+    "DAILY": "일상",
     "BUSINESS": "비즈니스",
-    "DAILY_LIFE": "일상생활",
-    "EMERGENCY": "긴급",
-    "TRANSPORTATION": "교통",
-    "HEALTHCARE": "의료"
+    "FREE": "자유 대화"
   },
   "a11y": {
     "skipToMain": "메인 콘텐츠로 건너뛰기",

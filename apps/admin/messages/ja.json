@@ -209,13 +209,9 @@
   },
   "category": {
     "TRAVEL": "旅行",
-    "SHOPPING": "ショッピング",
-    "RESTAURANT": "レストラン",
+    "DAILY": "日常",
     "BUSINESS": "ビジネス",
-    "DAILY_LIFE": "日常生活",
-    "EMERGENCY": "緊急",
-    "TRANSPORTATION": "交通",
-    "HEALTHCARE": "医療"
+    "FREE": "フリートーク"
   },
   "a11y": {
     "skipToMain": "メインコンテンツへスキップ",
