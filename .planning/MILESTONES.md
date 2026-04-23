@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.1 Quality & Polish (Shipped: 2026-04-23)
+
+**Phases completed:** 3 phases, 6 plans, 10 tasks
+
+**Key accomplishments:**
+
+- Alembic migration adds field column to tts_audio with 4-col UniqueConstraint; API returns per-field audio map and does field-scoped regeneration
+- Per-field audio state in TtsPlayer using audios map from backend, grammar example_sentences field, and mixed-state Vitest coverage
+- One-liner:
+- All 12 admin .tsx files purged of hardcoded CJK strings — column headers, toast messages, Zod errors, placeholders, aria-labels, and relative time now all use useTranslations() calls
+- One-liner:
+- One-liner:
+
+---
+
 ## v1.0 HaruKoto Admin MVP (Shipped: 2026-03-30)
 
 **Phases completed:** 10 phases, 22 plans, 21 tasks

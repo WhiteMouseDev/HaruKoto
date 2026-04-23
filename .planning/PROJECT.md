@@ -12,7 +12,10 @@ apps/admin으로 메인 앱과 분리된 독립 Next.js 앱, Vercel 배포.
 
 ## Current State
 
-**v1.0 MVP shipped (2026-03-30)** — admin.harukoto.co.kr 운용 중
+**v1.1 Quality & Polish shipped (2026-04-23)** — admin.harukoto.co.kr 운용 중, 필드별 TTS + i18n + 접근성 보강 완료.
+
+<details>
+<summary>v1.0 MVP shipped 2026-03-30 (Phases 1-5 + 999.x backlog)</summary>
 
 Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - 인증 게이트 (Supabase Auth + reviewer role)
@@ -21,10 +24,22 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - TTS 오디오 재생/재생성 (필드 리스트 UI)
 - 리뷰 큐 + 대시보드 통계
 - 프로덕션 수준 UI (sticky 사이드바, 색상 계층, WCAG 대비)
+</details>
 
-**Phase 6 complete (2026-03-31)** — 필드별 독립 TTS 오디오 생성·재생·재생성
-**Phase 7 complete (2026-04-02)** — i18n 완성 (173 키, CJK 하드코딩 제거) + 접근성 개선 (aria-current, skip link, 랜드마크, 검색 라벨)
-**Phase 8 complete (2026-04-02)** — i18n 갭 클로저: TTS 훅 toast i18n 전환 + hardcoded-strings 테스트 .ts 확장
+**v1.1 shipped contents:**
+- Phase 6 (2026-03-31) — 필드별 독립 TTS 오디오 생성·재생·재생성
+- Phase 7 (2026-04-02) — i18n 완성 (173 키, CJK 하드코딩 제거) + 접근성 (aria-current, skip link, 랜드마크, 검색 라벨)
+- Phase 8 (2026-04-02) — i18n 갭 클로저: TTS 훅 toast i18n 전환 + hardcoded-strings 테스트 .ts 확장
+
+**Post-milestone hardening (2026-04-23):**
+- admin↔api consistency audit: 8 drifts closed (commits 35d85ea → 67ba6a6)
+- v1.1 milestone re-audit: status `gaps_found` → `passed` (9/9 reqs, 4/4 flows)
+- P0-2 silent-fail 분류 + observability 강화 (chat_voice.py)
+- `validate_admin_contracts.py` CI guard 추가
+
+## Next Milestone: v1.2 (planning)
+
+Scope TBD. Leading candidate: **Ch.01 파일럿 콘텐츠 제작** (`docs/domain/learning/n5-curriculum-map.md` 참고). Use `/gsd:new-milestone` to define requirements.
 
 ## Requirements
 
@@ -38,11 +53,15 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 - ✓ 리뷰 큐/대시보드/알림 (UX-01~03) — Phase 5
 - ✓ 다국어 UI (I18N-01~03) — Phase 1
 
-### Active (v1.1)
+### Validated (v1.1)
 
 - ✓ 필드별 개별 TTS 오디오 (TTS-03~05) — Phase 6
 - ✓ 접근성 개선 (A11Y-01~04) — Phase 7
 - ✓ 하드코딩 일본어 번역 완성 (I18N-04~05) — Phase 7+8
+
+### Active (v1.2)
+
+(none yet — define via `/gsd:new-milestone`)
 
 ### Deferred
 
@@ -87,15 +106,6 @@ Phase 1~5 + backlog 999.1/999.3/999.4 완료:
 | TanStack Table 미도입 | 현재 규모에서 커스텀 테이블 충분 | ✓ Good (Codex 확인) |
 | 서버사이드 정렬/페이지네이션 | 클라이언트 정렬은 대량 데이터에 부적합 | ✓ Good |
 
-## Current Milestone: v1.1 Quality & Polish
-
-**Goal:** v1.0의 품질 미비 사항 해결 — 필드별 TTS, 번역 완성, 접근성 개선
-
-**Target features:**
-- 필드별 개별 TTS 오디오 (DB 스키마 변경 + API + 프론트엔드)
-- 하드코딩 일본어 번역 누락 수정 (i18n 완성)
-- 접근성 개선 (aria-current, skip link, nav 랜드마크, 검색 라벨)
-
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -114,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after Phase 8 completion (v1.1 milestone final phase)*
+*Last updated: 2026-04-23 after v1.1 milestone archive*
