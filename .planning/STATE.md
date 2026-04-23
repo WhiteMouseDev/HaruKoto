@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
-stopped_at: v1.1 archived 2026-04-23; awaiting next milestone scope
-last_updated: "2026-04-23T16:00:00.000Z"
+stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated-green, manual UAT pending
+last_updated: "2026-04-23T07:49:18.000Z"
 last_activity: 2026-04-23
 progress:
   total_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-04-23 — milestone archive + admin↔api audit cycle + carry-over cleanup (voice silent-fail mobile fix, stale branch pruning)
+Last activity: 2026-04-23 — stabilization checkpoint recorded; automated API/admin/mobile validation green; manual UAT pending
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -41,9 +41,16 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 - Ch.01 파일럿 콘텐츠 제작 (if v1.2 goes that direction) — blueprint → AI generation → admin review → TTS
 
+### Release Gate
+
+- v1.1 tag stays fixed at `d7a8c89`; post-tag commits (`950681d`, `c629aae`) are stabilization.
+- Current checkpoint: automated-green / manual-UAT-pending. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
+- If manual UAT passes and the post-tag mobile fix should ship, cut `v1.1.1` at `c629aae`.
+- Do not start new API/mobile refactoring until the manual UAT gate is closed or intentionally deferred.
+
 ### Blockers/Concerns
 
-None active.
+Manual UAT remains pending for the v1.1 stabilization checkpoint.
 
 ### Resolved Carry-overs (2026-04-23 PM)
 
@@ -53,6 +60,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-04-23T15:30:00Z
-Stopped at: v1.1 milestone archived + STATE reset
-Resume file: none — use `/gsd:new-milestone` to scope v1.2
+Last session: 2026-04-23T16:49:18+09:00
+Stopped at: v1.1 stabilization checkpoint recorded; automated validation green; manual UAT pending
+Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`

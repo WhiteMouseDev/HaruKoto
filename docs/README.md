@@ -38,6 +38,7 @@ docs/
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)
+- [v1.1 안정화 체크포인트](operations/release/v1.1-stabilization-checkpoint-2026-04-23.md) — 릴리스 경계, 자동 검증, 수동 UAT 게이트
 - [**AI Coding Harness**](operations/harness.md) — Claude Code + Codex 운영체계 (도메인 에이전트, 스킬, 훅, 계약 관리, 에스컬레이션)
 - [AI 하네스 엔지니어링 실전 구축기 (블로그)](blog/2026-04-23-ai-harness-engineering-실전-구축기.md) — 4-pillar 하네스 설계와 실제 드리프트 버그를 잡아낸 사례
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
