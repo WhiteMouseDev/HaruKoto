@@ -3,21 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../providers/quiz_session_provider.dart';
-import 'cloze_quiz.dart';
 import 'four_choice_quiz.dart';
-import 'matching_quiz.dart';
 import 'quiz_feedback_bar.dart';
 import 'quiz_header.dart';
 import 'quiz_progress_bar.dart';
-import 'sentence_arrange_quiz.dart';
-import 'typing_quiz.dart';
+import 'quiz_special_mode_builder.dart';
 
-typedef QuizSpecialAnswerHandler = void Function(
-  String questionId,
-  bool isCorrect,
-  String questionType, {
-  String? optionId,
-});
+export 'quiz_special_mode_builder.dart' show QuizSpecialAnswerHandler;
 
 class QuizPageContent extends ConsumerWidget {
   const QuizPageContent({
@@ -42,6 +34,7 @@ class QuizPageContent extends ConsumerWidget {
   final VoidCallback onComplete;
   final ValueChanged<String> onAnswer;
   final QuizSpecialAnswerHandler onSubmitSpecialAnswer;
+  static const _specialModeBuilder = QuizSpecialModeBuilder();
 
   String get _headerTitle => session.resolvedMode == 'review'
       ? '오답 복습'
@@ -60,81 +53,21 @@ class QuizPageContent extends ConsumerWidget {
       );
     }
 
-    if (session.resolvedMode == 'matching') {
+    final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
+    final specialModeChild = _specialModeBuilder.build(
+      resolvedMode: session.resolvedMode ?? '',
+      questions: session.unansweredQuestions,
+      quizType: quizType,
+      showFurigana: showFurigana,
+      onComplete: onComplete,
+      onSubmitSpecialAnswer: onSubmitSpecialAnswer,
+    );
+    if (specialModeChild != null) {
       return _QuizSpecialModeScaffold(
         title: _headerTitle,
         count: session.headerCount,
         onBack: onBackRequested,
-        child: MatchingQuiz(
-          questions: session.unansweredQuestions,
-          showFurigana: ref.watch(quizSettingsProvider).showFurigana,
-          onMatchResult: (questionId, isCorrect) {
-            onSubmitSpecialAnswer(
-              questionId,
-              isCorrect,
-              quizType,
-            );
-          },
-          onComplete: onComplete,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'cloze') {
-      return _QuizSpecialModeScaffold(
-        title: _headerTitle,
-        count: session.headerCount,
-        onBack: onBackRequested,
-        child: ClozeQuiz(
-          questions: session.unansweredQuestions,
-          onAnswer: (questionId, optionId, isCorrect) {
-            onSubmitSpecialAnswer(
-              questionId,
-              isCorrect,
-              'CLOZE',
-              optionId: optionId,
-            );
-          },
-          onComplete: onComplete,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'arrange') {
-      return _QuizSpecialModeScaffold(
-        title: _headerTitle,
-        count: session.headerCount,
-        onBack: onBackRequested,
-        child: SentenceArrangeQuiz(
-          questions: session.unansweredQuestions,
-          onAnswer: (questionId, isCorrect) {
-            onSubmitSpecialAnswer(
-              questionId,
-              isCorrect,
-              'SENTENCE_ARRANGE',
-            );
-          },
-          onComplete: onComplete,
-        ),
-      );
-    }
-
-    if (session.resolvedMode == 'typing') {
-      return _QuizSpecialModeScaffold(
-        title: _headerTitle,
-        count: session.headerCount,
-        onBack: onBackRequested,
-        child: TypingQuiz(
-          questions: session.unansweredQuestions,
-          onAnswer: (questionId, isCorrect) {
-            onSubmitSpecialAnswer(
-              questionId,
-              isCorrect,
-              'VOCABULARY',
-            );
-          },
-          onComplete: onComplete,
-        ),
+        child: specialModeChild,
       );
     }
 
@@ -167,8 +100,7 @@ class QuizPageContent extends ConsumerWidget {
                       selectedOptionId: session.selectedOptionId,
                       answered: session.answered,
                       isCorrect: session.isCorrect,
-                      showFurigana:
-                          ref.watch(quizSettingsProvider).showFurigana,
+                      showFurigana: showFurigana,
                       onSelect: onAnswer,
                     ),
                   ),
