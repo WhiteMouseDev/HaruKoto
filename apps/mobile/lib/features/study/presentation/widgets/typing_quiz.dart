@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../data/models/quiz_question_model.dart';
+import 'special_quiz_flow_controller.dart';
 
 class TypingQuiz extends StatefulWidget {
   final List<QuizQuestionModel> questions;
@@ -19,43 +20,51 @@ class TypingQuiz extends StatefulWidget {
 }
 
 class _TypingQuizState extends State<TypingQuiz> {
-  int _currentIndex = 0;
+  final _flow = SpecialQuizFlowController();
   final _controller = TextEditingController();
-  bool _answered = false;
-  bool _isCorrect = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_handleInputChanged);
+  }
 
   @override
   void dispose() {
+    _controller.removeListener(_handleInputChanged);
     _controller.dispose();
     super.dispose();
   }
 
-  QuizQuestionModel get _question => widget.questions[_currentIndex];
+  QuizQuestionModel get _question => widget.questions[_flow.currentIndex];
+
+  void _handleInputChanged() {
+    if (!mounted || _flow.answered) return;
+    setState(() {});
+  }
 
   void _submit() {
-    if (_answered) return;
+    if (_flow.answered) return;
     final userAnswer = _controller.text.trim();
     final correctAnswer = _question.answer ?? '';
     final isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
 
     setState(() {
-      _answered = true;
-      _isCorrect = isCorrect;
+      _flow.answer(isCorrect: isCorrect);
     });
     widget.onAnswer(_question.questionId, isCorrect);
   }
 
   void _next() {
-    if (_currentIndex + 1 >= widget.questions.length) {
+    if (_flow.isLastQuestion(widget.questions.length)) {
       widget.onComplete();
       return;
     }
+
     setState(() {
-      _currentIndex++;
-      _answered = false;
-      _isCorrect = false;
-      _controller.clear();
+      _flow.advance(widget.questions.length);
     });
+    _controller.clear();
   }
 
   @override
@@ -74,7 +83,7 @@ class _TypingQuizState extends State<TypingQuiz> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: (_currentIndex + 1) / widget.questions.length,
+                    value: _flow.progressFor(widget.questions.length),
                     minHeight: 6,
                     backgroundColor: theme.colorScheme.surfaceContainerHigh,
                     color: theme.colorScheme.primary,
@@ -82,7 +91,7 @@ class _TypingQuizState extends State<TypingQuiz> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text('${_currentIndex + 1}/${widget.questions.length}',
+              Text(_flow.countLabelFor(widget.questions.length),
                   style: theme.textTheme.bodySmall),
             ],
           ),
@@ -124,7 +133,7 @@ class _TypingQuizState extends State<TypingQuiz> {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           child: TextField(
             controller: _controller,
-            enabled: !_answered,
+            enabled: !_flow.answered,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleLarge,
             decoration: InputDecoration(
@@ -147,14 +156,14 @@ class _TypingQuizState extends State<TypingQuiz> {
         ),
 
         // Answer feedback
-        if (_answered)
+        if (_flow.answered)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _isCorrect
+                color: _flow.isCorrect
                     ? AppColors.success(brightness).withValues(alpha: 0.1)
                     : AppColors.error(brightness).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -162,15 +171,15 @@ class _TypingQuizState extends State<TypingQuiz> {
               child: Column(
                 children: [
                   Text(
-                    _isCorrect ? '정답이에요!' : '아쉬워요!',
+                    _flow.isCorrect ? '정답이에요!' : '아쉬워요!',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: _isCorrect
+                      color: _flow.isCorrect
                           ? AppColors.success(brightness)
                           : AppColors.error(brightness),
                     ),
                   ),
-                  if (!_isCorrect) ...[
+                  if (!_flow.isCorrect) ...[
                     const SizedBox(height: 4),
                     Text(
                       '정답: ${_question.answer}',
@@ -191,11 +200,11 @@ class _TypingQuizState extends State<TypingQuiz> {
           child: SizedBox(
             width: double.infinity,
             height: 48,
-            child: _answered
+            child: _flow.answered
                 ? FilledButton(
                     onPressed: _next,
                     child: Text(
-                      _currentIndex + 1 >= widget.questions.length
+                      _flow.isLastQuestion(widget.questions.length)
                           ? '결과 보기'
                           : '다음 문제 →',
                     ),

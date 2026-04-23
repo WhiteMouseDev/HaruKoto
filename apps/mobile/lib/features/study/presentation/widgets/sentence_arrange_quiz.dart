@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../data/models/quiz_question_model.dart';
+import 'special_quiz_flow_controller.dart';
 
 class SentenceArrangeQuiz extends StatefulWidget {
   final List<QuizQuestionModel> questions;
@@ -20,11 +21,9 @@ class SentenceArrangeQuiz extends StatefulWidget {
 }
 
 class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
-  int _currentIndex = 0;
+  final _flow = SpecialQuizFlowController();
   List<String> _availableTokens = [];
   List<String> _selectedTokens = [];
-  bool _answered = false;
-  bool _isCorrect = false;
 
   @override
   void initState() {
@@ -33,16 +32,14 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
   }
 
   void _setupQuestion() {
-    final q = widget.questions[_currentIndex];
+    final q = widget.questions[_flow.currentIndex];
     final tokens = q.tokens ?? [];
     _availableTokens = List.from(tokens)..shuffle(Random());
     _selectedTokens = [];
-    _answered = false;
-    _isCorrect = false;
   }
 
   void _selectToken(String token) {
-    if (_answered) return;
+    if (_flow.answered) return;
     setState(() {
       _availableTokens.remove(token);
       _selectedTokens.add(token);
@@ -50,7 +47,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
   }
 
   void _removeToken(String token) {
-    if (_answered) return;
+    if (_flow.answered) return;
     setState(() {
       _selectedTokens.remove(token);
       _availableTokens.add(token);
@@ -58,25 +55,26 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
   }
 
   void _checkAnswer() {
-    final q = widget.questions[_currentIndex];
+    if (_flow.answered) return;
+    final q = widget.questions[_flow.currentIndex];
     final correctOrder = q.tokens ?? [];
     final userAnswer = _selectedTokens.join();
     final isCorrect = userAnswer == correctOrder.join();
 
     setState(() {
-      _answered = true;
-      _isCorrect = isCorrect;
+      _flow.answer(isCorrect: isCorrect);
     });
     widget.onAnswer(q.questionId, isCorrect);
   }
 
   void _next() {
-    if (_currentIndex + 1 >= widget.questions.length) {
+    if (_flow.isLastQuestion(widget.questions.length)) {
       widget.onComplete();
       return;
     }
+
     setState(() {
-      _currentIndex++;
+      _flow.advance(widget.questions.length);
       _setupQuestion();
     });
   }
@@ -85,7 +83,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
-    final q = widget.questions[_currentIndex];
+    final q = widget.questions[_flow.currentIndex];
 
     return Column(
       children: [
@@ -98,7 +96,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: (_currentIndex + 1) / widget.questions.length,
+                    value: _flow.progressFor(widget.questions.length),
                     minHeight: 6,
                     backgroundColor: theme.colorScheme.surfaceContainerHigh,
                     color: theme.colorScheme.primary,
@@ -106,7 +104,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text('${_currentIndex + 1}/${widget.questions.length}',
+              Text(_flow.countLabelFor(widget.questions.length),
                   style: theme.textTheme.bodySmall),
             ],
           ),
@@ -137,8 +135,8 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: _answered
-                          ? (_isCorrect
+                      color: _flow.answered
+                          ? (_flow.isCorrect
                               ? AppColors.success(brightness)
                               : AppColors.error(brightness))
                           : theme.colorScheme.outline,
@@ -188,11 +186,11 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
           child: SizedBox(
             width: double.infinity,
             height: 48,
-            child: _answered
+            child: _flow.answered
                 ? FilledButton(
                     onPressed: _next,
                     child: Text(
-                      _currentIndex + 1 >= widget.questions.length
+                      _flow.isLastQuestion(widget.questions.length)
                           ? '결과 보기'
                           : '다음 문제 →',
                     ))

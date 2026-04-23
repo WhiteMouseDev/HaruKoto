@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../data/models/quiz_question_model.dart';
+import 'special_quiz_flow_controller.dart';
 
 class ClozeQuiz extends StatefulWidget {
   final List<QuizQuestionModel> questions;
@@ -20,31 +21,30 @@ class ClozeQuiz extends StatefulWidget {
 }
 
 class _ClozeQuizState extends State<ClozeQuiz> {
-  int _currentIndex = 0;
+  final _flow = SpecialQuizFlowController();
   String? _selectedId;
-  bool _answered = false;
 
-  QuizQuestionModel get _question => widget.questions[_currentIndex];
+  QuizQuestionModel get _question => widget.questions[_flow.currentIndex];
 
   void _handleSelect(String optionId) {
-    if (_answered) return;
+    if (_flow.answered) return;
     final isCorrect = optionId == _question.correctOptionId;
     setState(() {
       _selectedId = optionId;
-      _answered = true;
+      _flow.answer(isCorrect: isCorrect);
     });
     widget.onAnswer(_question.questionId, optionId, isCorrect);
   }
 
   void _next() {
-    if (_currentIndex + 1 >= widget.questions.length) {
+    if (_flow.isLastQuestion(widget.questions.length)) {
       widget.onComplete();
       return;
     }
+
     setState(() {
-      _currentIndex++;
+      _flow.advance(widget.questions.length);
       _selectedId = null;
-      _answered = false;
     });
   }
 
@@ -66,7 +66,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: (_currentIndex + 1) / widget.questions.length,
+                    value: _flow.progressFor(widget.questions.length),
                     minHeight: 6,
                     backgroundColor: theme.colorScheme.surfaceContainerHigh,
                     color: theme.colorScheme.primary,
@@ -75,7 +75,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
               ),
               const SizedBox(width: 12),
               Text(
-                '${_currentIndex + 1}/${widget.questions.length}',
+                _flow.countLabelFor(widget.questions.length),
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -101,18 +101,19 @@ class _ClozeQuizState extends State<ClozeQuiz> {
                           TextSpan(text: parts[i]),
                           if (i < parts.length - 1)
                             TextSpan(
-                              text: _answered
+                              text: _flow.answered
                                   ? _question.options
                                       .firstWhere((o) =>
                                           o.id == _question.correctOptionId)
                                       .text
                                   : '____',
                               style: TextStyle(
-                                color: _answered
+                                color: _flow.answered
                                     ? AppColors.success(brightness)
                                     : theme.colorScheme.primary,
-                                decoration:
-                                    _answered ? null : TextDecoration.underline,
+                                decoration: _flow.answered
+                                    ? null
+                                    : TextDecoration.underline,
                               ),
                             ),
                         ],
@@ -147,7 +148,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
               Color borderColor = theme.colorScheme.outline;
               Color? bgColor;
 
-              if (_answered) {
+              if (_flow.answered) {
                 if (isCorrectOption) {
                   borderColor = AppColors.success(brightness);
                   bgColor =
@@ -165,7 +166,8 @@ class _ClozeQuizState extends State<ClozeQuiz> {
                   borderRadius: BorderRadius.circular(12),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    onTap: _answered ? null : () => _handleSelect(option.id),
+                    onTap:
+                        _flow.answered ? null : () => _handleSelect(option.id),
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
@@ -189,7 +191,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
         ),
 
         // Next button
-        if (_answered)
+        if (_flow.answered)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             child: SizedBox(
@@ -198,7 +200,7 @@ class _ClozeQuizState extends State<ClozeQuiz> {
               child: FilledButton(
                 onPressed: _next,
                 child: Text(
-                  _currentIndex + 1 >= widget.questions.length
+                  _flow.isLastQuestion(widget.questions.length)
                       ? '결과 보기'
                       : '다음 문제 →',
                 ),
