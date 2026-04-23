@@ -5,19 +5,12 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
-from app.models import (
-    DailyProgress,
-    Grammar,
-    UserGrammarProgress,
-    UserVocabProgress,
-    Vocabulary,
-)
-from app.models.enums import JlptLevel
+from app.models import DailyProgress
 from app.models.user import User
 from app.schemas.stats import (
     ByCategoryResponse,
@@ -25,13 +18,12 @@ from app.schemas.stats import (
     DashboardResponse,
     HeatmapResponse,
     HistoryResponse,
-    JlptLevelProgress,
     JlptProgressResponse,
-    JlptProgressStat,
     TimeChartResponse,
     VolumeChartResponse,
 )
 from app.services.stats_dashboard import get_dashboard_data
+from app.services.stats_jlpt_progress import get_jlpt_progress_data
 from app.services.stats_time_series import (
     get_by_category_data,
     get_heatmap_data,
@@ -116,59 +108,11 @@ async def get_jlpt_progress(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> JlptProgressResponse:
     """3-7: JLPT level progress across all levels the user has studied."""
-
-    # Batch: total vocab/grammar counts per JLPT level (2 queries instead of N*6)
-    vocab_total_result = await db.execute(select(Vocabulary.jlpt_level, func.count(Vocabulary.id)).group_by(Vocabulary.jlpt_level))
-    vocab_totals = {row[0]: row[1] for row in vocab_total_result.all()}
-
-    grammar_total_result = await db.execute(select(Grammar.jlpt_level, func.count(Grammar.id)).group_by(Grammar.jlpt_level))
-    grammar_totals = {row[0]: row[1] for row in grammar_total_result.all()}
-
-    # Batch: user vocab progress per (jlpt_level, mastered) — single query
-    vocab_progress_result = await db.execute(
-        select(Vocabulary.jlpt_level, UserVocabProgress.mastered, func.count(UserVocabProgress.id))
-        .join(Vocabulary)
-        .where(UserVocabProgress.user_id == user.id)
-        .group_by(Vocabulary.jlpt_level, UserVocabProgress.mastered)
+    return await get_jlpt_progress_data(
+        db,
+        user_id=user.id,
+        current_jlpt_level=user.jlpt_level,
     )
-    vocab_progress: dict[tuple[JlptLevel, bool], int] = {}
-    for row in vocab_progress_result.all():
-        vocab_progress[(row[0], row[1])] = row[2]
-
-    # Batch: user grammar progress per (jlpt_level, mastered) — single query
-    grammar_progress_result = await db.execute(
-        select(Grammar.jlpt_level, UserGrammarProgress.mastered, func.count(UserGrammarProgress.id))
-        .join(Grammar)
-        .where(UserGrammarProgress.user_id == user.id)
-        .group_by(Grammar.jlpt_level, UserGrammarProgress.mastered)
-    )
-    grammar_progress: dict[tuple[JlptLevel, bool], int] = {}
-    for row in grammar_progress_result.all():
-        grammar_progress[(row[0], row[1])] = row[2]
-
-    levels: list[JlptLevelProgress] = []
-    for jlpt in JlptLevel:
-        v_total = vocab_totals.get(jlpt, 0)
-        g_total = grammar_totals.get(jlpt, 0)
-
-        if v_total == 0 and g_total == 0:
-            continue
-
-        v_mastered = vocab_progress.get((jlpt, True), 0)
-        v_in_progress = vocab_progress.get((jlpt, False), 0)
-        g_mastered = grammar_progress.get((jlpt, True), 0)
-        g_in_progress = grammar_progress.get((jlpt, False), 0)
-
-        if v_mastered + v_in_progress + g_mastered + g_in_progress > 0 or jlpt == user.jlpt_level:
-            levels.append(
-                JlptLevelProgress(
-                    level=jlpt.value,
-                    vocabulary=JlptProgressStat(total=v_total, mastered=v_mastered, in_progress=v_in_progress),
-                    grammar=JlptProgressStat(total=g_total, mastered=g_mastered, in_progress=g_in_progress),
-                )
-            )
-
-    return JlptProgressResponse(levels=levels)
 
 
 @router.get("/time-chart", response_model=TimeChartResponse, status_code=200)
