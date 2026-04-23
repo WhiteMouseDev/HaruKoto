@@ -23,7 +23,6 @@ export type VocabularyItem = {
   jlptLevel: string;
   reviewStatus: string;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type GrammarItem = {
@@ -33,7 +32,6 @@ export type GrammarItem = {
   jlptLevel: string;
   reviewStatus: string;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type QuizItem = {
@@ -43,7 +41,6 @@ export type QuizItem = {
   jlptLevel: string;
   reviewStatus: string;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type ConversationItem = {
@@ -53,7 +50,6 @@ export type ConversationItem = {
   jlptLevel: string | null;
   reviewStatus: string;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type ContentStatsItem = {
@@ -175,12 +171,23 @@ export async function batchReviewContent(
   if (!res.ok) throw new Error(`API error: ${res.status}`);
 }
 
+// Quiz uses compound path (quiz/cloze, quiz/sentence-arrange) for detail/patch/review,
+// but audit_logs DB records store the canonical single-segment type (cloze, sentence_arrange).
+// The audit-logs endpoint is also defined with single-segment content_type, so callers
+// must normalize before hitting it.
+function toAuditContentType(contentType: string): string {
+  if (contentType === 'quiz/cloze') return 'cloze';
+  if (contentType === 'quiz/sentence-arrange') return 'sentence_arrange';
+  return contentType;
+}
+
 export async function fetchAuditLogs(
   contentType: string,
   id: string,
 ): Promise<AuditLogEntry[]> {
   const headers = await getAuthHeaders();
-  const url = new URL(`${API_URL}/api/v1/admin/content/${contentType}/${id}/audit-logs`);
+  const auditType = toAuditContentType(contentType);
+  const url = new URL(`${API_URL}/api/v1/admin/content/${auditType}/${id}/audit-logs`);
   const res = await fetch(url.toString(), { headers });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json() as Promise<AuditLogEntry[]>;

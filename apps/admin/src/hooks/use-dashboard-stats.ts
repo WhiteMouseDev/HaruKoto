@@ -9,7 +9,7 @@ import {
 
 export function useDashboardStats() {
   return useQuery<ContentStatsResponse>({
-    queryKey: ['admin-content-stats'],
+    queryKey: ['admin-content', 'stats'],
     queryFn: fetchContentStats,
     staleTime: 60_000,
   });

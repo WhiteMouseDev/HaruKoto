@@ -64,7 +64,7 @@
       "title": "Title",
       "category": "Category",
       "status": "Status",
-      "updatedAt": "Updated"
+      "createdAt": "Created"
     },
     "selectAll": "Select all",
     "selectRow": "Select row {id}"
@@ -150,6 +150,7 @@
     "bulkSelected": "{count} selected",
     "bulkApprove": "Approve All",
     "bulkReject": "Reject All",
+    "bulkNoValidSelection": "Selected items cannot be bulk-processed",
     "startQueue": "Start Review",
     "startQueueEmpty": "No items pending review",
     "queueCapped": "Showing first 200 items only",

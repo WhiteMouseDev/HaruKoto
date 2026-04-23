@@ -7,13 +7,23 @@ type AuditTimelineProps = {
   isLoading: boolean;
 };
 
-function getActionBadgeClass(action: string): string {
+// API stores audit actions as 'edit' | 'approve' | 'reject' (past-tense verbs avoided on the
+// backend). The admin UI translations key these as 'modified' | 'approved' | 'rejected'.
+type AuditActionKey = 'modified' | 'approved' | 'rejected';
+
+function normalizeAction(action: string): AuditActionKey {
+  if (action === 'approve' || action === 'approved') return 'approved';
+  if (action === 'reject' || action === 'rejected') return 'rejected';
+  return 'modified';
+}
+
+function getActionBadgeClass(action: AuditActionKey): string {
   if (action === 'approved') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
   if (action === 'rejected') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
   return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
 }
 
-function getDotClass(action: string): string {
+function getDotClass(action: AuditActionKey): string {
   if (action === 'approved') return 'bg-green-500';
   if (action === 'rejected') return 'bg-red-500';
   return 'bg-blue-500';
@@ -73,6 +83,7 @@ export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
       <div className="relative border-l-2 border-border pl-4">
         {entries.map((entry, idx) => {
           const isLast = idx === entries.length - 1;
+          const actionKey = normalizeAction(entry.action);
           return (
             <div
               key={entry.id}
@@ -82,7 +93,7 @@ export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
               <div
                 className={cn(
                   'absolute -left-[1.3125rem] top-1 size-3 rounded-full border-2 border-background',
-                  getDotClass(entry.action),
+                  getDotClass(actionKey),
                 )}
               />
 
@@ -90,10 +101,10 @@ export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
                 <span
                   className={cn(
                     'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-                    getActionBadgeClass(entry.action),
+                    getActionBadgeClass(actionKey),
                   )}
                 >
-                  {t(entry.action as 'modified' | 'approved' | 'rejected')}
+                  {t(actionKey)}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {entry.reviewerEmail}

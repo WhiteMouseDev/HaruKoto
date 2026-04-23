@@ -64,7 +64,7 @@
       "title": "タイトル",
       "category": "カテゴリ",
       "status": "ステータス",
-      "updatedAt": "更新日"
+      "createdAt": "作成日"
     },
     "selectAll": "全て選択",
     "selectRow": "行 {id} を選択"
@@ -150,6 +150,7 @@
     "bulkSelected": "{count}件選択中",
     "bulkApprove": "一括承認",
     "bulkReject": "一括差し戻し",
+    "bulkNoValidSelection": "選択した項目を一括処理できません",
     "startQueue": "レビュー開始",
     "startQueueEmpty": "レビュー待ち項目はありません",
     "queueCapped": "リビューキューは最初の200件のみ表示しています",

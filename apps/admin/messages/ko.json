@@ -64,7 +64,7 @@
       "title": "제목",
       "category": "카테고리",
       "status": "상태",
-      "updatedAt": "수정일"
+      "createdAt": "생성일"
     },
     "selectAll": "전체 선택",
     "selectRow": "{id} 행 선택"
@@ -150,6 +150,7 @@
     "bulkSelected": "{count}개 선택됨",
     "bulkApprove": "일괄 승인",
     "bulkReject": "일괄 반려",
+    "bulkNoValidSelection": "선택한 항목을 일괄 처리할 수 없습니다",
     "startQueue": "리뷰 시작",
     "startQueueEmpty": "리뷰 대기 중인 항목이 없습니다",
     "queueCapped": "처음 200개 항목만 표시하고 있습니다",

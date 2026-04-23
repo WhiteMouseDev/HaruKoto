@@ -53,13 +53,13 @@ function GrammarContent() {
       ),
     },
     {
-      key: 'updatedAt',
-      header: t('col.updatedAt'),
+      key: 'createdAt',
+      header: t('col.createdAt'),
       width: '12%',
       sortKey: 'created_at',
       render: (item) => (
         <span className="text-xs text-muted-foreground">
-          {new Date(item.updatedAt || item.createdAt).toLocaleDateString('ja-JP')}
+          {new Date(item.createdAt).toLocaleDateString('ja-JP')}
         </span>
       ),
     },

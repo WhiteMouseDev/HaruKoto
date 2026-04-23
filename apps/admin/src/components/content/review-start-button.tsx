@@ -22,7 +22,7 @@ export function ReviewStartButton({ contentType }: ReviewStartButtonProps) {
   async function handleStart() {
     setIsLoading(true);
     try {
-      const jlptLevel = searchParams.get('jlpt_level') ?? undefined;
+      const jlptLevel = searchParams.get('jlpt') ?? undefined;
       const category = searchParams.get('category') ?? undefined;
 
       const data = await fetchReviewQueue(contentType, { jlptLevel, category });

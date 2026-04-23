@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Search, Database, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RejectReasonDialog } from '@/components/content/reject-reason-dialog';
@@ -16,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PaginationBar } from '@/components/ui/pagination-bar';
-import { useBulkReview } from '@/hooks/use-bulk-review';
+import { useBulkReview, type BulkBatch } from '@/hooks/use-bulk-review';
 
 export type Column<T> = {
   key: string;
@@ -84,7 +85,28 @@ export function ContentTable<T extends { id: string }>({
     setSelectedIds(new Set());
   }, [data]);
 
-  const bulkReview = useBulkReview(contentType);
+  const bulkReview = useBulkReview();
+
+  // Build batches keyed by the API's canonical content type. Quiz selections must be
+  // split into cloze / sentence_arrange because BatchReviewRequest doesn't accept 'quiz'.
+  function buildBatches(action: 'approve' | 'reject', reason?: string): BulkBatch[] {
+    if (contentType === 'quiz') {
+      const cloze: string[] = [];
+      const sentenceArrange: string[] = [];
+      data?.forEach((item) => {
+        if (!selectedIds.has(item.id)) return;
+        const quizType = (item as Record<string, unknown>).quizType;
+        if (quizType === 'cloze') cloze.push(item.id);
+        else if (quizType === 'sentence_arrange') sentenceArrange.push(item.id);
+      });
+      const batches: BulkBatch[] = [];
+      if (cloze.length) batches.push({ contentType: 'cloze', ids: cloze, action, reason });
+      if (sentenceArrange.length)
+        batches.push({ contentType: 'sentence_arrange', ids: sentenceArrange, action, reason });
+      return batches;
+    }
+    return [{ contentType, ids: Array.from(selectedIds), action, reason }];
+  }
 
   const visibleColumns = selectable
     ? [{ key: '__checkbox', header: '', width: '40px' } as Column<T>, ...columns]
@@ -115,22 +137,26 @@ export function ContentTable<T extends { id: string }>({
   }
 
   function handleBulkApprove() {
-    bulkReview.mutate(
-      { ids: Array.from(selectedIds), action: 'approve' },
-      { onSuccess: () => setSelectedIds(new Set()) },
-    );
+    const batches = buildBatches('approve');
+    if (batches.length === 0) {
+      toast.error(tReview('bulkNoValidSelection'));
+      return;
+    }
+    bulkReview.mutate(batches, { onSuccess: () => setSelectedIds(new Set()) });
   }
 
   function handleBulkReject(reason: string) {
-    bulkReview.mutate(
-      { ids: Array.from(selectedIds), action: 'reject', reason },
-      {
-        onSuccess: () => {
-          setSelectedIds(new Set());
-          setRejectDialogOpen(false);
-        },
+    const batches = buildBatches('reject', reason);
+    if (batches.length === 0) {
+      toast.error(tReview('bulkNoValidSelection'));
+      return;
+    }
+    bulkReview.mutate(batches, {
+      onSuccess: () => {
+        setSelectedIds(new Set());
+        setRejectDialogOpen(false);
       },
-    );
+    });
   }
 
   const selectedCount = selectedIds.size;
