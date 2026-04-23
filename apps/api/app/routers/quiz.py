@@ -35,7 +35,6 @@ from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_s
 from app.services.quiz_query import (
     QuizQueryServiceError,
     get_incomplete_quiz_session,
-    get_wrong_answers_data,
     resume_quiz_session,
 )
 from app.services.quiz_recommendations import get_recommendations_data
@@ -47,6 +46,7 @@ from app.services.quiz_start import (
     start_smart_quiz_session,
 )
 from app.services.quiz_stats_query import ContentQuizStatsResult, QuizStatsResult, get_quiz_stats_data
+from app.services.quiz_wrong_answers_query import get_wrong_answers_data
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
 

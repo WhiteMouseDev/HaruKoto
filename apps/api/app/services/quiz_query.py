@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import contextlib
-import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import QuizAnswer, QuizSession, Vocabulary
+from app.models import QuizAnswer, QuizSession
 from app.models.user import User
 from app.schemas.quiz import QuizQuestion, QuizResumeRequest
 from app.services.quiz_session import build_response_questions, extract_questions_data
@@ -41,16 +39,6 @@ class ResumeQuizResult:
     total_questions: int
     correct_count: int
     quiz_type: str
-
-
-@dataclass(slots=True)
-class WrongAnswerResult:
-    question_id: str
-    word: str | None
-    reading: str | None
-    meaning_ko: str | None
-    example_sentence: str | None
-    example_translation: str | None
 
 
 async def get_incomplete_quiz_session(
@@ -120,54 +108,3 @@ async def resume_quiz_session(
         correct_count=session.correct_count,
         quiz_type=enum_value(session.quiz_type),
     )
-
-
-async def get_wrong_answers_data(
-    db: AsyncSession,
-    user: User,
-    *,
-    session_id: str,
-) -> list[WrongAnswerResult]:
-    session = await db.get(QuizSession, session_id)
-    if not session or session.user_id != user.id:
-        raise QuizQueryServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
-
-    wrong_result = await db.execute(
-        select(QuizAnswer).where(
-            QuizAnswer.session_id == session.id,
-            QuizAnswer.is_correct.is_(False),
-        )
-    )
-    wrong_answers = wrong_result.scalars().all()
-
-    questions_data = extract_questions_data(session.questions_data)
-    question_map = {question["id"]: question for question in questions_data}
-
-    wrong_vocab_ids = []
-    for wrong_answer in wrong_answers:
-        question = question_map.get(str(wrong_answer.question_id))
-        if question and question.get("type") in ("VOCABULARY", "KANJI", "LISTENING"):
-            with contextlib.suppress(ValueError):
-                wrong_vocab_ids.append(uuid.UUID(str(wrong_answer.question_id)))
-
-    vocab_map: dict[str, Vocabulary] = {}
-    if wrong_vocab_ids:
-        vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(wrong_vocab_ids)))
-        for vocab_item in vocab_result.scalars().all():
-            vocab_map[str(vocab_item.id)] = vocab_item
-
-    results: list[WrongAnswerResult] = []
-    for wrong_answer in wrong_answers:
-        question = question_map.get(str(wrong_answer.question_id), {})
-        vocab_entry = vocab_map.get(str(wrong_answer.question_id))
-        results.append(
-            WrongAnswerResult(
-                question_id=str(wrong_answer.question_id),
-                word=question.get("word"),
-                reading=question.get("reading") or (vocab_entry.reading if vocab_entry else None),
-                meaning_ko=question.get("meaningKo"),
-                example_sentence=vocab_entry.example_sentence if vocab_entry else None,
-                example_translation=vocab_entry.example_translation if vocab_entry else None,
-            )
-        )
-    return results
