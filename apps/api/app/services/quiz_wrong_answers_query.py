@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import QuizAnswer, QuizSession, Vocabulary
 from app.models.user import User
-from app.services.quiz_query import QuizQueryServiceError
+from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_session import extract_questions_data
 
 VOCABULARY_QUESTION_TYPES = {"VOCABULARY", "KANJI", "LISTENING"}

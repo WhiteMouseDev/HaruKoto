@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.services.quiz_query import QuizQueryServiceError
+from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_wrong_answers_query import get_wrong_answers_data
 
 USER_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")

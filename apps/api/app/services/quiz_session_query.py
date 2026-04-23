@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import QuizAnswer, QuizSession
 from app.models.user import User
 from app.schemas.quiz import QuizQuestion, QuizResumeRequest
-from app.services.quiz_query import QuizQueryServiceError
+from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_session import build_response_questions, extract_questions_data
 from app.utils.helpers import enum_value
 

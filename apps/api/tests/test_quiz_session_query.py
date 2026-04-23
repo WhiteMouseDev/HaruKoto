@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.schemas.quiz import QuizResumeRequest
-from app.services.quiz_query import QuizQueryServiceError
+from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_session_query import get_incomplete_quiz_session, resume_quiz_session
 
 USER_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")

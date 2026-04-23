@@ -32,7 +32,7 @@ from app.schemas.quiz import (
 )
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
-from app.services.quiz_query import QuizQueryServiceError
+from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_recommendations import get_recommendations_data
 from app.services.quiz_session import build_response_questions
 from app.services.quiz_session_query import get_incomplete_quiz_session, resume_quiz_session
