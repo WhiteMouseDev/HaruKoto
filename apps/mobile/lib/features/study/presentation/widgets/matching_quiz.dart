@@ -1,8 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/services/sound_service.dart';
 import '../../data/models/quiz_question_model.dart';
+import 'matching_quiz_controller.dart';
 
 /// 매칭 퀴즈: 한 라운드에 [pairsPerRound]개씩 진행
 class MatchingQuiz extends StatefulWidget {
@@ -26,80 +26,51 @@ class MatchingQuiz extends StatefulWidget {
 }
 
 class _MatchingQuizState extends State<MatchingQuiz> {
-  late List<_MatchPair> _allPairs;
-  int _roundIndex = 0;
-  int _totalCorrect = 0;
-
-  // 현재 라운드 상태
-  late List<_MatchPair> _currentPairs;
-  late List<String> _shuffledRight;
-  String? _selectedLeft;
-  String? _selectedRight;
-  final Set<String> _matched = {};
+  late MatchingQuizController _controller;
 
   @override
   void initState() {
     super.initState();
-    _allPairs = widget.questions.map((q) {
-      // Use matching-specific fields from API if available,
-      // otherwise fall back to standard question/option format
-      if (q.matchingWord != null && q.matchingMeaning != null) {
-        return _MatchPair(
-          id: q.questionId,
-          left: q.matchingWord!,
-          reading: q.questionSubText,
-          right: q.matchingMeaning!,
-        );
-      }
-      final correctOption =
-          q.options.firstWhere((o) => o.id == q.correctOptionId);
-      return _MatchPair(
-        id: q.questionId,
-        left: q.questionText,
-        reading: q.questionSubText,
-        right: correctOption.text,
-      );
-    }).toList();
-    _startRound();
+    _controller = _createController();
   }
 
-  void _startRound() {
-    final start = _roundIndex * widget.pairsPerRound;
-    final end = (start + widget.pairsPerRound).clamp(0, _allPairs.length);
-    _currentPairs = _allPairs.sublist(start, end);
-    _shuffledRight = _currentPairs.map((p) => p.right).toList()
-      ..shuffle(Random());
-    _matched.clear();
-    _selectedLeft = null;
-    _selectedRight = null;
+  @override
+  void didUpdateWidget(covariant MatchingQuiz oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.questions != widget.questions ||
+        oldWidget.pairsPerRound != widget.pairsPerRound) {
+      _controller = _createController();
+    }
   }
 
-  int get _totalRounds => (_allPairs.length / widget.pairsPerRound).ceil();
+  MatchingQuizController _createController() {
+    return MatchingQuizController(
+      pairs: widget.questions.map(MatchingQuizPair.fromQuestion).toList(),
+      pairsPerRound: widget.pairsPerRound,
+    );
+  }
 
-  void _handleLeftTap(String left) {
+  void _handleLeftTap(MatchingQuizPair pair) {
+    MatchingQuizAttemptResult? result;
     setState(() {
-      _selectedLeft = left;
-      _checkMatch();
+      result = _controller.selectLeft(pair.id);
     });
+    _handleAttemptResult(result);
   }
 
-  void _handleRightTap(String right) {
+  void _handleRightTap(MatchingQuizPair pair) {
+    MatchingQuizAttemptResult? result;
     setState(() {
-      _selectedRight = right;
-      _checkMatch();
+      result = _controller.selectRight(pair.id);
     });
+    _handleAttemptResult(result);
   }
 
-  void _checkMatch() {
-    if (_selectedLeft == null || _selectedRight == null) return;
+  void _handleAttemptResult(MatchingQuizAttemptResult? result) {
+    if (result == null) return;
 
-    final pair = _currentPairs.firstWhere((p) => p.left == _selectedLeft);
-    final isCorrect = pair.right == _selectedRight;
-    widget.onMatchResult(pair.id, isCorrect);
-
-    if (isCorrect) {
-      _totalCorrect++;
-      _matched.add(pair.id);
+    widget.onMatchResult(result.leftPair.id, result.isCorrect);
+    if (result.isCorrect) {
       HapticService().light();
       SoundService().play(SoundType.match);
     } else {
@@ -109,21 +80,14 @@ class _MatchingQuizState extends State<MatchingQuiz> {
 
     Future.delayed(const Duration(milliseconds: 400), () {
       if (!mounted) return;
+
+      late MatchingQuizRoundOutcome outcome;
       setState(() {
-        _selectedLeft = null;
-        _selectedRight = null;
+        outcome = _controller.finishAttempt();
       });
 
-      if (_matched.length == _currentPairs.length) {
-        // 현재 라운드 완료
-        if (_roundIndex + 1 < _totalRounds) {
-          setState(() {
-            _roundIndex++;
-            _startRound();
-          });
-        } else {
-          widget.onComplete();
-        }
+      if (outcome == MatchingQuizRoundOutcome.completed) {
+        widget.onComplete();
       }
     });
   }
@@ -131,11 +95,8 @@ class _MatchingQuizState extends State<MatchingQuiz> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final unmatchedPairs =
-        _currentPairs.where((p) => !_matched.contains(p.id)).toList();
-    final unmatchedRight = _shuffledRight
-        .where((r) => unmatchedPairs.any((p) => p.right == r))
-        .toList();
+    final unmatchedPairs = _controller.unmatchedLeftPairs;
+    final unmatchedRight = _controller.unmatchedRightPairs;
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -150,15 +111,15 @@ class _MatchingQuizState extends State<MatchingQuiz> {
         Row(
           children: [
             Text(
-              '$_totalCorrect/${_allPairs.length} 맞춤',
+              _controller.scoreLabel,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
-            if (_totalRounds > 1) ...[
+            if (_controller.hasMultipleRounds) ...[
               const Spacer(),
               Text(
-                '라운드 ${_roundIndex + 1}/$_totalRounds',
+                _controller.roundLabel,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w600,
@@ -171,8 +132,9 @@ class _MatchingQuizState extends State<MatchingQuiz> {
         ...List.generate(unmatchedPairs.length, (i) {
           final pair = unmatchedPairs[i];
           final right = unmatchedRight[i];
-          final isLeftSelected = _selectedLeft == pair.left;
-          final isRightSelected = _selectedRight == right;
+          final isLeftSelected = _controller.isLeftSelected(pair.id);
+          final isRightSelected = _controller.isRightSelected(right.id);
+          final tapEnabled = !_controller.isResolving;
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -187,17 +149,17 @@ class _MatchingQuizState extends State<MatchingQuiz> {
                       subText: widget.showFurigana ? pair.reading : null,
                       isSelected: isLeftSelected,
                       isBold: true,
-                      onTap: () => _handleLeftTap(pair.left),
+                      onTap: tapEnabled ? () => _handleLeftTap(pair) : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   // Right (Korean)
                   Expanded(
                     child: _MatchTile(
-                      text: right,
+                      text: right.right,
                       isSelected: isRightSelected,
                       isBold: false,
-                      onTap: () => _handleRightTap(right),
+                      onTap: tapEnabled ? () => _handleRightTap(right) : null,
                     ),
                   ),
                 ],
@@ -215,7 +177,7 @@ class _MatchTile extends StatelessWidget {
   final String? subText;
   final bool isSelected;
   final bool isBold;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _MatchTile({
     required this.text,
@@ -276,17 +238,4 @@ class _MatchTile extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MatchPair {
-  final String id;
-  final String left;
-  final String? reading;
-  final String right;
-  const _MatchPair({
-    required this.id,
-    required this.left,
-    this.reading,
-    required this.right,
-  });
 }
