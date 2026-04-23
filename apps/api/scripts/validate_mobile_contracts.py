@@ -94,7 +94,7 @@ def _paths_match(concrete: str, template: str) -> bool:
     rhs = _normalize(template).split("/")
     if len(lhs) != len(rhs):
         return False
-    for part_c, part_t in zip(lhs, rhs):
+    for part_c, part_t in zip(lhs, rhs, strict=True):
         if part_t.startswith("{") and part_t.endswith("}"):
             continue
         if part_c != part_t:
@@ -112,10 +112,7 @@ def _endpoint_exists(method: str, path: str, openapi: dict) -> bool:
         if entry and method_lc in entry:
             return True
     # Templated match
-    for template, ops in paths.items():
-        if _paths_match(path, template) and method_lc in ops:
-            return True
-    return False
+    return any(_paths_match(path, template) and method_lc in ops for template, ops in paths.items())
 
 
 def _extract_annotated_models() -> list[tuple[Path, str, str, set[str]]]:
@@ -164,13 +161,15 @@ def _collect(openapi: dict) -> tuple[list[dict], list[dict]]:
     field_issues: list[dict] = []
     for file, schema_name, class_name, dart_fields in _extract_annotated_models():
         for level, msg in _compare_fields(schema_name, dart_fields, openapi):
-            field_issues.append({
-                "level": level,
-                "schema": schema_name,
-                "class": class_name,
-                "file": _rel(file),
-                "message": msg,
-            })
+            field_issues.append(
+                {
+                    "level": level,
+                    "schema": schema_name,
+                    "class": class_name,
+                    "file": _rel(file),
+                    "message": msg,
+                }
+            )
     return orphaned, field_issues
 
 
@@ -190,11 +189,15 @@ def main() -> int:
     has_error = bool(orphaned) or bool(error_field_issues)
 
     if emit_json:
-        json.dump({
-            "orphaned_endpoints": orphaned,
-            "field_issues": field_issues,
-            "has_error": has_error,
-        }, sys.stdout, indent=2)
+        json.dump(
+            {
+                "orphaned_endpoints": orphaned,
+                "field_issues": field_issues,
+                "has_error": has_error,
+            },
+            sys.stdout,
+            indent=2,
+        )
         sys.stdout.write("\n")
         return 1 if has_error else 0
 

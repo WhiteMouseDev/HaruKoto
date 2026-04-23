@@ -108,12 +108,25 @@ async def submit_live_conversation_feedback(
     else:
         transcript = []
 
-    feedback = None
-    if transcript:
+    feedback: dict[str, Any] | None = None
+    feedback_error: str | None = None
+    # "no_transcript" covers both an empty list AND a list whose entries all have
+    # empty/whitespace text — otherwise whitespace-only transcripts would hit the
+    # AI call, fail, and be misclassified as generation_failed.
+    has_content = any((entry.get("text") or "").strip() for entry in transcript)
+    if not has_content:
+        feedback_error = "no_transcript"
+    else:
         try:
             feedback = await generate_live_feedback(transcript)
         except Exception:
-            logger.exception("Live feedback generation failed")
+            logger.exception(
+                "Live feedback generation failed (user_id=%s, conversation_id=%s, transcript_entries=%d)",
+                user.id,
+                body.conversation_id,
+                len(transcript),
+            )
+            feedback_error = "generation_failed"
 
     if not conversation:
         conversation = Conversation(
@@ -163,6 +176,10 @@ async def submit_live_conversation_feedback(
     return {
         "conversationId": str(conversation.id),
         "feedbackSummary": feedback,
+        # Additive field (backward compatible). Null on success; "no_transcript" or
+        # "generation_failed" when feedbackSummary is null but the mobile client
+        # should distinguish the cause to show a useful retry/empty message.
+        "feedbackError": feedback_error,
         "xpEarned": xp,
         "events": events,
     }
