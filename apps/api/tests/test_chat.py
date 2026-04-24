@@ -358,3 +358,103 @@ async def test_live_feedback_creates_voice_conversation(
     assert data["events"] == []
     assert len(added_conversations) == 1
     assert added_conversations[0].type == ConversationType.VOICE
+
+
+@pytest.mark.asyncio
+@patch("app.services.chat_voice.grant_conversation_completion_rewards")
+@patch("app.services.chat_voice.generate_live_feedback")
+async def test_live_feedback_returns_500_when_commit_fails(
+    mock_feedback,
+    mock_rewards,
+    client,
+    mock_user,
+):
+    from app.main import app
+
+    mock_feedback.return_value = {"overallScore": 90, "summary": "좋아요"}
+    mock_rewards.return_value = MagicMock(xp_earned=20, events=[])
+
+    added_conversations = []
+
+    def capture_add(obj):
+        if isinstance(obj, Conversation):
+            obj.id = uuid.uuid4()
+            added_conversations.append(obj)
+
+    mock_session = MagicMock()
+    mock_session.add = MagicMock(side_effect=capture_add)
+    mock_session.flush = AsyncMock()
+    mock_session.commit = AsyncMock(side_effect=RuntimeError("commit failed"))
+    mock_session.rollback = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        "/api/v1/chat/live-feedback",
+        json={
+            "durationSeconds": 120,
+            "transcript": [
+                {"role": "user", "text": "こんにちは"},
+                {"role": "assistant", "text": "こんにちは！"},
+            ],
+        },
+    )
+
+    assert response.status_code == 500
+    assert response.json()["error"]["message"] == "라이브 피드백 저장에 실패했습니다"
+    assert len(added_conversations) == 1
+    mock_session.rollback.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@patch("app.services.chat_voice.grant_conversation_completion_rewards")
+@patch("app.services.chat_voice.generate_live_feedback")
+async def test_live_feedback_returns_500_when_fallback_save_fails(
+    mock_feedback,
+    mock_rewards,
+    client,
+    mock_user,
+):
+    from app.main import app
+
+    mock_feedback.return_value = {"overallScore": 90, "summary": "좋아요"}
+    mock_rewards.side_effect = RuntimeError("gamification failed")
+
+    added_conversations = []
+
+    def capture_add(obj):
+        if isinstance(obj, Conversation):
+            obj.id = uuid.uuid4()
+            added_conversations.append(obj)
+
+    mock_session = MagicMock()
+    mock_session.add = MagicMock(side_effect=capture_add)
+    mock_session.flush = AsyncMock()
+    mock_session.commit = AsyncMock(side_effect=RuntimeError("fallback commit failed"))
+    mock_session.rollback = AsyncMock()
+    mock_session.__contains__.return_value = False
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        "/api/v1/chat/live-feedback",
+        json={
+            "durationSeconds": 120,
+            "transcript": [
+                {"role": "user", "text": "こんにちは"},
+                {"role": "assistant", "text": "こんにちは！"},
+            ],
+        },
+    )
+
+    assert response.status_code == 500
+    assert response.json()["error"]["message"] == "라이브 피드백 저장에 실패했습니다"
+    assert len(added_conversations) == 2
+    assert added_conversations[0] is added_conversations[1]
+    assert mock_session.rollback.await_count == 2

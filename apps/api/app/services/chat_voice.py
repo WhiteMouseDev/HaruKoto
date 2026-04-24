@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 ALLOWED_AUDIO_TYPES = {"audio/webm", "audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/flac", "audio/m4a"}
 MAX_AUDIO_SIZE = 4_500_000  # 4.5MB
+LIVE_FEEDBACK_SAVE_ERROR_DETAIL = "라이브 피드백 저장에 실패했습니다"
 
 
 class ChatVoiceServiceError(Exception):
@@ -35,6 +36,12 @@ class ChatVoiceServiceError(Exception):
 class ChatTTSResult:
     audio: bytes
     media_type: str
+
+
+async def _rollback_live_feedback_save_failure(db: AsyncSession, *, log_message: str) -> None:
+    logger.exception(log_message)
+    await db.rollback()
+    raise ChatVoiceServiceError(status_code=500, detail=LIVE_FEEDBACK_SAVE_ERROR_DETAIL) from None
 
 
 async def synthesize_chat_tts(user: User, body: ChatTTSRequest) -> ChatTTSResult:
@@ -164,14 +171,18 @@ async def submit_live_conversation_feedback(
             conversation.feedback_summary = feedback
             await db.commit()
         except Exception:
-            logger.exception("Live feedback conversation save also failed")
-            await db.rollback()
+            await _rollback_live_feedback_save_failure(
+                db,
+                log_message="Live feedback conversation save also failed",
+            )
     else:
         try:
             await db.commit()
         except Exception:
-            logger.exception("Live feedback commit failed")
-            await db.rollback()
+            await _rollback_live_feedback_save_failure(
+                db,
+                log_message="Live feedback commit failed",
+            )
 
     return {
         "conversationId": str(conversation.id),
