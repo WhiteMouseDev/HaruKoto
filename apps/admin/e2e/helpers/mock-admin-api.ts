@@ -1,5 +1,11 @@
 import type { Page, Request } from '@playwright/test';
 import {
+  conversationAuditLogsResponse,
+  conversationDetailResponse,
+  conversationTtsResponse,
+  grammarAuditLogsResponse,
+  grammarDetailResponse,
+  grammarTtsResponse,
   statsResponse,
   supabaseUserResponse,
   vocabularyAuditLogsResponse,
@@ -11,6 +17,38 @@ import {
 export type AdminApiMockState = {
   reviewRequests: Array<unknown>;
 };
+
+type ContentDetailMock = {
+  contentType: string;
+  itemId: string;
+  detail: unknown;
+  auditLogs: unknown;
+  tts: unknown;
+};
+
+const contentDetailMocks: ContentDetailMock[] = [
+  {
+    contentType: 'vocabulary',
+    itemId: 'vocab-1',
+    detail: vocabularyDetailResponse,
+    auditLogs: vocabularyAuditLogsResponse,
+    tts: vocabularyTtsResponse,
+  },
+  {
+    contentType: 'grammar',
+    itemId: 'grammar-1',
+    detail: grammarDetailResponse,
+    auditLogs: grammarAuditLogsResponse,
+    tts: grammarTtsResponse,
+  },
+  {
+    contentType: 'conversation',
+    itemId: 'conversation-1',
+    detail: conversationDetailResponse,
+    auditLogs: conversationAuditLogsResponse,
+    tts: conversationTtsResponse,
+  },
+];
 
 async function readJsonBody(request: Request): Promise<unknown> {
   try {
@@ -39,34 +77,26 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
     }
   );
 
-  await page.route(
-    'https://api.e2e.test/api/v1/admin/content/vocabulary/vocab-1',
-    async (route) => {
-      await route.fulfill({ json: vocabularyDetailResponse });
-    }
-  );
+  for (const content of contentDetailMocks) {
+    const baseUrl = `https://api.e2e.test/api/v1/admin/content/${content.contentType}/${content.itemId}`;
 
-  await page.route(
-    'https://api.e2e.test/api/v1/admin/content/vocabulary/vocab-1/audit-logs',
-    async (route) => {
-      await route.fulfill({ json: vocabularyAuditLogsResponse });
-    }
-  );
+    await page.route(baseUrl, async (route) => {
+      await route.fulfill({ json: content.detail });
+    });
 
-  await page.route(
-    'https://api.e2e.test/api/v1/admin/content/vocabulary/vocab-1/tts',
-    async (route) => {
-      await route.fulfill({ json: vocabularyTtsResponse });
-    }
-  );
+    await page.route(`${baseUrl}/audit-logs`, async (route) => {
+      await route.fulfill({ json: content.auditLogs });
+    });
 
-  await page.route(
-    'https://api.e2e.test/api/v1/admin/content/vocabulary/vocab-1/review',
-    async (route) => {
+    await page.route(`${baseUrl}/tts`, async (route) => {
+      await route.fulfill({ json: content.tts });
+    });
+
+    await page.route(`${baseUrl}/review`, async (route) => {
       state.reviewRequests.push(await readJsonBody(route.request()));
       await route.fulfill({ status: 204 });
-    }
-  );
+    });
+  }
 
   await page.route(
     /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/vocabulary(?:\?.*)?$/,
