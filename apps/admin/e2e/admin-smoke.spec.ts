@@ -213,6 +213,31 @@ test('auto-advances after quiz queue review actions and exits after the final it
   await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
 });
 
+test('shows an empty queue message without leaving the vocabulary list', async ({
+  page,
+}) => {
+  let queueSearchParams: Record<string, string> = {};
+  await page.route(
+    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/vocabulary(?:\?.*)?$/,
+    async (route) => {
+      queueSearchParams = Object.fromEntries(
+        new URL(route.request().url()).searchParams.entries()
+      );
+      await route.fulfill({
+        json: { ids: [], total: 0, capped: false },
+      });
+    }
+  );
+
+  await page.goto('/vocabulary?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect(page.getByText('レビュー待ち項目はありません')).toBeVisible();
+  await expect(page).toHaveURL(/\/vocabulary\?jlpt=N5$/);
+  await expect(page.getByRole('heading', { name: '単語一覧' })).toBeVisible();
+});
+
 test('splits quiz bulk approve into canonical content-type batches', async ({
   page,
 }) => {
