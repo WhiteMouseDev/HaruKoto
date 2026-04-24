@@ -11,11 +11,13 @@ export 'lesson_tile.dart';
 class LessonChapterList extends StatefulWidget {
   final List<ChapterModel> chapters;
   final EdgeInsetsGeometry padding;
+  final String? recommendedLessonId;
 
   const LessonChapterList({
     super.key,
     required this.chapters,
     this.padding = const EdgeInsets.all(16),
+    this.recommendedLessonId,
   });
 
   @override
@@ -67,6 +69,7 @@ class _LessonChapterListState extends State<LessonChapterList> {
         final chapter = widget.chapters[index];
         return ChapterCard(
           chapter: chapter,
+          recommendedLessonId: widget.recommendedLessonId,
           isExpanded: _expandedChapterId == chapter.id,
           onToggle: () {
             setState(() {

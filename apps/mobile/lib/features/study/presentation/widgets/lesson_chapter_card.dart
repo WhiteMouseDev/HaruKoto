@@ -9,12 +9,14 @@ import 'lesson_tile.dart';
 /// A card displaying a single chapter with accordion expand/collapse.
 class ChapterCard extends StatelessWidget {
   final ChapterModel chapter;
+  final String? recommendedLessonId;
   final bool isExpanded;
   final VoidCallback onToggle;
 
   const ChapterCard({
     super.key,
     required this.chapter,
+    this.recommendedLessonId,
     required this.isExpanded,
     required this.onToggle,
   });
@@ -27,6 +29,8 @@ class ChapterCard extends StatelessWidget {
         ? chapter.completedLessons / chapter.totalLessons
         : 0.0;
     final isComplete = progress >= 1.0;
+    final hasRecommendedLesson = recommendedLessonId != null &&
+        chapter.lessons.any((lesson) => lesson.id == recommendedLessonId);
     final percentText = '${(progress * 100).round()}%';
 
     return Container(
@@ -34,7 +38,12 @@ class ChapterCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        border: Border.all(color: AppColors.lightBorder),
+        border: Border.all(
+          color: hasRecommendedLesson
+              ? AppColors.primaryStrong.withValues(alpha: 0.45)
+              : AppColors.lightBorder,
+          width: hasRecommendedLesson ? 1.4 : 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.08),
@@ -80,6 +89,29 @@ class ChapterCard extends StatelessWidget {
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
+                      if (hasRecommendedLesson) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryStrong.withValues(
+                              alpha: 0.12,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radiusFull),
+                          ),
+                          child: Text(
+                            '추천',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: AppColors.primaryStrong,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                       Text(
                         percentText,
                         style: theme.textTheme.labelMedium?.copyWith(
@@ -129,7 +161,12 @@ class ChapterCard extends StatelessWidget {
                         const EdgeInsets.only(left: 16, right: 16, bottom: 12),
                     child: Column(
                       children: chapter.lessons
-                          .map((lesson) => LessonTile(lesson: lesson))
+                          .map(
+                            (lesson) => LessonTile(
+                              lesson: lesson,
+                              isRecommended: lesson.id == recommendedLessonId,
+                            ),
+                          )
                           .toList(),
                     ),
                   )

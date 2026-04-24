@@ -99,6 +99,41 @@ void main() {
       expect(state.answers.keys.toSet(), equals({1, 2}));
     });
 
+    test('startPractice exposes an error and does not advance on start failure',
+        () async {
+      final repository = _FakeStudyRepository()
+        ..startError = Exception('locked');
+      final container = ProviderContainer(
+        overrides: [
+          studyRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
+      await notifier.startPractice(
+        _buildDetail(
+          questions: const [
+            LessonQuestionModel(
+              order: 1,
+              type: 'VOCAB_MCQ',
+              prompt: 'question-1',
+            ),
+          ],
+        ),
+      );
+
+      final state = container.read(lessonSessionProvider('lesson-1'));
+      expect(repository.startLessonCalls, 1);
+      expect(state.step, LessonStep.contextPreview);
+      expect(state.startErrorMessage, contains('locked'));
+      expect(state.answers, isEmpty);
+    });
+
     test('completeMatching submits immediately when no reorder exists',
         () async {
       final repository = _FakeStudyRepository();
@@ -258,11 +293,15 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
   int submitLessonCalls = 0;
   String? submittedLessonId;
   List<Map<String, dynamic>>? submittedAnswers;
+  Object? startError;
   Object? submitError;
 
   @override
   Future<LessonProgressModel> startLesson(String lessonId) async {
     startLessonCalls++;
+    if (startError != null) {
+      throw startError!;
+    }
     return const LessonProgressModel(
       status: 'IN_PROGRESS',
       attempts: 1,

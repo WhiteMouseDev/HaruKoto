@@ -431,3 +431,406 @@ async def test_submit_lesson(mock_process_answer, mock_register_items, client, m
         "status": "COMPLETED",
         "srsItemsRegistered": 1,
     }
+    assert progress.srs_registered_at is not None
+
+
+@pytest.mark.asyncio
+@patch("app.services.lesson_command.register_items_from_lesson", new_callable=AsyncMock)
+@patch("app.services.lesson_command.process_answer", new_callable=AsyncMock)
+async def test_submit_lesson_returns_500_when_srs_answer_processing_fails(
+    mock_process_answer,
+    mock_register_items,
+    client,
+    mock_user,
+):
+    """Test POST /api/v1/lessons/{lesson_id}/submit does not complete if SRS answer processing fails."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    vocab_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {
+                "order": 1,
+                "type": "VOCAB_MCQ",
+                "correct_answer": "a",
+                "explanation": "정답 설명",
+            }
+        ]
+    }
+
+    vocab_link = MagicMock()
+    vocab_link.item_type = "WORD"
+    vocab_link.vocabulary_id = vocab_id
+    vocab_link.grammar_id = None
+    vocab_link.item_order = 1
+    lesson.item_links = [vocab_link]
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=lesson_result)
+    mock_session.begin_nested = MagicMock(return_value=_AsyncNullContext())
+    mock_session.commit = AsyncMock()
+
+    mock_register_items.return_value = 1
+    mock_process_answer.side_effect = RuntimeError("srs down")
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 1200,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {
+            "code": "SYSTEM_ERROR",
+            "message": "레슨 복습 상태 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요",
+            "details": None,
+        }
+    }
+    mock_register_items.assert_called_once()
+    mock_session.commit.assert_not_called()
+
+
+@pytest.mark.asyncio
+@patch("app.services.lesson_command.register_items_from_lesson", new_callable=AsyncMock)
+@patch("app.services.lesson_command.process_answer", new_callable=AsyncMock)
+async def test_submit_lesson_marks_srs_registered_when_items_already_exist(
+    mock_process_answer,
+    mock_register_items,
+    client,
+    mock_user,
+):
+    """Test POST /api/v1/lessons/{lesson_id}/submit records SRS linkage even when no new rows are created."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    vocab_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {
+                "order": 1,
+                "type": "VOCAB_MCQ",
+                "correct_answer": "a",
+                "explanation": "정답 설명",
+            }
+        ]
+    }
+
+    vocab_link = MagicMock()
+    vocab_link.item_type = "WORD"
+    vocab_link.vocabulary_id = vocab_id
+    vocab_link.grammar_id = None
+    vocab_link.item_order = 1
+    lesson.item_links = [vocab_link]
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    progress = MagicMock()
+    progress.attempts = 1
+    progress.score_correct = 0
+    progress.score_total = 0
+    progress.status = "IN_PROGRESS"
+    progress.srs_registered_at = None
+    progress.completed_at = None
+
+    progress_result = MagicMock()
+    progress_result.scalar_one_or_none.return_value = progress
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=[lesson_result, progress_result])
+    mock_session.begin_nested = MagicMock(return_value=_AsyncNullContext())
+    mock_session.commit = AsyncMock()
+
+    mock_register_items.return_value = 0
+    mock_process_answer.return_value = {
+        "state_before": "LEARNING",
+        "state_after": "REVIEW",
+        "next_review_at": "2026-04-18T00:00:00+00:00",
+        "is_provisional_phase": False,
+    }
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 1200,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["srsItemsRegistered"] == 0
+    assert progress.status == "COMPLETED"
+    assert progress.srs_registered_at is not None
+
+
+@pytest.mark.asyncio
+@patch("app.services.lesson_command.register_items_from_lesson", new_callable=AsyncMock)
+@patch("app.services.lesson_command.process_answer", new_callable=AsyncMock)
+async def test_submit_lesson_returns_500_when_srs_registration_fails(
+    mock_process_answer,
+    mock_register_items,
+    client,
+    mock_user,
+):
+    """Test POST /api/v1/lessons/{lesson_id}/submit does not complete if SRS registration fails."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    vocab_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {
+                "order": 1,
+                "type": "VOCAB_MCQ",
+                "correct_answer": "a",
+                "explanation": "정답 설명",
+            }
+        ]
+    }
+
+    vocab_link = MagicMock()
+    vocab_link.item_type = "WORD"
+    vocab_link.vocabulary_id = vocab_id
+    vocab_link.grammar_id = None
+    vocab_link.item_order = 1
+    lesson.item_links = [vocab_link]
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=lesson_result)
+    mock_session.begin_nested = MagicMock(return_value=_AsyncNullContext())
+    mock_session.commit = AsyncMock()
+
+    mock_process_answer.return_value = {
+        "state_before": "LEARNING",
+        "state_after": "REVIEW",
+        "next_review_at": "2026-04-18T00:00:00+00:00",
+        "is_provisional_phase": False,
+    }
+    mock_register_items.side_effect = RuntimeError("registration down")
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 1200,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {
+            "code": "SYSTEM_ERROR",
+            "message": "레슨 복습 카드 등록에 실패했습니다. 잠시 후 다시 시도해주세요",
+            "details": None,
+        }
+    }
+    mock_session.commit.assert_not_called()
+    mock_process_answer.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_submit_lesson_rejects_partial_answers(client, mock_user):
+    """Test POST /api/v1/lessons/{lesson_id}/submit rejects incomplete answer sets."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {"order": 1, "type": "VOCAB_MCQ", "correct_answer": "a"},
+            {"order": 2, "type": "CONTEXT_CLOZE", "correct_answer": "b"},
+        ]
+    }
+    lesson.item_links = []
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=lesson_result)
+    mock_session.commit = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 800,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "모든 레슨 문항에 답변해야 제출할 수 있습니다",
+            "details": None,
+        }
+    }
+    mock_session.commit.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_submit_lesson_rejects_duplicate_orders(client, mock_user):
+    """Test POST /api/v1/lessons/{lesson_id}/submit rejects duplicate answers."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {"order": 1, "type": "VOCAB_MCQ", "correct_answer": "a"},
+            {"order": 2, "type": "CONTEXT_CLOZE", "correct_answer": "b"},
+        ]
+    }
+    lesson.item_links = []
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=lesson_result)
+    mock_session.commit = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {"order": 1, "selectedAnswer": "a", "responseMs": 800},
+                {"order": 1, "selectedAnswer": "a", "responseMs": 900},
+            ]
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "중복된 문항 답변은 제출할 수 없습니다",
+            "details": None,
+        }
+    }
+    mock_session.commit.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_submit_lesson_rejects_invalid_payload_for_question_type(client, mock_user):
+    """Test POST /api/v1/lessons/{lesson_id}/submit validates per-question answer shape."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "questions": [
+            {
+                "order": 1,
+                "type": "SENTENCE_REORDER",
+                "correct_order": ["私", "は", "学生", "です"],
+            }
+        ]
+    }
+    lesson.item_links = []
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=lesson_result)
+    mock_session.commit = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    response = await client.post(
+        f"/api/v1/lessons/{lesson_id}/submit",
+        json={
+            "answers": [
+                {
+                    "order": 1,
+                    "selectedAnswer": "a",
+                    "responseMs": 1200,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "1번 문항의 배열 답안이 필요합니다",
+            "details": None,
+        }
+    }
+    mock_session.commit.assert_not_called()
