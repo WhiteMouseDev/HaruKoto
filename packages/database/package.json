@@ -16,6 +16,7 @@
     "vocab:review:compile": "node scripts/compile-vocab-reviewed-final.mjs",
     "vocab:recorrect:priority": "node scripts/recorrect-priority-vocab-v3.mjs",
     "lessons:validate": "node scripts/validate-lessons.mjs",
+    "lessons:quality": "node scripts/lesson-quality-gate.mjs",
     "build": "prisma generate",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
