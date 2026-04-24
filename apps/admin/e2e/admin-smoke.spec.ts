@@ -181,6 +181,38 @@ test('starts the quiz review queue and navigates between queued items', async ({
   await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
 });
 
+test('auto-advances after quiz queue review actions and exits after the final item', async ({
+  page,
+}) => {
+  await page.goto('/quiz?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect(page).toHaveURL(/\/quiz\/cloze-1\?/);
+  await expect(page.getByText('1 / 2')).toBeVisible();
+
+  await page.getByRole('button', { name: '承認' }).click();
+  await expect
+    .poll(() => apiState.reviewRequests)
+    .toContainEqual({ action: 'approve' });
+  await expect(page).toHaveURL(/\/quiz\/arrange-1\?/);
+  await expect(page).toHaveURL(/type=sentence_arrange/);
+  await expect(page).toHaveURL(/qi=1/);
+  await expect(page.getByText('2 / 2')).toBeVisible();
+
+  await page.getByRole('button', { name: '差し戻し' }).click();
+  await page.getByLabel('差し戻し理由').fill('語順の説明を補ってください');
+  await page.getByRole('button', { name: '差し戻す' }).click();
+
+  await expect
+    .poll(() => apiState.reviewRequests)
+    .toEqual([
+      { action: 'approve' },
+      { action: 'reject', reason: '語順の説明を補ってください' },
+    ]);
+  await expect(page).toHaveURL(/\/quiz$/);
+  await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
+});
+
 test('splits quiz bulk approve into canonical content-type batches', async ({
   page,
 }) => {
