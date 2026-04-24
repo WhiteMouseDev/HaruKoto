@@ -34,14 +34,26 @@ CONTENT_FILES = [
     "ch06-progress-and-habits.json",
 ]
 
+PUBLISHABLE_META_STATUSES = {"PILOT", "PUBLISHED"}
+ALLOWED_META_STATUSES = {"DRAFT", *PUBLISHABLE_META_STATUSES}
+
 
 def _jlpt_str(level: object) -> str:
     """Extract string value from JlptLevel enum or plain string."""
     return level.value if hasattr(level, "value") else str(level)
 
 
+def _lesson_is_published(meta: dict[str, Any]) -> bool:
+    """Map content review status to DB publish state."""
+    status = str(meta.get("status", "")).upper()
+    if status not in ALLOWED_META_STATUSES:
+        raise ValueError(f"Unsupported lesson meta.status: {status}")
+    return status in PUBLISHABLE_META_STATUSES
+
+
 async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
     """Create or update chapter record."""
+    is_published = _lesson_is_published(meta)
     stmt = pg_insert(Chapter).values(
         jlpt_level=meta["jlpt_level"],
         part_no=meta["part_no"],
@@ -49,13 +61,13 @@ async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
         title=meta["chapter_title"],
         topic=meta.get("topic"),
         order_no=meta["chapter_no"],
-        is_published=True,
+        is_published=is_published,
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["jlpt_level", "part_no", "chapter_no"],
         set_={
             "title": meta["chapter_title"],
-            "is_published": True,
+            "is_published": is_published,
         },
     )
     await db.execute(stmt)
@@ -70,7 +82,7 @@ async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
     return result.scalar_one()
 
 
-async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[str, Any]) -> Lesson:
+async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[str, Any], *, is_published: bool) -> Lesson:
     """Create or update lesson record."""
     stmt = pg_insert(Lesson).values(
         chapter_id=chapter.id,
@@ -81,7 +93,7 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[s
         topic=lesson_data["topic"],
         estimated_minutes=lesson_data["estimated_minutes"],
         content_jsonb=lesson_data["content_jsonb"],
-        is_published=True,
+        is_published=is_published,
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["jlpt_level", "lesson_no"],
@@ -89,7 +101,7 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[s
             "title": lesson_data["title"],
             "topic": lesson_data["topic"],
             "content_jsonb": lesson_data["content_jsonb"],
-            "is_published": True,
+            "is_published": is_published,
         },
     )
     await db.execute(stmt)
@@ -169,15 +181,16 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
     data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
+    is_published = _lesson_is_published(meta)
 
     chapter = await _upsert_chapter(db, meta)
-    print(f"✅ Chapter {meta['chapter_no']}: {chapter.title} (id={chapter.id})")
+    print(f"✅ Chapter {meta['chapter_no']}: {chapter.title} (id={chapter.id}, status={meta['status']}, published={is_published})")
 
     lesson_count = 0
     link_count = 0
 
     for ld in lessons_data:
-        lesson = await _upsert_lesson(db, chapter, ld)
+        lesson = await _upsert_lesson(db, chapter, ld, is_published=is_published)
         print(f"  ✅ Lesson {ld['lesson_id']}: {ld['title']}")
 
         links = await _link_items(
