@@ -1,9 +1,19 @@
 import { expect, test } from '@playwright/test';
-import { mockAdminApi } from './helpers/mock-admin-api';
+import { mockAdminApi, type AdminApiMockState } from './helpers/mock-admin-api';
+
+let apiState: AdminApiMockState;
 
 test.beforeEach(async ({ page }) => {
-  await mockAdminApi(page);
+  apiState = await mockAdminApi(page);
 });
+
+function latestListParam(contentType: string, key: string): string {
+  const requests = apiState.listRequests.filter(
+    (request) => request.contentType === contentType
+  );
+  const latestRequest = requests[requests.length - 1];
+  return latestRequest?.searchParams[key] ?? '';
+}
 
 test('renders the login page without a live Supabase session', async ({
   page,
@@ -53,4 +63,172 @@ test('renders the vocabulary list and keeps filter state in the URL', async ({
 
   await page.getByLabel('JLPTレベル').selectOption('N5');
   await expect(page).toHaveURL(/jlpt=N5/);
+  await expect
+    .poll(() => latestListParam('vocabulary', 'jlpt_level'))
+    .toBe('N5');
+});
+
+test('filters the grammar list and opens the detail page', async ({ page }) => {
+  await page.goto('/grammar');
+
+  await expect(page.getByRole('heading', { name: '文法一覧' })).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '〜てもいいですか' })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '許可を求めるときに使う表現です。' })
+  ).toBeVisible();
+
+  await page.getByLabel('検索').fill('写真');
+  await expect.poll(() => latestListParam('grammar', 'search')).toBe('写真');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('grammar', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await page.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/grammar\/grammar-1$/);
+  await expect(page.getByRole('heading', { name: '文法を編集' })).toBeVisible();
+});
+
+test('filters the quiz list and preserves quiz type in detail links', async ({
+  page,
+}) => {
+  await page.goto('/quiz');
+
+  await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
+  const clozeRow = page
+    .getByRole('row')
+    .filter({ hasText: '私は毎朝コーヒーを___。' });
+  const arrangeRow = page
+    .getByRole('row')
+    .filter({ hasText: '図書館で日本語を勉強します。' });
+  await expect(clozeRow.getByText('cloze')).toBeVisible();
+  await expect(arrangeRow.getByText('sentence-arrange')).toBeVisible();
+  await expect(clozeRow.getByRole('link', { name: '詳細' })).toHaveAttribute(
+    'href',
+    '/quiz/cloze-1?type=cloze'
+  );
+  await expect(arrangeRow.getByRole('link', { name: '詳細' })).toHaveAttribute(
+    'href',
+    '/quiz/arrange-1?type=sentence_arrange'
+  );
+
+  await page.getByLabel('検索').fill('図書館');
+  await expect.poll(() => latestListParam('quiz', 'search')).toBe('図書館');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('JLPTレベル').selectOption('N5');
+  await expect.poll(() => latestListParam('quiz', 'jlpt_level')).toBe('N5');
+  await expect(page).toHaveURL(/jlpt=N5/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('quiz', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await arrangeRow.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/quiz\/arrange-1\?type=sentence_arrange$/);
+  await expect(
+    page.getByRole('heading', { name: 'クイズを編集' })
+  ).toBeVisible();
+});
+
+test('splits quiz bulk approve into canonical content-type batches', async ({
+  page,
+}) => {
+  await page.goto('/quiz');
+
+  await page.getByLabel('行 cloze-1 を選択').click();
+  await page.getByLabel('行 arrange-1 を選択').click();
+  await expect(page.getByText('2件選択中')).toBeVisible();
+
+  await page.getByRole('button', { name: '一括承認' }).click();
+
+  await expect
+    .poll(() =>
+      apiState.batchReviewRequests
+        .map((request) => JSON.stringify(request))
+        .sort()
+    )
+    .toEqual([
+      JSON.stringify({
+        contentType: 'cloze',
+        ids: ['cloze-1'],
+        action: 'approve',
+      }),
+      JSON.stringify({
+        contentType: 'sentence_arrange',
+        ids: ['arrange-1'],
+        action: 'approve',
+      }),
+    ]);
+  await expect(page.getByText('2件選択中')).toBeHidden();
+});
+
+test('submits non-quiz bulk reject with a review reason', async ({ page }) => {
+  await page.goto('/vocabulary');
+
+  await page.getByLabel('行 vocab-1 を選択').click();
+  await expect(page.getByText('1件選択中')).toBeVisible();
+
+  await page.getByRole('button', { name: '一括差し戻し' }).click();
+  await page.getByLabel('差し戻し理由').fill('例文をもう一度確認してください');
+  await page.getByRole('button', { name: '差し戻す' }).click();
+
+  await expect
+    .poll(() => apiState.batchReviewRequests)
+    .toEqual([
+      {
+        contentType: 'vocabulary',
+        ids: ['vocab-1'],
+        action: 'reject',
+        reason: '例文をもう一度確認してください',
+      },
+    ]);
+  await expect(page.getByText('1件選択中')).toBeHidden();
+  await expect(page.getByLabel('差し戻し理由')).toBeHidden();
+});
+
+test('filters the conversation list and opens the detail page', async ({
+  page,
+}) => {
+  await page.goto('/conversation');
+
+  await expect(
+    page.getByRole('heading', { name: '会話シナリオ一覧' })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '카페 주문 연습' })
+  ).toBeVisible();
+  await expect(page.getByRole('cell', { name: '日常' })).toBeVisible();
+  await expect(page.getByLabel('JLPTレベル')).toBeHidden();
+
+  await page.getByLabel('検索').fill('카페');
+  await expect
+    .poll(() => latestListParam('conversation', 'search'))
+    .toBe('카페');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('カテゴリ').selectOption('DAILY');
+  await expect
+    .poll(() => latestListParam('conversation', 'category'))
+    .toBe('DAILY');
+  await expect(page).toHaveURL(/category=DAILY/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('conversation', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await page.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/conversation\/conversation-1$/);
+  await expect(
+    page.getByRole('heading', { name: '会話シナリオを編集' })
+  ).toBeVisible();
 });
