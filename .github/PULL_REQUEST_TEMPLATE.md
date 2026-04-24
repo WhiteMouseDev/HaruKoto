@@ -49,6 +49,7 @@ AI 생성 PR일 경우 추가로:
 pnpm lint                                   # pass / fail: ...
 pnpm typecheck                              # pass
 pnpm test                                   # X passed / 0 failed
+pnpm --filter @harukoto/admin e2e           # pass (admin browser smoke)
 pnpm --filter @harukoto/admin build         # pass
 cd apps/api && uv run pytest tests/ -v      # pass (N tests)
 cd apps/mobile && flutter analyze           # 0 issues

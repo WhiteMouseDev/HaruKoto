@@ -17,6 +17,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
+      admin: ${{ steps.filter.outputs.admin }}
       frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
       mobile: ${{ steps.filter.outputs.mobile }}
@@ -36,6 +37,16 @@ jobs:
               - 'pnpm-lock.yaml'
               - 'pnpm-workspace.yaml'
               - 'turbo.json'
+            admin:
+              - 'apps/admin/**'
+              - 'packages/config/**'
+              - 'packages/database/**'
+              - 'packages/types/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
             backend:
               - 'apps/api/**'
               - 'packages/database/**'
@@ -86,6 +97,32 @@ jobs:
           NEXT_PUBLIC_PORTONE_STORE_ID: placeholder
           NEXT_PUBLIC_GA_ID: G-PLACEHOLDER
           NEXT_PUBLIC_SENTRY_DSN: ''
+
+  # ============================
+  # Admin E2E (Playwright browser smoke)
+  # ============================
+  admin-e2e:
+    needs: changes
+    if: needs.changes.outputs.admin == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v5.0.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @harukoto/admin exec playwright install --with-deps chromium
+
+      - name: Run admin browser smoke
+        run: pnpm --filter @harukoto/admin e2e
 
   # ============================
   # Backend (FastAPI)

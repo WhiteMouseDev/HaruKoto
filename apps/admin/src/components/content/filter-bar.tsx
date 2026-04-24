@@ -18,7 +18,11 @@ const selectClass =
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 const STATUS_OPTIONS = ['needs_review', 'approved', 'rejected'] as const;
 
-export function FilterBar({ showCategory = false, categories = [], showJlpt = true }: FilterBarProps) {
+export function FilterBar({
+  showCategory = false,
+  categories = [],
+  showJlpt = true,
+}: FilterBarProps) {
   const t = useTranslations('filter');
   const tStatus = useTranslations('status');
   const router = useRouter();
@@ -38,6 +42,9 @@ export function FilterBar({ showCategory = false, categories = [], showJlpt = tr
 
   // Debounce search: 300ms
   useEffect(() => {
+    const urlQ = searchParams.get('q') ?? '';
+    if (searchValue === urlQ) return;
+
     const timer = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (searchValue) {
@@ -49,8 +56,7 @@ export function FilterBar({ showCategory = false, categories = [], showJlpt = tr
       router.replace(pathname + '?' + params.toString());
     }, 300);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+  }, [searchValue, searchParams, router, pathname]);
 
   const handleFilterChange = useCallback(
     (key: string, value: string) => {

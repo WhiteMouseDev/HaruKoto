@@ -51,6 +51,8 @@ packages/database/prisma/*.db
 
 # Test
 coverage/
+playwright-report/
+test-results/
 
 # Vercel
 .vercel

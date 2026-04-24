@@ -1,7 +1,23 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { isE2eAuthBypassEnabled } from '@/lib/e2e-auth';
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isLoginPage = pathname === '/login';
+  const isAuthCallback = pathname.startsWith('/auth/');
+  const isApiRoute = pathname.startsWith('/api/');
+
+  if (isE2eAuthBypassEnabled()) {
+    if (pathname === '/') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -34,12 +50,6 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
-
-  const isLoginPage = pathname === '/login';
-  const isAuthCallback = pathname.startsWith('/auth/');
-  const isApiRoute = pathname.startsWith('/api/');
 
   // Non-exempt routes: require authentication + reviewer role
   if (!isLoginPage && !isAuthCallback && !isApiRoute) {

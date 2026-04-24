@@ -20,6 +20,7 @@
 - lint: `pnpm --filter <workspace> lint`
 - typecheck: `pnpm --filter <workspace> typecheck`
 - test: `pnpm --filter <workspace> test`
+- admin browser smoke: `pnpm --filter @harukoto/admin e2e` when admin routing, auth boundaries, or reviewer-critical UI flows change
 - 필요 시 build: `pnpm --filter <workspace> build`
 
 ### API
@@ -45,7 +46,8 @@
 
 ## E2E 주의사항
 
-- 이 저장소에는 현재 Playwright 기반 E2E 하니스가 정식 구성되어 있지 않을 수 있습니다.
+- `apps/admin`에는 Playwright smoke 하니스가 있습니다. 필요 시 `pnpm --filter @harukoto/admin e2e`를 실행합니다.
+- 다른 surface는 Playwright 기반 E2E 하니스가 정식 구성되어 있지 않을 수 있습니다.
 - E2E가 필요하면 먼저 실제 설정/스크립트 존재 여부를 확인하고, 없으면 “하니스 부재”를 명시합니다.
 
 ## 출력 형식

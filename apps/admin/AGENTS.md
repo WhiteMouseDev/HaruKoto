@@ -19,6 +19,7 @@ Instructions in this file apply to `apps/admin/**`.
 - `pnpm --filter @harukoto/admin lint`
 - `pnpm --filter @harukoto/admin typecheck`
 - `pnpm --filter @harukoto/admin test`
+- `pnpm --filter @harukoto/admin e2e` when admin routing, auth boundaries, or reviewer-critical UI flows change
 - `pnpm --filter @harukoto/admin build` when routes, config, auth boundaries, or shared package contracts change
 
 ## Change Risk
