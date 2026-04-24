@@ -13,6 +13,23 @@ const ALLOWED_META_STATUSES = new Set(['DRAFT', 'PILOT', 'PUBLISHED']);
 const QUESTION_TYPES = new Set(['VOCAB_MCQ', 'CONTEXT_CLOZE', 'SENTENCE_REORDER']);
 const COGNITIVE_LEVELS = new Set(['인식', '적용', '산출유사']);
 const PLACEHOLDER_RE = /\b(TODO|TBD|FIXME|PLACEHOLDER|LOREM)\b|임시|테스트용/i;
+const GRAMMAR_TEACHING_PATTERN_ALIASES = new Map([
+  [20, new Set(['〜ている'])],
+  [35, new Set(['これ / それ / あれ'])],
+  [36, new Set(['この / その / あの + 名詞'])],
+  [37, new Set(['名詞 + の + 名詞'])],
+  [38, new Set(['い形容詞 / な形容詞 + です'])],
+  [39, new Set(['い形容詞 + 名詞 / な形容詞 + な + 名詞'])],
+  [40, new Set(['ここ / そこ / あそこ'])],
+  [42, new Set(['〜に ある / いる'])],
+  [45, new Set(['動詞の辞書形 (る動詞 / う動詞)'])],
+  [47, new Set(['する / 来る (불규칙 동사)'])],
+  [48, new Set(['〜ない / 〜ません'])],
+  [49, new Set(['Verb て-form'])],
+  [50, new Set(['Verb+て、Verb'])],
+  [51, new Set(['Verb+てから'])],
+  [54, new Set(['もう〜ました'])],
+]);
 
 const CHECKS = [
   {
@@ -132,6 +149,15 @@ function hasText(value) {
 
 function normalize(value) {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function isAcceptedGrammarPattern(lessonPattern, referencePattern, grammarOrder) {
+  const normalizedLesson = normalize(lessonPattern);
+  const normalizedReference = normalize(referencePattern);
+  if (normalizedLesson === normalizedReference) return true;
+
+  const aliases = GRAMMAR_TEACHING_PATTERN_ALIASES.get(grammarOrder);
+  return aliases?.has(normalizedLesson) === true;
 }
 
 function sameMultiset(left, right) {
@@ -400,7 +426,10 @@ function validateLessonFile(filePath, level, vocabByOrder, grammarByOrder, state
       const grammar = grammarByOrder.get(grammarOrder);
       if (!grammar) {
         addIssue(rows, 'FAIL', 'Reference links', context, `Grammar order ${grammarOrder} not found for ${level}.`);
-      } else if (hasText(lesson?.grammar?.pattern) && normalize(lesson.grammar.pattern) !== normalize(grammar.pattern)) {
+      } else if (
+        hasText(lesson?.grammar?.pattern) &&
+        !isAcceptedGrammarPattern(lesson.grammar.pattern, grammar.pattern, grammarOrder)
+      ) {
         addIssue(
           rows,
           'WARN',
