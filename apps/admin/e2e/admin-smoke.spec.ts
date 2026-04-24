@@ -94,6 +94,50 @@ test('filters the grammar list and opens the detail page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '文法を編集' })).toBeVisible();
 });
 
+test('filters the quiz list and preserves quiz type in detail links', async ({
+  page,
+}) => {
+  await page.goto('/quiz');
+
+  await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
+  const clozeRow = page
+    .getByRole('row')
+    .filter({ hasText: '私は毎朝コーヒーを___。' });
+  const arrangeRow = page
+    .getByRole('row')
+    .filter({ hasText: '図書館で日本語を勉強します。' });
+  await expect(clozeRow.getByText('cloze')).toBeVisible();
+  await expect(arrangeRow.getByText('sentence-arrange')).toBeVisible();
+  await expect(clozeRow.getByRole('link', { name: '詳細' })).toHaveAttribute(
+    'href',
+    '/quiz/cloze-1?type=cloze'
+  );
+  await expect(arrangeRow.getByRole('link', { name: '詳細' })).toHaveAttribute(
+    'href',
+    '/quiz/arrange-1?type=sentence_arrange'
+  );
+
+  await page.getByLabel('検索').fill('図書館');
+  await expect.poll(() => latestListParam('quiz', 'search')).toBe('図書館');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('JLPTレベル').selectOption('N5');
+  await expect.poll(() => latestListParam('quiz', 'jlpt_level')).toBe('N5');
+  await expect(page).toHaveURL(/jlpt=N5/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('quiz', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await arrangeRow.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/quiz\/arrange-1\?type=sentence_arrange$/);
+  await expect(
+    page.getByRole('heading', { name: 'クイズを編集' })
+  ).toBeVisible();
+});
+
 test('filters the conversation list and opens the detail page', async ({
   page,
 }) => {

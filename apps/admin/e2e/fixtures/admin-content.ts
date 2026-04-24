@@ -73,6 +73,31 @@ export const grammarListResponse = {
   totalPages: 1,
 };
 
+export const quizListResponse = {
+  items: [
+    {
+      id: 'cloze-1',
+      sentence: '私は毎朝コーヒーを___。',
+      quizType: 'cloze',
+      jlptLevel: 'N5',
+      reviewStatus: 'needs_review',
+      createdAt: '2026-04-24T00:00:00.000Z',
+    },
+    {
+      id: 'arrange-1',
+      sentence: '図書館で日本語を勉強します。',
+      quizType: 'sentence_arrange',
+      jlptLevel: 'N5',
+      reviewStatus: 'needs_review',
+      createdAt: '2026-04-24T00:05:00.000Z',
+    },
+  ],
+  total: 2,
+  page: 1,
+  pageSize: 20,
+  totalPages: 1,
+};
+
 export const vocabularyDetailResponse = {
   id: 'vocab-1',
   word: '食べる',
@@ -153,6 +178,75 @@ export const grammarTtsResponse = {
       createdAt: '2026-04-24T00:00:00.000Z',
     },
     example_sentences: null,
+  },
+};
+
+export const clozeDetailResponse = {
+  id: 'cloze-1',
+  sentence: '私は毎朝コーヒーを___。',
+  translation: '나는 매일 아침 커피를 마신다.',
+  correctAnswer: '飲みます',
+  options: ['飲みます', '食べます', '行きます'],
+  explanation: '飲み物には「飲みます」を使います。',
+  jlptLevel: 'N5',
+  reviewStatus: 'needs_review',
+  createdAt: '2026-04-24T00:00:00.000Z',
+  updatedAt: '2026-04-24T01:00:00.000Z',
+};
+
+export const clozeAuditLogsResponse = [
+  {
+    id: 'audit-cloze-1',
+    action: 'edit',
+    changes: {
+      correctAnswer: '飲みます',
+    },
+    reason: null,
+    reviewerId: '00000000-0000-4000-8000-000000000001',
+    reviewerEmail: 'quiz-reviewer@harukoto.test',
+    createdAt: '2026-04-24T02:30:00.000Z',
+  },
+];
+
+export const clozeTtsResponse = {
+  audios: {
+    sentence: null,
+  },
+};
+
+export const sentenceArrangeDetailResponse = {
+  id: 'arrange-1',
+  koreanSentence: '도서관에서 일본어를 공부합니다.',
+  japaneseSentence: '図書館で日本語を勉強します。',
+  tokens: ['図書館', 'で', '日本語', 'を', '勉強', 'します'],
+  explanation: '場所を表す「で」を使います。',
+  jlptLevel: 'N5',
+  reviewStatus: 'needs_review',
+  createdAt: '2026-04-24T00:05:00.000Z',
+  updatedAt: '2026-04-24T01:05:00.000Z',
+};
+
+export const sentenceArrangeAuditLogsResponse = [
+  {
+    id: 'audit-arrange-1',
+    action: 'edit',
+    changes: {
+      japaneseSentence: '図書館で日本語を勉強します。',
+    },
+    reason: null,
+    reviewerId: '00000000-0000-4000-8000-000000000001',
+    reviewerEmail: 'arrange-reviewer@harukoto.test',
+    createdAt: '2026-04-24T02:40:00.000Z',
+  },
+];
+
+export const sentenceArrangeTtsResponse = {
+  audios: {
+    japanese_sentence: {
+      audioUrl: 'https://cdn.e2e.test/audio/sentence-arrange.mp3',
+      provider: 'elevenlabs',
+      createdAt: '2026-04-24T00:05:00.000Z',
+    },
   },
 };
 

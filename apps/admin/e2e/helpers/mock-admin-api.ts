@@ -1,5 +1,8 @@
 import type { Page, Request } from '@playwright/test';
 import {
+  clozeAuditLogsResponse,
+  clozeDetailResponse,
+  clozeTtsResponse,
   conversationAuditLogsResponse,
   conversationDetailResponse,
   conversationListResponse,
@@ -8,6 +11,10 @@ import {
   grammarDetailResponse,
   grammarListResponse,
   grammarTtsResponse,
+  quizListResponse,
+  sentenceArrangeAuditLogsResponse,
+  sentenceArrangeDetailResponse,
+  sentenceArrangeTtsResponse,
   statsResponse,
   supabaseUserResponse,
   vocabularyAuditLogsResponse,
@@ -37,6 +44,8 @@ type ContentDetailMock = {
   detail: unknown;
   auditLogs: unknown;
   tts: unknown;
+  auditContentType?: string;
+  ttsContentType?: string;
 };
 
 const contentListMocks: ContentListMock[] = [
@@ -47,6 +56,10 @@ const contentListMocks: ContentListMock[] = [
   {
     contentType: 'grammar',
     list: grammarListResponse,
+  },
+  {
+    contentType: 'quiz',
+    list: quizListResponse,
   },
   {
     contentType: 'conversation',
@@ -68,6 +81,24 @@ const contentDetailMocks: ContentDetailMock[] = [
     detail: grammarDetailResponse,
     auditLogs: grammarAuditLogsResponse,
     tts: grammarTtsResponse,
+  },
+  {
+    contentType: 'quiz/cloze',
+    itemId: 'cloze-1',
+    detail: clozeDetailResponse,
+    auditLogs: clozeAuditLogsResponse,
+    tts: clozeTtsResponse,
+    auditContentType: 'cloze',
+    ttsContentType: 'cloze',
+  },
+  {
+    contentType: 'quiz/sentence-arrange',
+    itemId: 'arrange-1',
+    detail: sentenceArrangeDetailResponse,
+    auditLogs: sentenceArrangeAuditLogsResponse,
+    tts: sentenceArrangeTtsResponse,
+    auditContentType: 'sentence_arrange',
+    ttsContentType: 'sentence_arrange',
   },
   {
     contentType: 'conversation',
@@ -112,16 +143,18 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
 
   for (const content of contentDetailMocks) {
     const baseUrl = `https://api.e2e.test/api/v1/admin/content/${content.contentType}/${content.itemId}`;
+    const auditBaseUrl = `https://api.e2e.test/api/v1/admin/content/${content.auditContentType ?? content.contentType}/${content.itemId}`;
+    const ttsBaseUrl = `https://api.e2e.test/api/v1/admin/content/${content.ttsContentType ?? content.contentType}/${content.itemId}`;
 
     await page.route(baseUrl, async (route) => {
       await route.fulfill({ json: content.detail });
     });
 
-    await page.route(`${baseUrl}/audit-logs`, async (route) => {
+    await page.route(`${auditBaseUrl}/audit-logs`, async (route) => {
       await route.fulfill({ json: content.auditLogs });
     });
 
-    await page.route(`${baseUrl}/tts`, async (route) => {
+    await page.route(`${ttsBaseUrl}/tts`, async (route) => {
       await route.fulfill({ json: content.tts });
     });
 
