@@ -472,22 +472,61 @@ class _RecommendedLessonCard extends StatelessWidget {
                         color: AppColors.lightSubtext,
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => context.push('/study/lessons'),
+                            icon: const Icon(LucideIcons.list, size: 16),
+                            label: const Text('전체 레슨'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.primaryStrong,
+                              side: BorderSide(
+                                color: AppColors.primaryStrong
+                                    .withValues(alpha: 0.42),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () =>
+                                context.push('/study/lessons/${lesson.id}'),
+                            icon: Icon(
+                              lesson.status == 'IN_PROGRESS'
+                                  ? LucideIcons.playCircle
+                                  : LucideIcons.arrowRight,
+                              size: 16,
+                            ),
+                            label: Text(
+                              lesson.status == 'IN_PROGRESS' ? '이어하기' : '시작하기',
+                            ),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primaryStrong,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
-                ),
-              ),
-              FilledButton(
-                onPressed: () => context.push('/study/lessons/${lesson.id}'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryStrong,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                child: Text(
-                  lesson.status == 'IN_PROGRESS' ? '이어하기' : '시작하기',
                 ),
               ),
             ],
