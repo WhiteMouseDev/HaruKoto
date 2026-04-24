@@ -19,6 +19,7 @@ from app.services.tts_generation import (
 logger = logging.getLogger(__name__)
 
 _GENERATING: set[str] = set()
+KANA_TTS_FIELD = "reading"
 
 
 class KanaTtsServiceError(TtsServiceError):
@@ -45,6 +46,7 @@ async def generate_kana_tts(
             TtsAudio.target_type == "kana",
             TtsAudio.target_id == text_hash,
             TtsAudio.speed == 1.0,
+            TtsAudio.field == KANA_TTS_FIELD,
         )
     )
     tts_record = cached.scalar_one_or_none()
@@ -70,6 +72,7 @@ async def generate_kana_tts(
                 provider=tts_result.provider,
                 model=tts_result.model,
                 audio_url=audio_url,
+                field=KANA_TTS_FIELD,
             )
         )
         await db.commit()
