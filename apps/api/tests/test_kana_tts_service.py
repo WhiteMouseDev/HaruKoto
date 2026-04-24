@@ -75,6 +75,7 @@ async def test_generate_kana_tts_generates_uploads_and_persists() -> None:
     assert db.added[0].target_type == "kana"
     assert db.added[0].target_id == expected_hash
     assert db.added[0].text == "あ"
+    assert db.added[0].field == "reading"
 
 
 @pytest.mark.asyncio
