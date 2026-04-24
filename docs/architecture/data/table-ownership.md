@@ -43,6 +43,22 @@
 
 **실행**: `cd apps/api && python -m app.seeds.lessons`
 
+### 개발/스테이징 학습 콘텐츠 통합 시드
+
+새 환경에서 학습 콘텐츠를 재현할 때는 root 명령을 사용한다.
+
+```bash
+DATABASE_URL="postgresql+asyncpg://user:pass@host:5432/db" pnpm seed:learning
+```
+
+이 명령은 아래 순서를 보장한다.
+
+1. Prisma 정적 콘텐츠: vocabulary, grammar, kana, cloze, sentence arrange, scenarios, characters
+2. SQLAlchemy 레슨 콘텐츠: N5 chapter, lesson, lesson item links
+3. SQLAlchemy 학습 스테이지: N5 vocabulary, grammar, sentence stages
+
+`DATABASE_URL`은 FastAPI/SQLAlchemy용 async URL이다. Prisma에 sync URL이 필요하면 `PRISMA_DATABASE_URL`을 별도로 지정한다.
+
 ---
 
 ## 런타임 쓰기 Ownership
