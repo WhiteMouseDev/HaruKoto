@@ -12,6 +12,7 @@ import '../../home/providers/home_provider.dart';
 import '../../my/providers/settings_sync_provider.dart';
 import '../data/models/review_summary_model.dart';
 import '../domain/lesson_recommendation.dart';
+import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
@@ -37,6 +38,8 @@ class StudyPage extends ConsumerStatefulWidget {
 }
 
 class _StudyPageState extends ConsumerState<StudyPage> {
+  final _trackedLessonListViews = <String>{};
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -64,6 +67,19 @@ class _StudyPageState extends ConsumerState<StudyPage> {
     final recommendedLesson = chaptersAsync.hasValue
         ? findRecommendedLesson(chaptersAsync.value!.chapters)
         : null;
+    final chapterList = chaptersAsync.hasValue ? chaptersAsync.value! : null;
+    if (chapterList != null) {
+      _trackLessonListViewedOnce(
+        jlptLevel: jlptLevel,
+        source: 'study_home',
+        chapterCount: chapterList.chapters.length,
+        lessonCount: chapterList.chapters.fold<int>(
+          0,
+          (total, chapter) => total + chapter.lessons.length,
+        ),
+        recommendedLessonId: recommendedLesson?.lesson.id,
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -115,7 +131,22 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                           summary.wordNew > 0 || summary.grammarNew > 0;
                       if (summary.totalDue > 0) {
                         return _ReviewDueCard(
-                            summary: summary, jlptLevel: jlptLevel);
+                          summary: summary,
+                          jlptLevel: jlptLevel,
+                          onReviewCtaClicked: () {
+                            ref
+                                .read(lessonPilotTelemetryProvider)
+                                .trackReviewCtaClicked(
+                                  jlptLevel: jlptLevel,
+                                  totalDue: summary.totalDue,
+                                  wordDue: summary.wordDue,
+                                  grammarDue: summary.grammarDue,
+                                  quizType: summary.grammarDue > summary.wordDue
+                                      ? 'GRAMMAR'
+                                      : 'VOCABULARY',
+                                );
+                          },
+                        );
                       }
                       if (!hasEverStudied) {
                         return _ReviewIdleBar(
@@ -245,6 +276,34 @@ class _StudyPageState extends ConsumerState<StudyPage> {
       ),
     );
   }
+
+  void _trackLessonListViewedOnce({
+    required String jlptLevel,
+    required String source,
+    required int chapterCount,
+    required int lessonCount,
+    String? recommendedLessonId,
+  }) {
+    final key = [
+      source,
+      jlptLevel,
+      chapterCount,
+      lessonCount,
+      recommendedLessonId,
+    ].join(':');
+    if (!_trackedLessonListViews.add(key)) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(lessonPilotTelemetryProvider).trackLessonListViewed(
+            jlptLevel: jlptLevel,
+            source: source,
+            chapterCount: chapterCount,
+            lessonCount: lessonCount,
+            recommendedLessonId: recommendedLessonId,
+          );
+    });
+  }
 }
 
 // ── SRS Review Card (due items) ──
@@ -252,12 +311,26 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 class _ReviewDueCard extends StatelessWidget {
   final String jlptLevel;
   final ReviewSummaryModel summary;
+  final VoidCallback onReviewCtaClicked;
 
-  const _ReviewDueCard({required this.summary, required this.jlptLevel});
+  const _ReviewDueCard({
+    required this.summary,
+    required this.jlptLevel,
+    required this.onReviewCtaClicked,
+  });
 
   // Pick review category: prefer the one with more due items
   String get _reviewQuizType =>
       summary.grammarDue > summary.wordDue ? 'GRAMMAR' : 'VOCABULARY';
+
+  void _openReview(BuildContext context) {
+    onReviewCtaClicked();
+    openReviewQuiz(
+      context,
+      quizType: _reviewQuizType,
+      jlptLevel: jlptLevel,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,11 +341,7 @@ class _ReviewDueCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        onTap: () => openReviewQuiz(
-          context,
-          quizType: _reviewQuizType,
-          jlptLevel: jlptLevel,
-        ),
+        onTap: () => _openReview(context),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -334,11 +403,7 @@ class _ReviewDueCard extends StatelessWidget {
                 ),
               ),
               FilledButton(
-                onPressed: () => openReviewQuiz(
-                  context,
-                  quizType: _reviewQuizType,
-                  jlptLevel: jlptLevel,
-                ),
+                onPressed: () => _openReview(context),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primaryStrong,
                   padding:

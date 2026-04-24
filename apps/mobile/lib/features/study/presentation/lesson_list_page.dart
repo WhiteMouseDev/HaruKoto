@@ -6,19 +6,40 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../domain/lesson_recommendation.dart';
+import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
 
-class LessonListPage extends ConsumerWidget {
+class LessonListPage extends ConsumerStatefulWidget {
   const LessonListPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LessonListPage> createState() => _LessonListPageState();
+}
+
+class _LessonListPageState extends ConsumerState<LessonListPage> {
+  final _trackedLessonListViews = <String>{};
+
+  @override
+  Widget build(BuildContext context) {
     final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
     final recommendedLesson = chaptersAsync.hasValue
         ? findRecommendedLesson(chaptersAsync.value!.chapters)
         : null;
+    final chapterList = chaptersAsync.hasValue ? chaptersAsync.value! : null;
+    if (chapterList != null) {
+      _trackLessonListViewedOnce(
+        jlptLevel: jlptLevel,
+        source: 'lesson_list',
+        chapterCount: chapterList.chapters.length,
+        lessonCount: chapterList.chapters.fold<int>(
+          0,
+          (total, chapter) => total + chapter.lessons.length,
+        ),
+        recommendedLessonId: recommendedLesson?.lesson.id,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('전체 레슨')),
@@ -52,6 +73,34 @@ class LessonListPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _trackLessonListViewedOnce({
+    required String jlptLevel,
+    required String source,
+    required int chapterCount,
+    required int lessonCount,
+    String? recommendedLessonId,
+  }) {
+    final key = [
+      source,
+      jlptLevel,
+      chapterCount,
+      lessonCount,
+      recommendedLessonId,
+    ].join(':');
+    if (!_trackedLessonListViews.add(key)) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(lessonPilotTelemetryProvider).trackLessonListViewed(
+            jlptLevel: jlptLevel,
+            source: source,
+            chapterCount: chapterCount,
+            lessonCount: lessonCount,
+            recommendedLessonId: recommendedLessonId,
+          );
+    });
   }
 }
 

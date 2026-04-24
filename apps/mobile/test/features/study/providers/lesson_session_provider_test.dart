@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
+import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
@@ -44,6 +45,51 @@ void main() {
       expect(state.step, LessonStep.recognition);
       expect(state.recognitionIndex, 0);
       expect(state.answers, isEmpty);
+    });
+
+    test('startPractice tracks a lesson_started pilot event', () async {
+      final repository = _FakeStudyRepository();
+      final events = <LessonPilotEvent>[];
+      final container = ProviderContainer(
+        overrides: [
+          studyRepositoryProvider.overrideWith((ref) => repository),
+          lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
+        ],
+      );
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
+      await notifier.startPractice(
+        _buildDetail(
+          questions: const [
+            LessonQuestionModel(
+              order: 1,
+              type: 'VOCAB_MCQ',
+              prompt: 'question-1',
+            ),
+            LessonQuestionModel(
+              order: 2,
+              type: 'SENTENCE_REORDER',
+              prompt: 'reorder-1',
+              tokens: ['a', 'b'],
+            ),
+          ],
+        ),
+      );
+
+      final startedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonStarted,
+      );
+      expect(startedEvent.properties['lessonId'], 'lesson-1');
+      expect(startedEvent.properties['lessonNo'], 1);
+      expect(startedEvent.properties['hasRecognitionStep'], isTrue);
+      expect(startedEvent.properties['hasReorderStep'], isTrue);
+      expect(startedEvent.properties['recognitionQuestionCount'], 1);
+      expect(startedEvent.properties['reorderQuestionCount'], 1);
     });
 
     test('answerRecognition advances through questions into matching',
@@ -165,6 +211,47 @@ void main() {
       expect(state.result, isNotNull);
     });
 
+    test('successful submit tracks submitted and completed pilot events',
+        () async {
+      final repository = _FakeStudyRepository();
+      final events = <LessonPilotEvent>[];
+      final container = ProviderContainer(
+        overrides: [
+          studyRepositoryProvider.overrideWith((ref) => repository),
+          lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
+        ],
+      );
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      final detail = _buildDetail(questions: const []);
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
+      await notifier.startPractice(detail);
+      await notifier.completeMatching(
+        detail: detail,
+        jlptLevel: 'N5',
+      );
+
+      expect(
+        events.map((event) => event.name),
+        containsAllInOrder([
+          LessonPilotEventNames.lessonStepCompleted,
+          LessonPilotEventNames.lessonSubmitted,
+          LessonPilotEventNames.lessonCompleted,
+        ]),
+      );
+      final submittedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonSubmitted,
+      );
+      expect(submittedEvent.properties['outcome'], 'success');
+      expect(submittedEvent.properties['answerCount'], 0);
+      expect(submittedEvent.properties['status'], 'COMPLETED');
+      expect(submittedEvent.properties['srsItemsRegistered'], 1);
+    });
+
     test('answerReorder submits after the final reorder answer', () async {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
@@ -238,9 +325,11 @@ void main() {
     test('submit failure is exposed through submissionErrorMessage', () async {
       final repository = _FakeStudyRepository()
         ..submitError = Exception('network down');
+      final events = <LessonPilotEvent>[];
       final container = ProviderContainer(
         overrides: [
           studyRepositoryProvider.overrideWith((ref) => repository),
+          lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
         ],
       );
       final sub =
@@ -263,6 +352,31 @@ void main() {
       expect(state.step, LessonStep.matching);
       expect(state.submitting, isFalse);
       expect(state.submissionErrorMessage, contains('network down'));
+      final submittedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonSubmitted,
+      );
+      expect(submittedEvent.properties['outcome'], 'failure');
+      expect(submittedEvent.properties['errorType'], contains('Exception'));
+    });
+
+    test('reset tracks a lesson_retry_clicked pilot event', () async {
+      final repository = _FakeStudyRepository();
+      final events = <LessonPilotEvent>[];
+      final container = ProviderContainer(
+        overrides: [
+          studyRepositoryProvider.overrideWith((ref) => repository),
+          lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
+        ],
+      );
+      final sub =
+          container.listen(lessonSessionProvider('lesson-1'), (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      container.read(lessonSessionProvider('lesson-1').notifier).reset();
+
+      expect(events.single.name, LessonPilotEventNames.lessonRetryClicked);
+      expect(events.single.properties['lessonId'], 'lesson-1');
     });
   });
 }
