@@ -12,6 +12,7 @@ import {
   grammarListResponse,
   grammarTtsResponse,
   quizListResponse,
+  reviewQueueResponses,
   sentenceArrangeAuditLogsResponse,
   sentenceArrangeDetailResponse,
   sentenceArrangeTtsResponse,
@@ -28,9 +29,15 @@ type ContentListRequest = {
   searchParams: Record<string, string>;
 };
 
+type ReviewQueueRequest = {
+  contentType: string;
+  searchParams: Record<string, string>;
+};
+
 export type AdminApiMockState = {
   batchReviewRequests: Array<unknown>;
   listRequests: ContentListRequest[];
+  queueRequests: ReviewQueueRequest[];
   reviewRequests: Array<unknown>;
 };
 
@@ -126,6 +133,7 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
   const state: AdminApiMockState = {
     batchReviewRequests: [],
     listRequests: [],
+    queueRequests: [],
     reviewRequests: [],
   };
 
@@ -150,6 +158,21 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
       await route.fulfill({ status: 204 });
     }
   );
+
+  for (const [contentType, queue] of Object.entries(reviewQueueResponses)) {
+    await page.route(
+      new RegExp(
+        `https:\\/\\/api\\.e2e\\.test\\/api\\/v1\\/admin\\/content\\/review-queue\\/${contentType}(?:\\?.*)?$`
+      ),
+      async (route) => {
+        state.queueRequests.push({
+          contentType,
+          searchParams: readSearchParams(route.request()),
+        });
+        await route.fulfill({ json: queue });
+      }
+    );
+  }
 
   for (const content of contentDetailMocks) {
     const baseUrl = `https://api.e2e.test/api/v1/admin/content/${content.contentType}/${content.itemId}`;

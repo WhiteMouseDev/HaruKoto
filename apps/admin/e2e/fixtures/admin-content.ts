@@ -98,6 +98,32 @@ export const quizListResponse = {
   totalPages: 1,
 };
 
+export const reviewQueueResponses = {
+  vocabulary: {
+    ids: [{ id: 'vocab-1' }],
+    total: 1,
+    capped: false,
+  },
+  grammar: {
+    ids: [{ id: 'grammar-1' }],
+    total: 1,
+    capped: false,
+  },
+  quiz: {
+    ids: [
+      { id: 'cloze-1', quizType: 'cloze' },
+      { id: 'arrange-1', quizType: 'sentence_arrange' },
+    ],
+    total: 2,
+    capped: false,
+  },
+  conversation: {
+    ids: [{ id: 'conversation-1' }],
+    total: 1,
+    capped: false,
+  },
+};
+
 export const vocabularyDetailResponse = {
   id: 'vocab-1',
   word: '食べる',
