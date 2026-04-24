@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Conversation, DailyProgress, Notification, User
+from app.services.daily_progress_upsert import build_daily_progress_insert_values
 from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
 from app.services.subscription_ai_usage import track_ai_usage
 from app.utils.constants import REWARDS
@@ -34,13 +35,13 @@ async def _update_daily_conversation_progress(
     await db.execute(
         insert(DailyProgress)
         .values(
-            user_id=user_id,
-            date=get_today_kst(),
-            xp_earned=xp,
-            quizzes_completed=0,
-            words_studied=0,
-            study_minutes=study_minutes,
-            conversation_count=1,
+            **build_daily_progress_insert_values(
+                user_id=user_id,
+                today=get_today_kst(),
+                xp_earned=xp,
+                study_minutes=study_minutes,
+                conversation_count=1,
+            )
         )
         .on_conflict_do_update(
             index_elements=["user_id", "date"],

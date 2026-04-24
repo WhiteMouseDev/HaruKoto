@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
-from typing import Literal, NotRequired, TypedDict
+from datetime import UTC, date, datetime
+from typing import Any, Literal, NotRequired, TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
@@ -77,20 +77,46 @@ async def track_ai_usage(
 ) -> None:
     """AI 사용량 기록 (upsert)."""
     today = date.today()
+    stmt = build_ai_usage_tracking_statement(
+        user_id=user_id,
+        today=today,
+        usage_type=usage_type,
+        duration_seconds=duration_seconds,
+    )
+    await db.execute(stmt)
+    await db.flush()
+
+
+def build_ai_usage_tracking_statement(
+    *,
+    user_id: uuid.UUID,
+    today: date,
+    usage_type: Literal["chat", "call"],
+    duration_seconds: int,
+) -> Any:
     count_field = "chat_count" if usage_type == "chat" else "call_count"
     seconds_field = "chat_seconds" if usage_type == "chat" else "call_seconds"
+    now = datetime.now(tz=UTC)
+    insert_values = {
+        "id": uuid.uuid4(),
+        "user_id": user_id,
+        "date": today,
+        "chat_count": 0,
+        "chat_seconds": 0,
+        "call_count": 0,
+        "call_seconds": 0,
+        "created_at": now,
+        "updated_at": now,
+    }
+    insert_values[count_field] = 1
+    insert_values[seconds_field] = duration_seconds
 
-    stmt = insert(DailyAiUsage).values(
-        user_id=user_id,
-        date=today,
-        **{count_field: 1, seconds_field: duration_seconds},
-    )
-    stmt = stmt.on_conflict_do_update(
+    stmt = insert(DailyAiUsage).values(**insert_values)
+    return stmt.on_conflict_do_update(
         index_elements=["user_id", "date"],
         set_={
             count_field: getattr(DailyAiUsage, count_field) + 1,
             seconds_field: getattr(DailyAiUsage, seconds_field) + duration_seconds,
+            "updated_at": now,
         },
     )
-    await db.execute(stmt)
-    await db.flush()

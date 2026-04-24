@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyProgress
+from app.services.daily_progress_upsert import build_daily_progress_insert_values
 
 
 async def apply_daily_progress_increment(
@@ -35,10 +36,7 @@ def build_daily_progress_increment_statement(
     xp_earned: int = 0,
     kana_learned: int = 0,
 ) -> Any:
-    values: dict[str, Any] = {
-        "user_id": user_id,
-        "date": today,
-    }
+    values = build_daily_progress_insert_values(user_id=user_id, today=today)
     updates: dict[str, Any] = {}
 
     if xp_earned:

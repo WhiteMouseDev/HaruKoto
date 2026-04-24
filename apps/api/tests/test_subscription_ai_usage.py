@@ -1,8 +1,11 @@
+from datetime import date
 from unittest.mock import AsyncMock, MagicMock, patch
+from uuid import UUID
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
-from app.services.subscription_ai_usage import check_ai_limit, get_daily_ai_usage
+from app.services.subscription_ai_usage import build_ai_usage_tracking_statement, check_ai_limit, get_daily_ai_usage
 
 
 @pytest.mark.asyncio
@@ -54,3 +57,22 @@ async def test_check_ai_limit_allows_premium_call_under_limit(mock_get_status, m
     result = await check_ai_limit(MagicMock(), MagicMock(), "call")
 
     assert result == {"allowed": True}
+
+
+def test_build_ai_usage_tracking_statement_sets_all_non_null_insert_columns():
+    stmt = build_ai_usage_tracking_statement(
+        user_id=UUID("00000000-0000-0000-0000-000000000001"),
+        today=date(2026, 4, 24),
+        usage_type="call",
+        duration_seconds=120,
+    )
+
+    params = stmt.compile(dialect=postgresql.dialect()).params
+
+    assert params["id"] is not None
+    assert params["chat_count"] == 0
+    assert params["chat_seconds"] == 0
+    assert params["call_count"] == 1
+    assert params["call_seconds"] == 120
+    assert params["created_at"] is not None
+    assert params["updated_at"] is not None

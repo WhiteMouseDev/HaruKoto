@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import DailyProgress, QuizSession, UserStudyStageProgress, UserVocabProgress
 from app.models.user import User
 from app.schemas.quiz import QuizCompleteRequest
+from app.services.daily_progress_upsert import build_daily_progress_insert_values
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
 from app.services.quiz_complete_metrics import calculate_accuracy, calculate_daily_progress_increments, calculate_study_minutes
 from app.utils.constants import REWARDS
@@ -84,16 +85,18 @@ async def _update_daily_progress(
     increments = calculate_daily_progress_increments(session)
 
     stmt = pg_insert(DailyProgress).values(
-        user_id=user_id,
-        date=today,
-        quizzes_completed=1,
-        correct_answers=session.correct_count,
-        total_answers=session.total_questions,
-        xp_earned=xp_earned,
-        words_studied=increments.words_studied,
-        grammar_studied=increments.grammar_studied,
-        sentences_studied=increments.sentences_studied,
-        study_minutes=study_duration_minutes,
+        **build_daily_progress_insert_values(
+            user_id=user_id,
+            today=today,
+            quizzes_completed=1,
+            correct_answers=session.correct_count,
+            total_answers=session.total_questions,
+            xp_earned=xp_earned,
+            words_studied=increments.words_studied,
+            grammar_studied=increments.grammar_studied,
+            sentences_studied=increments.sentences_studied,
+            study_minutes=study_duration_minutes,
+        )
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["user_id", "date"],
