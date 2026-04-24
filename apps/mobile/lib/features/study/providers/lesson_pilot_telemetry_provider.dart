@@ -1,7 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 typedef LessonPilotTelemetrySink = void Function(LessonPilotEvent event);
+typedef LessonPilotBreadcrumbRecorder = Future<void> Function(
+  Breadcrumb breadcrumb,
+);
 
 class LessonPilotEvent {
   const LessonPilotEvent({required this.name, required this.properties});
@@ -28,9 +34,7 @@ class LessonPilotEventNames {
 final lessonPilotTelemetrySinkProvider = Provider<LessonPilotTelemetrySink>((
   ref,
 ) {
-  return (event) {
-    debugPrint('[LessonPilotTelemetry] $event');
-  };
+  return LessonPilotSentryTelemetrySink().call;
 });
 
 final lessonPilotTelemetryProvider = Provider<LessonPilotTelemetry>((ref) {
@@ -155,5 +159,41 @@ class LessonPilotTelemetry {
       for (final entry in properties.entries)
         if (entry.value != null) entry.key: entry.value!,
     };
+  }
+}
+
+class LessonPilotSentryTelemetrySink {
+  LessonPilotSentryTelemetrySink({
+    this.debugLog = kDebugMode,
+    LessonPilotBreadcrumbRecorder? recordBreadcrumb,
+  }) : _recordBreadcrumb = recordBreadcrumb ??
+            ((breadcrumb) => Sentry.addBreadcrumb(breadcrumb));
+
+  static const _category = 'harukoto.lesson_pilot';
+
+  final bool debugLog;
+  final LessonPilotBreadcrumbRecorder _recordBreadcrumb;
+
+  void call(LessonPilotEvent event) {
+    if (debugLog) {
+      debugPrint('[LessonPilotTelemetry] $event');
+    }
+
+    unawaited(
+      _recordBreadcrumb(
+        Breadcrumb(
+          category: _category,
+          message: event.name,
+          level: SentryLevel.info,
+          data: event.properties,
+        ),
+      ).catchError((Object error, StackTrace stackTrace) {
+        if (debugLog) {
+          debugPrint(
+            '[LessonPilotTelemetry] Failed to record breadcrumb: $error',
+          );
+        }
+      }),
+    );
   }
 }
