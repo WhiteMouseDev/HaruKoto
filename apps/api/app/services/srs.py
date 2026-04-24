@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.lesson import LessonItemLink
 from app.models.progress import UserGrammarProgress, UserVocabProgress
+from app.services.progress_defaults import new_progress_defaults
 from app.services.srs_session_builder import SessionCard as SessionCard
 from app.services.srs_session_builder import build_smart_session as build_smart_session
 from app.services.srs_transition import (
@@ -87,6 +88,7 @@ async def register_items_from_lesson(
     registered = 0
 
     for link in item_links:
+        now = datetime.now(UTC)
         if link.item_type not in ("WORD", "GRAMMAR"):
             continue
 
@@ -112,7 +114,8 @@ async def register_items_from_lesson(
                 progress.introduced_by = "LESSON"
                 progress.source_lesson_id = lesson_id
                 progress.learning_step = 0
-                progress.next_review_at = datetime.now(UTC) + timedelta(days=LEARNING_INTERVALS[0])
+                progress.next_review_at = now + timedelta(days=LEARNING_INTERVALS[0])
+                progress.updated_at = now
                 registered += 1
         else:
             # Create new progress record
@@ -124,7 +127,8 @@ async def register_items_from_lesson(
                 introduced_by="LESSON",
                 source_lesson_id=lesson_id,
                 learning_step=0,
-                next_review_at=datetime.now(UTC) + timedelta(days=LEARNING_INTERVALS[0]),
+                next_review_at=now + timedelta(days=LEARNING_INTERVALS[0]),
+                **new_progress_defaults(now),
             )
             db.add(new_progress)
             registered += 1
@@ -217,6 +221,7 @@ async def process_answer(
     )
     result = await db.execute(stmt)
     progress = cast(ProgressRecord | None, result.scalar_one_or_none())
+    now = datetime.now(UTC)
 
     # If no progress record exists, create one (quiz tab first encounter)
     if progress is None:
@@ -227,6 +232,7 @@ async def process_answer(
             state=PROVISIONAL,
             introduced_by="QUIZ",
             learning_step=0,
+            **new_progress_defaults(now),
         )
         db.add(progress)
 
@@ -247,7 +253,6 @@ async def process_answer(
         state_before = UNSEEN  # keep original for return value
 
     # 3. Apply state transition
-    now = datetime.now(UTC)
     apply_transition(progress, is_correct, rating, now)
 
     # 4. Update directional stats
@@ -258,6 +263,7 @@ async def process_answer(
     progress.last_presented_on = now.date()
     progress.fsrs_last_rating = rating
     progress.fsrs_reps += 1
+    progress.updated_at = now
 
     if is_correct:
         progress.correct_count += 1

@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import UserGrammarProgress, UserVocabProgress
+from app.services.progress_defaults import new_progress_defaults
 from app.services.quiz_policy import apply_srs_update
 from app.services.srs import log_review_event
 
@@ -38,6 +39,7 @@ async def update_vocab_answer_progress(
         progress = UserVocabProgress(
             user_id=user_id,
             vocabulary_id=question_id,
+            **new_progress_defaults(now),
         )
         db.add(progress)
         await db.flush()
@@ -77,6 +79,7 @@ async def update_grammar_answer_progress(
         progress = UserGrammarProgress(
             user_id=user_id,
             grammar_id=question_id,
+            **new_progress_defaults(now),
         )
         db.add(progress)
         await db.flush()
@@ -108,6 +111,7 @@ async def _apply_and_log_progress(
 ) -> None:
     state_before = _progress_state(progress)
     apply_srs_update(progress, is_correct, time_spent_seconds, now)
+    progress.updated_at = now
 
     with contextlib.suppress(Exception):
         await log_review_event(

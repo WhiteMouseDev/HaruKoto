@@ -104,6 +104,12 @@ async def test_update_grammar_answer_progress_creates_missing_record_and_logs(mo
     assert isinstance(created, UserGrammarProgress)
     assert created.user_id == user_id
     assert created.grammar_id == question_id
+    assert created.created_at == now
+    assert created.updated_at == now
+    assert created.correct_count == 0
+    assert created.incorrect_count == 0
+    assert created.fsrs_reps == 0
+    assert created.jp_kr_total == 0
     db.flush.assert_awaited_once()
     log_review_event.assert_awaited_once()
     args = log_review_event.await_args.args
@@ -113,3 +119,44 @@ async def test_update_grammar_answer_progress_creates_missing_record_and_logs(mo
     assert args[9] == 1
     assert args[10] == "UNSEEN"
     assert args[11] == "REVIEW"
+
+
+@pytest.mark.asyncio
+async def test_update_vocab_answer_progress_creates_missing_record_with_defaults(monkeypatch: pytest.MonkeyPatch):
+    user_id = uuid.uuid4()
+    question_id = uuid.uuid4()
+    session_id = uuid.uuid4()
+    now = datetime(2026, 4, 21, 12, 0, tzinfo=UTC)
+    db = AsyncMock()
+    db.execute = AsyncMock(return_value=_scalar_one_or_none_result(None))
+    db.add = MagicMock()
+    db.flush = AsyncMock()
+    log_review_event = AsyncMock()
+    monkeypatch.setattr(quiz_answer_progress, "log_review_event", log_review_event)
+
+    await update_vocab_answer_progress(
+        db,
+        user_id=user_id,
+        question_id=question_id,
+        session_id=session_id,
+        is_correct=True,
+        time_spent_seconds=2,
+        now=now,
+    )
+
+    db.add.assert_called_once()
+    created = db.add.call_args.args[0]
+    assert isinstance(created, UserVocabProgress)
+    assert created.user_id == user_id
+    assert created.vocabulary_id == question_id
+    assert created.created_at == now
+    assert created.updated_at == now
+    assert created.correct_count == 1
+    assert created.incorrect_count == 0
+    assert created.streak == 1
+    assert created.fsrs_reps == 0
+    assert created.jp_kr_total == 0
+    assert created.state == "PROVISIONAL"
+    assert created.introduced_by == "QUIZ"
+    db.flush.assert_awaited_once()
+    log_review_event.assert_awaited_once()
