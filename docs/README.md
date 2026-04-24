@@ -61,6 +61,12 @@ packages/database/data/lessons/n5/
 └── ch06-progress-and-habits.json
 ```
 
+개발/스테이징 DB에 학습 콘텐츠를 재현할 때는 root에서 통합 시드 명령을 실행합니다.
+
+```bash
+DATABASE_URL="postgresql+asyncpg://user:pass@host:5432/db" pnpm seed:learning
+```
+
 ## 문서 규칙
 
 - **정본 원칙**: 코드가 문서보다 최신이면 문서를 업데이트

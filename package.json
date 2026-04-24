@@ -17,6 +17,7 @@
     "clean": "turbo clean",
     "verify:fast": "turbo lint typecheck",
     "verify": "turbo lint typecheck test",
+    "seed:learning": "bash scripts/seed-learning-content.sh",
     "setup:git-hooks": "git config core.hooksPath .githooks",
     "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma && pnpm run setup:git-hooks"
   },

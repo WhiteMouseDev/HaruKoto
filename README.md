@@ -74,6 +74,22 @@ pnpm build:landing    # landing만 (정적 빌드)
 pnpm build:admin      # admin만
 ```
 
+### 학습 콘텐츠 시드
+
+새 개발/스테이징 DB에 정적 학습 콘텐츠와 N5 파일럿 레슨을 같은 순서로 넣을 때는 root 명령을 사용합니다.
+
+```bash
+DATABASE_URL="postgresql+asyncpg://user:pass@host:5432/db" pnpm seed:learning
+```
+
+`DATABASE_URL`은 FastAPI/SQLAlchemy용 async URL입니다. Prisma가 별도 sync URL을 필요로 하면 `PRISMA_DATABASE_URL`을 함께 지정합니다.
+
+```bash
+DATABASE_URL="postgresql+asyncpg://user:pass@host:5432/db" \
+PRISMA_DATABASE_URL="postgresql://user:pass@host:5432/db" \
+pnpm seed:learning
+```
+
 ### 기타 명령어
 
 ```bash
