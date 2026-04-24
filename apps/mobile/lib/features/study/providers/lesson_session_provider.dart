@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_flow_policy.dart';
+import 'lesson_pilot_telemetry_provider.dart';
 import 'lesson_session_service.dart';
 
 enum LessonStep {
@@ -94,14 +95,17 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   void goToVocabLearning() {
+    _trackStepCompleted(state.step);
     state = state.copyWith(step: LessonStep.vocabLearning);
   }
 
   void goToGrammarLearning() {
+    _trackStepCompleted(state.step);
     state = state.copyWith(step: LessonStep.grammarLearning);
   }
 
   void goToGuidedReading() {
+    _trackStepCompleted(state.step);
     state = state.copyWith(step: LessonStep.guidedReading);
   }
 
@@ -129,6 +133,16 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       return;
     }
 
+    ref.read(lessonPilotTelemetryProvider).trackLessonStarted(
+          lessonId: detail.id,
+          lessonNo: detail.lessonNo,
+          chapterLessonNo: detail.chapterLessonNo,
+          hasRecognitionStep: practicePlan.hasRecognitionStep,
+          hasReorderStep: practicePlan.hasReorderStep,
+          recognitionQuestionCount: practicePlan.recognitionQuestions.length,
+          reorderQuestionCount: practicePlan.reorderQuestions.length,
+        );
+
     state = LessonSessionState(
       step: practicePlan.hasRecognitionStep
           ? LessonStep.recognition
@@ -139,6 +153,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   void skipRecognition() {
+    _trackStepCompleted(LessonStep.recognition, skipped: true);
     state = state.copyWith(step: LessonStep.matching);
   }
 
@@ -158,6 +173,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       return;
     }
 
+    _trackStepCompleted(LessonStep.recognition);
     state = state.copyWith(
       answers: answers,
       step: LessonStep.matching,
@@ -168,6 +184,8 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     required LessonDetailModel detail,
     String? jlptLevel,
   }) async {
+    _trackStepCompleted(LessonStep.matching);
+
     if (!state.hasReorderStep) {
       await submitAnswers(
         lessonId: detail.id,
@@ -196,6 +214,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       return;
     }
 
+    _trackStepCompleted(LessonStep.sentenceReorder);
     state = state.copyWith(answers: answers);
     await submitAnswers(
       lessonId: detail.id,
@@ -208,13 +227,13 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     String? jlptLevel,
   }) async {
     if (state.submitting) return;
+    final orderedAnswers = state.answers.keys.toList()..sort();
     state = state.copyWith(
       submitting: true,
       submissionErrorMessage: null,
     );
 
     try {
-      final orderedAnswers = state.answers.keys.toList()..sort();
       final result = await ref.read(lessonSessionServiceProvider).submitLesson(
         lessonId: lessonId,
         jlptLevel: jlptLevel,
@@ -228,7 +247,30 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         submitting: false,
         submissionErrorMessage: null,
       );
+      ref.read(lessonPilotTelemetryProvider).trackLessonSubmitted(
+            lessonId: lessonId,
+            outcome: 'success',
+            answerCount: orderedAnswers.length,
+            status: result.status,
+            scoreCorrect: result.scoreCorrect,
+            scoreTotal: result.scoreTotal,
+            srsItemsRegistered: result.srsItemsRegistered,
+          );
+      if (result.status == 'COMPLETED') {
+        ref.read(lessonPilotTelemetryProvider).trackLessonCompleted(
+              lessonId: lessonId,
+              scoreCorrect: result.scoreCorrect,
+              scoreTotal: result.scoreTotal,
+              srsItemsRegistered: result.srsItemsRegistered,
+            );
+      }
     } catch (error) {
+      ref.read(lessonPilotTelemetryProvider).trackLessonSubmitted(
+            lessonId: lessonId,
+            outcome: 'failure',
+            answerCount: orderedAnswers.length,
+            errorType: error.runtimeType.toString(),
+          );
       state = state.copyWith(
         submitting: false,
         submissionErrorMessage: '제출 실패: $error',
@@ -247,7 +289,19 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   void reset() {
+    ref.read(lessonPilotTelemetryProvider).trackLessonRetryClicked(
+          lessonId: lessonId,
+        );
     state = const LessonSessionState();
+  }
+
+  void _trackStepCompleted(LessonStep step, {bool skipped = false}) {
+    if (step == LessonStep.result) return;
+    ref.read(lessonPilotTelemetryProvider).trackLessonStepCompleted(
+          lessonId: lessonId,
+          step: step.name,
+          skipped: skipped,
+        );
   }
 }
 

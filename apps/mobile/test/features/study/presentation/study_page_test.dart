@@ -7,6 +7,7 @@ import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/data/models/review_summary_model.dart';
 import 'package:harukoto_mobile/features/study/presentation/study_page.dart';
+import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,8 +15,11 @@ void main() {
   group('StudyPage', () {
     testWidgets('shows recommended lesson copy for the first incomplete lesson',
         (tester) async {
+      final events = <LessonPilotEvent>[];
+
       await _pumpStudyPage(
         tester,
+        telemetryEvents: events,
         chapters: [
           _chapter(
             chapterNo: 1,
@@ -52,6 +56,15 @@ void main() {
       expect(find.text('시작하기'), findsOneWidget);
       expect(find.text('추천'), findsOneWidget);
       expect(find.text('Lesson 2'), findsWidgets);
+
+      final viewedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonListViewed,
+      );
+      expect(viewedEvent.properties['source'], 'study_home');
+      expect(viewedEvent.properties['jlptLevel'], 'N5');
+      expect(viewedEvent.properties['chapterCount'], 1);
+      expect(viewedEvent.properties['lessonCount'], 2);
+      expect(viewedEvent.properties['recommendedLessonId'], 'lesson-2');
     });
 
     testWidgets('shows resume copy for an in-progress lesson', (tester) async {
@@ -100,6 +113,7 @@ void main() {
 Future<void> _pumpStudyPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
+  List<LessonPilotEvent>? telemetryEvents,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -125,6 +139,10 @@ Future<void> _pumpStudyPage(
         chaptersProvider('N5').overrideWith(
           (ref) => Future.value(ChapterListModel(chapters: chapters)),
         ),
+        if (telemetryEvents != null)
+          lessonPilotTelemetrySinkProvider.overrideWith(
+            (ref) => telemetryEvents.add,
+          ),
       ],
       child: const MaterialApp(home: StudyPage()),
     ),

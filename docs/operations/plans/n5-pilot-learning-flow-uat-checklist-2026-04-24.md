@@ -95,7 +95,26 @@
 4. 자유 진입이 가능하다는 점이 충분히 드러나는가
 5. 추천 경로를 따르지 않아도 완료, 제출, 진행률 반영이 정상인가
 
-## 5. 합격 기준
+## 5. 계측 이벤트 확인
+
+모바일 앱은 파일럿 UAT 중 아래 이벤트를 `LessonPilotTelemetry`로 남긴다.
+초기 구현은 `debugPrint` sink이며, 테스트에서는 provider override로 이벤트를
+캡처한다.
+
+| 이벤트 | 확인 위치 | 핵심 속성 |
+|--------|-----------|-----------|
+| `lesson_list_viewed` | 학습 탭, 전체 레슨 화면 | `source`, `jlptLevel`, `chapterCount`, `lessonCount`, `recommendedLessonId` |
+| `lesson_started` | 레슨 start API 성공 직후 | `lessonId`, `lessonNo`, `hasRecognitionStep`, `hasReorderStep` |
+| `lesson_step_completed` | 레슨 단계 전환 | `lessonId`, `step`, `skipped` |
+| `lesson_submitted` | submit API 성공/실패 | `lessonId`, `outcome`, `answerCount`, `status`, `errorType` |
+| `lesson_completed` | submit 결과 `COMPLETED` | `lessonId`, `scoreCorrect`, `scoreTotal`, `srsItemsRegistered` |
+| `lesson_retry_clicked` | 결과 화면 다시 풀기 | `lessonId` |
+| `review_cta_clicked` | 복습 CTA 탭/버튼 | `jlptLevel`, `totalDue`, `wordDue`, `grammarDue`, `quizType` |
+
+UAT 기록에는 시나리오별 `Pass/Flag/Block`과 함께 누락된 이벤트가 있는지
+같이 남긴다. 이벤트가 빠지면 학습 행동 분석이 불가능하므로 `Flag`로 처리한다.
+
+## 6. 합격 기준
 
 - `Block` 없음
 - 핵심 시나리오 A-D에서 `Pass` 1회 이상 확보
