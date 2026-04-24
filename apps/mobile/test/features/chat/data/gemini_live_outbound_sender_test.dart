@@ -46,15 +46,12 @@ void main() {
 
       final greeting = jsonDecode(transport.sent[0]) as Map<String, dynamic>;
       final audio = jsonDecode(transport.sent[1]) as Map<String, dynamic>;
-      final clientContent = greeting['clientContent'] as Map<String, dynamic>;
-      final turns = clientContent['turns'] as List<dynamic>;
-      final turn = turns.first as Map<String, dynamic>;
-      final parts = turn['parts'] as List<dynamic>;
+      final greetingInput = greeting['realtimeInput'] as Map<String, dynamic>;
       final realtimeInput = audio['realtimeInput'] as Map<String, dynamic>;
       final mediaChunks = realtimeInput['mediaChunks'] as List<dynamic>;
       final chunk = mediaChunks.first as Map<String, dynamic>;
 
-      expect(parts.first, {'text': 'カスタム挨拶'});
+      expect(greetingInput['text'], 'カスタム挨拶');
       expect(chunk['mimeType'], 'audio/pcm;rate=16000');
       expect(chunk['data'], base64Encode([1, 2, 3, 4]));
     });

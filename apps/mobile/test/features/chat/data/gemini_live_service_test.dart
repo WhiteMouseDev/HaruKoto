@@ -45,11 +45,8 @@ void main() {
       expect(transport.sent, hasLength(2));
 
       final greeting = jsonDecode(transport.sent[1]) as Map<String, dynamic>;
-      final clientContent = greeting['clientContent'] as Map<String, dynamic>;
-      final turns = clientContent['turns'] as List<dynamic>;
-      final turn = turns.first as Map<String, dynamic>;
-      final parts = turn['parts'] as List<dynamic>;
-      expect(parts.first, {'text': 'カスタム挨拶'});
+      final greetingInput = greeting['realtimeInput'] as Map<String, dynamic>;
+      expect(greetingInput['text'], 'カスタム挨拶');
 
       audioAdapter.emitRecordedAudio(Uint8List.fromList([1, 2, 3]));
 

@@ -47,14 +47,9 @@ void main() {
       );
 
       final payload = jsonDecode(encoded) as Map<String, dynamic>;
-      final clientContent = payload['clientContent'] as Map<String, dynamic>;
-      final turns = clientContent['turns'] as List<dynamic>;
-      final turn = turns.first as Map<String, dynamic>;
-      final parts = turn['parts'] as List<dynamic>;
+      final realtimeInput = payload['realtimeInput'] as Map<String, dynamic>;
 
-      expect(turn['role'], 'user');
-      expect(parts.first, {'text': 'カスタム挨拶'});
-      expect(clientContent['turnComplete'], isTrue);
+      expect(realtimeInput['text'], 'カスタム挨拶');
     });
 
     test('encodeRealtimeAudio base64 encodes PCM bytes', () {

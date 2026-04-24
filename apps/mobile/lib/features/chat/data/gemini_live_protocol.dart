@@ -72,16 +72,8 @@ class GeminiLiveProtocol {
         scenarioGreeting ?? '[システム] $nameから電話がかかってきました。電話に出て「もしもし」から始めてください。';
 
     return jsonEncode({
-      'clientContent': {
-        'turns': [
-          {
-            'role': 'user',
-            'parts': [
-              {'text': greeting},
-            ],
-          },
-        ],
-        'turnComplete': true,
+      'realtimeInput': {
+        'text': greeting,
       },
     });
   }
