@@ -37,7 +37,7 @@ pnpm --filter @harukoto/database lessons:quality -- --level N5 --strict-warnings
 | reading script lines | 120 |
 | vocabulary links | 176 |
 | grammar links | 30 |
-| checks | 5 PASS / 17 WARN / 0 FAIL |
+| checks | 6 PASS / 1 WARN / 0 FAIL |
 
 ## 4. 현재 판정
 
@@ -49,17 +49,17 @@ pnpm --filter @harukoto/database lessons:quality -- --level N5 --strict-warnings
 | PASS | Reading script | 30레슨 모두 speaker, voice id, 일본어 본문, 한국어 번역 포함 |
 | PASS | Questions | 150문항 모두 타입별 구조와 정답 키가 유효함 |
 | PASS | Learning quality heuristics | 객관식/빈칸 문제 정답 option이 `a/b/c/d = 30/30/30/30`으로 분산됨 |
-| WARN | Learning quality heuristics | 일부 레슨의 문법 표기가 기준 문법명과 다름 |
+| PASS | Learning quality heuristics | 기준 문법명과 다른 레슨용 친화 표기는 `grammar_order`별 alias로 명시됨 |
 | WARN | Publish status | N5 6개 챕터 파일이 여전히 `meta.status: DRAFT` |
 
 ## 5. 후속 처리 기준
 
 1. `FAIL`이 있으면 데이터 수정 전까지 seed/배포 게이트로 사용한다.
 2. `WARN`은 파일럿 확대 전 콘텐츠 검수 큐로 본다.
-3. 문법 표기 불일치는 실제 오개념인지, 레슨용 친화 표현인지 구분해 기준 데이터 또는 레슨 표기 중 하나로 수렴한다.
+3. 레슨용 문법 친화 표기는 `grammar_order` alias 목록에 명시된 경우만 허용한다.
 4. `DRAFT` 상태는 `PILOT` 전환 또는 seed publish 정책 명시 중 하나로 결정한다.
 
 ## 6. Out of Scope
 
 - 원어민 검수, TTS 생성, 어드민 편집 UI는 별도 후속 phase로 분리한다.
-- 문법 표기 기준 정규화와 `PILOT` 상태 전환은 별도 데이터 정책 작업으로 분리한다.
+- `PILOT` 상태 전환은 별도 데이터 정책 작업으로 분리한다.
