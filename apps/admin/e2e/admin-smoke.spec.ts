@@ -15,6 +15,14 @@ function latestListParam(contentType: string, key: string): string {
   return latestRequest?.searchParams[key] ?? '';
 }
 
+function latestQueueParam(contentType: string, key: string): string {
+  const requests = apiState.queueRequests.filter(
+    (request) => request.contentType === contentType
+  );
+  const latestRequest = requests[requests.length - 1];
+  return latestRequest?.searchParams[key] ?? '';
+}
+
 test('renders the login page without a live Supabase session', async ({
   page,
 }) => {
@@ -136,6 +144,41 @@ test('filters the quiz list and preserves quiz type in detail links', async ({
   await expect(
     page.getByRole('heading', { name: 'クイズを編集' })
   ).toBeVisible();
+});
+
+test('starts the quiz review queue and navigates between queued items', async ({
+  page,
+}) => {
+  await page.goto('/quiz?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+
+  await expect.poll(() => latestQueueParam('quiz', 'jlpt_level')).toBe('N5');
+  await expect(page).toHaveURL(/\/quiz\/cloze-1\?/);
+  await expect(page).toHaveURL(/type=cloze/);
+  await expect(page).toHaveURL(/qi=0/);
+  await expect(page).toHaveURL(/queue=/);
+  await expect(page.getByText('1 / 2')).toBeVisible();
+  await expect(page.getByRole('button', { name: '前へ' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '次へ' })).toBeEnabled();
+
+  await page.getByRole('button', { name: '次へ' }).click();
+  await expect(page).toHaveURL(/\/quiz\/arrange-1\?/);
+  await expect(page).toHaveURL(/type=sentence_arrange/);
+  await expect(page).toHaveURL(/qi=1/);
+  await expect(page.getByText('2 / 2')).toBeVisible();
+  await expect(page.getByRole('button', { name: '前へ' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '次へ' })).toBeDisabled();
+
+  await page.getByRole('button', { name: '前へ' }).click();
+  await expect(page).toHaveURL(/\/quiz\/cloze-1\?/);
+  await expect(page).toHaveURL(/type=cloze/);
+  await expect(page).toHaveURL(/qi=0/);
+  await expect(page.getByText('1 / 2')).toBeVisible();
+
+  await page.getByRole('button', { name: 'キューを終了' }).click();
+  await expect(page).toHaveURL(/\/quiz$/);
+  await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
 });
 
 test('splits quiz bulk approve into canonical content-type batches', async ({
