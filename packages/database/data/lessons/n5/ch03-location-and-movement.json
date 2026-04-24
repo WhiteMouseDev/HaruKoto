@@ -73,12 +73,12 @@
             "cognitive_level": "인식",
             "prompt": "図書館의 뜻은?",
             "options": [
-              {"id": "a", "text": "도서관"},
+              {"id": "a", "text": "병원"},
               {"id": "b", "text": "학교"},
-              {"id": "c", "text": "병원"},
+              {"id": "c", "text": "도서관"},
               {"id": "d", "text": "회사"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "図書館(としょかん)는 '도서관'입니다."
           },
           {
@@ -87,12 +87,12 @@
             "cognitive_level": "인식",
             "prompt": "'역'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "駅"},
+              {"id": "a", "text": "学校"},
               {"id": "b", "text": "公園"},
               {"id": "c", "text": "病院"},
-              {"id": "d", "text": "学校"}
+              {"id": "d", "text": "駅"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "駅(えき)는 '역'입니다. 公園(こうえん)는 '공원'입니다."
           },
           {
@@ -115,12 +115,12 @@
             "cognitive_level": "적용",
             "prompt": "____は駅です。(저기는 역입니다.) — 멀리 있는 곳을 가리킬 때",
             "options": [
-              {"id": "a", "text": "あそこ"},
-              {"id": "b", "text": "ここ"},
+              {"id": "a", "text": "ここ"},
+              {"id": "b", "text": "あそこ"},
               {"id": "c", "text": "そこ"},
               {"id": "d", "text": "どこ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "あそこ는 '저기'로, 화자와 상대 모두에게서 먼 장소를 가리킵니다."
           },
           {
@@ -197,12 +197,12 @@
             "cognitive_level": "인식",
             "prompt": "郵便局의 뜻은?",
             "options": [
-              {"id": "a", "text": "우체국"},
+              {"id": "a", "text": "호텔"},
               {"id": "b", "text": "백화점"},
               {"id": "c", "text": "파출소"},
-              {"id": "d", "text": "호텔"}
+              {"id": "d", "text": "우체국"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "郵便局(ゆうびんきょく)는 '우체국'입니다."
           },
           {
@@ -225,12 +225,12 @@
             "cognitive_level": "적용",
             "prompt": "郵便局は____ですか。(우체국은 어디인가요?)",
             "options": [
-              {"id": "a", "text": "どこ"},
-              {"id": "b", "text": "なに"},
+              {"id": "a", "text": "なに"},
+              {"id": "b", "text": "どこ"},
               {"id": "c", "text": "いつ"},
               {"id": "d", "text": "だれ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "どこ는 '어디'를 뜻하는 의문사로, 장소를 물을 때 사용합니다."
           },
           {
@@ -239,12 +239,12 @@
             "cognitive_level": "적용",
             "prompt": "レストランは____ですか。(레스토랑은 어디인가요?)",
             "options": [
-              {"id": "a", "text": "どこ"},
+              {"id": "a", "text": "そこ"},
               {"id": "b", "text": "ここ"},
-              {"id": "c", "text": "そこ"},
+              {"id": "c", "text": "どこ"},
               {"id": "d", "text": "あそこ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "장소를 모를 때 どこ를 써서 '어디인가요?'라고 묻습니다. ここ/そこ/あそこ는 이미 알고 있는 장소를 가리킵니다."
           },
           {
@@ -335,12 +335,12 @@
             "cognitive_level": "인식",
             "prompt": "'있다(생물)'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "いる"},
-              {"id": "b", "text": "ある"},
+              {"id": "a", "text": "ある"},
+              {"id": "b", "text": "いる"},
               {"id": "c", "text": "する"},
               {"id": "d", "text": "くる"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "いる는 사람이나 동물 등 생물이 '있다'는 뜻입니다. ある는 사물이 '있다'입니다."
           },
           {
@@ -349,12 +349,12 @@
             "cognitive_level": "적용",
             "prompt": "本は机の上____あります。(책은 책상 위에 있습니다.)",
             "options": [
-              {"id": "a", "text": "に"},
+              {"id": "a", "text": "を"},
               {"id": "b", "text": "で"},
-              {"id": "c", "text": "を"},
+              {"id": "c", "text": "に"},
               {"id": "d", "text": "は"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "に는 존재하는 장소를 나타내는 조사입니다. ある/いる 앞에는 に를 씁니다."
           },
           {
@@ -363,12 +363,12 @@
             "cognitive_level": "적용",
             "prompt": "猫は箱の中に____。(고양이는 상자 안에 있습니다.) — 생물의 존재",
             "options": [
-              {"id": "a", "text": "います"},
+              {"id": "a", "text": "きます"},
               {"id": "b", "text": "あります"},
               {"id": "c", "text": "します"},
-              {"id": "d", "text": "きます"}
+              {"id": "d", "text": "います"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "생물(사람, 동물)에는 いる(います)를 쓰고, 사물에는 ある(あります)를 씁니다."
           },
           {
@@ -445,12 +445,12 @@
             "cognitive_level": "인식",
             "prompt": "電車의 뜻은?",
             "options": [
-              {"id": "a", "text": "전철"},
-              {"id": "b", "text": "버스"},
+              {"id": "a", "text": "버스"},
+              {"id": "b", "text": "전철"},
               {"id": "c", "text": "자전거"},
               {"id": "d", "text": "택시"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "電車(でんしゃ)는 '전철'입니다. バス는 '버스', 自転車(じてんしゃ)는 '자전거'입니다."
           },
           {
@@ -459,12 +459,12 @@
             "cognitive_level": "인식",
             "prompt": "'식당'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "食堂"},
+              {"id": "a", "text": "図書館"},
               {"id": "b", "text": "教室"},
-              {"id": "c", "text": "図書館"},
+              {"id": "c", "text": "食堂"},
               {"id": "d", "text": "病院"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "食堂(しょくどう)는 '식당'입니다. 教室(きょうしつ)는 '교실'입니다."
           },
           {
@@ -473,12 +473,12 @@
             "cognitive_level": "적용",
             "prompt": "電車____来ます。(전철로 옵니다.) — 이동 수단을 말할 때",
             "options": [
-              {"id": "a", "text": "で"},
+              {"id": "a", "text": "は"},
               {"id": "b", "text": "に"},
               {"id": "c", "text": "を"},
-              {"id": "d", "text": "は"}
+              {"id": "d", "text": "で"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "で는 수단·방법을 나타냅니다. '전철로'처럼 '~(으)로'에 해당합니다."
           },
           {
@@ -569,12 +569,12 @@
             "cognitive_level": "인식",
             "prompt": "海의 뜻은?",
             "options": [
-              {"id": "a", "text": "바다"},
+              {"id": "a", "text": "외국"},
               {"id": "b", "text": "산"},
-              {"id": "c", "text": "외국"},
+              {"id": "c", "text": "바다"},
               {"id": "d", "text": "학교"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "海(うみ)는 '바다'입니다. 山(やま)는 '산'입니다."
           },
           {
@@ -583,12 +583,12 @@
             "cognitive_level": "인식",
             "prompt": "'외국'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "外国"},
+              {"id": "a", "text": "学校"},
               {"id": "b", "text": "会社"},
               {"id": "c", "text": "病院"},
-              {"id": "d", "text": "学校"}
+              {"id": "d", "text": "外国"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "外国(がいこく)는 '외국'입니다. 会社(かいしゃ)는 '회사'입니다."
           },
           {
@@ -611,12 +611,12 @@
             "cognitive_level": "적용",
             "prompt": "外国____行きますよ。(외국으로 가요.) — 목적지 방향을 알려줄 때",
             "options": [
-              {"id": "a", "text": "へ"},
-              {"id": "b", "text": "に"},
+              {"id": "a", "text": "に"},
+              {"id": "b", "text": "へ"},
               {"id": "c", "text": "で"},
               {"id": "d", "text": "は"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "へ를 써서 '외국으로(=방향)'라고 이동 방향을 나타냅니다."
           },
           {

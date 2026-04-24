@@ -87,12 +87,12 @@
             "cognitive_level": "인식",
             "prompt": "'학생'의 일본어는?",
             "options": [
-              {"id": "a", "text": "学生"},
-              {"id": "b", "text": "先生"},
+              {"id": "a", "text": "先生"},
+              {"id": "b", "text": "学生"},
               {"id": "c", "text": "会社"},
               {"id": "d", "text": "大学"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "学生(がくせい)는 '학생'이라는 뜻입니다. 先生(せんせい)는 '선생님'이니 혼동하지 마세요."
           },
           {
@@ -101,12 +101,12 @@
             "cognitive_level": "적용",
             "prompt": "私はキム____。(저는 김입니다.)",
             "options": [
-              {"id": "a", "text": "です"},
+              {"id": "a", "text": "だけ"},
               {"id": "b", "text": "ます"},
-              {"id": "c", "text": "だけ"},
+              {"id": "c", "text": "です"},
               {"id": "d", "text": "から"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "〜です는 '~입니다'라는 뜻으로, 명사 뒤에 붙여서 정중하게 말합니다."
           },
           {
@@ -115,12 +115,12 @@
             "cognitive_level": "적용",
             "prompt": "はじめまして。田中____。(처음 뵙겠습니다. 다나카입니다.)",
             "options": [
-              {"id": "a", "text": "です"},
+              {"id": "a", "text": "でした"},
               {"id": "b", "text": "ません"},
               {"id": "c", "text": "ました"},
-              {"id": "d", "text": "でした"}
+              {"id": "d", "text": "です"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "자기소개할 때 '이름 + です'로 '~입니다'라고 말합니다."
           },
           {
@@ -197,12 +197,12 @@
             "cognitive_level": "인식",
             "prompt": "留学生의 뜻은?",
             "options": [
-              {"id": "a", "text": "유학생"},
-              {"id": "b", "text": "학생"},
+              {"id": "a", "text": "학생"},
+              {"id": "b", "text": "유학생"},
               {"id": "c", "text": "선생님"},
               {"id": "d", "text": "회사원"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "留学生(りゅうがくせい)는 외국에서 온 학생, 즉 '유학생'입니다."
           },
           {
@@ -211,12 +211,12 @@
             "cognitive_level": "인식",
             "prompt": "'어디'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "どこ"},
+              {"id": "a", "text": "いつ"},
               {"id": "b", "text": "なに"},
-              {"id": "c", "text": "いつ"},
+              {"id": "c", "text": "どこ"},
               {"id": "d", "text": "だれ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "どこ는 '어디'를 뜻합니다. なに는 '무엇', いつ는 '언제', だれ는 '누구'입니다."
           },
           {
@@ -225,12 +225,12 @@
             "cognitive_level": "적용",
             "prompt": "学生です____。(학생인가요?)",
             "options": [
-              {"id": "a", "text": "か"},
+              {"id": "a", "text": "も"},
               {"id": "b", "text": "よ"},
               {"id": "c", "text": "ね"},
-              {"id": "d", "text": "も"}
+              {"id": "d", "text": "か"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "문장 끝에 か를 붙이면 의문문(질문)이 됩니다."
           },
           {
@@ -321,12 +321,12 @@
             "cognitive_level": "인식",
             "prompt": "仕事의 뜻은?",
             "options": [
-              {"id": "a", "text": "일, 직업"},
+              {"id": "a", "text": "회사"},
               {"id": "b", "text": "학교"},
-              {"id": "c", "text": "회사"},
+              {"id": "c", "text": "일, 직업"},
               {"id": "d", "text": "친구"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "仕事(しごと)는 '일' 또는 '직업'이라는 뜻입니다."
           },
           {
@@ -335,12 +335,12 @@
             "cognitive_level": "인식",
             "prompt": "'의사'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "医者"},
+              {"id": "a", "text": "会社"},
               {"id": "b", "text": "学生"},
               {"id": "c", "text": "先生"},
-              {"id": "d", "text": "会社"}
+              {"id": "d", "text": "医者"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "医者(いしゃ)는 '의사'입니다. 先生(せんせい)는 '선생님'을 뜻합니다."
           },
           {
@@ -363,12 +363,12 @@
             "cognitive_level": "적용",
             "prompt": "友達____会社の人です。(친구는 회사 사람입니다.)",
             "options": [
-              {"id": "a", "text": "は"},
-              {"id": "b", "text": "も"},
+              {"id": "a", "text": "も"},
+              {"id": "b", "text": "は"},
               {"id": "c", "text": "か"},
               {"id": "d", "text": "と"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "は를 붙여서 '친구는(=화제)'이라고 이야기 주제를 세웁니다."
           },
           {
@@ -444,12 +444,12 @@
             "cognitive_level": "인식",
             "prompt": "映画의 뜻은?",
             "options": [
-              {"id": "a", "text": "영화"},
+              {"id": "a", "text": "요리"},
               {"id": "b", "text": "음악"},
               {"id": "c", "text": "여행"},
-              {"id": "d", "text": "요리"}
+              {"id": "d", "text": "영화"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "映画(えいが)는 '영화'입니다."
           },
           {
@@ -472,12 +472,12 @@
             "cognitive_level": "적용",
             "prompt": "「私は映画が好きです。」「私____映画が好きです。」(저도 영화를 좋아합니다.)",
             "options": [
-              {"id": "a", "text": "も"},
-              {"id": "b", "text": "は"},
+              {"id": "a", "text": "は"},
+              {"id": "b", "text": "も"},
               {"id": "c", "text": "が"},
               {"id": "d", "text": "を"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "も는 '~도'라는 뜻으로, 상대와 같은 점이 있을 때 は 대신 も를 씁니다."
           },
           {
@@ -486,12 +486,12 @@
             "cognitive_level": "적용",
             "prompt": "旅行____料理____好きです。(여행도 요리도 좋아합니다.)",
             "options": [
-              {"id": "a", "text": "も … も"},
+              {"id": "a", "text": "と … と"},
               {"id": "b", "text": "は … は"},
-              {"id": "c", "text": "と … と"},
+              {"id": "c", "text": "も … も"},
               {"id": "d", "text": "が … が"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "も…も로 '~도 ~도'라고 여러 개를 같이 나열할 수 있습니다."
           },
           {
@@ -582,12 +582,12 @@
             "cognitive_level": "인식",
             "prompt": "'감사합니다'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "ありがとうございます"},
-              {"id": "b", "text": "おはようございます"},
+              {"id": "a", "text": "おはようございます"},
+              {"id": "b", "text": "ありがとうございます"},
               {"id": "c", "text": "すみません"},
               {"id": "d", "text": "さようなら"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "ありがとうございます는 '감사합니다'입니다."
           },
           {
@@ -596,12 +596,12 @@
             "cognitive_level": "적용",
             "prompt": "いい天気です____。(좋은 날씨네요.) — 상대에게 동의를 구할 때",
             "options": [
-              {"id": "a", "text": "ね"},
+              {"id": "a", "text": "か"},
               {"id": "b", "text": "よ"},
-              {"id": "c", "text": "か"},
+              {"id": "c", "text": "ね"},
               {"id": "d", "text": "も"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "ね는 '~네요'처럼 상대와 공감하거나 동의를 구할 때 씁니다."
           },
           {
@@ -610,12 +610,12 @@
             "cognitive_level": "적용",
             "prompt": "あの人は友達です____。(저 사람은 친구예요.) — 상대가 모르는 정보를 알려줄 때",
             "options": [
-              {"id": "a", "text": "よ"},
+              {"id": "a", "text": "は"},
               {"id": "b", "text": "ね"},
               {"id": "c", "text": "か"},
-              {"id": "d", "text": "は"}
+              {"id": "d", "text": "よ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "よ는 '~요'처럼 상대가 모르는 새 정보를 알려줄 때 씁니다."
           },
           {

@@ -113,11 +113,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "先週"
+                "text": "今週"
               },
               {
                 "id": "b",
-                "text": "今週"
+                "text": "先週"
               },
               {
                 "id": "c",
@@ -128,7 +128,7 @@
                 "text": "去年"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "先週(せんしゅう)는 '지난주'입니다. 今週는 '이번 주', 来週는 '다음 주'입니다."
           },
           {
@@ -139,7 +139,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "ました"
+                "text": "ません"
               },
               {
                 "id": "b",
@@ -147,14 +147,14 @@
               },
               {
                 "id": "c",
-                "text": "ません"
+                "text": "ました"
               },
               {
                 "id": "d",
                 "text": "ませんでした"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "〜ました는 '~했습니다'로, 과거에 한 일을 정중하게 말할 때 씁니다."
           },
           {
@@ -165,7 +165,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "ました"
+                "text": "ましょう"
               },
               {
                 "id": "b",
@@ -177,10 +177,10 @@
               },
               {
                 "id": "d",
-                "text": "ましょう"
+                "text": "ました"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "동사의 ます형 어간 + ました로 과거 긍정을 나타냅니다."
           },
           {
@@ -281,11 +281,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "숙제"
+                "text": "시험"
               },
               {
                 "id": "b",
-                "text": "시험"
+                "text": "숙제"
               },
               {
                 "id": "c",
@@ -296,7 +296,7 @@
                 "text": "작문"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "宿題(しゅくだい)는 '숙제'라는 뜻입니다."
           },
           {
@@ -307,7 +307,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "問題"
+                "text": "作文"
               },
               {
                 "id": "b",
@@ -315,14 +315,14 @@
               },
               {
                 "id": "c",
-                "text": "作文"
+                "text": "問題"
               },
               {
                 "id": "d",
                 "text": "テスト"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "問題(もんだい)는 '문제'입니다. 質問(しつもん)는 '질문'이니 혼동하지 마세요."
           },
           {
@@ -333,7 +333,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "ませんでした"
+                "text": "ます"
               },
               {
                 "id": "b",
@@ -345,10 +345,10 @@
               },
               {
                 "id": "d",
-                "text": "ます"
+                "text": "ませんでした"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "〜ませんでした는 '~하지 않았습니다'로, 과거에 안 한 일을 정중하게 말합니다."
           },
           {
@@ -476,7 +476,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "돌아가다"
+                "text": "나가다"
               },
               {
                 "id": "b",
@@ -484,14 +484,14 @@
               },
               {
                 "id": "c",
-                "text": "나가다"
+                "text": "돌아가다"
               },
               {
                 "id": "d",
                 "text": "오다"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "帰る(かえる)는 '돌아가다'라는 뜻입니다."
           },
           {
@@ -502,7 +502,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "買う"
+                "text": "来る"
               },
               {
                 "id": "b",
@@ -514,10 +514,10 @@
               },
               {
                 "id": "d",
-                "text": "来る"
+                "text": "買う"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "買う(かう)는 '사다'입니다. 行く(いく)는 '가다'를 뜻합니다."
           },
           {
@@ -554,11 +554,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "来て"
+                "text": "来って"
               },
               {
                 "id": "b",
-                "text": "来って"
+                "text": "来て"
               },
               {
                 "id": "c",
@@ -569,7 +569,7 @@
                 "text": "来んで"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "来る(くる)는 불규칙 동사로, て형은 来て(きて)가 됩니다."
           },
           {
@@ -671,7 +671,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "씻다"
+                "text": "닫다"
               },
               {
                 "id": "b",
@@ -683,10 +683,10 @@
               },
               {
                 "id": "d",
-                "text": "닫다"
+                "text": "씻다"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "洗う(あらう)는 '씻다'라는 뜻입니다."
           },
           {
@@ -723,11 +723,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "って"
+                "text": "て"
               },
               {
                 "id": "b",
-                "text": "て"
+                "text": "って"
               },
               {
                 "id": "c",
@@ -738,7 +738,7 @@
                 "text": "いて"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "洗う(う동사)의 て형은 洗って입니다. う→って로 변합니다."
           },
           {
@@ -749,7 +749,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "て"
+                "text": "んで"
               },
               {
                 "id": "b",
@@ -757,14 +757,14 @@
               },
               {
                 "id": "c",
-                "text": "んで"
+                "text": "て"
               },
               {
                 "id": "d",
                 "text": "いて"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "浴びる(る동사)의 て형은 浴びて입니다. る동사는 る→て로 간단히 바뀝니다."
           },
           {
@@ -889,11 +889,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "終わる"
+                "text": "始まる"
               },
               {
                 "id": "b",
-                "text": "始まる"
+                "text": "終わる"
               },
               {
                 "id": "c",
@@ -904,7 +904,7 @@
                 "text": "帰る"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "終わる(おわる)는 '끝나다'입니다. 始まる(はじまる)는 '시작되다'를 뜻합니다."
           },
           {
@@ -915,7 +915,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "てから"
+                "text": "たら"
               },
               {
                 "id": "b",
@@ -923,14 +923,14 @@
               },
               {
                 "id": "c",
-                "text": "たら"
+                "text": "てから"
               },
               {
                 "id": "d",
                 "text": "ながら"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "〜てから는 '~하고 나서'로, 먼저 하는 동작이 끝난 뒤 다음 동작을 할 때 씁니다."
           },
           {
@@ -941,7 +941,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "てから"
+                "text": "ないで"
               },
               {
                 "id": "b",
@@ -953,10 +953,10 @@
               },
               {
                 "id": "d",
-                "text": "ないで"
+                "text": "てから"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "終わってから는 '끝나고 나서'입니다. て와 달리 てから는 선후 관계를 명확히 합니다."
           },
           {

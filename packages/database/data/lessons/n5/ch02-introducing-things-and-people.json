@@ -73,12 +73,12 @@
             "cognitive_level": "인식",
             "prompt": "鉛筆의 뜻은?",
             "options": [
-              {"id": "a", "text": "연필"},
-              {"id": "b", "text": "펜"},
+              {"id": "a", "text": "펜"},
+              {"id": "b", "text": "연필"},
               {"id": "c", "text": "책"},
               {"id": "d", "text": "가방"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "鉛筆(えんぴつ)는 '연필'입니다. ペン은 '펜'이니 혼동하지 마세요."
           },
           {
@@ -87,12 +87,12 @@
             "cognitive_level": "인식",
             "prompt": "'가방'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "鞄"},
+              {"id": "a", "text": "本"},
               {"id": "b", "text": "傘"},
-              {"id": "c", "text": "本"},
+              {"id": "c", "text": "鞄"},
               {"id": "d", "text": "電話"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "鞄(かばん)는 '가방'입니다. 傘(かさ)는 '우산'입니다."
           },
           {
@@ -101,12 +101,12 @@
             "cognitive_level": "적용",
             "prompt": "（자기 근처 물건을 가리키며）____はペンです。(이것은 펜입니다.)",
             "options": [
-              {"id": "a", "text": "これ"},
+              {"id": "a", "text": "どれ"},
               {"id": "b", "text": "それ"},
               {"id": "c", "text": "あれ"},
-              {"id": "d", "text": "どれ"}
+              {"id": "d", "text": "これ"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "これ는 '이것'으로, 말하는 사람 가까이에 있는 물건을 가리킵니다."
           },
           {
@@ -197,12 +197,12 @@
             "cognitive_level": "인식",
             "prompt": "辞書의 뜻은?",
             "options": [
-              {"id": "a", "text": "사전"},
+              {"id": "a", "text": "사진"},
               {"id": "b", "text": "잡지"},
-              {"id": "c", "text": "사진"},
+              {"id": "c", "text": "사전"},
               {"id": "d", "text": "시계"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "辞書(じしょ)는 '사전'입니다. 雑誌(ざっし)는 '잡지'입니다."
           },
           {
@@ -211,12 +211,12 @@
             "cognitive_level": "인식",
             "prompt": "'시계'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "時計"},
+              {"id": "a", "text": "机"},
               {"id": "b", "text": "写真"},
               {"id": "c", "text": "カメラ"},
-              {"id": "d", "text": "机"}
+              {"id": "d", "text": "時計"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "時計(とけい)는 '시계'입니다. 写真(しゃしん)는 '사진'입니다."
           },
           {
@@ -239,12 +239,12 @@
             "cognitive_level": "적용",
             "prompt": "（멀리 있는 책상을 가리키며）____机の上の辞書は私のです。(저 책상 위의 사전은 제 것입니다.)",
             "options": [
-              {"id": "a", "text": "あの"},
-              {"id": "b", "text": "この"},
+              {"id": "a", "text": "この"},
+              {"id": "b", "text": "あの"},
               {"id": "c", "text": "その"},
               {"id": "d", "text": "どの"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "あの는 '저 ~'로, 둘 다에게서 먼 대상의 명사를 수식합니다."
           },
           {
@@ -321,12 +321,12 @@
             "cognitive_level": "인식",
             "prompt": "家族의 뜻은?",
             "options": [
-              {"id": "a", "text": "가족"},
+              {"id": "a", "text": "학생"},
               {"id": "b", "text": "친구"},
               {"id": "c", "text": "선생님"},
-              {"id": "d", "text": "학생"}
+              {"id": "d", "text": "가족"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "家族(かぞく)는 '가족'입니다."
           },
           {
@@ -349,12 +349,12 @@
             "cognitive_level": "적용",
             "prompt": "これは先生____本です。(이것은 선생님의 책입니다.)",
             "options": [
-              {"id": "a", "text": "の"},
-              {"id": "b", "text": "は"},
+              {"id": "a", "text": "は"},
+              {"id": "b", "text": "の"},
               {"id": "c", "text": "が"},
               {"id": "d", "text": "を"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "の는 '~의'로, 명사와 명사를 연결하여 소유·소속을 나타냅니다."
           },
           {
@@ -363,12 +363,12 @@
             "cognitive_level": "적용",
             "prompt": "家族____家は学校____近くです。(가족의 집은 학교 근처입니다.)",
             "options": [
-              {"id": "a", "text": "の … の"},
+              {"id": "a", "text": "の … は"},
               {"id": "b", "text": "は … は"},
-              {"id": "c", "text": "の … は"},
+              {"id": "c", "text": "の … の"},
               {"id": "d", "text": "が … の"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "の를 반복해서 '가족의 집', '학교의 근처'처럼 소유·소속 관계를 이어갈 수 있습니다."
           },
           {
@@ -459,12 +459,12 @@
             "cognitive_level": "인식",
             "prompt": "'조용하다'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "静か"},
-              {"id": "b", "text": "元気"},
+              {"id": "a", "text": "元気"},
+              {"id": "b", "text": "静か"},
               {"id": "c", "text": "大きい"},
               {"id": "d", "text": "小さい"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "静か(しずか)는 'な형용사'로 '조용하다'는 뜻입니다. 元気(げんき)는 '건강하다, 활기차다'입니다."
           },
           {
@@ -473,12 +473,12 @@
             "cognitive_level": "적용",
             "prompt": "この公園は____ですね。(이 공원은 크네요.)",
             "options": [
-              {"id": "a", "text": "大きい"},
+              {"id": "a", "text": "高い"},
               {"id": "b", "text": "小さい"},
-              {"id": "c", "text": "高い"},
+              {"id": "c", "text": "大きい"},
               {"id": "d", "text": "静か"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "大きい(おおきい)는 'い형용사'로 '크다'라는 뜻입니다. い형용사 + です로 정중하게 말합니다."
           },
           {
@@ -487,12 +487,12 @@
             "cognitive_level": "적용",
             "prompt": "あのレストランは____ですよ。(저 레스토랑은 맛있어요.)",
             "options": [
-              {"id": "a", "text": "美味しい"},
+              {"id": "a", "text": "元気"},
               {"id": "b", "text": "高い"},
               {"id": "c", "text": "大きい"},
-              {"id": "d", "text": "元気"}
+              {"id": "d", "text": "美味しい"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "美味しい + です로 '맛있습니다'라고 정중하게 서술합니다."
           },
           {
@@ -569,12 +569,12 @@
             "cognitive_level": "인식",
             "prompt": "町의 뜻은?",
             "options": [
-              {"id": "a", "text": "마을, 동네"},
-              {"id": "b", "text": "산"},
+              {"id": "a", "text": "산"},
+              {"id": "b", "text": "마을, 동네"},
               {"id": "c", "text": "가게"},
               {"id": "d", "text": "방"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "町(まち)는 '마을' 또는 '동네'입니다."
           },
           {
@@ -583,12 +583,12 @@
             "cognitive_level": "인식",
             "prompt": "'방'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "部屋"},
+              {"id": "a", "text": "所"},
               {"id": "b", "text": "店"},
-              {"id": "c", "text": "所"},
+              {"id": "c", "text": "部屋"},
               {"id": "d", "text": "家"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "部屋(へや)는 '방'입니다. 店(みせ)는 '가게', 所(ところ)는 '장소'입니다."
           },
           {
@@ -597,12 +597,12 @@
             "cognitive_level": "적용",
             "prompt": "____町です。(조용한 동네입니다.) — な형용사가 명사를 수식할 때",
             "options": [
-              {"id": "a", "text": "静かな"},
+              {"id": "a", "text": "静かに"},
               {"id": "b", "text": "静かの"},
               {"id": "c", "text": "静か"},
-              {"id": "d", "text": "静かに"}
+              {"id": "d", "text": "静かな"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "な형용사는 명사를 수식할 때 '静か + な + 名詞' 형태를 취합니다."
           },
           {
