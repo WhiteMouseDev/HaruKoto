@@ -6,6 +6,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('DeviceSettingsRepository', () {
+    test(
+      'defaults to light theme when no theme preference is stored',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final repository = DeviceSettingsRepository(
+          sharedPreferences: prefs,
+          notificationScheduler: _FakeNotificationScheduler(),
+          soundDriver: _FakeToggleSettingDriver(),
+          hapticDriver: _FakeToggleSettingDriver(),
+        );
+
+        final settings = repository.load();
+
+        expect(settings.themeMode, ThemeMode.light);
+        expect(const DeviceSettings().themeMode, ThemeMode.light);
+      },
+    );
+
     test('loads persisted settings synchronously', () async {
       SharedPreferences.setMockInitialValues({
         'device_theme_mode': 'dark',
@@ -33,6 +52,21 @@ void main() {
       expect(settings.reminderHour, equals(7));
       expect(settings.reminderMinute, equals(30));
       expect(settings.streakDefenseEnabled, isFalse);
+    });
+
+    test('preserves explicit system theme preference', () async {
+      SharedPreferences.setMockInitialValues({'device_theme_mode': 'system'});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = DeviceSettingsRepository(
+        sharedPreferences: prefs,
+        notificationScheduler: _FakeNotificationScheduler(),
+        soundDriver: _FakeToggleSettingDriver(),
+        hapticDriver: _FakeToggleSettingDriver(),
+      );
+
+      final settings = repository.load();
+
+      expect(settings.themeMode, ThemeMode.system);
     });
 
     test('persists theme and runtime toggles', () async {
