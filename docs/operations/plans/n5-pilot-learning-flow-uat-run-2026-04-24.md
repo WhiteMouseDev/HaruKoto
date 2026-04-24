@@ -10,6 +10,7 @@
 - 웹 타깃은 `record_web` / `record_platform_interface` 불일치로 빌드에 실패했다.
 - 따라서 학습 탭, 레슨 목록, 레슨 상세는 각 경로로 직접 앱을 띄워 시각 확인했다.
 - 테스트 계정의 현재 레벨은 `ABSOLUTE_ZERO`였지만, lesson API 응답은 파일럿 레슨 데이터로 연결되어 있었다.
+- 아래 8장은 Computer Use가 정상화된 뒤 실제 탭 조작으로 다시 실행한 모바일 UAT 결과다.
 
 ## 2. 실행 시나리오 결과
 
@@ -164,3 +165,49 @@
 
 - 위 조치는 로컬 코드 기준이며, 원격 API에는 아직 배포되지 않았다.
 - 배포 후 같은 N5 계정 또는 새 N5 테스트 계정으로 Lesson 1 완료 플로우를 다시 실행해 `srsRegisteredAt` 기록과 결과 화면 SRS 안내를 재확인해야 한다.
+
+## 8. Lesson 2 모바일 완료 플로우 및 계측 재확인
+
+> 추가 실행: 2026-04-24
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `origin/main` 최신 반영 후 `b197e35` 기반
+- 실행 명령: `flutter run -d 5549AFB7-FF41-4697-BBC5-F9E3181E4DDF --dart-define-from-file=/Users/kimkunwoo/WhiteMouseDev/japanese/apps/mobile/.env --route=/study`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- 대상 레슨: N5 Ch.01 Lesson 2 `어디서 오셨나요?`
+- Lesson API id: `22b9bfa8-9819-4afd-8e1d-969524adca1e`
+- 실행 방식: Computer Use로 실제 모바일 UI를 탭하며 추천 카드부터 제출까지 진행
+
+### 플로우 결과
+
+- 상태: `Pass`
+- 근거:
+  - 앱 진입 시 `/api/v1/stats/dashboard`, `/api/v1/lessons/review/summary?jlptLevel=N5`,
+    `/api/v1/lessons/chapters?jlptLevel=N5`가 모두 200을 반환했다.
+  - 학습 탭 상단 추천 레슨이 Lesson 2 `어디서 오셨나요?`로 표시됐다.
+  - 레슨 상세 조회, start, submit API가 모두 200을 반환했다.
+  - context preview, vocab learning, grammar learning, guided reading, recognition 4문항,
+    matching, sentence reorder를 실제 UI에서 완료했다.
+  - submit 결과는 `status = COMPLETED`, `scoreCorrect = 5`, `scoreTotal = 5`,
+    `srsItemsRegistered = 7`이었다.
+  - 목록 복귀 후 Ch.01 진행률이 `40%`로 갱신됐고, Lesson 1/2가 각각 `5/5`로 표시됐다.
+  - 다음 추천 레슨은 Ch.01 Lesson 3 `이야기 주제 세우기`로 갱신됐다.
+
+### 확인된 계측 이벤트
+
+| 이벤트 | 상태 | 확인 내용 |
+|--------|------|----------|
+| `lesson_list_viewed` | `Pass` | `jlptLevel = N5`, `source = study_home`, `chapterCount = 6`, `lessonCount = 30`, Lesson 2 추천 id 기록 |
+| `lesson_started` | `Pass` | `lessonNo = 2`, `chapterLessonNo = 2`, recognition 4문항, reorder 1문항 속성 기록 |
+| `lesson_step_completed` | `Pass` | `contextPreview`, `vocabLearning`, `grammarLearning`, `recognition`, `matching`, `sentenceReorder` 기록 |
+| `lesson_submitted` | `Pass` | `outcome = success`, `answerCount = 5`, `status = COMPLETED`, `score = 5/5`, `srsItemsRegistered = 7` 기록 |
+| `lesson_completed` | `Pass` | `score = 5/5`, `srsItemsRegistered = 7` 기록 |
+| `lesson_retry_clicked` | `Pass` | 완료 직후 재학습 CTA 탭에서 이벤트 기록 확인 |
+
+### 남은 한계
+
+- 결과 화면의 점수/SRS 안내를 별도 스크린샷으로 보존하지 못했다.
+- 이번 실행은 로그와 목록 복귀 상태로 완료/SRS 연결을 확인했으므로, 다음 UAT에서는 결과 화면 캡처를 추가로 남긴다.
