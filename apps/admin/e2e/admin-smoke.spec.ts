@@ -241,7 +241,7 @@ test('shows capped queue message while opening the first quiz item', async ({
   await page.getByRole('button', { name: 'レビュー開始' }).click();
   await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
   await expect(
-    page.getByText('リビューキューは最初の200件のみ表示しています')
+    page.getByText('レビューキューは最初の200件のみ表示しています')
   ).toBeVisible();
   await expect(page).toHaveURL(/\/quiz\/cloze-1\?/);
   await expect(page).toHaveURL(/type=cloze/);
