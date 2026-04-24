@@ -217,7 +217,13 @@ async def test_get_lesson_detail(client, mock_user):
     grammar_link.grammar_id = grammar_id
     grammar_link.item_order = 2
 
-    lesson.item_links = [grammar_link, vocab_link]
+    duplicate_grammar_link = MagicMock()
+    duplicate_grammar_link.item_type = "GRAMMAR"
+    duplicate_grammar_link.vocabulary_id = None
+    duplicate_grammar_link.grammar_id = grammar_id
+    duplicate_grammar_link.item_order = 3
+
+    lesson.item_links = [grammar_link, vocab_link, duplicate_grammar_link]
 
     lesson_result = MagicMock()
     lesson_result.scalar_one_or_none.return_value = lesson

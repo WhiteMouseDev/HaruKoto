@@ -70,7 +70,7 @@ class VoiceCallSessionStartCoordinator {
     if (startResult.stale) return;
 
     if (startResult.hasError) {
-      _fail(input, startResult.errorMessage);
+      _fail(input, startResult.errorMessage, canRetry: startResult.canRetry);
       return;
     }
 
@@ -94,9 +94,13 @@ class VoiceCallSessionStartCoordinator {
     }
   }
 
-  void _fail(VoiceCallSessionStartInput input, String? errorMessage) {
+  void _fail(
+    VoiceCallSessionStartInput input,
+    String? errorMessage, {
+    bool canRetry = true,
+  }) {
     input.setState(
-      _stateReducer.fail(input.getState(), errorMessage),
+      _stateReducer.fail(input.getState(), errorMessage, canRetry: canRetry),
     );
   }
 }
