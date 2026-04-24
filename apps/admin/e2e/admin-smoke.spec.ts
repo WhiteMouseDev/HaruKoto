@@ -170,6 +170,30 @@ test('splits quiz bulk approve into canonical content-type batches', async ({
   await expect(page.getByText('2件選択中')).toBeHidden();
 });
 
+test('submits non-quiz bulk reject with a review reason', async ({ page }) => {
+  await page.goto('/vocabulary');
+
+  await page.getByLabel('行 vocab-1 を選択').click();
+  await expect(page.getByText('1件選択中')).toBeVisible();
+
+  await page.getByRole('button', { name: '一括差し戻し' }).click();
+  await page.getByLabel('差し戻し理由').fill('例文をもう一度確認してください');
+  await page.getByRole('button', { name: '差し戻す' }).click();
+
+  await expect
+    .poll(() => apiState.batchReviewRequests)
+    .toEqual([
+      {
+        contentType: 'vocabulary',
+        ids: ['vocab-1'],
+        action: 'reject',
+        reason: '例文をもう一度確認してください',
+      },
+    ]);
+  await expect(page.getByText('1件選択中')).toBeHidden();
+  await expect(page.getByLabel('差し戻し理由')).toBeHidden();
+});
+
 test('filters the conversation list and opens the detail page', async ({
   page,
 }) => {
