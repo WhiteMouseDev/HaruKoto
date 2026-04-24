@@ -74,12 +74,12 @@
             "cognitive_level": "인식",
             "prompt": "食べるの意味は? (食べる의 뜻은?)",
             "options": [
-              {"id": "a", "text": "먹다"},
+              {"id": "a", "text": "쓰다"},
               {"id": "b", "text": "마시다"},
               {"id": "c", "text": "보다"},
-              {"id": "d", "text": "쓰다"}
+              {"id": "d", "text": "먹다"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "食べる(たべる)는 '먹다'라는 뜻입니다. 飲む(のむ)가 '마시다'입니다."
           },
           {
@@ -102,12 +102,12 @@
             "cognitive_level": "적용",
             "prompt": "食べるは「____動詞」です。(다베루는 __동사입니다.)",
             "options": [
-              {"id": "a", "text": "る"},
-              {"id": "b", "text": "う"},
+              {"id": "a", "text": "う"},
+              {"id": "b", "text": "る"},
               {"id": "c", "text": "す"},
               {"id": "d", "text": "く"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "食べる는 어미가 -える로 끝나므로 る동사입니다. る동사는 る를 빼고 활용합니다."
           },
           {
@@ -116,12 +116,12 @@
             "cognitive_level": "적용",
             "prompt": "飲むは「____動詞」です。(노무는 __동사입니다.)",
             "options": [
-              {"id": "a", "text": "う"},
+              {"id": "a", "text": "す"},
               {"id": "b", "text": "る"},
-              {"id": "c", "text": "す"},
+              {"id": "c", "text": "う"},
               {"id": "d", "text": "く"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "飲む는 어미가 -む로 끝나므로 う동사입니다. う동사는 어미가 う단 음으로 끝납니다."
           },
           {
@@ -212,12 +212,12 @@
             "cognitive_level": "인식",
             "prompt": "'듣다'를 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "聞く"},
-              {"id": "b", "text": "話す"},
+              {"id": "a", "text": "話す"},
+              {"id": "b", "text": "聞く"},
               {"id": "c", "text": "読む"},
               {"id": "d", "text": "書く"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "聞く(きく)는 '듣다'입니다. 話す(はなす)는 '말하다'입니다."
           },
           {
@@ -226,12 +226,12 @@
             "cognitive_level": "적용",
             "prompt": "学校に行き____。(학교에 갑니다.)",
             "options": [
-              {"id": "a", "text": "ます"},
+              {"id": "a", "text": "ました"},
               {"id": "b", "text": "ません"},
-              {"id": "c", "text": "ました"},
+              {"id": "c", "text": "ます"},
               {"id": "d", "text": "る"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "〜ます는 현재·미래의 동작을 정중하게 표현합니다. 行きます = 갑니다."
           },
           {
@@ -240,12 +240,12 @@
             "cognitive_level": "적용",
             "prompt": "日本語を話し____。(일본어를 말합니다.)",
             "options": [
-              {"id": "a", "text": "ます"},
+              {"id": "a", "text": "て"},
               {"id": "b", "text": "ない"},
               {"id": "c", "text": "た"},
-              {"id": "d", "text": "て"}
+              {"id": "d", "text": "ます"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "話す → 話します. う동사는 어미를 い단으로 바꾸고 ます를 붙입니다."
           },
           {
@@ -323,12 +323,12 @@
             "cognitive_level": "인식",
             "prompt": "新聞의 뜻은?",
             "options": [
-              {"id": "a", "text": "신문"},
-              {"id": "b", "text": "책"},
+              {"id": "a", "text": "책"},
+              {"id": "b", "text": "신문"},
               {"id": "c", "text": "잡지"},
               {"id": "d", "text": "편지"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "新聞(しんぶん)는 '신문'입니다. 本(ほん)가 '책'입니다."
           },
           {
@@ -337,12 +337,12 @@
             "cognitive_level": "인식",
             "prompt": "'물'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "水"},
+              {"id": "a", "text": "御飯"},
               {"id": "b", "text": "お茶"},
-              {"id": "c", "text": "御飯"},
+              {"id": "c", "text": "水"},
               {"id": "d", "text": "お酒"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "水(みず)는 '물'입니다. お茶(おちゃ)는 '차'입니다."
           },
           {
@@ -351,12 +351,12 @@
             "cognitive_level": "적용",
             "prompt": "本____読みます。(책을 읽습니다.)",
             "options": [
-              {"id": "a", "text": "を"},
+              {"id": "a", "text": "で"},
               {"id": "b", "text": "は"},
               {"id": "c", "text": "に"},
-              {"id": "d", "text": "で"}
+              {"id": "d", "text": "を"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "を는 '~을/를'에 해당하는 조사로, 동사의 목적어를 나타냅니다."
           },
           {
@@ -447,12 +447,12 @@
             "cognitive_level": "인식",
             "prompt": "散歩의 뜻은?",
             "options": [
-              {"id": "a", "text": "산책"},
+              {"id": "a", "text": "공부"},
               {"id": "b", "text": "여행"},
-              {"id": "c", "text": "공부"},
+              {"id": "c", "text": "산책"},
               {"id": "d", "text": "쇼핑"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "散歩(さんぽ)는 '산책'입니다. 旅行(りょこう)는 '여행'입니다."
           },
           {
@@ -461,12 +461,12 @@
             "cognitive_level": "인식",
             "prompt": "'쇼핑'을 뜻하는 일본어는?",
             "options": [
-              {"id": "a", "text": "買い物"},
+              {"id": "a", "text": "結婚"},
               {"id": "b", "text": "仕事"},
               {"id": "c", "text": "勉強"},
-              {"id": "d", "text": "結婚"}
+              {"id": "d", "text": "買い物"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "買い物(かいもの)는 '쇼핑, 장보기'입니다. 仕事(しごと)는 '일'입니다."
           },
           {
@@ -489,12 +489,12 @@
             "cognitive_level": "적용",
             "prompt": "友達が韓国から____。(친구가 한국에서 옵니다.)",
             "options": [
-              {"id": "a", "text": "来ます"},
-              {"id": "b", "text": "します"},
+              {"id": "a", "text": "します"},
+              {"id": "b", "text": "来ます"},
               {"id": "c", "text": "行きます"},
               {"id": "d", "text": "帰ります"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "来る(くる)의 ます형은 来ます(きます)입니다. 불규칙 동사이므로 형태가 크게 바뀝니다."
           },
           {
@@ -571,12 +571,12 @@
             "cognitive_level": "인식",
             "prompt": "野菜의 뜻은?",
             "options": [
-              {"id": "a", "text": "채소"},
+              {"id": "a", "text": "생선"},
               {"id": "b", "text": "과일"},
               {"id": "c", "text": "고기"},
-              {"id": "d", "text": "생선"}
+              {"id": "d", "text": "채소"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "野菜(やさい)는 '채소'입니다. 果物(くだもの)가 '과일'입니다."
           },
           {
@@ -599,12 +599,12 @@
             "cognitive_level": "적용",
             "prompt": "魚は食べ____。(생선은 먹지 않습니다.)",
             "options": [
-              {"id": "a", "text": "ません"},
-              {"id": "b", "text": "ます"},
+              {"id": "a", "text": "ます"},
+              {"id": "b", "text": "ません"},
               {"id": "c", "text": "ました"},
               {"id": "d", "text": "ましょう"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "〜ません은 동사의 정중한 부정형입니다. 食べません = 먹지 않습니다."
           },
           {
@@ -613,12 +613,12 @@
             "cognitive_level": "적용",
             "prompt": "お酒は飲み____。(술은 마시지 않습니다.)",
             "options": [
-              {"id": "a", "text": "ません"},
+              {"id": "a", "text": "ました"},
               {"id": "b", "text": "ます"},
-              {"id": "c", "text": "ました"},
+              {"id": "c", "text": "ません"},
               {"id": "d", "text": "たい"}
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "飲む → 飲みます(긍정) / 飲みません(부정). ません을 붙이면 부정이 됩니다."
           },
           {

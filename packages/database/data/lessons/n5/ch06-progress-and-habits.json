@@ -88,11 +88,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "읽다"
+                "text": "쓰다"
               },
               {
                 "id": "b",
-                "text": "쓰다"
+                "text": "읽다"
               },
               {
                 "id": "c",
@@ -103,7 +103,7 @@
                 "text": "먹다"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "読む(よむ)는 '읽다'라는 뜻입니다."
           },
           {
@@ -114,7 +114,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "歌う"
+                "text": "働く"
               },
               {
                 "id": "b",
@@ -122,14 +122,14 @@
               },
               {
                 "id": "c",
-                "text": "働く"
+                "text": "歌う"
               },
               {
                 "id": "d",
                 "text": "話す"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "歌う(うたう)는 '노래하다'입니다. 遊ぶ(あそぶ)는 '놀다'입니다."
           },
           {
@@ -140,7 +140,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "います"
+                "text": "ます"
               },
               {
                 "id": "b",
@@ -152,10 +152,10 @@
               },
               {
                 "id": "d",
-                "text": "ます"
+                "text": "います"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "〜ている(〜ています)는 '~하고 있다'로 지금 진행 중인 동작을 나타냅니다."
           },
           {
@@ -278,7 +278,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "외우다, 기억하다"
+                "text": "가르치다"
               },
               {
                 "id": "b",
@@ -286,14 +286,14 @@
               },
               {
                 "id": "c",
-                "text": "가르치다"
+                "text": "외우다, 기억하다"
               },
               {
                 "id": "d",
                 "text": "읽다"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "覚える(おぼえる)는 '외우다, 기억하다'라는 뜻입니다. 忘れる(わすれる)가 반대말입니다."
           },
           {
@@ -304,7 +304,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "忘れる"
+                "text": "分かる"
               },
               {
                 "id": "b",
@@ -316,10 +316,10 @@
               },
               {
                 "id": "d",
-                "text": "分かる"
+                "text": "忘れる"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "忘れる(わすれる)는 '잊다'입니다. 覚える(おぼえる)는 '외우다'로 반대 의미입니다."
           },
           {
@@ -356,11 +356,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "いません"
+                "text": "います"
               },
               {
                 "id": "b",
-                "text": "います"
+                "text": "いません"
               },
               {
                 "id": "c",
@@ -371,7 +371,7 @@
                 "text": "ありません"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "知っていません은 '알고 있지 않다'라는 뜻입니다. 知る의 て형 + いません입니다."
           },
           {
@@ -469,7 +469,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "숙제"
+                "text": "수업"
               },
               {
                 "id": "b",
@@ -481,10 +481,10 @@
               },
               {
                 "id": "d",
-                "text": "수업"
+                "text": "숙제"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "宿題(しゅくだい)는 '숙제'라는 뜻입니다."
           },
           {
@@ -521,11 +521,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "していません"
+                "text": "しています"
               },
               {
                 "id": "b",
-                "text": "しています"
+                "text": "していません"
               },
               {
                 "id": "c",
@@ -536,7 +536,7 @@
                 "text": "します"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "まだ〜していません은 '아직 ~하지 않았다'로 미완료 상태를 나타냅니다."
           },
           {
@@ -547,7 +547,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "いません"
+                "text": "ました"
               },
               {
                 "id": "b",
@@ -555,14 +555,14 @@
               },
               {
                 "id": "c",
-                "text": "ました"
+                "text": "いません"
               },
               {
                 "id": "d",
                 "text": "ください"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "書いて + いません으로 '아직 쓰지 않았다'라는 미완료를 나타냅니다."
           },
           {
@@ -688,11 +688,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "終わる"
+                "text": "買う"
               },
               {
                 "id": "b",
-                "text": "買う"
+                "text": "終わる"
               },
               {
                 "id": "c",
@@ -703,7 +703,7 @@
                 "text": "飲む"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "終わる(おわる)는 '끝나다'입니다. 買う(かう)는 '사다'입니다."
           },
           {
@@ -714,7 +714,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "食べました"
+                "text": "食べません"
               },
               {
                 "id": "b",
@@ -722,14 +722,14 @@
               },
               {
                 "id": "c",
-                "text": "食べません"
+                "text": "食べました"
               },
               {
                 "id": "d",
                 "text": "食べます"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "もう + 〜ました로 '이미 ~했다'라는 완료를 나타냅니다."
           },
           {
@@ -740,7 +740,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "もう"
+                "text": "あまり"
               },
               {
                 "id": "b",
@@ -752,10 +752,10 @@
               },
               {
                 "id": "d",
-                "text": "あまり"
+                "text": "もう"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "もう는 '이미/벌써'로, 완료 여부를 물을 때 もう〜ましたか로 씁니다."
           },
           {
@@ -857,11 +857,11 @@
             "options": [
               {
                 "id": "a",
-                "text": "매일 아침"
+                "text": "매일 저녁"
               },
               {
                 "id": "b",
-                "text": "매일 저녁"
+                "text": "매일 아침"
               },
               {
                 "id": "c",
@@ -872,7 +872,7 @@
                 "text": "가끔"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "b",
             "explanation": "毎朝(まいあさ)는 '매일 아침'이라는 뜻입니다."
           },
           {
@@ -883,7 +883,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "時々"
+                "text": "よく"
               },
               {
                 "id": "b",
@@ -891,14 +891,14 @@
               },
               {
                 "id": "c",
-                "text": "よく"
+                "text": "時々"
               },
               {
                 "id": "d",
                 "text": "毎日"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "c",
             "explanation": "時々(ときどき)는 '가끔'입니다. いつも는 '항상', よく는 '자주'입니다."
           },
           {
@@ -909,7 +909,7 @@
             "options": [
               {
                 "id": "a",
-                "text": "しています"
+                "text": "しません"
               },
               {
                 "id": "b",
@@ -921,10 +921,10 @@
               },
               {
                 "id": "d",
-                "text": "しません"
+                "text": "しています"
               }
             ],
-            "correct_answer": "a",
+            "correct_answer": "d",
             "explanation": "〜ている(〜しています)는 진행뿐 아니라 반복적인 습관도 나타냅니다."
           },
           {
