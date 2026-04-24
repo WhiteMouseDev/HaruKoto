@@ -6,6 +6,9 @@ from unittest.mock import AsyncMock
 # Set required env vars before any app imports
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
 os.environ.setdefault("SUPABASE_URL", "https://test.supabase.co")
+# Never let pytest inherit a real Sentry DSN or production-like environment.
+os.environ["SENTRY_DSN"] = ""
+os.environ["ENVIRONMENT"] = "test"
 
 import pytest
 import pytest_asyncio
