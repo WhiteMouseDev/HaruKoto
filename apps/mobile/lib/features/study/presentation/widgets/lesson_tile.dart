@@ -9,8 +9,13 @@ import '../../data/models/lesson_models.dart';
 /// A single lesson row inside a chapter card.
 class LessonTile extends StatelessWidget {
   final LessonSummaryModel lesson;
+  final bool isRecommended;
 
-  const LessonTile({super.key, required this.lesson});
+  const LessonTile({
+    super.key,
+    required this.lesson,
+    this.isRecommended = false,
+  });
 
   bool get _isPerfect =>
       lesson.status == 'COMPLETED' &&
@@ -26,7 +31,13 @@ class LessonTile extends StatelessWidget {
     final IconData iconData;
     final Color iconColor;
 
-    if (_isPerfect) {
+    if (isRecommended && lesson.status != 'COMPLETED') {
+      bgColor = AppColors.primaryStrong.withValues(alpha: 0.10);
+      iconData = lesson.status == 'IN_PROGRESS'
+          ? LucideIcons.playCircle
+          : LucideIcons.sparkles;
+      iconColor = AppColors.primaryStrong;
+    } else if (_isPerfect) {
       bgColor = AppColors.primary.withValues(alpha: 0.14);
       iconData = LucideIcons.sparkles;
       iconColor = AppColors.primaryStrong;
@@ -56,6 +67,11 @@ class LessonTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(14),
+            border: isRecommended && lesson.status != 'COMPLETED'
+                ? Border.all(
+                    color: AppColors.primaryStrong.withValues(alpha: 0.22),
+                  )
+                : null,
           ),
           child: Row(
             children: [
@@ -65,6 +81,16 @@ class LessonTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (isRecommended && lesson.status != 'COMPLETED') ...[
+                      Text(
+                        lesson.status == 'IN_PROGRESS' ? '이어하기' : '추천 레슨',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppColors.primaryStrong,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                    ],
                     Text(
                       lesson.title,
                       style: theme.textTheme.bodyMedium?.copyWith(

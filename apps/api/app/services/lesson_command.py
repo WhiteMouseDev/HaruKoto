@@ -17,6 +17,9 @@ from app.services.srs import AnswerResult, process_answer, register_items_from_l
 
 logger = logging.getLogger(__name__)
 
+SRS_ANSWER_FAILURE_DETAIL = "레슨 복습 상태 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요"
+SRS_REGISTRATION_FAILURE_DETAIL = "레슨 복습 카드 등록에 실패했습니다. 잠시 후 다시 시도해주세요"
+
 
 class LessonServiceError(Exception):
     def __init__(self, status_code: int, detail: str) -> None:
@@ -110,6 +113,63 @@ def _grade_answer(answer: AnswerSubmission, question_data: dict[str, Any]) -> bo
     return bool(answer.selected_answer == question_data.get("correct_answer", ""))
 
 
+def _validate_answers_payload(
+    *,
+    questions_raw: list[dict[str, Any]],
+    answers: list[AnswerSubmission],
+) -> None:
+    expected_orders = [question["order"] for question in questions_raw]
+    submitted_orders = [answer.order for answer in answers]
+
+    if len(submitted_orders) != len(expected_orders):
+        raise LessonServiceError(
+            status_code=400,
+            detail="모든 레슨 문항에 답변해야 제출할 수 있습니다",
+        )
+
+    if len(set(submitted_orders)) != len(submitted_orders):
+        raise LessonServiceError(
+            status_code=400,
+            detail="중복된 문항 답변은 제출할 수 없습니다",
+        )
+
+    if set(submitted_orders) != set(expected_orders):
+        raise LessonServiceError(
+            status_code=400,
+            detail="제출한 답변 문항이 레슨 구성과 일치하지 않습니다",
+        )
+
+    answer_by_order = {answer.order: answer for answer in answers}
+    for question in questions_raw:
+        order = question["order"]
+        question_type = question.get("type", "")
+        answer = answer_by_order[order]
+
+        if question_type == "SENTENCE_REORDER":
+            if not answer.submitted_order:
+                raise LessonServiceError(
+                    status_code=400,
+                    detail=f"{order}번 문항의 배열 답안이 필요합니다",
+                )
+            if answer.selected_answer is not None:
+                raise LessonServiceError(
+                    status_code=400,
+                    detail=f"{order}번 문항은 선택형 답안을 제출할 수 없습니다",
+                )
+            continue
+
+        if answer.selected_answer is None or answer.selected_answer.strip() == "":
+            raise LessonServiceError(
+                status_code=400,
+                detail=f"{order}번 문항의 선택 답안이 필요합니다",
+            )
+        if answer.submitted_order is not None:
+            raise LessonServiceError(
+                status_code=400,
+                detail=f"{order}번 문항은 배열 답안을 제출할 수 없습니다",
+            )
+
+
 def _map_questions_to_links(lesson: Lesson, questions_raw: list[dict[str, Any]]) -> dict[int, LessonItemLink]:
     item_links_by_order = {link.item_order: link for link in lesson.item_links}
     question_to_link: dict[int, LessonItemLink] = {}
@@ -148,8 +208,33 @@ async def submit_lesson_attempt(
         raise LessonServiceError(status_code=404, detail="레슨을 찾을 수 없습니다")
 
     questions_raw = (lesson.content_jsonb or {}).get("questions", [])
+    _validate_answers_payload(
+        questions_raw=questions_raw,
+        answers=answers,
+    )
     answer_key = {question["order"]: question for question in questions_raw}
     question_to_link = _map_questions_to_links(lesson, questions_raw)
+
+    srs_items_registered = 0
+    has_srs_items = any(link.item_type in ("WORD", "GRAMMAR") for link in lesson.item_links)
+    try:
+        async with db.begin_nested():
+            srs_items_registered = await register_items_from_lesson(
+                db=db,
+                user_id=user.id,
+                lesson_id=lesson_id,
+                item_links=list(lesson.item_links),
+            )
+    except Exception as exc:
+        logger.warning(
+            "SRS register_items_from_lesson failed for lesson %s",
+            lesson_id,
+            exc_info=True,
+        )
+        raise LessonServiceError(
+            status_code=500,
+            detail=SRS_REGISTRATION_FAILURE_DETAIL,
+        ) from exc
 
     results: list[LessonQuestionResult] = []
     correct_count = 0
@@ -181,13 +266,17 @@ async def submit_lesson_attempt(
                             session_id=None,
                             lesson_id=lesson_id,
                         )
-                except Exception:
+                except Exception as exc:
                     logger.warning(
                         "SRS process_answer failed for item %s in lesson %s",
                         item_id,
                         lesson_id,
                         exc_info=True,
                     )
+                    raise LessonServiceError(
+                        status_code=500,
+                        detail=SRS_ANSWER_FAILURE_DETAIL,
+                    ) from exc
 
         results.append(
             LessonQuestionResult(
@@ -203,23 +292,7 @@ async def submit_lesson_attempt(
             )
         )
 
-    srs_items_registered = 0
-    try:
-        async with db.begin_nested():
-            srs_items_registered = await register_items_from_lesson(
-                db=db,
-                user_id=user.id,
-                lesson_id=lesson_id,
-                item_links=list(lesson.item_links),
-            )
-    except Exception:
-        logger.warning(
-            "SRS register_items_from_lesson failed for lesson %s",
-            lesson_id,
-            exc_info=True,
-        )
-
-    total = len(results)
+    total = len(questions_raw)
     progress_result = await db.execute(
         select(UserLessonProgress).where(
             UserLessonProgress.user_id == user.id,
@@ -239,7 +312,7 @@ async def submit_lesson_attempt(
             score_total=total,
             started_at=now,
             completed_at=now,
-            srs_registered_at=now if srs_items_registered > 0 else None,
+            srs_registered_at=now if has_srs_items else None,
         )
         db.add(progress)
     else:
@@ -248,7 +321,7 @@ async def submit_lesson_attempt(
         progress.score_total = total
         progress.status = "COMPLETED"
         progress.completed_at = now
-        if srs_items_registered > 0 and progress.srs_registered_at is None:
+        if has_srs_items and progress.srs_registered_at is None:
             progress.srs_registered_at = now
 
     await db.commit()

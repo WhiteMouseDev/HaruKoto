@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/user_preferences_provider.dart';
+import '../domain/lesson_recommendation.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
 
@@ -12,6 +13,9 @@ class LessonListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
+    final recommendedLesson = chaptersAsync.hasValue
+        ? findRecommendedLesson(chaptersAsync.value!.chapters)
+        : null;
 
     return Scaffold(
       appBar: AppBar(title: const Text('학습')),
@@ -19,6 +23,7 @@ class LessonListPage extends ConsumerWidget {
         data: (data) => SingleChildScrollView(
           child: LessonChapterList(
             chapters: data.chapters,
+            recommendedLessonId: recommendedLesson?.lesson.id,
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
