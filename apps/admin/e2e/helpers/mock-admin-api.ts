@@ -29,6 +29,7 @@ type ContentListRequest = {
 };
 
 export type AdminApiMockState = {
+  batchReviewRequests: Array<unknown>;
   listRequests: ContentListRequest[];
   reviewRequests: Array<unknown>;
 };
@@ -123,6 +124,7 @@ function readSearchParams(request: Request): Record<string, string> {
 
 export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
   const state: AdminApiMockState = {
+    batchReviewRequests: [],
     listRequests: [],
     reviewRequests: [],
   };
@@ -138,6 +140,14 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
     'https://api.e2e.test/api/v1/admin/content/stats',
     async (route) => {
       await route.fulfill({ json: statsResponse });
+    }
+  );
+
+  await page.route(
+    'https://api.e2e.test/api/v1/admin/content/batch-review',
+    async (route) => {
+      state.batchReviewRequests.push(await readJsonBody(route.request()));
+      await route.fulfill({ status: 204 });
     }
   );
 

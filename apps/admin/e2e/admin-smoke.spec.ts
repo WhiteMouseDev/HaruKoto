@@ -138,6 +138,38 @@ test('filters the quiz list and preserves quiz type in detail links', async ({
   ).toBeVisible();
 });
 
+test('splits quiz bulk approve into canonical content-type batches', async ({
+  page,
+}) => {
+  await page.goto('/quiz');
+
+  await page.getByLabel('行 cloze-1 を選択').click();
+  await page.getByLabel('行 arrange-1 を選択').click();
+  await expect(page.getByText('2件選択中')).toBeVisible();
+
+  await page.getByRole('button', { name: '一括承認' }).click();
+
+  await expect
+    .poll(() =>
+      apiState.batchReviewRequests
+        .map((request) => JSON.stringify(request))
+        .sort()
+    )
+    .toEqual([
+      JSON.stringify({
+        contentType: 'cloze',
+        ids: ['cloze-1'],
+        action: 'approve',
+      }),
+      JSON.stringify({
+        contentType: 'sentence_arrange',
+        ids: ['arrange-1'],
+        action: 'approve',
+      }),
+    ]);
+  await expect(page.getByText('2件選択中')).toBeHidden();
+});
+
 test('filters the conversation list and opens the detail page', async ({
   page,
 }) => {
