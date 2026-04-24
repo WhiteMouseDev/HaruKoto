@@ -25,10 +25,12 @@ class LessonSessionState {
     this.hasReorderStep = false,
     this.result,
     this.submitting = false,
+    this.startErrorMessage,
     this.submissionErrorMessage,
   });
 
   static const _noResultChange = Object();
+  static const _noStartErrorChange = Object();
   static const _noSubmissionErrorChange = Object();
 
   final LessonStep step;
@@ -39,6 +41,7 @@ class LessonSessionState {
   final bool hasReorderStep;
   final LessonSubmitResultModel? result;
   final bool submitting;
+  final String? startErrorMessage;
   final String? submissionErrorMessage;
 
   bool get canPop => step == LessonStep.contextPreview;
@@ -56,6 +59,7 @@ class LessonSessionState {
     bool? hasReorderStep,
     Object? result = _noResultChange,
     bool? submitting,
+    Object? startErrorMessage = _noStartErrorChange,
     Object? submissionErrorMessage = _noSubmissionErrorChange,
   }) {
     return LessonSessionState(
@@ -69,6 +73,9 @@ class LessonSessionState {
           ? this.result
           : result as LessonSubmitResultModel?,
       submitting: submitting ?? this.submitting,
+      startErrorMessage: identical(startErrorMessage, _noStartErrorChange)
+          ? this.startErrorMessage
+          : startErrorMessage as String?,
       submissionErrorMessage:
           identical(submissionErrorMessage, _noSubmissionErrorChange)
               ? this.submissionErrorMessage
@@ -115,8 +122,11 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
     try {
       await ref.read(lessonSessionServiceProvider).startLesson(detail.id);
-    } catch (_) {
-      // Ignore already-started lessons. UI state should still advance.
+    } catch (error) {
+      state = state.copyWith(
+        startErrorMessage: '레슨 시작 실패: $error',
+      );
+      return;
     }
 
     state = LessonSessionState(
@@ -224,6 +234,11 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         submissionErrorMessage: '제출 실패: $error',
       );
     }
+  }
+
+  void clearStartError() {
+    if (state.startErrorMessage == null) return;
+    state = state.copyWith(startErrorMessage: null);
   }
 
   void clearSubmissionError() {

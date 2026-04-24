@@ -12,6 +12,48 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   group('LessonPage', () {
     testWidgets(
+        'shows a snackbar and clears start error when lesson start fails',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final detail = _buildDetail();
+      final repository = _FakeStudyRepository(
+        detail: detail,
+        startError: Exception('locked'),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWith((ref) => prefs),
+          studyRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(
+            home: LessonPage(lessonId: 'lesson-1'),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      await container
+          .read(lessonSessionProvider('lesson-1').notifier)
+          .startPractice(detail);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.textContaining('locked'), findsOneWidget);
+      expect(
+        container.read(lessonSessionProvider('lesson-1')).startErrorMessage,
+        isNull,
+      );
+    });
+
+    testWidgets(
         'shows a snackbar and clears submission error on submit failure',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
@@ -60,15 +102,31 @@ void main() {
 class _FakeStudyRepository extends Fake implements StudyRepository {
   _FakeStudyRepository({
     required this.detail,
+    this.startError,
     this.submitError,
   });
 
   final LessonDetailModel detail;
+  final Object? startError;
   final Object? submitError;
 
   @override
   Future<LessonDetailModel> fetchLessonDetail(String lessonId) async {
     return detail;
+  }
+
+  @override
+  Future<LessonProgressModel> startLesson(String lessonId) async {
+    if (startError != null) {
+      throw startError!;
+    }
+
+    return const LessonProgressModel(
+      status: 'IN_PROGRESS',
+      attempts: 1,
+      scoreCorrect: 0,
+      scoreTotal: 0,
+    );
   }
 
   @override

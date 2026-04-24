@@ -12,6 +12,7 @@ import '../../home/providers/home_provider.dart';
 import '../../my/providers/settings_sync_provider.dart';
 import '../data/models/lesson_models.dart';
 import '../data/models/review_summary_model.dart';
+import '../domain/lesson_recommendation.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
@@ -61,6 +62,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
     // Watch chapters for inline lesson list
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
+    final recommendedLesson = chaptersAsync.hasValue
+        ? findRecommendedLesson(chaptersAsync.value!.chapters)
+        : null;
 
     return Scaffold(
       body: SafeArea(
@@ -115,21 +119,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                             summary: summary, jlptLevel: jlptLevel);
                       }
                       if (!hasEverStudied) {
-                        // Find first uncompleted lesson for CTA
-                        final chapters = chaptersAsync.hasValue
-                            ? chaptersAsync.value!.chapters
-                            : <ChapterModel>[];
-                        String? firstLessonId;
-                        for (final ch in chapters) {
-                          for (final l in ch.lessons) {
-                            if (l.status != 'COMPLETED') {
-                              firstLessonId = l.id;
-                              break;
-                            }
-                          }
-                          if (firstLessonId != null) break;
-                        }
-                        return _ReviewIdleBar(firstLessonId: firstLessonId);
+                        return _ReviewIdleBar(
+                          firstLessonId: recommendedLesson?.lesson.id,
+                        );
                       }
                       return const SizedBox.shrink();
                     },
@@ -172,6 +164,16 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 ),
               ),
 
+              if (recommendedLesson != null)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
+                    child: _RecommendedLessonCard(
+                      target: recommendedLesson,
+                    ),
+                  ),
+                ),
+
               // Inline chapter cards
               SliverToBoxAdapter(
                 child: chaptersAsync.when(
@@ -189,6 +191,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                         )
                       : LessonChapterList(
                           chapters: data.chapters,
+                          recommendedLessonId: recommendedLesson?.lesson.id,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                         ),
                   loading: () => Padding(
@@ -396,6 +399,100 @@ class _ReviewIdleBar extends StatelessWidget {
               const Icon(LucideIcons.arrowRight,
                   size: 18, color: AppColors.primaryStrong),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecommendedLessonCard extends StatelessWidget {
+  const _RecommendedLessonCard({required this.target});
+
+  final RecommendedLessonTarget target;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final lesson = target.lesson;
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        onTap: () => context.push('/study/lessons/${lesson.id}'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.primaryStrong.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(
+              color: AppColors.primaryStrong.withValues(alpha: 0.22),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryStrong.withValues(alpha: 0.16),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  lesson.status == 'IN_PROGRESS'
+                      ? LucideIcons.playCircle
+                      : LucideIcons.sparkles,
+                  size: 22,
+                  color: AppColors.primaryStrong,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      target.reason,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primaryStrong,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      target.lesson.title,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Ch.${target.chapter.chapterNo} · ${lesson.estimatedMinutes}분 · ${lesson.topic}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              FilledButton(
+                onPressed: () => context.push('/study/lessons/${lesson.id}'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryStrong,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                child: Text(
+                  lesson.status == 'IN_PROGRESS' ? '이어하기' : '시작하기',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -32,6 +32,16 @@ class _LessonPageState extends ConsumerState<LessonPage> {
     ref.listen<LessonSessionState>(
       lessonSessionProvider(widget.lessonId),
       (previous, next) {
+        final nextStartError = next.startErrorMessage;
+        if (nextStartError != null &&
+            nextStartError != previous?.startErrorMessage) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(content: Text(nextStartError)),
+          );
+          sessionNotifier.clearStartError();
+          return;
+        }
+
         final nextError = next.submissionErrorMessage;
         if (nextError == null ||
             nextError == previous?.submissionErrorMessage) {
