@@ -2,9 +2,11 @@ import type { Page, Request } from '@playwright/test';
 import {
   conversationAuditLogsResponse,
   conversationDetailResponse,
+  conversationListResponse,
   conversationTtsResponse,
   grammarAuditLogsResponse,
   grammarDetailResponse,
+  grammarListResponse,
   grammarTtsResponse,
   statsResponse,
   supabaseUserResponse,
@@ -14,8 +16,19 @@ import {
   vocabularyTtsResponse,
 } from '../fixtures/admin-content';
 
+type ContentListRequest = {
+  contentType: string;
+  searchParams: Record<string, string>;
+};
+
 export type AdminApiMockState = {
+  listRequests: ContentListRequest[];
   reviewRequests: Array<unknown>;
+};
+
+type ContentListMock = {
+  contentType: string;
+  list: unknown;
 };
 
 type ContentDetailMock = {
@@ -25,6 +38,21 @@ type ContentDetailMock = {
   auditLogs: unknown;
   tts: unknown;
 };
+
+const contentListMocks: ContentListMock[] = [
+  {
+    contentType: 'vocabulary',
+    list: vocabularyListResponse,
+  },
+  {
+    contentType: 'grammar',
+    list: grammarListResponse,
+  },
+  {
+    contentType: 'conversation',
+    list: conversationListResponse,
+  },
+];
 
 const contentDetailMocks: ContentDetailMock[] = [
   {
@@ -58,8 +86,13 @@ async function readJsonBody(request: Request): Promise<unknown> {
   }
 }
 
+function readSearchParams(request: Request): Record<string, string> {
+  return Object.fromEntries(new URL(request.url()).searchParams.entries());
+}
+
 export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
   const state: AdminApiMockState = {
+    listRequests: [],
     reviewRequests: [],
   };
 
@@ -98,12 +131,20 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
     });
   }
 
-  await page.route(
-    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/vocabulary(?:\?.*)?$/,
-    async (route) => {
-      await route.fulfill({ json: vocabularyListResponse });
-    }
-  );
+  for (const content of contentListMocks) {
+    await page.route(
+      new RegExp(
+        `https:\\/\\/api\\.e2e\\.test\\/api\\/v1\\/admin\\/content\\/${content.contentType}(?:\\?.*)?$`
+      ),
+      async (route) => {
+        state.listRequests.push({
+          contentType: content.contentType,
+          searchParams: readSearchParams(route.request()),
+        });
+        await route.fulfill({ json: content.list });
+      }
+    );
+  }
 
   return state;
 }

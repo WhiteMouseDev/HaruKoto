@@ -56,6 +56,23 @@ export const vocabularyListResponse = {
   totalPages: 1,
 };
 
+export const grammarListResponse = {
+  items: [
+    {
+      id: 'grammar-1',
+      pattern: '〜てもいいですか',
+      explanation: '許可を求めるときに使う表現です。',
+      jlptLevel: 'N5',
+      reviewStatus: 'needs_review',
+      createdAt: '2026-04-24T00:00:00.000Z',
+    },
+  ],
+  total: 1,
+  page: 1,
+  pageSize: 20,
+  totalPages: 1,
+};
+
 export const vocabularyDetailResponse = {
   id: 'vocab-1',
   word: '食べる',
@@ -153,6 +170,23 @@ export const conversationDetailResponse = {
   reviewStatus: 'needs_review',
   createdAt: '2026-04-24T00:00:00.000Z',
   updatedAt: '2026-04-24T01:00:00.000Z',
+};
+
+export const conversationListResponse = {
+  items: [
+    {
+      id: 'conversation-1',
+      title: '카페 주문 연습',
+      category: 'DAILY',
+      jlptLevel: null,
+      reviewStatus: 'needs_review',
+      createdAt: '2026-04-24T00:00:00.000Z',
+    },
+  ],
+  total: 1,
+  page: 1,
+  pageSize: 20,
+  totalPages: 1,
 };
 
 export const conversationAuditLogsResponse = [

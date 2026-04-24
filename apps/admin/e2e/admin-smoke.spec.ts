@@ -1,9 +1,19 @@
 import { expect, test } from '@playwright/test';
-import { mockAdminApi } from './helpers/mock-admin-api';
+import { mockAdminApi, type AdminApiMockState } from './helpers/mock-admin-api';
+
+let apiState: AdminApiMockState;
 
 test.beforeEach(async ({ page }) => {
-  await mockAdminApi(page);
+  apiState = await mockAdminApi(page);
 });
+
+function latestListParam(contentType: string, key: string): string {
+  const requests = apiState.listRequests.filter(
+    (request) => request.contentType === contentType
+  );
+  const latestRequest = requests[requests.length - 1];
+  return latestRequest?.searchParams[key] ?? '';
+}
 
 test('renders the login page without a live Supabase session', async ({
   page,
@@ -53,4 +63,72 @@ test('renders the vocabulary list and keeps filter state in the URL', async ({
 
   await page.getByLabel('JLPTレベル').selectOption('N5');
   await expect(page).toHaveURL(/jlpt=N5/);
+  await expect
+    .poll(() => latestListParam('vocabulary', 'jlpt_level'))
+    .toBe('N5');
+});
+
+test('filters the grammar list and opens the detail page', async ({ page }) => {
+  await page.goto('/grammar');
+
+  await expect(page.getByRole('heading', { name: '文法一覧' })).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '〜てもいいですか' })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '許可を求めるときに使う表現です。' })
+  ).toBeVisible();
+
+  await page.getByLabel('検索').fill('写真');
+  await expect.poll(() => latestListParam('grammar', 'search')).toBe('写真');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('grammar', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await page.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/grammar\/grammar-1$/);
+  await expect(page.getByRole('heading', { name: '文法を編集' })).toBeVisible();
+});
+
+test('filters the conversation list and opens the detail page', async ({
+  page,
+}) => {
+  await page.goto('/conversation');
+
+  await expect(
+    page.getByRole('heading', { name: '会話シナリオ一覧' })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: '카페 주문 연습' })
+  ).toBeVisible();
+  await expect(page.getByRole('cell', { name: '日常' })).toBeVisible();
+  await expect(page.getByLabel('JLPTレベル')).toBeHidden();
+
+  await page.getByLabel('検索').fill('카페');
+  await expect
+    .poll(() => latestListParam('conversation', 'search'))
+    .toBe('카페');
+  await expect(page).toHaveURL(/q=/);
+
+  await page.getByLabel('カテゴリ').selectOption('DAILY');
+  await expect
+    .poll(() => latestListParam('conversation', 'category'))
+    .toBe('DAILY');
+  await expect(page).toHaveURL(/category=DAILY/);
+
+  await page.getByLabel('ステータス').selectOption('needs_review');
+  await expect
+    .poll(() => latestListParam('conversation', 'review_status'))
+    .toBe('needs_review');
+  await expect(page).toHaveURL(/status=needs_review/);
+
+  await page.getByRole('link', { name: '詳細' }).click();
+  await expect(page).toHaveURL(/\/conversation\/conversation-1$/);
+  await expect(
+    page.getByRole('heading', { name: '会話シナリオを編集' })
+  ).toBeVisible();
 });
