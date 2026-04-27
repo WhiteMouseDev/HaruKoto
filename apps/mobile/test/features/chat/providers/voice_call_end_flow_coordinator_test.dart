@@ -37,12 +37,14 @@ void main() {
       );
 
       expect(service.endCalls, 1);
-      expect(result, isNotNull);
-      expect(result!.durationSeconds, 20);
-      expect(result.characterId, 'char-1');
-      expect(result.characterName, '하루');
-      expect(result.scenarioId, 'scenario-1');
-      expect(result.transcript, [
+      expect(result.feedbackError, isNull);
+      final analysisRequest = result.analysisRequest;
+      expect(analysisRequest, isNotNull);
+      expect(analysisRequest!.durationSeconds, 20);
+      expect(analysisRequest.characterId, 'char-1');
+      expect(analysisRequest.characterName, '하루');
+      expect(analysisRequest.scenarioId, 'scenario-1');
+      expect(analysisRequest.transcript, [
         {'role': 'user', 'text': 'もしもし'},
         {'role': 'assistant', 'text': 'やっほー'},
       ]);
@@ -71,7 +73,33 @@ void main() {
       );
 
       expect(service.endCalls, 1);
-      expect(result, isNull);
+      expect(result.analysisRequest, isNull);
+      expect(result.feedbackError, isNull);
+    });
+
+    test('returns no transcript feedback error for ineligible auto analysis',
+        () async {
+      final service = _FakeGeminiLiveService();
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..attachService(service);
+      final coordinator = VoiceCallEndFlowCoordinator(
+        analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
+        readAutoAnalysis: () => true,
+      );
+
+      final result = await coordinator.end(
+        VoiceCallEndFlowInput(
+          resources: resources,
+          request: const VoiceCallSessionRequest(characterId: 'char-1'),
+          durationSeconds: 1,
+        ),
+      );
+
+      expect(service.endCalls, 1);
+      expect(result.analysisRequest, isNull);
+      expect(result.feedbackError, 'no_transcript');
     });
   });
 }

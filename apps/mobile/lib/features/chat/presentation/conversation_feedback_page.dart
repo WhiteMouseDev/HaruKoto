@@ -18,12 +18,14 @@ class ConversationFeedbackPage extends ConsumerWidget {
     required this.conversationId,
     this.initialFeedback,
     this.initialFeedbackError,
+    this.onRetryVoiceCall,
     this.vocabulary,
   });
 
   final String conversationId;
   final FeedbackSummary? initialFeedback;
   final String? initialFeedbackError;
+  final VoidCallback? onRetryVoiceCall;
   final List<VocabularyItem>? vocabulary;
 
   @override
@@ -59,7 +61,10 @@ class ConversationFeedbackPage extends ConsumerWidget {
         ),
         data: (feedback) {
           if (feedback == null) {
-            return _FeedbackNoData(errorCode: initialFeedbackError);
+            return _FeedbackNoData(
+              errorCode: initialFeedbackError,
+              onRetryVoiceCall: onRetryVoiceCall,
+            );
           }
           return _FeedbackContent(
             feedback: feedback,
@@ -72,9 +77,13 @@ class ConversationFeedbackPage extends ConsumerWidget {
 }
 
 class _FeedbackNoData extends StatelessWidget {
-  const _FeedbackNoData({this.errorCode});
+  const _FeedbackNoData({
+    this.errorCode,
+    this.onRetryVoiceCall,
+  });
 
   final String? errorCode;
+  final VoidCallback? onRetryVoiceCall;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +132,13 @@ class _FeedbackNoData extends StatelessWidget {
               ),
             ],
             const SizedBox(height: AppSizes.md),
+            if (onRetryVoiceCall != null) ...[
+              FilledButton(
+                onPressed: onRetryVoiceCall,
+                child: const Text('다시 통화하기'),
+              ),
+              const SizedBox(height: AppSizes.xs),
+            ],
             OutlinedButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('대화 목록으로'),

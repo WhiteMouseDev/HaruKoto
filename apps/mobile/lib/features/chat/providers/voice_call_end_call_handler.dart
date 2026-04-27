@@ -5,7 +5,7 @@ import 'voice_call_connection_service.dart';
 import 'voice_call_end_flow_coordinator.dart';
 import 'voice_call_session_resources.dart';
 
-typedef VoiceCallEndFlowRunner = Future<VoiceCallAnalysisRequest?> Function(
+typedef VoiceCallEndFlowRunner = Future<VoiceCallEndFlowResult> Function(
   VoiceCallEndFlowInput input,
 );
 
@@ -30,10 +30,12 @@ class VoiceCallEndCallInput {
 class VoiceCallEndResult {
   const VoiceCallEndResult({
     this.analysisRequest,
+    this.feedbackError,
     this.ignored = false,
   });
 
   final VoiceCallAnalysisRequest? analysisRequest;
+  final String? feedbackError;
   final bool ignored;
 }
 
@@ -55,7 +57,7 @@ class VoiceCallEndCallHandler {
     }
 
     _isEnding = true;
-    final analysisRequest = await _endFlow(
+    final flowResult = await _endFlow(
       VoiceCallEndFlowInput(
         resources: input.resources,
         request: input.request,
@@ -63,6 +65,9 @@ class VoiceCallEndCallHandler {
       ),
     );
 
-    return VoiceCallEndResult(analysisRequest: analysisRequest);
+    return VoiceCallEndResult(
+      analysisRequest: flowResult.analysisRequest,
+      feedbackError: flowResult.feedbackError,
+    );
   }
 }

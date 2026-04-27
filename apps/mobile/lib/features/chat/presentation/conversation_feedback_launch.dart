@@ -8,6 +8,7 @@ MaterialPageRoute<void> conversationFeedbackRoute({
   required String conversationId,
   FeedbackSummary? initialFeedback,
   String? initialFeedbackError,
+  VoidCallback? onRetryVoiceCall,
   List<VocabularyItem>? vocabulary,
 }) {
   return MaterialPageRoute(
@@ -15,6 +16,7 @@ MaterialPageRoute<void> conversationFeedbackRoute({
       conversationId: conversationId,
       initialFeedback: initialFeedback,
       initialFeedbackError: initialFeedbackError,
+      onRetryVoiceCall: onRetryVoiceCall,
       vocabulary: vocabulary,
     ),
   );
@@ -25,6 +27,7 @@ void openConversationFeedbackPage(
   required String conversationId,
   FeedbackSummary? initialFeedback,
   String? initialFeedbackError,
+  VoidCallback? onRetryVoiceCall,
   List<VocabularyItem>? vocabulary,
   bool replace = false,
 }) {
@@ -32,6 +35,7 @@ void openConversationFeedbackPage(
     conversationId: conversationId,
     initialFeedback: initialFeedback,
     initialFeedbackError: initialFeedbackError,
+    onRetryVoiceCall: onRetryVoiceCall,
     vocabulary: vocabulary,
   );
   final navigator = Navigator.of(context);

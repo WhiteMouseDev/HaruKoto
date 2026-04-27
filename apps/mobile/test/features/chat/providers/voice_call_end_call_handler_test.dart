@@ -24,7 +24,9 @@ void main() {
       final handler = VoiceCallEndCallHandler(
         endFlow: (input) async {
           receivedInputs.add(input);
-          return analysisRequest;
+          return const VoiceCallEndFlowResult(
+            analysisRequest: analysisRequest,
+          );
         },
       );
 
@@ -38,8 +40,29 @@ void main() {
 
       expect(result.ignored, isFalse);
       expect(result.analysisRequest, same(analysisRequest));
+      expect(result.feedbackError, isNull);
       expect(receivedInputs.single.request, same(request));
       expect(receivedInputs.single.durationSeconds, 20);
+    });
+
+    test('wraps a no transcript feedback error result', () async {
+      final handler = VoiceCallEndCallHandler(
+        endFlow: (_) async {
+          return const VoiceCallEndFlowResult(feedbackError: 'no_transcript');
+        },
+      );
+
+      final result = await handler.end(
+        const VoiceCallEndCallInput(
+          resources: null,
+          request: VoiceCallSessionRequest(characterId: 'char-1'),
+          durationSeconds: 1,
+        ),
+      );
+
+      expect(result.ignored, isFalse);
+      expect(result.analysisRequest, isNull);
+      expect(result.feedbackError, 'no_transcript');
     });
 
     test('ignores duplicate end requests while an end is in progress',
@@ -49,7 +72,9 @@ void main() {
       final handler = VoiceCallEndCallHandler(
         endFlow: (_) {
           endCalls++;
-          return completer.future;
+          return completer.future.then(
+            (request) => VoiceCallEndFlowResult(analysisRequest: request),
+          );
         },
       );
 
@@ -79,7 +104,7 @@ void main() {
       final handler = VoiceCallEndCallHandler(
         endFlow: (_) async {
           endCalls++;
-          return null;
+          return const VoiceCallEndFlowResult();
         },
       );
 
