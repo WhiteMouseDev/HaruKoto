@@ -71,6 +71,34 @@ void main() {
       expect(state.errorMessage, 'bootstrap failed');
     });
 
+    test('preserves non-retryable start flow failures', () async {
+      var state = const VoiceCallSessionState(
+        status: VoiceCallStatus.connecting,
+      );
+      final coordinator = VoiceCallSessionStartCoordinator(
+        prepareStartFlow: (_) async {
+          return const VoiceCallStartFlowResult.failure(
+            '오늘의 AI 통화 횟수를 초과했습니다.',
+            canRetry: false,
+          );
+        },
+        startLiveSession: (_) async {
+          return const VoiceCallLiveSessionStartResult.success();
+        },
+      );
+
+      await coordinator.start(
+        _input(
+          getState: () => state,
+          setState: (nextState) => state = nextState,
+        ),
+      );
+
+      expect(state.status, VoiceCallStatus.error);
+      expect(state.errorMessage, '오늘의 AI 통화 횟수를 초과했습니다.');
+      expect(state.canRetry, isFalse);
+    });
+
     test('maps live session failure to error state', () async {
       var state = const VoiceCallSessionState(
         status: VoiceCallStatus.connecting,

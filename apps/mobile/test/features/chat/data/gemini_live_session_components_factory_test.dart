@@ -44,11 +44,8 @@ void main() {
       expect(instruction['text'], contains('JLPT N3'));
 
       final greeting =
-          _decode(transport.sent[1])['clientContent'] as Map<String, dynamic>;
-      final turns = greeting['turns'] as List<dynamic>;
-      final turn = turns.single as Map<String, dynamic>;
-      final greetingParts = turn['parts'] as List<dynamic>;
-      expect(greetingParts.single, {'text': 'カスタム挨拶'});
+          _decode(transport.sent[1])['realtimeInput'] as Map<String, dynamic>;
+      expect(greeting['text'], 'カスタム挨拶');
 
       final audio =
           _decode(transport.sent[2])['realtimeInput'] as Map<String, dynamic>;

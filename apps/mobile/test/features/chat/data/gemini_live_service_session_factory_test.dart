@@ -113,12 +113,8 @@ String _setupModel(String payload) {
 
 String _greetingText(String payload) {
   final decoded = jsonDecode(payload) as Map<String, dynamic>;
-  final clientContent = decoded['clientContent'] as Map<String, dynamic>;
-  final turns = clientContent['turns'] as List<dynamic>;
-  final turn = turns.first as Map<String, dynamic>;
-  final parts = turn['parts'] as List<dynamic>;
-  final part = parts.first as Map<String, dynamic>;
-  return part['text'] as String;
+  final realtimeInput = decoded['realtimeInput'] as Map<String, dynamic>;
+  return realtimeInput['text'] as String;
 }
 
 void _ignoreState(GeminiLiveState state) {}

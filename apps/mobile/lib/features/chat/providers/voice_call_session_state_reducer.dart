@@ -7,11 +7,13 @@ class VoiceCallSessionStateReducer {
 
   VoiceCallSessionState fail(
     VoiceCallSessionState state,
-    String? errorMessage,
-  ) {
+    String? errorMessage, {
+    bool canRetry = true,
+  }) {
     return state.copyWith(
       status: VoiceCallStatus.error,
       errorMessage: errorMessage,
+      canRetryConnection: canRetry,
     );
   }
 

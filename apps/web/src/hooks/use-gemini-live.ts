@@ -40,7 +40,7 @@ type GeminiLiveReturn = {
   getTranscript: () => TranscriptEntry[];
 };
 
-const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
+const GEMINI_MODEL = 'gemini-3.1-flash-live-preview';
 const DEFAULT_VOICE = 'Kore';
 const MAX_RECONNECT_ATTEMPTS = 3;
 const RECONNECT_BASE_DELAY_MS = 1000;
@@ -98,8 +98,6 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
             },
           },
           systemInstruction: optionsRef.current.systemInstruction ?? DEFAULT_SYSTEM_INSTRUCTION,
-          enableAffectiveDialog: true,
-          proactivity: { proactiveAudio: true },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           // VAD sensitivity — reduce false positives from background noise on mobile
@@ -321,14 +319,8 @@ export function useGeminiLive(options: GeminiLiveOptions): GeminiLiveReturn {
       ? `[システム] ${name}から電話がかかってきました。電話に出て「もしもし」から始めてください。`
       : '[システム] 友達から電話がかかってきました。電話に出て「もしもし」から始めてください。';
     const greeting = optionsRef.current.greeting ?? defaultGreeting;
-    session.sendClientContent({
-      turns: [
-        {
-          role: 'user',
-          parts: [{ text: greeting }],
-        },
-      ],
-      turnComplete: true,
+    session.sendRealtimeInput({
+      text: greeting,
     });
   }, [connectInternal]);
 

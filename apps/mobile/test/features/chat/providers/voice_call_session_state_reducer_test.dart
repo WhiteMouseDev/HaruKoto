@@ -18,11 +18,19 @@ void main() {
       expect(next.errorMessage, 'network error');
     });
 
-    test('toggles local call controls', () {
-      const state = VoiceCallSessionState(
-        isMuted: false,
-        showSubtitle: true,
+    test('applies non-retryable failure state', () {
+      final next = reducer.fail(
+        const VoiceCallSessionState(status: VoiceCallStatus.connected),
+        'quota exceeded',
+        canRetry: false,
       );
+
+      expect(next.status, VoiceCallStatus.error);
+      expect(next.canRetry, isFalse);
+    });
+
+    test('toggles local call controls', () {
+      const state = VoiceCallSessionState(isMuted: false, showSubtitle: true);
 
       final muted = reducer.toggleMute(state);
       final subtitleHidden = reducer.toggleSubtitle(state);

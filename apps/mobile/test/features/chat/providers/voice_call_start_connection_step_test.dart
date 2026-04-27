@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/settings/call_settings.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
@@ -90,6 +92,39 @@ void main() {
       expect(result.errorMessage, contains('연결에 실패했습니다'));
       expect(ringtone.stopCalls, 1);
     });
+
+    test(
+      'maps rate-limited API errors to non-retryable quota failure',
+      () async {
+        final ringtone = _FakeVoiceCallRingtonePlayer();
+        final connection = _FakeVoiceCallConnectionService(
+          unexpectedError: DioException(
+            requestOptions: RequestOptions(path: '/chat/live-token'),
+            error: const ApiException(
+              message: '오늘의 AI 통화 횟수를 초과했습니다.',
+              statusCode: 429,
+              errorCode: 'RATE_LIMITED',
+            ),
+          ),
+        );
+        final step =
+            VoiceCallStartConnectionStep(connectionService: connection);
+
+        final result = await step.connect(
+          VoiceCallStartConnectionInput(
+            request: const VoiceCallSessionRequest(characterId: 'char-1'),
+            startContext: _startContext(),
+            resources: VoiceCallSessionResources(ringtone),
+            isStale: () => false,
+          ),
+        );
+
+        expect(result.errorMessage, '오늘의 AI 통화 횟수를 초과했습니다.');
+        expect(result.errorMessage, isNot(contains('DioException')));
+        expect(result.canRetry, isFalse);
+        expect(ringtone.stopCalls, 1);
+      },
+    );
   });
 }
 
