@@ -29,9 +29,11 @@ class ConversationFeedbackPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final feedbackAsync = initialFeedback == null
-        ? ref.watch(conversationFeedbackProvider(conversationId))
-        : AsyncValue.data(initialFeedback);
+    final hasInitialAnalysisResult =
+        initialFeedback != null || initialFeedbackError != null;
+    final feedbackAsync = hasInitialAnalysisResult
+        ? AsyncValue.data(initialFeedback)
+        : ref.watch(conversationFeedbackProvider(conversationId));
 
     return Scaffold(
       appBar: AppBar(

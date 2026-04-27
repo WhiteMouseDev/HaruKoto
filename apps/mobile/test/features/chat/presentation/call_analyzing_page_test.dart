@@ -12,7 +12,14 @@ void main() {
   group('CallAnalyzingPage', () {
     testWidgets('navigates to the feedback report after analysis completes',
         (tester) async {
-      final repository = _FakeChatRepository();
+      final repository = _FakeChatRepository(
+        response: LiveFeedbackResponse(
+          conversationId: 'conversation-1',
+          feedbackSummary: _buildFeedbackSummary(),
+          xpEarned: 8,
+          events: const [],
+        ),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -55,10 +62,56 @@ void main() {
       expect(find.text('회화 리포트'), findsOneWidget);
       expect(find.text('잘한 표현'), findsOneWidget);
     });
+
+    testWidgets(
+        'shows generation failure no-data state after analysis completes',
+        (tester) async {
+      final repository = _FakeChatRepository(
+        response: const LiveFeedbackResponse(
+          conversationId: 'conversation-generation-failed',
+          feedbackError: 'generation_failed',
+          xpEarned: 0,
+          events: [],
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            chatRepositoryProvider.overrideWith((ref) => repository),
+          ],
+          child: const MaterialApp(
+            home: CallAnalyzingPage(
+              request: VoiceCallAnalysisRequest(
+                transcript: [
+                  {'role': 'user', 'text': 'こんにちは'},
+                ],
+                durationSeconds: 24,
+                characterName: 'Unknown',
+                scenarioId: 'scenario-1',
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+
+      expect(repository.calls, 1);
+      expect(find.text('회화 리포트'), findsOneWidget);
+      expect(find.text('피드백 생성에 실패했어요'), findsOneWidget);
+      expect(find.textContaining('잠시 후 다시 시도해 주세요'), findsOneWidget);
+    });
   });
 }
 
 class _FakeChatRepository extends ChatRepository {
+  _FakeChatRepository({required this.response});
+
+  final LiveFeedbackResponse response;
   int calls = 0;
 
   @override
@@ -69,12 +122,7 @@ class _FakeChatRepository extends ChatRepository {
     String? characterId,
   }) async {
     calls++;
-    return LiveFeedbackResponse(
-      conversationId: 'conversation-1',
-      feedbackSummary: _buildFeedbackSummary(),
-      xpEarned: 8,
-      events: const [],
-    );
+    return response;
   }
 }
 
