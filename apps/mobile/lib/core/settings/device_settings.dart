@@ -33,8 +33,10 @@ enum AppThemePreference {
         return AppThemePreference.light;
       case 'dark':
         return AppThemePreference.dark;
-      default:
+      case 'system':
         return AppThemePreference.system;
+      default:
+        return AppThemePreference.light;
     }
   }
 
@@ -52,7 +54,7 @@ enum AppThemePreference {
 
 class DeviceSettings {
   const DeviceSettings({
-    this.themePreference = AppThemePreference.system,
+    this.themePreference = AppThemePreference.light,
     this.soundEnabled = true,
     this.hapticEnabled = true,
     this.reminderEnabled = true,
