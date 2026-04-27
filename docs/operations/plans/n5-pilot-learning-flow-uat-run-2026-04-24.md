@@ -211,3 +211,61 @@
 
 - 결과 화면의 점수/SRS 안내를 별도 스크린샷으로 보존하지 못했다.
 - 이번 실행은 로그와 목록 복귀 상태로 완료/SRS 연결을 확인했으므로, 다음 UAT에서는 결과 화면 캡처를 추가로 남긴다.
+
+## 9. Lesson 3 모바일 완료 플로우 및 review CTA 재확인
+
+> 추가 실행: 2026-04-24
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `codex/n5-pilot-telemetry-uat`, Sentry breadcrumb 계측 포함
+- 실행 명령: `flutter run -d 5549AFB7-FF41-4697-BBC5-F9E3181E4DDF --dart-define-from-file=/Users/kimkunwoo/WhiteMouseDev/japanese/apps/mobile/.env --route=/study`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- 대상 레슨: N5 Ch.01 Lesson 3 `이야기 주제 세우기`
+- Lesson API id: `21161f32-9b71-43e2-9c38-e0a8192bf076`
+- 실행 방식: Computer Use로 실제 모바일 UI를 탭하며 추천 카드부터 제출까지 진행
+
+### 플로우 결과
+
+- 상태: `Pass`
+- 근거:
+  - 앱 진입 시 `/api/v1/stats/dashboard`, `/api/v1/lessons/review/summary?jlptLevel=N5`,
+    `/api/v1/lessons/chapters?jlptLevel=N5`가 모두 200을 반환했다.
+  - 학습 탭 상단 추천 레슨이 Lesson 3 `이야기 주제 세우기`로 표시됐다.
+  - 레슨 상세 조회, start, submit API가 모두 200을 반환했다.
+  - context preview, vocab learning, grammar learning, guided reading, recognition 4문항,
+    matching, sentence reorder를 실제 UI에서 완료했다.
+  - 최초 submit 결과는 `status = COMPLETED`, `scoreCorrect = 5`, `scoreTotal = 5`,
+    `srsItemsRegistered = 6`이었다.
+  - 완료 직후 재학습 CTA 탭에서 `lesson_retry_clicked`가 기록됐다.
+  - 같은 레슨 재시도 submit은 `score = 5/5`, `srsItemsRegistered = 0`을 반환해,
+    SRS 등록이 중복 증가하지 않는 idempotent 동작을 보였다.
+
+### review CTA 상태
+
+- 상태: `Contract Pass / Live Flag`
+- 근거:
+  - Lesson 3 실행 전 학습 홈에서는 복습 대기 카드가 노출되지 않았다.
+  - 따라서 `review_cta_clicked`를 실계정 UI에서 직접 탭하는 검증은 이번 실행에서 불가능했다.
+  - 대신 `StudyPage` 위젯 테스트로 `totalDue > 0`일 때 `복습 시작` 탭이
+    `review_cta_clicked`를 기록하는 이벤트 계약을 고정했다.
+  - 검증 속성: `jlptLevel`, `totalDue`, `wordDue`, `grammarDue`, `quizType`.
+
+### 확인된 계측 이벤트
+
+| 이벤트 | 상태 | 확인 내용 |
+|--------|------|----------|
+| `lesson_list_viewed` | `Pass` | `jlptLevel = N5`, `source = study_home`, `chapterCount = 6`, `lessonCount = 30`, Lesson 3 추천 id 기록 |
+| `lesson_started` | `Pass` | `lessonNo = 3`, `chapterLessonNo = 3`, recognition 4문항, reorder 1문항 속성 기록 |
+| `lesson_step_completed` | `Pass` | `contextPreview`, `vocabLearning`, `grammarLearning`, `recognition`, `matching`, `sentenceReorder` 기록 |
+| `lesson_submitted` | `Pass` | 최초 완료에서 `outcome = success`, `answerCount = 5`, `status = COMPLETED`, `score = 5/5`, `srsItemsRegistered = 6` 기록 |
+| `lesson_completed` | `Pass` | 최초 완료에서 `score = 5/5`, `srsItemsRegistered = 6` 기록 |
+| `lesson_retry_clicked` | `Pass` | 완료 직후 재학습 CTA 탭에서 이벤트 기록 확인 |
+| `review_cta_clicked` | `Contract Pass / Live Flag` | 실계정 CTA 미노출. 위젯 테스트로 due card 탭 이벤트 속성 계약 검증 |
+
+### 남은 한계
+
+- 결과 화면은 이벤트 로그로는 확인했지만, 세션 중단 이후 앱이 로그인 화면으로 전환되어 별도 스크린샷을 보존하지 못했다.
+- 실계정에서 due item이 즉시 노출되는 테스트 데이터 또는 시간 조작이 없으면 `review_cta_clicked`의 end-to-end 탭 검증은 불안정하다.

@@ -107,6 +107,55 @@ void main() {
       expect(find.text('Lesson 1'), findsWidgets);
       expect(find.text('추천 레슨'), findsNothing);
     });
+
+    testWidgets('tracks review CTA when due items are available',
+        (tester) async {
+      final events = <LessonPilotEvent>[];
+
+      await _pumpStudyPage(
+        tester,
+        telemetryEvents: events,
+        reviewSummary: const ReviewSummaryModel(
+          wordDue: 2,
+          grammarDue: 5,
+          totalDue: 7,
+          wordNew: 0,
+          grammarNew: 0,
+        ),
+        chapters: [
+          _chapter(
+            chapterNo: 1,
+            lessons: const [
+              LessonSummaryModel(
+                id: 'lesson-1',
+                lessonNo: 1,
+                chapterLessonNo: 1,
+                title: 'Lesson 1',
+                topic: 'Intro',
+                estimatedMinutes: 10,
+                status: 'COMPLETED',
+                scoreCorrect: 5,
+                scoreTotal: 5,
+              ),
+            ],
+          ),
+        ],
+      );
+
+      expect(find.text('복습 대기 7개'), findsOneWidget);
+      expect(find.text('단어 2 · 문법 5'), findsOneWidget);
+
+      await tester.tap(find.text('복습 시작'));
+
+      final event = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.reviewCtaClicked,
+      );
+      expect(event.properties['jlptLevel'], 'N5');
+      expect(event.properties['totalDue'], 7);
+      expect(event.properties['wordDue'], 2);
+      expect(event.properties['grammarDue'], 5);
+      expect(event.properties['quizType'], 'GRAMMAR');
+    });
   });
 }
 
@@ -114,6 +163,13 @@ Future<void> _pumpStudyPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
   List<LessonPilotEvent>? telemetryEvents,
+  ReviewSummaryModel reviewSummary = const ReviewSummaryModel(
+    wordDue: 0,
+    grammarDue: 0,
+    totalDue: 0,
+    wordNew: 0,
+    grammarNew: 0,
+  ),
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -126,15 +182,7 @@ Future<void> _pumpStudyPage(
           (ref) => Future.value(_dashboard()),
         ),
         reviewSummaryProvider('N5').overrideWith(
-          (ref) => Future.value(
-            const ReviewSummaryModel(
-              wordDue: 0,
-              grammarDue: 0,
-              totalDue: 0,
-              wordNew: 0,
-              grammarNew: 0,
-            ),
-          ),
+          (ref) => Future.value(reviewSummary),
         ),
         chaptersProvider('N5').overrideWith(
           (ref) => Future.value(ChapterListModel(chapters: chapters)),
