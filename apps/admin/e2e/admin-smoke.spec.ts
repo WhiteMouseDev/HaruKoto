@@ -295,6 +295,38 @@ test('shows capped queue message while opening the first quiz item', async ({
   await expect(page.getByText('1 / 2')).toBeVisible();
 });
 
+test('shows an error and stays on the quiz list when queue loading fails', async ({
+  page,
+}) => {
+  let queueSearchParams: Record<string, string> = {};
+  await page.route(
+    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/quiz(?:\?.*)?$/,
+    async (route) => {
+      queueSearchParams = Object.fromEntries(
+        new URL(route.request().url()).searchParams.entries()
+      );
+      await route.fulfill({
+        status: 500,
+        json: { detail: 'Queue unavailable' },
+      });
+    }
+  );
+
+  await page.goto('/quiz?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect(
+    page.getByText(
+      'レビューキューの読み込みに失敗しました。ページを再読み込みしてください。'
+    )
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/quiz\?jlpt=N5$/);
+  await expect(
+    page.getByRole('button', { name: 'レビュー開始' })
+  ).toBeEnabled();
+});
+
 test('splits quiz bulk approve into canonical content-type batches', async ({
   page,
 }) => {
