@@ -242,6 +242,8 @@
   - 완료 직후 재학습 CTA 탭에서 `lesson_retry_clicked`가 기록됐다.
   - 같은 레슨 재시도 submit은 `score = 5/5`, `srsItemsRegistered = 0`을 반환해,
     SRS 등록이 중복 증가하지 않는 idempotent 동작을 보였다.
+  - `LessonResultStep` 위젯 테스트로 `srsItemsRegistered > 0`일 때 결과 화면에
+    `6개 항목이 복습 예약되었습니다` 안내가 표시되는 UI 계약을 고정했다.
 
 ### review CTA 상태
 
@@ -268,4 +270,6 @@
 ### 남은 한계
 
 - 결과 화면은 이벤트 로그로는 확인했지만, 세션 중단 이후 앱이 로그인 화면으로 전환되어 별도 스크린샷을 보존하지 못했다.
+- 결과 화면의 점수/SRS 안내 UI는 `LessonResultStep` 위젯 테스트로 보강했으며,
+  다음 실기 UAT에서는 실제 기기 스크린샷을 추가 증거로 남긴다.
 - 실계정에서 due item이 즉시 노출되는 테스트 데이터 또는 시간 조작이 없으면 `review_cta_clicked`의 end-to-end 탭 검증은 불안정하다.
