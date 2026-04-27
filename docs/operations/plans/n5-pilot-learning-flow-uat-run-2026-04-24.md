@@ -278,3 +278,50 @@
 - 결과 화면의 점수/SRS 안내 UI는 `LessonResultStep` 위젯 테스트로 보강했으며,
   다음 실기 UAT에서는 실제 기기 스크린샷을 추가 증거로 남긴다.
 - 실계정 `review_cta_clicked`의 end-to-end 탭 검증은 `app.seeds.prepare_review_due --apply`로 due item을 만든 뒤 다시 실행한다.
+
+## 10. Review CTA 실계정 end-to-end 재검증
+
+> 추가 실행: 2026-04-27
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `codex/n5-pilot-telemetry-uat`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- Supabase 프로젝트: `HaruKoto` / `tdimppgykstgeykbnwal`
+- 실행 방식: Supabase CLI로 원격 DB 상태를 읽기 전용 확인한 뒤, 실제 모바일 UI에서 학습 탭의 복습 CTA를 탭했다.
+- DB 변경: 없음. 기존 N5 SRS progress row가 이미 due 상태라 `prepare_review_due --apply`는 실행하지 않았다.
+
+### 사전 확인
+
+- Supabase Auth password grant로 `test1@test.com` 인증 성공을 확인했다.
+- `auth.users.last_sign_in_at = 2026-04-27 02:21:56.414923+00`로 갱신됐다.
+- 원격 DB read-only 집계 결과:
+  - `wordDue = 2`
+  - `grammarDue = 3`
+  - `totalDue = 5`
+- 기존 `test@test.com` 계정은 N5 due/eligible row가 0이라 복습 CTA가 노출되지 않는 것이 정상으로 확인됐다.
+
+### 확인 결과
+
+- 상태: `Pass`
+- 근거:
+  - 학습 탭 상단에 `복습 대기 5개`, `단어 2 · 문법 3`, `복습 시작` CTA가 노출됐다.
+  - `복습 시작` CTA 탭 후 `퀴즈를 준비하고 있어요...` 로딩 화면으로 전환됐다.
+  - 로딩 후 실제 복습 퀴즈 화면 `오답 복습`으로 진입했다.
+  - 첫 문항 화면에서 `1/3`, `〜です`, 4개 선택지가 표시됐다.
+  - `review_cta_clicked` 이벤트가 `jlptLevel = N5`, `totalDue = 5`, `wordDue = 2`,
+    `grammarDue = 3`, `quizType = GRAMMAR` 속성으로 기록됐다.
+  - `/api/v1/quiz/start`가 200 응답을 반환했다.
+  - 모바일 앱의 Cloud Run API 호출은 로그인 세션 복구 후 200 응답을 반환했다.
+
+### 증빙
+
+- CTA 노출: `../qa/assets/harukoto-study-uat-n5-review-cta-current.png`
+- 복습 퀴즈 진입: `../qa/assets/harukoto-study-uat-n5-review-quiz-current.png`
+
+### 남은 한계
+
+- Flutter debug 로그가 `Authorization` 헤더를 그대로 출력하므로, 이번 문서에는 토큰 포함 터미널 로그를 인용하지 않는다.
+- `review_cta_clicked` 속성 계약은 위젯 테스트와 이번 실계정 이벤트 로그로 모두 확인됐다.
