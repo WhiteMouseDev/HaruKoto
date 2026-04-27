@@ -1,0 +1,3 @@
+bool isIosSimulatorEnvironment() {
+  return false;
+}

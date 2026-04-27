@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:record/record.dart';
 
+import 'gemini_live_audio_environment.dart';
+
 typedef GeminiLiveAudioOutputSetup = Future<void> Function({
   required int sampleRate,
   required int channelCount,
@@ -13,6 +15,7 @@ typedef GeminiLiveAudioOutputSetup = Future<void> Function({
 typedef GeminiLiveAudioThresholdSetter = Future<void> Function(int threshold);
 typedef GeminiLiveAudioOutputFeed = Future<void> Function(PcmArrayInt16 buffer);
 typedef GeminiLiveAudioOutputRelease = Future<void> Function();
+typedef GeminiLiveAudioOutputSupportChecker = bool Function();
 
 enum GeminiLiveAudioStartResult {
   started,
@@ -40,6 +43,7 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
     GeminiLiveAudioThresholdSetter? setFeedThreshold,
     GeminiLiveAudioOutputFeed? feedOutput,
     GeminiLiveAudioOutputRelease? releaseOutput,
+    GeminiLiveAudioOutputSupportChecker? isOutputSupported,
   })  : _recorder = recorder ?? AudioRecorder(),
         _setupOutput = setupOutput ??
             (({
@@ -53,21 +57,26 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
         _setFeedThreshold =
             setFeedThreshold ?? FlutterPcmSound.setFeedThreshold,
         _feedOutput = feedOutput ?? FlutterPcmSound.feed,
-        _releaseOutput = releaseOutput ?? FlutterPcmSound.release;
+        _releaseOutput = releaseOutput ?? FlutterPcmSound.release,
+        _isOutputSupported =
+            isOutputSupported ?? isGeminiLivePcmOutputSupported;
 
   final AudioRecorder _recorder;
   final GeminiLiveAudioOutputSetup _setupOutput;
   final GeminiLiveAudioThresholdSetter _setFeedThreshold;
   final GeminiLiveAudioOutputFeed _feedOutput;
   final GeminiLiveAudioOutputRelease _releaseOutput;
+  final GeminiLiveAudioOutputSupportChecker _isOutputSupported;
   StreamSubscription<Uint8List>? _recorderSub;
   Future<void> _playbackQueue = Future<void>.value();
+  bool _outputReady = false;
 
   @override
   Future<GeminiLiveAudioStartResult> startRecording({
     required void Function(Uint8List data) onData,
   }) async {
     await stopRecording();
+    await _releaseReadyOutput();
 
     try {
       if (!await _recorder.hasPermission()) {
@@ -79,8 +88,16 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
     }
 
     try {
-      await _setupOutput(sampleRate: 24000, channelCount: 1);
-      await _setFeedThreshold(8000);
+      _outputReady = false;
+      if (_isOutputSupported()) {
+        await _setupOutput(sampleRate: 24000, channelCount: 1);
+        _outputReady = true;
+        await _setFeedThreshold(8000);
+      } else {
+        debugPrint(
+          '[GeminiLive] PCM output disabled for this runtime environment',
+        );
+      }
 
       final stream = await _recorder.startStream(
         const RecordConfig(
@@ -96,6 +113,7 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
       _recorderSub = stream.listen(onData);
       return GeminiLiveAudioStartResult.started;
     } catch (e) {
+      await _releaseReadyOutput();
       debugPrint('[GeminiLive] Recording start failed: $e');
       return GeminiLiveAudioStartResult.unavailable;
     }
@@ -112,6 +130,8 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
 
   @override
   void playBase64Pcm(String base64Data) {
+    if (!_outputReady) return;
+
     try {
       final bytes = base64Decode(base64Data);
       final byteData = ByteData.sublistView(Uint8List.fromList(bytes));
@@ -137,6 +157,18 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
     await stopRecording();
     await _recorder.dispose();
     await _playbackQueue.catchError((_) {});
-    await _releaseOutput();
+    await _releaseReadyOutput();
+  }
+
+  Future<void> _releaseReadyOutput() async {
+    if (_outputReady) {
+      try {
+        await _releaseOutput();
+      } catch (e) {
+        debugPrint('[GeminiLive] Audio output release failed: $e');
+      } finally {
+        _outputReady = false;
+      }
+    }
   }
 }
