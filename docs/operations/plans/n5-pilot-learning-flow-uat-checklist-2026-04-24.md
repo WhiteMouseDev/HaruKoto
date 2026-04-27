@@ -9,6 +9,10 @@
 - 앱 빌드: 최신 모바일 브랜치 반영
 - 대상 계정: 신규 N5 계정 1개, 일부 진행 계정 1개, 전부 완료 계정 1개
 - 데이터: N5 Ch.01-Ch.06 seed 완료
+- 복습 CTA 실기 계정: 기존 SRS progress가 있는 N5 테스트 계정
+  - dry-run: `cd apps/api && DATABASE_URL="..." uv run --extra dev python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5`
+  - apply: `cd apps/api && DATABASE_URL="..." uv run --extra dev python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5 --apply`
+  - `--apply` 이후 `/api/v1/lessons/review/summary?jlptLevel=N5`의 `totalDue > 0`을 확인한 뒤 모바일 학습 탭을 연다.
 - 기록 방식: 각 시나리오마다 `Pass`, `Flag`, `Block` 중 하나로 기록
 
 ## 2. 평가 기준
@@ -85,6 +89,22 @@
 - 관찰:
 - 후속 조치:
 
+### 시나리오 F. due item 기반 복습 CTA
+
+1. 준비 조건의 `prepare_review_due --apply`로 N5 테스트 계정의 due item을 만든다.
+2. 앱을 재실행하거나 학습 탭을 pull-to-refresh한다.
+3. 학습 탭 상단에 `복습 대기 n개` 카드가 보이는지 확인한다.
+4. `복습 시작`을 탭한다.
+5. 복습 퀴즈 화면으로 진입하고 `review_cta_clicked` 이벤트가 기록되는지 확인한다.
+
+기록:
+
+- 상태:
+- `review/summary` 응답:
+- 계측 이벤트:
+- 관찰:
+- 후속 조치:
+
 ## 4. 공통 체크 질문
 
 각 시나리오마다 아래 질문에 답한다.
@@ -118,5 +138,6 @@ UAT 기록에는 시나리오별 `Pass/Flag/Block`과 함께 누락된 이벤트
 
 - `Block` 없음
 - 핵심 시나리오 A-D에서 `Pass` 1회 이상 확보
+- 시나리오 F에서 `review_cta_clicked` 이벤트와 복습 퀴즈 진입을 확인
 - 동일 문구에 대한 `Flag`가 2회 이상 반복되면 카피 수정 후 재검증
 - 추천 갱신 오류가 1회라도 나오면 서버/클라이언트 상태 계산을 다시 점검

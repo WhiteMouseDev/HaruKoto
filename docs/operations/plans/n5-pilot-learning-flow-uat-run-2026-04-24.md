@@ -10,6 +10,7 @@
 - 웹 타깃은 `record_web` / `record_platform_interface` 불일치로 빌드에 실패했다.
 - 따라서 학습 탭, 레슨 목록, 레슨 상세는 각 경로로 직접 앱을 띄워 시각 확인했다.
 - 테스트 계정의 현재 레벨은 `ABSOLUTE_ZERO`였지만, lesson API 응답은 파일럿 레슨 데이터로 연결되어 있었다.
+- 아래 8장은 Computer Use가 정상화된 뒤 실제 탭 조작으로 다시 실행한 모바일 UAT 결과다.
 
 ## 2. 실행 시나리오 결과
 
@@ -164,3 +165,163 @@
 
 - 위 조치는 로컬 코드 기준이며, 원격 API에는 아직 배포되지 않았다.
 - 배포 후 같은 N5 계정 또는 새 N5 테스트 계정으로 Lesson 1 완료 플로우를 다시 실행해 `srsRegisteredAt` 기록과 결과 화면 SRS 안내를 재확인해야 한다.
+
+## 8. Lesson 2 모바일 완료 플로우 및 계측 재확인
+
+> 추가 실행: 2026-04-24
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `origin/main` 최신 반영 후 `b197e35` 기반
+- 실행 명령: `flutter run -d 5549AFB7-FF41-4697-BBC5-F9E3181E4DDF --dart-define-from-file=/Users/kimkunwoo/WhiteMouseDev/japanese/apps/mobile/.env --route=/study`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- 대상 레슨: N5 Ch.01 Lesson 2 `어디서 오셨나요?`
+- Lesson API id: `22b9bfa8-9819-4afd-8e1d-969524adca1e`
+- 실행 방식: Computer Use로 실제 모바일 UI를 탭하며 추천 카드부터 제출까지 진행
+
+### 플로우 결과
+
+- 상태: `Pass`
+- 근거:
+  - 앱 진입 시 `/api/v1/stats/dashboard`, `/api/v1/lessons/review/summary?jlptLevel=N5`,
+    `/api/v1/lessons/chapters?jlptLevel=N5`가 모두 200을 반환했다.
+  - 학습 탭 상단 추천 레슨이 Lesson 2 `어디서 오셨나요?`로 표시됐다.
+  - 레슨 상세 조회, start, submit API가 모두 200을 반환했다.
+  - context preview, vocab learning, grammar learning, guided reading, recognition 4문항,
+    matching, sentence reorder를 실제 UI에서 완료했다.
+  - submit 결과는 `status = COMPLETED`, `scoreCorrect = 5`, `scoreTotal = 5`,
+    `srsItemsRegistered = 7`이었다.
+  - 목록 복귀 후 Ch.01 진행률이 `40%`로 갱신됐고, Lesson 1/2가 각각 `5/5`로 표시됐다.
+  - 다음 추천 레슨은 Ch.01 Lesson 3 `이야기 주제 세우기`로 갱신됐다.
+
+### 확인된 계측 이벤트
+
+| 이벤트 | 상태 | 확인 내용 |
+|--------|------|----------|
+| `lesson_list_viewed` | `Pass` | `jlptLevel = N5`, `source = study_home`, `chapterCount = 6`, `lessonCount = 30`, Lesson 2 추천 id 기록 |
+| `lesson_started` | `Pass` | `lessonNo = 2`, `chapterLessonNo = 2`, recognition 4문항, reorder 1문항 속성 기록 |
+| `lesson_step_completed` | `Pass` | `contextPreview`, `vocabLearning`, `grammarLearning`, `recognition`, `matching`, `sentenceReorder` 기록 |
+| `lesson_submitted` | `Pass` | `outcome = success`, `answerCount = 5`, `status = COMPLETED`, `score = 5/5`, `srsItemsRegistered = 7` 기록 |
+| `lesson_completed` | `Pass` | `score = 5/5`, `srsItemsRegistered = 7` 기록 |
+| `lesson_retry_clicked` | `Pass` | 완료 직후 재학습 CTA 탭에서 이벤트 기록 확인 |
+
+### 남은 한계
+
+- 결과 화면의 점수/SRS 안내를 별도 스크린샷으로 보존하지 못했다.
+- 이번 실행은 로그와 목록 복귀 상태로 완료/SRS 연결을 확인했으므로, 다음 UAT에서는 결과 화면 캡처를 추가로 남긴다.
+
+## 9. Lesson 3 모바일 완료 플로우 및 review CTA 재확인
+
+> 추가 실행: 2026-04-24
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `codex/n5-pilot-telemetry-uat`, Sentry breadcrumb 계측 포함
+- 실행 명령: `flutter run -d 5549AFB7-FF41-4697-BBC5-F9E3181E4DDF --dart-define-from-file=/Users/kimkunwoo/WhiteMouseDev/japanese/apps/mobile/.env --route=/study`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- 대상 레슨: N5 Ch.01 Lesson 3 `이야기 주제 세우기`
+- Lesson API id: `21161f32-9b71-43e2-9c38-e0a8192bf076`
+- 실행 방식: Computer Use로 실제 모바일 UI를 탭하며 추천 카드부터 제출까지 진행
+
+### 플로우 결과
+
+- 상태: `Pass`
+- 근거:
+  - 앱 진입 시 `/api/v1/stats/dashboard`, `/api/v1/lessons/review/summary?jlptLevel=N5`,
+    `/api/v1/lessons/chapters?jlptLevel=N5`가 모두 200을 반환했다.
+  - 학습 탭 상단 추천 레슨이 Lesson 3 `이야기 주제 세우기`로 표시됐다.
+  - 레슨 상세 조회, start, submit API가 모두 200을 반환했다.
+  - context preview, vocab learning, grammar learning, guided reading, recognition 4문항,
+    matching, sentence reorder를 실제 UI에서 완료했다.
+  - 최초 submit 결과는 `status = COMPLETED`, `scoreCorrect = 5`, `scoreTotal = 5`,
+    `srsItemsRegistered = 6`이었다.
+  - 완료 직후 재학습 CTA 탭에서 `lesson_retry_clicked`가 기록됐다.
+  - 같은 레슨 재시도 submit은 `score = 5/5`, `srsItemsRegistered = 0`을 반환해,
+    SRS 등록이 중복 증가하지 않는 idempotent 동작을 보였다.
+  - `LessonResultStep` 위젯 테스트로 `srsItemsRegistered > 0`일 때 결과 화면에
+    `6개 항목이 복습 예약되었습니다` 안내가 표시되는 UI 계약을 고정했다.
+
+### review CTA 상태
+
+- 상태: `Contract Pass / Live Flag`
+- 근거:
+  - Lesson 3 실행 전 학습 홈에서는 복습 대기 카드가 노출되지 않았다.
+  - 따라서 `review_cta_clicked`를 실계정 UI에서 직접 탭하는 검증은 이번 실행에서 불가능했다.
+  - 대신 `StudyPage` 위젯 테스트로 `totalDue > 0`일 때 `복습 시작` 탭이
+    `review_cta_clicked`를 기록하는 이벤트 계약을 고정했다.
+  - 검증 속성: `jlptLevel`, `totalDue`, `wordDue`, `grammarDue`, `quizType`.
+- 실기 재검증 준비:
+  - dry-run: `cd apps/api && DATABASE_URL="..." uv run python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5`
+  - apply: `cd apps/api && DATABASE_URL="..." uv run python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5 --apply`
+  - 이 커맨드는 기존 SRS progress row만 due 상태로 당겨 `review/summary`가 `totalDue > 0`을 반환하게 하는 UAT 보조 도구다.
+    실제 업데이트는 `--apply`가 있을 때만 수행한다.
+
+### 확인된 계측 이벤트
+
+| 이벤트 | 상태 | 확인 내용 |
+|--------|------|----------|
+| `lesson_list_viewed` | `Pass` | `jlptLevel = N5`, `source = study_home`, `chapterCount = 6`, `lessonCount = 30`, Lesson 3 추천 id 기록 |
+| `lesson_started` | `Pass` | `lessonNo = 3`, `chapterLessonNo = 3`, recognition 4문항, reorder 1문항 속성 기록 |
+| `lesson_step_completed` | `Pass` | `contextPreview`, `vocabLearning`, `grammarLearning`, `recognition`, `matching`, `sentenceReorder` 기록 |
+| `lesson_submitted` | `Pass` | 최초 완료에서 `outcome = success`, `answerCount = 5`, `status = COMPLETED`, `score = 5/5`, `srsItemsRegistered = 6` 기록 |
+| `lesson_completed` | `Pass` | 최초 완료에서 `score = 5/5`, `srsItemsRegistered = 6` 기록 |
+| `lesson_retry_clicked` | `Pass` | 완료 직후 재학습 CTA 탭에서 이벤트 기록 확인 |
+| `review_cta_clicked` | `Contract Pass / Live Flag` | 실계정 CTA 미노출. 위젯 테스트로 due card 탭 이벤트 속성 계약 검증 |
+
+### 남은 한계
+
+- 결과 화면은 이벤트 로그로는 확인했지만, 세션 중단 이후 앱이 로그인 화면으로 전환되어 별도 스크린샷을 보존하지 못했다.
+- 결과 화면의 점수/SRS 안내 UI는 `LessonResultStep` 위젯 테스트로 보강했으며,
+  다음 실기 UAT에서는 실제 기기 스크린샷을 추가 증거로 남긴다.
+- 실계정 `review_cta_clicked`의 end-to-end 탭 검증은 `app.seeds.prepare_review_due --apply`로 due item을 만든 뒤 다시 실행한다.
+
+## 10. Review CTA 실계정 end-to-end 재검증
+
+> 추가 실행: 2026-04-27
+
+### 실행 조건
+
+- 실행 워크트리: `/tmp/harukoto-n5-pilot-mobile-telemetry`
+- 앱 기준: `codex/n5-pilot-telemetry-uat`
+- 실행 기기: iPhone 17 Pro Simulator, iOS 26.4
+- 대상 계정: `test1@test.com`
+- Supabase 프로젝트: `HaruKoto` / `tdimppgykstgeykbnwal`
+- 실행 방식: Supabase CLI로 원격 DB 상태를 읽기 전용 확인한 뒤, 실제 모바일 UI에서 학습 탭의 복습 CTA를 탭했다.
+- DB 변경: 없음. 기존 N5 SRS progress row가 이미 due 상태라 `prepare_review_due --apply`는 실행하지 않았다.
+
+### 사전 확인
+
+- Supabase Auth password grant로 `test1@test.com` 인증 성공을 확인했다.
+- `auth.users.last_sign_in_at = 2026-04-27 02:21:56.414923+00`로 갱신됐다.
+- 원격 DB read-only 집계 결과:
+  - `wordDue = 2`
+  - `grammarDue = 3`
+  - `totalDue = 5`
+- 기존 `test@test.com` 계정은 N5 due/eligible row가 0이라 복습 CTA가 노출되지 않는 것이 정상으로 확인됐다.
+
+### 확인 결과
+
+- 상태: `Pass`
+- 근거:
+  - 학습 탭 상단에 `복습 대기 5개`, `단어 2 · 문법 3`, `복습 시작` CTA가 노출됐다.
+  - `복습 시작` CTA 탭 후 `퀴즈를 준비하고 있어요...` 로딩 화면으로 전환됐다.
+  - 로딩 후 실제 복습 퀴즈 화면 `오답 복습`으로 진입했다.
+  - 첫 문항 화면에서 `1/3`, `〜です`, 4개 선택지가 표시됐다.
+  - `review_cta_clicked` 이벤트가 `jlptLevel = N5`, `totalDue = 5`, `wordDue = 2`,
+    `grammarDue = 3`, `quizType = GRAMMAR` 속성으로 기록됐다.
+  - `/api/v1/quiz/start`가 200 응답을 반환했다.
+  - 모바일 앱의 Cloud Run API 호출은 로그인 세션 복구 후 200 응답을 반환했다.
+
+### 증빙
+
+- CTA 노출: `../qa/assets/harukoto-study-uat-n5-review-cta-current.png`
+- 복습 퀴즈 진입: `../qa/assets/harukoto-study-uat-n5-review-quiz-current.png`
+
+### 남은 한계
+
+- Flutter debug 로그가 `Authorization` 헤더를 그대로 출력하므로, 이번 문서에는 토큰 포함 터미널 로그를 인용하지 않는다.
+- `review_cta_clicked` 속성 계약은 위젯 테스트와 이번 실계정 이벤트 로그로 모두 확인됐다.
