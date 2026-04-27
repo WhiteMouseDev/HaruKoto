@@ -105,8 +105,13 @@ async def get_lesson_detail_data(
 
     vocab_items: list[VocabItemData] = []
     grammar_items: list[GrammarItemData] = []
+    seen_vocab_ids: set[UUID] = set()
+    seen_grammar_ids: set[UUID] = set()
     for link in sorted(lesson.item_links, key=lambda item: item.item_order):
         if link.item_type == "WORD" and link.vocabulary_id:
+            if link.vocabulary_id in seen_vocab_ids:
+                continue
+            seen_vocab_ids.add(link.vocabulary_id)
             vocab = vocab_map.get(link.vocabulary_id)
             if vocab:
                 vocab_items.append(
@@ -119,6 +124,9 @@ async def get_lesson_detail_data(
                     )
                 )
         elif link.item_type == "GRAMMAR" and link.grammar_id:
+            if link.grammar_id in seen_grammar_ids:
+                continue
+            seen_grammar_ids.add(link.grammar_id)
             grammar = grammar_map.get(link.grammar_id)
             if grammar:
                 grammar_items.append(

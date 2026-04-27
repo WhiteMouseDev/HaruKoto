@@ -72,6 +72,13 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
     }).toList();
   }
 
+  List<GrammarItemModel> get _uniqueGrammar {
+    final seen = <String>{};
+    return widget.detail.grammarItems.where((grammar) {
+      return seen.add(grammar.pattern);
+    }).toList();
+  }
+
   List<VocabItemModel> _previewVocab() {
     return _uniqueVocab.take(3).toList();
   }
@@ -83,7 +90,9 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
     final reading = detail.content.reading;
     final learningGoal = getLearningGoal(detail.topic);
     final previewVocab = _previewVocab();
+    final grammarItems = _uniqueGrammar;
     final remainingCount = _uniqueVocab.length - previewVocab.length;
+    final remainingGrammarCount = grammarItems.length - 3;
 
     return Column(
       children: [
@@ -266,12 +275,12 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
                       ],
                     ),
                   ),
-                if (previewVocab.isNotEmpty && detail.grammarItems.isNotEmpty)
+                if (previewVocab.isNotEmpty && grammarItems.isNotEmpty)
                   Divider(
                     color: AppColors.primary.withValues(alpha: 0.12),
                     height: AppSizes.xl,
                   ),
-                if (detail.grammarItems.isNotEmpty)
+                if (grammarItems.isNotEmpty)
                   _staggered(
                     5,
                     Column(
@@ -294,7 +303,7 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
                           ],
                         ),
                         const SizedBox(height: AppSizes.gap),
-                        ...detail.grammarItems.take(3).map(
+                        ...grammarItems.take(3).map(
                               (grammar) => Padding(
                                 padding: const EdgeInsets.only(
                                   bottom: AppSizes.sm,
@@ -346,9 +355,9 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
                                 ),
                               ),
                             ),
-                        if (detail.grammarItems.length > 3)
+                        if (remainingGrammarCount > 0)
                           Text(
-                            '+${detail.grammarItems.length - 3}개',
+                            '+$remainingGrammarCount개',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.lightSubtext,
                               fontWeight: FontWeight.w500,

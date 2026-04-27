@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../data/gemini_live_service.dart';
 import 'voice_call_connection_service.dart';
 import 'voice_call_session_resources.dart';
@@ -24,19 +26,23 @@ class VoiceCallStartConnectionResult {
   const VoiceCallStartConnectionResult._({
     this.service,
     this.errorMessage,
+    this.canRetry = true,
     this.stale = false,
   });
 
   const VoiceCallStartConnectionResult.ready(GeminiLiveService service)
       : this._(service: service);
 
-  const VoiceCallStartConnectionResult.failure(String message)
-      : this._(errorMessage: message);
+  const VoiceCallStartConnectionResult.failure(
+    String message, {
+    bool canRetry = true,
+  }) : this._(errorMessage: message, canRetry: canRetry);
 
   const VoiceCallStartConnectionResult.stale() : this._(stale: true);
 
   final GeminiLiveService? service;
   final String? errorMessage;
+  final bool canRetry;
   final bool stale;
 }
 
@@ -68,7 +74,30 @@ class VoiceCallStartConnectionStep {
       debugPrint('[VoiceCallSession] Start failed: $e');
       if (input.isStale()) return const VoiceCallStartConnectionResult.stale();
       await input.resources?.stopRingtone();
-      return VoiceCallStartConnectionResult.failure('연결에 실패했습니다: $e');
+      final apiException = _apiExceptionFrom(e);
+      if (apiException != null) {
+        return VoiceCallStartConnectionResult.failure(
+          _apiErrorMessage(apiException),
+          canRetry: !apiException.isRateLimited,
+        );
+      }
+      return const VoiceCallStartConnectionResult.failure(
+        '연결에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      );
     }
+  }
+
+  ApiException? _apiExceptionFrom(Object error) {
+    if (error is ApiException) return error;
+    if (error is DioException) {
+      final inner = error.error;
+      if (inner is ApiException) return inner;
+    }
+    return null;
+  }
+
+  String _apiErrorMessage(ApiException exception) {
+    if (exception.isRateLimited) return exception.message;
+    return exception.userMessage;
   }
 }
