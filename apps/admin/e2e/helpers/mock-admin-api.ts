@@ -34,6 +34,11 @@ type ReviewQueueRequest = {
   searchParams: Record<string, string>;
 };
 
+type ReviewQueueMockResponse = {
+  json: unknown;
+  status?: number;
+};
+
 export type AdminApiMockState = {
   batchReviewRequests: Array<unknown>;
   listRequests: ContentListRequest[];
@@ -129,6 +134,27 @@ function readSearchParams(request: Request): Record<string, string> {
   return Object.fromEntries(new URL(request.url()).searchParams.entries());
 }
 
+function reviewQueueRoutePattern(contentType: string): RegExp {
+  return new RegExp(
+    `https:\\/\\/api\\.e2e\\.test\\/api\\/v1\\/admin\\/content\\/review-queue\\/${contentType}(?:\\?.*)?$`
+  );
+}
+
+export async function mockReviewQueueResponse(
+  page: Page,
+  state: AdminApiMockState,
+  contentType: string,
+  response: ReviewQueueMockResponse
+): Promise<void> {
+  await page.route(reviewQueueRoutePattern(contentType), async (route) => {
+    state.queueRequests.push({
+      contentType,
+      searchParams: readSearchParams(route.request()),
+    });
+    await route.fulfill(response);
+  });
+}
+
 export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
   const state: AdminApiMockState = {
     batchReviewRequests: [],
@@ -160,18 +186,13 @@ export async function mockAdminApi(page: Page): Promise<AdminApiMockState> {
   );
 
   for (const [contentType, queue] of Object.entries(reviewQueueResponses)) {
-    await page.route(
-      new RegExp(
-        `https:\\/\\/api\\.e2e\\.test\\/api\\/v1\\/admin\\/content\\/review-queue\\/${contentType}(?:\\?.*)?$`
-      ),
-      async (route) => {
-        state.queueRequests.push({
-          contentType,
-          searchParams: readSearchParams(route.request()),
-        });
-        await route.fulfill({ json: queue });
-      }
-    );
+    await page.route(reviewQueueRoutePattern(contentType), async (route) => {
+      state.queueRequests.push({
+        contentType,
+        searchParams: readSearchParams(route.request()),
+      });
+      await route.fulfill({ json: queue });
+    });
   }
 
   for (const content of contentDetailMocks) {

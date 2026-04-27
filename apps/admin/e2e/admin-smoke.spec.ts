@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { mockAdminApi, type AdminApiMockState } from './helpers/mock-admin-api';
+import {
+  cappedQuizReviewQueueResponse,
+  emptyVocabularyReviewQueueResponse,
+  reviewQueueUnavailableResponse,
+} from './fixtures/admin-content';
+import {
+  mockAdminApi,
+  mockReviewQueueResponse,
+  type AdminApiMockState,
+} from './helpers/mock-admin-api';
 
 let apiState: AdminApiMockState;
 
@@ -216,23 +225,16 @@ test('auto-advances after quiz queue review actions and exits after the final it
 test('shows an empty queue message without leaving the vocabulary list', async ({
   page,
 }) => {
-  let queueSearchParams: Record<string, string> = {};
-  await page.route(
-    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/vocabulary(?:\?.*)?$/,
-    async (route) => {
-      queueSearchParams = Object.fromEntries(
-        new URL(route.request().url()).searchParams.entries()
-      );
-      await route.fulfill({
-        json: { ids: [], total: 0, capped: false },
-      });
-    }
-  );
+  await mockReviewQueueResponse(page, apiState, 'vocabulary', {
+    json: emptyVocabularyReviewQueueResponse,
+  });
 
   await page.goto('/vocabulary?jlpt=N5');
 
   await page.getByRole('button', { name: 'レビュー開始' }).click();
-  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect
+    .poll(() => latestQueueParam('vocabulary', 'jlpt_level'))
+    .toBe('N5');
   await expect(page.getByText('レビュー待ち項目はありません')).toBeVisible();
   await expect(page).toHaveURL(/\/vocabulary\?jlpt=N5$/);
   await expect(page.getByRole('heading', { name: '単語一覧' })).toBeVisible();
@@ -262,30 +264,14 @@ test('exits automatically after approving a single-item vocabulary queue', async
 test('shows capped queue message while opening the first quiz item', async ({
   page,
 }) => {
-  let queueSearchParams: Record<string, string> = {};
-  await page.route(
-    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/quiz(?:\?.*)?$/,
-    async (route) => {
-      queueSearchParams = Object.fromEntries(
-        new URL(route.request().url()).searchParams.entries()
-      );
-      await route.fulfill({
-        json: {
-          ids: [
-            { id: 'cloze-1', quizType: 'cloze' },
-            { id: 'arrange-1', quizType: 'sentence_arrange' },
-          ],
-          total: 250,
-          capped: true,
-        },
-      });
-    }
-  );
+  await mockReviewQueueResponse(page, apiState, 'quiz', {
+    json: cappedQuizReviewQueueResponse,
+  });
 
   await page.goto('/quiz?jlpt=N5');
 
   await page.getByRole('button', { name: 'レビュー開始' }).click();
-  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect.poll(() => latestQueueParam('quiz', 'jlpt_level')).toBe('N5');
   await expect(
     page.getByText('レビューキューは最初の200件のみ表示しています')
   ).toBeVisible();
@@ -298,24 +284,15 @@ test('shows capped queue message while opening the first quiz item', async ({
 test('shows an error and stays on the quiz list when queue loading fails', async ({
   page,
 }) => {
-  let queueSearchParams: Record<string, string> = {};
-  await page.route(
-    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/quiz(?:\?.*)?$/,
-    async (route) => {
-      queueSearchParams = Object.fromEntries(
-        new URL(route.request().url()).searchParams.entries()
-      );
-      await route.fulfill({
-        status: 500,
-        json: { detail: 'Queue unavailable' },
-      });
-    }
-  );
+  await mockReviewQueueResponse(page, apiState, 'quiz', {
+    status: 500,
+    json: reviewQueueUnavailableResponse,
+  });
 
   await page.goto('/quiz?jlpt=N5');
 
   await page.getByRole('button', { name: 'レビュー開始' }).click();
-  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect.poll(() => latestQueueParam('quiz', 'jlpt_level')).toBe('N5');
   await expect(
     page.getByText(
       'レビューキューの読み込みに失敗しました。ページを再読み込みしてください。'

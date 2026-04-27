@@ -124,6 +124,25 @@ export const reviewQueueResponses = {
   },
 };
 
+export const emptyVocabularyReviewQueueResponse = {
+  ids: [],
+  total: 0,
+  capped: false,
+};
+
+export const cappedQuizReviewQueueResponse = {
+  ids: [
+    { id: 'cloze-1', quizType: 'cloze' },
+    { id: 'arrange-1', quizType: 'sentence_arrange' },
+  ],
+  total: 250,
+  capped: true,
+};
+
+export const reviewQueueUnavailableResponse = {
+  detail: 'Queue unavailable',
+};
+
 export const vocabularyDetailResponse = {
   id: 'vocab-1',
   word: '食べる',
