@@ -213,6 +213,52 @@ test('auto-advances after quiz queue review actions and exits after the final it
   await expect(page.getByRole('heading', { name: 'クイズ一覧' })).toBeVisible();
 });
 
+test('shows an empty queue message without leaving the vocabulary list', async ({
+  page,
+}) => {
+  let queueSearchParams: Record<string, string> = {};
+  await page.route(
+    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/vocabulary(?:\?.*)?$/,
+    async (route) => {
+      queueSearchParams = Object.fromEntries(
+        new URL(route.request().url()).searchParams.entries()
+      );
+      await route.fulfill({
+        json: { ids: [], total: 0, capped: false },
+      });
+    }
+  );
+
+  await page.goto('/vocabulary?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect(page.getByText('レビュー待ち項目はありません')).toBeVisible();
+  await expect(page).toHaveURL(/\/vocabulary\?jlpt=N5$/);
+  await expect(page.getByRole('heading', { name: '単語一覧' })).toBeVisible();
+});
+
+test('exits automatically after approving a single-item vocabulary queue', async ({
+  page,
+}) => {
+  await page.goto('/vocabulary?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect
+    .poll(() => latestQueueParam('vocabulary', 'jlpt_level'))
+    .toBe('N5');
+  await expect(page).toHaveURL(/\/vocabulary\/vocab-1\?/);
+  await expect(page).toHaveURL(/qi=0/);
+  await expect(page.getByText('1 / 1')).toBeVisible();
+
+  await page.getByRole('button', { name: '承認' }).click();
+  await expect
+    .poll(() => apiState.reviewRequests)
+    .toEqual([{ action: 'approve' }]);
+  await expect(page).toHaveURL(/\/vocabulary$/);
+  await expect(page.getByRole('heading', { name: '単語一覧' })).toBeVisible();
+});
+
 test('shows capped queue message while opening the first quiz item', async ({
   page,
 }) => {
