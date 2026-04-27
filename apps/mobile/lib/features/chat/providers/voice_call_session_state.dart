@@ -14,6 +14,7 @@ class VoiceCallSessionState {
     this.showSubtitle = true,
     this.currentAiText = '',
     this.errorMessage,
+    this.canRetryConnection = true,
   });
 
   static const _unset = Object();
@@ -24,6 +25,7 @@ class VoiceCallSessionState {
   final bool showSubtitle;
   final String currentAiText;
   final String? errorMessage;
+  final bool canRetryConnection;
 
   String get formattedDuration {
     final mins = (callDurationSeconds ~/ 60).toString().padLeft(2, '0');
@@ -48,7 +50,7 @@ class VoiceCallSessionState {
 
   bool get isConnected => status == VoiceCallStatus.connected;
 
-  bool get canRetry => status == VoiceCallStatus.error;
+  bool get canRetry => status == VoiceCallStatus.error && canRetryConnection;
 
   VoiceCallSessionState copyWith({
     VoiceCallStatus? status,
@@ -57,6 +59,7 @@ class VoiceCallSessionState {
     bool? showSubtitle,
     String? currentAiText,
     Object? errorMessage = _unset,
+    bool? canRetryConnection,
   }) {
     return VoiceCallSessionState(
       status: status ?? this.status,
@@ -67,6 +70,7 @@ class VoiceCallSessionState {
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
+      canRetryConnection: canRetryConnection ?? this.canRetryConnection,
     );
   }
 }

@@ -33,19 +33,23 @@ class VoiceCallStartFlowResult {
   const VoiceCallStartFlowResult._({
     this.service,
     this.errorMessage,
+    this.canRetry = true,
     this.stale = false,
   });
 
   const VoiceCallStartFlowResult.ready(GeminiLiveService service)
       : this._(service: service);
 
-  const VoiceCallStartFlowResult.failure(String message)
-      : this._(errorMessage: message);
+  const VoiceCallStartFlowResult.failure(
+    String message, {
+    bool canRetry = true,
+  }) : this._(errorMessage: message, canRetry: canRetry);
 
   const VoiceCallStartFlowResult.stale() : this._(stale: true);
 
   final GeminiLiveService? service;
   final String? errorMessage;
+  final bool canRetry;
   final bool stale;
 
   bool get hasError => errorMessage != null;
@@ -97,7 +101,10 @@ class VoiceCallStartFlowCoordinator {
     }
     final errorMessage = connection.errorMessage;
     if (errorMessage != null) {
-      return VoiceCallStartFlowResult.failure(errorMessage);
+      return VoiceCallStartFlowResult.failure(
+        errorMessage,
+        canRetry: connection.canRetry,
+      );
     }
     final service = connection.service;
     if (service == null) return const VoiceCallStartFlowResult.stale();
