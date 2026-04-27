@@ -303,9 +303,7 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
                           ],
                         ),
                         const SizedBox(height: AppSizes.gap),
-                        ...grammarItems
-                            .take(3)
-                            .map(
+                        ...grammarItems.take(3).map(
                               (grammar) => Padding(
                                 padding: const EdgeInsets.only(
                                   bottom: AppSizes.sm,

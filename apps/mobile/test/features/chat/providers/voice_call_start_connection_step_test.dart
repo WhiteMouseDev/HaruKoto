@@ -107,7 +107,8 @@ void main() {
             ),
           ),
         );
-        final step = VoiceCallStartConnectionStep(connectionService: connection);
+        final step =
+            VoiceCallStartConnectionStep(connectionService: connection);
 
         final result = await step.connect(
           VoiceCallStartConnectionInput(
