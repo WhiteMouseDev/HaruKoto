@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/user_preferences_provider.dart';
@@ -8,15 +10,18 @@ import '../../my/providers/my_provider.dart';
 import 'voice_call_connection_service.dart';
 
 const _fallbackUserNickname = '학습자';
+const _profileLoadTimeout = Duration(seconds: 3);
 
 typedef VoiceCallPreferencesReader = UserPreferences Function();
 typedef VoiceCallProfileReader = AsyncValue<ProfileDetailModel> Function();
+typedef VoiceCallProfileFutureReader = Future<ProfileDetailModel> Function();
 
 final voiceCallStartContextReaderProvider =
     Provider<VoiceCallStartContextReader>((ref) {
   return VoiceCallStartContextReader(
     readPreferences: () => ref.read(userPreferencesProvider),
     readProfile: () => ref.read(profileDetailProvider),
+    readProfileFuture: () => ref.read(profileDetailProvider.future),
   );
 });
 
@@ -45,23 +50,44 @@ class VoiceCallStartContextReader {
   const VoiceCallStartContextReader({
     required VoiceCallPreferencesReader readPreferences,
     required VoiceCallProfileReader readProfile,
+    required VoiceCallProfileFutureReader readProfileFuture,
   })  : _readPreferences = readPreferences,
-        _readProfile = readProfile;
+        _readProfile = readProfile,
+        _readProfileFuture = readProfileFuture;
 
   final VoiceCallPreferencesReader _readPreferences;
   final VoiceCallProfileReader _readProfile;
+  final VoiceCallProfileFutureReader _readProfileFuture;
 
-  VoiceCallStartContext read() {
+  Future<VoiceCallStartContext> read() async {
     final preferences = _readPreferences();
-    final profileAsync = _readProfile();
-    final nickname = profileAsync.hasValue
-        ? profileAsync.value!.profile.nickname
-        : _fallbackUserNickname;
+    final profile = await _loadProfile();
 
     return VoiceCallStartContext(
-      callSettings: preferences.callSettings,
-      userNickname: nickname,
-      jlptLevel: preferences.jlptLevel,
+      callSettings: profile?.callSettings ?? preferences.callSettings,
+      userNickname: _normalizeNickname(profile?.nickname),
+      jlptLevel: profile?.jlptLevel ?? preferences.jlptLevel,
     );
+  }
+
+  Future<ProfileInfo?> _loadProfile() async {
+    final profileAsync = _readProfile();
+    if (profileAsync.hasValue) {
+      return profileAsync.value!.profile;
+    }
+
+    try {
+      final detail = await _readProfileFuture().timeout(_profileLoadTimeout);
+      return detail.profile;
+    } on TimeoutException {
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _normalizeNickname(String? nickname) {
+    final trimmed = nickname?.trim() ?? '';
+    return trimmed.isEmpty ? _fallbackUserNickname : trimmed;
   }
 }

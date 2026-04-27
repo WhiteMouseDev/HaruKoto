@@ -93,6 +93,14 @@ class LiveTokenRequest(CamelModel):
     character_id: UUID | None = None
 
 
+class LiveTokenResponse(CamelModel):
+    token: str
+    ws_uri: str
+    model: str
+    user_nickname: str
+    jlpt_level: str
+
+
 class LiveFeedbackRequest(CamelModel):
     conversation_id: UUID | None = None
     duration_seconds: int

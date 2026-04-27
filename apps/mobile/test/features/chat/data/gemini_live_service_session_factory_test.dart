@@ -47,7 +47,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connecting, GeminiLiveState.connected]);
-      expect(audioAdapter.startCalls, 1);
+      expect(audioAdapter.startCalls, 0);
       expect(_greetingText(transport.sent[1]), 'カスタム挨拶');
 
       transport.emitMessage(jsonEncode({
@@ -64,10 +64,12 @@ void main() {
           'turnComplete': true,
         },
       }));
+      await Future<void>.delayed(Duration.zero);
 
       expect(aiTexts, ['やっほー']);
       expect(transcriptEntries, ['user:もしもし', 'assistant:やっほー']);
       expect(audioAdapter.playedAudio, ['audio-1']);
+      expect(audioAdapter.startCalls, 1);
 
       await session.lifecycleRunner.end();
 

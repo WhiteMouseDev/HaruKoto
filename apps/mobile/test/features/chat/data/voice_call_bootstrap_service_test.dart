@@ -32,8 +32,8 @@ void main() {
       expect(bootstrap.model, 'gemini-live');
       expect(bootstrap.voiceName, 'Kore');
       expect(bootstrap.systemInstruction, 'friendly');
-      expect(bootstrap.userNickname, 'Tester');
-      expect(bootstrap.jlptLevel, 'N4');
+      expect(bootstrap.userNickname, 'TokenUser');
+      expect(bootstrap.jlptLevel, 'N3');
       expect(bootstrap.silenceDurationMs, 1500);
       expect(bootstrap.subtitleEnabled, isFalse);
     });
@@ -50,6 +50,8 @@ class _FakeChatRepository extends ChatRepository {
       wsUri: 'wss://example.test/live',
       token: 'token',
       model: 'gemini-live',
+      userNickname: 'TokenUser',
+      jlptLevel: 'N3',
     );
   }
 }

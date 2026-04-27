@@ -117,11 +117,15 @@ class LiveTokenResponse {
   final String token;
   final String wsUri;
   final String model;
+  final String? userNickname;
+  final String? jlptLevel;
 
   const LiveTokenResponse({
     required this.token,
     required this.wsUri,
     required this.model,
+    this.userNickname,
+    this.jlptLevel,
   });
 
   factory LiveTokenResponse.fromJson(Map<String, dynamic> json) {
@@ -129,6 +133,8 @@ class LiveTokenResponse {
       token: json['token'] as String? ?? '',
       wsUri: json['wsUri'] as String? ?? '',
       model: json['model'] as String? ?? '',
+      userNickname: json['userNickname'] as String?,
+      jlptLevel: json['jlptLevel'] as String?,
     );
   }
 }

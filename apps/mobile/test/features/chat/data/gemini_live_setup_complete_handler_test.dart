@@ -7,7 +7,8 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_transport.dart';
 
 void main() {
   group('GeminiLiveSetupCompleteHandler', () {
-    test('marks connected emits state sends greeting and starts recording', () {
+    test('marks connected and delays recording until the first model turn ends',
+        () {
       final events = <String>[];
       final reconnectCoordinator = GeminiLiveReconnectCoordinator();
       final firstDecision = reconnectCoordinator.requestReconnect();
@@ -31,6 +32,14 @@ void main() {
 
       expect(firstDecision.attempt, 1);
       expect(secondDecision.attempt, 1);
+      expect(events, [
+        'state:connected',
+        'send',
+      ]);
+
+      handler.handleModelTurnComplete();
+      handler.handleModelTurnComplete();
+
       expect(events, [
         'state:connected',
         'send',

@@ -56,6 +56,14 @@ class VoiceCallBootstrapService {
     );
     final characterContext =
         await _characterContextLoader.load(input.characterId);
+    final userNickname = _preferTokenValue(
+      tokenResp.userNickname,
+      fallback: input.userNickname,
+    );
+    final jlptLevel = _preferTokenValue(
+      tokenResp.jlptLevel,
+      fallback: input.jlptLevel,
+    );
 
     return VoiceCallBootstrapData(
       wsUri: tokenResp.wsUri,
@@ -63,10 +71,15 @@ class VoiceCallBootstrapService {
       model: tokenResp.model,
       voiceName: characterContext.voiceName,
       systemInstruction: characterContext.systemInstruction,
-      userNickname: input.userNickname,
+      userNickname: userNickname,
       silenceDurationMs: input.callSettings.silenceDurationMs,
       subtitleEnabled: input.callSettings.subtitleEnabled,
-      jlptLevel: input.jlptLevel,
+      jlptLevel: jlptLevel,
     );
+  }
+
+  String _preferTokenValue(String? value, {required String fallback}) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? fallback : trimmed;
   }
 }

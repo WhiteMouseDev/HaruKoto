@@ -46,6 +46,7 @@ void main() {
         'transcript:user:もしもし',
         'audio:audio-1',
         'transcript:assistant:やっほー',
+        'turnComplete',
       ]);
     });
 
@@ -85,6 +86,7 @@ GeminiLiveInboundDispatcher _dispatcher(
       recorder.events.add('transcript:${entry.role}:${entry.text}');
     },
     onAudioChunk: (base64Data) => recorder.events.add('audio:$base64Data'),
+    onModelTurnComplete: () => recorder.events.add('turnComplete'),
   );
 }
 

@@ -8,7 +8,8 @@ import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dar
 
 void main() {
   group('VoiceCallStartContextReader', () {
-    test('builds connection context from user preferences and profile', () {
+    test('builds connection context from user preferences and profile',
+        () async {
       const callSettings = CallSettings(
         silenceDurationMs: 900,
         subtitleEnabled: false,
@@ -18,10 +19,13 @@ void main() {
           jlptLevel: 'N3',
           callSettings: callSettings,
         ),
-        readProfile: () => AsyncValue.data(_profileDetail('Tester')),
+        readProfile: () => AsyncValue.data(
+          _profileDetail('Tester', callSettings: callSettings, jlptLevel: 'N3'),
+        ),
+        readProfileFuture: () => Future.value(_profileDetail('Fallback')),
       );
 
-      final context = reader.read();
+      final context = await reader.read();
       final input = context.toConnectionInput(
         const VoiceCallSessionRequest(
           characterId: 'char-1',
@@ -38,25 +42,44 @@ void main() {
       expect(input.request.characterId, 'char-1');
     });
 
-    test('falls back to default nickname when profile is not loaded', () {
+    test('waits for profile when the current provider value is still loading',
+        () async {
+      final reader = VoiceCallStartContextReader(
+        readPreferences: () => const UserPreferences(jlptLevel: 'N5'),
+        readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
+        readProfileFuture: () => Future.value(_profileDetail('LoadedUser')),
+      );
+
+      final context = await reader.read();
+
+      expect(context.userNickname, 'LoadedUser');
+    });
+
+    test('falls back to default nickname when profile cannot be loaded',
+        () async {
       final reader = VoiceCallStartContextReader(
         readPreferences: () => const UserPreferences(),
         readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
+        readProfileFuture: () => Future.error(Exception('profile failed')),
       );
 
-      final context = reader.read();
+      final context = await reader.read();
 
       expect(context.userNickname, '학습자');
     });
   });
 }
 
-ProfileDetailModel _profileDetail(String nickname) {
+ProfileDetailModel _profileDetail(
+  String nickname, {
+  CallSettings callSettings = const CallSettings(),
+  String jlptLevel = 'N5',
+}) {
   return ProfileDetailModel(
     profile: ProfileInfo(
       id: 'profile-1',
       nickname: nickname,
-      jlptLevel: 'N5',
+      jlptLevel: jlptLevel,
       dailyGoal: 10,
       experiencePoints: 0,
       level: 1,
@@ -64,6 +87,7 @@ ProfileDetailModel _profileDetail(String nickname) {
       streakCount: 0,
       longestStreak: 0,
       showKana: true,
+      callSettings: callSettings,
       createdAt: '2026-03-24T00:00:00Z',
     ),
     summary: const ProfileSummary(

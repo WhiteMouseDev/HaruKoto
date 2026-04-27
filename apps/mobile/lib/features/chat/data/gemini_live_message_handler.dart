@@ -7,6 +7,7 @@ enum GeminiLiveMessageActionType {
   aiTextDelta,
   transcriptEntry,
   audioChunk,
+  modelTurnComplete,
 }
 
 class GeminiLiveMessageAction {
@@ -39,6 +40,9 @@ class GeminiLiveMessageAction {
 
   const GeminiLiveMessageAction.audioChunk(String base64Data)
       : this._(type: GeminiLiveMessageActionType.audioChunk, text: base64Data);
+
+  const GeminiLiveMessageAction.modelTurnComplete()
+      : this._(type: GeminiLiveMessageActionType.modelTurnComplete);
 
   final GeminiLiveMessageActionType type;
   final String? text;
@@ -123,6 +127,7 @@ class GeminiLiveMessageHandler {
       if (aiEntry != null) {
         actions.add(GeminiLiveMessageAction.transcriptEntry(aiEntry));
       }
+      actions.add(const GeminiLiveMessageAction.modelTurnComplete());
     }
 
     if (serverContent['interrupted'] == true) {

@@ -57,6 +57,7 @@ void main() {
         GeminiLiveMessageActionType.transcriptEntry,
         GeminiLiveMessageActionType.audioChunk,
         GeminiLiveMessageActionType.transcriptEntry,
+        GeminiLiveMessageActionType.modelTurnComplete,
       ]);
       expect(actions[0].text, 'やっほー');
       expect(actions[1].transcriptEntry?.role, 'user');
