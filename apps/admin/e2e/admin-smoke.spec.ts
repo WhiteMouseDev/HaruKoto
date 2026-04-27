@@ -259,6 +259,42 @@ test('exits automatically after approving a single-item vocabulary queue', async
   await expect(page.getByRole('heading', { name: '単語一覧' })).toBeVisible();
 });
 
+test('shows capped queue message while opening the first quiz item', async ({
+  page,
+}) => {
+  let queueSearchParams: Record<string, string> = {};
+  await page.route(
+    /https:\/\/api\.e2e\.test\/api\/v1\/admin\/content\/review-queue\/quiz(?:\?.*)?$/,
+    async (route) => {
+      queueSearchParams = Object.fromEntries(
+        new URL(route.request().url()).searchParams.entries()
+      );
+      await route.fulfill({
+        json: {
+          ids: [
+            { id: 'cloze-1', quizType: 'cloze' },
+            { id: 'arrange-1', quizType: 'sentence_arrange' },
+          ],
+          total: 250,
+          capped: true,
+        },
+      });
+    }
+  );
+
+  await page.goto('/quiz?jlpt=N5');
+
+  await page.getByRole('button', { name: 'レビュー開始' }).click();
+  await expect.poll(() => queueSearchParams.jlpt_level ?? '').toBe('N5');
+  await expect(
+    page.getByText('レビューキューは最初の200件のみ表示しています')
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/quiz\/cloze-1\?/);
+  await expect(page).toHaveURL(/type=cloze/);
+  await expect(page).toHaveURL(/qi=0/);
+  await expect(page.getByText('1 / 2')).toBeVisible();
+});
+
 test('splits quiz bulk approve into canonical content-type batches', async ({
   page,
 }) => {
