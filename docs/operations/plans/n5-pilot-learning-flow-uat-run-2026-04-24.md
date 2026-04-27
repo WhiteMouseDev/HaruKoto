@@ -254,6 +254,11 @@
   - 대신 `StudyPage` 위젯 테스트로 `totalDue > 0`일 때 `복습 시작` 탭이
     `review_cta_clicked`를 기록하는 이벤트 계약을 고정했다.
   - 검증 속성: `jlptLevel`, `totalDue`, `wordDue`, `grammarDue`, `quizType`.
+- 실기 재검증 준비:
+  - dry-run: `cd apps/api && DATABASE_URL="..." uv run python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5`
+  - apply: `cd apps/api && DATABASE_URL="..." uv run python -m app.seeds.prepare_review_due --email test1@test.com --jlpt-level N5 --apply`
+  - 이 커맨드는 기존 SRS progress row만 due 상태로 당겨 `review/summary`가 `totalDue > 0`을 반환하게 하는 UAT 보조 도구다.
+    실제 업데이트는 `--apply`가 있을 때만 수행한다.
 
 ### 확인된 계측 이벤트
 
@@ -272,4 +277,4 @@
 - 결과 화면은 이벤트 로그로는 확인했지만, 세션 중단 이후 앱이 로그인 화면으로 전환되어 별도 스크린샷을 보존하지 못했다.
 - 결과 화면의 점수/SRS 안내 UI는 `LessonResultStep` 위젯 테스트로 보강했으며,
   다음 실기 UAT에서는 실제 기기 스크린샷을 추가 증거로 남긴다.
-- 실계정에서 due item이 즉시 노출되는 테스트 데이터 또는 시간 조작이 없으면 `review_cta_clicked`의 end-to-end 탭 검증은 불안정하다.
+- 실계정 `review_cta_clicked`의 end-to-end 탭 검증은 `app.seeds.prepare_review_due --apply`로 due item을 만든 뒤 다시 실행한다.
