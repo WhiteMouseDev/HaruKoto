@@ -99,11 +99,11 @@
 
 기록:
 
-- 상태:
-- `review/summary` 응답:
-- 계측 이벤트:
-- 관찰:
-- 후속 조치:
+- 상태: `Pass`
+- `review/summary` 응답: `test1@test.com` N5 기준 `totalDue = 5`, `wordDue = 2`, `grammarDue = 3`
+- 계측 이벤트: `review_cta_clicked` 기록 확인. 속성은 `jlptLevel = N5`, `totalDue = 5`, `wordDue = 2`, `grammarDue = 3`, `quizType = GRAMMAR`
+- 관찰: 학습 탭에서 `복습 대기 5개` 카드와 `복습 시작` CTA가 노출됐고, 탭 후 `오답 복습` 퀴즈 화면에 진입했다.
+- 후속 조치: 상세 증빙은 `n5-pilot-learning-flow-uat-run-2026-04-24.md`의 "9. due item 기반 복습 CTA 실계정 재확인"을 기준으로 한다.
 
 ## 4. 공통 체크 질문
 
