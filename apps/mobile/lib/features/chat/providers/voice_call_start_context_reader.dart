@@ -11,12 +11,14 @@ const _fallbackUserNickname = '학습자';
 
 typedef VoiceCallPreferencesReader = UserPreferences Function();
 typedef VoiceCallProfileReader = AsyncValue<ProfileDetailModel> Function();
+typedef VoiceCallProfileFutureReader = Future<ProfileDetailModel> Function();
 
 final voiceCallStartContextReaderProvider =
     Provider<VoiceCallStartContextReader>((ref) {
   return VoiceCallStartContextReader(
     readPreferences: () => ref.read(userPreferencesProvider),
     readProfile: () => ref.read(profileDetailProvider),
+    readProfileFuture: () => ref.read(profileDetailProvider.future),
   );
 });
 
@@ -45,23 +47,45 @@ class VoiceCallStartContextReader {
   const VoiceCallStartContextReader({
     required VoiceCallPreferencesReader readPreferences,
     required VoiceCallProfileReader readProfile,
+    required VoiceCallProfileFutureReader readProfileFuture,
   })  : _readPreferences = readPreferences,
-        _readProfile = readProfile;
+        _readProfile = readProfile,
+        _readProfileFuture = readProfileFuture;
 
   final VoiceCallPreferencesReader _readPreferences;
   final VoiceCallProfileReader _readProfile;
+  final VoiceCallProfileFutureReader _readProfileFuture;
 
-  VoiceCallStartContext read() {
+  Future<VoiceCallStartContext> read() async {
     final preferences = _readPreferences();
-    final profileAsync = _readProfile();
-    final nickname = profileAsync.hasValue
-        ? profileAsync.value!.profile.nickname
-        : _fallbackUserNickname;
+    final profile = await _resolveProfile();
+    final nickname = _nicknameFrom(profile);
 
     return VoiceCallStartContext(
       callSettings: preferences.callSettings,
       userNickname: nickname,
       jlptLevel: preferences.jlptLevel,
     );
+  }
+
+  Future<ProfileDetailModel?> _resolveProfile() async {
+    final profileAsync = _readProfile();
+    if (profileAsync.hasValue) {
+      return profileAsync.value;
+    }
+
+    try {
+      return await _readProfileFuture();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _nicknameFrom(ProfileDetailModel? profile) {
+    final nickname = profile?.profile.nickname.trim();
+    if (nickname == null || nickname.isEmpty) {
+      return _fallbackUserNickname;
+    }
+    return nickname;
   }
 }

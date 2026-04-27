@@ -52,8 +52,7 @@ void main() {
 
       final audio = jsonDecode(transport.sent[2]) as Map<String, dynamic>;
       final realtimeInput = audio['realtimeInput'] as Map<String, dynamic>;
-      final chunks = realtimeInput['mediaChunks'] as List<dynamic>;
-      final chunk = chunks.first as Map<String, dynamic>;
+      final chunk = realtimeInput['audio'] as Map<String, dynamic>;
       expect(chunk['mimeType'], 'audio/pcm;rate=16000');
       expect(chunk['data'], base64Encode([1, 2, 3]));
 

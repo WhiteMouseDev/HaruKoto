@@ -70,7 +70,7 @@ void main() {
       expect(recorder.config, isNull);
     });
 
-    test('playBase64Pcm decodes little endian PCM samples', () {
+    test('playBase64Pcm decodes little endian PCM samples', () async {
       PcmArrayInt16? fedBuffer;
       final adapter = DefaultGeminiLiveAudioAdapter(
         recorder: _FakeAudioRecorder(),
@@ -86,12 +86,47 @@ void main() {
       );
 
       adapter.playBase64Pcm(base64Encode([0x01, 0x00, 0xff, 0x7f, 0x00, 0x80]));
+      await Future<void>.delayed(Duration.zero);
 
       expect(fedBuffer, isNotNull);
       expect(fedBuffer!.count, 3);
       expect(fedBuffer![0], 1);
       expect(fedBuffer![1], 32767);
       expect(fedBuffer![2], -32768);
+    });
+
+    test('playBase64Pcm serializes feed calls in order', () async {
+      final events = <String>[];
+      final firstFeed = Completer<void>();
+      var feedCalls = 0;
+      final adapter = DefaultGeminiLiveAudioAdapter(
+        recorder: _FakeAudioRecorder(),
+        setupOutput: ({
+          required int sampleRate,
+          required int channelCount,
+        }) async {},
+        setFeedThreshold: (_) async {},
+        feedOutput: (buffer) async {
+          feedCalls++;
+          events.add('start-$feedCalls:${buffer[0]}');
+          if (feedCalls == 1) {
+            await firstFeed.future;
+          }
+          events.add('end-$feedCalls:${buffer[0]}');
+        },
+        releaseOutput: () async {},
+      );
+
+      adapter.playBase64Pcm(base64Encode([0x01, 0x00]));
+      adapter.playBase64Pcm(base64Encode([0x02, 0x00]));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events, ['start-1:1']);
+
+      firstFeed.complete();
+      await adapter.dispose();
+
+      expect(events, ['start-1:1', 'end-1:1', 'start-2:2', 'end-2:2']);
     });
 
     test('dispose stops recorder and releases output', () async {

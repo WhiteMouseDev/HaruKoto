@@ -30,7 +30,8 @@ void main() {
       expect(setup['model'], 'gemini-live');
       expect(setup['sessionResumption'], {'handle': 'resume-1'});
       expect(parts.first, {
-        'text': '話してください\n\n## ユーザー情報\n- 名前: Tester\n\nN5 only',
+        'text':
+            '話してください\n\n## ユーザー情報\n- 名前: Tester\n- 相手を呼ぶ時は「学習者」ではなく、この名前を関係設定の呼び方ルールに合わせて呼ぶこと。\n\nN5 only',
       });
     });
 
@@ -48,8 +49,7 @@ void main() {
       final audio = jsonDecode(transport.sent[1]) as Map<String, dynamic>;
       final greetingInput = greeting['realtimeInput'] as Map<String, dynamic>;
       final realtimeInput = audio['realtimeInput'] as Map<String, dynamic>;
-      final mediaChunks = realtimeInput['mediaChunks'] as List<dynamic>;
-      final chunk = mediaChunks.first as Map<String, dynamic>;
+      final chunk = realtimeInput['audio'] as Map<String, dynamic>;
 
       expect(greetingInput['text'], 'カスタム挨拶');
       expect(chunk['mimeType'], 'audio/pcm;rate=16000');

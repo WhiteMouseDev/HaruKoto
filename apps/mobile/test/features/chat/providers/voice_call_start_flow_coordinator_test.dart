@@ -104,7 +104,7 @@ void main() {
           resources: VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer()),
           isStale: () {
             staleChecks++;
-            return staleChecks >= 3;
+            return staleChecks >= 4;
           },
           setState: (_) {},
         ),
@@ -122,12 +122,13 @@ class _FakeVoiceCallStartContextReader extends VoiceCallStartContextReader {
       : super(
           readPreferences: () => throw UnimplementedError(),
           readProfile: () => throw UnimplementedError(),
+          readProfileFuture: () => throw UnimplementedError(),
         );
 
   final VoiceCallStartContext _context;
 
   @override
-  VoiceCallStartContext read() => _context;
+  Future<VoiceCallStartContext> read() async => _context;
 }
 
 class _FakeVoiceCallConnectionService extends VoiceCallConnectionService {

@@ -61,6 +61,7 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   final GeminiLiveAudioOutputFeed _feedOutput;
   final GeminiLiveAudioOutputRelease _releaseOutput;
   StreamSubscription<Uint8List>? _recorderSub;
+  Future<void> _playbackQueue = Future<void>.value();
 
   @override
   Future<GeminiLiveAudioStartResult> startRecording({
@@ -79,7 +80,7 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
 
     try {
       await _setupOutput(sampleRate: 24000, channelCount: 1);
-      unawaited(_setFeedThreshold(8000));
+      await _setFeedThreshold(8000);
 
       final stream = await _recorder.startStream(
         const RecordConfig(
@@ -120,7 +121,12 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
         (i) => byteData.getInt16(i * 2, Endian.little),
       );
       final buffer = PcmArrayInt16.fromList(samples);
-      unawaited(_feedOutput(buffer));
+      _playbackQueue = _playbackQueue
+          .catchError((_) {})
+          .then((_) => _feedOutput(buffer))
+          .catchError((Object e) {
+        debugPrint('[GeminiLive] Audio playback error: $e');
+      });
     } catch (e) {
       debugPrint('[GeminiLive] Audio playback error: $e');
     }
@@ -130,6 +136,7 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   Future<void> dispose() async {
     await stopRecording();
     await _recorder.dispose();
+    await _playbackQueue.catchError((_) {});
     await _releaseOutput();
   }
 }

@@ -33,10 +33,12 @@ void main() {
 
       expect(setup['model'], 'gemini-live');
       expect(generationConfig['responseModalities'], ['AUDIO']);
+      expect(realtimeConfig['activityHandling'], 'NO_INTERRUPTION');
       expect(activityDetection['silenceDurationMs'], 1200);
       expect(setup['sessionResumption'], {'handle': 'resume-1'});
       expect(parts.first, {
-        'text': '話してください\n\n## ユーザー情報\n- 名前: Tester\n\nN5 only',
+        'text':
+            '話してください\n\n## ユーザー情報\n- 名前: Tester\n- 相手を呼ぶ時は「学習者」ではなく、この名前を関係設定の呼び方ルールに合わせて呼ぶこと。\n\nN5 only',
       });
     });
 
@@ -59,8 +61,7 @@ void main() {
 
       final payload = jsonDecode(encoded) as Map<String, dynamic>;
       final realtimeInput = payload['realtimeInput'] as Map<String, dynamic>;
-      final chunks = realtimeInput['mediaChunks'] as List<dynamic>;
-      final chunk = chunks.first as Map<String, dynamic>;
+      final chunk = realtimeInput['audio'] as Map<String, dynamic>;
 
       expect(chunk['mimeType'], 'audio/pcm;rate=16000');
       expect(chunk['data'], base64Encode([1, 2, 3, 4]));

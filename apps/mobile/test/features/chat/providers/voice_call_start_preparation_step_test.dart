@@ -61,7 +61,8 @@ void main() {
       expect(ringtone.startCalls, 0);
     });
 
-    test('returns stale after ringtone when generation changes', () async {
+    test('returns stale after reading context when generation changes',
+        () async {
       final ringtone = _FakeVoiceCallRingtonePlayer();
       var staleChecks = 0;
       final step = VoiceCallStartPreparationStep(
@@ -87,6 +88,35 @@ void main() {
 
       expect(result.stale, isTrue);
       expect(ringtone.stopCalls, 1);
+      expect(ringtone.startCalls, 0);
+    });
+
+    test('returns stale after ringtone when generation changes', () async {
+      final ringtone = _FakeVoiceCallRingtonePlayer();
+      var staleChecks = 0;
+      final step = VoiceCallStartPreparationStep(
+        startContextReader: _FakeVoiceCallStartContextReader(
+          const VoiceCallStartContext(
+            callSettings: CallSettings(),
+            userNickname: 'Tester',
+            jlptLevel: 'N5',
+          ),
+        ),
+      );
+
+      final result = await step.prepare(
+        VoiceCallStartPreparationInput(
+          resources: VoiceCallSessionResources(ringtone),
+          isStale: () {
+            staleChecks++;
+            return staleChecks >= 3;
+          },
+          setState: (_) {},
+        ),
+      );
+
+      expect(result.stale, isTrue);
+      expect(ringtone.stopCalls, 1);
       expect(ringtone.startCalls, 1);
     });
   });
@@ -97,13 +127,14 @@ class _FakeVoiceCallStartContextReader extends VoiceCallStartContextReader {
       : super(
           readPreferences: () => throw UnimplementedError(),
           readProfile: () => throw UnimplementedError(),
+          readProfileFuture: () => throw UnimplementedError(),
         );
 
   final VoiceCallStartContext _context;
   int readCalls = 0;
 
   @override
-  VoiceCallStartContext read() {
+  Future<VoiceCallStartContext> read() async {
     readCalls++;
     return _context;
   }

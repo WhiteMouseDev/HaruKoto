@@ -8,7 +8,8 @@ import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dar
 
 void main() {
   group('VoiceCallStartContextReader', () {
-    test('builds connection context from user preferences and profile', () {
+    test('builds connection context from user preferences and profile',
+        () async {
       const callSettings = CallSettings(
         silenceDurationMs: 900,
         subtitleEnabled: false,
@@ -19,9 +20,10 @@ void main() {
           callSettings: callSettings,
         ),
         readProfile: () => AsyncValue.data(_profileDetail('Tester')),
+        readProfileFuture: () async => _profileDetail('Ignored'),
       );
 
-      final context = reader.read();
+      final context = await reader.read();
       final input = context.toConnectionInput(
         const VoiceCallSessionRequest(
           characterId: 'char-1',
@@ -38,13 +40,41 @@ void main() {
       expect(input.request.characterId, 'char-1');
     });
 
-    test('falls back to default nickname when profile is not loaded', () {
+    test('waits for profile future when profile is still loading', () async {
       final reader = VoiceCallStartContextReader(
         readPreferences: () => const UserPreferences(),
         readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
+        readProfileFuture: () async => _profileDetail('LoadedTester'),
       );
 
-      final context = reader.read();
+      final context = await reader.read();
+
+      expect(context.userNickname, 'LoadedTester');
+    });
+
+    test('falls back to default nickname when profile loading fails', () async {
+      final reader = VoiceCallStartContextReader(
+        readPreferences: () => const UserPreferences(),
+        readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
+        readProfileFuture: () => Future<ProfileDetailModel>.error(
+          StateError('profile failed'),
+        ),
+      );
+
+      final context = await reader.read();
+
+      expect(context.userNickname, '학습자');
+    });
+
+    test('falls back to default nickname when profile nickname is empty',
+        () async {
+      final reader = VoiceCallStartContextReader(
+        readPreferences: () => const UserPreferences(),
+        readProfile: () => AsyncValue.data(_profileDetail('   ')),
+        readProfileFuture: () async => _profileDetail('Ignored'),
+      );
+
+      final context = await reader.read();
 
       expect(context.userNickname, '학습자');
     });
