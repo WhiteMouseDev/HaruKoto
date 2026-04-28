@@ -77,6 +77,37 @@ void main() {
       expect(result, isFalse);
     });
 
+    test('rejects calls without a user transcript entry', () {
+      const policy = VoiceCallAnalysisEligibilityPolicy();
+
+      final result = policy.allows(
+        request: request,
+        transcript: const [
+          TranscriptEntry(role: 'assistant', text: 'もしもし'),
+        ],
+        durationSeconds: 20,
+        autoAnalysis: true,
+      );
+
+      expect(result, isFalse);
+    });
+
+    test('rejects calls with only blank user transcript entries', () {
+      const policy = VoiceCallAnalysisEligibilityPolicy();
+
+      final result = policy.allows(
+        request: request,
+        transcript: const [
+          TranscriptEntry(role: 'assistant', text: 'もしもし'),
+          TranscriptEntry(role: 'user', text: '  '),
+        ],
+        durationSeconds: 20,
+        autoAnalysis: true,
+      );
+
+      expect(result, isFalse);
+    });
+
     test('uses the configured minimum duration', () {
       const policy = VoiceCallAnalysisEligibilityPolicy(
         minimumDurationSeconds: 30,

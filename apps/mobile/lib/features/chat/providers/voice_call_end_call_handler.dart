@@ -20,11 +20,13 @@ class VoiceCallEndCallInput {
     required this.resources,
     required this.request,
     required this.durationSeconds,
+    required this.wasConnected,
   });
 
   final VoiceCallSessionResources? resources;
   final VoiceCallSessionRequest? request;
   final int durationSeconds;
+  final bool wasConnected;
 }
 
 class VoiceCallEndResult {
@@ -62,6 +64,7 @@ class VoiceCallEndCallHandler {
         resources: input.resources,
         request: input.request,
         durationSeconds: input.durationSeconds,
+        wasConnected: input.wasConnected,
       ),
     );
 

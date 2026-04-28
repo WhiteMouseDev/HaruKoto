@@ -71,6 +71,36 @@ void main() {
       expect(result.errorMessage, contains('연결에 실패했습니다'));
       expect(result.stale, isFalse);
       expect(ringtone.stopCalls, 1);
+      expect(service.disposed, isTrue);
+    });
+
+    test('returns failure when live service never reports connected', () async {
+      final service = _FakeGeminiLiveService(autoConnect: false);
+      final ringtone = _FakeVoiceCallRingtonePlayer();
+      final resources = VoiceCallSessionResources(ringtone);
+
+      final result = await const VoiceCallLiveSessionStarter(
+        connectedTimeout: Duration(milliseconds: 1),
+      ).start(
+        VoiceCallLiveSessionStartInput(
+          service: service,
+          resources: resources,
+          isActive: () => true,
+          callbacks: VoiceCallLiveSessionCallbacks(
+            onStateChange: (_) {},
+            onAiTextDelta: (_) {},
+            onTranscriptEntry: (_) {},
+            onError: (_) {},
+          ),
+        ),
+      );
+
+      expect(result.hasError, isTrue);
+      expect(result.errorMessage, contains('연결 시간이 초과되었습니다'));
+      expect(result.stale, isFalse);
+      expect(ringtone.stopCalls, 1);
+      expect(service.disposed, isTrue);
+      expect(resources.service, isNull);
     });
 
     test('returns stale when live service start throws after becoming inactive',
@@ -101,15 +131,19 @@ void main() {
 }
 
 class _FakeGeminiLiveService extends GeminiLiveService {
-  _FakeGeminiLiveService({this.startError})
-      : super(
+  _FakeGeminiLiveService({
+    this.startError,
+    this.autoConnect = true,
+  }) : super(
           wsUri: 'wss://example.com/live',
           token: 'token',
           model: 'gemini-live',
         );
 
   final String? startError;
+  final bool autoConnect;
   int startCalls = 0;
+  bool disposed = false;
 
   @override
   Future<void> start() async {
@@ -118,7 +152,14 @@ class _FakeGeminiLiveService extends GeminiLiveService {
     if (error != null) {
       throw StateError(error);
     }
-    onStateChange?.call(GeminiLiveState.connected);
+    if (autoConnect) {
+      onStateChange?.call(GeminiLiveState.connected);
+    }
+  }
+
+  @override
+  Future<void> dispose() async {
+    disposed = true;
   }
 
   void emitAiText(String text) {

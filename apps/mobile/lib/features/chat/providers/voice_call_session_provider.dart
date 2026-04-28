@@ -87,6 +87,7 @@ class VoiceCallSessionController extends Notifier<VoiceCallSessionState> {
         resources: _resources,
         request: _lifecycle.request,
         durationSeconds: state.callDurationSeconds,
+        wasConnected: state.isConnected || state.callDurationSeconds > 0,
       ),
     );
   }
