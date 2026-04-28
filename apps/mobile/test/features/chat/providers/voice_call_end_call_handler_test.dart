@@ -35,6 +35,7 @@ void main() {
           resources: null,
           request: request,
           durationSeconds: 20,
+          wasConnected: true,
         ),
       );
 
@@ -43,6 +44,7 @@ void main() {
       expect(result.feedbackError, isNull);
       expect(receivedInputs.single.request, same(request));
       expect(receivedInputs.single.durationSeconds, 20);
+      expect(receivedInputs.single.wasConnected, isTrue);
     });
 
     test('wraps a no transcript feedback error result', () async {
@@ -57,6 +59,7 @@ void main() {
           resources: null,
           request: VoiceCallSessionRequest(characterId: 'char-1'),
           durationSeconds: 1,
+          wasConnected: true,
         ),
       );
 
@@ -83,6 +86,7 @@ void main() {
           resources: null,
           request: null,
           durationSeconds: 0,
+          wasConnected: false,
         ),
       );
       final duplicateResult = await handler.end(
@@ -90,6 +94,7 @@ void main() {
           resources: null,
           request: null,
           durationSeconds: 0,
+          wasConnected: false,
         ),
       );
       completer.complete(null);
@@ -113,6 +118,7 @@ void main() {
           resources: null,
           request: null,
           durationSeconds: 0,
+          wasConnected: false,
         ),
       );
       final ignoredResult = await handler.end(
@@ -120,6 +126,7 @@ void main() {
           resources: null,
           request: null,
           durationSeconds: 0,
+          wasConnected: false,
         ),
       );
       handler.reset();
@@ -128,6 +135,7 @@ void main() {
           resources: null,
           request: null,
           durationSeconds: 0,
+          wasConnected: false,
         ),
       );
 

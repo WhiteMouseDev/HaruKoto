@@ -23,11 +23,13 @@ class VoiceCallEndFlowInput {
     required this.resources,
     required this.request,
     required this.durationSeconds,
+    required this.wasConnected,
   });
 
   final VoiceCallSessionResources? resources;
   final VoiceCallSessionRequest? request;
   final int durationSeconds;
+  final bool wasConnected;
 }
 
 class VoiceCallEndFlowResult {
@@ -55,6 +57,10 @@ class VoiceCallEndFlowCoordinator {
 
   Future<VoiceCallEndFlowResult> end(VoiceCallEndFlowInput input) async {
     final endedSession = await _sessionEnder.end(input.resources);
+    if (!input.wasConnected) {
+      return const VoiceCallEndFlowResult();
+    }
+
     final autoAnalysis = _readAutoAnalysis();
 
     final analysisRequest = _analysisRequestFactory.build(

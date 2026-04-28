@@ -21,9 +21,13 @@ class VoiceCallAnalysisEligibilityPolicy {
     required int durationSeconds,
     required bool autoAnalysis,
   }) {
+    final hasUserTranscript = transcript.any(
+      (entry) => entry.role == 'user' && entry.text.trim().isNotEmpty,
+    );
+
     return request != null &&
         autoAnalysis &&
         durationSeconds >= minimumDurationSeconds &&
-        transcript.isNotEmpty;
+        hasUserTranscript;
   }
 }

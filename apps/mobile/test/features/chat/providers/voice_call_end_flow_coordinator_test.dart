@@ -33,6 +33,7 @@ void main() {
             characterName: '하루',
           ),
           durationSeconds: 20,
+          wasConnected: true,
         ),
       );
 
@@ -69,6 +70,7 @@ void main() {
           resources: resources,
           request: const VoiceCallSessionRequest(characterId: 'char-1'),
           durationSeconds: 20,
+          wasConnected: true,
         ),
       );
 
@@ -94,12 +96,68 @@ void main() {
           resources: resources,
           request: const VoiceCallSessionRequest(characterId: 'char-1'),
           durationSeconds: 1,
+          wasConnected: true,
         ),
       );
 
       expect(service.endCalls, 1);
       expect(result.analysisRequest, isNull);
       expect(result.feedbackError, 'no_transcript');
+    });
+
+    test('returns no transcript feedback error for assistant-only transcript',
+        () async {
+      final service = _FakeGeminiLiveService()
+        ..providedTranscript = const [
+          TranscriptEntry(role: 'assistant', text: 'もしもし'),
+        ];
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..attachService(service);
+      final coordinator = VoiceCallEndFlowCoordinator(
+        analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
+        readAutoAnalysis: () => true,
+      );
+
+      final result = await coordinator.end(
+        VoiceCallEndFlowInput(
+          resources: resources,
+          request: const VoiceCallSessionRequest(characterId: 'char-1'),
+          durationSeconds: 20,
+          wasConnected: true,
+        ),
+      );
+
+      expect(service.endCalls, 1);
+      expect(result.analysisRequest, isNull);
+      expect(result.feedbackError, 'no_transcript');
+    });
+
+    test('does not return no transcript error when call never connected',
+        () async {
+      final service = _FakeGeminiLiveService();
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..attachService(service);
+      final coordinator = VoiceCallEndFlowCoordinator(
+        analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
+        readAutoAnalysis: () => true,
+      );
+
+      final result = await coordinator.end(
+        VoiceCallEndFlowInput(
+          resources: resources,
+          request: const VoiceCallSessionRequest(characterId: 'char-1'),
+          durationSeconds: 0,
+          wasConnected: false,
+        ),
+      );
+
+      expect(service.endCalls, 1);
+      expect(result.analysisRequest, isNull);
+      expect(result.feedbackError, isNull);
     });
   });
 }

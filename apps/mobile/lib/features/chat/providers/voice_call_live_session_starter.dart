@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -60,29 +62,74 @@ class VoiceCallLiveSessionStartResult {
 }
 
 class VoiceCallLiveSessionStarter {
-  const VoiceCallLiveSessionStarter();
+  const VoiceCallLiveSessionStarter({
+    Duration connectedTimeout = const Duration(seconds: 12),
+  }) : _connectedTimeout = connectedTimeout;
+
+  final Duration _connectedTimeout;
 
   Future<VoiceCallLiveSessionStartResult> start(
     VoiceCallLiveSessionStartInput input,
   ) async {
+    final handshake = Completer<VoiceCallLiveSessionStartResult>();
+
+    void completeHandshake(VoiceCallLiveSessionStartResult result) {
+      if (!handshake.isCompleted) {
+        handshake.complete(result);
+      }
+    }
+
     try {
       input.resources?.attachService(input.service);
       VoiceCallLiveEventBinder(
         service: input.service,
         isActive: input.isActive,
-        onStateChange: input.callbacks.onStateChange,
+        onStateChange: (state) {
+          input.callbacks.onStateChange(state);
+          switch (state) {
+            case GeminiLiveState.connected:
+              completeHandshake(
+                  const VoiceCallLiveSessionStartResult.success());
+              break;
+            case GeminiLiveState.error:
+              completeHandshake(
+                const VoiceCallLiveSessionStartResult.failure('연결에 실패했습니다'),
+              );
+              break;
+            case GeminiLiveState.connecting:
+            case GeminiLiveState.ending:
+            case GeminiLiveState.ended:
+              break;
+          }
+        },
         onAiTextDelta: input.callbacks.onAiTextDelta,
         onTranscriptEntry: input.callbacks.onTranscriptEntry,
-        onError: input.callbacks.onError,
+        onError: (message) {
+          input.callbacks.onError(message);
+          completeHandshake(VoiceCallLiveSessionStartResult.failure(message));
+        },
       ).bind();
       await input.service.start();
-      return const VoiceCallLiveSessionStartResult.success();
+
+      final result = await handshake.future.timeout(
+        _connectedTimeout,
+        onTimeout: () => const VoiceCallLiveSessionStartResult.failure(
+          '연결 시간이 초과되었습니다. 다시 시도해주세요.',
+        ),
+      );
+      if (!input.isActive()) {
+        return const VoiceCallLiveSessionStartResult.stale();
+      }
+      if (result.hasError) {
+        await input.resources?.cancelActiveSession();
+      }
+      return result;
     } catch (e) {
       debugPrint('[VoiceCallSession] Start failed: $e');
       if (!input.isActive()) {
         return const VoiceCallLiveSessionStartResult.stale();
       }
-      await input.resources?.stopRingtone();
+      await input.resources?.cancelActiveSession();
       return VoiceCallLiveSessionStartResult.failure('연결에 실패했습니다: $e');
     }
   }
