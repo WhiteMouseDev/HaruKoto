@@ -272,7 +272,8 @@ iOS: 화면 잠금 / 다른 앱 전환 / 알림 표시
 
 ### 5.1 Gemini VAD 감도 설정 (우선순위: 최고)
 
-현재 VAD가 기본값이라 모바일 소음에 민감하게 반응. 명시적 설정 추가 필요.
+Live API 기본값과 맞춰 `HIGH`를 명시한다. 짧거나 작은 발화를 놓치지 않는
+방향을 우선하되, 소음 환경의 오탐 증가는 기기 테스트로 확인한다.
 
 ```typescript
 // use-gemini-live.ts — config에 추가
@@ -285,16 +286,16 @@ config: {
   // 추가
   realtimeInputConfig: {
     automaticActivityDetection: {
-      startOfSpeechSensitivity: 'START_SENSITIVITY_MEDIUM',
-      endOfSpeechSensitivity: 'END_SENSITIVITY_MEDIUM',
+      startOfSpeechSensitivity: 'START_SENSITIVITY_HIGH',
+      endOfSpeechSensitivity: 'END_SENSITIVITY_HIGH',
     },
   },
 },
 ```
 
-- `START_SENSITIVITY_LOW`: 소음이 많은 환경에서 발화 시작 인식을 보수적으로
-- `END_SENSITIVITY_LOW`: 발화 종료 판단을 느리게 → "더 기다림"
-- 모바일 환경 테스트 후 LOW/MEDIUM 중 선택
+- `START_SENSITIVITY_HIGH`: 발화 시작을 더 자주 감지해 짧거나 약한 발화 누락을 줄임
+- `END_SENSITIVITY_HIGH`: 발화 종료를 더 자주 감지해 응답 시작 지연을 줄임
+- 모바일 소음 환경에서 오탐이 늘어나면 `LOW` 전환을 별도 튜닝으로 검토
 
 ### 5.2 WebSocket 재연결 로직 (우선순위: 높음)
 
