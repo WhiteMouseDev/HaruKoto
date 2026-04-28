@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/settings/call_settings.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_microphone_permission.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_resources.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_state.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_start_context_reader.dart';
@@ -61,6 +62,42 @@ void main() {
       expect(ringtone.startCalls, 0);
     });
 
+    test(
+        'returns failure before context and ringtone when microphone is denied',
+        () async {
+      final ringtone = _FakeVoiceCallRingtonePlayer();
+      final states = <VoiceCallSessionState>[];
+      final reader = _FakeVoiceCallStartContextReader(
+        const VoiceCallStartContext(
+          callSettings: CallSettings(),
+          userNickname: 'Tester',
+          jlptLevel: 'N5',
+        ),
+      );
+      final step = VoiceCallStartPreparationStep(
+        startContextReader: reader,
+        requestMicrophonePermission: () async {
+          return VoiceCallMicrophonePermissionResult.denied;
+        },
+      );
+
+      final result = await step.prepare(
+        VoiceCallStartPreparationInput(
+          resources: VoiceCallSessionResources(ringtone),
+          isStale: () => false,
+          setState: states.add,
+        ),
+      );
+
+      expect(result.hasError, isTrue);
+      expect(result.errorMessage, '마이크 권한이 필요합니다');
+      expect(result.context, isNull);
+      expect(reader.readCalls, 0);
+      expect(ringtone.stopCalls, 1);
+      expect(ringtone.startCalls, 0);
+      expect(states, isEmpty);
+    });
+
     test('returns stale after reading context when generation changes',
         () async {
       final ringtone = _FakeVoiceCallRingtonePlayer();
@@ -80,7 +117,7 @@ void main() {
           resources: VoiceCallSessionResources(ringtone),
           isStale: () {
             staleChecks++;
-            return staleChecks >= 2;
+            return staleChecks >= 3;
           },
           setState: (_) {},
         ),
@@ -109,7 +146,7 @@ void main() {
           resources: VoiceCallSessionResources(ringtone),
           isStale: () {
             staleChecks++;
-            return staleChecks >= 3;
+            return staleChecks >= 4;
           },
           setState: (_) {},
         ),

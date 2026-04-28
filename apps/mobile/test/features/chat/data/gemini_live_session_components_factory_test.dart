@@ -113,8 +113,15 @@ class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   });
 
   final GeminiLiveAudioStartResult result;
+  int prepareCalls = 0;
   int startCalls = 0;
   void Function(Uint8List data)? _onData;
+
+  @override
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
+    prepareCalls++;
+    return GeminiLiveAudioPlaybackPrepareResult.ready;
+  }
 
   @override
   Future<GeminiLiveAudioStartResult> startRecording({

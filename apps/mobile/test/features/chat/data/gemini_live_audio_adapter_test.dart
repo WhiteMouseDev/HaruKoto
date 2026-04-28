@@ -46,6 +46,39 @@ void main() {
       expect(forwarded.single, [1, 2, 3]);
     });
 
+    test('preparePlayback allows model audio before recording starts',
+        () async {
+      var setupCalls = 0;
+      PcmArrayInt16? fedBuffer;
+      final adapter = DefaultGeminiLiveAudioAdapter(
+        recorder: _FakeAudioRecorder(),
+        setupOutput: ({
+          required int sampleRate,
+          required int channelCount,
+        }) async {
+          setupCalls++;
+          expect(sampleRate, 24000);
+          expect(channelCount, 1);
+        },
+        setFeedThreshold: (_) async {},
+        feedOutput: (buffer) async {
+          fedBuffer = buffer;
+        },
+        releaseOutput: () async {},
+      );
+
+      final result = await adapter.preparePlayback();
+      adapter.playBase64Pcm(base64Encode([0x01, 0x00]));
+      await Future<void>.delayed(Duration.zero);
+      final startResult = await adapter.startRecording(onData: (_) {});
+
+      expect(result, GeminiLiveAudioPlaybackPrepareResult.ready);
+      expect(startResult, GeminiLiveAudioStartResult.started);
+      expect(setupCalls, 1);
+      expect(fedBuffer, isNotNull);
+      expect(fedBuffer![0], 1);
+    });
+
     test('startRecording returns permissionDenied before output setup',
         () async {
       final recorder = _FakeAudioRecorder()..permission = false;

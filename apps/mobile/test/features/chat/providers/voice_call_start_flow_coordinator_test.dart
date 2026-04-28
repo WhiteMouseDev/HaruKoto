@@ -4,6 +4,7 @@ import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/data/voice_call_bootstrap_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_connection_service.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_microphone_permission.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_resources.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_state.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_start_context_reader.dart';
@@ -83,6 +84,41 @@ void main() {
       expect(ringtone.stopCalls, 2);
     });
 
+    test(
+        'returns failure without ringing or connecting when microphone is denied',
+        () async {
+      final connection = _FakeVoiceCallConnectionService();
+      final ringtone = _FakeVoiceCallRingtonePlayer();
+      final coordinator = VoiceCallStartFlowCoordinator(
+        startContextReader: _FakeVoiceCallStartContextReader(
+          const VoiceCallStartContext(
+            callSettings: CallSettings(),
+            userNickname: 'Tester',
+            jlptLevel: 'N5',
+          ),
+        ),
+        requestMicrophonePermission: () async {
+          return VoiceCallMicrophonePermissionResult.denied;
+        },
+        connectionService: connection,
+      );
+
+      final result = await coordinator.prepare(
+        VoiceCallStartFlowInput(
+          request: const VoiceCallSessionRequest(characterId: 'char-1'),
+          resources: VoiceCallSessionResources(ringtone),
+          isStale: () => false,
+          setState: (_) {},
+        ),
+      );
+
+      expect(result.hasError, isTrue);
+      expect(result.errorMessage, '마이크 권한이 필요합니다');
+      expect(connection.prepareCalls, 0);
+      expect(ringtone.stopCalls, 1);
+      expect(ringtone.startCalls, 0);
+    });
+
     test('disposes prepared service when generation becomes stale', () async {
       final service = _FakeGeminiLiveService();
       final connection = _FakeVoiceCallConnectionService(service: service);
@@ -104,7 +140,7 @@ void main() {
           resources: VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer()),
           isStale: () {
             staleChecks++;
-            return staleChecks >= 4;
+            return staleChecks >= 5;
           },
           setState: (_) {},
         ),

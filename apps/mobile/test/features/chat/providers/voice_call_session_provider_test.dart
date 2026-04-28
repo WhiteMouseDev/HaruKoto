@@ -7,6 +7,7 @@ import 'package:harukoto_mobile/core/settings/user_preferences.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/data/voice_call_bootstrap_service.dart';
+import 'package:harukoto_mobile/features/chat/providers/voice_call_microphone_permission.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provider.dart';
 import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dart';
 import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
@@ -22,6 +23,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider.overrideWith(
+            (ref) => allowVoiceCallMicrophonePermission,
+          ),
           profileDetailProvider.overrideWith(
             (ref) => Future.value(
               _profileDetail(
@@ -87,6 +91,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider.overrideWith(
+            (ref) => allowVoiceCallMicrophonePermission,
+          ),
           profileDetailProvider.overrideWith(
             (ref) => Future.value(_profileDetail()),
           ),
@@ -130,6 +137,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider.overrideWith(
+            (ref) => allowVoiceCallMicrophonePermission,
+          ),
           profileDetailProvider.overrideWith(
             (ref) => Future.value(_profileDetail()),
           ),
@@ -178,6 +188,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider.overrideWith(
+            (ref) => allowVoiceCallMicrophonePermission,
+          ),
           profileDetailProvider.overrideWith(
             (ref) => Future.value(_profileDetail()),
           ),
@@ -231,6 +244,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider.overrideWith(
+            (ref) => allowVoiceCallMicrophonePermission,
+          ),
           profileDetailProvider.overrideWith(
             (ref) => Future.value(_profileDetail()),
           ),

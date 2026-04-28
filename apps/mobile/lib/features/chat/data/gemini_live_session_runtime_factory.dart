@@ -66,6 +66,7 @@ class GeminiLiveSessionRuntimeFactory {
     final setupCompleteHandler = GeminiLiveSetupCompleteHandler(
       reconnectCoordinator: reconnectCoordinator,
       greetingSender: greetingSender,
+      preparePlayback: audioSession.preparePlayback,
       startRecording: audioSession.startRecording,
       emitState: emitState,
     );

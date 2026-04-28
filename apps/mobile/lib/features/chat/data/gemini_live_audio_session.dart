@@ -28,6 +28,21 @@ class GeminiLiveAudioSession {
   final void Function(String message) _onError;
   final void Function() _onUnavailable;
 
+  Future<bool> preparePlayback() async {
+    if (!_isActive()) return false;
+
+    final result = await _audioAdapter.preparePlayback();
+    switch (result) {
+      case GeminiLiveAudioPlaybackPrepareResult.ready:
+      case GeminiLiveAudioPlaybackPrepareResult.unsupported:
+        return true;
+      case GeminiLiveAudioPlaybackPrepareResult.unavailable:
+        _onError('오디오를 재생할 수 없습니다. 기기를 확인해주세요.');
+        _onUnavailable();
+        return false;
+    }
+  }
+
   Future<void> startRecording() async {
     if (!_isActive()) return;
 

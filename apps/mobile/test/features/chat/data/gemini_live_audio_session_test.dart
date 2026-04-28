@@ -112,23 +112,49 @@ void main() {
         onUnavailable: () {},
       );
 
+      final prepared = await session.preparePlayback();
       session.playBase64Pcm('AAE=');
       await session.stopRecording();
       await session.dispose();
 
+      expect(prepared, isTrue);
+      expect(audioAdapter.prepareCalls, 1);
       expect(audioAdapter.playedAudio, ['AAE=']);
       expect(audioAdapter.stopCalls, 1);
       expect(audioAdapter.disposeCalls, 1);
+    });
+
+    test('preparePlayback maps output failures to user-facing callbacks',
+        () async {
+      final errors = <String>[];
+      var unavailableCalls = 0;
+      final session = _newSession(
+        result: GeminiLiveAudioStartResult.started,
+        playbackResult: GeminiLiveAudioPlaybackPrepareResult.unavailable,
+        onError: errors.add,
+        onUnavailable: () => unavailableCalls++,
+      );
+
+      final prepared = await session.preparePlayback();
+
+      expect(prepared, isFalse);
+      expect(errors, ['오디오를 재생할 수 없습니다. 기기를 확인해주세요.']);
+      expect(unavailableCalls, 1);
     });
   });
 }
 
 GeminiLiveAudioSession _newSession({
   required GeminiLiveAudioStartResult result,
+  GeminiLiveAudioPlaybackPrepareResult playbackResult =
+      GeminiLiveAudioPlaybackPrepareResult.ready,
   required void Function(String message) onError,
   required void Function() onUnavailable,
 }) {
-  final audioAdapter = _FakeGeminiLiveAudioAdapter(result: result);
+  final audioAdapter = _FakeGeminiLiveAudioAdapter(
+    result: result,
+    playbackResult: playbackResult,
+  );
   return GeminiLiveAudioSession(
     audioAdapter: audioAdapter,
     outboundSender: GeminiLiveOutboundSender(
@@ -145,14 +171,23 @@ GeminiLiveAudioSession _newSession({
 class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   _FakeGeminiLiveAudioAdapter({
     this.result = GeminiLiveAudioStartResult.started,
+    this.playbackResult = GeminiLiveAudioPlaybackPrepareResult.ready,
   });
 
   final GeminiLiveAudioStartResult result;
+  final GeminiLiveAudioPlaybackPrepareResult playbackResult;
+  int prepareCalls = 0;
   int startCalls = 0;
   int stopCalls = 0;
   int disposeCalls = 0;
   final playedAudio = <String>[];
   void Function(Uint8List data)? _onData;
+
+  @override
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
+    prepareCalls++;
+    return playbackResult;
+  }
 
   @override
   Future<GeminiLiveAudioStartResult> startRecording({

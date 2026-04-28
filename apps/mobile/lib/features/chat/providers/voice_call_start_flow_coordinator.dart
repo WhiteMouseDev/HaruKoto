@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/gemini_live_service.dart';
 import 'voice_call_connection_service.dart';
+import 'voice_call_microphone_permission.dart';
 import 'voice_call_session_resources.dart';
 import 'voice_call_start_connection_step.dart';
 import 'voice_call_start_context_reader.dart';
@@ -12,6 +13,8 @@ final voiceCallStartFlowCoordinatorProvider =
   return VoiceCallStartFlowCoordinator(
     startContextReader: ref.watch(voiceCallStartContextReaderProvider),
     connectionService: ref.watch(voiceCallConnectionServiceProvider),
+    requestMicrophonePermission:
+        ref.watch(voiceCallMicrophonePermissionRequesterProvider),
   );
 });
 
@@ -59,11 +62,14 @@ class VoiceCallStartFlowCoordinator {
   VoiceCallStartFlowCoordinator({
     required VoiceCallStartContextReader startContextReader,
     required VoiceCallConnectionService connectionService,
+    VoiceCallMicrophonePermissionRequester? requestMicrophonePermission,
     VoiceCallStartPreparationStep? preparationStep,
     VoiceCallStartConnectionStep? connectionStep,
   })  : _preparationStep = preparationStep ??
             VoiceCallStartPreparationStep(
               startContextReader: startContextReader,
+              requestMicrophonePermission: requestMicrophonePermission ??
+                  allowVoiceCallMicrophonePermission,
             ),
         _connectionStep = connectionStep ??
             VoiceCallStartConnectionStep(
@@ -84,9 +90,17 @@ class VoiceCallStartFlowCoordinator {
       ),
     );
     final startContext = preparation.context;
-    if (preparation.stale || startContext == null) {
+    if (preparation.stale) {
       return const VoiceCallStartFlowResult.stale();
     }
+    final preparationError = preparation.errorMessage;
+    if (preparationError != null) {
+      return VoiceCallStartFlowResult.failure(
+        preparationError,
+        canRetry: preparation.canRetry,
+      );
+    }
+    if (startContext == null) return const VoiceCallStartFlowResult.stale();
 
     final connection = await _connectionStep.connect(
       VoiceCallStartConnectionInput(

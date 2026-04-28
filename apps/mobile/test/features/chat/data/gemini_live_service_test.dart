@@ -41,6 +41,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connecting, GeminiLiveState.connected]);
+      expect(audioAdapter.prepareCalls, 1);
       expect(audioAdapter.startCalls, 0);
       expect(transport.sent, hasLength(2));
 
@@ -151,11 +152,18 @@ class _FakeGeminiLiveTransport implements GeminiLiveTransport {
 }
 
 class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
+  int prepareCalls = 0;
   int startCalls = 0;
   int stopCalls = 0;
   int disposeCalls = 0;
   final playedAudio = <String>[];
   void Function(Uint8List data)? _onData;
+
+  @override
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
+    prepareCalls++;
+    return GeminiLiveAudioPlaybackPrepareResult.ready;
+  }
 
   @override
   Future<GeminiLiveAudioStartResult> startRecording({

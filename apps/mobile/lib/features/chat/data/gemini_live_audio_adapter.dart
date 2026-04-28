@@ -24,7 +24,15 @@ enum GeminiLiveAudioStartResult {
   unavailable,
 }
 
+enum GeminiLiveAudioPlaybackPrepareResult {
+  ready,
+  unsupported,
+  unavailable,
+}
+
 abstract class GeminiLiveAudioAdapter {
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback();
+
   Future<GeminiLiveAudioStartResult> startRecording({
     required void Function(Uint8List data) onData,
   });
@@ -72,11 +80,33 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   bool _outputReady = false;
 
   @override
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
+    if (_outputReady) return GeminiLiveAudioPlaybackPrepareResult.ready;
+
+    try {
+      if (!_isOutputSupported()) {
+        debugPrint(
+          '[GeminiLive] PCM output disabled for this runtime environment',
+        );
+        return GeminiLiveAudioPlaybackPrepareResult.unsupported;
+      }
+
+      await _setupOutput(sampleRate: 24000, channelCount: 1);
+      _outputReady = true;
+      await _setFeedThreshold(8000);
+      return GeminiLiveAudioPlaybackPrepareResult.ready;
+    } catch (e) {
+      await _releaseReadyOutput();
+      debugPrint('[GeminiLive] Playback setup failed: $e');
+      return GeminiLiveAudioPlaybackPrepareResult.unavailable;
+    }
+  }
+
+  @override
   Future<GeminiLiveAudioStartResult> startRecording({
     required void Function(Uint8List data) onData,
   }) async {
     await stopRecording();
-    await _releaseReadyOutput();
 
     try {
       if (!await _recorder.hasPermission()) {
@@ -87,18 +117,12 @@ class DefaultGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
       return GeminiLiveAudioStartResult.permissionCheckFailed;
     }
 
-    try {
-      _outputReady = false;
-      if (_isOutputSupported()) {
-        await _setupOutput(sampleRate: 24000, channelCount: 1);
-        _outputReady = true;
-        await _setFeedThreshold(8000);
-      } else {
-        debugPrint(
-          '[GeminiLive] PCM output disabled for this runtime environment',
-        );
-      }
+    final playbackResult = await preparePlayback();
+    if (playbackResult == GeminiLiveAudioPlaybackPrepareResult.unavailable) {
+      return GeminiLiveAudioStartResult.unavailable;
+    }
 
+    try {
       final stream = await _recorder.startStream(
         const RecordConfig(
           encoder: AudioEncoder.pcm16bits,

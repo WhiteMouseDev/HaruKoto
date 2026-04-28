@@ -66,6 +66,11 @@ void main() {
 
 class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   @override
+  Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
+    return GeminiLiveAudioPlaybackPrepareResult.ready;
+  }
+
+  @override
   Future<GeminiLiveAudioStartResult> startRecording({
     required void Function(Uint8List data) onData,
   }) async {

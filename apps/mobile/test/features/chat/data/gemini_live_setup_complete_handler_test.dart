@@ -7,8 +7,9 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_transport.dart';
 
 void main() {
   group('GeminiLiveSetupCompleteHandler', () {
-    test('marks connected and delays recording until the first model turn ends',
-        () {
+    test(
+        'marks connected, prepares playback, and delays recording until the first model turn ends',
+        () async {
       final events = <String>[];
       final reconnectCoordinator = GeminiLiveReconnectCoordinator();
       final firstDecision = reconnectCoordinator.requestReconnect();
@@ -21,6 +22,10 @@ void main() {
           scenarioGreeting: 'カスタム挨拶',
         ),
         emitState: (state) => events.add('state:${state.name}'),
+        preparePlayback: () {
+          events.add('playback');
+          return Future<bool>.value(true);
+        },
         startRecording: () {
           events.add('recording');
           return Future<void>.value();
@@ -28,12 +33,14 @@ void main() {
       );
 
       handler.handle();
+      await Future<void>.delayed(Duration.zero);
       final secondDecision = reconnectCoordinator.requestReconnect();
 
       expect(firstDecision.attempt, 1);
       expect(secondDecision.attempt, 1);
       expect(events, [
         'state:connected',
+        'playback',
         'send',
       ]);
 
@@ -42,6 +49,7 @@ void main() {
 
       expect(events, [
         'state:connected',
+        'playback',
         'send',
         'recording',
       ]);
