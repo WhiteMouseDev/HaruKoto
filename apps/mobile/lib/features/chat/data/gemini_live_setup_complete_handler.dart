@@ -5,7 +5,7 @@ import 'gemini_live_greeting_sender.dart';
 import 'gemini_live_reconnect_coordinator.dart';
 
 class GeminiLiveSetupCompleteHandler {
-  const GeminiLiveSetupCompleteHandler({
+  GeminiLiveSetupCompleteHandler({
     required GeminiLiveReconnectCoordinator reconnectCoordinator,
     required GeminiLiveGreetingSender greetingSender,
     required Future<void> Function() startRecording,
@@ -19,11 +19,17 @@ class GeminiLiveSetupCompleteHandler {
   final GeminiLiveGreetingSender _greetingSender;
   final Future<void> Function() _startRecording;
   final void Function(GeminiLiveState state) _emitState;
+  bool _recordingStarted = false;
 
   void handle() {
     _reconnectCoordinator.markConnected();
     _emitState(GeminiLiveState.connected);
     _greetingSender.send();
+  }
+
+  void handleModelTurnComplete() {
+    if (_recordingStarted) return;
+    _recordingStarted = true;
     unawaited(_startRecording());
   }
 }

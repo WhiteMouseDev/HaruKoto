@@ -97,13 +97,14 @@ class _FakeVoiceCallStartContextReader extends VoiceCallStartContextReader {
       : super(
           readPreferences: () => throw UnimplementedError(),
           readProfile: () => throw UnimplementedError(),
+          readProfileFuture: () => throw UnimplementedError(),
         );
 
   final VoiceCallStartContext _context;
   int readCalls = 0;
 
   @override
-  VoiceCallStartContext read() {
+  Future<VoiceCallStartContext> read() async {
     readCalls++;
     return _context;
   }

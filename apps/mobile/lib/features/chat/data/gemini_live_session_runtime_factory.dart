@@ -104,6 +104,7 @@ class GeminiLiveSessionRuntimeFactory {
       onAiTextDelta: onAiTextDelta,
       onTranscriptEntry: onTranscriptEntry,
       onAudioChunk: onAudioChunk,
+      onModelTurnComplete: setupCompleteHandler.handleModelTurnComplete,
     );
 
     return GeminiLiveSessionRuntime._(

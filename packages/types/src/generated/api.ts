@@ -2835,6 +2835,19 @@ export interface components {
             /** Characterid */
             characterId?: string | null;
         };
+        /** LiveTokenResponse */
+        LiveTokenResponse: {
+            /** Token */
+            token: string;
+            /** Wsuri */
+            wsUri: string;
+            /** Model */
+            model: string;
+            /** Usernickname */
+            userNickname: string;
+            /** Jlptlevel */
+            jlptLevel: string;
+        };
         /** MarkReadRequest */
         MarkReadRequest: {
             /** Id */
@@ -6006,9 +6019,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["LiveTokenResponse"];
                 };
             };
             /** @description Validation Error */

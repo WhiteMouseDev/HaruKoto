@@ -42,7 +42,7 @@ class VoiceCallStartPreparationStep {
       return const VoiceCallStartPreparationResult.stale();
     }
 
-    final startContext = _startContextReader.read();
+    final startContext = await _startContextReader.read();
     input.setState(
       VoiceCallSessionState(
         status: VoiceCallStatus.connecting,

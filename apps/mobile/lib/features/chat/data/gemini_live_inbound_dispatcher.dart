@@ -14,6 +14,7 @@ class GeminiLiveInboundDispatcher {
     required void Function(String text) onAiTextDelta,
     required void Function(TranscriptEntry entry) onTranscriptEntry,
     required void Function(String base64Data) onAudioChunk,
+    required void Function() onModelTurnComplete,
   })  : _messageHandler = messageHandler,
         _isActive = isActive,
         _onSetupComplete = onSetupComplete,
@@ -21,7 +22,8 @@ class GeminiLiveInboundDispatcher {
         _onReconnect = onReconnect,
         _onAiTextDelta = onAiTextDelta,
         _onTranscriptEntry = onTranscriptEntry,
-        _onAudioChunk = onAudioChunk;
+        _onAudioChunk = onAudioChunk,
+        _onModelTurnComplete = onModelTurnComplete;
 
   final GeminiLiveMessageHandler _messageHandler;
   final bool Function() _isActive;
@@ -31,6 +33,7 @@ class GeminiLiveInboundDispatcher {
   final void Function(String text) _onAiTextDelta;
   final void Function(TranscriptEntry entry) _onTranscriptEntry;
   final void Function(String base64Data) _onAudioChunk;
+  final void Function() _onModelTurnComplete;
 
   void dispatch(dynamic raw) {
     if (!_isActive()) return;
@@ -73,6 +76,8 @@ class GeminiLiveInboundDispatcher {
       case GeminiLiveMessageActionType.audioChunk:
         final base64Data = action.text;
         if (base64Data != null) _onAudioChunk(base64Data);
+      case GeminiLiveMessageActionType.modelTurnComplete:
+        _onModelTurnComplete();
     }
   }
 }
