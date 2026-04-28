@@ -63,11 +63,11 @@ export async function checkAiLimit(
       return { allowed: false, reason: '오늘의 AI 채팅 시간을 초과했습니다.' };
     }
   } else {
-    if (usage.callCount >= limits.CALL_COUNT) {
-      return { allowed: false, reason: '오늘의 AI 통화 횟수를 초과했습니다.' };
-    }
     if (usage.callSeconds >= limits.CALL_SECONDS) {
       return { allowed: false, reason: '오늘의 AI 통화 시간을 초과했습니다.' };
+    }
+    if (usage.callCount >= limits.CALL_COUNT) {
+      return { allowed: false, reason: '오늘의 AI 통화 횟수를 초과했습니다.' };
     }
   }
 
