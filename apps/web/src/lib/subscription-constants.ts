@@ -11,14 +11,14 @@ export const AI_LIMITS = {
   FREE: {
     CHAT_COUNT: 3, // 하루 3회
     CHAT_SECONDS: 300, // 5분
-    CALL_COUNT: 1, // 하루 1회
-    CALL_SECONDS: 180, // 3분
+    CALL_COUNT: 30, // 짧은 재시도 폭주 방지
+    CALL_SECONDS: 900, // 15분
   },
   PREMIUM: {
-    CHAT_COUNT: 999, // 사실상 무제한
-    CHAT_SECONDS: 99999,
-    CALL_COUNT: 999,
-    CALL_SECONDS: 99999,
+    CHAT_COUNT: 50,
+    CHAT_SECONDS: 600, // 10분
+    CALL_COUNT: 300, // 짧은 재시도 폭주 방지
+    CALL_SECONDS: 7200, // 120분
   },
 } as const;
 
@@ -33,7 +33,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'JLPT 단어/문법 학습',
       '퀴즈 무제한',
       `AI 채팅 하루 ${AI_LIMITS.FREE.CHAT_COUNT}회`,
-      `AI 통화 하루 ${AI_LIMITS.FREE.CALL_COUNT}회`,
+      'AI 통화 하루 15분',
       '기본 캐릭터 2명',
     ],
   },
@@ -44,8 +44,8 @@ export const PRICING_PLANS: PricingPlan[] = [
     period: '월',
     recommended: true,
     features: [
-      'AI 채팅 무제한',
-      'AI 통화 무제한',
+      'AI 채팅 하루 50회',
+      'AI 통화 하루 120분',
       '모든 캐릭터 해금',
       '상세 학습 리포트',
       '광고 제거',

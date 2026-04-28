@@ -50,13 +50,30 @@ async def test_check_ai_limit_allows_premium_call_under_limit(mock_get_status, m
     mock_get_usage.return_value = {
         "chat_count": 50,
         "chat_seconds": 600,
-        "call_count": 19,
-        "call_seconds": 599,
+        "call_count": 299,
+        "call_seconds": 7199,
     }
 
     result = await check_ai_limit(MagicMock(), MagicMock(), "call")
 
     assert result == {"allowed": True}
+
+
+@pytest.mark.asyncio
+@patch("app.services.subscription_ai_usage.get_daily_ai_usage")
+@patch("app.services.subscription_ai_usage.get_subscription_status")
+async def test_check_ai_limit_blocks_call_seconds_before_call_count(mock_get_status, mock_get_usage):
+    mock_get_status.return_value = {"is_premium": False}
+    mock_get_usage.return_value = {
+        "chat_count": 0,
+        "chat_seconds": 0,
+        "call_count": 30,
+        "call_seconds": 900,
+    }
+
+    result = await check_ai_limit(MagicMock(), MagicMock(), "call")
+
+    assert result == {"allowed": False, "reason": "오늘의 AI 통화 시간을 초과했습니다."}
 
 
 def test_build_ai_usage_tracking_statement_sets_all_non_null_insert_columns():

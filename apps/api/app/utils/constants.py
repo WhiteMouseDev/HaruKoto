@@ -73,8 +73,8 @@ class _AiTierLimits:
 
 @dataclass(frozen=True)
 class _AiLimits:
-    FREE: _AiTierLimits = _AiTierLimits(CHAT_COUNT=3, CHAT_SECONDS=300, CALL_COUNT=1, CALL_SECONDS=180)
-    PREMIUM: _AiTierLimits = _AiTierLimits(CHAT_COUNT=50, CHAT_SECONDS=600, CALL_COUNT=20, CALL_SECONDS=600)
+    FREE: _AiTierLimits = _AiTierLimits(CHAT_COUNT=3, CHAT_SECONDS=300, CALL_COUNT=30, CALL_SECONDS=900)
+    PREMIUM: _AiTierLimits = _AiTierLimits(CHAT_COUNT=50, CHAT_SECONDS=600, CALL_COUNT=300, CALL_SECONDS=7200)
 
 
 @dataclass(frozen=True)

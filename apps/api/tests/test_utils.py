@@ -114,15 +114,15 @@ def test_pagination_values():
 def test_ai_limits_free():
     assert AI_LIMITS.FREE.CHAT_COUNT == 3
     assert AI_LIMITS.FREE.CHAT_SECONDS == 300
-    assert AI_LIMITS.FREE.CALL_COUNT == 1
-    assert AI_LIMITS.FREE.CALL_SECONDS == 180
+    assert AI_LIMITS.FREE.CALL_COUNT == 30
+    assert AI_LIMITS.FREE.CALL_SECONDS == 900
 
 
 def test_ai_limits_premium():
     assert AI_LIMITS.PREMIUM.CHAT_COUNT == 50
     assert AI_LIMITS.PREMIUM.CHAT_SECONDS == 600
-    assert AI_LIMITS.PREMIUM.CALL_COUNT == 20
-    assert AI_LIMITS.PREMIUM.CALL_SECONDS == 600
+    assert AI_LIMITS.PREMIUM.CALL_COUNT == 300
+    assert AI_LIMITS.PREMIUM.CALL_SECONDS == 7200
 
 
 def test_prices():
