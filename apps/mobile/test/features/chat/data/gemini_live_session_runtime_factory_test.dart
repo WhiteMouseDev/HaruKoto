@@ -43,9 +43,14 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connected]);
-      expect(audioAdapter.startCalls, 1);
+      expect(audioAdapter.startCalls, 0);
       expect(transport.sent, hasLength(2));
       expect(_greetingText(transport.sent.last), 'カスタム挨拶');
+
+      runtime.dispatch('{"serverContent":{"turnComplete":true}}');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(audioAdapter.startCalls, 1);
     });
 
     test('dispatches inbound text transcript and audio callbacks', () async {

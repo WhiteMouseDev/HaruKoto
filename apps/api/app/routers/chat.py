@@ -19,6 +19,7 @@ from app.schemas.chat import (
     ChatTTSRequest,
     LiveFeedbackRequest,
     LiveTokenRequest,
+    LiveTokenResponse,
 )
 from app.services.chat_session import ChatSessionServiceError, end_chat_session, send_chat_message, start_chat_session
 from app.services.chat_voice import (
@@ -125,12 +126,12 @@ async def transcribe_voice(
 # ==========================================
 
 
-@router.post("/live-token", status_code=200)
+@router.post("/live-token", response_model=LiveTokenResponse, status_code=200)
 async def get_live_token_endpoint(
     body: LiveTokenRequest,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-) -> dict[str, str]:
+) -> LiveTokenResponse:
     try:
         return await create_live_token(db, user, body)
     except ChatVoiceServiceError as exc:

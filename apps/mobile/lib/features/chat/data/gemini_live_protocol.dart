@@ -49,8 +49,8 @@ class GeminiLiveProtocol {
         'realtimeInputConfig': {
           'activityHandling': 'NO_INTERRUPTION',
           'automaticActivityDetection': {
-            'startOfSpeechSensitivity': 'START_SENSITIVITY_HIGH',
-            'endOfSpeechSensitivity': 'END_SENSITIVITY_HIGH',
+            'startOfSpeechSensitivity': 'START_SENSITIVITY_MEDIUM',
+            'endOfSpeechSensitivity': 'END_SENSITIVITY_MEDIUM',
             'prefixPaddingMs': 200,
             'silenceDurationMs': config.silenceDurationMs,
           },

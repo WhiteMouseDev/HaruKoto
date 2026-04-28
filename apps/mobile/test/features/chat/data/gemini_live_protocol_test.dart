@@ -33,8 +33,16 @@ void main() {
 
       expect(setup['model'], 'gemini-live');
       expect(generationConfig['responseModalities'], ['AUDIO']);
-      expect(realtimeConfig['activityHandling'], 'NO_INTERRUPTION');
+      expect(
+        activityDetection['startOfSpeechSensitivity'],
+        'START_SENSITIVITY_MEDIUM',
+      );
+      expect(
+        activityDetection['endOfSpeechSensitivity'],
+        'END_SENSITIVITY_MEDIUM',
+      );
       expect(activityDetection['silenceDurationMs'], 1200);
+      expect(realtimeConfig['activityHandling'], 'NO_INTERRUPTION');
       expect(setup['sessionResumption'], {'handle': 'resume-1'});
       expect(parts.first, {
         'text':

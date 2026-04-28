@@ -296,6 +296,8 @@ async def test_live_token_success(mock_rate_limit, mock_ai_limit, mock_generate_
         "token": "test-token",
         "wsUri": "wss://example.test/live",
         "model": "models/test",
+        "userNickname": "테스터",
+        "jlptLevel": "N5",
     }
 
 

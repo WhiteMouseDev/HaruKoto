@@ -41,12 +41,17 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connecting, GeminiLiveState.connected]);
-      expect(audioAdapter.startCalls, 1);
+      expect(audioAdapter.startCalls, 0);
       expect(transport.sent, hasLength(2));
 
       final greeting = jsonDecode(transport.sent[1]) as Map<String, dynamic>;
       final greetingInput = greeting['realtimeInput'] as Map<String, dynamic>;
       expect(greetingInput['text'], 'カスタム挨拶');
+
+      transport.emitMessage('{"serverContent":{"turnComplete":true}}');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(audioAdapter.startCalls, 1);
 
       audioAdapter.emitRecordedAudio(Uint8List.fromList([1, 2, 3]));
 

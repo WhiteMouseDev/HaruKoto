@@ -19,8 +19,10 @@ void main() {
           jlptLevel: 'N3',
           callSettings: callSettings,
         ),
-        readProfile: () => AsyncValue.data(_profileDetail('Tester')),
-        readProfileFuture: () async => _profileDetail('Ignored'),
+        readProfile: () => AsyncValue.data(
+          _profileDetail('Tester', callSettings: callSettings, jlptLevel: 'N3'),
+        ),
+        readProfileFuture: () => Future.value(_profileDetail('Fallback')),
       );
 
       final context = await reader.read();
@@ -40,25 +42,25 @@ void main() {
       expect(input.request.characterId, 'char-1');
     });
 
-    test('waits for profile future when profile is still loading', () async {
+    test('waits for profile when the current provider value is still loading',
+        () async {
       final reader = VoiceCallStartContextReader(
-        readPreferences: () => const UserPreferences(),
+        readPreferences: () => const UserPreferences(jlptLevel: 'N5'),
         readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
-        readProfileFuture: () async => _profileDetail('LoadedTester'),
+        readProfileFuture: () => Future.value(_profileDetail('LoadedUser')),
       );
 
       final context = await reader.read();
 
-      expect(context.userNickname, 'LoadedTester');
+      expect(context.userNickname, 'LoadedUser');
     });
 
-    test('falls back to default nickname when profile loading fails', () async {
+    test('falls back to default nickname when profile cannot be loaded',
+        () async {
       final reader = VoiceCallStartContextReader(
         readPreferences: () => const UserPreferences(),
         readProfile: () => const AsyncValue<ProfileDetailModel>.loading(),
-        readProfileFuture: () => Future<ProfileDetailModel>.error(
-          StateError('profile failed'),
-        ),
+        readProfileFuture: () => Future.error(Exception('profile failed')),
       );
 
       final context = await reader.read();
@@ -71,7 +73,7 @@ void main() {
       final reader = VoiceCallStartContextReader(
         readPreferences: () => const UserPreferences(),
         readProfile: () => AsyncValue.data(_profileDetail('   ')),
-        readProfileFuture: () async => _profileDetail('Ignored'),
+        readProfileFuture: () => Future.value(_profileDetail('Ignored')),
       );
 
       final context = await reader.read();
@@ -81,12 +83,16 @@ void main() {
   });
 }
 
-ProfileDetailModel _profileDetail(String nickname) {
+ProfileDetailModel _profileDetail(
+  String nickname, {
+  CallSettings callSettings = const CallSettings(),
+  String jlptLevel = 'N5',
+}) {
   return ProfileDetailModel(
     profile: ProfileInfo(
       id: 'profile-1',
       nickname: nickname,
-      jlptLevel: 'N5',
+      jlptLevel: jlptLevel,
       dailyGoal: 10,
       experiencePoints: 0,
       level: 1,
@@ -94,6 +100,7 @@ ProfileDetailModel _profileDetail(String nickname) {
       streakCount: 0,
       longestStreak: 0,
       showKana: true,
+      callSettings: callSettings,
       createdAt: '2026-03-24T00:00:00Z',
     ),
     summary: const ProfileSummary(

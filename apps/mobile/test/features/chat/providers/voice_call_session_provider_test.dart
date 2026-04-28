@@ -23,7 +23,11 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           profileDetailProvider.overrideWith(
-            (ref) => Future.value(_profileDetail()),
+            (ref) => Future.value(
+              _profileDetail(
+                callSettings: const CallSettings(subtitleEnabled: false),
+              ),
+            ),
           ),
           voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
           voiceCallLiveServiceFactoryProvider.overrideWith(
@@ -367,8 +371,10 @@ class _FakeVoiceCallRingtonePlayer implements VoiceCallRingtonePlayer {
   }
 }
 
-ProfileDetailModel _profileDetail() {
-  return const ProfileDetailModel(
+ProfileDetailModel _profileDetail({
+  CallSettings callSettings = const CallSettings(),
+}) {
+  return ProfileDetailModel(
     profile: ProfileInfo(
       id: 'profile-1',
       nickname: 'Tester',
@@ -376,13 +382,14 @@ ProfileDetailModel _profileDetail() {
       dailyGoal: 10,
       experiencePoints: 0,
       level: 1,
-      levelProgress: LevelProgress(currentXp: 0, xpForNext: 100),
+      levelProgress: const LevelProgress(currentXp: 0, xpForNext: 100),
       streakCount: 0,
       longestStreak: 0,
       showKana: true,
+      callSettings: callSettings,
       createdAt: '2026-03-24T00:00:00Z',
     ),
-    summary: ProfileSummary(
+    summary: const ProfileSummary(
       totalWordsStudied: 0,
       totalQuizzesCompleted: 0,
       totalStudyDays: 0,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/user_preferences_provider.dart';
@@ -8,6 +10,7 @@ import '../../my/providers/my_provider.dart';
 import 'voice_call_connection_service.dart';
 
 const _fallbackUserNickname = '학습자';
+const _profileLoadTimeout = Duration(seconds: 3);
 
 typedef VoiceCallPreferencesReader = UserPreferences Function();
 typedef VoiceCallProfileReader = AsyncValue<ProfileDetailModel> Function();
@@ -58,34 +61,33 @@ class VoiceCallStartContextReader {
 
   Future<VoiceCallStartContext> read() async {
     final preferences = _readPreferences();
-    final profile = await _resolveProfile();
-    final nickname = _nicknameFrom(profile);
+    final profile = await _loadProfile();
 
     return VoiceCallStartContext(
-      callSettings: preferences.callSettings,
-      userNickname: nickname,
-      jlptLevel: preferences.jlptLevel,
+      callSettings: profile?.callSettings ?? preferences.callSettings,
+      userNickname: _normalizeNickname(profile?.nickname),
+      jlptLevel: profile?.jlptLevel ?? preferences.jlptLevel,
     );
   }
 
-  Future<ProfileDetailModel?> _resolveProfile() async {
+  Future<ProfileInfo?> _loadProfile() async {
     final profileAsync = _readProfile();
     if (profileAsync.hasValue) {
-      return profileAsync.value;
+      return profileAsync.value!.profile;
     }
 
     try {
-      return await _readProfileFuture();
+      final detail = await _readProfileFuture().timeout(_profileLoadTimeout);
+      return detail.profile;
+    } on TimeoutException {
+      return null;
     } catch (_) {
       return null;
     }
   }
 
-  String _nicknameFrom(ProfileDetailModel? profile) {
-    final nickname = profile?.profile.nickname.trim();
-    if (nickname == null || nickname.isEmpty) {
-      return _fallbackUserNickname;
-    }
-    return nickname;
+  String _normalizeNickname(String? nickname) {
+    final trimmed = nickname?.trim() ?? '';
+    return trimmed.isEmpty ? _fallbackUserNickname : trimmed;
   }
 }

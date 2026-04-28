@@ -3356,11 +3356,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object",
-                  "title": "Response Get Live Token Endpoint Api V1 Chat Live Token Post"
+                  "$ref": "#/components/schemas/LiveTokenResponse"
                 }
               }
             }
@@ -8719,6 +8715,39 @@
         },
         "type": "object",
         "title": "LiveTokenRequest"
+      },
+      "LiveTokenResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "wsUri": {
+            "type": "string",
+            "title": "Wsuri"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "userNickname": {
+            "type": "string",
+            "title": "Usernickname"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "wsUri",
+          "model",
+          "userNickname",
+          "jlptLevel"
+        ],
+        "title": "LiveTokenResponse"
       },
       "MarkReadRequest": {
         "properties": {

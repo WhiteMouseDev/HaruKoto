@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.middleware.rate_limit import rate_limit
 from app.models import Conversation, User
 from app.models.enums import ConversationType
-from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest
+from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest, LiveTokenResponse
 from app.services.ai import generate_live_feedback, generate_live_token, generate_tts, transcribe_audio
 from app.services.conversation_rewards import grant_conversation_completion_rewards
 from app.services.subscription_ai_usage import check_ai_limit
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 ALLOWED_AUDIO_TYPES = {"audio/webm", "audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/flac", "audio/m4a"}
 MAX_AUDIO_SIZE = 4_500_000  # 4.5MB
 LIVE_FEEDBACK_SAVE_ERROR_DETAIL = "라이브 피드백 저장에 실패했습니다"
+FALLBACK_USER_NICKNAME = "학습자"
 
 
 class ChatVoiceServiceError(Exception):
@@ -68,7 +69,7 @@ async def transcribe_chat_voice(audio_bytes: bytes, content_type: str | None) ->
     return await transcribe_audio(audio_bytes, content_type or "audio/webm")
 
 
-async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest) -> dict[str, str]:
+async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest) -> LiveTokenResponse:
     del body
     rl = await rate_limit(f"live:{user.id}", RATE_LIMITS.LIVE_TOKEN.max_requests, RATE_LIMITS.LIVE_TOKEN.window_seconds)
     if not rl.success:
@@ -78,7 +79,16 @@ async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest
     if not limit_check["allowed"]:
         raise ChatVoiceServiceError(status_code=429, detail=limit_check["reason"])
 
-    return await generate_live_token()
+    token = await generate_live_token()
+    nickname = (user.nickname or "").strip() or FALLBACK_USER_NICKNAME
+
+    return LiveTokenResponse(
+        token=token["token"],
+        ws_uri=token["wsUri"],
+        model=token["model"],
+        user_nickname=nickname,
+        jlpt_level=str(user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level),
+    )
 
 
 def _transcript_from_messages(raw_messages: Any) -> list[dict[str, str]]:
