@@ -35,11 +35,19 @@ void main() {
       expect(generationConfig['responseModalities'], ['AUDIO']);
       expect(
         activityDetection['startOfSpeechSensitivity'],
-        'START_SENSITIVITY_MEDIUM',
+        'START_SENSITIVITY_HIGH',
       );
       expect(
         activityDetection['endOfSpeechSensitivity'],
-        'END_SENSITIVITY_MEDIUM',
+        'END_SENSITIVITY_HIGH',
+      );
+      expect(
+        activityDetection.values,
+        isNot(contains('START_SENSITIVITY_MEDIUM')),
+      );
+      expect(
+        activityDetection.values,
+        isNot(contains('END_SENSITIVITY_MEDIUM')),
       );
       expect(activityDetection['silenceDurationMs'], 1200);
       expect(realtimeConfig['activityHandling'], 'NO_INTERRUPTION');
