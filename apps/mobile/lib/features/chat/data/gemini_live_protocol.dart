@@ -42,18 +42,18 @@ class GeminiLiveProtocol {
           'parts': [
             {
               'text':
-                  '${config.instruction}\n\n## ユーザー情報\n- 名前: ${config.userNickname}\n\n${config.jlptSection}'
+                  '${config.instruction}\n\n## ユーザー情報\n- 名前: ${config.userNickname}\n- 相手を呼ぶ時は「学習者」ではなく、この名前を関係設定の呼び方ルールに合わせて呼ぶこと。\n\n${config.jlptSection}'
             },
           ],
         },
         'realtimeInputConfig': {
+          'activityHandling': 'NO_INTERRUPTION',
           'automaticActivityDetection': {
             'startOfSpeechSensitivity': 'START_SENSITIVITY_MEDIUM',
             'endOfSpeechSensitivity': 'END_SENSITIVITY_MEDIUM',
             'prefixPaddingMs': 200,
             'silenceDurationMs': config.silenceDurationMs,
           },
-          'activityHandling': 'NO_INTERRUPTION',
         },
         'inputAudioTranscription': {},
         'outputAudioTranscription': {},
@@ -82,12 +82,10 @@ class GeminiLiveProtocol {
   static String encodeRealtimeAudio(Uint8List data) {
     return jsonEncode({
       'realtimeInput': {
-        'mediaChunks': [
-          {
-            'mimeType': 'audio/pcm;rate=16000',
-            'data': base64Encode(data),
-          },
-        ],
+        'audio': {
+          'mimeType': 'audio/pcm;rate=16000',
+          'data': base64Encode(data),
+        },
       },
     });
   }

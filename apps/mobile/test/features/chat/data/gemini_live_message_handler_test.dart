@@ -71,6 +71,32 @@ void main() {
       ]);
     });
 
+    test('serverContent emits every audio chunk in a multi-part model turn',
+        () {
+      final handler = GeminiLiveMessageHandler();
+
+      final actions = handler.handle({
+        'serverContent': {
+          'modelTurn': {
+            'parts': [
+              {
+                'inlineData': {'data': 'audio-1'},
+              },
+              {
+                'inlineData': {'data': 'audio-2'},
+              },
+            ],
+          },
+        },
+      });
+
+      expect(actions.map((action) => action.type), [
+        GeminiLiveMessageActionType.audioChunk,
+        GeminiLiveMessageActionType.audioChunk,
+      ]);
+      expect(actions.map((action) => action.text), ['audio-1', 'audio-2']);
+    });
+
     test('interrupted flushes pending assistant transcript', () {
       final handler = GeminiLiveMessageHandler();
 

@@ -10,6 +10,7 @@ import '../../../core/constants/sizes.dart';
 import '../../../core/services/haptic_service.dart';
 import '../providers/voice_call_session_provider.dart';
 import 'call_analysis_launch.dart';
+import 'conversation_feedback_launch.dart';
 import 'widgets/call_waveform.dart';
 
 class VoiceCallPage extends ConsumerStatefulWidget {
@@ -31,6 +32,8 @@ class VoiceCallPage extends ConsumerStatefulWidget {
 }
 
 class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
+  ProviderContainer? _container;
+
   @override
   void initState() {
     super.initState();
@@ -45,12 +48,42 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container ??= ProviderScope.containerOf(context, listen: false);
+  }
+
   Future<void> _endCall() async {
     final result = await ref.read(voiceCallSessionProvider.notifier).endCall();
     if (!mounted || result.ignored) return;
 
     final analysisRequest = result.analysisRequest;
     if (analysisRequest == null) {
+      final feedbackError = result.feedbackError;
+      if (feedbackError != null) {
+        final navigator = Navigator.of(context);
+        openConversationFeedbackPage(
+          context,
+          conversationId:
+              'local-voice-call-${DateTime.now().millisecondsSinceEpoch}',
+          initialFeedbackError: feedbackError,
+          onRetryVoiceCall: () {
+            navigator.pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (_) => VoiceCallPage(
+                  scenarioId: widget.scenarioId,
+                  characterId: widget.characterId,
+                  characterName: widget.characterName,
+                  avatarUrl: widget.avatarUrl,
+                ),
+              ),
+            );
+          },
+          replace: true,
+        );
+        return;
+      }
       Navigator.of(context).pop();
       return;
     }
@@ -60,8 +93,10 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage> {
 
   @override
   void dispose() {
-    final container = ProviderScope.containerOf(context, listen: false);
-    Future(() => container.invalidate(voiceCallSessionProvider));
+    final container = _container;
+    if (container != null) {
+      container.invalidate(voiceCallSessionProvider);
+    }
     super.dispose();
   }
 

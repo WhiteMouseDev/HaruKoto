@@ -104,7 +104,7 @@ void main() {
           resources: VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer()),
           isStale: () {
             staleChecks++;
-            return staleChecks >= 3;
+            return staleChecks >= 4;
           },
           setState: (_) {},
         ),

@@ -67,6 +67,19 @@ void main() {
 
       expect(context.userNickname, '학습자');
     });
+
+    test('falls back to default nickname when profile nickname is empty',
+        () async {
+      final reader = VoiceCallStartContextReader(
+        readPreferences: () => const UserPreferences(),
+        readProfile: () => AsyncValue.data(_profileDetail('   ')),
+        readProfileFuture: () => Future.value(_profileDetail('Ignored')),
+      );
+
+      final context = await reader.read();
+
+      expect(context.userNickname, '학습자');
+    });
   });
 }
 

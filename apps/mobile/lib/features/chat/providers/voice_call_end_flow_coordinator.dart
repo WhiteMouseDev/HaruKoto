@@ -30,6 +30,16 @@ class VoiceCallEndFlowInput {
   final int durationSeconds;
 }
 
+class VoiceCallEndFlowResult {
+  const VoiceCallEndFlowResult({
+    this.analysisRequest,
+    this.feedbackError,
+  });
+
+  final VoiceCallAnalysisRequest? analysisRequest;
+  final String? feedbackError;
+}
+
 class VoiceCallEndFlowCoordinator {
   const VoiceCallEndFlowCoordinator({
     required VoiceCallAnalysisRequestFactory analysisRequestFactory,
@@ -43,16 +53,27 @@ class VoiceCallEndFlowCoordinator {
   final VoiceCallSessionEnder _sessionEnder;
   final VoiceCallAutoAnalysisReader _readAutoAnalysis;
 
-  Future<VoiceCallAnalysisRequest?> end(VoiceCallEndFlowInput input) async {
+  Future<VoiceCallEndFlowResult> end(VoiceCallEndFlowInput input) async {
     final endedSession = await _sessionEnder.end(input.resources);
+    final autoAnalysis = _readAutoAnalysis();
 
-    return _analysisRequestFactory.build(
+    final analysisRequest = _analysisRequestFactory.build(
       VoiceCallAnalysisRequestInput(
         request: input.request,
         transcript: endedSession.transcript,
         durationSeconds: input.durationSeconds,
-        autoAnalysis: _readAutoAnalysis(),
+        autoAnalysis: autoAnalysis,
       ),
     );
+
+    if (analysisRequest != null) {
+      return VoiceCallEndFlowResult(analysisRequest: analysisRequest);
+    }
+
+    if (input.request != null && autoAnalysis) {
+      return const VoiceCallEndFlowResult(feedbackError: 'no_transcript');
+    }
+
+    return const VoiceCallEndFlowResult();
   }
 }

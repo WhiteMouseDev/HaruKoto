@@ -49,8 +49,7 @@ void main() {
 
       final audio =
           _decode(transport.sent[2])['realtimeInput'] as Map<String, dynamic>;
-      final chunks = audio['mediaChunks'] as List<dynamic>;
-      final chunk = chunks.single as Map<String, dynamic>;
+      final chunk = audio['audio'] as Map<String, dynamic>;
       expect(chunk['mimeType'], 'audio/pcm;rate=16000');
       expect(chunk['data'], base64Encode([1, 2, 3]));
     });
