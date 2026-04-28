@@ -16,6 +16,7 @@ void main() {
       expect(free.period, '');
       expect(free.recommended, false);
       expect(free.features.isNotEmpty, true);
+      expect(free.features, contains('AI 통화 하루 15분'));
     });
 
     test('monthly plan is recommended', () {
@@ -24,6 +25,8 @@ void main() {
       expect(monthly.price, 4900);
       expect(monthly.recommended, true);
       expect(monthly.period, '월');
+      expect(monthly.features, contains('AI 채팅 하루 50회'));
+      expect(monthly.features, contains('AI 통화 하루 120분'));
     });
 
     test('yearly plan has original price', () {

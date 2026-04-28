@@ -61,10 +61,10 @@ async def check_ai_limit(
         if usage["chat_seconds"] >= limits.CHAT_SECONDS:
             return {"allowed": False, "reason": "오늘의 AI 채팅 시간을 초과했습니다."}
     else:
-        if usage["call_count"] >= limits.CALL_COUNT:
-            return {"allowed": False, "reason": "오늘의 AI 통화 횟수를 초과했습니다."}
         if usage["call_seconds"] >= limits.CALL_SECONDS:
             return {"allowed": False, "reason": "오늘의 AI 통화 시간을 초과했습니다."}
+        if usage["call_count"] >= limits.CALL_COUNT:
+            return {"allowed": False, "reason": "오늘의 AI 통화 횟수를 초과했습니다."}
 
     return {"allowed": True}
 
