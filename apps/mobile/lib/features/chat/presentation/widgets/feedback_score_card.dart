@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import 'conversation_status_mark.dart';
 
 class FeedbackScoreCard extends StatelessWidget {
   final int overallScore;
@@ -50,7 +51,10 @@ class FeedbackScoreCard extends StatelessWidget {
         child: Column(
           children: [
             // Mascot & message
-            const Text('🦊', style: TextStyle(fontSize: 48)),
+            const ConversationStatusMark(
+              icon: LucideIcons.sparkles,
+              size: 64,
+            ),
             const SizedBox(height: 8),
             Text(
               _starRating >= 4

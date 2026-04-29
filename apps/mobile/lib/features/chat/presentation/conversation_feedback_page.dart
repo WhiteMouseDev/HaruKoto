@@ -9,6 +9,7 @@ import '../../../shared/widgets/app_skeleton.dart';
 import '../data/models/chat_message_model.dart';
 import '../data/models/feedback_model.dart';
 import '../providers/conversation_feedback_provider.dart';
+import 'widgets/conversation_status_mark.dart';
 import 'widgets/feedback_score_card.dart';
 import 'widgets/feedback_transcript.dart';
 
@@ -112,7 +113,10 @@ class _FeedbackNoData extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🦊', style: TextStyle(fontSize: 48)),
+            const ConversationStatusMark(
+              icon: LucideIcons.micOff,
+              size: 64,
+            ),
             const SizedBox(height: AppSizes.sm),
             Text(
               title,
