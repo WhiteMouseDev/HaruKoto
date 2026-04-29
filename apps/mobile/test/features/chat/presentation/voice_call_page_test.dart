@@ -51,6 +51,29 @@ void main() {
       expect(find.text('🦊'), findsNothing);
       expect(find.byIcon(LucideIcons.micOff), findsOneWidget);
       expect(find.text('다시 통화하기'), findsOneWidget);
+      final retryButton = tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text('다시 통화하기'),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      final historyButton = tester.widget<OutlinedButton>(
+        find.ancestor(
+          of: find.text('대화 목록으로'),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      final retryStyle = retryButton.style!;
+      final historyStyle = historyButton.style!;
+      final retrySize = retryStyle.minimumSize!.resolve(const <WidgetState>{});
+      final historySize =
+          historyStyle.minimumSize!.resolve(const <WidgetState>{});
+      final retryShape = retryStyle.shape!.resolve(const <WidgetState>{})
+          as RoundedRectangleBorder;
+      final historyShape = historyStyle.shape!.resolve(const <WidgetState>{})
+          as RoundedRectangleBorder;
+      expect(retrySize, historySize);
+      expect(retryShape.borderRadius, historyShape.borderRadius);
 
       await tester.tap(find.text('다시 통화하기'));
       await tester.pump();
