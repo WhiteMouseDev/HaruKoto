@@ -19,9 +19,9 @@ const _tabWidth = 52.0;
 const _tabHeight = 72.0;
 
 const _tabBgColors = [
-  Color(0xFFFFD6E0), // 단어: pastel pink
-  Color(0xFFD1C4E9), // 문법: pastel lavender
-  Color(0xFFB2DFDB), // 문장: pastel mint
+  AppColors.primary,
+  AppColors.primaryPressed,
+  AppColors.accentAlt,
 ];
 
 const _categories = [

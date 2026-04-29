@@ -9,16 +9,17 @@ abstract final class AppColors {
   static const brandPink = primary;
 
   // ─── Accent system ───────────────────────────────────────
-  static const accent = Color(0xFF1F1B1A);
-  static const accentAlt = Color(0xFF3A3431);
-  static const accentContainer = Color(0xFFF4EFEC);
-  static const tabInactive = Color(0xFFA89E9A);
+  static const accent = primaryPressed;
+  static const accentAlt = Color(0xFFA0364A);
+  static const accentContainer = Color(0xFFFFF1EE);
+  static const surfaceMuted = Color(0xFFF5ECE8);
+  static const tabInactive = Color(0xFFB0A29C);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBF8F6);
+  static const lightBackground = Color(0xFFFBF6F4);
   static const lightCard = Color(0xFFFFFFFF);
-  static const lightSecondary = accentContainer;
-  static const lightBorder = Color(0xFFE7DEDA);
+  static const lightSecondary = surfaceMuted;
+  static const lightBorder = Color(0xFFEADFD9);
   static const lightText = Color(0xFF2A2422);
   static const lightSubtext = Color(0xFF6E635F);
 
