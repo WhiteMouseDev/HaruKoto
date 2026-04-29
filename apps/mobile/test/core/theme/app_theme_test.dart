@@ -7,19 +7,19 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('HaruSemanticColors', () {
-    test('light palette exposes Sumi Ink + Sakura semantic colors', () {
+    test('light palette exposes Sakura Depth semantic colors', () {
       final semantic = HaruSemanticColors.fromBrightness(Brightness.light);
 
       expect(semantic.primaryPressed, AppColors.primaryPressed);
       expect(semantic.accent, AppColors.accent);
-      expect(semantic.onAccent, AppColors.lightBackground);
+      expect(semantic.onAccent, Colors.white);
       expect(semantic.accentContainer, AppColors.accentContainer);
       expect(semantic.success, AppColors.success(Brightness.light));
       expect(semantic.warning, AppColors.warning(Brightness.light));
       expect(semantic.error, AppColors.error(Brightness.light));
       expect(semantic.tabActive, AppColors.accent);
       expect(semantic.tabInactive, AppColors.tabInactive);
-      expect(semantic.surfaceMuted, AppColors.accentContainer);
+      expect(semantic.surfaceMuted, AppColors.surfaceMuted);
     });
 
     test('copyWith preserves unspecified tokens', () {

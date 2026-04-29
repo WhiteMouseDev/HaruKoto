@@ -112,19 +112,6 @@ class _TabItem extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Active indicator bar
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          height: 2,
-          width: isActive ? 32 : 0,
-          margin: const EdgeInsets.only(bottom: 4),
-          decoration: BoxDecoration(
-            color: isActive ? activeColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(1),
-          ),
-        ),
-        // Icon
         Stack(
           clipBehavior: Clip.none,
           children: [
@@ -151,14 +138,24 @@ class _TabItem extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 2),
-        // Label
+        const SizedBox(height: 4),
         Text(
           tab.label,
           style: TextStyle(
             fontSize: 10,
             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
             color: color,
+          ),
+        ),
+        const SizedBox(height: 3),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: isActive ? activeColor : Colors.transparent,
+            shape: BoxShape.circle,
           ),
         ),
       ],

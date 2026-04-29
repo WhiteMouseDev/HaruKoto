@@ -40,14 +40,13 @@ class HaruSemanticColors extends ThemeExtension<HaruSemanticColors> {
       primaryPressed:
           isLight ? AppColors.primaryPressed : const Color(0xFFE56F88),
       accent: isLight ? AppColors.accent : const Color(0xFFF5EDE5),
-      onAccent: isLight ? AppColors.lightBackground : AppColors.darkBackground,
+      onAccent: isLight ? Colors.white : AppColors.darkBackground,
       accentContainer:
           isLight ? AppColors.accentContainer : AppColors.darkSecondary,
       success: AppColors.success(brightness),
       warning: AppColors.warning(brightness),
       error: AppColors.error(brightness),
-      surfaceMuted:
-          isLight ? AppColors.accentContainer : AppColors.darkSecondary,
+      surfaceMuted: isLight ? AppColors.surfaceMuted : AppColors.darkSecondary,
       tabActive: isLight ? AppColors.accent : AppColors.darkText,
       tabInactive: isLight ? AppColors.tabInactive : AppColors.darkSubtext,
     );
