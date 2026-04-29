@@ -2,17 +2,25 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
-  static const primary = Color(0xFFF6A5B3);
-  static const primaryStrong = Color(0xFFFA7B95);
-  static const brandPink = Color(0xFFFFB7C5);
+  static const primary = Color(0xFFE86B7C);
+  static const primaryStrong = primary;
+  static const primaryPressed = Color(0xFFC84A5C);
+  static const primaryContainer = Color(0xFFFCE4E8);
+  static const brandPink = primary;
+
+  // ─── Accent system ───────────────────────────────────────
+  static const accent = Color(0xFF1F1B1A);
+  static const accentAlt = Color(0xFF3A3431);
+  static const accentContainer = Color(0xFFF4EFEC);
+  static const tabInactive = Color(0xFFA89E9A);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFCF6F5);
+  static const lightBackground = Color(0xFFFBF8F6);
   static const lightCard = Color(0xFFFFFFFF);
-  static const lightSecondary = Color(0xFFFFF0F3);
-  static const lightBorder = Color(0xFFFCE7EC);
-  static const lightText = Color(0xFF1A1A2E);
-  static const lightSubtext = Color(0xFF666680);
+  static const lightSecondary = accentContainer;
+  static const lightBorder = Color(0xFFE7DEDA);
+  static const lightText = Color(0xFF2A2422);
+  static const lightSubtext = Color(0xFF6E635F);
 
   // ─── Dark theme ──────────────────────────────────────────
   static const darkBackground = Color(0xFF1A1A2E);
@@ -40,14 +48,14 @@ abstract final class AppColors {
   // ─── Functional semantic colors (brightness-aware) ───────
   // Soft teal green – complements pink theme without clashing
   static Color success(Brightness brightness) => brightness == Brightness.light
-      ? const Color(0xFF2DB08A)
+      ? const Color(0xFF5BA890)
       : const Color(0xFF26997A);
-  // Warm rose – harmonises with brandPink rather than harsh red
+  // Warm vermilion – visible without feeling like a harsh system red
   static Color error(Brightness brightness) => brightness == Brightness.light
-      ? const Color(0xFFE8577D)
+      ? const Color(0xFFC4503D)
       : const Color(0xFFD14468);
   static Color warning(Brightness brightness) => brightness == Brightness.light
-      ? const Color(0xFFF59E0B)
+      ? const Color(0xFFD9883A)
       : const Color(0xFFD97706);
   static Color info(Brightness brightness) => brightness == Brightness.light
       ? const Color(0xFF3B82F6)
@@ -55,8 +63,8 @@ abstract final class AppColors {
 
   // ─── Auth gradient ───────────────────────────────────────
   static const authGradientTop = Color(0xFFFCF6F5);
-  static const authGradientMid = Color(0xFFFFF0F3);
-  static const authGradientBottom = Color(0xFFFFE4EC);
+  static const authGradientMid = Color(0xFFFDF1F3);
+  static const authGradientBottom = primaryContainer;
   static const authGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -107,10 +115,10 @@ abstract final class AppColors {
   // ─── Heatmap intensities ─────────────────────────────────
   static const heatmapLight = [
     Color(0xFFF0F0F0),
-    Color(0xFFFCE7EC),
-    Color(0xFFF6A5B3),
-    Color(0xFFF494A4),
-    Color(0xFFE5607A),
+    primaryContainer,
+    Color(0xFFF3B8C0),
+    primary,
+    primaryPressed,
   ];
   static const heatmapDark = [
     Color(0xFF2A2A4A),

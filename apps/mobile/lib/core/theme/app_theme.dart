@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../constants/sizes.dart';
+import 'haru_semantic_colors.dart';
 import 'text_theme.dart';
 
 abstract final class AppTheme {
@@ -18,13 +19,18 @@ abstract final class AppTheme {
     final border = isLight ? AppColors.lightBorder : AppColors.darkBorder;
     final text = isLight ? AppColors.lightText : AppColors.darkText;
     final subtext = isLight ? AppColors.lightSubtext : AppColors.darkSubtext;
+    final semantic = HaruSemanticColors.fromBrightness(brightness);
 
     final colorScheme = ColorScheme(
       brightness: brightness,
       primary: AppColors.primary,
       onPrimary: Colors.white,
-      secondary: surface,
-      onSecondary: text,
+      primaryContainer: AppColors.primaryContainer,
+      onPrimaryContainer: AppColors.primaryPressed,
+      secondary: semantic.accent,
+      onSecondary: semantic.onAccent,
+      secondaryContainer: semantic.accentContainer,
+      onSecondaryContainer: AppColors.accentAlt,
       surface: background,
       onSurface: text,
       surfaceContainerLowest: card,
@@ -32,7 +38,7 @@ abstract final class AppTheme {
       surfaceContainer: card,
       surfaceContainerHigh: surface,
       surfaceContainerHighest: surface,
-      error: AppColors.difficultyAdvanced,
+      error: semantic.error,
       onError: Colors.white,
       outline: border,
     );
@@ -43,6 +49,7 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
       textTheme: appTextTheme(brightness),
+      extensions: [semantic],
       cardTheme: CardThemeData(
         color: card,
         elevation: 0,
@@ -52,27 +59,65 @@ abstract final class AppTheme {
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primaryStrong,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return semantic.surfaceMuted;
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return semantic.primaryPressed;
+            }
+            return colorScheme.primary;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return semantic.tabInactive;
+            }
+            return Colors.white;
+          }),
+          elevation: const WidgetStatePropertyAll(0),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+            ),
+          ),
+          textStyle: const WidgetStatePropertyAll(
+            TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryStrong,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return semantic.surfaceMuted;
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return semantic.primaryPressed;
+            }
+            return colorScheme.primary;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return semantic.tabInactive;
+            }
+            return Colors.white;
+          }),
+          elevation: const WidgetStatePropertyAll(0),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+            ),
+          ),
+          textStyle: const WidgetStatePropertyAll(
+            TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -88,14 +133,14 @@ abstract final class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.inputRadius),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: card,
-        selectedItemColor: AppColors.primary,
+        selectedItemColor: semantic.tabActive,
         unselectedItemColor: subtext,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
@@ -107,8 +152,9 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: false,
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primaryStrong,
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: colorScheme.primary,
+        linearTrackColor: semantic.surfaceMuted,
       ),
       dividerTheme: DividerThemeData(color: border, thickness: 1),
     );
