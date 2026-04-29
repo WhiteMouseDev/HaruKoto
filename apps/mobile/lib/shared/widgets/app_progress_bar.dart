@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/haru_semantic_colors.dart';
 import '../../core/constants/sizes.dart';
 
 /// Standard linear progress bar with consistent styling.
@@ -19,16 +20,20 @@ class AppProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final semantic = HaruSemanticColors.of(context);
+    final clampedValue = value.clamp(0.0, 1.0);
+    final progressColor = color ??
+        (clampedValue >= 1.0 ? semantic.success : theme.colorScheme.primary);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(height / 2),
       child: LinearProgressIndicator(
-        value: value.clamp(0.0, 1.0),
+        value: clampedValue,
         minHeight: height,
         valueColor: AlwaysStoppedAnimation(
-          color ?? theme.colorScheme.primary,
+          progressColor,
         ),
-        backgroundColor: backgroundColor ??
-            theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        backgroundColor: backgroundColor ?? semantic.surfaceMuted,
       ),
     );
   }

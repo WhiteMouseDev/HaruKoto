@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/constants/colors.dart';
 import '../../core/services/haptic_service.dart';
+import '../../core/theme/haru_semantic_colors.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -27,12 +28,11 @@ class BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final semantic = HaruSemanticColors.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = (isDark ? AppColors.darkCard : AppColors.lightBackground)
         .withValues(alpha: 0.95);
     final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-    final inactiveColor =
-        isDark ? AppColors.darkSubtext : AppColors.lightSubtext;
 
     return ClipRect(
       child: BackdropFilter(
@@ -64,7 +64,8 @@ class BottomNav extends StatelessWidget {
                         child: _TabItem(
                           tab: tab,
                           isActive: isActive,
-                          inactiveColor: inactiveColor,
+                          activeColor: semantic.tabActive,
+                          inactiveColor: semantic.tabInactive,
                         ),
                       ),
                     ),
@@ -94,17 +95,19 @@ class _TabData {
 class _TabItem extends StatelessWidget {
   final _TabData tab;
   final bool isActive;
+  final Color activeColor;
   final Color inactiveColor;
 
   const _TabItem({
     required this.tab,
     required this.isActive,
+    required this.activeColor,
     required this.inactiveColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppColors.primary : inactiveColor;
+    final color = isActive ? activeColor : inactiveColor;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +120,7 @@ class _TabItem extends StatelessWidget {
           width: isActive ? 32 : 0,
           margin: const EdgeInsets.only(bottom: 4),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : Colors.transparent,
+            color: isActive ? activeColor : Colors.transparent,
             borderRadius: BorderRadius.circular(1),
           ),
         ),
