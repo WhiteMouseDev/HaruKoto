@@ -13,6 +13,8 @@ import 'widgets/conversation_status_mark.dart';
 import 'widgets/feedback_score_card.dart';
 import 'widgets/feedback_transcript.dart';
 
+const Size _feedbackNoDataActionSize = Size(220, 56);
+
 class ConversationFeedbackPage extends ConsumerWidget {
   const ConversationFeedbackPage({
     super.key,
@@ -139,12 +141,19 @@ class _FeedbackNoData extends StatelessWidget {
             if (onRetryVoiceCall != null) ...[
               FilledButton(
                 onPressed: onRetryVoiceCall,
+                style: _feedbackNoDataActionStyle(),
                 child: const Text('다시 통화하기'),
               ),
               const SizedBox(height: AppSizes.xs),
             ],
             OutlinedButton(
               onPressed: () => Navigator.of(context).pop(),
+              style: _feedbackNoDataActionStyle(
+                foregroundColor: AppColors.primary,
+                side: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.22),
+                ),
+              ),
               child: const Text('대화 목록으로'),
             ),
           ],
@@ -152,6 +161,30 @@ class _FeedbackNoData extends StatelessWidget {
       ),
     );
   }
+}
+
+ButtonStyle _feedbackNoDataActionStyle({
+  Color? foregroundColor,
+  BorderSide? side,
+}) {
+  return ButtonStyle(
+    foregroundColor: foregroundColor == null
+        ? null
+        : WidgetStatePropertyAll(foregroundColor),
+    side: side == null ? null : WidgetStatePropertyAll(side),
+    minimumSize: const WidgetStatePropertyAll(_feedbackNoDataActionSize),
+    padding: const WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    ),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+      ),
+    ),
+    textStyle: const WidgetStatePropertyAll(
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+    ),
+  );
 }
 
 class _FeedbackContent extends StatelessWidget {
