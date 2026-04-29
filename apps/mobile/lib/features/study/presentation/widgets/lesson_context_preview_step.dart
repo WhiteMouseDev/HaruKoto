@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../data/learning_goals.dart';
 import '../../data/models/lesson_models.dart';
 import 'lesson_vocab_preview_chip.dart';
@@ -79,8 +80,16 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
     }).toList();
   }
 
-  List<VocabItemModel> _previewVocab() {
-    return _uniqueVocab.take(3).toList();
+  void _showAllVocabSheet(
+      BuildContext context, List<VocabItemModel> vocabItems) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: AppSizes.sheetShape,
+      builder: (context) {
+        return _LessonVocabPreviewSheet(vocabItems: vocabItems);
+      },
+    );
   }
 
   @override
@@ -89,9 +98,10 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
     final theme = Theme.of(context);
     final reading = detail.content.reading;
     final learningGoal = getLearningGoal(detail.topic);
-    final previewVocab = _previewVocab();
+    final vocabItems = _uniqueVocab;
+    final previewVocab = vocabItems.take(3).toList();
     final grammarItems = _uniqueGrammar;
-    final remainingCount = _uniqueVocab.length - previewVocab.length;
+    final remainingCount = vocabItems.length - previewVocab.length;
     final remainingGrammarCount = grammarItems.length - 3;
 
     return Column(
@@ -246,32 +256,57 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
                               color: AppColors.primaryStrong,
                             ),
                             const SizedBox(width: 6),
-                            Text(
-                              '배울 단어',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                '핵심 단어 미리보기',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
+                            LessonVocabCountPill(count: vocabItems.length),
                           ],
                         ),
                         const SizedBox(height: AppSizes.gap),
-                        Wrap(
-                          spacing: AppSizes.sm,
-                          runSpacing: AppSizes.sm,
-                          children: [
-                            ...previewVocab.map(
-                              (vocab) => LessonVocabPreviewChip(vocab: vocab),
-                            ),
-                            if (remainingCount > 0)
-                              Text(
-                                '+$remainingCount개',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: AppColors.lightSubtext,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                          ],
+                        SizedBox(
+                          height: LessonVocabPreviewChip.height,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            clipBehavior: Clip.none,
+                            itemCount: previewVocab.length +
+                                (remainingCount > 0 ? 1 : 0),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: AppSizes.sm),
+                            itemBuilder: (context, index) {
+                              if (index < previewVocab.length) {
+                                return LessonVocabPreviewChip(
+                                  vocab: previewVocab[index],
+                                );
+                              }
+                              return LessonVocabPreviewMoreChip(
+                                remainingCount: remainingCount,
+                                totalCount: vocabItems.length,
+                                onTap: () =>
+                                    _showAllVocabSheet(context, vocabItems),
+                              );
+                            },
+                          ),
                         ),
+                        if (remainingCount > 0) ...[
+                          const SizedBox(height: AppSizes.sm),
+                          TextButton.icon(
+                            onPressed: () =>
+                                _showAllVocabSheet(context, vocabItems),
+                            icon: const Icon(LucideIcons.list),
+                            label: Text('전체 ${vocabItems.length}개 보기'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.lightSubtext,
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 32),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -385,6 +420,78 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LessonVocabPreviewSheet extends StatelessWidget {
+  final List<VocabItemModel> vocabItems;
+
+  const _LessonVocabPreviewSheet({required this.vocabItems});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.56,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) {
+        return SafeArea(
+          child: ListView.separated(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.lg,
+              AppSizes.md,
+              AppSizes.lg,
+              AppSizes.lg,
+            ),
+            itemCount: vocabItems.length + 1,
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: AppSizes.sm),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppSheetHandle(),
+                    const SizedBox(height: AppSizes.lg),
+                    Row(
+                      children: [
+                        const Icon(
+                          LucideIcons.bookOpen,
+                          size: 18,
+                          color: AppColors.primaryStrong,
+                        ),
+                        const SizedBox(width: AppSizes.sm),
+                        Text(
+                          '배울 단어 ${vocabItems.length}개',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppColors.lightText,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSizes.gap),
+                    Text(
+                      '레슨에서 순서대로 만나게 될 표현입니다.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                      ),
+                    ),
+                    const SizedBox(height: AppSizes.md),
+                  ],
+                );
+              }
+
+              return LessonVocabSheetRow(vocab: vocabItems[index - 1]);
+            },
+          ),
+        );
+      },
     );
   }
 }
