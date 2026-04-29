@@ -75,7 +75,7 @@ class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
   List<GrammarItemModel> get _uniqueGrammar {
     final seen = <String>{};
     return widget.detail.grammarItems.where((grammar) {
-      return seen.add(grammar.pattern);
+      return seen.add(grammar.normalizedPatternKey);
     }).toList();
   }
 

@@ -28,7 +28,7 @@ class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
   List<GrammarItemModel> get _uniqueGrammar {
     final seen = <String>{};
     return widget.grammarItems.where((grammar) {
-      return seen.add(grammar.pattern);
+      return seen.add(grammar.normalizedPatternKey);
     }).toList();
   }
 

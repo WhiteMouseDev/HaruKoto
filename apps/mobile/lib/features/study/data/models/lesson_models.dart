@@ -314,6 +314,16 @@ class GrammarItemModel {
       explanation: json['explanation'] as String? ?? '',
     );
   }
+
+  String get normalizedPatternKey => normalizeGrammarPatternKey(pattern);
+}
+
+String normalizeGrammarPatternKey(String pattern) {
+  return pattern
+      .replaceAll('〜', '~')
+      .replaceAll('～', '~')
+      .replaceAll(RegExp(r'\s+'), '')
+      .toLowerCase();
 }
 
 class LessonProgressModel {
