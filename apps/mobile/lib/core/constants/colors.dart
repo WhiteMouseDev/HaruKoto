@@ -11,15 +11,25 @@ abstract final class AppColors {
   // ─── Accent system ───────────────────────────────────────
   static const accent = primaryPressed;
   static const accentAlt = Color(0xFFA0364A);
-  static const accentContainer = Color(0xFFFFF1EE);
-  static const surfaceMuted = Color(0xFFF5ECE8);
+  static const accentContainer = primaryContainer;
+  static const surfaceMuted = Color(0xFFF4EEE9);
+  static const cardWarm = Color(0xFFFFFCFA);
+  static const neutralContainer = Color(0xFFF0EAE5);
+  static const neutralOn = Color(0xFF6E635F);
+  static const grammar = Color(0xFF9A8AB8);
+  static const grammarContainer = Color(0xFFECE6F2);
+  static const grammarOn = Color(0xFF5C4F77);
+  static const kanji = Color(0xFF5E8E94);
+  static const kanjiContainer = Color(0xFFDCE8E9);
+  static const kanjiOn = Color(0xFF2F5560);
   static const tabInactive = Color(0xFFB0A29C);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBF6F4);
+  static const lightBackground = Color(0xFFFBF7F4);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
-  static const lightBorder = Color(0xFFEADFD9);
+  static const lightBorder = Color(0xFFEFE9E5);
+  static const lightBorderStrong = Color(0xFFE1D9D2);
   static const lightText = Color(0xFF2A2422);
   static const lightSubtext = Color(0xFF6E635F);
 

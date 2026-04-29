@@ -34,9 +34,11 @@ class StudyStageCard extends StatelessWidget {
       bgColor = AppColors.success(theme.brightness).withValues(alpha: 0.04);
       borderWidth = 1;
     } else {
-      borderColor = theme.colorScheme.primary;
-      bgColor = theme.colorScheme.primary.withValues(alpha: 0.04);
-      borderWidth = 2;
+      borderColor = theme.colorScheme.outline;
+      bgColor = theme.brightness == Brightness.light
+          ? AppColors.cardWarm
+          : theme.colorScheme.surfaceContainerLow;
+      borderWidth = 1.2;
     }
 
     return Material(

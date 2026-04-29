@@ -39,9 +39,7 @@ class SmartLearningCard extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.primary.withValues(alpha: 0.2),
-        ),
+        side: BorderSide(color: theme.colorScheme.outline),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -55,7 +53,7 @@ class SmartLearningCard extends ConsumerWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    color: AppColors.primaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -255,6 +253,9 @@ class _CircularProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = goal > 0 ? (completed / goal).clamp(0.0, 1.0) : 0.0;
+    final trackColor = theme.brightness == Brightness.light
+        ? AppColors.surfaceMuted
+        : theme.colorScheme.surfaceContainerHigh;
 
     return SizedBox(
       width: 48,
@@ -265,7 +266,7 @@ class _CircularProgress extends StatelessWidget {
           CircularProgressIndicator(
             value: progress,
             strokeWidth: 4,
-            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.12),
+            backgroundColor: trackColor,
             valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
           ),
           Text(

@@ -335,6 +335,11 @@ class _ReviewDueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final cardColor =
+        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
+    final borderColor =
+        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
 
     return Material(
       color: Colors.transparent,
@@ -345,31 +350,26 @@ class _ReviewDueCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.primaryStrong.withValues(alpha: 0.16),
-                AppColors.primary.withValues(alpha: 0.10),
-              ],
-            ),
-            border: Border.all(
-              color: AppColors.primaryStrong.withValues(alpha: 0.40),
-            ),
+            color: cardColor,
+            border: Border.all(color: borderColor),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            boxShadow: isLight
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             children: [
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryStrong.withValues(alpha: 0.18),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
@@ -431,6 +431,11 @@ class _ReviewIdleBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final cardColor =
+        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
+    final borderColor =
+        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
 
     return GestureDetector(
       onTap: firstLessonId != null
@@ -439,11 +444,9 @@ class _ReviewIdleBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.10),
+          color: cardColor,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.28),
-          ),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
@@ -455,7 +458,7 @@ class _ReviewIdleBar extends StatelessWidget {
                 '첫 레슨을 시작해보세요',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryStrong,
+                  color: AppColors.neutralOn,
                 ),
               ),
             ),
@@ -477,6 +480,11 @@ class _RecommendedLessonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final cardColor =
+        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
+    final borderColor =
+        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
     final lesson = target.lesson;
 
     return Material(
@@ -488,19 +496,17 @@ class _RecommendedLessonCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.primaryStrong.withValues(alpha: 0.08),
+            color: cardColor,
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(
-              color: AppColors.primaryStrong.withValues(alpha: 0.22),
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             children: [
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryStrong.withValues(alpha: 0.16),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -516,14 +522,26 @@ class _RecommendedLessonCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      target.reason,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: AppColors.primaryStrong,
-                        fontWeight: FontWeight.w800,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryContainer,
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.radiusFull,
+                        ),
+                      ),
+                      child: Text(
+                        target.reason,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppColors.primaryStrong,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 6),
                     Text(
                       target.lesson.title,
                       style: theme.textTheme.titleSmall?.copyWith(
@@ -547,9 +565,8 @@ class _RecommendedLessonCard extends StatelessWidget {
                             label: const Text('전체 레슨'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primaryStrong,
-                              side: BorderSide(
-                                color: AppColors.primaryStrong
-                                    .withValues(alpha: 0.42),
+                              side: const BorderSide(
+                                color: AppColors.lightBorderStrong,
                               ),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -612,6 +629,11 @@ class _KanaBootcampCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final cardColor =
+        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
+    final borderColor =
+        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
     final kana = dashboard.kanaProgress;
     final learned =
         (kana?.hiragana.learned ?? 0) + (kana?.katakana.learned ?? 0);
@@ -627,10 +649,8 @@ class _KanaBootcampCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.07),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.22),
-            ),
+            color: cardColor,
+            border: Border.all(color: borderColor),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Row(
@@ -638,8 +658,8 @@ class _KanaBootcampCard extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.18),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
@@ -682,8 +702,7 @@ class _KanaBootcampCard extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: progress,
                               minHeight: AppSizes.progressHeight,
-                              backgroundColor:
-                                  AppColors.primary.withValues(alpha: 0.12),
+                              backgroundColor: AppColors.surfaceMuted,
                               color: AppColors.primaryStrong,
                             ),
                           ),

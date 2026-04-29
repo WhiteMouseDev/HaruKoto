@@ -7,7 +7,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('HaruSemanticColors', () {
-    test('light palette exposes Sakura Depth semantic colors', () {
+    test('light palette exposes Sakura punctuation semantic colors', () {
       final semantic = HaruSemanticColors.fromBrightness(Brightness.light);
 
       expect(semantic.primaryPressed, AppColors.primaryPressed);

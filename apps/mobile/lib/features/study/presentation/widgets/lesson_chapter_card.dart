@@ -25,6 +25,14 @@ class ChapterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
+    final isLight = brightness == Brightness.light;
+    final cardColor =
+        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
+    final outlineColor =
+        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
+    final mutedSurface = isLight
+        ? AppColors.surfaceMuted
+        : theme.colorScheme.surfaceContainerHigh;
     final progress = chapter.totalLessons > 0
         ? chapter.completedLessons / chapter.totalLessons
         : 0.0;
@@ -36,21 +44,18 @@ class ChapterCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: cardColor,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        border: Border.all(
-          color: hasRecommendedLesson
-              ? AppColors.primaryStrong.withValues(alpha: 0.45)
-              : AppColors.lightBorder,
-          width: hasRecommendedLesson ? 1.4 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        border: Border.all(color: outlineColor),
+        boxShadow: isLight
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
       ),
       child: Column(
         children: [
@@ -69,14 +74,18 @@ class ChapterCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.16),
+                          color: isLight
+                              ? AppColors.neutralContainer
+                              : theme.colorScheme.surfaceContainerHigh,
                           borderRadius:
                               BorderRadius.circular(AppSizes.radiusFull),
                         ),
                         child: Text(
                           'Ch.${chapter.chapterNo}',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.primaryStrong,
+                            color: isLight
+                                ? AppColors.neutralOn
+                                : theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -96,9 +105,7 @@ class ChapterCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryStrong.withValues(
-                              alpha: 0.12,
-                            ),
+                            color: AppColors.primaryContainer,
                             borderRadius:
                                 BorderRadius.circular(AppSizes.radiusFull),
                           ),
@@ -117,7 +124,9 @@ class ChapterCard extends StatelessWidget {
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: isComplete
                               ? AppColors.success(brightness)
-                              : AppColors.primaryStrong,
+                              : progress > 0
+                                  ? AppColors.primaryStrong
+                                  : AppColors.neutralOn,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -140,8 +149,7 @@ class ChapterCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: AppSizes.progressHeight,
-                      backgroundColor:
-                          AppColors.primary.withValues(alpha: 0.12),
+                      backgroundColor: mutedSurface,
                       color: isComplete
                           ? AppColors.success(brightness)
                           : AppColors.primaryStrong,
