@@ -118,6 +118,16 @@ void main() {
         );
       }
 
+      final wordTop = tester.getTopLeft(find.text('私')).dy;
+      final readingTop = tester.getTopLeft(find.text('わたし')).dy;
+      final meaningTop = tester.getTopLeft(find.text('저')).dy;
+      expect(wordTop, lessThan(readingTop));
+      expect(readingTop, lessThan(meaningTop));
+
+      final noReadingWordTop = tester.getTopLeft(find.text('はじめまして')).dy;
+      final noReadingMeaningTop = tester.getTopLeft(find.text('처음 뵙겠습니다')).dy;
+      expect(noReadingWordTop, lessThan(noReadingMeaningTop));
+
       await tester.tap(find.byType(LessonVocabPreviewMoreChip));
       await tester.pumpAndSettle();
 

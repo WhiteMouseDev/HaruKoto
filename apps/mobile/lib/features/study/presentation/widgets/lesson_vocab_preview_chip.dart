@@ -7,6 +7,8 @@ import '../../data/models/lesson_models.dart';
 class LessonVocabPreviewChip extends StatelessWidget {
   static const double width = 116;
   static const double height = 84;
+  static const double _readingSlotHeight = 14;
+  static const double _compactReadingSpacerHeight = 8;
 
   final VocabItemModel vocab;
 
@@ -43,22 +45,6 @@ class LessonVocabPreviewChip extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 14,
-              child: showReading
-                  ? Text(
-                      vocab.reading,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.lightSubtext,
-                        fontSize: 10,
-                        height: 1.1,
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 3),
-            SizedBox(
               height: 24,
               width: double.infinity,
               child: FittedBox(
@@ -72,6 +58,24 @@ class LessonVocabPreviewChip extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            SizedBox(height: showReading ? 2 : 4),
+            SizedBox(
+              height: showReading
+                  ? _readingSlotHeight
+                  : _compactReadingSpacerHeight,
+              child: showReading
+                  ? Text(
+                      vocab.reading,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppColors.lightSubtext,
+                        fontSize: 10,
+                        height: 1.1,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 3),
             SizedBox(
