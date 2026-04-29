@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../data/models/mission_model.dart';
 
 class DailyMissionsCard extends StatelessWidget {
@@ -17,6 +18,30 @@ class DailyMissionsCard extends StatelessWidget {
       'chat' => LucideIcons.messageCircle,
       'kana' => LucideIcons.bookOpen,
       _ => LucideIcons.target,
+    };
+  }
+
+  static Color _missionAccent(String missionType) {
+    final prefix = missionType.split('_').first;
+    return switch (prefix) {
+      'words' => AppColors.primaryPressed,
+      'kana' => AppColors.primaryPressed,
+      'quiz' => AppColors.grammar,
+      'correct' => AppColors.grammar,
+      'chat' => AppColors.kanji,
+      _ => AppColors.primaryPressed,
+    };
+  }
+
+  static Color _missionContainer(String missionType) {
+    final prefix = missionType.split('_').first;
+    return switch (prefix) {
+      'words' => AppColors.primaryContainer,
+      'kana' => AppColors.primaryContainer,
+      'quiz' => AppColors.grammarContainer,
+      'correct' => AppColors.grammarContainer,
+      'chat' => AppColors.kanjiContainer,
+      _ => AppColors.primaryContainer,
     };
   }
 
@@ -130,6 +155,9 @@ class _MissionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final missionAccent = DailyMissionsCard._missionAccent(mission.missionType);
+    final missionContainer =
+        DailyMissionsCard._missionContainer(mission.missionType);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -149,16 +177,14 @@ class _MissionItem extends StatelessWidget {
               shape: BoxShape.circle,
               color: mission.rewardClaimed
                   ? theme.colorScheme.primary
-                  : theme.colorScheme.secondary,
+                  : missionContainer.withValues(alpha: 0.88),
             ),
             child: Icon(
               mission.rewardClaimed
                   ? LucideIcons.check
                   : DailyMissionsCard._missionIcon(mission.missionType),
               size: 18,
-              color: mission.rewardClaimed
-                  ? Colors.white
-                  : theme.colorScheme.primary,
+              color: mission.rewardClaimed ? Colors.white : missionAccent,
             ),
           ),
           const SizedBox(width: 12),
