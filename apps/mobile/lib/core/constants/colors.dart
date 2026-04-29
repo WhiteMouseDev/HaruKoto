@@ -12,15 +12,15 @@ abstract final class AppColors {
   static const accent = primaryPressed;
   static const accentAlt = Color(0xFFA0364A);
   static const accentContainer = primaryContainer;
-  static const surfaceMuted = Color(0xFFF4EEE9);
+  static const surfaceMuted = Color(0xFFF6F0EC);
   static const cardWarm = Color(0xFFFFFCFA);
-  static const neutralContainer = Color(0xFFF0EAE5);
+  static const neutralContainer = Color(0xFFF3EDEA);
   static const neutralOn = Color(0xFF6E635F);
-  static const grammar = Color(0xFF9A8AB8);
-  static const grammarContainer = Color(0xFFECE6F2);
+  static const grammar = Color(0xFF8F7AD1);
+  static const grammarContainer = Color(0xFFEEE9FA);
   static const grammarOn = Color(0xFF5C4F77);
-  static const kanji = Color(0xFF5E8E94);
-  static const kanjiContainer = Color(0xFFDCE8E9);
+  static const kanji = Color(0xFF4E9AA3);
+  static const kanjiContainer = Color(0xFFE1F1F2);
   static const kanjiOn = Color(0xFF2F5560);
   static const tabInactive = Color(0xFFB0A29C);
 
