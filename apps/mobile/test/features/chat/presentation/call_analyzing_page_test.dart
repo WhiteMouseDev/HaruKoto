@@ -7,6 +7,7 @@ import 'package:harukoto_mobile/features/chat/presentation/call_analyzing_page.d
 import 'package:harukoto_mobile/features/chat/presentation/conversation_feedback_page.dart';
 import 'package:harukoto_mobile/features/chat/providers/chat_provider.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provider.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 void main() {
   group('CallAnalyzingPage', () {
@@ -61,6 +62,8 @@ void main() {
       expect(repository.calls, 1);
       expect(find.text('회화 리포트'), findsOneWidget);
       expect(find.text('잘한 표현'), findsOneWidget);
+      expect(find.text('🦊'), findsNothing);
+      expect(find.byIcon(LucideIcons.sparkles), findsOneWidget);
     });
 
     testWidgets(
@@ -104,6 +107,8 @@ void main() {
       expect(find.text('회화 리포트'), findsOneWidget);
       expect(find.text('피드백 생성에 실패했어요'), findsOneWidget);
       expect(find.textContaining('잠시 후 다시 시도해 주세요'), findsOneWidget);
+      expect(find.text('🦊'), findsNothing);
+      expect(find.byIcon(LucideIcons.micOff), findsOneWidget);
     });
   });
 }

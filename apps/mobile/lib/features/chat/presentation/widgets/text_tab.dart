@@ -4,6 +4,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
 import 'category_grid.dart';
+import 'conversation_status_mark.dart';
 import 'conversation_history_list.dart';
 
 class TextTab extends StatelessWidget {
@@ -55,7 +56,10 @@ class TextTab extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: const Center(
-                      child: Text('🦊', style: TextStyle(fontSize: 24)),
+                      child: ConversationStatusMark(
+                        size: 32,
+                        iconSize: 16,
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppSizes.md),
