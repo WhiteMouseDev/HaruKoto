@@ -2,36 +2,36 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
-  static const primary = Color(0xFFE86B7C);
+  static const primary = Color(0xFFFF6B86);
   static const primaryStrong = primary;
-  static const primaryPressed = Color(0xFFC84A5C);
-  static const primaryContainer = Color(0xFFFCE4E8);
+  static const primaryPressed = Color(0xFFE04A6A);
+  static const primaryContainer = Color(0xFFFFDCE4);
   static const brandPink = primary;
 
   // ─── Accent system ───────────────────────────────────────
   static const accent = primaryPressed;
-  static const accentAlt = Color(0xFFA0364A);
+  static const accentAlt = Color(0xFF931F3D);
   static const accentContainer = primaryContainer;
-  static const surfaceMuted = Color(0xFFF6F0EC);
+  static const surfaceMuted = Color(0xFFF5F2EE);
   static const cardWarm = Color(0xFFFFFCFA);
-  static const neutralContainer = Color(0xFFF3EDEA);
-  static const neutralOn = Color(0xFF6E635F);
-  static const grammar = Color(0xFF8F7AD1);
-  static const grammarContainer = Color(0xFFEEE9FA);
-  static const grammarOn = Color(0xFF5C4F77);
-  static const kanji = Color(0xFF4E9AA3);
-  static const kanjiContainer = Color(0xFFE1F1F2);
-  static const kanjiOn = Color(0xFF2F5560);
-  static const tabInactive = Color(0xFFB0A29C);
+  static const neutralContainer = Color(0xFFF0EAE4);
+  static const neutralOn = Color(0xFF5A524E);
+  static const grammar = Color(0xFF9C7BFF);
+  static const grammarContainer = Color(0xFFE6DDFF);
+  static const grammarOn = Color(0xFF4A2DAA);
+  static const kanji = Color(0xFF34CDB7);
+  static const kanjiContainer = Color(0xFFCDF1E9);
+  static const kanjiOn = Color(0xFF186E5E);
+  static const tabInactive = Color(0xFF9B928D);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBF7F4);
+  static const lightBackground = Color(0xFFFBFAF8);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
-  static const lightBorder = Color(0xFFEFE9E5);
-  static const lightBorderStrong = Color(0xFFE1D9D2);
-  static const lightText = Color(0xFF2A2422);
-  static const lightSubtext = Color(0xFF6E635F);
+  static const lightBorder = Color(0xFFECE7E1);
+  static const lightBorderStrong = Color(0xFFDCD5CD);
+  static const lightText = Color(0xFF1F1B1A);
+  static const lightSubtext = Color(0xFF5A524E);
 
   // ─── Dark theme ──────────────────────────────────────────
   static const darkBackground = Color(0xFF1A1A2E);
