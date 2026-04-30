@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/user_preferences_provider.dart';
 import '../../../../core/services/haptic_service.dart';
@@ -40,15 +41,15 @@ class SettingsMenu extends ConsumerWidget {
             children: [
               // JLPT Level
               ListTile(
-                leading: Icon(LucideIcons.graduationCap,
-                    size: 20, color: theme.colorScheme.primary),
+                leading: const Icon(LucideIcons.graduationCap,
+                    size: 20, color: AppColors.purple),
                 title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
                 trailing: Text(
                   preferences.jlptLevel,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+                    color: AppColors.purple,
                   ),
                 ),
                 onTap: () => _showJlptSheet(
@@ -61,8 +62,8 @@ class SettingsMenu extends ConsumerWidget {
 
               // Show Kana
               SwitchListTile(
-                secondary: Icon(LucideIcons.languages,
-                    size: 20, color: theme.colorScheme.primary),
+                secondary: const Icon(LucideIcons.languages,
+                    size: 20, color: AppColors.sakura),
                 title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
                 value: preferences.showKana,
                 onChanged: (value) async {
@@ -118,12 +119,13 @@ class SettingsMenu extends ConsumerWidget {
                   ListTile(
                     title: Text(level),
                     trailing: currentJlptLevel == level
-                        ? Icon(LucideIcons.check,
-                            color: theme.colorScheme.primary, size: 20)
+                        ? const Icon(LucideIcons.check,
+                            color: AppColors.purple, size: 20)
                         : null,
                     selected: currentJlptLevel == level,
-                    selectedTileColor:
-                        theme.colorScheme.primary.withValues(alpha: 0.08),
+                    selectedTileColor: theme.brightness == Brightness.light
+                        ? AppColors.purpleTrack
+                        : AppColors.purple.withValues(alpha: 0.18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

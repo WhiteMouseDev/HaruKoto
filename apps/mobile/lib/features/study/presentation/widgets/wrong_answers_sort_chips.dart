@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 
 const wrongAnswersSortOptions = [
@@ -21,6 +22,10 @@ class WrongAnswersSortChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final activeBg =
+        isLight ? AppColors.sakuraTrack : theme.colorScheme.primary;
+    final activeFg = isLight ? AppColors.sakura : theme.colorScheme.onPrimary;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -37,15 +42,18 @@ class WrongAnswersSortChips extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? theme.colorScheme.primary
+                      ? activeBg
                       : theme.colorScheme.surfaceContainerHigh,
+                  border: Border.all(
+                    color: isActive ? activeFg : Colors.transparent,
+                  ),
                   borderRadius: BorderRadius.circular(AppSizes.chipRadius),
                 ),
                 child: Text(
                   option.$2,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: isActive
-                        ? theme.colorScheme.onPrimary
+                        ? activeFg
                         : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w600,
                   ),

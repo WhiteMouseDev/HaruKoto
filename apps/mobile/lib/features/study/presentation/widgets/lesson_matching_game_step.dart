@@ -132,6 +132,7 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
             '단어 매칭',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: AppColors.purple,
             ),
           ),
           const SizedBox(height: AppSizes.xs),
@@ -273,8 +274,8 @@ class _MatchCard extends StatelessWidget {
       backgroundColor = AppColors.error(brightness).withValues(alpha: 0.15);
       borderColor = AppColors.error(brightness);
     } else if (isSelected) {
-      backgroundColor = AppColors.primary.withValues(alpha: 0.15);
-      borderColor = AppColors.primaryStrong;
+      backgroundColor = AppColors.purpleTrack;
+      borderColor = AppColors.purple;
     } else {
       backgroundColor = AppColors.lightCard;
       borderColor = AppColors.lightBorder;

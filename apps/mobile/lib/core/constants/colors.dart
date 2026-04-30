@@ -2,26 +2,64 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
-  static const primary = Color(0xFFE86B7C);
+  static const primary = Color(0xFFFF6B86);
   static const primaryStrong = primary;
-  static const primaryPressed = Color(0xFFC84A5C);
-  static const primaryContainer = Color(0xFFFCE4E8);
+  static const primaryPressed = Color(0xFFE04A6A);
+  static const primaryContainer = Color(0xFFFFD8E1);
   static const brandPink = primary;
+  static const sakura = primary;
+  static const sakuraPressed = primaryPressed;
+  static const sakuraContainer = primaryContainer;
+  static const sakuraOn = Color(0xFF931F3D);
+  static const sakuraTrack = Color(0xFFFFE3EA);
 
   // ─── Accent system ───────────────────────────────────────
   static const accent = primaryPressed;
-  static const accentAlt = Color(0xFFA0364A);
-  static const accentContainer = Color(0xFFFFF1EE);
-  static const surfaceMuted = Color(0xFFF5ECE8);
-  static const tabInactive = Color(0xFFB0A29C);
+  static const accentAlt = sakuraOn;
+  static const accentContainer = primaryContainer;
+  static const surfaceMuted = Color(0xFFF5F2EE);
+  static const cardWarm = Color(0xFFFFFCFA);
+  static const neutralContainer = Color(0xFFF0EAE4);
+  static const neutralOn = Color(0xFF5A524E);
+  static const purple = Color(0xFF9C7BFF);
+  static const purplePressed = Color(0xFF7E5AE8);
+  static const purpleContainer = Color(0xFFE4D9FF);
+  static const purpleOn = Color(0xFF4A2DAA);
+  static const purpleTrack = Color(0xFFEFE8FF);
+  static const mint = Color(0xFF2DD4BF);
+  static const mintPressed = Color(0xFF14B8A6);
+  static const mintContainer = Color(0xFFB8F0E5);
+  static const mintOn = Color(0xFF0F766E);
+  static const mintTrack = Color(0xFFDCFCF3);
+  static const streak = Color(0xFFFF6B35);
+  static const streakContainer = Color(0xFFFFDDCC);
+  static const streakOn = Color(0xFF8A2C0A);
+  static const missionDoneFg = mintPressed;
+  static const missionDoneBg = mintTrack;
+  static const missionInProgressFg = primary;
+  static const missionInProgressBg = sakuraTrack;
+  static const missionLockedFg = Color(0xFFB8B0AB);
+  static const missionLockedBg = Color(0xFFF0EDE9);
+  static const grammar = Color(0xFF9C7BFF);
+  static const grammarPressed = purplePressed;
+  static const grammarContainer = purpleContainer;
+  static const grammarOn = purpleOn;
+  static const grammarTrack = purpleTrack;
+  static const kanji = mint;
+  static const kanjiPressed = mintPressed;
+  static const kanjiContainer = mintContainer;
+  static const kanjiOn = mintOn;
+  static const kanjiTrack = mintTrack;
+  static const tabInactive = Color(0xFF9B928D);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBF6F4);
+  static const lightBackground = Color(0xFFFBFAF8);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
-  static const lightBorder = Color(0xFFEADFD9);
-  static const lightText = Color(0xFF2A2422);
-  static const lightSubtext = Color(0xFF6E635F);
+  static const lightBorder = Color(0xFFECE7E1);
+  static const lightBorderStrong = Color(0xFFE1DAD2);
+  static const lightText = Color(0xFF1F1B1A);
+  static const lightSubtext = Color(0xFF5A524E);
 
   // ─── Dark theme ──────────────────────────────────────────
   static const darkBackground = Color(0xFF1A1A2E);

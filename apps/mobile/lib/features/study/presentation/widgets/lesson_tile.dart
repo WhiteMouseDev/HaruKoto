@@ -26,21 +26,23 @@ class LessonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
+    final isLight = brightness == Brightness.light;
 
     final Color bgColor;
     final IconData iconData;
     final Color iconColor;
 
     if (isRecommended && lesson.status != 'COMPLETED') {
-      bgColor = AppColors.primaryStrong.withValues(alpha: 0.10);
+      bgColor =
+          isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
       iconData = lesson.status == 'IN_PROGRESS'
           ? LucideIcons.playCircle
           : LucideIcons.sparkles;
       iconColor = AppColors.primaryStrong;
     } else if (_isPerfect) {
-      bgColor = AppColors.primary.withValues(alpha: 0.14);
+      bgColor = AppColors.success(brightness).withValues(alpha: 0.10);
       iconData = LucideIcons.sparkles;
-      iconColor = AppColors.primaryStrong;
+      iconColor = AppColors.success(brightness);
     } else {
       switch (lesson.status) {
         case 'COMPLETED':
@@ -48,7 +50,9 @@ class LessonTile extends StatelessWidget {
           iconData = LucideIcons.checkCircle2;
           iconColor = AppColors.success(brightness);
         case 'IN_PROGRESS':
-          bgColor = AppColors.primary.withValues(alpha: 0.08);
+          bgColor = isLight
+              ? AppColors.neutralContainer.withValues(alpha: 0.58)
+              : theme.colorScheme.surfaceContainerHigh;
           iconData = LucideIcons.playCircle;
           iconColor = AppColors.primaryStrong;
         default:
@@ -68,9 +72,7 @@ class LessonTile extends StatelessWidget {
             color: bgColor,
             borderRadius: BorderRadius.circular(14),
             border: isRecommended && lesson.status != 'COMPLETED'
-                ? Border.all(
-                    color: AppColors.primaryStrong.withValues(alpha: 0.22),
-                  )
+                ? Border.all(color: AppColors.lightBorder)
                 : null,
           ),
           child: Row(
@@ -113,16 +115,14 @@ class LessonTile extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _isPerfect
-                        ? AppColors.primaryStrong.withValues(alpha: 0.14)
+                        ? AppColors.success(brightness).withValues(alpha: 0.12)
                         : AppColors.success(brightness).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
                     '${lesson.scoreCorrect}/${lesson.scoreTotal}',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: _isPerfect
-                          ? AppColors.primaryStrong
-                          : AppColors.success(brightness),
+                      color: AppColors.success(brightness),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

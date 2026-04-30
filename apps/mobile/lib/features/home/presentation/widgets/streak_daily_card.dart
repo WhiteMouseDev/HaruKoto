@@ -158,8 +158,11 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(LucideIcons.flame,
-                      size: 20, color: AppColors.hkRed(theme.brightness)),
+                  const Icon(
+                    LucideIcons.flame,
+                    size: 20,
+                    color: AppColors.streak,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${widget.streak.current}일 연속 학습',
@@ -386,8 +389,6 @@ class _StreakHeaderState extends State<_StreakHeader>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final brightness = theme.brightness;
-
     final text =
         widget.streak > 0 ? '${widget.streak}일째 연속 학습 중!' : '오늘 첫 학습을 시작해보세요!';
 
@@ -396,9 +397,9 @@ class _StreakHeaderState extends State<_StreakHeader>
       children: [
         ScaleTransition(
           scale: _scaleAnimation,
-          child: Icon(
+          child: const Icon(
             LucideIcons.flame,
-            color: AppColors.hkRed(brightness),
+            color: AppColors.streak,
             size: 20,
           ),
         ),
@@ -424,6 +425,8 @@ class _StreakWeek extends StatelessWidget {
     final theme = Theme.of(context);
     const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
     final todayStr = _formatDate(DateTime.now());
+    final inactiveDayColor = AppColors.streakContainer.withValues(alpha: 0.42);
+    final pastDayColor = AppColors.streakContainer.withValues(alpha: 0.3);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -438,30 +441,30 @@ class _StreakWeek extends StatelessWidget {
         Widget child;
 
         if (studied > 0) {
-          bgColor = theme.colorScheme.primary;
+          bgColor = AppColors.streak;
           child = const Icon(LucideIcons.check,
               color: AppColors.onGradient, size: 14);
         } else if (isToday) {
-          bgColor = theme.colorScheme.secondary;
-          child = Text(
+          bgColor = AppColors.streakContainer;
+          child = const Text(
             '-',
             style: TextStyle(
-              color: theme.colorScheme.primary,
+              color: AppColors.streak,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           );
         } else if (isPast) {
-          bgColor = theme.colorScheme.surfaceContainerHigh;
+          bgColor = pastDayColor;
           child = Text(
             '-',
             style: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+              color: AppColors.streak.withValues(alpha: 0.42),
               fontSize: 12,
             ),
           );
         } else {
-          bgColor = theme.colorScheme.secondary;
+          bgColor = inactiveDayColor;
           child = const SizedBox.shrink();
         }
 

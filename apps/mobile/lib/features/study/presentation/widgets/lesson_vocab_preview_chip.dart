@@ -31,11 +31,11 @@ class LessonVocabPreviewChip extends StatelessWidget {
           color: AppColors.lightCard,
           borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.25),
+            color: AppColors.sakura.withValues(alpha: 0.25),
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: AppColors.sakura.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -87,7 +87,7 @@ class LessonVocabPreviewChip extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.primaryStrong,
+                  color: AppColors.sakura,
                   fontSize: 11,
                   height: 1.2,
                 ),
@@ -128,7 +128,7 @@ class LessonVocabPreviewMoreChip extends StatelessWidget {
             color: AppColors.lightSecondary,
             borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.25),
+              color: AppColors.sakura.withValues(alpha: 0.25),
             ),
           ),
           child: Column(
@@ -137,7 +137,7 @@ class LessonVocabPreviewMoreChip extends StatelessWidget {
               Text(
                 '$remainingCount개',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primaryStrong,
+                  color: AppColors.sakura,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -186,7 +186,7 @@ class LessonVocabSheetRow extends StatelessWidget {
         color: AppColors.lightCard,
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          color: AppColors.sakura.withValues(alpha: 0.12),
         ),
       ),
       child: Row(
@@ -231,7 +231,7 @@ class LessonVocabSheetRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.right,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primaryStrong,
+                  color: AppColors.sakura,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -258,13 +258,13 @@ class LessonVocabCountPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: AppColors.sakuraTrack,
         borderRadius: BorderRadius.circular(AppSizes.radiusFull),
       ),
       child: Text(
         '총 $count개',
         style: theme.textTheme.labelSmall?.copyWith(
-          color: AppColors.primaryStrong,
+          color: AppColors.sakura,
           fontWeight: FontWeight.w700,
         ),
       ),

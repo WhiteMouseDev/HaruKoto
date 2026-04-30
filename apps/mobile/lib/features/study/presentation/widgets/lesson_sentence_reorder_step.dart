@@ -271,9 +271,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
               Text(
                 '선택 ${_selected.length}/$_correctTokenCount',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: _isFull
-                      ? AppColors.primaryStrong
-                      : AppColors.lightSubtext,
+                  color: _isFull ? AppColors.purple : AppColors.lightSubtext,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -335,7 +333,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
               child: ElevatedButton(
                 onPressed: (_isFull && !_submitting) ? _submit : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryStrong,
+                  backgroundColor: AppColors.sakura,
                   disabledBackgroundColor:
                       AppColors.lightBorder.withValues(alpha: 0.5),
                   shape: RoundedRectangleBorder(
@@ -394,18 +392,17 @@ class _AnswerToken extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 48),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
-            color: isHovered
-                ? AppColors.primaryStrong.withValues(alpha: 0.22)
-                : AppColors.primary.withValues(alpha: 0.12),
+            color:
+                isHovered ? AppColors.purpleContainer : AppColors.purpleTrack,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppColors.primaryStrong,
+              color: AppColors.purple,
               width: isHovered ? 2.0 : 1.5,
             ),
             boxShadow: isDragging
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: AppColors.purple.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -428,7 +425,7 @@ class _AnswerToken extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: const BoxDecoration(
-              color: AppColors.primaryStrong,
+              color: AppColors.purple,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
@@ -476,7 +473,7 @@ class _BankToken extends StatelessWidget {
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
+                      color: AppColors.purple.withValues(alpha: 0.08),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

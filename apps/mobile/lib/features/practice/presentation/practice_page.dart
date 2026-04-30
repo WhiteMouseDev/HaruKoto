@@ -24,6 +24,22 @@ enum _QuizCategory {
 
   /// Smart preview/start is available for vocabulary and grammar only
   bool get hasSmart => this == vocabulary || this == grammar;
+
+  Color get color => switch (this) {
+        vocabulary => AppColors.primaryStrong,
+        grammar => AppColors.grammar,
+        kanji => AppColors.kanji,
+        listening => AppColors.neutralOn,
+        sentenceArrange => AppColors.kanji,
+      };
+
+  Color get containerColor => switch (this) {
+        vocabulary => AppColors.primaryContainer,
+        grammar => AppColors.grammarContainer,
+        kanji => AppColors.kanjiContainer,
+        listening => AppColors.neutralContainer,
+        sentenceArrange => AppColors.kanjiContainer,
+      };
 }
 
 class PracticePage extends ConsumerStatefulWidget {
@@ -140,7 +156,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               const SizedBox(height: 8),
               _MenuListTile(
                 icon: LucideIcons.fileX,
-                iconColor: AppColors.primaryStrong,
+                iconColor: AppColors.error(theme.brightness),
                 label: '오답노트',
                 onTap: () => context.push('/study/wrong-answers'),
               ),
@@ -152,7 +168,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               ),
               _MenuListTile(
                 icon: LucideIcons.bookMarked,
-                iconColor: AppColors.primaryStrong,
+                iconColor: AppColors.neutralOn,
                 label: '단어장',
                 onTap: () => context.push('/study/wordbook'),
               ),
@@ -167,7 +183,9 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: theme.brightness == Brightness.light
+            ? AppColors.surfaceMuted
+            : theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(14),
       ),
       child: SingleChildScrollView(
@@ -187,7 +205,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.12),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -200,9 +218,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                     Icon(
                       cat.icon,
                       size: 16,
-                      color: isSelected
-                          ? AppColors.primaryStrong
-                          : AppColors.lightSubtext,
+                      color: isSelected ? cat.color : AppColors.lightSubtext,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -210,9 +226,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight:
                             isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected
-                            ? AppColors.primaryStrong
-                            : AppColors.lightSubtext,
+                        color: isSelected ? cat.color : AppColors.lightSubtext,
                       ),
                     ),
                   ],
@@ -243,6 +257,19 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final dailyGoal = preview?.dailyGoal ?? 20;
     final completedPct =
         dailyGoal > 0 ? (todayCompleted / dailyGoal).clamp(0.0, 1.0) : 0.0;
+    final actionColor =
+        hasIncomplete ? AppColors.primaryStrong : _selectedCategory.color;
+    final actionContainer = theme.brightness == Brightness.light
+        ? (hasIncomplete
+            ? AppColors.primaryContainer
+            : _selectedCategory.containerColor)
+        : theme.colorScheme.surfaceContainerHigh;
+    final cardColor = theme.brightness == Brightness.light
+        ? AppColors.cardWarm
+        : theme.colorScheme.surfaceContainerLow;
+    final borderColor = theme.brightness == Brightness.light
+        ? AppColors.lightBorder
+        : theme.colorScheme.outline;
 
     // CTA text based on category
     final ctaTitle =
@@ -278,25 +305,9 @@ class _PracticePageState extends ConsumerState<PracticePage> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: hasIncomplete
-                  ? [
-                      AppColors.primaryStrong.withValues(alpha: 0.14),
-                      AppColors.primary.withValues(alpha: 0.08),
-                    ]
-                  : [
-                      AppColors.primary.withValues(alpha: 0.10),
-                      AppColors.primary.withValues(alpha: 0.04),
-                    ],
-            ),
+            color: cardColor,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: hasIncomplete
-                  ? AppColors.primaryStrong.withValues(alpha: 0.3)
-                  : AppColors.primary.withValues(alpha: 0.2),
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             children: [
@@ -326,9 +337,8 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                         child: LinearProgressIndicator(
                           value: completedPct,
                           minHeight: 6,
-                          backgroundColor:
-                              AppColors.primary.withValues(alpha: 0.12),
-                          color: AppColors.primaryStrong,
+                          backgroundColor: AppColors.surfaceMuted,
+                          color: actionColor,
                         ),
                       ),
                     ],
@@ -340,7 +350,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.14),
+                  color: actionContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -348,7 +358,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                       ? LucideIcons.playCircle
                       : _selectedCategory.icon,
                   size: 24,
-                  color: AppColors.primaryStrong,
+                  color: actionColor,
                 ),
               ),
             ],

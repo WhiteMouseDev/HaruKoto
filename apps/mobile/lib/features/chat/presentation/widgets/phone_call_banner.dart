@@ -13,6 +13,7 @@ class PhoneCallBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isLight = theme.brightness == Brightness.light;
 
     return Material(
       color: Colors.transparent,
@@ -27,13 +28,19 @@ class PhoneCallBanner extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.primary.withValues(alpha: 0.05),
-                AppColors.primary.withValues(alpha: 0.15),
+                if (isLight)
+                  AppColors.sakuraTrack
+                else
+                  AppColors.sakura.withValues(alpha: 0.08),
+                if (isLight)
+                  AppColors.sakuraContainer
+                else
+                  AppColors.sakura.withValues(alpha: 0.18),
               ],
             ),
             borderRadius: BorderRadius.circular(AppSizes.cardRadius),
             border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.2),
+              color: AppColors.sakura.withValues(alpha: 0.24),
             ),
           ),
           child: Row(
@@ -42,11 +49,11 @@ class PhoneCallBanner extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: AppColors.sakura,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: AppColors.sakura.withValues(alpha: 0.3),
                       blurRadius: 8,
                     ),
                   ],
@@ -72,21 +79,23 @@ class PhoneCallBanner extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: isLight
+                                ? AppColors.purpleTrack
+                                : AppColors.purple.withValues(alpha: 0.18),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(LucideIcons.flaskConical,
-                                  size: 10, color: AppColors.primary),
+                                  size: 10, color: AppColors.purple),
                               SizedBox(width: 2),
                               Text(
                                 'Beta',
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
+                                  color: AppColors.purple,
                                 ),
                               ),
                             ],
@@ -104,7 +113,7 @@ class PhoneCallBanner extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(LucideIcons.phone, size: 20, color: AppColors.primary),
+              const Icon(LucideIcons.phone, size: 20, color: AppColors.sakura),
             ],
           ),
         ),

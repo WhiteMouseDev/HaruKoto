@@ -20,8 +20,8 @@ const _tabHeight = 72.0;
 
 const _tabBgColors = [
   AppColors.primary,
-  AppColors.primaryPressed,
-  AppColors.accentAlt,
+  AppColors.grammar,
+  AppColors.kanji,
 ];
 
 const _categories = [
@@ -30,18 +30,24 @@ const _categories = [
     quizType: 'vocabulary',
     ctaLabel: '오늘의 단어',
     title: '단어 학습',
+    color: AppColors.primary,
+    containerColor: AppColors.primaryContainer,
   ),
   _CategoryInfo(
     icon: LucideIcons.braces,
     quizType: 'grammar',
     ctaLabel: '오늘의 문법',
     title: '문법 학습',
+    color: AppColors.grammar,
+    containerColor: AppColors.grammarContainer,
   ),
   _CategoryInfo(
     icon: LucideIcons.alignLeft,
     quizType: 'sentence',
     ctaLabel: '오늘의 문장배열',
     title: '문장배열 학습',
+    color: AppColors.kanji,
+    containerColor: AppColors.kanjiContainer,
   ),
 ];
 
@@ -379,13 +385,13 @@ class _MainContent extends ConsumerWidget {
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                  color: cat.containerColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   cat.icon,
                   size: 36,
-                  color: theme.colorScheme.primary,
+                  color: cat.color,
                 ),
               ),
             ),
@@ -406,20 +412,20 @@ class _MainContent extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.checkCircle,
-                    size: 14, color: theme.colorScheme.primary),
+                const Icon(LucideIcons.checkCircle,
+                    size: 14, color: AppColors.neutralOn),
                 const SizedBox(width: 4),
                 Text(
                   hasProgress ? '복습 정답률 ${_getAccuracy(today)}%' : '복습 정답률 -%',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.primary,
+                    color: AppColors.neutralOn,
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
                 ),
                 const SizedBox(width: 2),
-                Icon(LucideIcons.chevronRight,
-                    size: 14, color: theme.colorScheme.primary),
+                const Icon(LucideIcons.chevronRight,
+                    size: 14, color: AppColors.neutralOn),
               ],
             ),
           ),
@@ -486,9 +492,8 @@ class _MainContent extends ConsumerWidget {
                   child: CustomPaint(
                     painter: _CircularProgressPainter(
                       progress: progressPct.clamp(0.0, 1.0),
-                      trackColor:
-                          theme.colorScheme.primary.withValues(alpha: 0.10),
-                      progressColor: theme.colorScheme.primary,
+                      trackColor: AppColors.surfaceMuted,
+                      progressColor: cat.color,
                       strokeWidth: 5,
                     ),
                     child: Center(
@@ -496,7 +501,7 @@ class _MainContent extends ConsumerWidget {
                         '${(progressPct * 100).toStringAsFixed(0)}%',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                          color: cat.color,
                         ),
                       ),
                     ),
@@ -735,10 +740,15 @@ class _CategoryInfo {
   final String quizType;
   final String ctaLabel;
   final String title;
+  final Color color;
+  final Color containerColor;
+
   const _CategoryInfo({
     required this.icon,
     required this.quizType,
     required this.ctaLabel,
     required this.title,
+    required this.color,
+    required this.containerColor,
   });
 }

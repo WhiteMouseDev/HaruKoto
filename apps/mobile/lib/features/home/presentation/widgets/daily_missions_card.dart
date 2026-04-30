@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../data/models/mission_model.dart';
 
 class DailyMissionsCard extends StatelessWidget {
@@ -20,18 +21,54 @@ class DailyMissionsCard extends StatelessWidget {
     };
   }
 
+  static _MissionVisualState _missionState(MissionModel mission) {
+    if (mission.rewardClaimed || mission.isCompleted) {
+      return _MissionVisualState.done;
+    }
+    if (mission.targetCount <= 0) {
+      return _MissionVisualState.locked;
+    }
+    return _MissionVisualState.inProgress;
+  }
+
+  static Color _missionAccent(_MissionVisualState state) {
+    return switch (state) {
+      _MissionVisualState.done => AppColors.missionDoneFg,
+      _MissionVisualState.inProgress => AppColors.missionInProgressFg,
+      _MissionVisualState.locked => AppColors.missionLockedFg,
+    };
+  }
+
+  static Color _missionContainer(_MissionVisualState state) {
+    return switch (state) {
+      _MissionVisualState.done => AppColors.missionDoneBg,
+      _MissionVisualState.inProgress => AppColors.missionInProgressBg,
+      _MissionVisualState.locked => AppColors.missionLockedBg,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final completedCount = missions.where((m) => m.rewardClaimed).length;
+    final completedCount = missions
+        .where(
+          (mission) =>
+              DailyMissionsCard._missionState(mission) ==
+              _MissionVisualState.done,
+        )
+        .length;
     final total = missions.length;
-    final allClaimed = total > 0 && completedCount == total;
+    final allCompleted = total > 0 && completedCount == total;
 
     // Sort: incomplete first, completed last
     final sorted = List<MissionModel>.from(missions)
       ..sort((a, b) {
-        if (a.rewardClaimed == b.rewardClaimed) return 0;
-        return a.rewardClaimed ? 1 : -1;
+        final aDone =
+            DailyMissionsCard._missionState(a) == _MissionVisualState.done;
+        final bDone =
+            DailyMissionsCard._missionState(b) == _MissionVisualState.done;
+        if (aDone == bDone) return 0;
+        return aDone ? 1 : -1;
       });
 
     return Padding(
@@ -75,28 +112,31 @@ class DailyMissionsCard extends StatelessWidget {
             ),
 
             // Completion banner
-            if (allClaimed) ...[
+            if (allCompleted) ...[
               const SizedBox(height: 12),
               Container(
                 width: double.infinity,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  color: AppColors.missionDoneBg,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(LucideIcons.checkCircle,
-                        size: 16, color: theme.colorScheme.primary),
-                    const SizedBox(width: 6),
+                    Icon(
+                      LucideIcons.checkCircle,
+                      size: 16,
+                      color: AppColors.missionDoneFg,
+                    ),
+                    SizedBox(width: 6),
                     Text(
                       '오늘의 미션을 모두 완료했어요!',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.primary,
+                        color: AppColors.missionDoneFg,
                       ),
                     ),
                   ],
@@ -122,6 +162,8 @@ class DailyMissionsCard extends StatelessWidget {
   }
 }
 
+enum _MissionVisualState { done, inProgress, locked }
+
 class _MissionItem extends StatelessWidget {
   final MissionModel mission;
 
@@ -130,6 +172,11 @@ class _MissionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final missionState = DailyMissionsCard._missionState(mission);
+    final missionAccent = DailyMissionsCard._missionAccent(missionState);
+    final missionContainer = DailyMissionsCard._missionContainer(missionState);
+    final isDone = missionState == _MissionVisualState.done;
+    final isLocked = missionState == _MissionVisualState.locked;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -147,18 +194,16 @@ class _MissionItem extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: mission.rewardClaimed
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.secondary,
+              color: missionContainer,
             ),
             child: Icon(
-              mission.rewardClaimed
+              isDone
                   ? LucideIcons.check
-                  : DailyMissionsCard._missionIcon(mission.missionType),
+                  : isLocked
+                      ? LucideIcons.lock
+                      : DailyMissionsCard._missionIcon(mission.missionType),
               size: 18,
-              color: mission.rewardClaimed
-                  ? Colors.white
-                  : theme.colorScheme.primary,
+              color: missionAccent,
             ),
           ),
           const SizedBox(width: 12),
@@ -170,33 +215,39 @@ class _MissionItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: mission.rewardClaimed
-                    ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                decoration:
-                    mission.rewardClaimed ? TextDecoration.lineThrough : null,
+                color: isDone
+                    ? AppColors.missionDoneFg.withValues(alpha: 0.78)
+                    : isLocked
+                        ? AppColors.missionLockedFg
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                decoration: isDone ? TextDecoration.lineThrough : null,
               ),
             ),
           ),
           const SizedBox(width: 8),
 
           // Right
-          if (mission.rewardClaimed)
+          if (isDone)
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.zap,
-                    size: 14, color: theme.colorScheme.primary),
+                Icon(LucideIcons.zap, size: 14, color: missionAccent),
                 const SizedBox(width: 2),
                 Text(
                   '+${mission.xpReward}',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+                    color: missionAccent,
                   ),
                 ),
               ],
+            )
+          else if (isLocked)
+            Icon(
+              LucideIcons.lock,
+              size: 16,
+              color: missionAccent,
             )
           else
             Text(
@@ -204,7 +255,7 @@ class _MissionItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                color: missionAccent,
               ),
             ),
         ],

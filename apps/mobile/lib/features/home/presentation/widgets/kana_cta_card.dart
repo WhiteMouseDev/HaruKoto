@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../shared/widgets/app_progress_bar.dart';
@@ -44,12 +45,12 @@ class KanaCtaCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.secondary,
+                      color: AppColors.sakuraContainer,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       LucideIcons.languages,
-                      color: theme.colorScheme.primary,
+                      color: AppColors.sakuraOn,
                       size: 24,
                     ),
                   ),
@@ -75,7 +76,7 @@ class KanaCtaCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         AppProgressBar(
                           value: progress,
-                          backgroundColor: theme.colorScheme.secondary,
+                          backgroundColor: AppColors.sakuraTrack,
                         ),
                       ],
                     ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/device_settings_provider.dart';
 import '../../../../core/providers/notification_settings_provider.dart';
@@ -44,8 +45,8 @@ class AppSettingsSection extends ConsumerWidget {
             children: [
               // Theme
               ListTile(
-                leading: Icon(LucideIcons.palette,
-                    size: 20, color: theme.colorScheme.primary),
+                leading: const Icon(LucideIcons.palette,
+                    size: 20, color: AppColors.purple),
                 title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
                 trailing: Text(
                   _themeModeLabel(themeMode),
@@ -60,8 +61,8 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Furigana
               SwitchListTile(
-                secondary: Icon(LucideIcons.languages,
-                    size: 20, color: theme.colorScheme.primary),
+                secondary: const Icon(LucideIcons.languages,
+                    size: 20, color: AppColors.mintPressed),
                 title:
                     const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
@@ -101,8 +102,8 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Study Reminder
               SwitchListTile(
-                secondary: Icon(LucideIcons.bell,
-                    size: 20, color: theme.colorScheme.primary),
+                secondary: const Icon(LucideIcons.bell,
+                    size: 20, color: AppColors.sakura),
                 title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
                   '매일 설정한 시간에 알림',
@@ -124,15 +125,15 @@ class AppSettingsSection extends ConsumerWidget {
               if (deviceSettings.reminderEnabled) ...[
                 const Divider(height: 1),
                 ListTile(
-                  leading: Icon(LucideIcons.clock,
-                      size: 20, color: theme.colorScheme.primary),
+                  leading: const Icon(LucideIcons.clock,
+                      size: 20, color: AppColors.sakura),
                   title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
                   trailing: Text(
                     deviceSettings.reminderTimeLabel,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.primary,
+                      color: AppColors.sakura,
                     ),
                   ),
                   onTap: () => _showTimePicker(context, ref),
@@ -142,8 +143,8 @@ class AppSettingsSection extends ConsumerWidget {
 
               // Streak Defense
               SwitchListTile(
-                secondary: Icon(LucideIcons.flame,
-                    size: 20, color: theme.colorScheme.primary),
+                secondary: const Icon(LucideIcons.flame,
+                    size: 20, color: AppColors.streak),
                 title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
                   '오늘 학습 미완료 시 22:00에 알림',
@@ -194,7 +195,7 @@ class AppSettingsSection extends ConsumerWidget {
               // AM/PM 선택 상태를 명확하게
               dayPeriodColor: WidgetStateColor.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return theme.colorScheme.primary;
+                  return AppColors.sakura;
                 }
                 return theme.colorScheme.surfaceContainerHigh;
               }),
@@ -275,8 +276,11 @@ class _SoundToggle extends ConsumerWidget {
     final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
     return SwitchListTile(
-      secondary:
-          Icon(LucideIcons.volume2, size: 20, color: theme.colorScheme.primary),
+      secondary: const Icon(
+        LucideIcons.volume2,
+        size: 20,
+        color: AppColors.mintPressed,
+      ),
       title: const Text('효과음', style: TextStyle(fontSize: 14)),
       subtitle: Text(
         '정답/오답 시 효과음 재생',
@@ -303,8 +307,11 @@ class _HapticToggle extends ConsumerWidget {
     final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
     return SwitchListTile(
-      secondary:
-          Icon(LucideIcons.vibrate, size: 20, color: theme.colorScheme.primary),
+      secondary: const Icon(
+        LucideIcons.vibrate,
+        size: 20,
+        color: AppColors.purple,
+      ),
       title: const Text('진동 피드백', style: TextStyle(fontSize: 14)),
       subtitle: Text(
         '터치 시 진동으로 반응',

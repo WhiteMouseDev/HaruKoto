@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/quiz_session_model.dart';
 import 'quiz_mode_selector.dart';
@@ -75,8 +76,12 @@ class _FreeQuizSummaryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     final isVocabulary = selectedType == 'VOCABULARY';
     final contentLabel = isVocabulary ? '단어' : '문법';
+    final accentColor = isVocabulary ? AppColors.sakura : AppColors.purple;
+    final accentBg =
+        isVocabulary ? AppColors.sakuraTrack : AppColors.purpleTrack;
 
     return Row(
       children: [
@@ -84,13 +89,15 @@ class _FreeQuizSummaryHeader extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            color: isLight
+                ? accentBg
+                : theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             isVocabulary ? LucideIcons.bookOpen : LucideIcons.languages,
             size: 20,
-            color: theme.colorScheme.primary,
+            color: isLight ? accentColor : theme.colorScheme.primary,
           ),
         ),
         const SizedBox(width: 12),
@@ -118,7 +125,9 @@ class _FreeQuizSummaryHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHigh,
+            color: isLight
+                ? AppColors.mintTrack
+                : theme.colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -139,6 +148,7 @@ class _FreeQuizProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
 
     return Column(
       children: [
@@ -165,8 +175,10 @@ class _FreeQuizProgress extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress / 100,
             minHeight: 8,
-            backgroundColor: theme.colorScheme.surfaceContainerHigh,
-            color: theme.colorScheme.primary,
+            backgroundColor: isLight
+                ? AppColors.sakuraTrack
+                : theme.colorScheme.surfaceContainerHigh,
+            color: isLight ? AppColors.sakura : theme.colorScheme.primary,
           ),
         ),
       ],
