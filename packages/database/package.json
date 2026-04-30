@@ -15,6 +15,8 @@
     "vocab:review:batch": "node scripts/prepare-vocab-manual-review-batches.mjs",
     "vocab:review:compile": "node scripts/compile-vocab-reviewed-final.mjs",
     "vocab:recorrect:priority": "node scripts/recorrect-priority-vocab-v3.mjs",
+    "curriculum:derive": "node scripts/derive-curriculum-topics.mjs",
+    "curriculum:validate": "node scripts/validate-curriculum-contracts.mjs",
     "lessons:validate": "node scripts/validate-lessons.mjs",
     "lessons:quality": "node scripts/lesson-quality-gate.mjs",
     "build": "prisma generate",

@@ -1,0 +1,2067 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "blueprints": [
+    {
+      "blueprintId": "qb-kana-hiragana",
+      "topicId": "topic-kana-hiragana",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "KANA_READING",
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "Kana 전용 문항 UI가 생기기 전까지는 기존 MCQ/CLOZE 호환 문항만 publish한다."
+    },
+    {
+      "blueprintId": "qb-personal-pronouns",
+      "topicId": "topic-personal-pronouns",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-demonstratives",
+      "topicId": "topic-demonstratives",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-desu-copula",
+      "topicId": "topic-desu-copula",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-nominal-negative",
+      "topicId": "topic-nominal-negative",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-basic-particles",
+      "topicId": "topic-basic-particles",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-greetings",
+      "topicId": "topic-greetings",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-numbers-and-counters",
+      "topicId": "topic-numbers-and-counters",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-time-and-weekdays",
+      "topicId": "topic-time-and-weekdays",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-onegai-shimasu",
+      "topicId": "topic-onegai-shimasu",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-sentence-final-yo",
+      "topicId": "topic-sentence-final-yo",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-sentence-final-ne",
+      "topicId": "topic-sentence-final-ne",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-kanji-reading-basics",
+      "topicId": "topic-kanji-reading-basics",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-i-adjectives",
+      "topicId": "topic-i-adjectives",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-i-adjective-nominalization",
+      "topicId": "topic-i-adjective-nominalization",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-na-attributive-linker",
+      "topicId": "topic-na-attributive-linker",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-na-adjectives",
+      "topicId": "topic-na-adjectives",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-kedo-contrast",
+      "topicId": "topic-kedo-contrast",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-verb-groups",
+      "topicId": "topic-verb-groups",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-polite-verb-forms",
+      "topicId": "topic-polite-verb-forms",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-aru-iru-existence",
+      "topicId": "topic-aru-iru-existence",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-polite-form-applications",
+      "topicId": "topic-polite-form-applications",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-particle-de",
+      "topicId": "topic-particle-de",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-nagara",
+      "topicId": "topic-nagara",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-sugiru",
+      "topicId": "topic-sugiru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-yasui-nikui",
+      "topicId": "topic-yasui-nikui",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-nasai",
+      "topicId": "topic-nasai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tai-desire",
+      "topicId": "topic-tai-desire",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-purpose-ni-iku",
+      "topicId": "topic-purpose-ni-iku",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-shi-reason-listing",
+      "topicId": "topic-shi-reason-listing",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-no-functions",
+      "topicId": "topic-no-functions",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-verb-connection-forms",
+      "topicId": "topic-verb-connection-forms",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-te-kudasai",
+      "topicId": "topic-te-kudasai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-miru",
+      "topicId": "topic-te-miru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-oku",
+      "topicId": "topic-te-oku",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-shimau",
+      "topicId": "topic-te-shimau",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-temo-ii",
+      "topicId": "topic-temo-ii",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tewa-ikenai",
+      "topicId": "topic-tewa-ikenai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-iru-progress-state",
+      "topicId": "topic-te-iru-progress-state",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-shiru-wakaru",
+      "topicId": "topic-shiru-wakaru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-hoshii",
+      "topicId": "topic-hoshii",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-tsuzukeru-compound-verbs",
+      "topicId": "topic-tsuzukeru-compound-verbs",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-iku-te-kuru",
+      "topicId": "topic-te-iku-te-kuru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-ageru",
+      "topicId": "topic-te-ageru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-kureru",
+      "topicId": "topic-te-kureru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-te-morau",
+      "topicId": "topic-te-morau",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-verb-past-forms",
+      "topicId": "topic-verb-past-forms",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tara-conditional",
+      "topicId": "topic-tara-conditional",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-ta-koto-ga-aru",
+      "topicId": "topic-ta-koto-ga-aru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-ta-bakari",
+      "topicId": "topic-ta-bakari",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-ta-hou-ga-ii",
+      "topicId": "topic-ta-hou-ga-ii",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tari-tari-suru",
+      "topicId": "topic-tari-tari-suru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-deshou",
+      "topicId": "topic-deshou",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-ku-naru-ni-naru",
+      "topicId": "topic-ku-naru-ni-naru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-sentence-final-wa",
+      "topicId": "topic-sentence-final-wa",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-nai-form",
+      "topicId": "topic-nai-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-naide-kudasai",
+      "topicId": "topic-naide-kudasai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-prohibitive-na",
+      "topicId": "topic-prohibitive-na",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-nakereba-naranai",
+      "topicId": "topic-nakereba-naranai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-kamoshirenai",
+      "topicId": "topic-kamoshirenai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-shika-nai",
+      "topicId": "topic-shika-nai",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-dake",
+      "topicId": "topic-dake",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-kara",
+      "topicId": "topic-kara",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-node",
+      "topicId": "topic-node",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-potential-form",
+      "topicId": "topic-potential-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-adjective-sa",
+      "topicId": "topic-adjective-sa",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-sentence-final-zo",
+      "topicId": "topic-sentence-final-zo",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-imperative-form",
+      "topicId": "topic-imperative-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-volitional-form",
+      "topicId": "topic-volitional-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-sentence-final-ze",
+      "topicId": "topic-sentence-final-ze",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-to-omou",
+      "topicId": "topic-to-omou",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-kana-particle",
+      "topicId": "topic-kana-particle",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-ni-suru",
+      "topicId": "topic-ni-suru",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-noni",
+      "topicId": "topic-noni",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-noda-ndesu",
+      "topicId": "topic-noda-ndesu",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-passive-form",
+      "topicId": "topic-passive-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-causative-form",
+      "topicId": "topic-causative-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-causative-passive-form",
+      "topicId": "topic-causative-passive-form",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tameni",
+      "topicId": "topic-tameni",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-to-conditional",
+      "topicId": "topic-to-conditional",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-toiu",
+      "topicId": "topic-toiu",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-toiu-mono-wa",
+      "topicId": "topic-toiu-mono-wa",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-to-quotation-or-condition",
+      "topicId": "topic-to-quotation-or-condition",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-ba-conditional",
+      "topicId": "topic-ba-conditional",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-nara-conditional",
+      "topicId": "topic-nara-conditional",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-tsumori",
+      "topicId": "topic-tsumori",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-souda-hearsay-appearance-a",
+      "topicId": "topic-souda-hearsay-appearance-a",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-souda-hearsay-appearance-b",
+      "topicId": "topic-souda-hearsay-appearance-b",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-youda",
+      "topicId": "topic-youda",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-rashii",
+      "topicId": "topic-rashii",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-kitto",
+      "topicId": "topic-kitto",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ"
+      ],
+      "notesKo": "어휘/읽기 topic은 기존 lesson runtime 호환 문항을 먼저 만들고 듣기는 draft로 둔다."
+    },
+    {
+      "blueprintId": "qb-bakari",
+      "topicId": "topic-bakari",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-casual-contractions",
+      "topicId": "topic-casual-contractions",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-toiu-ka",
+      "topicId": "topic-toiu-ka",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-mono-functions",
+      "topicId": "topic-mono-functions",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production",
+        "contrast"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "USAGE_CONTRAST"
+      ],
+      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+    },
+    {
+      "blueprintId": "qb-hazu-da",
+      "topicId": "topic-hazu-da",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "production"
+      ],
+      "minDraftQuestions": 5,
+      "audioRequired": false,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
+    },
+    {
+      "blueprintId": "qb-honorific-prefix-o-go",
+      "topicId": "topic-honorific-prefix-o-go",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    },
+    {
+      "blueprintId": "qb-keigo-sonkeigo-kenjougo",
+      "topicId": "topic-keigo-sonkeigo-kenjougo",
+      "recommendedQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE"
+      ],
+      "cognitiveLevels": [
+        "recognition",
+        "application",
+        "contrast",
+        "listening"
+      ],
+      "minDraftQuestions": 3,
+      "audioRequired": true,
+      "requiresOriginalExample": true,
+      "reviewStatus": "needs_review",
+      "draftFutureQuestionTypes": [
+        "LISTENING_MCQ",
+        "REGISTER_CHOICE"
+      ],
+      "notesKo": "회화/register topic은 맥락 선택과 듣기 문항이 필요하지만 현재 runtime에는 draft로만 둔다."
+    }
+  ]
+}

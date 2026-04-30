@@ -1544,6 +1544,209 @@
         ]
       }
     },
+    "/api/v1/admin/content/tts/review-batches": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Tts Review Batches",
+        "description": "Return generated TTS review/export batches without generating audio.",
+        "operationId": "get_tts_review_batches_api_v1_admin_content_tts_review_batches_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "review_surface",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "admin_existing_tts",
+                    "admin_extension_required"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Review Surface"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsReviewBatchListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/targets": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Tts Review Batch Targets",
+        "description": "Return ordered target metadata for one generated TTS review batch.",
+        "operationId": "get_tts_review_batch_targets_api_v1_admin_content_tts_review_batches__batch_id__targets_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsReviewBatchTargetsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/generation-plan": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Tts Review Generation Plan",
+        "description": "Dry-run whether a generated TTS review batch can use current admin TTS fields.",
+        "operationId": "get_tts_review_generation_plan_api_v1_admin_content_tts_review_batches__batch_id__generation_plan_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsReviewGenerationPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/execute-preview": {
+      "get": {
+        "tags": [
+          "admin-content"
+        ],
+        "summary": "Get Tts Review Execute Preview",
+        "description": "Resolve dry-run generation candidates to current DB rows without generating audio.",
+        "operationId": "get_tts_review_execute_preview_api_v1_admin_content_tts_review_batches__batch_id__execute_preview_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTtsReviewExecutePreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/content/review-queue/{content_type}": {
       "get": {
         "tags": [
@@ -6011,6 +6214,752 @@
           "provider"
         ],
         "title": "AdminTtsResponse"
+      },
+      "AdminTtsReviewBatchItem": {
+        "properties": {
+          "batchId": {
+            "type": "string",
+            "title": "Batchid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "approved"
+            ],
+            "title": "Status"
+          },
+          "reviewSurface": {
+            "type": "string",
+            "enum": [
+              "admin_existing_tts",
+              "admin_extension_required"
+            ],
+            "title": "Reviewsurface"
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "topic_vocabulary_fields",
+              "topic_grammar_fields",
+              "topic_grammar_question_prompts",
+              "topic_kana_fields",
+              "example_sentence_fields",
+              "seed_candidate_script_lines",
+              "seed_candidate_question_prompts"
+            ],
+            "title": "Sourcekind"
+          },
+          "targetIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targetids"
+          },
+          "targetCount": {
+            "type": "integer",
+            "title": "Targetcount"
+          },
+          "requiredBeforePublishCount": {
+            "type": "integer",
+            "title": "Requiredbeforepublishcount"
+          },
+          "generationStatusSummary": {
+            "$ref": "#/components/schemas/TtsGenerationStatusSummary"
+          },
+          "adminExport": {
+            "$ref": "#/components/schemas/AdminTtsReviewExportInfo"
+          },
+          "reviewerChecklist": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reviewerchecklist"
+          },
+          "notesKo": {
+            "type": "string",
+            "title": "Notesko"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batchId",
+          "status",
+          "reviewSurface",
+          "sourceKind",
+          "targetIds",
+          "targetCount",
+          "requiredBeforePublishCount",
+          "generationStatusSummary",
+          "adminExport",
+          "reviewerChecklist",
+          "notesKo"
+        ],
+        "title": "AdminTtsReviewBatchItem"
+      },
+      "AdminTtsReviewBatchListResponse": {
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "title": "Schemaversion"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "batches": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewBatchItem"
+            },
+            "type": "array",
+            "title": "Batches"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AdminTtsReviewBatchSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "status",
+          "batches",
+          "summary"
+        ],
+        "title": "AdminTtsReviewBatchListResponse"
+      },
+      "AdminTtsReviewBatchSummary": {
+        "properties": {
+          "totalBatches": {
+            "type": "integer",
+            "title": "Totalbatches"
+          },
+          "totalTargets": {
+            "type": "integer",
+            "title": "Totaltargets"
+          },
+          "adminReadyTargets": {
+            "type": "integer",
+            "title": "Adminreadytargets"
+          },
+          "extensionRequiredTargets": {
+            "type": "integer",
+            "title": "Extensionrequiredtargets"
+          },
+          "requiredBeforePublishTargets": {
+            "type": "integer",
+            "title": "Requiredbeforepublishtargets"
+          },
+          "generationStatusSummary": {
+            "$ref": "#/components/schemas/TtsGenerationStatusSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalBatches",
+          "totalTargets",
+          "adminReadyTargets",
+          "extensionRequiredTargets",
+          "requiredBeforePublishTargets",
+          "generationStatusSummary"
+        ],
+        "title": "AdminTtsReviewBatchSummary"
+      },
+      "AdminTtsReviewBatchTargetsResponse": {
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "title": "Schemaversion"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/AdminTtsReviewBatchItem"
+          },
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewTargetItem"
+            },
+            "type": "array",
+            "title": "Targets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "status",
+          "batch",
+          "targets"
+        ],
+        "title": "AdminTtsReviewBatchTargetsResponse"
+      },
+      "AdminTtsReviewExecutePreviewItem": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/AdminTtsReviewTargetItem"
+          },
+          "adminContentType": {
+            "type": "string",
+            "title": "Admincontenttype"
+          },
+          "adminField": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adminfield"
+          },
+          "lookupStatus": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "missing",
+              "ambiguous",
+              "not_lookup_ready",
+              "blocked"
+            ],
+            "title": "Lookupstatus"
+          },
+          "canGenerateWithCurrentService": {
+            "type": "boolean",
+            "title": "Cangeneratewithcurrentservice"
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdminTtsReviewGenerationPlanCandidate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contentItemId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contentitemid"
+          },
+          "contentLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contentlabel"
+          },
+          "notesKo": {
+            "type": "string",
+            "title": "Notesko"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target",
+          "adminContentType",
+          "adminField",
+          "lookupStatus",
+          "canGenerateWithCurrentService",
+          "candidate",
+          "notesKo"
+        ],
+        "title": "AdminTtsReviewExecutePreviewItem"
+      },
+      "AdminTtsReviewExecutePreviewResponse": {
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "title": "Schemaversion"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/AdminTtsReviewBatchItem"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AdminTtsReviewExecutePreviewSummary"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewExecutePreviewItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "status",
+          "batch",
+          "summary",
+          "items"
+        ],
+        "title": "AdminTtsReviewExecutePreviewResponse"
+      },
+      "AdminTtsReviewExecutePreviewSummary": {
+        "properties": {
+          "totalTargets": {
+            "type": "integer",
+            "title": "Totaltargets"
+          },
+          "resolvedTargets": {
+            "type": "integer",
+            "title": "Resolvedtargets"
+          },
+          "missingTargets": {
+            "type": "integer",
+            "title": "Missingtargets"
+          },
+          "ambiguousTargets": {
+            "type": "integer",
+            "title": "Ambiguoustargets"
+          },
+          "notLookupReadyTargets": {
+            "type": "integer",
+            "title": "Notlookupreadytargets"
+          },
+          "blockedTargets": {
+            "type": "integer",
+            "title": "Blockedtargets"
+          },
+          "generatableTargets": {
+            "type": "integer",
+            "title": "Generatabletargets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalTargets",
+          "resolvedTargets",
+          "missingTargets",
+          "ambiguousTargets",
+          "notLookupReadyTargets",
+          "blockedTargets",
+          "generatableTargets"
+        ],
+        "title": "AdminTtsReviewExecutePreviewSummary"
+      },
+      "AdminTtsReviewExportInfo": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "existing_admin_tts_fields",
+              "requires_admin_extension"
+            ],
+            "title": "Mode"
+          },
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "vocabulary",
+              "grammar",
+              "kana",
+              "example_sentence_pool",
+              "lesson_seed_candidate"
+            ],
+            "title": "Contenttype"
+          },
+          "fieldMappings": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewFieldMapping"
+            },
+            "type": "array",
+            "title": "Fieldmappings"
+          },
+          "blockers": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin_tts_field_gap",
+                "admin_content_type_gap",
+                "lesson_seed_admin_surface_gap"
+              ]
+            },
+            "type": "array",
+            "title": "Blockers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "contentType",
+          "fieldMappings",
+          "blockers"
+        ],
+        "title": "AdminTtsReviewExportInfo"
+      },
+      "AdminTtsReviewFieldMapping": {
+        "properties": {
+          "audioField": {
+            "type": "string",
+            "enum": [
+              "word",
+              "reading",
+              "japanese",
+              "pattern",
+              "example_sentence",
+              "script_line",
+              "question_prompt"
+            ],
+            "title": "Audiofield"
+          },
+          "adminField": {
+            "type": "string",
+            "title": "Adminfield"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audioField",
+          "adminField"
+        ],
+        "title": "AdminTtsReviewFieldMapping"
+      },
+      "AdminTtsReviewGenerationPlanCandidate": {
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "vocabulary",
+              "grammar"
+            ],
+            "title": "Contenttype"
+          },
+          "lookupType": {
+            "type": "string",
+            "enum": [
+              "topic_id",
+              "grammar_level_order",
+              "vocabulary_level_order"
+            ],
+            "title": "Lookuptype"
+          },
+          "topicId": {
+            "type": "string",
+            "title": "Topicid"
+          },
+          "adminField": {
+            "type": "string",
+            "title": "Adminfield"
+          },
+          "jlptLevel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jlptlevel"
+          },
+          "grammarOrder": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grammarorder"
+          },
+          "vocabularyOrder": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vocabularyorder"
+          },
+          "matchType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "exact",
+                  "partial",
+                  "related"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matchtype"
+          },
+          "noteKo": {
+            "type": "string",
+            "title": "Noteko"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contentType",
+          "lookupType",
+          "topicId",
+          "adminField",
+          "noteKo"
+        ],
+        "title": "AdminTtsReviewGenerationPlanCandidate"
+      },
+      "AdminTtsReviewGenerationPlanItem": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/AdminTtsReviewTargetItem"
+          },
+          "adminContentType": {
+            "type": "string",
+            "title": "Admincontenttype"
+          },
+          "adminField": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adminfield"
+          },
+          "operationStatus": {
+            "type": "string",
+            "enum": [
+              "ready_after_db_lookup",
+              "manual_mapping_required",
+              "blocked"
+            ],
+            "title": "Operationstatus"
+          },
+          "existingAdminTtsSupported": {
+            "type": "boolean",
+            "title": "Existingadminttssupported"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewGenerationPlanCandidate"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "blockerCodes": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin_extension_required",
+                "unsupported_admin_tts_field",
+                "missing_admin_field_mapping",
+                "topic_vocabulary_mapping_required",
+                "ambiguous_or_partial_vocabulary_mapping",
+                "topic_grammar_mapping_required",
+                "ambiguous_or_partial_grammar_mapping"
+              ]
+            },
+            "type": "array",
+            "title": "Blockercodes"
+          },
+          "notesKo": {
+            "type": "string",
+            "title": "Notesko"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target",
+          "adminContentType",
+          "adminField",
+          "operationStatus",
+          "existingAdminTtsSupported",
+          "candidates",
+          "blockerCodes",
+          "notesKo"
+        ],
+        "title": "AdminTtsReviewGenerationPlanItem"
+      },
+      "AdminTtsReviewGenerationPlanResponse": {
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "title": "Schemaversion"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/AdminTtsReviewBatchItem"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AdminTtsReviewGenerationPlanSummary"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminTtsReviewGenerationPlanItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "status",
+          "batch",
+          "summary",
+          "items"
+        ],
+        "title": "AdminTtsReviewGenerationPlanResponse"
+      },
+      "AdminTtsReviewGenerationPlanSummary": {
+        "properties": {
+          "totalTargets": {
+            "type": "integer",
+            "title": "Totaltargets"
+          },
+          "supportedTargets": {
+            "type": "integer",
+            "title": "Supportedtargets"
+          },
+          "readyAfterDbLookupTargets": {
+            "type": "integer",
+            "title": "Readyafterdblookuptargets"
+          },
+          "manualMappingRequiredTargets": {
+            "type": "integer",
+            "title": "Manualmappingrequiredtargets"
+          },
+          "blockedTargets": {
+            "type": "integer",
+            "title": "Blockedtargets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalTargets",
+          "supportedTargets",
+          "readyAfterDbLookupTargets",
+          "manualMappingRequiredTargets",
+          "blockedTargets"
+        ],
+        "title": "AdminTtsReviewGenerationPlanSummary"
+      },
+      "AdminTtsReviewTargetItem": {
+        "properties": {
+          "targetId": {
+            "type": "string",
+            "title": "Targetid"
+          },
+          "topicId": {
+            "type": "string",
+            "title": "Topicid"
+          },
+          "audioTargetType": {
+            "type": "string",
+            "enum": [
+              "vocabulary",
+              "grammar",
+              "kana",
+              "lesson_script",
+              "example_sentence",
+              "question_prompt"
+            ],
+            "title": "Audiotargettype"
+          },
+          "audioField": {
+            "type": "string",
+            "enum": [
+              "word",
+              "reading",
+              "japanese",
+              "pattern",
+              "example_sentence",
+              "script_line",
+              "question_prompt"
+            ],
+            "title": "Audiofield"
+          },
+          "textSource": {
+            "type": "string",
+            "title": "Textsource"
+          },
+          "defaultSpeed": {
+            "type": "number",
+            "title": "Defaultspeed"
+          },
+          "requiredBeforePublish": {
+            "type": "boolean",
+            "title": "Requiredbeforepublish"
+          },
+          "preferredVoiceId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferredvoiceid"
+          },
+          "generationStatus": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "generated",
+              "approved",
+              "rejected",
+              "stale"
+            ],
+            "title": "Generationstatus"
+          },
+          "cacheKeyStrategy": {
+            "type": "string",
+            "const": "provider-model-speed-field-text-hash-v1",
+            "title": "Cachekeystrategy"
+          },
+          "notesKo": {
+            "type": "string",
+            "title": "Notesko"
+          }
+        },
+        "type": "object",
+        "required": [
+          "targetId",
+          "topicId",
+          "audioTargetType",
+          "audioField",
+          "textSource",
+          "defaultSpeed",
+          "requiredBeforePublish",
+          "generationStatus",
+          "cacheKeyStrategy",
+          "notesKo"
+        ],
+        "title": "AdminTtsReviewTargetItem"
       },
       "AiUsageInfo": {
         "properties": {
@@ -11181,6 +12130,39 @@
           "goalProgress"
         ],
         "title": "TodayStats"
+      },
+      "TtsGenerationStatusSummary": {
+        "properties": {
+          "missing": {
+            "type": "integer",
+            "title": "Missing"
+          },
+          "generated": {
+            "type": "integer",
+            "title": "Generated"
+          },
+          "approved": {
+            "type": "integer",
+            "title": "Approved"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "stale": {
+            "type": "integer",
+            "title": "Stale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "missing",
+          "generated",
+          "approved",
+          "rejected",
+          "stale"
+        ],
+        "title": "TtsGenerationStatusSummary"
       },
       "UserGoal": {
         "type": "string",

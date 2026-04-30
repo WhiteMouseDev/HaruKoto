@@ -4,6 +4,7 @@ import {
   BookOpen,
   BookMarked,
   HelpCircle,
+  Headphones,
   MessageSquare,
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
@@ -51,6 +52,11 @@ export async function Sidebar({ user, locale }: { user: User; locale: string }) 
       icon: <MessageSquare className="size-4 shrink-0" />,
       label: t('conversation'),
       contentTypeKey: 'conversation',
+    },
+    {
+      href: '/tts-review',
+      icon: <Headphones className="size-4 shrink-0" />,
+      label: t('ttsReview'),
     },
   ];
 

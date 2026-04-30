@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "mappings": [
+    {
+      "topicId": "topic-personal-pronouns",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 605,
+      "matchType": "partial",
+      "notesKo": "PDF 006 인칭대명사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-personal-pronouns",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 211,
+      "matchType": "partial",
+      "notesKo": "PDF 006 인칭대명사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-numbers-and-counters",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 228,
+      "matchType": "partial",
+      "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-numbers-and-counters",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 486,
+      "matchType": "partial",
+      "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-numbers-and-counters",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 374,
+      "matchType": "partial",
+      "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-numbers-and-counters",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 409,
+      "matchType": "partial",
+      "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-numbers-and-counters",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 410,
+      "matchType": "partial",
+      "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 15,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 16,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 17,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 18,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 23,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 24,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 301,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 325,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 335,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 395,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 470,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 490,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-time-and-weekdays",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 572,
+      "matchType": "partial",
+      "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-kanji-reading-basics",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 309,
+      "matchType": "exact",
+      "notesKo": "PDF 017 한자 읽는 법 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-shiru-wakaru",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 393,
+      "matchType": "partial",
+      "notesKo": "PDF 044 알다 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-shiru-wakaru",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 122,
+      "matchType": "partial",
+      "notesKo": "PDF 044 알다 vocabulary coverage anchor"
+    },
+    {
+      "topicId": "topic-kitto",
+      "vocabularyLevel": "N5",
+      "vocabularyOrder": 189,
+      "matchType": "related",
+      "notesKo": "PDF 095 きっと vocabulary coverage anchor"
+    }
+  ]
+}

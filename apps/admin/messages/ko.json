@@ -30,7 +30,8 @@
     "vocabulary": "단어",
     "grammar": "문법",
     "quiz": "퀴즈",
-    "conversation": "회화"
+    "conversation": "회화",
+    "ttsReview": "TTS 검토"
   },
   "filter": {
     "searchPlaceholder": "검색...",
@@ -83,7 +84,8 @@
     "vocabulary": "단어 목록",
     "grammar": "문법 목록",
     "quiz": "퀴즈 목록",
-    "conversation": "회화 시나리오 목록"
+    "conversation": "회화 시나리오 목록",
+    "ttsReview": "TTS 검토"
   },
   "locale": {
     "label": "언어",
@@ -196,6 +198,111 @@
       "japaneseSentence": "일본어 문장",
       "situation": "상황",
       "exampleSentences": "예문"
+    }
+  },
+  "ttsReview": {
+    "title": "TTS 검토 배치",
+    "subtitle": "커리큘럼 음성 대상을 현재 관리자 필드와 확장 필요 항목으로 구분합니다.",
+    "refresh": "새로고침",
+    "error": "TTS 검토 배치를 불러오지 못했습니다.",
+    "filter": {
+      "all": "전체",
+      "adminExisting": "현재 지원",
+      "adminExtension": "확장 필요"
+    },
+    "summary": {
+      "totalTargets": "전체 대상",
+      "adminReadyTargets": "현재 생성 가능",
+      "extensionRequiredTargets": "확장 필요 대상",
+      "extensionBatches": "확장 필요 배치"
+    },
+    "table": {
+      "batch": "배치",
+      "surface": "검토 경로",
+      "targets": "대상",
+      "required": "필수",
+      "missing": "미생성",
+      "blockers": "차단 사유",
+      "actions": "작업",
+      "noBlockers": "차단 없음",
+      "viewTargets": "대상 보기"
+    },
+    "targetPanel": {
+      "count": "{count}개 대상",
+      "error": "TTS 대상 목록을 불러오지 못했습니다."
+    },
+    "targetTable": {
+      "target": "대상",
+      "type": "유형",
+      "field": "필드",
+      "speed": "속도",
+      "status": "상태",
+      "plan": "생성 계획",
+      "lookup": "DB 조회",
+      "source": "소스"
+    },
+    "target": {
+      "required": "필수",
+      "optional": "선택"
+    },
+    "audioTargetType": {
+      "vocabulary": "어휘",
+      "grammar": "문법",
+      "kana": "가나",
+      "lessonScript": "Lesson script",
+      "exampleSentence": "예문",
+      "questionPrompt": "문항 프롬프트"
+    },
+    "audioField": {
+      "word": "단어",
+      "reading": "읽기",
+      "japanese": "일본어",
+      "pattern": "패턴",
+      "exampleSentence": "예문",
+      "scriptLine": "대화문",
+      "questionPrompt": "문항 프롬프트"
+    },
+    "generationStatus": {
+      "missing": "미생성",
+      "generated": "생성됨",
+      "approved": "승인됨",
+      "rejected": "반려됨",
+      "stale": "갱신 필요"
+    },
+    "generationPlan": {
+      "ready_after_db_lookup": "DB 조회 후 가능",
+      "manual_mapping_required": "수동 매핑 필요",
+      "blocked": "차단됨",
+      "loading": "확인 중",
+      "candidates": "후보 {count}개",
+      "summary": "가능 {ready} · 매핑 {manual} · 차단 {blocked}"
+    },
+    "executePreview": {
+      "resolved": "DB 연결됨",
+      "missing": "DB 누락",
+      "ambiguous": "중복 후보",
+      "not_lookup_ready": "매핑 대기",
+      "blocked": "차단됨",
+      "loading": "확인 중",
+      "summary": "DB 연결 {resolved} · 생성 가능 {generatable}"
+    },
+    "surface": {
+      "adminExisting": "현재 관리자 TTS",
+      "adminExtension": "관리자 확장 필요"
+    },
+    "sourceKind": {
+      "topicVocabularyFields": "어휘 필드",
+      "topicGrammarFields": "문법 필드",
+      "topicGrammarQuestionPrompts": "문법 질문 프롬프트",
+      "topicKanaFields": "가나 필드",
+      "exampleSentenceFields": "예문 필드",
+      "seedCandidateScriptLines": "Seed 대화문",
+      "seedCandidateQuestionPrompts": "Seed 문항 프롬프트"
+    },
+    "blocker": {
+      "adminTtsFieldGap": "관리자 TTS 필드 필요",
+      "adminContentTypeGap": "관리자 콘텐츠 타입 필요",
+      "lessonSeedAdminSurfaceGap": "Lesson seed 검토 화면 필요"
     }
   },
   "validation": {

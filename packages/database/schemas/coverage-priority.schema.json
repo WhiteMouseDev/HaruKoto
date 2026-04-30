@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/coverage-priority.schema.json",
+  "title": "Coverage Priorities",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "priorities"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "priorities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "priorityId",
+          "topicId",
+          "track",
+          "priority",
+          "recommendedWave",
+          "coverageStatus",
+          "rationaleKo",
+          "blockers",
+          "targetLessonBlueprintIds"
+        ],
+        "properties": {
+          "priorityId": {
+            "type": "string",
+            "pattern": "^priority-[a-z0-9][a-z0-9-]*$"
+          },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "track": {
+            "enum": [
+              "ABSOLUTE_ZERO_FOUNDATION",
+              "N5_REINFORCEMENT",
+              "N4_FOUNDATION",
+              "N3_PLUS_EXTENSION",
+              "CONVERSATION_REGISTER",
+              "BUSINESS_KEIGO"
+            ]
+          },
+          "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+          "recommendedWave": {
+            "enum": [
+              "WAVE_1_N5_PATCH",
+              "WAVE_2_N4_FOUNDATION",
+              "WAVE_3_N3_PLUS",
+              "WAVE_4_REGISTER_BUSINESS"
+            ]
+          },
+          "coverageStatus": {
+            "enum": ["covered", "partial", "missing", "deferred"]
+          },
+          "rationaleKo": { "type": "string", "minLength": 1 },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "needs_original_examples",
+                "needs_lesson_slot",
+                "needs_runtime_support",
+                "needs_tts_decision",
+                "needs_human_review"
+              ]
+            }
+          },
+          "targetLessonBlueprintIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ldb-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "notesKo": { "type": "string" }
+        }
+      }
+    }
+  }
+}

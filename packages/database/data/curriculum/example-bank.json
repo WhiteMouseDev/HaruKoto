@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "examples": [
+    {
+      "exampleId": "ex-kana-hiragana-001",
+      "topicId": "topic-kana-hiragana",
+      "jlptLevel": "ABSOLUTE_ZERO",
+      "japanese": "あいうえおをゆっくり読みます。",
+      "reading": "あいうえおをゆっくりよみます。",
+      "korean": "あいうえお를 천천히 읽습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["kana", "pronunciation", "starter"],
+      "notesKo": "가나 발음 학습용 신규 예문.",
+      "audio": {
+        "audioTargetType": "kana",
+        "audioField": "japanese",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-personal-pronouns-001",
+      "topicId": "topic-personal-pronouns",
+      "jlptLevel": "N5",
+      "japanese": "私は会社員です。弟は学生です。",
+      "reading": "わたしはかいしゃいんです。おとうとはがくせいです。",
+      "korean": "저는 회사원입니다. 남동생은 학생입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["pronouns", "self-introduction", "n5"],
+      "notesKo": "한국어 화자가 자기소개에서 바로 쓰는 맥락.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-demonstratives-001",
+      "topicId": "topic-demonstratives",
+      "jlptLevel": "N5",
+      "japanese": "その本は先生の本です。",
+      "reading": "そのほんはせんせいのほんです。",
+      "korean": "그 책은 선생님의 책입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["demonstratives", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-desu-copula-001",
+      "topicId": "topic-desu-copula",
+      "jlptLevel": "N5",
+      "japanese": "ここは日本語の教室です。",
+      "reading": "ここはにほんごのきょうしつです。",
+      "korean": "여기는 일본어 교실입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["desu", "classroom", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-nominal-negative-001",
+      "topicId": "topic-nominal-negative",
+      "jlptLevel": "N5",
+      "japanese": "これは私のかばんではありません。",
+      "reading": "これはわたしのかばんではありません。",
+      "korean": "이것은 제 가방이 아닙니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["negative", "desu", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-basic-particles-001",
+      "topicId": "topic-basic-particles",
+      "jlptLevel": "N5",
+      "japanese": "私は駅で友だちを待ちます。",
+      "reading": "わたしはえきでともだちをまちます。",
+      "korean": "저는 역에서 친구를 기다립니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["particles", "wa", "de", "wo", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-greetings-001",
+      "topicId": "topic-greetings",
+      "jlptLevel": "N5",
+      "japanese": "おはようございます。今日もよろしくお願いします。",
+      "reading": "おはようございます。きょうもよろしくおねがいします。",
+      "korean": "좋은 아침입니다. 오늘도 잘 부탁드립니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["greetings", "conversation", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-numbers-and-counters-001",
+      "topicId": "topic-numbers-and-counters",
+      "jlptLevel": "N5",
+      "japanese": "りんごを二つ買いました。",
+      "reading": "りんごをふたつかいました。",
+      "korean": "사과를 두 개 샀습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["numbers", "counters", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-time-and-weekdays-001",
+      "topicId": "topic-time-and-weekdays",
+      "jlptLevel": "N5",
+      "japanese": "水曜日の三時に会います。",
+      "reading": "すいようびのさんじにあいます。",
+      "korean": "수요일 세 시에 만납니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["time", "weekday", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-onegai-shimasu-001",
+      "topicId": "topic-onegai-shimasu",
+      "jlptLevel": "N5",
+      "japanese": "この紙を一枚お願いします。",
+      "reading": "このかみをいちまいおねがいします。",
+      "korean": "이 종이를 한 장 부탁드립니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["request", "conversation", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-sentence-final-yo-001",
+      "topicId": "topic-sentence-final-yo",
+      "jlptLevel": "N5",
+      "japanese": "駅はあちらですよ。",
+      "reading": "えきはあちらですよ。",
+      "korean": "역은 저쪽이에요.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["sentence-final-particle", "yo", "conversation"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-sentence-final-ne-001",
+      "topicId": "topic-sentence-final-ne",
+      "jlptLevel": "N5",
+      "japanese": "今日は少し寒いですね。",
+      "reading": "きょうはすこしさむいですね。",
+      "korean": "오늘은 조금 춥네요.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["sentence-final-particle", "ne", "conversation"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-kanji-reading-basics-001",
+      "topicId": "topic-kanji-reading-basics",
+      "jlptLevel": "N5",
+      "japanese": "山の読み方は「やま」です。",
+      "reading": "やまのよみかたは「やま」です。",
+      "korean": "山의 읽는 법은 'やま'입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["kanji", "reading", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-i-adjectives-001",
+      "topicId": "topic-i-adjectives",
+      "jlptLevel": "N5",
+      "japanese": "新しいノートを買いました。",
+      "reading": "あたらしいノートをかいました。",
+      "korean": "새 공책을 샀습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["i-adjective", "noun-modifier", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-na-adjectives-001",
+      "topicId": "topic-na-adjectives",
+      "jlptLevel": "N5",
+      "japanese": "静かな部屋で勉強します。",
+      "reading": "しずかなへやでべんきょうします。",
+      "korean": "조용한 방에서 공부합니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["na-adjective", "noun-modifier", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-aru-iru-existence-001",
+      "topicId": "topic-aru-iru-existence",
+      "jlptLevel": "N5",
+      "japanese": "机の上にペンがあります。",
+      "reading": "つくえのうえにペンがあります。",
+      "korean": "책상 위에 펜이 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["existence", "aru", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-verb-groups-001",
+      "topicId": "topic-verb-groups",
+      "jlptLevel": "N5",
+      "japanese": "私は朝、パンを食べます。友だちは水を飲みます。",
+      "reading": "わたしはあさ、パンをたべます。ともだちはみずをのみます。",
+      "korean": "저는 아침에 빵을 먹습니다. 친구는 물을 마십니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["verb-groups", "masu-form", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-polite-form-applications-001",
+      "topicId": "topic-polite-form-applications",
+      "jlptLevel": "N5",
+      "japanese": "昼に図書館へ勉強しに行きましょう。",
+      "reading": "ひるにとしょかんへべんきょうしにいきましょう。",
+      "korean": "점심에 도서관에 공부하러 갑시다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["polite-form", "mashou", "purpose", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-no-functions-001",
+      "topicId": "topic-no-functions",
+      "jlptLevel": "N5",
+      "japanese": "映画を見るのが好きです。",
+      "reading": "えいがをみるのがすきです。",
+      "korean": "영화를 보는 것을 좋아합니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["nominalizer", "no", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-verb-connection-forms-001",
+      "topicId": "topic-verb-connection-forms",
+      "jlptLevel": "N5",
+      "japanese": "名前を書いて、友だちを待ちます。",
+      "reading": "なまえをかいて、ともだちをまちます。",
+      "korean": "이름을 쓰고 친구를 기다립니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["te-form", "connection", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-te-iru-progress-state-001",
+      "topicId": "topic-te-iru-progress-state",
+      "jlptLevel": "N5",
+      "japanese": "キムさんは今、本を読んでいます。",
+      "reading": "キムさんはいま、ほんをよんでいます。",
+      "korean": "김 씨는 지금 책을 읽고 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["te-iru", "progress", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-shiru-wakaru-001",
+      "topicId": "topic-shiru-wakaru",
+      "jlptLevel": "N5",
+      "japanese": "この言葉の意味が分かります。",
+      "reading": "このことばのいみがわかります。",
+      "korean": "이 단어의 뜻을 압니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["know", "wakaru", "vocabulary", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-hoshii-001",
+      "topicId": "topic-hoshii",
+      "jlptLevel": "N5",
+      "japanese": "新しいノートが欲しいです。",
+      "reading": "あたらしいノートがほしいです。",
+      "korean": "새 노트를 갖고 싶습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["desire", "hoshii", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-ku-naru-ni-naru-001",
+      "topicId": "topic-ku-naru-ni-naru",
+      "jlptLevel": "N5",
+      "japanese": "朝は寒くなって、部屋は静かになりました。",
+      "reading": "あさはさむくなって、へやはしずかになりました。",
+      "korean": "아침은 추워졌고, 방은 조용해졌습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["change", "adjective", "naru", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-dake-001",
+      "topicId": "topic-dake",
+      "jlptLevel": "N5",
+      "japanese": "今日は水だけ飲みます。",
+      "reading": "きょうはみずだけのみます。",
+      "korean": "오늘은 물만 마십니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["limitation", "dake", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-ni-suru-001",
+      "topicId": "topic-ni-suru",
+      "jlptLevel": "N5",
+      "japanese": "私はお茶にします。",
+      "reading": "わたしはおちゃにします。",
+      "korean": "저는 차로 하겠습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["choice", "ni-suru", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-toiu-001",
+      "topicId": "topic-toiu",
+      "jlptLevel": "N5",
+      "japanese": "これは春という言葉です。",
+      "reading": "これははるということばです。",
+      "korean": "이것은 봄이라는 단어입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": ["definition", "toiu", "n5"],
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    }
+  ]
+}

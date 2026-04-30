@@ -30,7 +30,8 @@
     "vocabulary": "単語",
     "grammar": "文法",
     "quiz": "クイズ",
-    "conversation": "会話"
+    "conversation": "会話",
+    "ttsReview": "TTS確認"
   },
   "filter": {
     "searchPlaceholder": "検索...",
@@ -83,7 +84,8 @@
     "vocabulary": "単語一覧",
     "grammar": "文法一覧",
     "quiz": "クイズ一覧",
-    "conversation": "会話シナリオ一覧"
+    "conversation": "会話シナリオ一覧",
+    "ttsReview": "TTS確認"
   },
   "locale": {
     "label": "言語",
@@ -196,6 +198,111 @@
       "japaneseSentence": "日本語文",
       "situation": "シチュエーション",
       "exampleSentences": "例文"
+    }
+  },
+  "ttsReview": {
+    "title": "TTS確認バッチ",
+    "subtitle": "カリキュラム音声対象を現在の管理者フィールドと拡張が必要な項目に分けます。",
+    "refresh": "再読み込み",
+    "error": "TTS確認バッチの読み込みに失敗しました。",
+    "filter": {
+      "all": "すべて",
+      "adminExisting": "現在対応",
+      "adminExtension": "拡張必要"
+    },
+    "summary": {
+      "totalTargets": "全対象",
+      "adminReadyTargets": "現在生成可能",
+      "extensionRequiredTargets": "拡張必要対象",
+      "extensionBatches": "拡張必要バッチ"
+    },
+    "table": {
+      "batch": "バッチ",
+      "surface": "確認経路",
+      "targets": "対象",
+      "required": "必須",
+      "missing": "未生成",
+      "blockers": "ブロッカー",
+      "actions": "操作",
+      "noBlockers": "ブロッカーなし",
+      "viewTargets": "対象を見る"
+    },
+    "targetPanel": {
+      "count": "{count}件の対象",
+      "error": "TTS対象の読み込みに失敗しました。"
+    },
+    "targetTable": {
+      "target": "対象",
+      "type": "種類",
+      "field": "フィールド",
+      "speed": "速度",
+      "status": "状態",
+      "plan": "生成計画",
+      "lookup": "DB検索",
+      "source": "ソース"
+    },
+    "target": {
+      "required": "必須",
+      "optional": "任意"
+    },
+    "audioTargetType": {
+      "vocabulary": "語彙",
+      "grammar": "文法",
+      "kana": "かな",
+      "lessonScript": "Lesson script",
+      "exampleSentence": "例文",
+      "questionPrompt": "問題プロンプト"
+    },
+    "audioField": {
+      "word": "単語",
+      "reading": "読み",
+      "japanese": "日本語",
+      "pattern": "パターン",
+      "exampleSentence": "例文",
+      "scriptLine": "会話文",
+      "questionPrompt": "問題プロンプト"
+    },
+    "generationStatus": {
+      "missing": "未生成",
+      "generated": "生成済み",
+      "approved": "承認済み",
+      "rejected": "差し戻し",
+      "stale": "更新必要"
+    },
+    "generationPlan": {
+      "ready_after_db_lookup": "DB検索後に可能",
+      "manual_mapping_required": "手動マッピング必要",
+      "blocked": "ブロック中",
+      "loading": "確認中",
+      "candidates": "候補 {count}件",
+      "summary": "可能 {ready} · マッピング {manual} · ブロック {blocked}"
+    },
+    "executePreview": {
+      "resolved": "DB連携済み",
+      "missing": "DB未検出",
+      "ambiguous": "候補重複",
+      "not_lookup_ready": "マッピング待ち",
+      "blocked": "ブロック中",
+      "loading": "確認中",
+      "summary": "DB連携 {resolved} · 生成可能 {generatable}"
+    },
+    "surface": {
+      "adminExisting": "現在の管理者TTS",
+      "adminExtension": "管理者拡張が必要"
+    },
+    "sourceKind": {
+      "topicVocabularyFields": "語彙フィールド",
+      "topicGrammarFields": "文法フィールド",
+      "topicGrammarQuestionPrompts": "文法質問プロンプト",
+      "topicKanaFields": "かなフィールド",
+      "exampleSentenceFields": "例文フィールド",
+      "seedCandidateScriptLines": "Seed会話文",
+      "seedCandidateQuestionPrompts": "Seed問題プロンプト"
+    },
+    "blocker": {
+      "adminTtsFieldGap": "管理者TTSフィールドが必要",
+      "adminContentTypeGap": "管理者コンテンツタイプが必要",
+      "lessonSeedAdminSurfaceGap": "Lesson seed確認画面が必要"
     }
   },
   "validation": {

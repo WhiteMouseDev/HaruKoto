@@ -121,6 +121,121 @@ class FakeTtsResult:
 
 
 # ---------------------------------------------------------------------------
+# GET /api/v1/admin/content/tts/review-batches (read-only curriculum contract)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_batches_returns_summary(client):
+    """GET returns generated TTS review batch summary without touching DB."""
+    ac, mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["schemaVersion"] == 1
+    assert data["summary"]["totalBatches"] == 7
+    assert data["summary"]["totalTargets"] == 498
+    assert data["summary"]["adminReadyTargets"] == 174
+    assert data["summary"]["extensionRequiredTargets"] == 324
+    assert len(data["batches"]) == 7
+    mock_db.execute.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_batches_filters_review_surface(client):
+    """GET can filter to current-admin TTS batches only."""
+    ac, _mock_db = client
+
+    resp = await ac.get(
+        "/api/v1/admin/content/tts/review-batches",
+        params={"review_surface": "admin_existing_tts"},
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["summary"]["totalBatches"] == 2
+    assert data["summary"]["totalTargets"] == 174
+    assert {batch["reviewSurface"] for batch in data["batches"]} == {"admin_existing_tts"}
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_batch_targets_returns_manifest_targets(client):
+    """GET returns ordered target details for a generated TTS review batch."""
+    ac, mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/tts-review-admin-vocabulary-fields/targets")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["schemaVersion"] == 1
+    assert data["batch"]["batchId"] == "tts-review-admin-vocabulary-fields"
+    assert len(data["targets"]) == data["batch"]["targetCount"]
+    assert data["targets"][0]["targetId"] == data["batch"]["targetIds"][0]
+    assert data["targets"][0]["audioField"] in {"word", "reading", "example_sentence"}
+    mock_db.execute.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_batch_targets_returns_404_for_unknown_batch(client):
+    """GET returns 404 when the requested generated batch id does not exist."""
+    ac, _mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/missing-batch/targets")
+
+    assert resp.status_code == 404
+    assert resp.json()["error"]["message"] == "TTS review batch not found"
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_generation_plan_returns_dry_run_summary(client):
+    """GET returns generation feasibility without touching DB or generating audio."""
+    ac, mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/tts-review-admin-grammar-fields/generation-plan")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["batch"]["batchId"] == "tts-review-admin-grammar-fields"
+    assert data["summary"]["totalTargets"] == 156
+    assert data["summary"]["supportedTargets"] == 156
+    assert data["summary"]["readyAfterDbLookupTargets"] > 0
+    assert data["summary"]["manualMappingRequiredTargets"] > 0
+    assert data["items"][0]["target"]["targetId"] == data["batch"]["targetIds"][0]
+    mock_db.execute.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_generation_plan_blocks_extension_batch(client):
+    """GET marks extension-required batches as blocked without generation side effects."""
+    ac, _mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/tts-review-gap-seed-script-lines/generation-plan")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["summary"]["blockedTargets"] == data["summary"]["totalTargets"]
+    assert data["items"][0]["operationStatus"] == "blocked"
+    assert data["items"][0]["blockerCodes"] == ["admin_extension_required"]
+
+
+@pytest.mark.asyncio
+async def test_get_tts_review_execute_preview_blocks_extension_batch_without_db_lookup(client):
+    """GET resolves execute preview without DB access for extension-required batches."""
+    ac, mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/tts-review-gap-seed-script-lines/execute-preview")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["summary"]["blockedTargets"] == data["summary"]["totalTargets"]
+    assert data["summary"]["generatableTargets"] == 0
+    assert data["items"][0]["lookupStatus"] == "blocked"
+    mock_db.execute.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
 # GET /api/v1/admin/content/{content_type}/{item_id}/tts (map response)
 # ---------------------------------------------------------------------------
 

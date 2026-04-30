@@ -30,7 +30,8 @@
     "vocabulary": "Vocabulary",
     "grammar": "Grammar",
     "quiz": "Quiz",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "ttsReview": "TTS Review"
   },
   "filter": {
     "searchPlaceholder": "Search...",
@@ -83,7 +84,8 @@
     "vocabulary": "Vocabulary",
     "grammar": "Grammar",
     "quiz": "Quiz",
-    "conversation": "Conversation Scenarios"
+    "conversation": "Conversation Scenarios",
+    "ttsReview": "TTS Review"
   },
   "locale": {
     "label": "Language",
@@ -196,6 +198,111 @@
       "japaneseSentence": "Japanese sentence",
       "situation": "Situation",
       "exampleSentences": "Example Sentences"
+    }
+  },
+  "ttsReview": {
+    "title": "TTS Review Batches",
+    "subtitle": "Separate curriculum audio targets by current admin fields and extension-required items.",
+    "refresh": "Refresh",
+    "error": "Failed to load TTS review batches.",
+    "filter": {
+      "all": "All",
+      "adminExisting": "Current support",
+      "adminExtension": "Extension required"
+    },
+    "summary": {
+      "totalTargets": "Total targets",
+      "adminReadyTargets": "Ready now",
+      "extensionRequiredTargets": "Extension targets",
+      "extensionBatches": "Extension batches"
+    },
+    "table": {
+      "batch": "Batch",
+      "surface": "Review path",
+      "targets": "Targets",
+      "required": "Required",
+      "missing": "Missing",
+      "blockers": "Blockers",
+      "actions": "Actions",
+      "noBlockers": "No blockers",
+      "viewTargets": "View targets"
+    },
+    "targetPanel": {
+      "count": "{count} targets",
+      "error": "Failed to load TTS targets."
+    },
+    "targetTable": {
+      "target": "Target",
+      "type": "Type",
+      "field": "Field",
+      "speed": "Speed",
+      "status": "Status",
+      "plan": "Generation plan",
+      "lookup": "DB lookup",
+      "source": "Source"
+    },
+    "target": {
+      "required": "Required",
+      "optional": "Optional"
+    },
+    "audioTargetType": {
+      "vocabulary": "Vocabulary",
+      "grammar": "Grammar",
+      "kana": "Kana",
+      "lessonScript": "Lesson script",
+      "exampleSentence": "Example sentence",
+      "questionPrompt": "Question prompt"
+    },
+    "audioField": {
+      "word": "Word",
+      "reading": "Reading",
+      "japanese": "Japanese",
+      "pattern": "Pattern",
+      "exampleSentence": "Example sentence",
+      "scriptLine": "Script line",
+      "questionPrompt": "Question prompt"
+    },
+    "generationStatus": {
+      "missing": "Missing",
+      "generated": "Generated",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "stale": "Stale"
+    },
+    "generationPlan": {
+      "ready_after_db_lookup": "Ready after DB lookup",
+      "manual_mapping_required": "Manual mapping required",
+      "blocked": "Blocked",
+      "loading": "Checking",
+      "candidates": "{count} candidates",
+      "summary": "Ready {ready} · Mapping {manual} · Blocked {blocked}"
+    },
+    "executePreview": {
+      "resolved": "DB resolved",
+      "missing": "DB missing",
+      "ambiguous": "Ambiguous",
+      "not_lookup_ready": "Mapping pending",
+      "blocked": "Blocked",
+      "loading": "Checking",
+      "summary": "DB resolved {resolved} · Generatable {generatable}"
+    },
+    "surface": {
+      "adminExisting": "Current admin TTS",
+      "adminExtension": "Admin extension required"
+    },
+    "sourceKind": {
+      "topicVocabularyFields": "Vocabulary fields",
+      "topicGrammarFields": "Grammar fields",
+      "topicGrammarQuestionPrompts": "Grammar question prompts",
+      "topicKanaFields": "Kana fields",
+      "exampleSentenceFields": "Example sentence fields",
+      "seedCandidateScriptLines": "Seed script lines",
+      "seedCandidateQuestionPrompts": "Seed question prompts"
+    },
+    "blocker": {
+      "adminTtsFieldGap": "Admin TTS field needed",
+      "adminContentTypeGap": "Admin content type needed",
+      "lessonSeedAdminSurfaceGap": "Lesson seed review surface needed"
     }
   },
   "validation": {

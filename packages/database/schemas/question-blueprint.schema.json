@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/question-blueprint.schema.json",
+  "title": "Question Blueprints",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "blueprints"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "blueprints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "blueprintId",
+          "topicId",
+          "recommendedQuestionTypes",
+          "cognitiveLevels",
+          "minDraftQuestions",
+          "audioRequired",
+          "reviewStatus"
+        ],
+        "properties": {
+          "blueprintId": {
+            "type": "string",
+            "pattern": "^qb-[a-z0-9][a-z0-9-]*$"
+          },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "recommendedQuestionTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "VOCAB_MCQ",
+                "CONTEXT_CLOZE",
+                "SENTENCE_REORDER"
+              ]
+            }
+          },
+          "draftFutureQuestionTypes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "LISTENING_MCQ",
+                "USAGE_CONTRAST",
+                "REGISTER_CHOICE",
+                "KANA_READING"
+              ]
+            }
+          },
+          "cognitiveLevels": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": ["recognition", "application", "production", "contrast", "listening"]
+            }
+          },
+          "minDraftQuestions": { "type": "integer", "minimum": 1 },
+          "audioRequired": { "type": "boolean" },
+          "requiresOriginalExample": { "type": "boolean" },
+          "notesKo": { "type": "string" },
+          "reviewStatus": {
+            "enum": ["needs_review", "approved", "rejected"]
+          }
+        }
+      }
+    }
+  }
+}
