@@ -6,6 +6,9 @@
       "topicId": "topic-personal-pronouns",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 605,
+      "word": "私",
+      "reading": "わたし",
+      "meaningKo": "저",
       "matchType": "partial",
       "notesKo": "PDF 006 인칭대명사 vocabulary coverage anchor"
     },
@@ -13,6 +16,9 @@
       "topicId": "topic-personal-pronouns",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 211,
+      "word": "あなた",
+      "reading": "あなた",
+      "meaningKo": "당신",
       "matchType": "partial",
       "notesKo": "PDF 006 인칭대명사 vocabulary coverage anchor"
     },
@@ -20,6 +26,9 @@
       "topicId": "topic-numbers-and-counters",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 228,
+      "word": "一",
+      "reading": "いち",
+      "meaningKo": "일. 하나",
       "matchType": "partial",
       "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
     },
@@ -27,6 +36,9 @@
       "topicId": "topic-numbers-and-counters",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 486,
+      "word": "二",
+      "reading": "に",
+      "meaningKo": "이. 둘",
       "matchType": "partial",
       "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
     },
@@ -34,6 +46,9 @@
       "topicId": "topic-numbers-and-counters",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 374,
+      "word": "三",
+      "reading": "さん",
+      "meaningKo": "삼. 셋",
       "matchType": "partial",
       "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
     },
@@ -41,6 +56,9 @@
       "topicId": "topic-numbers-and-counters",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 409,
+      "word": "ゼロ",
+      "reading": "ゼロ",
+      "meaningKo": "제로. 영",
       "matchType": "partial",
       "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
     },
@@ -48,6 +66,9 @@
       "topicId": "topic-numbers-and-counters",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 410,
+      "word": "千",
+      "reading": "せん",
+      "meaningKo": "천",
       "matchType": "partial",
       "notesKo": "PDF 012 숫자・조수사 vocabulary coverage anchor"
     },
@@ -55,6 +76,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 15,
+      "word": "時間",
+      "reading": "じかん",
+      "meaningKo": "시간",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -62,6 +86,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 16,
+      "word": "今日",
+      "reading": "きょう",
+      "meaningKo": "오늘",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -69,6 +96,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 17,
+      "word": "明日",
+      "reading": "あした",
+      "meaningKo": "내일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -76,6 +106,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 18,
+      "word": "昨日",
+      "reading": "きのう",
+      "meaningKo": "어제",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -83,6 +116,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 23,
+      "word": "毎日",
+      "reading": "まいにち",
+      "meaningKo": "매일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -90,6 +126,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 24,
+      "word": "毎週",
+      "reading": "まいしゅう",
+      "meaningKo": "매주",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -97,6 +136,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 301,
+      "word": "火曜日",
+      "reading": "かようび",
+      "meaningKo": "화요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -104,6 +146,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 325,
+      "word": "金曜日",
+      "reading": "きんようび",
+      "meaningKo": "금요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -111,6 +156,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 335,
+      "word": "月曜日",
+      "reading": "げつようび",
+      "meaningKo": "월요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -118,6 +166,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 395,
+      "word": "水曜日",
+      "reading": "すいようび",
+      "meaningKo": "수요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -125,6 +176,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 470,
+      "word": "土曜日",
+      "reading": "どようび",
+      "meaningKo": "토요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -132,6 +186,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 490,
+      "word": "日曜日",
+      "reading": "にちようび",
+      "meaningKo": "일요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -139,6 +196,9 @@
       "topicId": "topic-time-and-weekdays",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 572,
+      "word": "木曜日",
+      "reading": "もくようび",
+      "meaningKo": "목요일",
       "matchType": "partial",
       "notesKo": "PDF 013 시간・요일 vocabulary coverage anchor"
     },
@@ -146,6 +206,9 @@
       "topicId": "topic-kanji-reading-basics",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 309,
+      "word": "漢字",
+      "reading": "かんじ",
+      "meaningKo": "한자",
       "matchType": "exact",
       "notesKo": "PDF 017 한자 읽는 법 vocabulary coverage anchor"
     },
@@ -153,6 +216,9 @@
       "topicId": "topic-shiru-wakaru",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 393,
+      "word": "知る",
+      "reading": "しる",
+      "meaningKo": "(지식으로) 알다",
       "matchType": "partial",
       "notesKo": "PDF 044 알다 vocabulary coverage anchor"
     },
@@ -160,6 +226,9 @@
       "topicId": "topic-shiru-wakaru",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 122,
+      "word": "分かる",
+      "reading": "わかる",
+      "meaningKo": "알다, 이해하다",
       "matchType": "partial",
       "notesKo": "PDF 044 알다 vocabulary coverage anchor"
     },
@@ -167,6 +236,9 @@
       "topicId": "topic-kitto",
       "vocabularyLevel": "N5",
       "vocabularyOrder": 189,
+      "word": "多分",
+      "reading": "たぶん",
+      "meaningKo": "아마",
       "matchType": "related",
       "notesKo": "PDF 095 きっと vocabulary coverage anchor"
     }

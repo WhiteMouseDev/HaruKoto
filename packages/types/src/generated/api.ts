@@ -2101,6 +2101,12 @@ export interface components {
             grammarOrder?: number | null;
             /** Vocabularyorder */
             vocabularyOrder?: number | null;
+            /** Contentlabel */
+            contentLabel?: string | null;
+            /** Contentreading */
+            contentReading?: string | null;
+            /** Meaningko */
+            meaningKo?: string | null;
             /** Matchtype */
             matchType?: ("exact" | "partial" | "related") | null;
             /** Noteko */

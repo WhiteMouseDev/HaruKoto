@@ -6695,6 +6695,39 @@
             ],
             "title": "Vocabularyorder"
           },
+          "contentLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contentlabel"
+          },
+          "contentReading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contentreading"
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meaningko"
+          },
           "matchType": {
             "anyOf": [
               {

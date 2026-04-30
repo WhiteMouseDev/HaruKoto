@@ -383,6 +383,9 @@ export type TtsReviewGenerationPlanCandidate = {
   jlptLevel: string | null;
   grammarOrder: number | null;
   vocabularyOrder: number | null;
+  contentLabel: string | null;
+  contentReading: string | null;
+  meaningKo: string | null;
   matchType: 'exact' | 'partial' | 'related' | null;
   noteKo: string;
 };

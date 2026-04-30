@@ -147,13 +147,16 @@ const generationPlanResponse: TtsReviewGenerationPlanResponse = {
     candidates: [
       {
         contentType: 'vocabulary',
-        lookupType: 'topic_id',
+        lookupType: 'vocabulary_level_order',
         topicId: target.topicId,
         adminField: target.audioField,
-        jlptLevel: null,
+        jlptLevel: 'N5',
         grammarOrder: null,
-        vocabularyOrder: null,
-        matchType: null,
+        vocabularyOrder: 605,
+        contentLabel: '私',
+        contentReading: 'わたし',
+        meaningKo: '저',
+        matchType: 'partial',
         noteKo: 'review',
       },
     ],
@@ -183,13 +186,16 @@ const executePreviewResponse: TtsReviewExecutePreviewResponse = {
     canGenerateWithCurrentService: false,
     candidate: {
       contentType: 'vocabulary',
-      lookupType: 'topic_id',
+      lookupType: 'vocabulary_level_order',
       topicId: target.topicId,
       adminField: target.audioField,
-      jlptLevel: null,
+      jlptLevel: 'N5',
       grammarOrder: null,
-      vocabularyOrder: null,
-      matchType: null,
+      vocabularyOrder: 605,
+      contentLabel: '私',
+      contentReading: 'わたし',
+      meaningKo: '저',
+      matchType: 'partial',
       noteKo: 'review',
     },
     contentItemId: null,
@@ -275,6 +281,7 @@ describe('TtsReviewPage', () => {
     expect(screen.getByText('curriculum-topics:topic-personal-pronouns:word')).toBeTruthy();
     expect(screen.getByText('japanese_female_1')).toBeTruthy();
     expect(screen.getAllByText('generationPlan.manual_mapping_required').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('N5 #605 私').length).toBeGreaterThan(0);
     expect(screen.getAllByText('executePreview.not_lookup_ready').length).toBeGreaterThan(0);
   });
 });
