@@ -364,6 +364,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/content/tts/review-batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tts Review Batches
+         * @description Return generated TTS review/export batches without generating audio.
+         */
+        get: operations["get_tts_review_batches_api_v1_admin_content_tts_review_batches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tts Review Batch Targets
+         * @description Return ordered target metadata for one generated TTS review batch.
+         */
+        get: operations["get_tts_review_batch_targets_api_v1_admin_content_tts_review_batches__batch_id__targets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/generation-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tts Review Generation Plan
+         * @description Dry-run whether a generated TTS review batch can use current admin TTS fields.
+         */
+        get: operations["get_tts_review_generation_plan_api_v1_admin_content_tts_review_batches__batch_id__generation_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/tts/review-batches/{batch_id}/execute-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tts Review Execute Preview
+         * @description Resolve dry-run generation candidates to current DB rows without generating audio.
+         */
+        get: operations["get_tts_review_execute_preview_api_v1_admin_content_tts_review_batches__batch_id__execute_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/content/review-queue/{content_type}": {
         parameters: {
             query?: never;
@@ -1855,6 +1935,258 @@ export interface components {
             field: string | null;
             /** Provider */
             provider: string | null;
+        };
+        /** AdminTtsReviewBatchItem */
+        AdminTtsReviewBatchItem: {
+            /** Batchid */
+            batchId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "review" | "approved";
+            /**
+             * Reviewsurface
+             * @enum {string}
+             */
+            reviewSurface: "admin_existing_tts" | "admin_extension_required";
+            /**
+             * Sourcekind
+             * @enum {string}
+             */
+            sourceKind: "topic_vocabulary_fields" | "topic_grammar_fields" | "topic_grammar_question_prompts" | "topic_kana_fields" | "example_sentence_fields" | "seed_candidate_script_lines" | "seed_candidate_question_prompts";
+            /** Targetids */
+            targetIds: string[];
+            /** Targetcount */
+            targetCount: number;
+            /** Requiredbeforepublishcount */
+            requiredBeforePublishCount: number;
+            generationStatusSummary: components["schemas"]["TtsGenerationStatusSummary"];
+            adminExport: components["schemas"]["AdminTtsReviewExportInfo"];
+            /** Reviewerchecklist */
+            reviewerChecklist: string[];
+            /** Notesko */
+            notesKo: string;
+        };
+        /** AdminTtsReviewBatchListResponse */
+        AdminTtsReviewBatchListResponse: {
+            /** Schemaversion */
+            schemaVersion: number;
+            /** Status */
+            status: string;
+            /** Batches */
+            batches: components["schemas"]["AdminTtsReviewBatchItem"][];
+            summary: components["schemas"]["AdminTtsReviewBatchSummary"];
+        };
+        /** AdminTtsReviewBatchSummary */
+        AdminTtsReviewBatchSummary: {
+            /** Totalbatches */
+            totalBatches: number;
+            /** Totaltargets */
+            totalTargets: number;
+            /** Adminreadytargets */
+            adminReadyTargets: number;
+            /** Extensionrequiredtargets */
+            extensionRequiredTargets: number;
+            /** Requiredbeforepublishtargets */
+            requiredBeforePublishTargets: number;
+            generationStatusSummary: components["schemas"]["TtsGenerationStatusSummary"];
+        };
+        /** AdminTtsReviewBatchTargetsResponse */
+        AdminTtsReviewBatchTargetsResponse: {
+            /** Schemaversion */
+            schemaVersion: number;
+            /** Status */
+            status: string;
+            batch: components["schemas"]["AdminTtsReviewBatchItem"];
+            /** Targets */
+            targets: components["schemas"]["AdminTtsReviewTargetItem"][];
+        };
+        /** AdminTtsReviewExecutePreviewItem */
+        AdminTtsReviewExecutePreviewItem: {
+            target: components["schemas"]["AdminTtsReviewTargetItem"];
+            /** Admincontenttype */
+            adminContentType: string;
+            /** Adminfield */
+            adminField: string | null;
+            /**
+             * Lookupstatus
+             * @enum {string}
+             */
+            lookupStatus: "resolved" | "missing" | "ambiguous" | "not_lookup_ready" | "blocked";
+            /** Cangeneratewithcurrentservice */
+            canGenerateWithCurrentService: boolean;
+            candidate: components["schemas"]["AdminTtsReviewGenerationPlanCandidate"] | null;
+            /** Contentitemid */
+            contentItemId?: string | null;
+            /** Contentlabel */
+            contentLabel?: string | null;
+            /** Notesko */
+            notesKo: string;
+        };
+        /** AdminTtsReviewExecutePreviewResponse */
+        AdminTtsReviewExecutePreviewResponse: {
+            /** Schemaversion */
+            schemaVersion: number;
+            /** Status */
+            status: string;
+            batch: components["schemas"]["AdminTtsReviewBatchItem"];
+            summary: components["schemas"]["AdminTtsReviewExecutePreviewSummary"];
+            /** Items */
+            items: components["schemas"]["AdminTtsReviewExecutePreviewItem"][];
+        };
+        /** AdminTtsReviewExecutePreviewSummary */
+        AdminTtsReviewExecutePreviewSummary: {
+            /** Totaltargets */
+            totalTargets: number;
+            /** Resolvedtargets */
+            resolvedTargets: number;
+            /** Missingtargets */
+            missingTargets: number;
+            /** Ambiguoustargets */
+            ambiguousTargets: number;
+            /** Notlookupreadytargets */
+            notLookupReadyTargets: number;
+            /** Blockedtargets */
+            blockedTargets: number;
+            /** Generatabletargets */
+            generatableTargets: number;
+        };
+        /** AdminTtsReviewExportInfo */
+        AdminTtsReviewExportInfo: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "existing_admin_tts_fields" | "requires_admin_extension";
+            /**
+             * Contenttype
+             * @enum {string}
+             */
+            contentType: "vocabulary" | "grammar" | "kana" | "example_sentence_pool" | "lesson_seed_candidate";
+            /** Fieldmappings */
+            fieldMappings: components["schemas"]["AdminTtsReviewFieldMapping"][];
+            /** Blockers */
+            blockers: ("admin_tts_field_gap" | "admin_content_type_gap" | "lesson_seed_admin_surface_gap")[];
+        };
+        /** AdminTtsReviewFieldMapping */
+        AdminTtsReviewFieldMapping: {
+            /**
+             * Audiofield
+             * @enum {string}
+             */
+            audioField: "word" | "reading" | "japanese" | "pattern" | "example_sentence" | "script_line" | "question_prompt";
+            /** Adminfield */
+            adminField: string;
+        };
+        /** AdminTtsReviewGenerationPlanCandidate */
+        AdminTtsReviewGenerationPlanCandidate: {
+            /**
+             * Contenttype
+             * @enum {string}
+             */
+            contentType: "vocabulary" | "grammar";
+            /**
+             * Lookuptype
+             * @enum {string}
+             */
+            lookupType: "topic_id" | "grammar_level_order" | "vocabulary_level_order";
+            /** Topicid */
+            topicId: string;
+            /** Adminfield */
+            adminField: string;
+            /** Jlptlevel */
+            jlptLevel?: string | null;
+            /** Grammarorder */
+            grammarOrder?: number | null;
+            /** Vocabularyorder */
+            vocabularyOrder?: number | null;
+            /** Matchtype */
+            matchType?: ("exact" | "partial" | "related") | null;
+            /** Noteko */
+            noteKo: string;
+        };
+        /** AdminTtsReviewGenerationPlanItem */
+        AdminTtsReviewGenerationPlanItem: {
+            target: components["schemas"]["AdminTtsReviewTargetItem"];
+            /** Admincontenttype */
+            adminContentType: string;
+            /** Adminfield */
+            adminField: string | null;
+            /**
+             * Operationstatus
+             * @enum {string}
+             */
+            operationStatus: "ready_after_db_lookup" | "manual_mapping_required" | "blocked";
+            /** Existingadminttssupported */
+            existingAdminTtsSupported: boolean;
+            /** Candidates */
+            candidates: components["schemas"]["AdminTtsReviewGenerationPlanCandidate"][];
+            /** Blockercodes */
+            blockerCodes: ("admin_extension_required" | "unsupported_admin_tts_field" | "missing_admin_field_mapping" | "topic_vocabulary_mapping_required" | "ambiguous_or_partial_vocabulary_mapping" | "topic_grammar_mapping_required" | "ambiguous_or_partial_grammar_mapping")[];
+            /** Notesko */
+            notesKo: string;
+        };
+        /** AdminTtsReviewGenerationPlanResponse */
+        AdminTtsReviewGenerationPlanResponse: {
+            /** Schemaversion */
+            schemaVersion: number;
+            /** Status */
+            status: string;
+            batch: components["schemas"]["AdminTtsReviewBatchItem"];
+            summary: components["schemas"]["AdminTtsReviewGenerationPlanSummary"];
+            /** Items */
+            items: components["schemas"]["AdminTtsReviewGenerationPlanItem"][];
+        };
+        /** AdminTtsReviewGenerationPlanSummary */
+        AdminTtsReviewGenerationPlanSummary: {
+            /** Totaltargets */
+            totalTargets: number;
+            /** Supportedtargets */
+            supportedTargets: number;
+            /** Readyafterdblookuptargets */
+            readyAfterDbLookupTargets: number;
+            /** Manualmappingrequiredtargets */
+            manualMappingRequiredTargets: number;
+            /** Blockedtargets */
+            blockedTargets: number;
+        };
+        /** AdminTtsReviewTargetItem */
+        AdminTtsReviewTargetItem: {
+            /** Targetid */
+            targetId: string;
+            /** Topicid */
+            topicId: string;
+            /**
+             * Audiotargettype
+             * @enum {string}
+             */
+            audioTargetType: "vocabulary" | "grammar" | "kana" | "lesson_script" | "example_sentence" | "question_prompt";
+            /**
+             * Audiofield
+             * @enum {string}
+             */
+            audioField: "word" | "reading" | "japanese" | "pattern" | "example_sentence" | "script_line" | "question_prompt";
+            /** Textsource */
+            textSource: string;
+            /** Defaultspeed */
+            defaultSpeed: number;
+            /** Requiredbeforepublish */
+            requiredBeforePublish: boolean;
+            /** Preferredvoiceid */
+            preferredVoiceId?: string | null;
+            /**
+             * Generationstatus
+             * @enum {string}
+             */
+            generationStatus: "missing" | "generated" | "approved" | "rejected" | "stale";
+            /**
+             * Cachekeystrategy
+             * @constant
+             */
+            cacheKeyStrategy: "provider-model-speed-field-text-hash-v1";
+            /** Notesko */
+            notesKo: string;
         };
         /** AiUsageInfo */
         AiUsageInfo: {
@@ -3733,6 +4065,19 @@ export interface components {
             /** Goalprogress */
             goalProgress: number;
         };
+        /** TtsGenerationStatusSummary */
+        TtsGenerationStatusSummary: {
+            /** Missing */
+            missing: number;
+            /** Generated */
+            generated: number;
+            /** Approved */
+            approved: number;
+            /** Rejected */
+            rejected: number;
+            /** Stale */
+            stale: number;
+        };
         /**
          * UserGoal
          * @enum {string}
@@ -4810,6 +5155,130 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminTtsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tts_review_batches_api_v1_admin_content_tts_review_batches_get: {
+        parameters: {
+            query?: {
+                review_surface?: ("admin_existing_tts" | "admin_extension_required") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTtsReviewBatchListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tts_review_batch_targets_api_v1_admin_content_tts_review_batches__batch_id__targets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTtsReviewBatchTargetsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tts_review_generation_plan_api_v1_admin_content_tts_review_batches__batch_id__generation_plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTtsReviewGenerationPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tts_review_execute_preview_api_v1_admin_content_tts_review_batches__batch_id__execute_preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTtsReviewExecutePreviewResponse"];
                 };
             };
             /** @description Validation Error */

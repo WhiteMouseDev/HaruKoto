@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/topic-vocabulary-map.schema.json",
+  "title": "Topic Vocabulary Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "mappings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["topicId", "vocabularyLevel", "vocabularyOrder", "matchType"],
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "vocabularyLevel": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
+          "vocabularyOrder": { "type": "integer", "minimum": 1 },
+          "matchType": { "enum": ["exact", "partial", "related"] },
+          "notesKo": { "type": "string" }
+        }
+      }
+    }
+  }
+}

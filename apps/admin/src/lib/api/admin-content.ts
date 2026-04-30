@@ -264,6 +264,251 @@ export async function regenerateTts(
   return res.json() as Promise<TtsAudioResponse>;
 }
 
+export type TtsReviewSurface =
+  | 'admin_existing_tts'
+  | 'admin_extension_required';
+
+export type TtsGenerationStatusSummary = {
+  missing: number;
+  generated: number;
+  approved: number;
+  rejected: number;
+  stale: number;
+};
+
+export type TtsReviewFieldMapping = {
+  audioField:
+    | 'word'
+    | 'reading'
+    | 'japanese'
+    | 'pattern'
+    | 'example_sentence'
+    | 'script_line'
+    | 'question_prompt';
+  adminField: string;
+};
+
+export type TtsReviewExportInfo = {
+  mode: 'existing_admin_tts_fields' | 'requires_admin_extension';
+  contentType:
+    | 'vocabulary'
+    | 'grammar'
+    | 'kana'
+    | 'example_sentence_pool'
+    | 'lesson_seed_candidate';
+  fieldMappings: TtsReviewFieldMapping[];
+  blockers: Array<
+    | 'admin_tts_field_gap'
+    | 'admin_content_type_gap'
+    | 'lesson_seed_admin_surface_gap'
+  >;
+};
+
+export type TtsReviewBatchItem = {
+  batchId: string;
+  status: 'draft' | 'review' | 'approved';
+  reviewSurface: TtsReviewSurface;
+  sourceKind:
+    | 'topic_vocabulary_fields'
+    | 'topic_grammar_fields'
+    | 'topic_grammar_question_prompts'
+    | 'topic_kana_fields'
+    | 'example_sentence_fields'
+    | 'seed_candidate_script_lines'
+    | 'seed_candidate_question_prompts';
+  targetIds: string[];
+  targetCount: number;
+  requiredBeforePublishCount: number;
+  generationStatusSummary: TtsGenerationStatusSummary;
+  adminExport: TtsReviewExportInfo;
+  reviewerChecklist: string[];
+  notesKo: string;
+};
+
+export type TtsReviewTargetItem = {
+  targetId: string;
+  topicId: string;
+  audioTargetType:
+    | 'vocabulary'
+    | 'grammar'
+    | 'kana'
+    | 'lesson_script'
+    | 'example_sentence'
+    | 'question_prompt';
+  audioField:
+    | 'word'
+    | 'reading'
+    | 'japanese'
+    | 'pattern'
+    | 'example_sentence'
+    | 'script_line'
+    | 'question_prompt';
+  textSource: string;
+  defaultSpeed: number;
+  requiredBeforePublish: boolean;
+  preferredVoiceId: string | null;
+  generationStatus: 'missing' | 'generated' | 'approved' | 'rejected' | 'stale';
+  cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1';
+  notesKo: string;
+};
+
+export type TtsReviewBatchSummary = {
+  totalBatches: number;
+  totalTargets: number;
+  adminReadyTargets: number;
+  extensionRequiredTargets: number;
+  requiredBeforePublishTargets: number;
+  generationStatusSummary: TtsGenerationStatusSummary;
+};
+
+export type TtsReviewBatchListResponse = {
+  schemaVersion: number;
+  status: string;
+  batches: TtsReviewBatchItem[];
+  summary: TtsReviewBatchSummary;
+};
+
+export type TtsReviewBatchTargetsResponse = {
+  schemaVersion: number;
+  status: string;
+  batch: TtsReviewBatchItem;
+  targets: TtsReviewTargetItem[];
+};
+
+export type TtsReviewGenerationPlanCandidate = {
+  contentType: 'vocabulary' | 'grammar';
+  lookupType: 'topic_id' | 'grammar_level_order' | 'vocabulary_level_order';
+  topicId: string;
+  adminField: string;
+  jlptLevel: string | null;
+  grammarOrder: number | null;
+  vocabularyOrder: number | null;
+  matchType: 'exact' | 'partial' | 'related' | null;
+  noteKo: string;
+};
+
+export type TtsReviewGenerationPlanItem = {
+  target: TtsReviewTargetItem;
+  adminContentType: string;
+  adminField: string | null;
+  operationStatus:
+    | 'ready_after_db_lookup'
+    | 'manual_mapping_required'
+    | 'blocked';
+  existingAdminTtsSupported: boolean;
+  candidates: TtsReviewGenerationPlanCandidate[];
+  blockerCodes: Array<
+    | 'admin_extension_required'
+    | 'unsupported_admin_tts_field'
+    | 'missing_admin_field_mapping'
+    | 'topic_vocabulary_mapping_required'
+    | 'ambiguous_or_partial_vocabulary_mapping'
+    | 'topic_grammar_mapping_required'
+    | 'ambiguous_or_partial_grammar_mapping'
+  >;
+  notesKo: string;
+};
+
+export type TtsReviewGenerationPlanSummary = {
+  totalTargets: number;
+  supportedTargets: number;
+  readyAfterDbLookupTargets: number;
+  manualMappingRequiredTargets: number;
+  blockedTargets: number;
+};
+
+export type TtsReviewGenerationPlanResponse = {
+  schemaVersion: number;
+  status: string;
+  batch: TtsReviewBatchItem;
+  summary: TtsReviewGenerationPlanSummary;
+  items: TtsReviewGenerationPlanItem[];
+};
+
+export type TtsReviewExecutePreviewItem = {
+  target: TtsReviewTargetItem;
+  adminContentType: string;
+  adminField: string | null;
+  lookupStatus:
+    | 'resolved'
+    | 'missing'
+    | 'ambiguous'
+    | 'not_lookup_ready'
+    | 'blocked';
+  canGenerateWithCurrentService: boolean;
+  candidate: TtsReviewGenerationPlanCandidate | null;
+  contentItemId: string | null;
+  contentLabel: string | null;
+  notesKo: string;
+};
+
+export type TtsReviewExecutePreviewSummary = {
+  totalTargets: number;
+  resolvedTargets: number;
+  missingTargets: number;
+  ambiguousTargets: number;
+  notLookupReadyTargets: number;
+  blockedTargets: number;
+  generatableTargets: number;
+};
+
+export type TtsReviewExecutePreviewResponse = {
+  schemaVersion: number;
+  status: string;
+  batch: TtsReviewBatchItem;
+  summary: TtsReviewExecutePreviewSummary;
+  items: TtsReviewExecutePreviewItem[];
+};
+
+export async function fetchTtsReviewBatches(params: {
+  reviewSurface?: TtsReviewSurface;
+} = {}): Promise<TtsReviewBatchListResponse> {
+  const headers = await getAuthHeaders();
+  const url = new URL(`${API_URL}/api/v1/admin/content/tts/review-batches`);
+  if (params.reviewSurface) {
+    url.searchParams.set('review_surface', params.reviewSurface);
+  }
+  const res = await fetch(url.toString(), { headers });
+  await throwIfNotOk(res);
+  return res.json() as Promise<TtsReviewBatchListResponse>;
+}
+
+export async function fetchTtsReviewBatchTargets(
+  batchId: string,
+): Promise<TtsReviewBatchTargetsResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(
+    `${API_URL}/api/v1/admin/content/tts/review-batches/${encodeURIComponent(batchId)}/targets`,
+    { headers },
+  );
+  await throwIfNotOk(res);
+  return res.json() as Promise<TtsReviewBatchTargetsResponse>;
+}
+
+export async function fetchTtsReviewGenerationPlan(
+  batchId: string,
+): Promise<TtsReviewGenerationPlanResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(
+    `${API_URL}/api/v1/admin/content/tts/review-batches/${encodeURIComponent(batchId)}/generation-plan`,
+    { headers },
+  );
+  await throwIfNotOk(res);
+  return res.json() as Promise<TtsReviewGenerationPlanResponse>;
+}
+
+export async function fetchTtsReviewExecutePreview(
+  batchId: string,
+): Promise<TtsReviewExecutePreviewResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(
+    `${API_URL}/api/v1/admin/content/tts/review-batches/${encodeURIComponent(batchId)}/execute-preview`,
+    { headers },
+  );
+  await throwIfNotOk(res);
+  return res.json() as Promise<TtsReviewExecutePreviewResponse>;
+}
+
 // ---- Review Queue API functions ----
 
 export type ReviewQueueItem = {

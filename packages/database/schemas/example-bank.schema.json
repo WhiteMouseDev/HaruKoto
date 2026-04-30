@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/example-bank.schema.json",
+  "title": "Example Bank",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "examples"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exampleId",
+          "topicId",
+          "jlptLevel",
+          "japanese",
+          "reading",
+          "korean",
+          "sourceKind",
+          "originalityStatus",
+          "reviewStatus",
+          "audio"
+        ],
+        "properties": {
+          "exampleId": {
+            "type": "string",
+            "pattern": "^ex-[a-z0-9][a-z0-9-]*$"
+          },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "jlptLevel": {
+            "enum": [
+              "ABSOLUTE_ZERO",
+              "N5",
+              "N4",
+              "N3",
+              "N2",
+              "N1",
+              "CONVERSATION",
+              "BUSINESS"
+            ]
+          },
+          "japanese": { "type": "string", "minLength": 1 },
+          "reading": { "type": "string", "minLength": 1 },
+          "korean": { "type": "string", "minLength": 1 },
+          "register": {
+            "enum": ["neutral", "polite", "casual", "formal", "business"]
+          },
+          "sourceKind": {
+            "enum": ["harukoto_authored", "public_dataset_adapted"]
+          },
+          "originalityStatus": {
+            "enum": [
+              "authored_not_source_copied",
+              "needs_similarity_check",
+              "approved_original"
+            ]
+          },
+          "reviewStatus": {
+            "enum": ["needs_review", "approved", "rejected"]
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "notesKo": { "type": "string" },
+          "audio": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["audioTargetType", "audioField", "generationStatus"],
+            "properties": {
+              "audioTargetType": {
+                "enum": ["example_sentence", "vocabulary", "grammar", "kana"]
+              },
+              "audioField": {
+                "enum": ["japanese", "reading", "example_sentence"]
+              },
+              "generationStatus": {
+                "enum": ["missing", "generated", "approved", "rejected", "stale"]
+              },
+              "preferredVoiceId": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

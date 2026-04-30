@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/contrast-question-policy.schema.json",
+  "title": "Contrast Question Policies",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "policies"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyId",
+          "status",
+          "topicId",
+          "anchorPolicyId",
+          "route",
+          "sourceExampleIds",
+          "metadataIds",
+          "targetRuntimeQuestionTypes",
+          "draftFutureQuestionTypes",
+          "contrastPairs",
+          "questionPolicy",
+          "promotionReadiness",
+          "notesKo"
+        ],
+        "properties": {
+          "policyId": {
+            "type": "string",
+            "pattern": "^contrast-[a-z0-9][a-z0-9-]*$"
+          },
+          "status": { "enum": ["draft", "review", "approved"] },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "anchorPolicyId": {
+            "type": "string",
+            "pattern": "^anchor-[a-z0-9][a-z0-9-]*$"
+          },
+          "route": {
+            "enum": [
+              "vocab_skill_contrast",
+              "grammar_metadata_contrast",
+              "grammar_split_contrast"
+            ]
+          },
+          "sourceExampleIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^ex-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "metadataIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^gmv2-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "targetRuntimeQuestionTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": ["VOCAB_MCQ", "CONTEXT_CLOZE", "SENTENCE_REORDER"]
+            }
+          },
+          "draftFutureQuestionTypes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "LISTENING_MCQ",
+                "USAGE_CONTRAST",
+                "REGISTER_CHOICE",
+                "KANA_READING"
+              ]
+            }
+          },
+          "contrastPairs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["left", "right", "focusKo", "commonMistakeKo"],
+              "properties": {
+                "left": { "$ref": "#/$defs/contrastRef" },
+                "right": { "$ref": "#/$defs/contrastRef" },
+                "focusKo": { "type": "string", "minLength": 1 },
+                "commonMistakeKo": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "questionPolicy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mustTest",
+              "avoidUntilRuntimeSupport",
+              "ttsTargets",
+              "generationStatus"
+            ],
+            "properties": {
+              "mustTest": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "avoidUntilRuntimeSupport": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "ttsTargets": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "enum": ["pattern", "example_sentence", "question_prompt"]
+                }
+              },
+              "generationStatus": {
+                "enum": ["missing", "generated", "approved", "rejected", "stale"]
+              }
+            }
+          },
+          "promotionReadiness": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["state", "requiredBeforeSeedCandidate"],
+            "properties": {
+              "state": { "enum": ["blocked", "ready_for_candidate", "ready_for_review"] },
+              "requiredBeforeSeedCandidate": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "runtime_question_review",
+                    "tts_readiness_review",
+                    "human_curriculum_review"
+                  ]
+                }
+              }
+            }
+          },
+          "notesKo": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "contrastRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref", "label"],
+      "properties": {
+        "kind": {
+          "enum": ["vocabulary_ref", "grammar_ref", "grammar_metadata"]
+        },
+        "ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^gmv2-[a-z0-9][a-z0-9-]*$"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["level", "order"],
+              "properties": {
+                "level": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
+                "order": { "type": "integer", "minimum": 1 }
+              }
+            }
+          ]
+        },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

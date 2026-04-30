@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/lesson-draft-blueprint.schema.json",
+  "title": "Lesson Draft Blueprints",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "lessons"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lessonBlueprintId",
+          "status",
+          "track",
+          "jlptLevel",
+          "lessonKind",
+          "titleKo",
+          "primaryTopicId",
+          "topicIds",
+          "estimatedMinutes",
+          "targetQuestionCount",
+          "runtimeQuestionTypes",
+          "draftFutureQuestionTypes",
+          "exampleIds",
+          "ttsRequired",
+          "coverageGoal",
+          "validationGates",
+          "notesKo"
+        ],
+        "properties": {
+          "lessonBlueprintId": {
+            "type": "string",
+            "pattern": "^ldb-[a-z0-9][a-z0-9-]*$"
+          },
+          "status": { "enum": ["draft", "review", "approved"] },
+          "track": {
+            "enum": [
+              "ABSOLUTE_ZERO_FOUNDATION",
+              "N5_REINFORCEMENT",
+              "N4_FOUNDATION",
+              "N3_PLUS_EXTENSION",
+              "CONVERSATION_REGISTER",
+              "BUSINESS_KEIGO"
+            ]
+          },
+          "jlptLevel": {
+            "enum": [
+              "ABSOLUTE_ZERO",
+              "N5",
+              "N4",
+              "N3",
+              "N2",
+              "N1",
+              "CONVERSATION",
+              "BUSINESS"
+            ]
+          },
+          "lessonKind": {
+            "enum": [
+              "kana_scaffold",
+              "reinforcement",
+              "new_lesson",
+              "bridge",
+              "register",
+              "business"
+            ]
+          },
+          "titleKo": { "type": "string", "minLength": 1 },
+          "primaryTopicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "topicIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "estimatedMinutes": { "type": "integer", "minimum": 1 },
+          "targetQuestionCount": { "type": "integer", "minimum": 1 },
+          "runtimeQuestionTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": ["VOCAB_MCQ", "CONTEXT_CLOZE", "SENTENCE_REORDER"]
+            }
+          },
+          "draftFutureQuestionTypes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "LISTENING_MCQ",
+                "USAGE_CONTRAST",
+                "REGISTER_CHOICE",
+                "KANA_READING"
+              ]
+            }
+          },
+          "exampleIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ex-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "ttsRequired": { "type": "boolean" },
+          "coverageGoal": {
+            "enum": [
+              "cover_missing_topic",
+              "split_partial_topic",
+              "strengthen_existing_topic",
+              "prepare_future_runtime"
+            ]
+          },
+          "validationGates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "ExampleOriginalityGate",
+                "RuntimeQuestionCompatibilityGate",
+                "AudioReadinessGate",
+                "KoreanLearnerGate",
+                "RegisterGate",
+                "ContrastGate"
+              ]
+            }
+          },
+          "notesKo": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

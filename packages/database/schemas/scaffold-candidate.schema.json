@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/scaffold-candidate.schema.json",
+  "title": "Scaffold Candidates",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "candidates"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "candidateId",
+          "status",
+          "scaffoldType",
+          "lessonBlueprintId",
+          "sourceTopicIds",
+          "exampleIds",
+          "promotionTarget",
+          "runtimeQuestionTypes",
+          "draftFutureQuestionTypes",
+          "scaffoldShape",
+          "validationGates",
+          "notesKo"
+        ],
+        "properties": {
+          "candidateId": {
+            "type": "string",
+            "pattern": "^scaf-[a-z0-9][a-z0-9-]*$"
+          },
+          "status": { "enum": ["draft", "review", "approved"] },
+          "scaffoldType": { "enum": ["kana", "kanji"] },
+          "lessonBlueprintId": {
+            "type": "string",
+            "pattern": "^ldb-[a-z0-9][a-z0-9-]*$"
+          },
+          "sourceTopicIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "exampleIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^ex-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "promotionTarget": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "track",
+              "jlptLevel",
+              "suggestedLessonNo",
+              "publishStatus"
+            ],
+            "properties": {
+              "track": { "const": "ABSOLUTE_ZERO_FOUNDATION" },
+              "jlptLevel": { "const": "ABSOLUTE_ZERO" },
+              "suggestedLessonNo": { "type": "integer", "minimum": 1 },
+              "publishStatus": { "const": "DRAFT" }
+            }
+          },
+          "runtimeQuestionTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": ["VOCAB_MCQ", "CONTEXT_CLOZE", "SENTENCE_REORDER"]
+            }
+          },
+          "draftFutureQuestionTypes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "LISTENING_MCQ",
+                "USAGE_CONTRAST",
+                "REGISTER_CHOICE",
+                "KANA_READING"
+              ]
+            }
+          },
+          "scaffoldShape": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "titleKo",
+              "canDoStatementKo",
+              "focusItems",
+              "reading",
+              "audioPolicy"
+            ],
+            "properties": {
+              "titleKo": { "type": "string", "minLength": 1 },
+              "canDoStatementKo": { "type": "string", "minLength": 1 },
+              "focusItems": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["text", "reading", "meaningKo"],
+                  "properties": {
+                    "text": { "type": "string", "minLength": 1 },
+                    "reading": { "type": "string", "minLength": 1 },
+                    "meaningKo": { "type": "string", "minLength": 1 }
+                  }
+                }
+              },
+              "reading": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "script"],
+                "properties": {
+                  "type": { "enum": ["pronunciation_drill", "reading_drill"] },
+                  "script": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["speaker", "voice_id", "text", "translation"],
+                      "properties": {
+                        "speaker": { "type": "string", "minLength": 1 },
+                        "voice_id": { "type": "string", "minLength": 1 },
+                        "text": { "type": "string", "minLength": 1 },
+                        "translation": { "type": "string", "minLength": 1 }
+                      }
+                    }
+                  }
+                }
+              },
+              "audioPolicy": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "audioTargetType",
+                  "ttsTargets",
+                  "generationStatus",
+                  "preferredVoiceId"
+                ],
+                "properties": {
+                  "audioTargetType": { "enum": ["kana", "example_sentence"] },
+                  "ttsTargets": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "enum": ["japanese", "reading", "script_line"] }
+                  },
+                  "generationStatus": {
+                    "enum": ["missing", "generated", "approved", "rejected", "stale"]
+                  },
+                  "preferredVoiceId": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          },
+          "validationGates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "ExampleOriginalityGate",
+                "RuntimeQuestionCompatibilityGate",
+                "AudioReadinessGate",
+                "KoreanLearnerGate",
+                "RegisterGate",
+                "ContrastGate"
+              ]
+            }
+          },
+          "notesKo": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

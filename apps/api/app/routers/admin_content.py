@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +14,10 @@ from app.schemas.admin_content import (
     AdminTtsMapResponse,
     AdminTtsRegenerateRequest,
     AdminTtsResponse,
+    AdminTtsReviewBatchListResponse,
+    AdminTtsReviewBatchTargetsResponse,
+    AdminTtsReviewExecutePreviewResponse,
+    AdminTtsReviewGenerationPlanResponse,
     AudioFieldInfo,
     AuditLogItem,
     BatchReviewRequest,
@@ -60,6 +64,15 @@ from app.services.admin_tts import (
     AdminTtsServiceError,
     get_admin_tts_map,
     regenerate_admin_tts_audio,
+)
+from app.services.admin_tts_review_batches import (
+    AdminTtsReviewBatchServiceError,
+    get_admin_tts_review_batch_targets,
+    get_admin_tts_review_batches,
+    get_admin_tts_review_generation_plan,
+)
+from app.services.admin_tts_review_batches import (
+    get_admin_tts_review_execute_preview as build_admin_tts_review_execute_preview,
 )
 from app.services.admin_vocabulary_list import list_admin_vocabulary
 from app.services.ai import generate_tts
@@ -587,6 +600,55 @@ async def regenerate_admin_tts(
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
     return AdminTtsResponse(audio_url=result.audio_url, field=result.field, provider=result.provider)
+
+
+@router.get("/tts/review-batches", response_model=AdminTtsReviewBatchListResponse)
+async def get_tts_review_batches(
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+    review_surface: Literal["admin_existing_tts", "admin_extension_required"] | None = Query(default=None),
+) -> AdminTtsReviewBatchListResponse:
+    """Return generated TTS review/export batches without generating audio."""
+    try:
+        return get_admin_tts_review_batches(review_surface=review_surface)
+    except AdminTtsReviewBatchServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
+@router.get("/tts/review-batches/{batch_id}/targets", response_model=AdminTtsReviewBatchTargetsResponse)
+async def get_tts_review_batch_targets(
+    batch_id: str,
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> AdminTtsReviewBatchTargetsResponse:
+    """Return ordered target metadata for one generated TTS review batch."""
+    try:
+        return get_admin_tts_review_batch_targets(batch_id)
+    except AdminTtsReviewBatchServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
+@router.get("/tts/review-batches/{batch_id}/generation-plan", response_model=AdminTtsReviewGenerationPlanResponse)
+async def get_tts_review_generation_plan(
+    batch_id: str,
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> AdminTtsReviewGenerationPlanResponse:
+    """Dry-run whether a generated TTS review batch can use current admin TTS fields."""
+    try:
+        return get_admin_tts_review_generation_plan(batch_id)
+    except AdminTtsReviewBatchServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
+@router.get("/tts/review-batches/{batch_id}/execute-preview", response_model=AdminTtsReviewExecutePreviewResponse)
+async def get_tts_review_execute_preview(
+    batch_id: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _reviewer: Annotated[User, Depends(require_reviewer)],
+) -> AdminTtsReviewExecutePreviewResponse:
+    """Resolve dry-run generation candidates to current DB rows without generating audio."""
+    try:
+        return await build_admin_tts_review_execute_preview(db, batch_id)
+    except AdminTtsReviewBatchServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
 @router.get("/review-queue/{content_type}", response_model=ReviewQueueResponse)

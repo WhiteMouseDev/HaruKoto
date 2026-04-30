@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/tts-review-batch.schema.json",
+  "title": "TTS Review Batches",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "batches"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "batches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "batchId",
+          "status",
+          "reviewSurface",
+          "sourceKind",
+          "targetIds",
+          "targetCount",
+          "requiredBeforePublishCount",
+          "generationStatusSummary",
+          "adminExport",
+          "reviewerChecklist",
+          "notesKo"
+        ],
+        "properties": {
+          "batchId": {
+            "type": "string",
+            "pattern": "^tts-review-[a-z0-9][a-z0-9-]*$"
+          },
+          "status": { "enum": ["draft", "review", "approved"] },
+          "reviewSurface": {
+            "enum": ["admin_existing_tts", "admin_extension_required"]
+          },
+          "sourceKind": {
+            "enum": [
+              "topic_vocabulary_fields",
+              "topic_grammar_fields",
+              "topic_grammar_question_prompts",
+              "topic_kana_fields",
+              "example_sentence_fields",
+              "seed_candidate_script_lines",
+              "seed_candidate_question_prompts"
+            ]
+          },
+          "targetIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^tts-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "targetCount": { "type": "integer", "minimum": 1 },
+          "requiredBeforePublishCount": { "type": "integer", "minimum": 0 },
+          "generationStatusSummary": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["missing", "generated", "approved", "rejected", "stale"],
+            "properties": {
+              "missing": { "type": "integer", "minimum": 0 },
+              "generated": { "type": "integer", "minimum": 0 },
+              "approved": { "type": "integer", "minimum": 0 },
+              "rejected": { "type": "integer", "minimum": 0 },
+              "stale": { "type": "integer", "minimum": 0 }
+            }
+          },
+          "adminExport": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["mode", "contentType", "fieldMappings", "blockers"],
+            "properties": {
+              "mode": {
+                "enum": ["existing_admin_tts_fields", "requires_admin_extension"]
+              },
+              "contentType": {
+                "enum": [
+                  "vocabulary",
+                  "grammar",
+                  "kana",
+                  "example_sentence_pool",
+                  "lesson_seed_candidate"
+                ]
+              },
+              "fieldMappings": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["audioField", "adminField"],
+                  "properties": {
+                    "audioField": {
+                      "enum": [
+                        "word",
+                        "reading",
+                        "japanese",
+                        "pattern",
+                        "example_sentence",
+                        "script_line",
+                        "question_prompt"
+                      ]
+                    },
+                    "adminField": { "type": "string", "minLength": 1 }
+                  }
+                }
+              },
+              "blockers": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "admin_tts_field_gap",
+                    "admin_content_type_gap",
+                    "lesson_seed_admin_surface_gap"
+                  ]
+                }
+              }
+            }
+          },
+          "reviewerChecklist": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "notesKo": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

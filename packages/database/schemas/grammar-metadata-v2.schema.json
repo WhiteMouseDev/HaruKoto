@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harukoto.local/schemas/grammar-metadata-v2.schema.json",
+  "title": "Grammar Metadata V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "metadata"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "review", "approved"] },
+    "metadata": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metadataId",
+          "status",
+          "topicId",
+          "jlptLevel",
+          "coverageRole",
+          "titleKo",
+          "pattern",
+          "meaningKo",
+          "formationKo",
+          "usageNoteKo",
+          "nuanceKo",
+          "commonMistakesKo",
+          "koreanComparisonKo",
+          "register",
+          "targetSkills",
+          "exampleIds",
+          "existingGrammarRefs",
+          "contrastMetadataIds",
+          "audioPolicy",
+          "notesKo"
+        ],
+        "properties": {
+          "metadataId": {
+            "type": "string",
+            "pattern": "^gmv2-[a-z0-9][a-z0-9-]*$"
+          },
+          "status": { "enum": ["draft", "review", "approved"] },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "jlptLevel": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
+          "coverageRole": {
+            "enum": ["primary_topic", "split_lower_level", "split_upper_level"]
+          },
+          "titleKo": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string", "minLength": 1 },
+          "meaningKo": { "type": "string", "minLength": 1 },
+          "formationKo": { "type": "string", "minLength": 1 },
+          "usageNoteKo": { "type": "string", "minLength": 1 },
+          "nuanceKo": { "type": "string", "minLength": 1 },
+          "commonMistakesKo": { "type": "string", "minLength": 1 },
+          "koreanComparisonKo": { "type": "string", "minLength": 1 },
+          "register": {
+            "enum": ["neutral", "polite", "casual", "formal", "written", "business"]
+          },
+          "targetSkills": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "recognition",
+                "form_recall",
+                "context_selection",
+                "sentence_building",
+                "contrast",
+                "listening",
+                "conversation"
+              ]
+            }
+          },
+          "exampleIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ex-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "existingGrammarRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["level", "order"],
+              "properties": {
+                "level": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
+                "order": { "type": "integer", "minimum": 1 }
+              }
+            }
+          },
+          "contrastMetadataIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^gmv2-[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "audioPolicy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["audioTargetType", "ttsTargets", "generationStatus"],
+            "properties": {
+              "audioTargetType": { "enum": ["grammar", "example_sentence"] },
+              "ttsTargets": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "enum": ["pattern", "example_sentence", "question_prompt"] }
+              },
+              "generationStatus": {
+                "enum": ["missing", "generated", "approved", "rejected", "stale"]
+              },
+              "preferredVoiceId": { "type": "string" }
+            }
+          },
+          "notesKo": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,942 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "priorities": [
+    {
+      "priorityId": "priority-kana-hiragana",
+      "topicId": "topic-kana-hiragana",
+      "track": "ABSOLUTE_ZERO_FOUNDATION",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-kana-hiragana"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-personal-pronouns",
+      "topicId": "topic-personal-pronouns",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-personal-pronouns"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-demonstratives",
+      "topicId": "topic-demonstratives",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-demonstratives"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-nominal-negative",
+      "topicId": "topic-nominal-negative",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-nominal-negative"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-basic-particles",
+      "topicId": "topic-basic-particles",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-basic-particles"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-greetings",
+      "topicId": "topic-greetings",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-greetings"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-numbers-and-counters",
+      "topicId": "topic-numbers-and-counters",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-numbers-and-counters"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-time-and-weekdays",
+      "topicId": "topic-time-and-weekdays",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-time-and-weekdays"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-onegai-shimasu",
+      "topicId": "topic-onegai-shimasu",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-onegai-shimasu"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-kanji-reading-basics",
+      "topicId": "topic-kanji-reading-basics",
+      "track": "ABSOLUTE_ZERO_FOUNDATION",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-kanji-reading-basics"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-i-adjective-nominalization",
+      "topicId": "topic-i-adjective-nominalization",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-i-adjective-nominalization"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-verb-groups",
+      "topicId": "topic-verb-groups",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-verb-groups"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-aru-iru-existence",
+      "topicId": "topic-aru-iru-existence",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-aru-iru-existence"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-polite-form-applications",
+      "topicId": "topic-polite-form-applications",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-polite-form-applications"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-nasai",
+      "topicId": "topic-nasai",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-nasai"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-no-functions",
+      "topicId": "topic-no-functions",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-no-functions"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-verb-connection-forms",
+      "topicId": "topic-verb-connection-forms",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-verb-connection-forms"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-te-iru-progress-state",
+      "topicId": "topic-te-iru-progress-state",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-te-iru-progress-state"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-shiru-wakaru",
+      "topicId": "topic-shiru-wakaru",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-shiru-wakaru"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-hoshii",
+      "topicId": "topic-hoshii",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-hoshii"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-ta-hou-ga-ii",
+      "topicId": "topic-ta-hou-ga-ii",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-ta-hou-ga-ii"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-ku-naru-ni-naru",
+      "topicId": "topic-ku-naru-ni-naru",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-ku-naru-ni-naru"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-sentence-final-wa",
+      "topicId": "topic-sentence-final-wa",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-sentence-final-wa"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-prohibitive-na",
+      "topicId": "topic-prohibitive-na",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-prohibitive-na"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-kamoshirenai",
+      "topicId": "topic-kamoshirenai",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-kamoshirenai"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-shika-nai",
+      "topicId": "topic-shika-nai",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-shika-nai"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-dake",
+      "topicId": "topic-dake",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-dake"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-potential-form",
+      "topicId": "topic-potential-form",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-potential-form"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-adjective-sa",
+      "topicId": "topic-adjective-sa",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-adjective-sa"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-sentence-final-zo",
+      "topicId": "topic-sentence-final-zo",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-sentence-final-zo"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-imperative-form",
+      "topicId": "topic-imperative-form",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-imperative-form"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-volitional-form",
+      "topicId": "topic-volitional-form",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-volitional-form"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-sentence-final-ze",
+      "topicId": "topic-sentence-final-ze",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-sentence-final-ze"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-kana-particle",
+      "topicId": "topic-kana-particle",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-kana-particle"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-ni-suru",
+      "topicId": "topic-ni-suru",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-ni-suru"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-noda-ndesu",
+      "topicId": "topic-noda-ndesu",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-noda-ndesu"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-tameni",
+      "topicId": "topic-tameni",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-tameni"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-to-conditional",
+      "topicId": "topic-to-conditional",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-to-conditional"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-toiu",
+      "topicId": "topic-toiu",
+      "track": "N5_REINFORCEMENT",
+      "priority": "P0",
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-toiu"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-toiu-mono-wa",
+      "topicId": "topic-toiu-mono-wa",
+      "track": "N3_PLUS_EXTENSION",
+      "priority": "P3",
+      "recommendedWave": "WAVE_3_N3_PLUS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-toiu-mono-wa"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-to-quotation-or-condition",
+      "topicId": "topic-to-quotation-or-condition",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-to-quotation-or-condition"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-souda-hearsay-appearance-a",
+      "topicId": "topic-souda-hearsay-appearance-a",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-souda-hearsay-appearance-a"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-souda-hearsay-appearance-b",
+      "topicId": "topic-souda-hearsay-appearance-b",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-souda-hearsay-appearance-b"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-kitto",
+      "topicId": "topic-kitto",
+      "track": "N4_FOUNDATION",
+      "priority": "P2",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-kitto"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-casual-contractions",
+      "topicId": "topic-casual-contractions",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-casual-contractions"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-toiu-ka",
+      "topicId": "topic-toiu-ka",
+      "track": "CONVERSATION_REGISTER",
+      "priority": "P2",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-toiu-ka"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-mono-functions",
+      "topicId": "topic-mono-functions",
+      "track": "N4_FOUNDATION",
+      "priority": "P1",
+      "recommendedWave": "WAVE_2_N4_FOUNDATION",
+      "coverageStatus": "partial",
+      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-mono-functions"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-honorific-prefix-o-go",
+      "topicId": "topic-honorific-prefix-o-go",
+      "track": "BUSINESS_KEIGO",
+      "priority": "P3",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-honorific-prefix-o-go"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    },
+    {
+      "priorityId": "priority-keigo-sonkeigo-kenjougo",
+      "topicId": "topic-keigo-sonkeigo-kenjougo",
+      "track": "BUSINESS_KEIGO",
+      "priority": "P3",
+      "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+      "coverageStatus": "missing",
+      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
+      "blockers": [
+        "needs_original_examples",
+        "needs_lesson_slot",
+        "needs_human_review",
+        "needs_tts_decision",
+        "needs_runtime_support"
+      ],
+      "targetLessonBlueprintIds": [
+        "ldb-keigo-sonkeigo-kenjougo"
+      ],
+      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+    }
+  ]
+}

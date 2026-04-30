@@ -1,0 +1,2728 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "candidates": [
+    {
+      "candidateId": "lsc-personal-pronouns-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-personal-pronouns",
+      "sourceTopicIds": ["topic-personal-pronouns"],
+      "exampleIds": ["ex-personal-pronouns-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 31,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "나는 학생입니다",
+        "subtitle": "私は로 나를 소개하고 は로 주제를 세우기",
+        "topic": "인칭대명사",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 1,
+          "pattern": "〜です",
+          "meaning_ko": "~입니다 / ~이에요",
+          "supporting_grammar_orders": [32]
+        },
+        "vocab_orders": [605, 7, 6, 607],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "일본어 교실 첫 수업에서 옆자리 사람에게 간단히 자기소개",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私はキムです。学生です。",
+                "translation": "저는 김입니다. 학생입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "佐藤です。先生です。",
+                "translation": "사토입니다. 선생님입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は韓国から来ました。",
+                "translation": "저는 한국에서 왔습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "そうですか。よろしくお願いします。",
+                "translation": "그렇군요. 잘 부탁합니다."
+              }
+            ],
+            "highlights": ["私", "学生", "先生", "です", "は"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "私의 뜻은?",
+              "options": [
+                { "id": "a", "text": "저" },
+                { "id": "b", "text": "선생님" },
+                { "id": "c", "text": "친구" },
+                { "id": "d", "text": "학교" }
+              ],
+              "correct_answer": "a",
+              "explanation": "私(わたし)는 '저, 나'라는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "'학생'의 일본어는?",
+              "options": [
+                { "id": "a", "text": "先生" },
+                { "id": "b", "text": "学生" },
+                { "id": "c", "text": "韓国" },
+                { "id": "d", "text": "名前" }
+              ],
+              "correct_answer": "b",
+              "explanation": "学生(がくせい)는 '학생'입니다. 先生(せんせい)는 '선생님'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私___キムです。(저는 김입니다.)",
+              "options": [
+                { "id": "a", "text": "は" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "か" }
+              ],
+              "correct_answer": "a",
+              "explanation": "は는 주제를 나타내며, 私は는 '저는'이라는 뜻입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "学生___。(학생입니다.)",
+              "options": [
+                { "id": "a", "text": "です" },
+                { "id": "b", "text": "では" },
+                { "id": "c", "text": "から" },
+                { "id": "d", "text": "まで" }
+              ],
+              "correct_answer": "a",
+              "explanation": "명사 뒤에 です를 붙이면 정중하게 '~입니다'라고 말할 수 있습니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["学生", "です", "私は"],
+              "correct_order": ["私は", "学生", "です"],
+              "explanation": "일본어 기본 어순은 주제(私は) + 명사(学生) + です입니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 006의 인칭대명사 주제 커버리지 후보이며, 예문과 문항은 HaruKoto에서 새로 작성한 초안이다."
+    },
+    {
+      "candidateId": "lsc-demonstratives-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-demonstratives",
+      "sourceTopicIds": ["topic-demonstratives"],
+      "exampleIds": ["ex-demonstratives-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 32,
+        "chapterLessonNo": 2,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "이것, 그것, 저것",
+        "subtitle": "これ・それ・あれ로 물건을 가리키기",
+        "topic": "지시대명사",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 35,
+          "pattern": "これ・それ・あれ",
+          "meaning_ko": "이것·그것·저것",
+          "supporting_grammar_orders": [36, 37]
+        },
+        "vocab_orders": [357, 419, 219, 45, 6],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "교실 책상 위의 책을 보며 누구의 책인지 확인",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "これは私の本です。",
+                "translation": "이것은 제 책입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "それは先生の本ですか。",
+                "translation": "그것은 선생님의 책입니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、あれが先生の本です。",
+                "translation": "아니요, 저것이 선생님의 책입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "この本ですね。",
+                "translation": "이 책이군요."
+              }
+            ],
+            "highlights": ["これ", "それ", "あれ", "この", "の"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "これ의 뜻은?",
+              "options": [
+                { "id": "a", "text": "이것" },
+                { "id": "b", "text": "그것" },
+                { "id": "c", "text": "저것" },
+                { "id": "d", "text": "어느 것" }
+              ],
+              "correct_answer": "a",
+              "explanation": "これ는 말하는 사람 가까이에 있는 물건을 가리킬 때 씁니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "それ의 뜻은?",
+              "options": [
+                { "id": "a", "text": "저것" },
+                { "id": "b", "text": "그것" },
+                { "id": "c", "text": "이 사람" },
+                { "id": "d", "text": "어디" }
+              ],
+              "correct_answer": "b",
+              "explanation": "それ는 듣는 사람 쪽에 있거나 방금 말한 대상을 가리킬 때 씁니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "___は私の本です。(이것은 제 책입니다.)",
+              "options": [
+                { "id": "a", "text": "どれ" },
+                { "id": "b", "text": "あそこ" },
+                { "id": "c", "text": "これ" },
+                { "id": "d", "text": "そこ" }
+              ],
+              "correct_answer": "c",
+              "explanation": "말하는 사람 가까이에 있는 물건은 これ로 가리킵니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "先生___本です。(선생님의 책입니다.)",
+              "options": [
+                { "id": "a", "text": "は" },
+                { "id": "b", "text": "の" },
+                { "id": "c", "text": "を" },
+                { "id": "d", "text": "で" }
+              ],
+              "correct_answer": "b",
+              "explanation": "の는 소유를 나타내며, 先生の本은 '선생님의 책'입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이것은 선생님의 책입니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["先生の", "本", "これは", "です"],
+              "correct_order": ["これは", "先生の", "本", "です"],
+              "explanation": "지시어+は 뒤에 소유 표현 先生の와 명사 本을 놓고 です로 끝냅니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 007의 지시대명사 주제 커버리지 후보이며, 기존 N5 grammar 35/36/37과 연결해 분리 학습한다."
+    },
+    {
+      "candidateId": "lsc-nominal-negative-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-nominal-negative",
+      "sourceTopicIds": ["topic-nominal-negative"],
+      "exampleIds": ["ex-nominal-negative-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 33,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "가방이 아닙니다",
+        "subtitle": "ではありません으로 명사를 부정하기",
+        "topic": "명사 부정",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 1,
+          "pattern": "〜ではありません",
+          "meaning_ko": "~이/가 아닙니다",
+          "supporting_grammar_orders": [31, 32, 37]
+        },
+        "vocab_orders": [357, 52, 605, 7, 6],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "교실에서 같은 색 가방을 보고 누구의 것인지 확인",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "これは私のかばんですか。",
+                "translation": "이것은 제 가방입니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、私のかばんではありません。",
+                "translation": "아니요, 제 가방이 아닙니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "では、先生のかばんですか。",
+                "translation": "그러면 선생님의 가방입니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、先生のかばんです。",
+                "translation": "네, 선생님의 가방입니다."
+              }
+            ],
+            "highlights": ["ではありません", "かばん", "私の", "先生の"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "ではありません의 뜻은?",
+              "options": [
+                { "id": "a", "text": "~입니다" },
+                { "id": "b", "text": "~이/가 아닙니다" },
+                { "id": "c", "text": "~했습니다" },
+                { "id": "d", "text": "~하고 싶습니다" }
+              ],
+              "correct_answer": "b",
+              "explanation": "ではありません은 명사나 な형용사를 정중하게 부정할 때 씁니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "かばん의 뜻은?",
+              "options": [
+                { "id": "a", "text": "가방" },
+                { "id": "b", "text": "책" },
+                { "id": "c", "text": "역" },
+                { "id": "d", "text": "이름" }
+              ],
+              "correct_answer": "a",
+              "explanation": "かばん은 '가방'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私のかばん___ありません。(제 가방이 아닙니다.)",
+              "options": [
+                { "id": "a", "text": "では" },
+                { "id": "b", "text": "まで" },
+                { "id": "c", "text": "から" },
+                { "id": "d", "text": "より" }
+              ],
+              "correct_answer": "a",
+              "explanation": "명사 부정은 '명사 + ではありません'으로 말합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "先生___かばんです。(선생님의 가방입니다.)",
+              "options": [
+                { "id": "a", "text": "を" },
+                { "id": "b", "text": "で" },
+                { "id": "c", "text": "の" },
+                { "id": "d", "text": "か" }
+              ],
+              "correct_answer": "c",
+              "explanation": "の는 소유를 나타냅니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이것은 제 가방이 아닙니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["私の", "ありません", "これは", "かばんでは"],
+              "correct_order": ["これは", "私の", "かばんでは", "ありません"],
+              "explanation": "부정할 명사 뒤에 ではありません을 붙입니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 009의 명사 부정 주제 커버리지 후보이며, 현재 문법 seed에는 ではありません 전용 항목이 없어 です 계열 변형으로 스테이징한다."
+    },
+    {
+      "candidateId": "lsc-basic-particles-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-basic-particles",
+      "sourceTopicIds": ["topic-basic-particles"],
+      "exampleIds": ["ex-basic-particles-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 34,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "역에서 친구를 기다립니다",
+        "subtitle": "は・で・を로 문장 역할 구분하기",
+        "topic": "조사 총정리",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 32,
+          "pattern": "〜は",
+          "meaning_ko": "은/는",
+          "supporting_grammar_orders": [31, 33, 37, 43, 44]
+        },
+        "vocab_orders": [605, 19, 29, 5, 26, 16],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "아침에 역에서 친구를 만나 학교로 가는 상황",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は朝、駅で友だちを待ちます。",
+                "translation": "저는 아침에 역에서 친구를 기다립니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "友だちは今日、学校に行きますか。",
+                "translation": "친구는 오늘 학교에 갑니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、駅から学校まで歩きます。",
+                "translation": "네, 역에서 학교까지 걸어갑니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "いいですね。",
+                "translation": "좋네요."
+              }
+            ],
+            "highlights": ["は", "で", "を", "に", "から", "まで"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "駅의 뜻은?",
+              "options": [
+                { "id": "a", "text": "학교" },
+                { "id": "b", "text": "역" },
+                { "id": "c", "text": "아침" },
+                { "id": "d", "text": "친구" }
+              ],
+              "correct_answer": "b",
+              "explanation": "駅(えき)는 '역'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "友だち의 뜻은?",
+              "options": [
+                { "id": "a", "text": "친구" },
+                { "id": "b", "text": "선생님" },
+                { "id": "c", "text": "학생" },
+                { "id": "d", "text": "가방" }
+              ],
+              "correct_answer": "a",
+              "explanation": "友だち(ともだち)는 '친구'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "駅___友だちを待ちます。(역에서 친구를 기다립니다.)",
+              "options": [
+                { "id": "a", "text": "を" },
+                { "id": "b", "text": "で" },
+                { "id": "c", "text": "は" },
+                { "id": "d", "text": "の" }
+              ],
+              "correct_answer": "b",
+              "explanation": "행동이 일어나는 장소에는 で를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私___学生です。(저는 학생입니다.)",
+              "options": [
+                { "id": "a", "text": "は" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "まで" }
+              ],
+              "correct_answer": "a",
+              "explanation": "は는 문장의 주제나 대비되는 대상을 표시합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'저는 역에서 친구를 기다립니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["友だちを", "駅で", "私は", "待ちます"],
+              "correct_order": ["私は", "駅で", "友だちを", "待ちます"],
+              "explanation": "주제 私は 뒤에 장소 駅で, 목적어 友だちを, 동사 待ちます를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 010의 조사 총정리 주제 커버리지 후보이며, 기존 N5 조사 항목을 하나의 복습 lesson으로 묶는다."
+    },
+    {
+      "candidateId": "lsc-greetings-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-greetings",
+      "sourceTopicIds": ["topic-greetings"],
+      "exampleIds": ["ex-greetings-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 35,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "오늘도 잘 부탁합니다",
+        "subtitle": "기본 인사와 부탁 표현을 자연스럽게 연결하기",
+        "topic": "인사말",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 1,
+          "pattern": "定型表現 + です/ます",
+          "meaning_ko": "정중한 인사와 부탁 표현",
+          "supporting_grammar_orders": [34]
+        },
+        "vocab_orders": [196, 197, 198, 199, 503, 594],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "아침 스터디 모임에서 만난 학습자끼리 인사",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "おはようございます。",
+                "translation": "좋은 아침입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "おはようございます。今日もよろしくお願いします。",
+                "translation": "좋은 아침입니다. 오늘도 잘 부탁합니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "ありがとうございます。",
+                "translation": "감사합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "こちらこそ、よろしくお願いします。",
+                "translation": "저야말로 잘 부탁합니다."
+              }
+            ],
+            "highlights": ["おはようございます", "よろしくお願いします", "ありがとうございます"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "おはようございます의 뜻은?",
+              "options": [
+                { "id": "a", "text": "좋은 아침입니다" },
+                { "id": "b", "text": "안녕히 가세요" },
+                { "id": "c", "text": "죄송합니다" },
+                { "id": "d", "text": "실례합니다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "おはようございます는 아침에 쓰는 정중한 인사입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "ありがとうございます의 뜻은?",
+              "options": [
+                { "id": "a", "text": "부탁합니다" },
+                { "id": "b", "text": "감사합니다" },
+                { "id": "c", "text": "처음 뵙겠습니다" },
+                { "id": "d", "text": "괜찮습니다" }
+              ],
+              "correct_answer": "b",
+              "explanation": "ありがとうございます는 정중하게 '감사합니다'라고 말하는 표현입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "よろしく___。(잘 부탁합니다.)",
+              "options": [
+                { "id": "a", "text": "あります" },
+                { "id": "b", "text": "ありません" },
+                { "id": "c", "text": "お願いします" },
+                { "id": "d", "text": "おはよう" }
+              ],
+              "correct_answer": "c",
+              "explanation": "よろしくお願いします는 처음 만났을 때나 함께 일할 때 쓰는 정중한 표현입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "今日も___お願いします。(오늘도 잘 부탁합니다.)",
+              "options": [
+                { "id": "a", "text": "よろしく" },
+                { "id": "b", "text": "すみません" },
+                { "id": "c", "text": "こんばんは" },
+                { "id": "d", "text": "ありがとう" }
+              ],
+              "correct_answer": "a",
+              "explanation": "今日もよろしくお願いします는 계속 함께할 사람에게 자연스럽게 쓸 수 있습니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'좋은 아침입니다. 오늘도 잘 부탁합니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["よろしくお願いします", "おはようございます。", "今日も"],
+              "correct_order": ["おはようございます。", "今日も", "よろしくお願いします"],
+              "explanation": "아침 인사 뒤에 今日もよろしくお願いします를 붙이면 자연스러운 인사말이 됩니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "RegisterGate"
+      ],
+      "notesKo": "PDF 011의 인사말 주제 커버리지 후보이며, 듣기와 register 문항은 추후 runtime 확장 전까지 draftFutureQuestionTypes에만 둔다."
+    },
+    {
+      "candidateId": "lsc-numbers-and-counters-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-numbers-and-counters",
+      "sourceTopicIds": ["topic-numbers-and-counters"],
+      "exampleIds": ["ex-numbers-and-counters-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 36,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "종이를 두 장 삽니다",
+        "subtitle": "숫자와 조수사를 묶어 수량 말하기",
+        "topic": "숫자・조수사",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 46,
+          "pattern": "数量 + 助数詞",
+          "meaning_ko": "수량 표현",
+          "supporting_grammar_orders": [1, 43]
+        },
+        "vocab_orders": [191, 192, 193, 299, 547, 101, 534, 199],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "문구점에서 종이와 펜 수량을 말하며 구입",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "紙を二枚買います。",
+                "translation": "종이를 두 장 삽니다."
+              },
+              {
+                "speaker": "店員",
+                "voice_id": "japanese_female_1",
+                "text": "ペンも一つ買いますか。",
+                "translation": "펜도 하나 사십니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、紙を三枚お願いします。",
+                "translation": "아니요, 종이를 세 장 부탁합니다."
+              },
+              {
+                "speaker": "店員",
+                "voice_id": "japanese_female_1",
+                "text": "はい、三枚ですね。",
+                "translation": "네, 세 장이군요."
+              }
+            ],
+            "highlights": ["一つ", "二枚", "三枚", "紙", "買います"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "二つ의 뜻은?",
+              "options": [
+                { "id": "a", "text": "하나" },
+                { "id": "b", "text": "둘" },
+                { "id": "c", "text": "셋" },
+                { "id": "d", "text": "열" }
+              ],
+              "correct_answer": "b",
+              "explanation": "二つ(ふたつ)는 일반적인 물건을 셀 때 쓰는 '둘'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "-枚의 뜻은?",
+              "options": [
+                { "id": "a", "text": "-장" },
+                { "id": "b", "text": "-명" },
+                { "id": "c", "text": "-시" },
+                { "id": "d", "text": "-분" }
+              ],
+              "correct_answer": "a",
+              "explanation": "枚(まい)는 종이처럼 얇고 평평한 물건을 셀 때 쓰는 조수사입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "紙を二___買います。(종이를 두 장 삽니다.)",
+              "options": [
+                { "id": "a", "text": "枚" },
+                { "id": "b", "text": "時" },
+                { "id": "c", "text": "人" },
+                { "id": "d", "text": "日" }
+              ],
+              "correct_answer": "a",
+              "explanation": "종이는 얇은 물건이므로 枚를 사용합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "ペンも一___買いますか。(펜도 하나 사십니까?)",
+              "options": [
+                { "id": "a", "text": "つ" },
+                { "id": "b", "text": "枚" },
+                { "id": "c", "text": "時" },
+                { "id": "d", "text": "分" }
+              ],
+              "correct_answer": "a",
+              "explanation": "일반적인 물건 하나를 말할 때 一つ를 쓸 수 있습니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'종이를 세 장 부탁합니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["お願いします", "紙を", "三枚"],
+              "correct_order": ["紙を", "三枚", "お願いします"],
+              "explanation": "대상 紙を 뒤에 수량 三枚를 두고 お願いします로 부탁합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 012의 숫자・조수사 주제 커버리지 후보이며, 조수사 설명과 문항은 새로 작성했다."
+    },
+    {
+      "candidateId": "lsc-time-and-weekdays-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-time-and-weekdays",
+      "sourceTopicIds": ["topic-time-and-weekdays"],
+      "exampleIds": ["ex-time-and-weekdays-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 37,
+        "chapterLessonNo": 2,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "수요일 세 시에 만납니다",
+        "subtitle": "요일과 시각 뒤에 に 붙이기",
+        "topic": "시간・요일",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 42,
+          "pattern": "時間 + に",
+          "meaning_ko": "시간에",
+          "supporting_grammar_orders": [31, 37]
+        },
+        "vocab_orders": [16, 17, 202, 374, 377, 388, 395, 514, 532],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "스터디 일정을 정하며 요일과 시각을 확인",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "水曜日の三時に会いますか。",
+                "translation": "수요일 세 시에 만납니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、三時に会います。",
+                "translation": "네, 세 시에 만납니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "明日は十時半に会いますか。",
+                "translation": "내일은 열 시 반에 만납니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、今日は水曜日です。",
+                "translation": "아니요, 오늘은 수요일입니다."
+              }
+            ],
+            "highlights": ["水曜日", "三時", "十時半", "に", "会います"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "水曜日의 뜻은?",
+              "options": [
+                { "id": "a", "text": "월요일" },
+                { "id": "b", "text": "수요일" },
+                { "id": "c", "text": "토요일" },
+                { "id": "d", "text": "일요일" }
+              ],
+              "correct_answer": "b",
+              "explanation": "水曜日(すいようび)는 수요일입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "-時의 뜻은?",
+              "options": [
+                { "id": "a", "text": "-시" },
+                { "id": "b", "text": "-분" },
+                { "id": "c", "text": "-장" },
+                { "id": "d", "text": "-개" }
+              ],
+              "correct_answer": "a",
+              "explanation": "時(じ)는 시각의 '-시'를 나타냅니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "水曜日の三時___会います。(수요일 세 시에 만납니다.)",
+              "options": [
+                { "id": "a", "text": "に" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "の" }
+              ],
+              "correct_answer": "a",
+              "explanation": "구체적인 시각 뒤에는 に를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "十時___に会います。(열 시 반에 만납니다.)",
+              "options": [
+                { "id": "a", "text": "半" },
+                { "id": "b", "text": "枚" },
+                { "id": "c", "text": "人" },
+                { "id": "d", "text": "本" }
+              ],
+              "correct_answer": "a",
+              "explanation": "半(はん)은 '반, 30분'을 뜻해 十時半은 열 시 반입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'수요일 세 시에 만납니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["会います", "三時に", "水曜日の"],
+              "correct_order": ["水曜日の", "三時に", "会います"],
+              "explanation": "요일 水曜日の 뒤에 시각 三時に를 두고 동사 会います로 끝냅니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 013의 시간・요일 주제 커버리지 후보이며, 요일/시각과 조사 に를 함께 검증한다."
+    },
+    {
+      "candidateId": "lsc-onegai-shimasu-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-onegai-shimasu",
+      "sourceTopicIds": ["topic-onegai-shimasu"],
+      "exampleIds": ["ex-onegai-shimasu-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 38,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "이 종이를 한 장 부탁합니다",
+        "subtitle": "お願いします로 물건이나 도움을 정중하게 부탁하기",
+        "topic": "おねがいします",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 6,
+          "pattern": "お願いします",
+          "meaning_ko": "부탁합니다",
+          "supporting_grammar_orders": [36, 46]
+        },
+        "vocab_orders": [198, 199, 299, 354, 426, 538, 547],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "접수 데스크에서 종이와 볼펜을 정중하게 부탁",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "すみません。この紙を一枚お願いします。",
+                "translation": "실례합니다. 이 종이를 한 장 부탁합니다."
+              },
+              {
+                "speaker": "受付",
+                "voice_id": "japanese_female_1",
+                "text": "はい、一枚ですね。",
+                "translation": "네, 한 장이군요."
+              },
+              {
+                "speaker": "受付",
+                "voice_id": "japanese_female_1",
+                "text": "ボールペンもお願いしますか。",
+                "translation": "볼펜도 필요하십니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、紙だけお願いします。",
+                "translation": "아니요, 종이만 부탁합니다."
+              }
+            ],
+            "highlights": ["すみません", "この紙", "一枚", "お願いします", "だけ"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "お願いします의 뜻은?",
+              "options": [
+                { "id": "a", "text": "부탁합니다" },
+                { "id": "b", "text": "감사합니다" },
+                { "id": "c", "text": "안녕하세요" },
+                { "id": "d", "text": "괜찮습니다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "お願いします는 정중하게 부탁할 때 쓰는 표현입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "この의 뜻은?",
+              "options": [
+                { "id": "a", "text": "그" },
+                { "id": "b", "text": "저" },
+                { "id": "c", "text": "이" },
+                { "id": "d", "text": "어느" }
+              ],
+              "correct_answer": "c",
+              "explanation": "この는 명사 앞에서 '이'라는 뜻으로 씁니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この紙を一枚___。(이 종이를 한 장 부탁합니다.)",
+              "options": [
+                { "id": "a", "text": "お願いします" },
+                { "id": "b", "text": "あります" },
+                { "id": "c", "text": "会います" },
+                { "id": "d", "text": "分かります" }
+              ],
+              "correct_answer": "a",
+              "explanation": "대상 뒤에 お願いします를 붙이면 정중한 부탁이 됩니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "紙___お願いします。(종이만 부탁합니다.)",
+              "options": [
+                { "id": "a", "text": "だけ" },
+                { "id": "b", "text": "まで" },
+                { "id": "c", "text": "から" },
+                { "id": "d", "text": "より" }
+              ],
+              "correct_answer": "a",
+              "explanation": "だけ는 '-만'이라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이 종이를 한 장 부탁합니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["一枚", "お願いします", "この紙を"],
+              "correct_order": ["この紙を", "一枚", "お願いします"],
+              "explanation": "부탁할 대상 この紙を 뒤에 수량 一枚를 두고 お願いします로 끝냅니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "RegisterGate"
+      ],
+      "notesKo": "PDF 014의 お願いします 주제 커버리지 후보이며, 부탁 표현과 수량 표현을 함께 다룬다."
+    },
+    {
+      "candidateId": "lsc-aru-iru-existence-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-aru-iru-existence",
+      "sourceTopicIds": ["topic-aru-iru-existence"],
+      "exampleIds": ["ex-aru-iru-existence-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 39,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "책상 위에 펜이 있습니다",
+        "subtitle": "ある・いる로 사물과 생물의 존재 말하기",
+        "topic": "ある・いる",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 42,
+          "pattern": "ある・いる",
+          "meaning_ko": "있다",
+          "supporting_grammar_orders": [37, 40]
+        },
+        "vocab_orders": [35, 103, 104, 236, 244, 439, 494, 534],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "교실에서 책상 위 물건과 방 안의 동물을 설명",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "部屋に机があります。",
+                "translation": "방에 책상이 있습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "机の上にペンがあります。",
+                "translation": "책상 위에 펜이 있습니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "部屋に猫もいますか。",
+                "translation": "방에 고양이도 있습니까?"
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "いいえ、犬がいます。",
+                "translation": "아니요, 개가 있습니다."
+              }
+            ],
+            "highlights": ["あります", "います", "部屋", "机の上", "猫", "犬"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "ある의 뜻은?",
+              "options": [
+                { "id": "a", "text": "있다(사물)" },
+                { "id": "b", "text": "있다(생물)" },
+                { "id": "c", "text": "가다" },
+                { "id": "d", "text": "사다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "ある는 주로 사물이나 식물이 '있다'고 말할 때 씁니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "いる의 뜻은?",
+              "options": [
+                { "id": "a", "text": "있다(사물)" },
+                { "id": "b", "text": "있다(생물)" },
+                { "id": "c", "text": "만나다" },
+                { "id": "d", "text": "걷다" }
+              ],
+              "correct_answer": "b",
+              "explanation": "いる는 사람이나 동물처럼 생물이 '있다'고 말할 때 씁니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "机の上にペンが___。(책상 위에 펜이 있습니다.)",
+              "options": [
+                { "id": "a", "text": "あります" },
+                { "id": "b", "text": "います" },
+                { "id": "c", "text": "会います" },
+                { "id": "d", "text": "買います" }
+              ],
+              "correct_answer": "a",
+              "explanation": "펜은 사물이므로 あります를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "部屋に猫が___。(방에 고양이가 있습니다.)",
+              "options": [
+                { "id": "a", "text": "あります" },
+                { "id": "b", "text": "います" },
+                { "id": "c", "text": "買います" },
+                { "id": "d", "text": "行きます" }
+              ],
+              "correct_answer": "b",
+              "explanation": "고양이는 생물이므로 います를 씁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'책상 위에 펜이 있습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["ペンが", "机の上に", "あります"],
+              "correct_order": ["机の上に", "ペンが", "あります"],
+              "explanation": "위치 표현 机の上に 뒤에 존재하는 대상 ペンが를 두고 あります로 끝냅니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 025의 ある・いる 주제 커버리지 후보이며, 현재 grammar JSON에는 전용 항목이 없어 존재 위치 조사 に를 anchor로 둔다."
+    },
+    {
+      "candidateId": "lsc-verb-groups-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-verb-groups",
+      "sourceTopicIds": ["topic-verb-groups"],
+      "exampleIds": ["ex-verb-groups-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 40,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "먹습니다, 마십니다",
+        "subtitle": "る동사・う동사・불규칙 동사 구분하기",
+        "topic": "동사의 종류와 특징",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 45,
+          "pattern": "る動詞 / う動詞",
+          "meaning_ko": "1그룹 / 2그룹 동사 분류",
+          "supporting_grammar_orders": [47, 49]
+        },
+        "vocab_orders": [91, 92, 93, 94, 96, 98, 99, 102, 513],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "아침 식사와 공부 계획을 말하며 여러 동사를 비교",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は朝、パンを食べます。",
+                "translation": "저는 아침에 빵을 먹습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私は水を飲みます。",
+                "translation": "저는 물을 마십니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "昼に図書館へ行きます。",
+                "translation": "점심에 도서관에 갑니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "図書館で勉強します。",
+                "translation": "도서관에서 공부합니다."
+              }
+            ],
+            "highlights": ["食べます", "飲みます", "行きます", "します"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "食べる의 뜻은?",
+              "options": [
+                { "id": "a", "text": "먹다" },
+                { "id": "b", "text": "마시다" },
+                { "id": "c", "text": "보다" },
+                { "id": "d", "text": "쓰다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "食べる(たべる)는 '먹다'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "飲む의 뜻은?",
+              "options": [
+                { "id": "a", "text": "가다" },
+                { "id": "b", "text": "오다" },
+                { "id": "c", "text": "마시다" },
+                { "id": "d", "text": "읽다" }
+              ],
+              "correct_answer": "c",
+              "explanation": "飲む(のむ)는 '마시다'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "パンを___。(빵을 먹습니다.)",
+              "options": [
+                { "id": "a", "text": "食べます" },
+                { "id": "b", "text": "飲みます" },
+                { "id": "c", "text": "来ます" },
+                { "id": "d", "text": "書きます" }
+              ],
+              "correct_answer": "a",
+              "explanation": "パン은 먹는 대상이므로 食べます를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "図書館で勉強___。(도서관에서 공부합니다.)",
+              "options": [
+                { "id": "a", "text": "します" },
+                { "id": "b", "text": "来ます" },
+                { "id": "c", "text": "見ます" },
+                { "id": "d", "text": "読みます" }
+              ],
+              "correct_answer": "a",
+              "explanation": "勉強する는 '공부하다'이며, 정중형은 勉強します입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'저는 빵을 먹습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["食べます", "パンを", "私は"],
+              "correct_order": ["私は", "パンを", "食べます"],
+              "explanation": "주제 私は 뒤에 목적어 パンを를 두고 동사 食べます로 끝냅니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 023의 동사 분류 보강 후보이며, 후속 て형/ない형 topic의 prerequisite로 사용한다."
+    },
+    {
+      "candidateId": "lsc-polite-form-applications-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-polite-form-applications",
+      "sourceTopicIds": ["topic-polite-form-applications"],
+      "exampleIds": ["ex-polite-form-applications-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 41,
+        "chapterLessonNo": 6,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "도서관에 공부하러 갑시다",
+        "subtitle": "ましょう와 〜に行きます로 정중하게 제안하기",
+        "topic": "정중형의 응용표현",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 11,
+          "pattern": "〜ましょう",
+          "meaning_ko": "~합시다 / ~하겠습니다",
+          "supporting_grammar_orders": [12, 44]
+        },
+        "vocab_orders": [20, 32, 81, 93, 102, 188],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "점심 이후 도서관에서 함께 공부하자고 제안",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "昼に図書館へ行きましょう。",
+                "translation": "점심에 도서관에 갑시다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいですね。勉強しに行きましょう。",
+                "translation": "좋네요. 공부하러 갑시다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "一緒に日本語を勉強します。",
+                "translation": "함께 일본어를 공부합니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、行きましょう。",
+                "translation": "네, 갑시다."
+              }
+            ],
+            "highlights": ["行きましょう", "勉強しに行きましょう", "一緒に"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "図書館의 뜻은?",
+              "options": [
+                { "id": "a", "text": "도서관" },
+                { "id": "b", "text": "학교" },
+                { "id": "c", "text": "역" },
+                { "id": "d", "text": "가게" }
+              ],
+              "correct_answer": "a",
+              "explanation": "図書館(としょかん)는 '도서관'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "一緒に의 뜻은?",
+              "options": [
+                { "id": "a", "text": "혼자" },
+                { "id": "b", "text": "함께" },
+                { "id": "c", "text": "가끔" },
+                { "id": "d", "text": "다시" }
+              ],
+              "correct_answer": "b",
+              "explanation": "一緒に(いっしょに)는 '함께'라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "図書館へ行き___。(도서관에 갑시다.)",
+              "options": [
+                { "id": "a", "text": "ましょう" },
+                { "id": "b", "text": "ません" },
+                { "id": "c", "text": "ました" },
+                { "id": "d", "text": "たいです" }
+              ],
+              "correct_answer": "a",
+              "explanation": "제안할 때는 동사의 ます형 어간에 ましょう를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "勉強し___行きます。(공부하러 갑니다.)",
+              "options": [
+                { "id": "a", "text": "に" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "の" }
+              ],
+              "correct_answer": "a",
+              "explanation": "목적을 말할 때 동사 ます형 어간 + に行きます를 씁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'도서관에 공부하러 갑시다'를 올바른 순서로 배열하세요.",
+              "tokens": ["行きましょう", "図書館へ", "勉強しに"],
+              "correct_order": ["図書館へ", "勉強しに", "行きましょう"],
+              "explanation": "장소 図書館へ 뒤에 목적 勉強しに를 두고 行きましょう로 제안합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 026의 정중형 응용 보강 후보이며, ましょう와 목적 표현 〜に行きます를 한 lesson에서 비교한다."
+    },
+    {
+      "candidateId": "lsc-no-functions-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-no-functions",
+      "sourceTopicIds": ["topic-no-functions"],
+      "exampleIds": ["ex-no-functions-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 42,
+        "chapterLessonNo": 7,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "영화를 보는 것을 좋아합니다",
+        "subtitle": "の의 소유와 명사화 용법 구분하기",
+        "topic": "の",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 28,
+          "pattern": "〜のが好きです",
+          "meaning_ko": "~하는 것을 좋아합니다",
+          "supporting_grammar_orders": [37]
+        },
+        "vocab_orders": [45, 76, 96, 162, 398, 605],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "취미를 이야기하며 소유의 の와 명사화 の를 구분",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は映画を見るのが好きです。",
+                "translation": "저는 영화를 보는 것을 좋아합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "その本はキムさんの本ですか。",
+                "translation": "그 책은 김 씨의 책입니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、私の本です。",
+                "translation": "네, 제 책입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "読むのも好きですか。",
+                "translation": "읽는 것도 좋아합니까?"
+              }
+            ],
+            "highlights": ["見るの", "読むの", "私の", "本"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "映画의 뜻은?",
+              "options": [
+                { "id": "a", "text": "영화" },
+                { "id": "b", "text": "음악" },
+                { "id": "c", "text": "책" },
+                { "id": "d", "text": "노트" }
+              ],
+              "correct_answer": "a",
+              "explanation": "映画(えいが)는 '영화'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "好きです의 뜻은?",
+              "options": [
+                { "id": "a", "text": "좋아합니다" },
+                { "id": "b", "text": "싫어합니다" },
+                { "id": "c", "text": "읽습니다" },
+                { "id": "d", "text": "봅니다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "好きです는 '좋아합니다'라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "映画を見る___が好きです。(영화를 보는 것을 좋아합니다.)",
+              "options": [
+                { "id": "a", "text": "の" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "か" }
+              ],
+              "correct_answer": "a",
+              "explanation": "동사 뒤의 の는 '~하는 것'처럼 동작을 명사처럼 만듭니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私___本です。(제 책입니다.)",
+              "options": [
+                { "id": "a", "text": "の" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "へ" }
+              ],
+              "correct_answer": "a",
+              "explanation": "명사 뒤의 の는 소유를 나타내며, 私の本은 '제 책'입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'영화를 보는 것을 좋아합니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["好きです", "映画を見るのが", "私は"],
+              "correct_order": ["私は", "映画を見るのが", "好きです"],
+              "explanation": "동작을 명사화한 映画を見るのが 뒤에 好きです를 붙입니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 035의 の 보강 후보이며, 소유 の와 명사화 の를 같은 script 안에서 분리한다."
+    },
+    {
+      "candidateId": "lsc-verb-connection-forms-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-verb-connection-forms",
+      "sourceTopicIds": ["topic-verb-connection-forms"],
+      "exampleIds": ["ex-verb-connection-forms-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 43,
+        "chapterLessonNo": 8,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "이름을 쓰고 기다립니다",
+        "subtitle": "て형으로 동작을 자연스럽게 연결하기",
+        "topic": "동사의 연결형",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 50,
+          "pattern": "Verb+て",
+          "meaning_ko": "동사て형 연결",
+          "supporting_grammar_orders": [49]
+        },
+        "vocab_orders": [5, 45, 74, 98, 99, 112],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "접수표에 이름을 쓰고 친구를 기다리는 상황",
+            "script": [
+              {
+                "speaker": "受付",
+                "voice_id": "japanese_female_1",
+                "text": "ここに名前を書いてください。",
+                "translation": "여기에 이름을 써 주세요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、名前を書いて、友だちを待ちます。",
+                "translation": "네, 이름을 쓰고 친구를 기다립니다."
+              },
+              {
+                "speaker": "受付",
+                "voice_id": "japanese_female_1",
+                "text": "この本を読んでください。",
+                "translation": "이 책을 읽어 주세요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "分かりました。",
+                "translation": "알겠습니다."
+              }
+            ],
+            "highlights": ["書いて", "読んで", "待ちます", "ください"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "書く의 뜻은?",
+              "options": [
+                { "id": "a", "text": "쓰다" },
+                { "id": "b", "text": "읽다" },
+                { "id": "c", "text": "기다리다" },
+                { "id": "d", "text": "보다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "書く(かく)는 '쓰다'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "待つ의 뜻은?",
+              "options": [
+                { "id": "a", "text": "기다리다" },
+                { "id": "b", "text": "사다" },
+                { "id": "c", "text": "오다" },
+                { "id": "d", "text": "마시다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "待つ(まつ)는 '기다리다'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "名前を___、友だちを待ちます。(이름을 쓰고 친구를 기다립니다.)",
+              "options": [
+                { "id": "a", "text": "書いて" },
+                { "id": "b", "text": "書く" },
+                { "id": "c", "text": "書きます" },
+                { "id": "d", "text": "書きません" }
+              ],
+              "correct_answer": "a",
+              "explanation": "동작을 이어 말할 때는 て형 書いて를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この本を___ください。(이 책을 읽어 주세요.)",
+              "options": [
+                { "id": "a", "text": "読んで" },
+                { "id": "b", "text": "読む" },
+                { "id": "c", "text": "読みます" },
+                { "id": "d", "text": "読まない" }
+              ],
+              "correct_answer": "a",
+              "explanation": "てください 앞에는 동사의 て형이 옵니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이름을 쓰고 친구를 기다립니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["友だちを", "名前を書いて、", "待ちます"],
+              "correct_order": ["名前を書いて、", "友だちを", "待ちます"],
+              "explanation": "첫 동작 名前を書いて 뒤에 다음 동작 友だちを待ちます를 연결합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 036의 동사 연결형 보강 후보이며, て형 변형 규칙은 별도 drill에서 더 촘촘히 다룬다."
+    },
+    {
+      "candidateId": "lsc-te-iru-progress-state-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-te-iru-progress-state",
+      "sourceTopicIds": ["topic-te-iru-progress-state"],
+      "exampleIds": ["ex-te-iru-progress-state-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 8,
+        "lessonNo": 44,
+        "chapterLessonNo": 9,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "지금 책을 읽고 있습니다",
+        "subtitle": "〜ている로 진행 중인 동작 말하기",
+        "topic": "진행과 상태",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 20,
+          "pattern": "〜ています",
+          "meaning_ko": "하고 있습니다 / 해 있습니다",
+          "supporting_grammar_orders": [49, 52]
+        },
+        "vocab_orders": [22, 45, 96, 98, 105, 106],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "스터디 중에 지금 무엇을 하고 있는지 묻고 답하기",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "キムさんは今、何をしていますか。",
+                "translation": "김 씨는 지금 무엇을 하고 있습니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "本を読んでいます。",
+                "translation": "책을 읽고 있습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私は映画を見ています。",
+                "translation": "저는 영화를 보고 있습니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "友だちは寝ていますか。",
+                "translation": "친구는 자고 있습니까?"
+              }
+            ],
+            "highlights": ["読んでいます", "見ています", "寝ています", "今"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "今의 뜻은?",
+              "options": [
+                { "id": "a", "text": "지금" },
+                { "id": "b", "text": "내일" },
+                { "id": "c", "text": "어제" },
+                { "id": "d", "text": "아침" }
+              ],
+              "correct_answer": "a",
+              "explanation": "今(いま)는 '지금'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "読む의 뜻은?",
+              "options": [
+                { "id": "a", "text": "읽다" },
+                { "id": "b", "text": "보다" },
+                { "id": "c", "text": "자다" },
+                { "id": "d", "text": "일어나다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "読む(よむ)는 '읽다'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "本を読んで___。(책을 읽고 있습니다.)",
+              "options": [
+                { "id": "a", "text": "います" },
+                { "id": "b", "text": "ください" },
+                { "id": "c", "text": "ましょう" },
+                { "id": "d", "text": "ません" }
+              ],
+              "correct_answer": "a",
+              "explanation": "진행 중인 동작은 동사 て형 + います로 말합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "映画を___います。(영화를 보고 있습니다.)",
+              "options": [
+                { "id": "a", "text": "見て" },
+                { "id": "b", "text": "見る" },
+                { "id": "c", "text": "見ます" },
+                { "id": "d", "text": "見ません" }
+              ],
+              "correct_answer": "a",
+              "explanation": "見る의 て형은 見て입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'지금 책을 읽고 있습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["読んでいます", "今、", "本を"],
+              "correct_order": ["今、", "本を", "読んでいます"],
+              "explanation": "시간 今 뒤에 목적어 本を를 두고 読んでいます로 진행을 말합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 043의 ている 보강 후보이며, 진행/상태/반복 용법 중 이번 후보는 진행 의미만 다룬다."
+    },
+    {
+      "candidateId": "lsc-shiru-wakaru-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-shiru-wakaru",
+      "sourceTopicIds": ["topic-shiru-wakaru"],
+      "exampleIds": ["ex-shiru-wakaru-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 45,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "알고 있나요, 이해하나요",
+        "subtitle": "知っています와 分かります를 문맥으로 구분하기",
+        "topic": "知る와 分かる",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 20,
+          "pattern": "知っています / 分かります",
+          "meaning_ko": "알고 있습니다 / 이해합니다",
+          "supporting_grammar_orders": [31, 46]
+        },
+        "vocab_orders": [75, 85, 122, 393],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "새 단어의 뜻과 아는 사람을 구분해서 묻고 답하기",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "この言葉の意味が分かりますか。",
+                "translation": "이 단어의 뜻을 압니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、意味が分かります。",
+                "translation": "네, 뜻을 압니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "田中さんを知っていますか。",
+                "translation": "다나카 씨를 알고 있습니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、田中さんを知っています。",
+                "translation": "네, 다나카 씨를 알고 있습니다."
+              }
+            ],
+            "highlights": ["言葉", "意味", "分かります", "知っています"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "分かる의 뜻에 가까운 것은?",
+              "options": [
+                { "id": "a", "text": "이해하다" },
+                { "id": "b", "text": "마시다" },
+                { "id": "c", "text": "사다" },
+                { "id": "d", "text": "기다리다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "分かる는 의미나 상황을 이해한다는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "知る의 뜻에 가까운 것은?",
+              "options": [
+                { "id": "a", "text": "정보나 사람을 알다" },
+                { "id": "b", "text": "방을 청소하다" },
+                { "id": "c", "text": "길을 걷다" },
+                { "id": "d", "text": "밥을 먹다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "知る는 정보를 접해 알거나 사람을 알고 있다는 뜻으로 씁니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この言葉の意味が___。(이 단어의 뜻을 압니다.)",
+              "options": [
+                { "id": "a", "text": "分かります" },
+                { "id": "b", "text": "知っています" },
+                { "id": "c", "text": "飲みます" },
+                { "id": "d", "text": "行きます" }
+              ],
+              "correct_answer": "a",
+              "explanation": "의미를 이해한다는 문맥에서는 分かります가 자연스럽습니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "田中さんを___か。(다나카 씨를 알고 있습니까?)",
+              "options": [
+                { "id": "a", "text": "知っています" },
+                { "id": "b", "text": "分かります" },
+                { "id": "c", "text": "寒いです" },
+                { "id": "d", "text": "静かです" }
+              ],
+              "correct_answer": "a",
+              "explanation": "사람을 알고 있다는 상태는 知っています로 말합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이 단어의 뜻을 압니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["意味が", "この言葉の", "分かります"],
+              "correct_order": ["この言葉の", "意味が", "分かります"],
+              "explanation": "この言葉の意味が 뒤에 分かります를 두어 '이 단어의 뜻을 압니다'라고 말합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 044의 어휘/문맥 contrast 후보이며, 知る와 分かる의 한국어 '알다' 번역 충돌을 분리한다."
+    },
+    {
+      "candidateId": "lsc-hoshii-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-hoshii",
+      "sourceTopicIds": ["topic-hoshii"],
+      "exampleIds": ["ex-hoshii-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 46,
+        "chapterLessonNo": 2,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "새 노트를 갖고 싶습니다",
+        "subtitle": "N が欲しいです로 원하는 물건 말하기",
+        "topic": "名詞が欲しい",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 10,
+          "pattern": "N + が欲しいです",
+          "meaning_ko": "~을 갖고 싶습니다",
+          "supporting_grammar_orders": [32]
+        },
+        "vocab_orders": [138, 157, 496, 534, 543],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "문구점에서 새 노트와 펜을 고르며 원하는 물건 말하기",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "新しいノートが欲しいです。",
+                "translation": "새 노트를 갖고 싶습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "赤いノートですか。",
+                "translation": "빨간 노트입니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、赤いノートが欲しいです。",
+                "translation": "네, 빨간 노트를 갖고 싶습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私は新しいペンが欲しいです。",
+                "translation": "저는 새 펜을 갖고 싶습니다."
+              }
+            ],
+            "highlights": ["新しい", "ノート", "ペン", "が欲しいです"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "欲しい의 뜻은?",
+              "options": [
+                { "id": "a", "text": "갖고 싶다" },
+                { "id": "b", "text": "조용하다" },
+                { "id": "c", "text": "마시다" },
+                { "id": "d", "text": "읽다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "欲しい는 원하는 물건이나 상태를 말할 때 쓰는 '갖고 싶다'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "ノート의 뜻은?",
+              "options": [
+                { "id": "a", "text": "노트" },
+                { "id": "b", "text": "차" },
+                { "id": "c", "text": "봄" },
+                { "id": "d", "text": "방" }
+              ],
+              "correct_answer": "a",
+              "explanation": "ノート는 '노트'라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "新しいノート___欲しいです。(새 노트를 갖고 싶습니다.)",
+              "options": [
+                { "id": "a", "text": "が" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "で" },
+                { "id": "d", "text": "に" }
+              ],
+              "correct_answer": "a",
+              "explanation": "欲しい 앞의 원하는 대상은 が로 표시합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私は新しいペンが___。(저는 새 펜을 갖고 싶습니다.)",
+              "options": [
+                { "id": "a", "text": "欲しいです" },
+                { "id": "b", "text": "飲みます" },
+                { "id": "c", "text": "行きます" },
+                { "id": "d", "text": "来ます" }
+              ],
+              "correct_answer": "a",
+              "explanation": "원하는 물건을 말할 때는 N が欲しいです를 씁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'새 노트를 갖고 싶습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["欲しいです", "新しいノートが", "私は"],
+              "correct_order": ["私は", "新しいノートが", "欲しいです"],
+              "explanation": "주제 私は 뒤에 원하는 대상 新しいノートが, 끝에 欲しいです를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 045의 ほしい 보강 후보이며, N5 seed에서는 명사 욕구 표현만 다루고 Vてほしい는 N4 contrast로 남긴다."
+    },
+    {
+      "candidateId": "lsc-ku-naru-ni-naru-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-ku-naru-ni-naru",
+      "sourceTopicIds": ["topic-ku-naru-ni-naru"],
+      "exampleIds": ["ex-ku-naru-ni-naru-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 47,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "춥게, 조용하게 변했습니다",
+        "subtitle": "い형용사는 く, な형용사와 명사는 に로 변화 말하기",
+        "topic": "くなる・になる",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 38,
+          "pattern": "いAdj stem + くなります / なAdj・N + になります",
+          "meaning_ko": "~해집니다 / ~이 됩니다",
+          "supporting_grammar_orders": [39]
+        },
+        "vocab_orders": [19, 35, 145, 166],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "아침 날씨와 방 상태가 어떻게 변했는지 말하기",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "朝は寒くなりました。",
+                "translation": "아침은 추워졌습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "部屋は静かになりました。",
+                "translation": "방은 조용해졌습니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "寒いは寒く、静かは静かになりますね。",
+                "translation": "춥다는 寒く, 조용하다는 静かになります군요."
+              }
+            ],
+            "highlights": ["寒くなりました", "静かになりました", "く", "に"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "寒い의 뜻은?",
+              "options": [
+                { "id": "a", "text": "춥다" },
+                { "id": "b", "text": "조용하다" },
+                { "id": "c", "text": "새롭다" },
+                { "id": "d", "text": "빨갛다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "寒い는 '춥다'라는 뜻의 い형용사입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "静か의 뜻은?",
+              "options": [
+                { "id": "a", "text": "조용하다" },
+                { "id": "b", "text": "춥다" },
+                { "id": "c", "text": "마시다" },
+                { "id": "d", "text": "알다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "静か는 '조용하다'라는 뜻의 な형용사입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "寒___なりました。(추워졌습니다.)",
+              "options": [
+                { "id": "a", "text": "く" },
+                { "id": "b", "text": "に" },
+                { "id": "c", "text": "を" },
+                { "id": "d", "text": "で" }
+              ],
+              "correct_answer": "a",
+              "explanation": "い형용사 寒い는 마지막 い를 く로 바꾸고 なります를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "静か___なりました。(조용해졌습니다.)",
+              "options": [
+                { "id": "a", "text": "に" },
+                { "id": "b", "text": "く" },
+                { "id": "c", "text": "が" },
+                { "id": "d", "text": "を" }
+              ],
+              "correct_answer": "a",
+              "explanation": "な형용사 静か는 静かに なります로 말합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'방은 조용해졌습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["静かに", "部屋は", "なりました"],
+              "correct_order": ["部屋は", "静かに", "なりました"],
+              "explanation": "주제 部屋は 뒤에 静かに, 끝에 なりました를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 058의 변화 표현 도입 후보이며, grammar metadata v2에서 い형용사와 な형용사/명사 접속을 분리했다."
+    },
+    {
+      "candidateId": "lsc-dake-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-dake",
+      "sourceTopicIds": ["topic-dake"],
+      "exampleIds": ["ex-dake-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 48,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "오늘은 물만 마십니다",
+        "subtitle": "だけ로 범위를 하나로 제한하기",
+        "topic": "だけ",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 33,
+          "pattern": "N / quantity + だけ",
+          "meaning_ko": "~만",
+          "supporting_grammar_orders": [46]
+        },
+        "vocab_orders": [16, 37, 38, 92],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "오늘 마실 것을 정하며 '만'과 '도'를 구분하기",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "今日は水だけ飲みます。",
+                "translation": "오늘은 물만 마십니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "お茶も飲みますか。",
+                "translation": "차도 마십니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "いいえ、水だけです。",
+                "translation": "아니요, 물뿐입니다."
+              }
+            ],
+            "highlights": ["水だけ", "お茶も", "飲みます"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "水의 뜻은?",
+              "options": [
+                { "id": "a", "text": "물" },
+                { "id": "b", "text": "차" },
+                { "id": "c", "text": "노트" },
+                { "id": "d", "text": "봄" }
+              ],
+              "correct_answer": "a",
+              "explanation": "水(みず)는 '물'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "飲む의 뜻은?",
+              "options": [
+                { "id": "a", "text": "마시다" },
+                { "id": "b", "text": "알다" },
+                { "id": "c", "text": "사다" },
+                { "id": "d", "text": "보다" }
+              ],
+              "correct_answer": "a",
+              "explanation": "飲む(のむ)는 '마시다'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "水___飲みます。(물만 마십니다.)",
+              "options": [
+                { "id": "a", "text": "だけ" },
+                { "id": "b", "text": "も" },
+                { "id": "c", "text": "から" },
+                { "id": "d", "text": "まで" }
+              ],
+              "correct_answer": "a",
+              "explanation": "범위를 하나로 제한할 때는 제한할 말 뒤에 だけ를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "お茶___飲みますか。(차도 마십니까?)",
+              "options": [
+                { "id": "a", "text": "も" },
+                { "id": "b", "text": "だけ" },
+                { "id": "c", "text": "を" },
+                { "id": "d", "text": "に" }
+              ],
+              "correct_answer": "a",
+              "explanation": "추가나 동류를 말할 때는 も를 씁니다. だけ는 제한 의미입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'오늘은 물만 마십니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["水だけ", "今日は", "飲みます"],
+              "correct_order": ["今日は", "水だけ", "飲みます"],
+              "explanation": "今日は 뒤에 제한 대상 水だけ, 끝에 飲みます를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 066의 だけ 도입 후보이며, 기존 N5 も와 대비해 제한 의미를 먼저 고정한다."
+    },
+    {
+      "candidateId": "lsc-ni-suru-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-ni-suru",
+      "sourceTopicIds": ["topic-ni-suru"],
+      "exampleIds": ["ex-ni-suru-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 49,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "저는 차로 하겠습니다",
+        "subtitle": "N にします로 선택을 말하기",
+        "topic": "にする",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 47,
+          "pattern": "N + にします",
+          "meaning_ko": "~로 하겠습니다",
+          "supporting_grammar_orders": [42]
+        },
+        "vocab_orders": [37, 38, 102, 343, 605],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "카페에서 마실 것을 고르며 선택 표현 말하기",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "飲み物は何にしますか。",
+                "translation": "마실 것은 무엇으로 하겠습니까?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私はお茶にします。",
+                "translation": "저는 차로 하겠습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私はコーヒーにします。",
+                "translation": "저는 커피로 하겠습니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "水もお願いします。",
+                "translation": "물도 부탁합니다."
+              }
+            ],
+            "highlights": ["何にしますか", "お茶にします", "コーヒーにします"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "お茶의 뜻은?",
+              "options": [
+                { "id": "a", "text": "차" },
+                { "id": "b", "text": "물" },
+                { "id": "c", "text": "커피" },
+                { "id": "d", "text": "노트" }
+              ],
+              "correct_answer": "a",
+              "explanation": "お茶(おちゃ)는 '차'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "コーヒー의 뜻은?",
+              "options": [
+                { "id": "a", "text": "커피" },
+                { "id": "b", "text": "차" },
+                { "id": "c", "text": "물" },
+                { "id": "d", "text": "봄" }
+              ],
+              "correct_answer": "a",
+              "explanation": "コーヒー는 '커피'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "私はお茶___します。(저는 차로 하겠습니다.)",
+              "options": [
+                { "id": "a", "text": "に" },
+                { "id": "b", "text": "を" },
+                { "id": "c", "text": "が" },
+                { "id": "d", "text": "で" }
+              ],
+              "correct_answer": "a",
+              "explanation": "선택한 명사 뒤에는 にします를 붙여 '~로 하겠습니다'라고 말합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "飲み物は何___しますか。(마실 것은 무엇으로 하겠습니까?)",
+              "options": [
+                { "id": "a", "text": "に" },
+                { "id": "b", "text": "だけ" },
+                { "id": "c", "text": "も" },
+                { "id": "d", "text": "の" }
+              ],
+              "correct_answer": "a",
+              "explanation": "무엇으로 정할지 물을 때도 何にしますか를 씁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'저는 커피로 하겠습니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["コーヒーに", "私は", "します"],
+              "correct_order": ["私は", "コーヒーに", "します"],
+              "explanation": "주제 私は 뒤에 선택한 명사 コーヒーに, 끝에 します를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 077의 にする 보강 후보이며, N5 seed에서는 명사 선택 표현으로 제한하고 N4 ことにする와 분리한다."
+    },
+    {
+      "candidateId": "lsc-toiu-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-toiu",
+      "sourceTopicIds": ["topic-toiu"],
+      "exampleIds": ["ex-toiu-001"],
+      "promotionTarget": {
+        "level": "N5",
+        "partNo": 1,
+        "chapterNo": 9,
+        "lessonNo": 50,
+        "chapterLessonNo": 6,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "봄이라는 단어",
+        "subtitle": "N という N으로 이름과 명칭 소개하기",
+        "topic": "という",
+        "estimated_minutes": 10,
+        "grammar": {
+          "level": "N5",
+          "grammar_order": 1,
+          "pattern": "N + という + N",
+          "meaning_ko": "~이라는 ~",
+          "supporting_grammar_orders": [37]
+        },
+        "vocab_orders": [74, 75, 512, 605],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "일본어 단어와 이름을 소개하며 という로 명칭 설명하기",
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "これは春という言葉です。",
+                "translation": "이것은 봄이라는 단어입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "春はいい言葉ですね。",
+                "translation": "봄은 좋은 단어네요."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私の名前は佐藤です。",
+                "translation": "제 이름은 사토입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "佐藤という名前ですね。",
+                "translation": "사토라는 이름이군요."
+              }
+            ],
+            "highlights": ["春という言葉", "佐藤という名前", "言葉", "名前"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "言葉의 뜻은?",
+              "options": [
+                { "id": "a", "text": "말, 단어" },
+                { "id": "b", "text": "차" },
+                { "id": "c", "text": "방" },
+                { "id": "d", "text": "물" }
+              ],
+              "correct_answer": "a",
+              "explanation": "言葉(ことば)는 '말, 단어'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "春의 뜻은?",
+              "options": [
+                { "id": "a", "text": "봄" },
+                { "id": "b", "text": "아침" },
+                { "id": "c", "text": "오늘" },
+                { "id": "d", "text": "가게" }
+              ],
+              "correct_answer": "a",
+              "explanation": "春(はる)는 '봄'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "春___言葉です。(봄이라는 단어입니다.)",
+              "options": [
+                { "id": "a", "text": "という" },
+                { "id": "b", "text": "だけ" },
+                { "id": "c", "text": "にする" },
+                { "id": "d", "text": "欲しい" }
+              ],
+              "correct_answer": "a",
+              "explanation": "이름이나 표현을 소개할 때 N という N 구조를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "佐藤___名前です。(사토라는 이름입니다.)",
+              "options": [
+                { "id": "a", "text": "という" },
+                { "id": "b", "text": "だけ" },
+                { "id": "c", "text": "も" },
+                { "id": "d", "text": "を" }
+              ],
+              "correct_answer": "a",
+              "explanation": "명칭을 설명할 때 이름 뒤에 という를 붙입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'봄이라는 단어입니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["言葉です", "春という", "これは"],
+              "correct_order": ["これは", "春という", "言葉です"],
+              "explanation": "これは 뒤에 春という 言葉です를 두어 이름을 소개합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 085의 という 보강 후보이며, N5에서는 명칭/이름 소개 용법만 다루고 절 인용은 N3+ contrast로 남긴다."
+    }
+  ]
+}

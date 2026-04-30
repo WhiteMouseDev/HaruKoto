@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "policies": [
+    {
+      "policyId": "anchor-kana-hiragana",
+      "status": "draft",
+      "topicId": "topic-kana-hiragana",
+      "route": "scaffold_candidate",
+      "targetLessonBlueprintId": "ldb-kana-hiragana",
+      "exampleIds": ["ex-kana-hiragana-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "scaffold",
+        "requiresNewGrammarMetadata": false,
+        "requiresScaffoldCandidate": true,
+        "requiresContrastPolicy": false,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": [],
+        "scaffoldCandidateId": "scaf-kana-hiragana-001"
+      },
+      "promotionReadiness": {
+        "state": "ready_for_review",
+        "requiredBeforeSeedCandidate": [
+          "scaffold_shape_review",
+          "tts_readiness_review",
+          "human_curriculum_review"
+        ]
+      },
+      "notesKo": "문법 seed가 아니라 Absolute Zero 문자 scaffold로 검수한다."
+    },
+    {
+      "policyId": "anchor-kanji-reading-basics",
+      "status": "draft",
+      "topicId": "topic-kanji-reading-basics",
+      "route": "scaffold_candidate",
+      "targetLessonBlueprintId": "ldb-kanji-reading-basics",
+      "exampleIds": ["ex-kanji-reading-basics-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "scaffold",
+        "requiresNewGrammarMetadata": false,
+        "requiresScaffoldCandidate": true,
+        "requiresContrastPolicy": false,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": [],
+        "scaffoldCandidateId": "scaf-kanji-reading-basics-001"
+      },
+      "promotionReadiness": {
+        "state": "ready_for_review",
+        "requiredBeforeSeedCandidate": [
+          "scaffold_shape_review",
+          "tts_readiness_review",
+          "human_curriculum_review"
+        ]
+      },
+      "notesKo": "한자 읽기는 N5 문법 lesson이 아니라 kanji scaffold 축으로 검수한다."
+    },
+    {
+      "policyId": "anchor-shiru-wakaru",
+      "status": "draft",
+      "topicId": "topic-shiru-wakaru",
+      "route": "vocab_skill_candidate",
+      "targetLessonBlueprintId": "ldb-shiru-wakaru",
+      "exampleIds": ["ex-shiru-wakaru-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "vocabulary_skill",
+        "requiresNewGrammarMetadata": false,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": []
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": [
+          "runtime_question_review",
+          "tts_readiness_review",
+          "human_curriculum_review"
+        ]
+      },
+      "notesKo": "知る/分かる는 문법 row보다 어휘와 상황 선택 contrast가 핵심이라 문항 정책을 먼저 정한다."
+    },
+    {
+      "policyId": "anchor-hoshii",
+      "status": "draft",
+      "topicId": "topic-hoshii",
+      "route": "split_grammar_metadata_v2",
+      "targetLessonBlueprintId": "ldb-hoshii",
+      "exampleIds": ["ex-hoshii-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "split_n5_n4_grammar",
+        "requiresNewGrammarMetadata": true,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [{ "level": "N4", "order": 39 }],
+        "proposedMetadataIds": ["gmv2-n5-noun-ga-hoshii", "gmv2-n4-te-hoshii"]
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": ["tts_readiness_review", "human_curriculum_review"]
+      },
+      "notesKo": "명사+がほしい는 N5 후보로, 동사て形+ほしい는 기존 N4 grammar와 분리한다."
+    },
+    {
+      "policyId": "anchor-ku-naru-ni-naru",
+      "status": "draft",
+      "topicId": "topic-ku-naru-ni-naru",
+      "route": "new_grammar_metadata_v2",
+      "targetLessonBlueprintId": "ldb-ku-naru-ni-naru",
+      "exampleIds": ["ex-ku-naru-ni-naru-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "new_n5_grammar",
+        "requiresNewGrammarMetadata": true,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": ["gmv2-n5-i-adj-ku-naru", "gmv2-n5-na-noun-ni-naru"]
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": ["tts_readiness_review", "human_curriculum_review"]
+      },
+      "notesKo": "い형용사 변화와 な형용사/명사 변화를 한 항목으로 넣지 않고 metadata에서 분리한다."
+    },
+    {
+      "policyId": "anchor-dake",
+      "status": "draft",
+      "topicId": "topic-dake",
+      "route": "new_grammar_metadata_v2",
+      "targetLessonBlueprintId": "ldb-dake",
+      "exampleIds": ["ex-dake-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "new_n5_grammar",
+        "requiresNewGrammarMetadata": true,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": ["gmv2-n5-dake-limitation"]
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": ["tts_readiness_review", "human_curriculum_review"]
+      },
+      "notesKo": "だけ는 현재 grammar JSON에 전용 row가 없으므로 N5 제한 표현 metadata를 먼저 만든다."
+    },
+    {
+      "policyId": "anchor-ni-suru",
+      "status": "draft",
+      "topicId": "topic-ni-suru",
+      "route": "split_grammar_metadata_v2",
+      "targetLessonBlueprintId": "ldb-ni-suru",
+      "exampleIds": ["ex-ni-suru-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "split_n5_n4_grammar",
+        "requiresNewGrammarMetadata": true,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [{ "level": "N4", "order": 10 }],
+        "proposedMetadataIds": ["gmv2-n5-choice-ni-suru", "gmv2-n4-koto-ni-suru"]
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": ["tts_readiness_review", "human_curriculum_review"]
+      },
+      "notesKo": "N5 선택 표현 にする와 N4 ことにする를 분리해야 한다."
+    },
+    {
+      "policyId": "anchor-toiu",
+      "status": "draft",
+      "topicId": "topic-toiu",
+      "route": "new_grammar_metadata_v2",
+      "targetLessonBlueprintId": "ldb-toiu",
+      "exampleIds": ["ex-toiu-001"],
+      "recommendedWave": "WAVE_1_N5_PATCH",
+      "priority": "P0",
+      "anchorDecision": {
+        "mode": "new_n5_grammar",
+        "requiresNewGrammarMetadata": true,
+        "requiresScaffoldCandidate": false,
+        "requiresContrastPolicy": true,
+        "existingGrammarRefs": [],
+        "proposedMetadataIds": ["gmv2-n5-toiu-naming", "gmv2-n3-toiu-quotation"]
+      },
+      "promotionReadiness": {
+        "state": "ready_for_candidate",
+        "requiredBeforeSeedCandidate": ["tts_readiness_review", "human_curriculum_review"]
+      },
+      "notesKo": "명칭/정의로 쓰는 N5 という과 인용/담화 용법을 분리한다."
+    }
+  ]
+}
