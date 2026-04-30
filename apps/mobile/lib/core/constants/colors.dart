@@ -5,23 +5,51 @@ abstract final class AppColors {
   static const primary = Color(0xFFFF6B86);
   static const primaryStrong = primary;
   static const primaryPressed = Color(0xFFE04A6A);
-  static const primaryContainer = Color(0xFFFFDCE4);
+  static const primaryContainer = Color(0xFFFFD8E1);
   static const brandPink = primary;
+  static const sakura = primary;
+  static const sakuraPressed = primaryPressed;
+  static const sakuraContainer = primaryContainer;
+  static const sakuraOn = Color(0xFF931F3D);
+  static const sakuraTrack = Color(0xFFFFE3EA);
 
   // ─── Accent system ───────────────────────────────────────
   static const accent = primaryPressed;
-  static const accentAlt = Color(0xFF931F3D);
+  static const accentAlt = sakuraOn;
   static const accentContainer = primaryContainer;
   static const surfaceMuted = Color(0xFFF5F2EE);
   static const cardWarm = Color(0xFFFFFCFA);
   static const neutralContainer = Color(0xFFF0EAE4);
   static const neutralOn = Color(0xFF5A524E);
+  static const purple = Color(0xFF9C7BFF);
+  static const purplePressed = Color(0xFF7E5AE8);
+  static const purpleContainer = Color(0xFFE4D9FF);
+  static const purpleOn = Color(0xFF4A2DAA);
+  static const purpleTrack = Color(0xFFEFE8FF);
+  static const mint = Color(0xFF2DD4BF);
+  static const mintPressed = Color(0xFF14B8A6);
+  static const mintContainer = Color(0xFFB8F0E5);
+  static const mintOn = Color(0xFF0F766E);
+  static const mintTrack = Color(0xFFDCFCF3);
+  static const streak = Color(0xFFFF6B35);
+  static const streakContainer = Color(0xFFFFDDCC);
+  static const streakOn = Color(0xFF8A2C0A);
+  static const missionDoneFg = mintPressed;
+  static const missionDoneBg = mintTrack;
+  static const missionInProgressFg = primary;
+  static const missionInProgressBg = sakuraTrack;
+  static const missionLockedFg = Color(0xFFB8B0AB);
+  static const missionLockedBg = Color(0xFFF0EDE9);
   static const grammar = Color(0xFF9C7BFF);
-  static const grammarContainer = Color(0xFFE6DDFF);
-  static const grammarOn = Color(0xFF4A2DAA);
-  static const kanji = Color(0xFF34CDB7);
-  static const kanjiContainer = Color(0xFFCDF1E9);
-  static const kanjiOn = Color(0xFF186E5E);
+  static const grammarPressed = purplePressed;
+  static const grammarContainer = purpleContainer;
+  static const grammarOn = purpleOn;
+  static const grammarTrack = purpleTrack;
+  static const kanji = mint;
+  static const kanjiPressed = mintPressed;
+  static const kanjiContainer = mintContainer;
+  static const kanjiOn = mintOn;
+  static const kanjiTrack = mintTrack;
   static const tabInactive = Color(0xFF9B928D);
 
   // ─── Light theme ─────────────────────────────────────────
@@ -29,7 +57,7 @@ abstract final class AppColors {
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
   static const lightBorder = Color(0xFFECE7E1);
-  static const lightBorderStrong = Color(0xFFDCD5CD);
+  static const lightBorderStrong = Color(0xFFE1DAD2);
   static const lightText = Color(0xFF1F1B1A);
   static const lightSubtext = Color(0xFF5A524E);
 

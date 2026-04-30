@@ -161,7 +161,7 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
                   const Icon(
                     LucideIcons.flame,
                     size: 20,
-                    color: AppColors.primary,
+                    color: AppColors.streak,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -399,7 +399,7 @@ class _StreakHeaderState extends State<_StreakHeader>
           scale: _scaleAnimation,
           child: const Icon(
             LucideIcons.flame,
-            color: AppColors.primary,
+            color: AppColors.streak,
             size: 20,
           ),
         ),
@@ -425,8 +425,8 @@ class _StreakWeek extends StatelessWidget {
     final theme = Theme.of(context);
     const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
     final todayStr = _formatDate(DateTime.now());
-    final inactiveDayColor = AppColors.primaryContainer.withValues(alpha: 0.5);
-    final pastDayColor = AppColors.primaryContainer.withValues(alpha: 0.3);
+    final inactiveDayColor = AppColors.streakContainer.withValues(alpha: 0.42);
+    final pastDayColor = AppColors.streakContainer.withValues(alpha: 0.3);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -441,15 +441,15 @@ class _StreakWeek extends StatelessWidget {
         Widget child;
 
         if (studied > 0) {
-          bgColor = theme.colorScheme.primary;
+          bgColor = AppColors.streak;
           child = const Icon(LucideIcons.check,
               color: AppColors.onGradient, size: 14);
         } else if (isToday) {
-          bgColor = AppColors.primaryContainer;
+          bgColor = AppColors.streakContainer;
           child = const Text(
             '-',
             style: TextStyle(
-              color: AppColors.primaryPressed,
+              color: AppColors.streak,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -459,7 +459,7 @@ class _StreakWeek extends StatelessWidget {
           child = Text(
             '-',
             style: TextStyle(
-              color: AppColors.primaryPressed.withValues(alpha: 0.42),
+              color: AppColors.streak.withValues(alpha: 0.42),
               fontSize: 12,
             ),
           );

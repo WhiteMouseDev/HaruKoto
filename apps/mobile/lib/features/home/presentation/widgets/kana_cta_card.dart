@@ -45,12 +45,12 @@ class KanaCtaCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryContainer,
+                      color: AppColors.sakuraContainer,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
                       LucideIcons.languages,
-                      color: AppColors.primaryPressed,
+                      color: AppColors.sakuraOn,
                       size: 24,
                     ),
                   ),
@@ -76,8 +76,7 @@ class KanaCtaCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         AppProgressBar(
                           value: progress,
-                          backgroundColor: AppColors.primaryContainer
-                              .withValues(alpha: 0.55),
+                          backgroundColor: AppColors.sakuraTrack,
                         ),
                       ],
                     ),
