@@ -28,8 +28,8 @@ class LessonStepProgressBar extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(2),
                 color: isCompleted || isCurrent
-                    ? AppColors.primaryStrong
-                    : AppColors.primary.withValues(alpha: 0.15),
+                    ? AppColors.sakura
+                    : AppColors.sakuraTrack,
               ),
             ),
           ),

@@ -88,13 +88,13 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
 
   Color _optionBgColor(QuizOptionModel option) {
     if (_selected == option.id) {
-      return AppColors.primary.withValues(alpha: 0.12);
+      return AppColors.sakuraTrack;
     }
     return AppColors.lightCard;
   }
 
   Color _optionBorderColor(QuizOptionModel option) {
-    if (_selected == option.id) return AppColors.primaryStrong;
+    if (_selected == option.id) return AppColors.sakura;
     return AppColors.lightBorder;
   }
 
@@ -135,7 +135,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
                 Text(
                   '이해 체크',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.primaryStrong,
+                    color: AppColors.sakura,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -149,10 +149,10 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
               width: double.infinity,
               padding: const EdgeInsets.all(AppSizes.md),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.06),
+                color: AppColors.sakuraTrack,
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: AppColors.sakura.withValues(alpha: 0.18),
                 ),
               ),
               child: Text(
@@ -201,7 +201,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
                           const Icon(
                             LucideIcons.check,
                             size: 18,
-                            color: AppColors.primaryStrong,
+                            color: AppColors.sakura,
                           ),
                         ],
                       ],
@@ -217,7 +217,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
               width: double.infinity,
               padding: const EdgeInsets.all(AppSizes.gap),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.06),
+                color: AppColors.sakuraTrack,
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               child: Row(
@@ -226,7 +226,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
                   const Icon(
                     LucideIcons.lightbulb,
                     size: 16,
-                    color: AppColors.primaryStrong,
+                    color: AppColors.sakura,
                   ),
                   const SizedBox(width: AppSizes.sm),
                   Expanded(

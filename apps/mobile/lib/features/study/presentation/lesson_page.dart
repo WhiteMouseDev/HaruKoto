@@ -96,7 +96,7 @@ class _LessonPageState extends ConsumerState<LessonPage> {
                         child: const Icon(
                           LucideIcons.messageSquare,
                           size: 18,
-                          color: AppColors.primaryStrong,
+                          color: AppColors.sakura,
                         ),
                       ),
                     ],
