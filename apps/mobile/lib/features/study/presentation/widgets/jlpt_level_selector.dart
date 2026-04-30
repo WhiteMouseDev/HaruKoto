@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
+
 class JlptLevelSelector extends StatelessWidget {
   final List<String> levels;
   final String selected;
@@ -15,6 +17,11 @@ class JlptLevelSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final activeColor = isLight ? AppColors.sakura : theme.colorScheme.primary;
+    final activeBg = isLight
+        ? AppColors.sakuraTrack
+        : theme.colorScheme.primary.withValues(alpha: 0.1);
 
     return Row(
       children: levels.map((level) {
@@ -31,14 +38,10 @@ class JlptLevelSelector extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: isActive
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline,
+                    color: isActive ? activeColor : theme.colorScheme.outline,
                     width: isActive ? 2 : 1,
                   ),
-                  color: isActive
-                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                      : Colors.transparent,
+                  color: isActive ? activeBg : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
@@ -47,7 +50,7 @@ class JlptLevelSelector extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isActive
-                          ? theme.colorScheme.primary
+                          ? activeColor
                           : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),

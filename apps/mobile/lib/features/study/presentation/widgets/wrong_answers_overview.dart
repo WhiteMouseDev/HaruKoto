@@ -17,6 +17,9 @@ class WrongAnswersOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+
     return Column(
       children: [
         _WrongAnswersSummaryRow(summary: summary),
@@ -30,6 +33,12 @@ class WrongAnswersOverview extends StatelessWidget {
                 onPressed: onStartReview,
                 icon: const Icon(LucideIcons.rotateCcw, size: 16),
                 label: const Text('오답 복습 퀴즈 시작'),
+                style: FilledButton.styleFrom(
+                  backgroundColor:
+                      isLight ? AppColors.sakura : theme.colorScheme.primary,
+                  foregroundColor:
+                      isLight ? Colors.white : theme.colorScheme.onPrimary,
+                ),
               ),
             ),
           ),
@@ -65,7 +74,7 @@ class _WrongAnswersSummaryRow extends StatelessWidget {
           WrongAnswersSummaryCard(
             label: '극복 완료',
             value: '${summary.mastered}',
-            valueColor: theme.colorScheme.primary,
+            valueColor: AppColors.mintPressed,
           ),
         ],
       ),

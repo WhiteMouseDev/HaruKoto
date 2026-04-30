@@ -143,9 +143,8 @@ class _MasteryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = mastered
-        ? theme.colorScheme.primary
-        : AppColors.error(theme.brightness);
+    final color =
+        mastered ? AppColors.mintPressed : AppColors.error(theme.brightness);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -263,14 +262,24 @@ class _JlptLevelBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline),
+        color: isLight ? AppColors.purpleTrack : Colors.transparent,
+        border: Border.all(
+          color: isLight ? AppColors.purple : theme.colorScheme.outline,
+        ),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(level, style: theme.textTheme.labelSmall),
+      child: Text(
+        level,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: isLight ? AppColors.purple : null,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }
@@ -287,6 +296,7 @@ class _SaveToWordbookButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
 
     return GestureDetector(
       onTap: onTap,
@@ -294,7 +304,9 @@ class _SaveToWordbookButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: saved
-              ? theme.colorScheme.primary.withValues(alpha: 0.1)
+              ? isLight
+                  ? AppColors.mintTrack
+                  : theme.colorScheme.primary.withValues(alpha: 0.1)
               : theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -305,7 +317,9 @@ class _SaveToWordbookButton extends StatelessWidget {
               saved ? LucideIcons.check : LucideIcons.bookmarkPlus,
               size: 12,
               color: saved
-                  ? theme.colorScheme.primary
+                  ? isLight
+                      ? AppColors.mintPressed
+                      : theme.colorScheme.primary
                   : theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             const SizedBox(width: 4),
@@ -313,6 +327,7 @@ class _SaveToWordbookButton extends StatelessWidget {
               saved ? '저장됨' : '단어장에 추가',
               style: theme.textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: saved && isLight ? AppColors.mintPressed : null,
               ),
             ),
           ],

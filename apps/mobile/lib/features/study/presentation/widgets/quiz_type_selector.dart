@@ -17,11 +17,15 @@ class QuizTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final activeColor = isLight ? AppColors.sakura : theme.colorScheme.primary;
 
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
+        color: isLight
+            ? AppColors.sakuraTrack
+            : theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Row(
@@ -52,7 +56,7 @@ class QuizTypeSelector extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isActive
-                          ? theme.colorScheme.onSurface
+                          ? activeColor
                           : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),

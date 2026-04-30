@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 
 const learnedWordsFilterOptions = [
@@ -21,6 +22,12 @@ class LearnedWordsFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final activeColor =
+        isLight ? AppColors.mintPressed : theme.colorScheme.primary;
+    final activeBg = isLight
+        ? AppColors.mintTrack
+        : theme.colorScheme.primary.withValues(alpha: 0.1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -36,13 +43,9 @@ class LearnedWordsFilterChips extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                      : Colors.transparent,
+                  color: isActive ? activeBg : Colors.transparent,
                   border: Border.all(
-                    color: isActive
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline,
+                    color: isActive ? activeColor : theme.colorScheme.outline,
                   ),
                   borderRadius: BorderRadius.circular(AppSizes.chipRadius),
                 ),
@@ -50,7 +53,7 @@ class LearnedWordsFilterChips extends StatelessWidget {
                   filter.$2,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: isActive
-                        ? theme.colorScheme.primary
+                        ? activeColor
                         : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w600,
                   ),

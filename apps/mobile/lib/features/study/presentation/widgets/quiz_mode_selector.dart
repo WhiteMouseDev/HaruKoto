@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
+
 class QuizModeSelector extends StatelessWidget {
   final String selectedMode;
   final ValueChanged<String> onChanged;
@@ -27,6 +29,11 @@ class QuizModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final activeColor = isLight ? AppColors.purple : theme.colorScheme.primary;
+    final activeBg = isLight
+        ? AppColors.purpleTrack
+        : theme.colorScheme.primary.withValues(alpha: 0.1);
 
     final modes = availableModes != null
         ? _allModes.where((m) => availableModes!.contains(m.$1)).toList()
@@ -44,14 +51,10 @@ class QuizModeSelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               border: Border.all(
-                color: isActive
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.outline,
+                color: isActive ? activeColor : theme.colorScheme.outline,
                 width: isActive ? 2 : 1,
               ),
-              color: isActive
-                  ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                  : Colors.transparent,
+              color: isActive ? activeBg : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -61,7 +64,7 @@ class QuizModeSelector extends StatelessWidget {
                   m.$2,
                   size: 14,
                   color: isActive
-                      ? theme.colorScheme.primary
+                      ? activeColor
                       : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
                 const SizedBox(width: 6),
@@ -70,7 +73,7 @@ class QuizModeSelector extends StatelessWidget {
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isActive
-                        ? theme.colorScheme.primary
+                        ? activeColor
                         : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),

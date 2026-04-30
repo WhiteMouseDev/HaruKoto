@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../data/models/quiz_session_model.dart';
 import 'free_quiz_selection.dart';
@@ -128,11 +129,14 @@ class _FreeQuizStatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
+        color: isLight
+            ? AppColors.mintTrack
+            : theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -147,7 +151,8 @@ class _FreeQuizStatsRow extends StatelessWidget {
           Text(
             '진행률 ${stats.progress}%',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.primary,
+              color:
+                  isLight ? AppColors.mintPressed : theme.colorScheme.primary,
               fontWeight: FontWeight.w600,
             ),
           ),
