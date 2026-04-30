@@ -20,31 +20,32 @@ class ProfileHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
 
     final stats = [
       (
         LucideIcons.calendar,
         '총 학습일',
         '${summary.totalStudyDays}일',
-        AppColors.hkBlue(theme.brightness)
+        AppColors.mintPressed
       ),
       (
         LucideIcons.bookOpen,
         '학습 단어',
         '${summary.totalWordsStudied}개',
-        theme.colorScheme.primary
+        AppColors.sakura
       ),
       (
         LucideIcons.zap,
         '총 XP',
         '${profile.experiencePoints}',
-        AppColors.hkYellow(theme.brightness)
+        AppColors.purple
       ),
       (
         LucideIcons.flame,
         '최장 연속',
         '${profile.longestStreak}일',
-        AppColors.hkRed(theme.brightness)
+        AppColors.streak
       ),
     ];
 
@@ -67,7 +68,9 @@ class ProfileHero extends StatelessWidget {
                 // Avatar
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: theme.colorScheme.surfaceContainerHigh,
+                  backgroundColor: isLight
+                      ? AppColors.sakuraTrack
+                      : theme.colorScheme.surfaceContainerHigh,
                   backgroundImage: profile.avatarUrl != null
                       ? CachedNetworkImageProvider(profile.avatarUrl!)
                       : null,
@@ -75,8 +78,10 @@ class ProfileHero extends StatelessWidget {
                       ? Icon(
                           LucideIcons.user,
                           size: 24,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
+                          color: isLight
+                              ? AppColors.sakuraOn
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
                         )
                       : null,
                 ),
@@ -109,7 +114,9 @@ class ProfileHero extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHigh,
+                        color: isLight
+                            ? AppColors.sakuraTrack
+                            : theme.colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -117,8 +124,10 @@ class ProfileHero extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.6),
+                          color: isLight
+                              ? AppColors.sakuraOn
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
                         ),
                       ),
                     ),
@@ -145,10 +154,11 @@ class ProfileHero extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: xpProgress,
                       minHeight: 6,
-                      backgroundColor:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                      backgroundColor: isLight
+                          ? AppColors.sakuraTrack
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation(
-                        theme.colorScheme.primary,
+                        isLight ? AppColors.sakura : theme.colorScheme.primary,
                       ),
                     ),
                   ),

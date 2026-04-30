@@ -134,6 +134,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isLight = theme.brightness == Brightness.light;
 
     if (_selectedCategory != null) {
       return ScenarioListView(
@@ -167,19 +168,21 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: isLight
+                                ? AppColors.purpleTrack
+                                : AppColors.purple.withValues(alpha: 0.18),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(LucideIcons.flaskConical,
-                                  size: 12, color: AppColors.primary),
+                                  size: 12, color: AppColors.purple),
                               const SizedBox(width: 2),
                               Text(
                                 'Beta',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppColors.primary,
+                                  color: AppColors.purple,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -206,8 +209,10 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                         const EdgeInsets.symmetric(horizontal: AppSizes.md),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: colorScheme.secondaryContainer
-                            .withValues(alpha: 0.5),
+                        color: isLight
+                            ? AppColors.sakuraTrack
+                            : colorScheme.secondaryContainer
+                                .withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       ),
                       padding: const EdgeInsets.all(4),
@@ -227,7 +232,9 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                         ),
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
-                        labelColor: colorScheme.onSurface,
+                        labelColor: isLight
+                            ? AppColors.sakuraOn
+                            : colorScheme.onSurface,
                         unselectedLabelColor:
                             colorScheme.onSurface.withValues(alpha: 0.5),
                         labelStyle: theme.textTheme.bodySmall

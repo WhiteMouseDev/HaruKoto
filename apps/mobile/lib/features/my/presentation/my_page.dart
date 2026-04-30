@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -81,8 +82,8 @@ class _MyPageState extends ConsumerState<MyPage> {
             ),
             clipBehavior: Clip.antiAlias,
             child: ListTile(
-              leading: Icon(LucideIcons.barChart3,
-                  size: 20, color: theme.colorScheme.primary),
+              leading: const Icon(LucideIcons.barChart3,
+                  size: 20, color: AppColors.purple),
               title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
               trailing: Icon(LucideIcons.chevronRight,
                   size: 18,

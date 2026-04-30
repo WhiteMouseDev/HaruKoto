@@ -369,14 +369,14 @@ class _ReviewDueCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: AppColors.sakuraContainer,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
                   child: Icon(
                     LucideIcons.rotateCcw,
                     size: 22,
-                    color: AppColors.primaryStrong,
+                    color: AppColors.sakuraOn,
                   ),
                 ),
               ),
@@ -506,7 +506,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: AppColors.sakuraTrack,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -514,7 +514,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                       ? LucideIcons.playCircle
                       : LucideIcons.sparkles,
                   size: 22,
-                  color: AppColors.primaryStrong,
+                  color: AppColors.sakura,
                 ),
               ),
               const SizedBox(width: 14),
@@ -528,7 +528,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: AppColors.sakuraTrack,
                         borderRadius: BorderRadius.circular(
                           AppSizes.radiusFull,
                         ),
@@ -536,7 +536,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                       child: Text(
                         target.reason,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.primaryStrong,
+                          color: AppColors.sakura,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -564,7 +564,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                             icon: const Icon(LucideIcons.list, size: 16),
                             label: const Text('전체 레슨'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.primaryStrong,
+                              foregroundColor: AppColors.sakura,
                               side: const BorderSide(
                                 color: AppColors.lightBorderStrong,
                               ),
@@ -594,7 +594,7 @@ class _RecommendedLessonCard extends StatelessWidget {
                               lesson.status == 'IN_PROGRESS' ? '이어하기' : '시작하기',
                             ),
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primaryStrong,
+                              backgroundColor: AppColors.sakura,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
@@ -659,7 +659,7 @@ class _KanaBootcampCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: AppColors.sakuraContainer,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
@@ -668,7 +668,7 @@ class _KanaBootcampCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryStrong,
+                      color: AppColors.sakuraOn,
                     ),
                   ),
                 ),
@@ -702,8 +702,8 @@ class _KanaBootcampCard extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: progress,
                               minHeight: AppSizes.progressHeight,
-                              backgroundColor: AppColors.surfaceMuted,
-                              color: AppColors.primaryStrong,
+                              backgroundColor: AppColors.sakuraTrack,
+                              color: AppColors.sakura,
                             ),
                           ),
                         ),
@@ -723,8 +723,8 @@ class _KanaBootcampCard extends StatelessWidget {
               OutlinedButton(
                 onPressed: () => context.push('/study/kana'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primaryStrong,
-                  side: const BorderSide(color: AppColors.primaryStrong),
+                  foregroundColor: AppColors.sakura,
+                  side: const BorderSide(color: AppColors.sakura),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   textStyle: const TextStyle(
@@ -758,10 +758,10 @@ class _JlptLevelChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.15),
+          color: AppColors.sakuraTrack,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: AppColors.sakura.withValues(alpha: 0.35),
           ),
         ),
         child: Row(
@@ -771,7 +771,7 @@ class _JlptLevelChip extends StatelessWidget {
               level,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.primary,
+                color: AppColors.sakura,
               ),
             ),
             const SizedBox(width: 4),
