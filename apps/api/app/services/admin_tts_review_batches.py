@@ -272,6 +272,9 @@ def _load_topic_vocabulary_candidates(path: Path) -> dict[str, list[AdminTtsRevi
                     admin_field="",
                     jlpt_level=str(mapping["vocabularyLevel"]),
                     vocabulary_order=int(mapping["vocabularyOrder"]),
+                    content_label=str(mapping["word"]),
+                    content_reading=str(mapping["reading"]),
+                    meaning_ko=str(mapping["meaningKo"]),
                     match_type=str(mapping["matchType"]),
                     note_ko=str(mapping.get("notesKo") or "Topic vocabulary map candidate."),
                 )

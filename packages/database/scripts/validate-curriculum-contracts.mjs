@@ -308,7 +308,7 @@ function vocabularyOrdersByLevel() {
   for (const level of LEVELS) {
     const filePath = join(VOCAB_DIR, `${level.toLowerCase()}-words.json`);
     const rows = readJson(filePath);
-    byLevel.set(level, new Set(rows.map((row) => row.order)));
+    byLevel.set(level, new Map(rows.map((row) => [row.order, row])));
   }
   return byLevel;
 }
@@ -469,9 +469,19 @@ function validateTopicVocabularyMap(data, rows, vocabularyOrders, topicIds) {
     if (!topicIds.has(mapping?.topicId)) {
       addIssue(rows, 'FAIL', scope, 'Mapping references an unknown topicId.');
     }
-    const orders = vocabularyOrders.get(mapping?.vocabularyLevel);
-    if (!orders?.has(mapping?.vocabularyOrder)) {
+    const vocabularyRow = vocabularyOrders.get(mapping?.vocabularyLevel)?.get(mapping?.vocabularyOrder);
+    if (!vocabularyRow) {
       addIssue(rows, 'FAIL', scope, 'Mapping references a missing vocabulary order.');
+    } else {
+      if (mapping.word !== vocabularyRow.word) {
+        addIssue(rows, 'FAIL', scope, 'word must match the source vocabulary row.');
+      }
+      if (mapping.reading !== vocabularyRow.reading) {
+        addIssue(rows, 'FAIL', scope, 'reading must match the source vocabulary row.');
+      }
+      if (mapping.meaningKo !== vocabularyRow.meaningKo) {
+        addIssue(rows, 'FAIL', scope, 'meaningKo must match the source vocabulary row.');
+      }
     }
     if (!['exact', 'partial', 'related'].includes(mapping?.matchType)) {
       addIssue(rows, 'FAIL', scope, 'matchType must be exact, partial, or related.');

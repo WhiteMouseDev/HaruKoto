@@ -13,7 +13,15 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["topicId", "vocabularyLevel", "vocabularyOrder", "matchType"],
+        "required": [
+          "topicId",
+          "vocabularyLevel",
+          "vocabularyOrder",
+          "word",
+          "reading",
+          "meaningKo",
+          "matchType"
+        ],
         "properties": {
           "topicId": {
             "type": "string",
@@ -21,6 +29,9 @@
           },
           "vocabularyLevel": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
           "vocabularyOrder": { "type": "integer", "minimum": 1 },
+          "word": { "type": "string", "minLength": 1 },
+          "reading": { "type": "string", "minLength": 1 },
+          "meaningKo": { "type": "string", "minLength": 1 },
           "matchType": { "enum": ["exact", "partial", "related"] },
           "notesKo": { "type": "string" }
         }

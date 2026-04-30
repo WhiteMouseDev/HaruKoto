@@ -166,6 +166,9 @@ def test_get_admin_tts_review_generation_plan_marks_exact_vocabulary_ready(tmp_p
     assert result.items[0].operation_status == "ready_after_db_lookup"
     assert result.items[0].candidates[0].lookup_type == "vocabulary_level_order"
     assert result.items[0].candidates[0].vocabulary_order == 309
+    assert result.items[0].candidates[0].content_label == "漢字"
+    assert result.items[0].candidates[0].content_reading == "かんじ"
+    assert result.items[0].candidates[0].meaning_ko == "한자"
 
 
 def test_get_admin_tts_review_generation_plan_marks_exact_grammar_ready(tmp_path: Path) -> None:
@@ -476,6 +479,9 @@ def _topic_vocabulary_mappings(*, match_type: str) -> list[dict[str, object]]:
             "topicId": "topic-kanji-reading-basics",
             "vocabularyLevel": "N5",
             "vocabularyOrder": 309,
+            "word": "漢字",
+            "reading": "かんじ",
+            "meaningKo": "한자",
             "matchType": match_type,
             "notesKo": "PDF 017 한자 읽기 coverage anchor",
         }

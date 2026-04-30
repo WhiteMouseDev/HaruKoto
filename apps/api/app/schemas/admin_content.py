@@ -350,6 +350,9 @@ class AdminTtsReviewGenerationPlanCandidate(CamelModel):
     jlpt_level: str | None = None
     grammar_order: int | None = None
     vocabulary_order: int | None = None
+    content_label: str | None = None
+    content_reading: str | None = None
+    meaning_ko: str | None = None
     match_type: Literal["exact", "partial", "related"] | None = None
     note_ko: str
 

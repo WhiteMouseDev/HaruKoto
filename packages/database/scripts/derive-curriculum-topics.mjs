@@ -422,7 +422,7 @@ function vocabularyOrderIndex() {
   const byLevel = new Map();
   for (const level of LEVELS) {
     const rows = readJson(join(VOCABULARY_DIR, `${level.toLowerCase()}-words.json`));
-    byLevel.set(level, new Set(rows.map((row) => row.order)));
+    byLevel.set(level, new Map(rows.map((row) => [row.order, row])));
   }
   return byLevel;
 }
@@ -443,12 +443,16 @@ function grammarMappingsFor(item, orderIndex) {
 
 function vocabularyMappingsFor(item, orderIndex) {
   return (VOCABULARY_MAPPINGS[item.pdfRef] ?? []).map(([level, order, matchType]) => {
-    if (!orderIndex.get(level)?.has(order)) {
+    const row = orderIndex.get(level)?.get(order);
+    if (!row) {
       throw new Error(`Invalid vocabulary mapping for pdf ${item.pdfRef}: ${level} order ${order}.`);
     }
     return {
       level,
       order,
+      word: row.word,
+      reading: row.reading,
+      meaningKo: row.meaningKo,
       matchType,
       notesKo: `PDF ${item.pdfRef} ${item.titleKo} vocabulary coverage anchor`,
     };
@@ -505,6 +509,9 @@ function buildVocabularyMap(items, orderIndex) {
         topicId: topicIdFor(item.pdfRef),
         vocabularyLevel: mapping.level,
         vocabularyOrder: mapping.order,
+        word: mapping.word,
+        reading: mapping.reading,
+        meaningKo: mapping.meaningKo,
         matchType: mapping.matchType,
         notesKo: mapping.notesKo,
       });

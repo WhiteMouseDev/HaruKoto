@@ -347,6 +347,7 @@ function GenerationPlanBadge({
       : item.operationStatus === 'manual_mapping_required'
         ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
         : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
+  const visibleCandidates = item.candidates.slice(0, 3);
 
   return (
     <div className="flex flex-col items-start gap-1">
@@ -361,6 +362,45 @@ function GenerationPlanBadge({
       <span className="text-xs text-muted-foreground">
         {t('generationPlan.candidates', { count: item.candidates.length })}
       </span>
+      {visibleCandidates.length > 0 ? (
+        <div className="flex max-w-56 flex-col gap-0.5">
+          {visibleCandidates.map((candidate) => {
+            const order = candidate.vocabularyOrder ?? candidate.grammarOrder;
+            const label =
+              candidate.contentLabel ?? candidate.matchType ?? candidate.topicId;
+            const detail =
+              candidate.contentReading && candidate.meaningKo
+                ? `${candidate.contentReading} · ${candidate.meaningKo}`
+                : candidate.meaningKo;
+            return (
+              <div
+                key={[
+                  candidate.contentType,
+                  candidate.topicId,
+                  candidate.jlptLevel,
+                  order,
+                  candidate.matchType,
+                ].join(':')}
+                className="truncate text-xs text-muted-foreground"
+                title={
+                  detail
+                    ? `${candidate.jlptLevel ?? ''} #${order} ${label} · ${detail}`
+                    : undefined
+                }
+              >
+                {candidate.jlptLevel ? `${candidate.jlptLevel} ` : null}
+                {order ? `#${order} ` : null}
+                {label}
+              </div>
+            );
+          })}
+          {item.candidates.length > visibleCandidates.length ? (
+            <div className="text-xs text-muted-foreground">
+              +{item.candidates.length - visibleCandidates.length}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
