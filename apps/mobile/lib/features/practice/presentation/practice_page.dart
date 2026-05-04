@@ -15,7 +15,7 @@ enum _QuizCategory {
   grammar('문법', 'GRAMMAR', LucideIcons.braces),
   kanji('한자', 'KANJI', LucideIcons.penTool),
   listening('리스닝', 'LISTENING', LucideIcons.headphones),
-  sentenceArrange('문장배열', 'SENTENCE_ARRANGE', LucideIcons.arrowUpDown);
+  sentenceArrange('문장', 'SENTENCE_ARRANGE', LucideIcons.arrowUpDown);
 
   final String label;
   final String apiType;
@@ -29,16 +29,16 @@ enum _QuizCategory {
         vocabulary => AppColors.primaryStrong,
         grammar => AppColors.grammar,
         kanji => AppColors.kanji,
-        listening => AppColors.neutralOn,
-        sentenceArrange => AppColors.kanji,
+        listening => AppColors.listening,
+        sentenceArrange => AppColors.sentenceArrange,
       };
 
   Color get containerColor => switch (this) {
         vocabulary => AppColors.primaryContainer,
         grammar => AppColors.grammarContainer,
         kanji => AppColors.kanjiContainer,
-        listening => AppColors.neutralContainer,
-        sentenceArrange => AppColors.kanjiContainer,
+        listening => AppColors.listeningContainer,
+        sentenceArrange => AppColors.sentenceArrangeContainer,
       };
 }
 
@@ -156,7 +156,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               const SizedBox(height: 8),
               _MenuListTile(
                 icon: LucideIcons.fileX,
-                iconColor: AppColors.error(theme.brightness),
+                iconColor: AppColors.coralPressed,
                 label: '오답노트',
                 onTap: () => context.push('/study/wrong-answers'),
               ),
@@ -168,7 +168,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               ),
               _MenuListTile(
                 icon: LucideIcons.bookMarked,
-                iconColor: AppColors.neutralOn,
+                iconColor: AppColors.sentenceArrange,
                 label: '단어장',
                 onTap: () => context.push('/study/wordbook'),
               ),
@@ -180,57 +180,105 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   }
 
   Widget _buildCategoryTabs(ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.light
-            ? AppColors.surfaceMuted
+        color: isLight
+            ? AppColors.quizTabSurface
             : theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isLight
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : theme.colorScheme.outline,
+        ),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: _QuizCategory.values.map((cat) {
             final isSelected = _selectedCategory == cat;
-            return GestureDetector(
-              onTap: () => setState(() => _selectedCategory = cat),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.lightCard : Colors.transparent,
-                  borderRadius: BorderRadius.circular(11),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      cat.icon,
-                      size: 16,
-                      color: isSelected ? cat.color : AppColors.lightSubtext,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      cat.label,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? cat.color : AppColors.lightSubtext,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(end: isSelected ? 1 : 0),
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                builder: (context, selectedValue, _) {
+                  final selectedSurface = isLight
+                      ? cat.containerColor.withValues(alpha: 0.78)
+                      : cat.color.withValues(alpha: 0.18);
+                  final backgroundColor = Color.lerp(
+                    Colors.transparent,
+                    selectedSurface,
+                    selectedValue,
+                  )!;
+                  final iconColor = isSelected
+                      ? cat.color
+                      : cat.color.withValues(alpha: 0.62);
+                  final textColor =
+                      isSelected ? cat.color : AppColors.quizTabInactive;
+                  final borderColor = Color.lerp(
+                    Colors.transparent,
+                    cat.color.withValues(alpha: 0.28),
+                    selectedValue,
+                  )!;
+
+                  return Transform.scale(
+                    scale: 1 + (selectedValue * 0.025),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => setState(() => _selectedCategory = cat),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.circular(11),
+                          border: Border.all(color: borderColor),
+                          boxShadow: selectedValue > 0
+                              ? [
+                                  BoxShadow(
+                                    color: cat.color.withValues(
+                                      alpha: 0.12 * selectedValue,
+                                    ),
+                                    blurRadius: 12 * selectedValue,
+                                    offset: Offset(0, 3 * selectedValue),
+                                  ),
+                                  BoxShadow(
+                                    color: AppColors.overlay(
+                                      0.03 * selectedValue,
+                                    ),
+                                    blurRadius: 4 * selectedValue,
+                                    offset: Offset(0, 1 * selectedValue),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(cat.icon, size: 16, color: iconColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              cat.label,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             );
           }).toList(),
@@ -268,7 +316,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
         ? AppColors.cardWarm
         : theme.colorScheme.surfaceContainerLow;
     final borderColor = theme.brightness == Brightness.light
-        ? AppColors.lightBorder
+        ? actionColor.withValues(alpha: 0.24)
         : theme.colorScheme.outline;
 
     // CTA text based on category
@@ -398,7 +446,7 @@ class _MenuListTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.12),
+                color: iconColor.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, size: 20, color: iconColor),
