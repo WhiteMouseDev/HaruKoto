@@ -239,11 +239,13 @@ class GooeyTabRailPainter extends CustomPainter {
       if (i == activeIdx) continue;
       final top = i * tabHeight;
       final bottom = top + tabHeight;
+      final tabTop = i == 0 ? top : top - 4;
+      final tabBottom = i == tabCount - 1 ? bottom : bottom + 4;
       final rrect = RRect.fromLTRBAndCorners(
         baseX,
-        top - 4,
+        tabTop,
         w,
-        bottom + 4,
+        tabBottom,
         topRight: const Radius.circular(_tabR),
         bottomRight: const Radius.circular(_tabR),
       );

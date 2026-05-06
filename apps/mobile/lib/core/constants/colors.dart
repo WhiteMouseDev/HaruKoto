@@ -34,6 +34,15 @@ abstract final class AppColors {
   static const streak = Color(0xFFFF6B35);
   static const streakContainer = Color(0xFFFFDDCC);
   static const streakOn = Color(0xFF8A2C0A);
+  static const coral = Color(0xFFFF7A6E);
+  static const coralPressed = Color(0xFFE85D52);
+  static const coralContainer = Color(0xFFFFE1DE);
+  static const sky = Color(0xFF38BDF8);
+  static const skyPressed = Color(0xFF0EA5E9);
+  static const skyContainer = Color(0xFFDFF6FF);
+  static const amber = Color(0xFFFFB84D);
+  static const amberPressed = Color(0xFFE89A1D);
+  static const amberContainer = Color(0xFFFFEEC5);
   static const missionDoneFg = mintPressed;
   static const missionDoneBg = mintTrack;
   static const missionInProgressFg = primary;
@@ -50,7 +59,14 @@ abstract final class AppColors {
   static const kanjiContainer = mintContainer;
   static const kanjiOn = mintOn;
   static const kanjiTrack = mintTrack;
+  static const listening = skyPressed;
+  static const listeningContainer = skyContainer;
+  static const sentenceArrange = amberPressed;
+  static const sentenceArrangeContainer = amberContainer;
+  static const quizTabSurface = Color(0xFFFFF7FA);
+  static const quizTabInactive = Color(0xFF6F625E);
   static const tabInactive = Color(0xFF9B928D);
+  static const offlineBanner = Color(0xFFFF6B5F);
 
   // ─── Light theme ─────────────────────────────────────────
   static const lightBackground = Color(0xFFFBFAF8);

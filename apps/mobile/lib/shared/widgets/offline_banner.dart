@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/constants/colors.dart';
 import '../../core/network/connectivity_service.dart';
 
 class OfflineBanner extends ConsumerWidget {
@@ -15,12 +16,12 @@ class OfflineBanner extends ConsumerWidget {
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 6),
-          color: Theme.of(context).colorScheme.error,
-          child: Text(
+          color: AppColors.offlineBanner,
+          child: const Text(
             '인터넷 연결이 없습니다',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onError,
+              color: Colors.white,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
