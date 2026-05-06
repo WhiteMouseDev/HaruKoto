@@ -68,6 +68,8 @@ CURRICULUM_TTS_TARGET_MANIFEST_PATH = _default_tts_target_manifest_path()
 CURRICULUM_TOPIC_GRAMMAR_MAP_PATH = _default_topic_grammar_map_path()
 CURRICULUM_TOPIC_VOCABULARY_MAP_PATH = _default_topic_vocabulary_map_path()
 CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH = _default_tts_review_manual_mapping_overrides_path()
+MANUAL_MAPPING_SOURCE_MATCH_TYPES = {"exact", "partial", "related"}
+MANUAL_MAPPING_RESOLUTION_TYPES = {"exact_mapping", "partial_override"}
 
 
 class AdminTtsReviewBatchServiceError(Exception):
@@ -315,6 +317,16 @@ def _load_manual_mapping_overrides(path: Path) -> dict[str, AdminTtsReviewGenera
         for decision in decisions:
             if str(decision["decisionStatus"]) != "approved":
                 raise ValueError("manual mapping decisions must be approved")
+            source_match_type = str(decision.get("sourceMatchType", "exact"))
+            resolution_type = str(decision.get("resolutionType", "exact_mapping"))
+            if source_match_type not in MANUAL_MAPPING_SOURCE_MATCH_TYPES:
+                raise ValueError("manual mapping sourceMatchType is invalid")
+            if resolution_type not in MANUAL_MAPPING_RESOLUTION_TYPES:
+                raise ValueError("manual mapping resolutionType is invalid")
+            if source_match_type == "exact" and resolution_type != "exact_mapping":
+                raise ValueError("exact manual mappings must use exact_mapping resolutionType")
+            if source_match_type != "exact" and resolution_type != "partial_override":
+                raise ValueError("non-exact manual mappings must use partial_override resolutionType")
 
             target_id = str(decision["targetId"])
             if target_id in candidates_by_target:
@@ -335,7 +347,7 @@ def _load_manual_mapping_overrides(path: Path) -> dict[str, AdminTtsReviewGenera
                     content_label=str(decision["contentLabel"]),
                     content_reading=str(decision["contentReading"]),
                     meaning_ko=str(decision["meaningKo"]),
-                    match_type="exact",
+                    match_type=source_match_type,
                     note_ko=str(decision["notesKo"]),
                 )
             elif content_type == "grammar":
@@ -348,7 +360,7 @@ def _load_manual_mapping_overrides(path: Path) -> dict[str, AdminTtsReviewGenera
                     admin_field=str(decision["adminField"]),
                     jlpt_level=str(decision["jlptLevel"]),
                     grammar_order=int(decision["grammarOrder"]),
-                    match_type="exact",
+                    match_type=source_match_type,
                     note_ko=str(decision["notesKo"]),
                 )
             else:

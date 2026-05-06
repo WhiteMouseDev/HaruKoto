@@ -9,7 +9,9 @@ const CURRICULUM_DIR = join(PACKAGE_DIR, 'data', 'curriculum');
 const GRAMMAR_DIR = join(PACKAGE_DIR, 'data', 'grammar');
 const VOCAB_DIR = join(PACKAGE_DIR, 'data', 'vocabulary');
 const DEFAULT_REVIEW_DIR = join(CURRICULUM_DIR, 'tts-manual-mapping-review');
+const DEFAULT_OVERRIDES_FILE = join(CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json');
 const REVIEW_DIR = resolveOption('--in') ?? DEFAULT_REVIEW_DIR;
+const OVERRIDES_FILE = resolveOption('--overrides') ?? DEFAULT_OVERRIDES_FILE;
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 const DECISIONS = new Set([
   'PENDING',
@@ -19,6 +21,7 @@ const DECISIONS = new Set([
   'APPROVED',
   'REJECTED',
 ]);
+const REVIEW_OUTCOME_DECISIONS = new Set(['NEEDS_MAPPING', 'NEEDS_TOPIC_SPLIT', 'NEEDS_PARTIAL_OVERRIDE', 'REJECTED']);
 const MATCH_TYPES = new Set(['exact', 'partial', 'related']);
 const OPERATION_STATUSES = new Set(['ready_after_db_lookup', 'manual_mapping_required', 'blocked']);
 const ADMIN_TTS_FIELDS = new Map([
@@ -414,6 +417,75 @@ function validateFollowups(followups, reviewRows, rows) {
   }
 }
 
+function candidateRefForReview(candidate) {
+  const ref = {
+    lookupType: candidate.lookupType,
+    jlptLevel: candidate.jlptLevel,
+    matchType: candidate.matchType,
+    contentLabel: normalize(candidate.contentLabel) || null,
+    noteKo: normalize(candidate.noteKo) || null,
+  };
+  if (candidate.grammarOrder !== undefined) ref.grammarOrder = candidate.grammarOrder;
+  if (candidate.vocabularyOrder !== undefined) ref.vocabularyOrder = candidate.vocabularyOrder;
+  if (candidate.contentReading !== undefined) ref.contentReading = normalize(candidate.contentReading) || null;
+  if (candidate.meaningKo !== undefined) ref.meaningKo = normalize(candidate.meaningKo) || null;
+  return ref;
+}
+
+function reviewOutcomeForRow(row, decision) {
+  return {
+    targetId: row.targetId,
+    topicId: row.topicId,
+    contentType: row.contentType,
+    adminField: row.adminField,
+    decisionStatus: decision.toLowerCase(),
+    notesKo:
+      normalize(row.reviewerNotes) ||
+      `Manual mapping review outcome recorded as ${decision.toLowerCase().replaceAll('_', ' ')}.`,
+    candidateRefs: (row.candidates ?? []).map(candidateRefForReview),
+  };
+}
+
+function expectedReviewOutcomes(reviewRows) {
+  return reviewRows
+    .map((item) => {
+      const decision = normalize(item.row.decision).toUpperCase();
+      return REVIEW_OUTCOME_DECISIONS.has(decision) ? reviewOutcomeForRow(item.row, decision) : null;
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.targetId.localeCompare(right.targetId));
+}
+
+function loadOverrides(rows) {
+  if (!existsSync(OVERRIDES_FILE)) {
+    addIssue(rows, 'FAIL', 'tts-review-manual-mapping-overrides.json', 'Missing manual mapping override contract.');
+    return null;
+  }
+  try {
+    return readJson(OVERRIDES_FILE);
+  } catch (error) {
+    addIssue(rows, 'FAIL', 'tts-review-manual-mapping-overrides.json', `Invalid JSON: ${error.message}`);
+    return null;
+  }
+}
+
+function validateOverrideReviewOutcomes(overrides, reviewRows, rows) {
+  if (!overrides) return;
+  if (!Array.isArray(overrides.reviewOutcomes)) {
+    addIssue(rows, 'FAIL', 'tts-review-manual-mapping-overrides.json', 'reviewOutcomes must be an array.');
+    return;
+  }
+  const expected = expectedReviewOutcomes(reviewRows);
+  if (JSON.stringify(overrides.reviewOutcomes) !== JSON.stringify(expected)) {
+    addIssue(
+      rows,
+      'FAIL',
+      'tts-review-manual-mapping-overrides.json',
+      'reviewOutcomes are stale; run curriculum:tts-review:compile -- --replace.',
+    );
+  }
+}
+
 function printRows(rows) {
   const failCount = rows.filter((row) => row.level === 'FAIL').length;
   const warnCount = rows.filter((row) => row.level === 'WARN').length;
@@ -433,6 +505,7 @@ function main() {
   const context = buildContext();
   const { manifest, reviewRows } = loadReviewRows(rows);
   const followups = loadFollowups(rows);
+  const overrides = loadOverrides(rows);
   const seenTargetIds = new Set();
 
   for (const item of reviewRows) validateReviewRow(item, context, rows, seenTargetIds);
@@ -450,6 +523,7 @@ function main() {
 
   validateManifest(manifest, reviewRows, context, rows);
   validateFollowups(followups, reviewRows, rows);
+  validateOverrideReviewOutcomes(overrides, reviewRows, rows);
   printRows(rows);
 }
 

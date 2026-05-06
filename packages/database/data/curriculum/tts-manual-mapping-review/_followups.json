@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "draft",
-  "generatedAt": "2026-05-06T06:35:48.009Z",
+  "generatedAt": "2026-05-06T07:06:26.892Z",
   "sourceReviewDir": "data/curriculum/tts-manual-mapping-review",
   "summary": {
     "totalRows": 88,
@@ -47,7 +47,12 @@
       ],
       "candidateCount": 0,
       "candidates": [],
-      "recommendedActionKo": "topic map 후보가 없으므로 topic-grammar-map 또는 topic-vocabulary-map에 후보를 추가한다."
+      "recommendedActionKo": "topic map 후보가 없으므로 topic-grammar-map 또는 topic-vocabulary-map에 후보를 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_mapping_required",
+        "nextStepKo": "정확한 학습 항목을 source grammar/vocabulary row에 매핑한 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-basic-particles-grammar",
@@ -166,7 +171,12 @@
           "grammarOrder": 46
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-demonstratives-grammar",
@@ -241,7 +251,12 @@
           "grammarOrder": 41
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-i-adjective-nominalization-grammar",
@@ -294,7 +309,12 @@
           "grammarOrder": 39
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-ku-naru-ni-naru-grammar",
@@ -347,7 +367,12 @@
           "grammarOrder": 8
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-no-functions-grammar",
@@ -400,7 +425,12 @@
           "grammarOrder": 37
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-numbers-and-counters-vocabulary",
@@ -495,7 +525,12 @@
           "contentReading": "に"
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-personal-pronouns-vocabulary",
@@ -554,7 +589,12 @@
           "contentReading": "わたし"
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-polite-form-applications-grammar",
@@ -607,7 +647,12 @@
           "grammarOrder": 12
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-prohibitive-na-grammar",
@@ -660,7 +705,12 @@
           "grammarOrder": 9
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-shiru-wakaru-vocabulary",
@@ -719,7 +769,12 @@
           "contentReading": "しる"
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-souda-hearsay-appearance-a-grammar",
@@ -783,7 +838,12 @@
           "grammarOrder": 14
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-souda-hearsay-appearance-b-grammar",
@@ -847,7 +907,12 @@
           "grammarOrder": 14
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-tameni-grammar",
@@ -900,7 +965,12 @@
           "grammarOrder": 17
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-te-iku-te-kuru-grammar",
@@ -953,7 +1023,12 @@
           "grammarOrder": 29
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-te-iru-progress-state-grammar",
@@ -1006,7 +1081,12 @@
           "grammarOrder": 20
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-time-and-weekdays-vocabulary",
@@ -1197,7 +1277,12 @@
           "contentReading": "もくようび"
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-to-quotation-or-condition-grammar",
@@ -1250,7 +1335,12 @@
           "grammarOrder": 19
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-verb-connection-forms-grammar",
@@ -1314,7 +1404,12 @@
           "grammarOrder": 50
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-verb-groups-grammar",
@@ -1378,7 +1473,12 @@
           "grammarOrder": 49
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     },
     {
       "followupId": "tts-followup-needs-topic-split-verb-past-forms-grammar",
@@ -1442,7 +1542,12 @@
           "grammarOrder": 49
         }
       ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다."
+      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
+      "resolutionContract": {
+        "executableDecisionAllowed": false,
+        "expectedResolutionType": "topic_split_required",
+        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
+      }
     }
   ]
 }

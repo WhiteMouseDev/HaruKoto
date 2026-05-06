@@ -41,7 +41,9 @@ Wave 0 keeps these files as validated staging contracts:
   package files.
 - `tts-review-manual-mapping-overrides.json`: approved reviewer decisions that
   resolve manual TTS mapping rows to a concrete grammar or vocabulary level/order
-  before admin execute preview. It is source-controlled and bundled to
+  before admin execute preview, plus audit-only `reviewOutcomes` for unresolved
+  rows that still need topic mapping, topic split, partial override review, or
+  rejection handling. It is source-controlled and bundled to
   `apps/api/app/data/curriculum/tts-review-manual-mapping-overrides.json` by
   `scripts/derive-curriculum-topics.mjs`.
 - `lesson-draft-blueprints.json`: draft lesson planning records for missing or
@@ -69,7 +71,8 @@ Wave 0 keeps these files as validated staging contracts:
 - `scripts/prepare-tts-manual-mapping-followups.mjs`: groups unresolved TTS
   manual mapping rows into reviewer follow-up queues.
 - `scripts/compile-tts-manual-mapping-overrides.mjs`: compiles approved TTS
-  manual mapping rows into `tts-review-manual-mapping-overrides.json`.
+  manual mapping rows into executable `decisions` and unresolved rows into
+  audit-only `reviewOutcomes` in `tts-review-manual-mapping-overrides.json`.
 - `scripts/validate-tts-manual-mapping-review.mjs`: validates source-controlled
   TTS review rows against current target, batch, topic map, vocabulary, and
   grammar contracts. It runs as part of `curriculum:validate`.
@@ -108,9 +111,14 @@ Rules:
 - A reviewer marks a row `APPROVED` and selects either `selectedCandidateIndex`
   or a fully populated `selected` object before running
   `curriculum:tts-review:compile`.
+- Approved decisions must preserve `sourceMatchType` and `resolutionType` in
+  the compiled override file. Non-exact selections are target-level
+  `partial_override` decisions; they do not make the parent topic map exact.
 - Run `curriculum:tts-review:followups` after reviewer edits so
   `tts-manual-mapping-review/_followups.json` stays synchronized with the
-  unresolved queue. `curriculum:validate` fails if this file drifts.
+  unresolved queue. Run `curriculum:tts-review:compile -- --replace` so
+  `reviewOutcomes` stays synchronized with the unresolved queue.
+  `curriculum:validate` fails if either artifact drifts.
 - Mechanical triage may approve a row only when there is exactly one `exact`
   candidate. Rows with multiple non-exact candidates should stay
   `NEEDS_TOPIC_SPLIT`, and rows with a single non-exact candidate should stay

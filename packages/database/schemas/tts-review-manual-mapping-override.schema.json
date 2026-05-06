@@ -4,7 +4,7 @@
   "title": "TTS Review Manual Mapping Override",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "status", "decisions"],
+  "required": ["schemaVersion", "status", "decisions", "reviewOutcomes"],
   "properties": {
     "schemaVersion": { "const": 1 },
     "status": { "enum": ["draft", "review", "approved"] },
@@ -21,6 +21,8 @@
           "adminField",
           "jlptLevel",
           "decisionStatus",
+          "sourceMatchType",
+          "resolutionType",
           "notesKo"
         ],
         "properties": {
@@ -42,6 +44,8 @@
           "contentReading": { "type": "string", "minLength": 1 },
           "meaningKo": { "type": "string", "minLength": 1 },
           "decisionStatus": { "enum": ["approved"] },
+          "sourceMatchType": { "enum": ["exact", "partial", "related"] },
+          "resolutionType": { "enum": ["exact_mapping", "partial_override"] },
           "notesKo": { "type": "string", "minLength": 1 }
         },
         "allOf": [
@@ -75,6 +79,73 @@
             }
           }
         ]
+      }
+    },
+    "reviewOutcomes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetId",
+          "topicId",
+          "contentType",
+          "adminField",
+          "decisionStatus",
+          "notesKo",
+          "candidateRefs"
+        ],
+        "properties": {
+          "targetId": {
+            "type": "string",
+            "pattern": "^tts-[a-z0-9][a-z0-9-]*$"
+          },
+          "topicId": {
+            "type": "string",
+            "pattern": "^topic-[a-z0-9][a-z0-9-]*$"
+          },
+          "contentType": { "enum": ["vocabulary", "grammar"] },
+          "adminField": { "type": "string", "minLength": 1 },
+          "decisionStatus": {
+            "enum": ["needs_mapping", "needs_topic_split", "needs_partial_override", "rejected"]
+          },
+          "notesKo": { "type": "string", "minLength": 1 },
+          "candidateRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["lookupType", "jlptLevel", "matchType"],
+              "properties": {
+                "lookupType": { "enum": ["vocabulary_level_order", "grammar_level_order"] },
+                "jlptLevel": { "enum": ["N5", "N4", "N3", "N2", "N1"] },
+                "grammarOrder": { "type": "integer", "minimum": 1 },
+                "vocabularyOrder": { "type": "integer", "minimum": 1 },
+                "matchType": { "enum": ["exact", "partial", "related"] },
+                "contentLabel": { "type": ["string", "null"] },
+                "contentReading": { "type": ["string", "null"] },
+                "meaningKo": { "type": ["string", "null"] },
+                "noteKo": { "type": ["string", "null"] }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": { "lookupType": { "const": "vocabulary_level_order" } },
+                    "required": ["lookupType"]
+                  },
+                  "then": { "required": ["vocabularyOrder"] }
+                },
+                {
+                  "if": {
+                    "properties": { "lookupType": { "const": "grammar_level_order" } },
+                    "required": ["lookupType"]
+                  },
+                  "then": { "required": ["grammarOrder"] }
+                }
+              ]
+            }
+          }
+        }
       }
     }
   }

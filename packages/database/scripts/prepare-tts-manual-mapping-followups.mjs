@@ -20,6 +20,11 @@ const FOLLOWUP_ACTIONS = new Map([
     {
       actionType: 'add_topic_mapping',
       recommendedActionKo: 'topic map 후보가 없으므로 topic-grammar-map 또는 topic-vocabulary-map에 후보를 추가한다.',
+      resolutionContract: {
+        executableDecisionAllowed: false,
+        expectedResolutionType: 'topic_mapping_required',
+        nextStepKo: '정확한 학습 항목을 source grammar/vocabulary row에 매핑한 뒤 review artifact를 재생성한다.',
+      },
     },
   ],
   [
@@ -27,6 +32,11 @@ const FOLLOWUP_ACTIONS = new Map([
     {
       actionType: 'split_topic_or_strengthen_mapping',
       recommendedActionKo: '복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.',
+      resolutionContract: {
+        executableDecisionAllowed: false,
+        expectedResolutionType: 'topic_split_required',
+        nextStepKo: '넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다.',
+      },
     },
   ],
   [
@@ -34,6 +44,11 @@ const FOLLOWUP_ACTIONS = new Map([
     {
       actionType: 'review_partial_override',
       recommendedActionKo: '단일 non-exact 후보를 사용할 수 있는지 검토하고 승인 시 명시적 partial override 근거를 남긴다.',
+      resolutionContract: {
+        executableDecisionAllowed: true,
+        expectedResolutionType: 'partial_override',
+        nextStepKo: '후보가 target 단위 TTS 생성에 충분하다는 근거를 reviewerNotes에 남기고 APPROVED로 전환한다.',
+      },
     },
   ],
 ]);
@@ -190,6 +205,7 @@ export function buildFollowupContract(reviewRows, { reviewDir, generatedAt = new
         candidateCount: candidates.length,
         candidates,
         recommendedActionKo: action.recommendedActionKo,
+        resolutionContract: action.resolutionContract,
       };
     })
     .sort((left, right) => {

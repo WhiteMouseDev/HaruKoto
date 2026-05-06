@@ -2266,7 +2266,12 @@
           "ref": "065"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 48
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2281,7 +2286,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "한정 조사 しか와 선택지 없음의 しかない를 분리한 뒤 grammar row를 확정한다."
+      "notesKo": "한정 조사 しか와 선택지 없음의 しかない를 구분한다."
     },
     {
       "topicId": "topic-dake",
@@ -3517,7 +3522,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "ものだ/ものではない/ものの 등 세부 topic을 분리한 뒤 grammar row를 확정한다."
+      "notesKo": "ものは/ものだ 등 세부 topic을 분리한다."
     },
     {
       "topicId": "topic-hazu-da",

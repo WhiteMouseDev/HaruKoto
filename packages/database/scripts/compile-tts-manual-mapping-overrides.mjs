@@ -10,6 +10,7 @@ const VOCAB_DIR = join(PACKAGE_DIR, 'data', 'vocabulary');
 const DEFAULT_REVIEW_DIR = join(CURRICULUM_DIR, 'tts-manual-mapping-review');
 const DEFAULT_OUT_FILE = join(CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json');
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
+const MATCH_TYPES = new Set(['exact', 'partial', 'related']);
 const VALID_DECISIONS = new Set([
   'PENDING',
   'NEEDS_MAPPING',
@@ -96,6 +97,8 @@ function existingDecisionsByTarget(outFile) {
 
   const existing = readJson(outFile);
   for (const decision of existing.decisions ?? []) {
+    decision.sourceMatchType ??= 'exact';
+    decision.resolutionType ??= resolutionTypeForMatch(decision.sourceMatchType);
     byTarget.set(decision.targetId, decision);
   }
   return byTarget;
@@ -130,10 +133,39 @@ function requireInteger(value, scope, field) {
   return value;
 }
 
+function requireMatchType(value, scope) {
+  const matchType = requireText(value, scope, 'matchType');
+  if (!MATCH_TYPES.has(matchType)) throw new Error(`${scope}: invalid matchType ${value}.`);
+  return matchType;
+}
+
+function resolutionTypeForMatch(matchType) {
+  return matchType === 'exact' ? 'exact_mapping' : 'partial_override';
+}
+
+function summarizeCandidateRef(candidate, scope) {
+  const matchType = requireMatchType(candidate.matchType, scope);
+  const ref = {
+    lookupType: requireText(candidate.lookupType, scope, 'lookupType'),
+    jlptLevel: requireLevel(candidate.jlptLevel, scope),
+    matchType,
+    contentLabel: normalize(candidate.contentLabel) || null,
+    noteKo: normalize(candidate.noteKo) || null,
+  };
+  if (candidate.grammarOrder !== undefined) ref.grammarOrder = requireInteger(candidate.grammarOrder, scope, 'grammarOrder');
+  if (candidate.vocabularyOrder !== undefined) {
+    ref.vocabularyOrder = requireInteger(candidate.vocabularyOrder, scope, 'vocabularyOrder');
+  }
+  if (candidate.contentReading !== undefined) ref.contentReading = normalize(candidate.contentReading) || null;
+  if (candidate.meaningKo !== undefined) ref.meaningKo = normalize(candidate.meaningKo) || null;
+  return ref;
+}
+
 function compileVocabularyDecision(row, selected, vocabularyRowsByLevel) {
   const scope = row.reviewId;
   const jlptLevel = requireLevel(selected.jlptLevel, scope);
   const vocabularyOrder = requireInteger(selected.vocabularyOrder, scope, 'vocabularyOrder');
+  const sourceMatchType = requireMatchType(selected.matchType, scope);
   const sourceRow = vocabularyRowsByLevel.get(jlptLevel)?.get(vocabularyOrder);
   if (!sourceRow) throw new Error(`${scope}: missing vocabulary source row ${jlptLevel}:${vocabularyOrder}.`);
 
@@ -156,6 +188,8 @@ function compileVocabularyDecision(row, selected, vocabularyRowsByLevel) {
     contentReading,
     meaningKo,
     decisionStatus: 'approved',
+    sourceMatchType,
+    resolutionType: resolutionTypeForMatch(sourceMatchType),
     notesKo: normalize(row.reviewerNotes) || normalize(selected.noteKo) || 'TTS manual vocabulary mapping approved.',
   };
 }
@@ -164,6 +198,7 @@ function compileGrammarDecision(row, selected, grammarRowsByLevel) {
   const scope = row.reviewId;
   const jlptLevel = requireLevel(selected.jlptLevel, scope);
   const grammarOrder = requireInteger(selected.grammarOrder, scope, 'grammarOrder');
+  const sourceMatchType = requireMatchType(selected.matchType, scope);
   if (!grammarRowsByLevel.get(jlptLevel)?.has(grammarOrder)) {
     throw new Error(`${scope}: missing grammar source row ${jlptLevel}:${grammarOrder}.`);
   }
@@ -177,6 +212,8 @@ function compileGrammarDecision(row, selected, grammarRowsByLevel) {
     jlptLevel,
     grammarOrder,
     decisionStatus: 'approved',
+    sourceMatchType,
+    resolutionType: resolutionTypeForMatch(sourceMatchType),
     notesKo: normalize(row.reviewerNotes) || normalize(selected.noteKo) || 'TTS manual grammar mapping approved.',
   };
 }
@@ -198,11 +235,27 @@ function compileDecision(row, vocabularyRowsByLevel, grammarRowsByLevel) {
   throw new Error(`${row.reviewId}: unsupported contentType ${row.contentType}.`);
 }
 
+function compileReviewOutcome(row, decision) {
+  const scope = row.reviewId;
+  return {
+    targetId: requireText(row.targetId, scope, 'targetId'),
+    topicId: requireText(row.topicId, scope, 'topicId'),
+    contentType: requireText(row.contentType, scope, 'contentType'),
+    adminField: requireText(row.adminField, scope, 'adminField'),
+    decisionStatus: decision.toLowerCase(),
+    notesKo:
+      normalize(row.reviewerNotes) ||
+      `Manual mapping review outcome recorded as ${decision.toLowerCase().replaceAll('_', ' ')}.`,
+    candidateRefs: (row.candidates ?? []).map((candidate) => summarizeCandidateRef(candidate, scope)),
+  };
+}
+
 try {
   const reviewRows = loadReviewRows(REVIEW_DIR);
   const vocabularyRowsByLevel = loadRowsByLevel(VOCAB_DIR, 'words');
   const grammarRowsByLevel = loadRowsByLevel(GRAMMAR_DIR, 'grammar');
   const decisionsByTarget = existingDecisionsByTarget(OUT_FILE);
+  const reviewOutcomesByTarget = new Map();
   const stats = {
     files: new Set(reviewRows.map((item) => item.sourceFile)).size,
     rows: reviewRows.length,
@@ -228,18 +281,22 @@ try {
     }
     if (decision === 'NEEDS_MAPPING') {
       stats.needsMapping += 1;
+      reviewOutcomesByTarget.set(row.targetId, compileReviewOutcome(row, decision));
       continue;
     }
     if (decision === 'NEEDS_TOPIC_SPLIT') {
       stats.needsTopicSplit += 1;
+      reviewOutcomesByTarget.set(row.targetId, compileReviewOutcome(row, decision));
       continue;
     }
     if (decision === 'NEEDS_PARTIAL_OVERRIDE') {
       stats.needsPartialOverride += 1;
+      reviewOutcomesByTarget.set(row.targetId, compileReviewOutcome(row, decision));
       continue;
     }
     if (decision === 'REJECTED') {
       stats.rejected += 1;
+      reviewOutcomesByTarget.set(row.targetId, compileReviewOutcome(row, decision));
       continue;
     }
 
@@ -253,6 +310,7 @@ try {
     schemaVersion: 1,
     status: 'draft',
     decisions: Array.from(decisionsByTarget.values()).sort((left, right) => left.targetId.localeCompare(right.targetId)),
+    reviewOutcomes: Array.from(reviewOutcomesByTarget.values()).sort((left, right) => left.targetId.localeCompare(right.targetId)),
   };
 
   writeJson(OUT_FILE, output);

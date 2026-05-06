@@ -210,6 +210,7 @@ def test_get_admin_tts_review_generation_plan_uses_manual_vocabulary_override(tm
     assert result.items[0].candidates[0].content_label == "私"
     assert result.items[0].candidates[0].content_reading == "わたし"
     assert result.items[0].candidates[0].meaning_ko == "저"
+    assert result.items[0].candidates[0].match_type == "exact"
     assert result.items[1].operation_status == "manual_mapping_required"
 
 
@@ -233,6 +234,33 @@ def test_get_admin_tts_review_generation_plan_marks_exact_grammar_ready(tmp_path
     assert result.items[0].operation_status == "ready_after_db_lookup"
     assert result.items[0].candidates[0].lookup_type == "grammar_level_order"
     assert result.items[0].candidates[0].grammar_order == 1
+
+
+def test_get_admin_tts_review_generation_plan_preserves_partial_override_match_type(tmp_path: Path) -> None:
+    batch_path = _write_contract(tmp_path, _grammar_contract())
+    manifest_path = _write_manifest(tmp_path, _grammar_manifest_targets())
+    grammar_map_path = _write_topic_grammar_map(tmp_path)
+    vocabulary_map_path = _write_topic_vocabulary_map(tmp_path)
+    manual_mapping_overrides_path = _write_manual_mapping_overrides(
+        tmp_path,
+        [_manual_partial_grammar_override_decision()],
+    )
+
+    result = get_admin_tts_review_generation_plan(
+        "tts-review-admin-grammar-fields",
+        batch_path=batch_path,
+        manifest_path=manifest_path,
+        topic_grammar_map_path=grammar_map_path,
+        topic_vocabulary_map_path=vocabulary_map_path,
+        manual_mapping_overrides_path=manual_mapping_overrides_path,
+    )
+
+    assert result.summary.ready_after_db_lookup_targets == 1
+    assert result.summary.manual_mapping_required_targets == 0
+    assert result.items[0].operation_status == "ready_after_db_lookup"
+    assert result.items[0].candidates[0].lookup_type == "grammar_level_order"
+    assert result.items[0].candidates[0].grammar_order == 1
+    assert result.items[0].candidates[0].match_type == "partial"
 
 
 def test_get_admin_tts_review_generation_plan_blocks_extension_required_batch(tmp_path: Path) -> None:
@@ -468,6 +496,7 @@ def _write_manual_mapping_overrides(tmp_path: Path, decisions: list[dict[str, ob
                 "schemaVersion": 1,
                 "status": "draft",
                 "decisions": decisions if decisions is not None else [],
+                "reviewOutcomes": [],
             }
         ),
         encoding="utf-8",
@@ -591,7 +620,25 @@ def _manual_vocabulary_override_decision() -> dict[str, object]:
         "contentReading": "わたし",
         "meaningKo": "저",
         "decisionStatus": "approved",
+        "sourceMatchType": "exact",
+        "resolutionType": "exact_mapping",
         "notesKo": "리뷰어가 개인 대명사 topic의 word target을 N5 605번 어휘로 확정했다.",
+    }
+
+
+def _manual_partial_grammar_override_decision() -> dict[str, object]:
+    return {
+        "targetId": "tts-desu-copula-pattern",
+        "topicId": "topic-desu-copula",
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 1,
+        "decisionStatus": "approved",
+        "sourceMatchType": "partial",
+        "resolutionType": "partial_override",
+        "notesKo": "리뷰어가 pattern target 단위 TTS에는 N5 1번 문법 row가 충분하다고 확정했다.",
     }
 
 
