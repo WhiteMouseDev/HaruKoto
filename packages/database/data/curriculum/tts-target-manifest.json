@@ -3231,40 +3231,40 @@
       "notesKo": "Curriculum manifest target only; not yet persisted to tts_audio."
     },
     {
-      "targetId": "tts-kitto-word",
+      "targetId": "tts-vocabulary-n4-173-word",
       "topicId": "topic-kitto",
       "audioTargetType": "vocabulary",
       "audioField": "word",
-      "textSource": "curriculum-topics:topic-kitto:word",
+      "textSource": "vocabulary:N4:173:word",
       "defaultSpeed": 0.9,
       "requiredBeforePublish": true,
       "generationStatus": "missing",
       "cacheKeyStrategy": "provider-model-speed-field-text-hash-v1",
-      "notesKo": "Curriculum manifest target only; not yet persisted to tts_audio."
+      "notesKo": "Exact topic vocabulary mapping target; ready for DB lookup preview before TTS generation."
     },
     {
-      "targetId": "tts-kitto-reading",
+      "targetId": "tts-vocabulary-n4-173-reading",
       "topicId": "topic-kitto",
       "audioTargetType": "vocabulary",
       "audioField": "reading",
-      "textSource": "curriculum-topics:topic-kitto:reading",
+      "textSource": "vocabulary:N4:173:reading",
       "defaultSpeed": 0.9,
       "requiredBeforePublish": true,
       "generationStatus": "missing",
       "cacheKeyStrategy": "provider-model-speed-field-text-hash-v1",
-      "notesKo": "Curriculum manifest target only; not yet persisted to tts_audio."
+      "notesKo": "Exact topic vocabulary mapping target; ready for DB lookup preview before TTS generation."
     },
     {
-      "targetId": "tts-kitto-example-sentence",
+      "targetId": "tts-vocabulary-n4-173-example-sentence",
       "topicId": "topic-kitto",
       "audioTargetType": "vocabulary",
       "audioField": "example_sentence",
-      "textSource": "curriculum-topics:topic-kitto:example_sentence",
+      "textSource": "vocabulary:N4:173:example_sentence",
       "defaultSpeed": 0.9,
       "requiredBeforePublish": true,
       "generationStatus": "missing",
       "cacheKeyStrategy": "provider-model-speed-field-text-hash-v1",
-      "notesKo": "Curriculum manifest target only; not yet persisted to tts_audio."
+      "notesKo": "Exact topic vocabulary mapping target; ready for DB lookup preview before TTS generation."
     },
     {
       "targetId": "tts-bakari-pattern",

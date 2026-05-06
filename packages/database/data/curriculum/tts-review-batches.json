@@ -23,9 +23,9 @@
         "tts-shiru-wakaru-word",
         "tts-shiru-wakaru-reading",
         "tts-shiru-wakaru-example-sentence",
-        "tts-kitto-word",
-        "tts-kitto-reading",
-        "tts-kitto-example-sentence"
+        "tts-vocabulary-n4-173-word",
+        "tts-vocabulary-n4-173-reading",
+        "tts-vocabulary-n4-173-example-sentence"
       ],
       "targetCount": 18,
       "requiredBeforePublishCount": 18,

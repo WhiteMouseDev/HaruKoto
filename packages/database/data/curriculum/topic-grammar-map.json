@@ -38,6 +38,13 @@
       "notesKo": "PDF 008 です coverage anchor"
     },
     {
+      "topicId": "topic-nominal-negative",
+      "grammarLevel": "N5",
+      "grammarOrder": 58,
+      "matchType": "exact",
+      "notesKo": "PDF 009 ではない coverage anchor"
+    },
+    {
       "topicId": "topic-basic-particles",
       "grammarLevel": "N5",
       "grammarOrder": 31,
@@ -115,6 +122,20 @@
       "notesKo": "PDF 018 い형용사 coverage anchor"
     },
     {
+      "topicId": "topic-i-adjective-nominalization",
+      "grammarLevel": "N5",
+      "grammarOrder": 38,
+      "matchType": "related",
+      "notesKo": "PDF 019 い형용사의 명사화 coverage anchor"
+    },
+    {
+      "topicId": "topic-i-adjective-nominalization",
+      "grammarLevel": "N5",
+      "grammarOrder": 39,
+      "matchType": "related",
+      "notesKo": "PDF 019 い형용사의 명사화 coverage anchor"
+    },
+    {
       "topicId": "topic-na-attributive-linker",
       "grammarLevel": "N5",
       "grammarOrder": 39,
@@ -185,6 +206,13 @@
       "notesKo": "PDF 024 동사의 정중형 coverage anchor"
     },
     {
+      "topicId": "topic-aru-iru-existence",
+      "grammarLevel": "N5",
+      "grammarOrder": 55,
+      "matchType": "exact",
+      "notesKo": "PDF 025 ある・いる coverage anchor"
+    },
+    {
       "topicId": "topic-polite-form-applications",
       "grammarLevel": "N5",
       "grammarOrder": 11,
@@ -246,6 +274,13 @@
       "grammarOrder": 37,
       "matchType": "related",
       "notesKo": "PDF 030 やすい coverage anchor"
+    },
+    {
+      "topicId": "topic-nasai",
+      "grammarLevel": "N4",
+      "grammarOrder": 42,
+      "matchType": "exact",
+      "notesKo": "PDF 031 なさい coverage anchor"
     },
     {
       "topicId": "topic-tai-desire",
@@ -486,6 +521,13 @@
       "notesKo": "PDF 054 たばかりだ coverage anchor"
     },
     {
+      "topicId": "topic-ta-hou-ga-ii",
+      "grammarLevel": "N4",
+      "grammarOrder": 43,
+      "matchType": "exact",
+      "notesKo": "PDF 055 たほうがいい coverage anchor"
+    },
+    {
       "topicId": "topic-tari-tari-suru",
       "grammarLevel": "N4",
       "grammarOrder": 6,
@@ -498,6 +540,20 @@
       "grammarOrder": 23,
       "matchType": "exact",
       "notesKo": "PDF 057 でしょう coverage anchor"
+    },
+    {
+      "topicId": "topic-ku-naru-ni-naru",
+      "grammarLevel": "N4",
+      "grammarOrder": 8,
+      "matchType": "related",
+      "notesKo": "PDF 058 くなる・になる coverage anchor"
+    },
+    {
+      "topicId": "topic-ku-naru-ni-naru",
+      "grammarLevel": "N3",
+      "grammarOrder": 5,
+      "matchType": "related",
+      "notesKo": "PDF 058 くなる・になる coverage anchor"
     },
     {
       "topicId": "topic-nai-form",
@@ -514,11 +570,46 @@
       "notesKo": "PDF 061 ないでください coverage anchor"
     },
     {
+      "topicId": "topic-prohibitive-na",
+      "grammarLevel": "N5",
+      "grammarOrder": 7,
+      "matchType": "related",
+      "notesKo": "PDF 062 な coverage anchor"
+    },
+    {
+      "topicId": "topic-prohibitive-na",
+      "grammarLevel": "N5",
+      "grammarOrder": 9,
+      "matchType": "related",
+      "notesKo": "PDF 062 な coverage anchor"
+    },
+    {
       "topicId": "topic-nakereba-naranai",
       "grammarLevel": "N5",
       "grammarOrder": 27,
       "matchType": "exact",
       "notesKo": "PDF 063 なければならない coverage anchor"
+    },
+    {
+      "topicId": "topic-kamoshirenai",
+      "grammarLevel": "N4",
+      "grammarOrder": 41,
+      "matchType": "exact",
+      "notesKo": "PDF 064 かもしれない coverage anchor"
+    },
+    {
+      "topicId": "topic-shika-nai",
+      "grammarLevel": "N4",
+      "grammarOrder": 48,
+      "matchType": "exact",
+      "notesKo": "PDF 065 しかない coverage anchor"
+    },
+    {
+      "topicId": "topic-dake",
+      "grammarLevel": "N5",
+      "grammarOrder": 56,
+      "matchType": "exact",
+      "notesKo": "PDF 066 だけ coverage anchor"
     },
     {
       "topicId": "topic-kara",
@@ -535,6 +626,27 @@
       "notesKo": "PDF 068 ので coverage anchor"
     },
     {
+      "topicId": "topic-potential-form",
+      "grammarLevel": "N4",
+      "grammarOrder": 44,
+      "matchType": "exact",
+      "notesKo": "PDF 069 가능형 coverage anchor"
+    },
+    {
+      "topicId": "topic-adjective-sa",
+      "grammarLevel": "N4",
+      "grammarOrder": 45,
+      "matchType": "exact",
+      "notesKo": "PDF 070 さ coverage anchor"
+    },
+    {
+      "topicId": "topic-volitional-form",
+      "grammarLevel": "N4",
+      "grammarOrder": 46,
+      "matchType": "exact",
+      "notesKo": "PDF 073 동사의 의지형 coverage anchor"
+    },
+    {
       "topicId": "topic-to-omou",
       "grammarLevel": "N5",
       "grammarOrder": 19,
@@ -543,9 +655,9 @@
     },
     {
       "topicId": "topic-ni-suru",
-      "grammarLevel": "N4",
-      "grammarOrder": 10,
-      "matchType": "related",
+      "grammarLevel": "N5",
+      "grammarOrder": 59,
+      "matchType": "exact",
       "notesKo": "PDF 077 にする coverage anchor"
     },
     {
@@ -561,6 +673,13 @@
       "grammarOrder": 2,
       "matchType": "related",
       "notesKo": "PDF 078 のに coverage anchor"
+    },
+    {
+      "topicId": "topic-noda-ndesu",
+      "grammarLevel": "N4",
+      "grammarOrder": 47,
+      "matchType": "exact",
+      "notesKo": "PDF 079 のだ coverage anchor"
     },
     {
       "topicId": "topic-passive-form",
@@ -617,6 +736,20 @@
       "grammarOrder": 40,
       "matchType": "partial",
       "notesKo": "PDF 084 と coverage anchor"
+    },
+    {
+      "topicId": "topic-toiu",
+      "grammarLevel": "N5",
+      "grammarOrder": 57,
+      "matchType": "exact",
+      "notesKo": "PDF 085 という coverage anchor"
+    },
+    {
+      "topicId": "topic-toiu-mono-wa",
+      "grammarLevel": "N3",
+      "grammarOrder": 51,
+      "matchType": "exact",
+      "notesKo": "PDF 086 というものは coverage anchor"
     },
     {
       "topicId": "topic-to-quotation-or-condition",

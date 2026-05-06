@@ -234,12 +234,12 @@
     },
     {
       "topicId": "topic-kitto",
-      "vocabularyLevel": "N5",
-      "vocabularyOrder": 189,
-      "word": "多分",
-      "reading": "たぶん",
-      "meaningKo": "아마",
-      "matchType": "related",
+      "vocabularyLevel": "N4",
+      "vocabularyOrder": 173,
+      "word": "きっと",
+      "reading": "きっと",
+      "meaningKo": "반드시, 틀림없이",
+      "matchType": "exact",
       "notesKo": "PDF 095 きっと vocabulary coverage anchor"
     }
   ]

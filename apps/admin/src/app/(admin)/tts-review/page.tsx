@@ -9,6 +9,7 @@ import {
   Eye,
   FileAudio2,
   Headphones,
+  ListChecks,
   RefreshCw,
   ShieldAlert,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ import {
   type TtsReviewBatchTargetsResponse,
   type TtsReviewExecutePreviewItem,
   type TtsReviewExecutePreviewResponse,
+  type TtsReviewGenerationPlanCandidate,
   type TtsReviewGenerationPlanItem,
   type TtsReviewGenerationPlanResponse,
   type TtsReviewTargetItem,
@@ -97,6 +99,15 @@ function BlockerLabel({
   }
 }
 
+function GenerationPlanBlockerLabel({
+  blocker,
+}: {
+  blocker: TtsReviewGenerationPlanItem['blockerCodes'][number];
+}) {
+  const t = useTranslations('ttsReview');
+  return t(`generationPlanBlocker.${blocker}`);
+}
+
 function AudioTargetTypeLabel({
   type,
 }: {
@@ -162,6 +173,46 @@ function SummaryTile({
         <div className="mt-1 text-2xl font-semibold tabular-nums">{value}</div>
       </div>
     </div>
+  );
+}
+
+function candidateDisplayLabel(candidate: TtsReviewGenerationPlanCandidate): string {
+  const order = candidate.vocabularyOrder ?? candidate.grammarOrder;
+  const label = candidate.contentLabel ?? candidate.matchType ?? candidate.topicId;
+  return [
+    candidate.jlptLevel,
+    order ? `#${order}` : null,
+    label,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function candidateDetail(candidate: TtsReviewGenerationPlanCandidate): string | null {
+  if (candidate.contentReading && candidate.meaningKo) {
+    return `${candidate.contentReading} · ${candidate.meaningKo}`;
+  }
+  return candidate.meaningKo ?? candidate.contentReading ?? null;
+}
+
+function CandidateSummary({
+  candidate,
+}: {
+  candidate: TtsReviewGenerationPlanCandidate;
+}) {
+  const displayLabel = candidateDisplayLabel(candidate);
+  const detail = candidateDetail(candidate);
+
+  return (
+    <span
+      className="inline-flex max-w-full flex-col rounded-md bg-background px-2 py-1 text-xs"
+      title={detail ? `${displayLabel} · ${detail}` : displayLabel}
+    >
+      <span className="truncate font-medium text-foreground">{displayLabel}</span>
+      {detail ? (
+        <span className="truncate text-muted-foreground">{detail}</span>
+      ) : null}
+    </span>
   );
 }
 
@@ -366,12 +417,8 @@ function GenerationPlanBadge({
         <div className="flex max-w-56 flex-col gap-0.5">
           {visibleCandidates.map((candidate) => {
             const order = candidate.vocabularyOrder ?? candidate.grammarOrder;
-            const label =
-              candidate.contentLabel ?? candidate.matchType ?? candidate.topicId;
-            const detail =
-              candidate.contentReading && candidate.meaningKo
-                ? `${candidate.contentReading} · ${candidate.meaningKo}`
-                : candidate.meaningKo;
+            const label = candidateDisplayLabel(candidate);
+            const detail = candidateDetail(candidate);
             return (
               <div
                 key={[
@@ -383,13 +430,9 @@ function GenerationPlanBadge({
                 ].join(':')}
                 className="truncate text-xs text-muted-foreground"
                 title={
-                  detail
-                    ? `${candidate.jlptLevel ?? ''} #${order} ${label} · ${detail}`
-                    : undefined
+                  detail ? `${label} · ${detail}` : label
                 }
               >
-                {candidate.jlptLevel ? `${candidate.jlptLevel} ` : null}
-                {order ? `#${order} ` : null}
                 {label}
               </div>
             );
@@ -401,6 +444,95 @@ function GenerationPlanBadge({
           ) : null}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function ManualMappingQueue({
+  items,
+}: {
+  items: TtsReviewGenerationPlanItem[];
+}) {
+  const t = useTranslations('ttsReview');
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="border-b bg-muted/20 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <ListChecks className="size-4 shrink-0 text-muted-foreground" />
+          <h3 className="truncate text-sm font-semibold">
+            {t('manualQueue.title')}
+          </h3>
+        </div>
+        <span className="text-xs font-medium text-muted-foreground">
+          {t('manualQueue.count', { count: items.length })}
+        </span>
+      </div>
+      <div className="mt-3 divide-y border-y">
+        {items.map((item) => (
+          <div
+            key={item.target.targetId}
+            className="grid gap-3 py-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_minmax(0,1.35fr)]"
+          >
+            <div className="min-w-0">
+              <div className="text-[11px] font-medium uppercase text-muted-foreground">
+                {t('manualQueue.target')}
+              </div>
+              <div className="mt-1 truncate text-sm font-medium">
+                {item.target.targetId}
+              </div>
+              <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                {item.target.topicId} · {item.adminField ?? item.target.audioField}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-medium uppercase text-muted-foreground">
+                {t('manualQueue.blockers')}
+              </div>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {item.blockerCodes.map((blocker) => (
+                  <span
+                    key={blocker}
+                    className="inline-flex max-w-full rounded-md bg-amber-100 px-2 py-1 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+                  >
+                    <GenerationPlanBlockerLabel blocker={blocker} />
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-medium uppercase text-muted-foreground">
+                {t('manualQueue.candidates')}
+              </div>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {item.candidates.length > 0 ? (
+                  item.candidates.map((candidate) => (
+                    <CandidateSummary
+                      key={[
+                        item.target.targetId,
+                        candidate.contentType,
+                        candidate.topicId,
+                        candidate.jlptLevel,
+                        candidate.vocabularyOrder ?? candidate.grammarOrder,
+                        candidate.matchType,
+                      ].join(':')}
+                      candidate={candidate}
+                    />
+                  ))
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {t('manualQueue.noCandidates')}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -478,6 +610,13 @@ function TargetDetailPanel({
       ),
     [generationPlan],
   );
+  const manualMappingItems = useMemo(
+    () =>
+      generationPlan?.items.filter(
+        (item) => item.operationStatus === 'manual_mapping_required',
+      ) ?? [],
+    [generationPlan],
+  );
   const executePreviewByTargetId = useMemo(
     () =>
       new Map(
@@ -552,6 +691,7 @@ function TargetDetailPanel({
         </div>
       ) : (
         <div className="overflow-x-auto">
+          {!isPlanLoading ? <ManualMappingQueue items={manualMappingItems} /> : null}
           <Table>
             <TableHeader>
               <TableRow>

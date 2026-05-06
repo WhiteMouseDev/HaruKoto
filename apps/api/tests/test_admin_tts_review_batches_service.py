@@ -10,10 +10,12 @@ import pytest
 
 from app.services.admin_tts_review_batches import (
     CURRICULUM_TTS_REVIEW_BATCH_PATH,
+    CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH,
     AdminTtsReviewBatchServiceError,
     _default_topic_grammar_map_path,
     _default_topic_vocabulary_map_path,
     _default_tts_review_batch_path,
+    _default_tts_review_manual_mapping_overrides_path,
     _default_tts_target_manifest_path,
     get_admin_tts_review_batch_targets,
     get_admin_tts_review_batches,
@@ -28,6 +30,14 @@ def test_default_tts_review_batch_path_uses_api_bundle() -> None:
     assert path == CURRICULUM_TTS_REVIEW_BATCH_PATH
     assert path.exists()
     assert path.parts[-4:] == ("app", "data", "curriculum", "tts-review-batches.json")
+
+
+def test_default_tts_review_manual_mapping_overrides_path_uses_api_bundle() -> None:
+    path = _default_tts_review_manual_mapping_overrides_path()
+
+    assert path == CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH
+    assert path.exists()
+    assert path.parts[-4:] == ("app", "data", "curriculum", "tts-review-manual-mapping-overrides.json")
 
 
 def test_default_tts_target_manifest_path_uses_api_bundle() -> None:
@@ -171,6 +181,38 @@ def test_get_admin_tts_review_generation_plan_marks_exact_vocabulary_ready(tmp_p
     assert result.items[0].candidates[0].meaning_ko == "한자"
 
 
+def test_get_admin_tts_review_generation_plan_uses_manual_vocabulary_override(tmp_path: Path) -> None:
+    batch_path = _write_contract(tmp_path)
+    manifest_path = _write_manifest(tmp_path)
+    grammar_map_path = _write_topic_grammar_map(tmp_path)
+    vocabulary_map_path = _write_topic_vocabulary_map(tmp_path)
+    manual_mapping_overrides_path = _write_manual_mapping_overrides(
+        tmp_path,
+        [_manual_vocabulary_override_decision()],
+    )
+
+    result = get_admin_tts_review_generation_plan(
+        "tts-review-admin-vocabulary-fields",
+        batch_path=batch_path,
+        manifest_path=manifest_path,
+        topic_grammar_map_path=grammar_map_path,
+        topic_vocabulary_map_path=vocabulary_map_path,
+        manual_mapping_overrides_path=manual_mapping_overrides_path,
+    )
+
+    assert result.summary.supported_targets == 2
+    assert result.summary.ready_after_db_lookup_targets == 1
+    assert result.summary.manual_mapping_required_targets == 1
+    assert result.items[0].operation_status == "ready_after_db_lookup"
+    assert result.items[0].blocker_codes == []
+    assert result.items[0].candidates[0].lookup_type == "vocabulary_level_order"
+    assert result.items[0].candidates[0].vocabulary_order == 605
+    assert result.items[0].candidates[0].content_label == "私"
+    assert result.items[0].candidates[0].content_reading == "わたし"
+    assert result.items[0].candidates[0].meaning_ko == "저"
+    assert result.items[1].operation_status == "manual_mapping_required"
+
+
 def test_get_admin_tts_review_generation_plan_marks_exact_grammar_ready(tmp_path: Path) -> None:
     batch_path = _write_contract(tmp_path, _grammar_contract())
     manifest_path = _write_manifest(tmp_path, _grammar_manifest_targets())
@@ -291,6 +333,39 @@ async def test_get_admin_tts_review_execute_preview_resolves_exact_vocabulary(tm
 
 
 @pytest.mark.asyncio
+async def test_get_admin_tts_review_execute_preview_resolves_manual_vocabulary_override(tmp_path: Path) -> None:
+    batch_path = _write_contract(tmp_path)
+    manifest_path = _write_manifest(tmp_path)
+    grammar_map_path = _write_topic_grammar_map(tmp_path)
+    vocabulary_map_path = _write_topic_vocabulary_map(tmp_path)
+    manual_mapping_overrides_path = _write_manual_mapping_overrides(
+        tmp_path,
+        [_manual_vocabulary_override_decision()],
+    )
+    vocabulary_id = uuid.uuid4()
+    db = _FakeDb([_ScalarsResult([SimpleNamespace(id=vocabulary_id, word="私")])])
+
+    result = await get_admin_tts_review_execute_preview(
+        db,  # type: ignore[arg-type]
+        "tts-review-admin-vocabulary-fields",
+        batch_path=batch_path,
+        manifest_path=manifest_path,
+        topic_grammar_map_path=grammar_map_path,
+        topic_vocabulary_map_path=vocabulary_map_path,
+        manual_mapping_overrides_path=manual_mapping_overrides_path,
+    )
+
+    assert result.summary.resolved_targets == 1
+    assert result.summary.not_lookup_ready_targets == 1
+    assert result.summary.generatable_targets == 1
+    assert result.items[0].lookup_status == "resolved"
+    assert result.items[0].content_item_id == str(vocabulary_id)
+    assert result.items[0].content_label == "私"
+    assert result.items[1].lookup_status == "not_lookup_ready"
+    assert db.execute_calls == 1
+
+
+@pytest.mark.asyncio
 async def test_get_admin_tts_review_execute_preview_skips_manual_vocabulary_lookup(tmp_path: Path) -> None:
     batch_path = _write_contract(tmp_path)
     manifest_path = _write_manifest(tmp_path)
@@ -378,6 +453,21 @@ def _write_topic_vocabulary_map(tmp_path: Path, mappings: list[dict[str, object]
                 "schemaVersion": 1,
                 "status": "draft",
                 "mappings": mappings if mappings is not None else [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
+def _write_manual_mapping_overrides(tmp_path: Path, decisions: list[dict[str, object]] | None = None) -> Path:
+    path = tmp_path / "tts-review-manual-mapping-overrides.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "status": "draft",
+                "decisions": decisions if decisions is not None else [],
             }
         ),
         encoding="utf-8",
@@ -486,6 +576,23 @@ def _topic_vocabulary_mappings(*, match_type: str) -> list[dict[str, object]]:
             "notesKo": "PDF 017 한자 읽기 coverage anchor",
         }
     ]
+
+
+def _manual_vocabulary_override_decision() -> dict[str, object]:
+    return {
+        "targetId": "tts-vocabulary-word",
+        "topicId": "topic-personal-pronouns",
+        "contentType": "vocabulary",
+        "lookupType": "vocabulary_level_order",
+        "adminField": "word",
+        "jlptLevel": "N5",
+        "vocabularyOrder": 605,
+        "contentLabel": "私",
+        "contentReading": "わたし",
+        "meaningKo": "저",
+        "decisionStatus": "approved",
+        "notesKo": "리뷰어가 개인 대명사 topic의 word target을 N5 605번 어휘로 확정했다.",
+    }
 
 
 def _grammar_contract() -> dict[str, object]:

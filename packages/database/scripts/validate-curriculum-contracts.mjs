@@ -56,6 +56,12 @@ const CONTRACT_FILES = [
     topArray: 'batches',
   },
   {
+    label: 'TTS review manual mapping overrides',
+    path: join(DATA_DIR, 'tts-review-manual-mapping-overrides.json'),
+    topArray: 'decisions',
+    allowEmpty: true,
+  },
+  {
     label: 'Lesson draft blueprints',
     path: join(DATA_DIR, 'lesson-draft-blueprints.json'),
     topArray: 'lessons',
@@ -97,6 +103,7 @@ const SCHEMA_FILES = [
   'grammar-metadata-v2.schema.json',
   'tts-target-manifest.schema.json',
   'tts-review-batch.schema.json',
+  'tts-review-manual-mapping-override.schema.json',
   'lesson-draft-blueprint.schema.json',
   'lesson-seed-candidate.schema.json',
   'scaffold-candidate.schema.json',
@@ -335,7 +342,7 @@ function validateContractShell(file, rows) {
   }
   if (!Array.isArray(data[file.topArray])) {
     addIssue(rows, 'FAIL', file.label, `${file.topArray} must be an array.`);
-  } else if (data[file.topArray].length === 0) {
+  } else if (data[file.topArray].length === 0 && !file.allowEmpty) {
     addIssue(rows, 'WARN', file.label, `${file.topArray} is empty; Wave 0 contract only.`);
   }
 
@@ -879,8 +886,10 @@ function validateTtsTargetManifest(
 function validateTtsReviewBatches(data, rows, ttsTargetContext) {
   const batchIds = new Set();
   const coveredTargetIds = new Set();
+  const batchByTargetId = new Map();
+  const adminFieldByTargetId = new Map();
 
-  if (!data || !Array.isArray(data.batches)) return;
+  if (!data || !Array.isArray(data.batches)) return { batchByTargetId, adminFieldByTargetId };
 
   for (const batch of data.batches) {
     const scope = batch?.batchId ?? 'tts review batch ?';
@@ -978,6 +987,9 @@ function validateTtsReviewBatches(data, rows, ttsTargetContext) {
     for (const target of targets) {
       if (!audioFieldMappings.has(target.audioField)) {
         addIssue(rows, 'FAIL', scope, `No admin field mapping covers audioField ${target.audioField}.`);
+      } else {
+        batchByTargetId.set(target.targetId, batch);
+        adminFieldByTargetId.set(target.targetId, audioFieldMappings.get(target.audioField));
       }
     }
     if (!Array.isArray(batch.reviewerChecklist) || batch.reviewerChecklist.length === 0) {
@@ -995,6 +1007,108 @@ function validateTtsReviewBatches(data, rows, ttsTargetContext) {
     if (!coveredTargetIds.has(targetId)) {
       addIssue(rows, 'FAIL', targetId, 'No TTS review batch covers this target.');
     }
+  }
+
+  return { batchByTargetId, adminFieldByTargetId };
+}
+
+function validateTtsReviewManualMappingOverrides(
+  data,
+  rows,
+  ttsTargetContext,
+  ttsReviewContext,
+  grammarOrders,
+  vocabularyOrders,
+) {
+  const seenTargetIds = new Set();
+
+  if (!data || !Array.isArray(data.decisions)) return;
+
+  for (const decision of data.decisions) {
+    const scope = `tts manual mapping ${decision?.targetId ?? '?'}`;
+    const targetId = decision?.targetId;
+
+    if (seenTargetIds.has(targetId)) {
+      addIssue(rows, 'FAIL', scope, 'Duplicate manual mapping decision for targetId.');
+    }
+    seenTargetIds.add(targetId);
+
+    const target = ttsTargetContext.targetById.get(targetId);
+    if (!target) {
+      addIssue(rows, 'FAIL', scope, 'Manual mapping references an unknown TTS target.');
+      continue;
+    }
+    if (decision.topicId !== target.topicId) {
+      addIssue(rows, 'FAIL', scope, 'topicId must match the TTS target topicId.');
+    }
+    if (decision.contentType !== target.audioTargetType) {
+      addIssue(rows, 'FAIL', scope, 'contentType must match the TTS target audioTargetType.');
+    }
+
+    const batch = ttsReviewContext.batchByTargetId.get(targetId);
+    if (!batch) {
+      addIssue(rows, 'FAIL', scope, 'Manual mapping target is not covered by a TTS review batch.');
+    } else {
+      if (batch.adminExport?.mode !== 'existing_admin_tts_fields') {
+        addIssue(rows, 'FAIL', scope, 'Manual mappings can only target existing admin TTS field batches.');
+      }
+      if (batch.adminExport?.contentType !== decision.contentType) {
+        addIssue(rows, 'FAIL', scope, 'contentType must match the review batch adminExport contentType.');
+      }
+    }
+
+    const adminField = ttsReviewContext.adminFieldByTargetId.get(targetId);
+    if (adminField !== decision.adminField) {
+      addIssue(rows, 'FAIL', scope, 'adminField must match the review batch field mapping for the target audioField.');
+    }
+    if (decision.decisionStatus !== 'approved') {
+      addIssue(rows, 'FAIL', scope, 'decisionStatus must be approved before API generation can use it.');
+    }
+    if (!hasText(decision.notesKo)) {
+      addIssue(rows, 'FAIL', scope, 'notesKo is required.');
+    }
+
+    if (decision.contentType === 'vocabulary') {
+      if (decision.lookupType !== 'vocabulary_level_order') {
+        addIssue(rows, 'FAIL', scope, 'vocabulary decisions must use vocabulary_level_order lookupType.');
+      }
+      if (!Number.isInteger(decision.vocabularyOrder)) {
+        addIssue(rows, 'FAIL', scope, 'vocabularyOrder must be an integer for vocabulary decisions.');
+        continue;
+      }
+
+      const vocabularyRow = vocabularyOrders.get(decision.jlptLevel)?.get(decision.vocabularyOrder);
+      if (!vocabularyRow) {
+        addIssue(rows, 'FAIL', scope, 'Manual mapping references a missing vocabulary order.');
+      } else {
+        if (decision.contentLabel !== vocabularyRow.word) {
+          addIssue(rows, 'FAIL', scope, 'contentLabel must match the source vocabulary row word.');
+        }
+        if (decision.contentReading !== vocabularyRow.reading) {
+          addIssue(rows, 'FAIL', scope, 'contentReading must match the source vocabulary row reading.');
+        }
+        if (decision.meaningKo !== vocabularyRow.meaningKo) {
+          addIssue(rows, 'FAIL', scope, 'meaningKo must match the source vocabulary row meaningKo.');
+        }
+      }
+      continue;
+    }
+
+    if (decision.contentType === 'grammar') {
+      if (decision.lookupType !== 'grammar_level_order') {
+        addIssue(rows, 'FAIL', scope, 'grammar decisions must use grammar_level_order lookupType.');
+      }
+      if (!Number.isInteger(decision.grammarOrder)) {
+        addIssue(rows, 'FAIL', scope, 'grammarOrder must be an integer for grammar decisions.');
+        continue;
+      }
+      if (!grammarOrders.get(decision.jlptLevel)?.has(decision.grammarOrder)) {
+        addIssue(rows, 'FAIL', scope, 'Manual mapping references a missing grammar order.');
+      }
+      continue;
+    }
+
+    addIssue(rows, 'FAIL', scope, 'contentType must be vocabulary or grammar.');
   }
 }
 
@@ -2120,7 +2234,15 @@ function main() {
     vocabularyMapContext,
     vocabularyOrders,
   );
-  validateTtsReviewBatches(data.get('TTS review batches'), rows, ttsTargetContext);
+  const ttsReviewContext = validateTtsReviewBatches(data.get('TTS review batches'), rows, ttsTargetContext);
+  validateTtsReviewManualMappingOverrides(
+    data.get('TTS review manual mapping overrides'),
+    rows,
+    ttsTargetContext,
+    ttsReviewContext,
+    grammarOrders,
+    vocabularyOrders,
+  );
   const scaffoldContext = validateScaffoldCandidates(
     data.get('Scaffold candidates'),
     rows,

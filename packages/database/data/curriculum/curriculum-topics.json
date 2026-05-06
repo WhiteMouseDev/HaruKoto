@@ -161,7 +161,12 @@
           "ref": "009"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 58
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -519,7 +524,16 @@
           "ref": "019"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 38
+        },
+        {
+          "level": "N5",
+          "order": 39
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -750,7 +764,12 @@
           "ref": "025"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 55
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -977,7 +996,12 @@
           "ref": "031"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 42
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -1879,7 +1903,12 @@
           "ref": "055"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 43
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -1982,7 +2011,16 @@
           "ref": "058"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 8
+        },
+        {
+          "level": "N3",
+          "order": 5
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2116,7 +2154,16 @@
           "ref": "062"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 7
+        },
+        {
+          "level": "N5",
+          "order": 9
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2183,7 +2230,12 @@
           "ref": "064"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 41
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2229,7 +2281,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "한정 조사 しか와 선택지 없음의 しかない를 구분한다."
+      "notesKo": "한정 조사 しか와 선택지 없음의 しかない를 분리한 뒤 grammar row를 확정한다."
     },
     {
       "topicId": "topic-dake",
@@ -2245,7 +2297,12 @@
           "ref": "066"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 56
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2348,7 +2405,12 @@
           "ref": "069"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 44
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2379,7 +2441,12 @@
           "ref": "070"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 45
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2472,7 +2539,12 @@
           "ref": "073"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 46
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2603,8 +2675,8 @@
       ],
       "mappedGrammarOrders": [
         {
-          "level": "N4",
-          "order": 10
+          "level": "N5",
+          "order": 59
         }
       ],
       "mappedLessonIds": [],
@@ -2677,7 +2749,12 @@
           "ref": "079"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 47
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2900,7 +2977,12 @@
           "ref": "085"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N5",
+          "order": 57
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -2931,7 +3013,12 @@
           "ref": "086"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N3",
+          "order": 51
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -3430,7 +3517,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "ものは/ものだ 등 세부 topic을 분리한다."
+      "notesKo": "ものだ/ものではない/ものの 등 세부 topic을 분리한 뒤 grammar row를 확정한다."
     },
     {
       "topicId": "topic-hazu-da",

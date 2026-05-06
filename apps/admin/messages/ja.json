@@ -277,6 +277,23 @@
       "candidates": "候補 {count}件",
       "summary": "可能 {ready} · マッピング {manual} · ブロック {blocked}"
     },
+    "generationPlanBlocker": {
+      "admin_extension_required": "管理者拡張が必要",
+      "unsupported_admin_tts_field": "未対応TTSフィールド",
+      "missing_admin_field_mapping": "フィールドマッピング不足",
+      "topic_vocabulary_mapping_required": "語彙topicマッピング必要",
+      "ambiguous_or_partial_vocabulary_mapping": "語彙候補の確認必要",
+      "topic_grammar_mapping_required": "文法topicマッピング必要",
+      "ambiguous_or_partial_grammar_mapping": "文法候補の確認必要"
+    },
+    "manualQueue": {
+      "title": "手動マッピングキュー",
+      "count": "{count}件",
+      "target": "対象",
+      "blockers": "ブロッカー",
+      "candidates": "候補",
+      "noCandidates": "候補なし"
+    },
     "executePreview": {
       "resolved": "DB連携済み",
       "missing": "DB未検出",
