@@ -1,0 +1,2482 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "decisions": [
+    {
+      "targetId": "tts-ba-conditional-example-sentence",
+      "topicId": "topic-ba-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 22,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #22 〜ば만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-ba-conditional-pattern",
+      "topicId": "topic-ba-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 22,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #22 〜ば만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-causative-form-example-sentence",
+      "topicId": "topic-causative-form",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 27,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #27 사역형 〜(さ)せる만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-causative-form-pattern",
+      "topicId": "topic-causative-form",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 27,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #27 사역형 〜(さ)せる만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-hazu-da-example-sentence",
+      "topicId": "topic-hazu-da",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 13,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #13 〜はず만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-hazu-da-pattern",
+      "topicId": "topic-hazu-da",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 13,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #13 〜はず만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-hoshii-example-sentence",
+      "topicId": "topic-hoshii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 39,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "topic note가 명사+ほしい와 동사て形+ほしい 분리를 요구하고, 이 target은 기존 N4 #39 〜てほしい row로 다루는 동사て形+ほしい 용법에 해당한다. example_sentence TTS는 N4 #39를 사용한다."
+    },
+    {
+      "targetId": "tts-hoshii-pattern",
+      "topicId": "topic-hoshii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 39,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "topic note가 명사+ほしい와 동사て形+ほしい 분리를 요구하고, 이 target은 기존 N4 #39 〜てほしい row로 다루는 동사て形+ほしい 용법에 해당한다. pattern TTS는 N4 #39를 사용한다."
+    },
+    {
+      "targetId": "tts-kara-example-sentence",
+      "topicId": "topic-kara",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 17,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N5 #17 〜から row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-kara-pattern",
+      "topicId": "topic-kara",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 17,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N5 #17 〜から row로 확인. topic title から와 pattern이 직접 대응한다."
+    },
+    {
+      "targetId": "tts-na-attributive-linker-example-sentence",
+      "topicId": "topic-na-attributive-linker",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 39,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N5 #39 형용사+명사 수식 row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-na-attributive-linker-pattern",
+      "topicId": "topic-na-attributive-linker",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 39,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N5 #39 형용사+명사 수식 row로 확인. topic title な는 이 row의 な-Adj+N 하위 용법에 대응한다."
+    },
+    {
+      "targetId": "tts-nagara-example-sentence",
+      "topicId": "topic-nagara",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 14,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #14 〜ながら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-nagara-pattern",
+      "topicId": "topic-nagara",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 14,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #14 〜ながら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-nara-conditional-example-sentence",
+      "topicId": "topic-nara-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 23,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #23 〜なら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-nara-conditional-pattern",
+      "topicId": "topic-nara-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 23,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #23 〜なら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-noni-example-sentence",
+      "topicId": "topic-noni",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 19,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #19 〜のに만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-noni-pattern",
+      "topicId": "topic-noni",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 19,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #19 〜のに만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-passive-form-example-sentence",
+      "topicId": "topic-passive-form",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 26,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #26 수동형 〜(ら)れる만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-passive-form-pattern",
+      "topicId": "topic-passive-form",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 26,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #26 수동형 〜(ら)れる만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-polite-verb-forms-example-sentence",
+      "topicId": "topic-polite-verb-forms",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 2,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 4개 중 N5 #2 〜ます만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-polite-verb-forms-pattern",
+      "topicId": "topic-polite-verb-forms",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 2,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 4개 중 N5 #2 〜ます만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-rashii-example-sentence",
+      "topicId": "topic-rashii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 15,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #15 〜らしい만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-rashii-pattern",
+      "topicId": "topic-rashii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 15,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #15 〜らしい만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-shi-reason-listing-example-sentence",
+      "topicId": "topic-shi-reason-listing",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 24,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #24 〜し만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-shi-reason-listing-pattern",
+      "topicId": "topic-shi-reason-listing",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 24,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #24 〜し만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-sugiru-example-sentence",
+      "topicId": "topic-sugiru",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 24,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #24 〜すぎます만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-sugiru-pattern",
+      "topicId": "topic-sugiru",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 24,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #24 〜すぎます만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-ta-bakari-example-sentence",
+      "topicId": "topic-ta-bakari",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N3",
+      "grammarOrder": 9,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N3 #9 〜たばかり만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-ta-bakari-pattern",
+      "topicId": "topic-ta-bakari",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N3",
+      "grammarOrder": 9,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N3 #9 〜たばかり만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-tara-conditional-example-sentence",
+      "topicId": "topic-tara-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 21,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #21 〜たら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-tara-conditional-pattern",
+      "topicId": "topic-tara-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 21,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #21 〜たら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-te-shimau-example-sentence",
+      "topicId": "topic-te-shimau",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 1,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #1 〜てしまう만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-te-shimau-pattern",
+      "topicId": "topic-te-shimau",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 1,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #1 〜てしまう만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-temo-ii-example-sentence",
+      "topicId": "topic-temo-ii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 8,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #8 〜てもいいですか만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-temo-ii-pattern",
+      "topicId": "topic-temo-ii",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 8,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #8 〜てもいいですか만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-to-conditional-example-sentence",
+      "topicId": "topic-to-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 40,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N4 #40 〜と 조건 row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-to-conditional-pattern",
+      "topicId": "topic-to-conditional",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 40,
+      "decisionStatus": "approved",
+      "sourceMatchType": "partial",
+      "resolutionType": "partial_override",
+      "notesKo": "단일 N4 #40 〜と 조건 row로 확인. topic title と는 조건 용법으로 pattern이 직접 대응한다."
+    },
+    {
+      "targetId": "tts-tsumori-example-sentence",
+      "topicId": "topic-tsumori",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N4",
+      "grammarOrder": 12,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #12 〜つもり만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-tsumori-pattern",
+      "topicId": "topic-tsumori",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N4",
+      "grammarOrder": 12,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N4 #12 〜つもり만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-yasui-nikui-example-sentence",
+      "topicId": "topic-yasui-nikui",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 26,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #26 〜やすい/にくい만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+    },
+    {
+      "targetId": "tts-yasui-nikui-pattern",
+      "topicId": "topic-yasui-nikui",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 26,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "후보 2개 중 N5 #26 〜やすい/にくい만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+    }
+  ],
+  "reviewOutcomes": [
+    {
+      "targetId": "tts-basic-particles-example-sentence",
+      "topicId": "topic-basic-particles",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜か",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 31,
+          "meaningKo": "~인가요? / ~입니까? (의문 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜は",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 32,
+          "meaningKo": "~은/는 (주제 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜も",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 33,
+          "meaningKo": "~도 (첨가·동류 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜の",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 37,
+          "meaningKo": "~의 (소유 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜に",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 42,
+          "meaningKo": "~에 (존재 위치 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜で",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 43,
+          "meaningKo": "~에서 / ~으로 (장소/수단 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜へ",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 44,
+          "meaningKo": "~으로 / ~에 (방향 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜を",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 46,
+          "meaningKo": "~을/를 (목적어 조사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-basic-particles-pattern",
+      "topicId": "topic-basic-particles",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜か",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 31,
+          "meaningKo": "~인가요? / ~입니까? (의문 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜は",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 32,
+          "meaningKo": "~은/는 (주제 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜も",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 33,
+          "meaningKo": "~도 (첨가·동류 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜の",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 37,
+          "meaningKo": "~의 (소유 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜に",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 42,
+          "meaningKo": "~에 (존재 위치 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜で",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 43,
+          "meaningKo": "~에서 / ~으로 (장소/수단 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜へ",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 44,
+          "meaningKo": "~으로 / ~에 (방향 조사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜を",
+          "noteKo": "PDF 010 조사 총정리 coverage anchor",
+          "grammarOrder": 46,
+          "meaningKo": "~을/를 (목적어 조사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-demonstratives-example-sentence",
+      "topicId": "topic-demonstratives",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "これ・それ・あれ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 35,
+          "meaningKo": "이것·그것·저것 (지시대명사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "この・その・あの",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 36,
+          "meaningKo": "이·그·저 + 명사 (연체사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "ここ・そこ・あそこ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 40,
+          "meaningKo": "여기·거기·저기 (장소 지시어)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "どこ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 41,
+          "meaningKo": "어디 (장소 의문사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-demonstratives-pattern",
+      "topicId": "topic-demonstratives",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "これ・それ・あれ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 35,
+          "meaningKo": "이것·그것·저것 (지시대명사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "この・その・あの",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 36,
+          "meaningKo": "이·그·저 + 명사 (연체사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "ここ・そこ・あそこ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 40,
+          "meaningKo": "여기·거기·저기 (장소 지시어)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "どこ",
+          "noteKo": "PDF 007 지시대명사 coverage anchor",
+          "grammarOrder": 41,
+          "meaningKo": "어디 (장소 의문사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-i-adjective-nominalization-example-sentence",
+      "topicId": "topic-i-adjective-nominalization",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "い形容詞 / な形容詞",
+          "noteKo": "PDF 019 い형용사의 명사화 coverage anchor",
+          "grammarOrder": 38,
+          "meaningKo": "い형용사 / な형용사 기본"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "い-Adj+N / な-Adj+N",
+          "noteKo": "PDF 019 い형용사의 명사화 coverage anchor",
+          "grammarOrder": 39,
+          "meaningKo": "형용사+명사 수식"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-i-adjective-nominalization-pattern",
+      "topicId": "topic-i-adjective-nominalization",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "い形容詞 / な形容詞",
+          "noteKo": "PDF 019 い형용사의 명사화 coverage anchor",
+          "grammarOrder": 38,
+          "meaningKo": "い형용사 / な형용사 기본"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "い-Adj+N / な-Adj+N",
+          "noteKo": "PDF 019 い형용사의 명사화 coverage anchor",
+          "grammarOrder": 39,
+          "meaningKo": "형용사+명사 수식"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-ku-naru-ni-naru-example-sentence",
+      "topicId": "topic-ku-naru-ni-naru",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "related",
+          "contentLabel": "〜ようになる",
+          "noteKo": "PDF 058 くなる・になる coverage anchor",
+          "grammarOrder": 8,
+          "meaningKo": "~하게 되다 (변화)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "related",
+          "contentLabel": "〜ようになる",
+          "noteKo": "PDF 058 くなる・になる coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하게 되다 / ~할 수 있게 되다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-ku-naru-ni-naru-pattern",
+      "topicId": "topic-ku-naru-ni-naru",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "related",
+          "contentLabel": "〜ようになる",
+          "noteKo": "PDF 058 くなる・になる coverage anchor",
+          "grammarOrder": 8,
+          "meaningKo": "~하게 되다 (변화)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "related",
+          "contentLabel": "〜ようになる",
+          "noteKo": "PDF 058 くなる・になる coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하게 되다 / ~할 수 있게 되다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-mono-functions-example-sentence",
+      "topicId": "topic-mono-functions",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_mapping",
+      "notesKo": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다.",
+      "candidateRefs": []
+    },
+    {
+      "targetId": "tts-mono-functions-pattern",
+      "topicId": "topic-mono-functions",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_mapping",
+      "notesKo": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다.",
+      "candidateRefs": []
+    },
+    {
+      "targetId": "tts-no-functions-example-sentence",
+      "topicId": "topic-no-functions",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜のが好きです",
+          "noteKo": "PDF 035 の coverage anchor",
+          "grammarOrder": 28,
+          "meaningKo": "~하는 것을 좋아합니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜の",
+          "noteKo": "PDF 035 の coverage anchor",
+          "grammarOrder": 37,
+          "meaningKo": "~의 (소유 조사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-no-functions-pattern",
+      "topicId": "topic-no-functions",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜のが好きです",
+          "noteKo": "PDF 035 の coverage anchor",
+          "grammarOrder": 28,
+          "meaningKo": "~하는 것을 좋아합니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜の",
+          "noteKo": "PDF 035 の coverage anchor",
+          "grammarOrder": 37,
+          "meaningKo": "~의 (소유 조사)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-numbers-and-counters-example-sentence",
+      "topicId": "topic-numbers-and-counters",
+      "contentType": "vocabulary",
+      "adminField": "example_sentence",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "一",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 228,
+          "contentReading": "いち",
+          "meaningKo": "일. 하나"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "二",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 486,
+          "contentReading": "に",
+          "meaningKo": "이. 둘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "三",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 374,
+          "contentReading": "さん",
+          "meaningKo": "삼. 셋"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "ゼロ",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 409,
+          "contentReading": "ゼロ",
+          "meaningKo": "제로. 영"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "千",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 410,
+          "contentReading": "せん",
+          "meaningKo": "천"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-numbers-and-counters-reading",
+      "topicId": "topic-numbers-and-counters",
+      "contentType": "vocabulary",
+      "adminField": "reading",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "一",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 228,
+          "contentReading": "いち",
+          "meaningKo": "일. 하나"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "二",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 486,
+          "contentReading": "に",
+          "meaningKo": "이. 둘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "三",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 374,
+          "contentReading": "さん",
+          "meaningKo": "삼. 셋"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "ゼロ",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 409,
+          "contentReading": "ゼロ",
+          "meaningKo": "제로. 영"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "千",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 410,
+          "contentReading": "せん",
+          "meaningKo": "천"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-numbers-and-counters-word",
+      "topicId": "topic-numbers-and-counters",
+      "contentType": "vocabulary",
+      "adminField": "word",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "一",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 228,
+          "contentReading": "いち",
+          "meaningKo": "일. 하나"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "二",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 486,
+          "contentReading": "に",
+          "meaningKo": "이. 둘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "三",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 374,
+          "contentReading": "さん",
+          "meaningKo": "삼. 셋"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "ゼロ",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 409,
+          "contentReading": "ゼロ",
+          "meaningKo": "제로. 영"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "千",
+          "noteKo": "PDF 012 숫자・조수사 vocabulary coverage anchor",
+          "vocabularyOrder": 410,
+          "contentReading": "せん",
+          "meaningKo": "천"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-personal-pronouns-example-sentence",
+      "topicId": "topic-personal-pronouns",
+      "contentType": "vocabulary",
+      "adminField": "example_sentence",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "私",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 605,
+          "contentReading": "わたし",
+          "meaningKo": "저"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "あなた",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 211,
+          "contentReading": "あなた",
+          "meaningKo": "당신"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-personal-pronouns-reading",
+      "topicId": "topic-personal-pronouns",
+      "contentType": "vocabulary",
+      "adminField": "reading",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "私",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 605,
+          "contentReading": "わたし",
+          "meaningKo": "저"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "あなた",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 211,
+          "contentReading": "あなた",
+          "meaningKo": "당신"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-personal-pronouns-word",
+      "topicId": "topic-personal-pronouns",
+      "contentType": "vocabulary",
+      "adminField": "word",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "私",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 605,
+          "contentReading": "わたし",
+          "meaningKo": "저"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "あなた",
+          "noteKo": "PDF 006 인칭대명사 vocabulary coverage anchor",
+          "vocabularyOrder": 211,
+          "contentReading": "あなた",
+          "meaningKo": "당신"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-polite-form-applications-example-sentence",
+      "topicId": "topic-polite-form-applications",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜ましょう",
+          "noteKo": "PDF 026 정중형의 응용표현 coverage anchor",
+          "grammarOrder": 11,
+          "meaningKo": "~합시다 / ~하겠습니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜に行きます",
+          "noteKo": "PDF 026 정중형의 응용표현 coverage anchor",
+          "grammarOrder": 12,
+          "meaningKo": "~하러 갑니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-polite-form-applications-pattern",
+      "topicId": "topic-polite-form-applications",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜ましょう",
+          "noteKo": "PDF 026 정중형의 응용표현 coverage anchor",
+          "grammarOrder": 11,
+          "meaningKo": "~합시다 / ~하겠습니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜に行きます",
+          "noteKo": "PDF 026 정중형의 응용표현 coverage anchor",
+          "grammarOrder": 12,
+          "meaningKo": "~하러 갑니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-prohibitive-na-example-sentence",
+      "topicId": "topic-prohibitive-na",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜ないでください",
+          "noteKo": "PDF 062 な coverage anchor",
+          "grammarOrder": 7,
+          "meaningKo": "~하지 말아 주세요"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜てはいけません",
+          "noteKo": "PDF 062 な coverage anchor",
+          "grammarOrder": 9,
+          "meaningKo": "~하면 안 됩니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-prohibitive-na-pattern",
+      "topicId": "topic-prohibitive-na",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜ないでください",
+          "noteKo": "PDF 062 な coverage anchor",
+          "grammarOrder": 7,
+          "meaningKo": "~하지 말아 주세요"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜てはいけません",
+          "noteKo": "PDF 062 な coverage anchor",
+          "grammarOrder": 9,
+          "meaningKo": "~하면 안 됩니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-shiru-wakaru-example-sentence",
+      "topicId": "topic-shiru-wakaru",
+      "contentType": "vocabulary",
+      "adminField": "example_sentence",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "知る",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 393,
+          "contentReading": "しる",
+          "meaningKo": "(지식으로) 알다"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "分かる",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 122,
+          "contentReading": "わかる",
+          "meaningKo": "알다, 이해하다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-shiru-wakaru-reading",
+      "topicId": "topic-shiru-wakaru",
+      "contentType": "vocabulary",
+      "adminField": "reading",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "知る",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 393,
+          "contentReading": "しる",
+          "meaningKo": "(지식으로) 알다"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "分かる",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 122,
+          "contentReading": "わかる",
+          "meaningKo": "알다, 이해하다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-shiru-wakaru-word",
+      "topicId": "topic-shiru-wakaru",
+      "contentType": "vocabulary",
+      "adminField": "word",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "知る",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 393,
+          "contentReading": "しる",
+          "meaningKo": "(지식으로) 알다"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "分かる",
+          "noteKo": "PDF 044 알다 vocabulary coverage anchor",
+          "vocabularyOrder": 122,
+          "contentReading": "わかる",
+          "meaningKo": "알다, 이해하다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-souda-hearsay-appearance-a-example-sentence",
+      "topicId": "topic-souda-hearsay-appearance-a",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜そう",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうだ (伝聞)",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 13,
+          "meaningKo": "~라고 한다 / ~라고 들었다 (전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうな (様態)",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같은 / ~해 보이는 (양태)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-souda-hearsay-appearance-a-pattern",
+      "topicId": "topic-souda-hearsay-appearance-a",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜そう",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうだ (伝聞)",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 13,
+          "meaningKo": "~라고 한다 / ~라고 들었다 (전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうな (様態)",
+          "noteKo": "PDF 091 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같은 / ~해 보이는 (양태)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-souda-hearsay-appearance-b-example-sentence",
+      "topicId": "topic-souda-hearsay-appearance-b",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜そう",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうだ (伝聞)",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 13,
+          "meaningKo": "~라고 한다 / ~라고 들었다 (전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうな (様態)",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같은 / ~해 보이는 (양태)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-souda-hearsay-appearance-b-pattern",
+      "topicId": "topic-souda-hearsay-appearance-b",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜そう",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうだ (伝聞)",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 13,
+          "meaningKo": "~라고 한다 / ~라고 들었다 (전문)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜そうな (様態)",
+          "noteKo": "PDF 092 そうだ coverage anchor",
+          "grammarOrder": 14,
+          "meaningKo": "~할 것 같은 / ~해 보이는 (양태)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-tameni-example-sentence",
+      "topicId": "topic-tameni",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜ために",
+          "noteKo": "PDF 083 ために coverage anchor",
+          "grammarOrder": 17,
+          "meaningKo": "~하기 위해 / ~때문에 (목적/원인)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "related",
+          "contentLabel": "〜ために",
+          "noteKo": "PDF 083 ために coverage anchor",
+          "grammarOrder": 15,
+          "meaningKo": "~하기 위해 / ~때문에"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-tameni-pattern",
+      "topicId": "topic-tameni",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜ために",
+          "noteKo": "PDF 083 ために coverage anchor",
+          "grammarOrder": 17,
+          "meaningKo": "~하기 위해 / ~때문에 (목적/원인)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "related",
+          "contentLabel": "〜ために",
+          "noteKo": "PDF 083 ために coverage anchor",
+          "grammarOrder": 15,
+          "meaningKo": "~하기 위해 / ~때문에"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-te-iku-te-kuru-example-sentence",
+      "topicId": "topic-te-iku-te-kuru",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜ていく",
+          "noteKo": "PDF 047 ていく・てくる coverage anchor",
+          "grammarOrder": 28,
+          "meaningKo": "~해 가다 / 점점 ~하게 되다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜てくる",
+          "noteKo": "PDF 047 ていく・てくる coverage anchor",
+          "grammarOrder": 29,
+          "meaningKo": "~해 오다 / 점점 ~해지다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-te-iku-te-kuru-pattern",
+      "topicId": "topic-te-iku-te-kuru",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜ていく",
+          "noteKo": "PDF 047 ていく・てくる coverage anchor",
+          "grammarOrder": 28,
+          "meaningKo": "~해 가다 / 점점 ~하게 되다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N3",
+          "matchType": "partial",
+          "contentLabel": "〜てくる",
+          "noteKo": "PDF 047 ていく・てくる coverage anchor",
+          "grammarOrder": 29,
+          "meaningKo": "~해 오다 / 점점 ~해지다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-te-iru-progress-state-example-sentence",
+      "topicId": "topic-te-iru-progress-state",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ています",
+          "noteKo": "PDF 043 진행과 상태 coverage anchor",
+          "grammarOrder": 20,
+          "meaningKo": "~하고 있습니다 / ~해 있습니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜ている (N4 확장)",
+          "noteKo": "PDF 043 진행과 상태 coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하고 있다 / ~해 있다 (반복·경력·외모)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-te-iru-progress-state-pattern",
+      "topicId": "topic-te-iru-progress-state",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ています",
+          "noteKo": "PDF 043 진행과 상태 coverage anchor",
+          "grammarOrder": 20,
+          "meaningKo": "~하고 있습니다 / ~해 있습니다"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜ている (N4 확장)",
+          "noteKo": "PDF 043 진행과 상태 coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하고 있다 / ~해 있다 (반복·경력·외모)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-time-and-weekdays-example-sentence",
+      "topicId": "topic-time-and-weekdays",
+      "contentType": "vocabulary",
+      "adminField": "example_sentence",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "時間",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 15,
+          "contentReading": "じかん",
+          "meaningKo": "시간"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "今日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 16,
+          "contentReading": "きょう",
+          "meaningKo": "오늘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "明日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 17,
+          "contentReading": "あした",
+          "meaningKo": "내일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "昨日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 18,
+          "contentReading": "きのう",
+          "meaningKo": "어제"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 23,
+          "contentReading": "まいにち",
+          "meaningKo": "매일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎週",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 24,
+          "contentReading": "まいしゅう",
+          "meaningKo": "매주"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "火曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 301,
+          "contentReading": "かようび",
+          "meaningKo": "화요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "金曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 325,
+          "contentReading": "きんようび",
+          "meaningKo": "금요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "月曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 335,
+          "contentReading": "げつようび",
+          "meaningKo": "월요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "水曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 395,
+          "contentReading": "すいようび",
+          "meaningKo": "수요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "土曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 470,
+          "contentReading": "どようび",
+          "meaningKo": "토요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "日曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 490,
+          "contentReading": "にちようび",
+          "meaningKo": "일요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "木曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 572,
+          "contentReading": "もくようび",
+          "meaningKo": "목요일"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-time-and-weekdays-reading",
+      "topicId": "topic-time-and-weekdays",
+      "contentType": "vocabulary",
+      "adminField": "reading",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "時間",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 15,
+          "contentReading": "じかん",
+          "meaningKo": "시간"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "今日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 16,
+          "contentReading": "きょう",
+          "meaningKo": "오늘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "明日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 17,
+          "contentReading": "あした",
+          "meaningKo": "내일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "昨日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 18,
+          "contentReading": "きのう",
+          "meaningKo": "어제"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 23,
+          "contentReading": "まいにち",
+          "meaningKo": "매일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎週",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 24,
+          "contentReading": "まいしゅう",
+          "meaningKo": "매주"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "火曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 301,
+          "contentReading": "かようび",
+          "meaningKo": "화요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "金曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 325,
+          "contentReading": "きんようび",
+          "meaningKo": "금요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "月曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 335,
+          "contentReading": "げつようび",
+          "meaningKo": "월요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "水曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 395,
+          "contentReading": "すいようび",
+          "meaningKo": "수요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "土曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 470,
+          "contentReading": "どようび",
+          "meaningKo": "토요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "日曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 490,
+          "contentReading": "にちようび",
+          "meaningKo": "일요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "木曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 572,
+          "contentReading": "もくようび",
+          "meaningKo": "목요일"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-time-and-weekdays-word",
+      "topicId": "topic-time-and-weekdays",
+      "contentType": "vocabulary",
+      "adminField": "word",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "時間",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 15,
+          "contentReading": "じかん",
+          "meaningKo": "시간"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "今日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 16,
+          "contentReading": "きょう",
+          "meaningKo": "오늘"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "明日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 17,
+          "contentReading": "あした",
+          "meaningKo": "내일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "昨日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 18,
+          "contentReading": "きのう",
+          "meaningKo": "어제"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 23,
+          "contentReading": "まいにち",
+          "meaningKo": "매일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "毎週",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 24,
+          "contentReading": "まいしゅう",
+          "meaningKo": "매주"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "火曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 301,
+          "contentReading": "かようび",
+          "meaningKo": "화요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "金曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 325,
+          "contentReading": "きんようび",
+          "meaningKo": "금요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "月曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 335,
+          "contentReading": "げつようび",
+          "meaningKo": "월요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "水曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 395,
+          "contentReading": "すいようび",
+          "meaningKo": "수요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "土曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 470,
+          "contentReading": "どようび",
+          "meaningKo": "토요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "日曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 490,
+          "contentReading": "にちようび",
+          "meaningKo": "일요일"
+        },
+        {
+          "lookupType": "vocabulary_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "木曜日",
+          "noteKo": "PDF 013 시간・요일 vocabulary coverage anchor",
+          "vocabularyOrder": 572,
+          "contentReading": "もくようび",
+          "meaningKo": "목요일"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-to-quotation-or-condition-example-sentence",
+      "topicId": "topic-to-quotation-or-condition",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜と (条件)",
+          "noteKo": "PDF 087 と coverage anchor",
+          "grammarOrder": 40,
+          "meaningKo": "~하면 (필연적 조건/발견)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜と思います",
+          "noteKo": "PDF 087 と coverage anchor",
+          "grammarOrder": 19,
+          "meaningKo": "~라고 생각합니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-to-quotation-or-condition-pattern",
+      "topicId": "topic-to-quotation-or-condition",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "partial",
+          "contentLabel": "〜と (条件)",
+          "noteKo": "PDF 087 と coverage anchor",
+          "grammarOrder": 40,
+          "meaningKo": "~하면 (필연적 조건/발견)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "〜と思います",
+          "noteKo": "PDF 087 と coverage anchor",
+          "grammarOrder": 19,
+          "meaningKo": "~라고 생각합니다"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-connection-forms-example-sentence",
+      "topicId": "topic-verb-connection-forms",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "Verb+て",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 50,
+          "meaningKo": "동사て형 연결 (~하고, ~해서)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "related",
+          "contentLabel": "〜て/〜ないで",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 25,
+          "meaningKo": "~해서 / ~하지 않고 (수단/부대상황)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-connection-forms-pattern",
+      "topicId": "topic-verb-connection-forms",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "Verb+て",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 50,
+          "meaningKo": "동사て형 연결 (~하고, ~해서)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N4",
+          "matchType": "related",
+          "contentLabel": "〜て/〜ないで",
+          "noteKo": "PDF 036 동사의 연결형 coverage anchor",
+          "grammarOrder": 25,
+          "meaningKo": "~해서 / ~하지 않고 (수단/부대상황)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-groups-example-sentence",
+      "topicId": "topic-verb-groups",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "る動詞 / う動詞",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 45,
+          "meaningKo": "1그룹 / 2그룹 동사 분류"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "する・くる",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 47,
+          "meaningKo": "하다·오다 (불규칙 동사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-groups-pattern",
+      "topicId": "topic-verb-groups",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "る動詞 / う動詞",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 45,
+          "meaningKo": "1그룹 / 2그룹 동사 분류"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "する・くる",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 47,
+          "meaningKo": "하다·오다 (불규칙 동사)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "related",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-past-forms-example-sentence",
+      "topicId": "topic-verb-past-forms",
+      "contentType": "grammar",
+      "adminField": "example_sentences",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ました",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 4,
+          "meaningKo": "~했습니다 (정중한 과거)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ませんでした",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하지 않았습니다 (정중한 과거 부정)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        }
+      ]
+    },
+    {
+      "targetId": "tts-verb-past-forms-pattern",
+      "topicId": "topic-verb-past-forms",
+      "contentType": "grammar",
+      "adminField": "pattern",
+      "decisionStatus": "needs_topic_split",
+      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
+      "candidateRefs": [
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ました",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 4,
+          "meaningKo": "~했습니다 (정중한 과거)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "〜ませんでした",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 5,
+          "meaningKo": "~하지 않았습니다 (정중한 과거 부정)"
+        },
+        {
+          "lookupType": "grammar_level_order",
+          "jlptLevel": "N5",
+          "matchType": "partial",
+          "contentLabel": "て/た形",
+          "noteKo": "PDF 051 동사의 과거형 coverage anchor",
+          "grammarOrder": 49,
+          "meaningKo": "て형 / た형 변형 규칙 (동사 활용)"
+        }
+      ]
+    }
+  ]
+}

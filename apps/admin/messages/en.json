@@ -277,6 +277,23 @@
       "candidates": "{count} candidates",
       "summary": "Ready {ready} · Mapping {manual} · Blocked {blocked}"
     },
+    "generationPlanBlocker": {
+      "admin_extension_required": "Admin extension required",
+      "unsupported_admin_tts_field": "Unsupported TTS field",
+      "missing_admin_field_mapping": "Missing field mapping",
+      "topic_vocabulary_mapping_required": "Vocabulary topic mapping required",
+      "ambiguous_or_partial_vocabulary_mapping": "Vocabulary candidate review required",
+      "topic_grammar_mapping_required": "Grammar topic mapping required",
+      "ambiguous_or_partial_grammar_mapping": "Grammar candidate review required"
+    },
+    "manualQueue": {
+      "title": "Manual mapping queue",
+      "count": "{count} items",
+      "target": "Target",
+      "blockers": "Blockers",
+      "candidates": "Candidates",
+      "noCandidates": "No candidates"
+    },
     "executePreview": {
       "resolved": "DB resolved",
       "missing": "DB missing",

@@ -276,12 +276,19 @@ describe('TtsReviewPage', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: /table.viewTargets/ })[0]);
 
-    expect(screen.getByText('tts-vocabulary-word')).toBeTruthy();
-    expect(screen.getByText('tts-vocabulary-reading')).toBeTruthy();
+    expect(screen.getAllByText('tts-vocabulary-word').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('tts-vocabulary-reading').length).toBeGreaterThan(0);
     expect(screen.getByText('curriculum-topics:topic-personal-pronouns:word')).toBeTruthy();
     expect(screen.getByText('japanese_female_1')).toBeTruthy();
+    expect(screen.getByText('manualQueue.title')).toBeTruthy();
+    expect(screen.getAllByText('manualQueue.count').length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText('generationPlanBlocker.topic_vocabulary_mapping_required')
+        .length,
+    ).toBeGreaterThan(0);
     expect(screen.getAllByText('generationPlan.manual_mapping_required').length).toBeGreaterThan(0);
     expect(screen.getAllByText('N5 #605 私').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('わたし · 저').length).toBeGreaterThan(0);
     expect(screen.getAllByText('executePreview.not_lookup_ready').length).toBeGreaterThan(0);
   });
 });

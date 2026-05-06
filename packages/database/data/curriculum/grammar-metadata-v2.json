@@ -127,7 +127,7 @@
       "register": "neutral",
       "targetSkills": ["recognition", "context_selection", "sentence_building"],
       "exampleIds": ["ex-dake-001"],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N5", "order": 56 }],
       "contrastMetadataIds": [],
       "audioPolicy": {
         "audioTargetType": "grammar",
@@ -135,7 +135,7 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
       },
-      "notesKo": "현재 N5 grammar JSON에 없는 제한 표현을 metadata로 먼저 정의한다."
+      "notesKo": "N5 grammar 56과 연결해 제한 표현을 다룬다."
     },
     {
       "metadataId": "gmv2-n5-choice-ni-suru",
@@ -154,7 +154,7 @@
       "register": "polite",
       "targetSkills": ["context_selection", "conversation", "contrast"],
       "exampleIds": ["ex-ni-suru-001"],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N5", "order": 59 }],
       "contrastMetadataIds": ["gmv2-n4-koto-ni-suru"],
       "audioPolicy": {
         "audioTargetType": "grammar",
@@ -162,7 +162,7 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
       },
-      "notesKo": "N5에서는 명사 선택 표현으로 제한하고, N4 ことにする와 분리한다."
+      "notesKo": "N5 grammar 59와 연결해 명사 선택 표현으로 제한하고, N4 ことにする와 분리한다."
     },
     {
       "metadataId": "gmv2-n4-koto-ni-suru",
@@ -208,7 +208,7 @@
       "register": "neutral",
       "targetSkills": ["recognition", "context_selection", "sentence_building"],
       "exampleIds": ["ex-toiu-001"],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N5", "order": 57 }],
       "contrastMetadataIds": ["gmv2-n3-toiu-quotation"],
       "audioPolicy": {
         "audioTargetType": "grammar",
@@ -216,7 +216,7 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
       },
-      "notesKo": "N5에서는 명칭/정의 용법으로 제한한다."
+      "notesKo": "N5 grammar 57과 연결해 명칭/정의 용법으로 제한한다."
     },
     {
       "metadataId": "gmv2-n3-toiu-quotation",
@@ -244,6 +244,141 @@
         "preferredVoiceId": "japanese_female_1"
       },
       "notesKo": "N3+ 확장 용법으로 분리하고 N5 seed candidate에는 직접 포함하지 않는다."
+    },
+    {
+      "metadataId": "gmv2-n4-shika-nai-no-choice",
+      "status": "draft",
+      "topicId": "topic-shika-nai",
+      "jlptLevel": "N4",
+      "coverageRole": "primary_topic",
+      "titleKo": "선택지 없음 しかない",
+      "pattern": "V辞書形 + しかない",
+      "meaningKo": "~할 수밖에 없다",
+      "formationKo": "다른 선택지가 없음을 말할 동사 사전형 뒤에 しかない를 붙인다.",
+      "usageNoteKo": "상황상 가능한 행동이 하나뿐임을 말할 때 쓴다.",
+      "nuanceKo": "단순 한정의 'N + しか'보다 체념이나 불가피성의 느낌이 강하다.",
+      "commonMistakesKo": "대상을 제한하는 조사 しか와 선택지 없음의 しかない를 같은 문형으로 합치지 않는다.",
+      "koreanComparisonKo": "한국어 '~할 수밖에 없다'와 가깝다.",
+      "register": "neutral",
+      "targetSkills": ["context_selection", "contrast", "sentence_building"],
+      "exampleIds": [],
+      "existingGrammarRefs": [],
+      "contrastMetadataIds": ["gmv2-n4-shika-limitation"],
+      "audioPolicy": {
+        "audioTargetType": "grammar",
+        "ttsTargets": ["pattern", "question_prompt"],
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      },
+      "notesKo": "topic-shika-nai의 신규 grammar row 후보는 이 불가피성 용법으로 제한하고, 한정 조사 しか는 별도 contrast metadata로 둔다."
+    },
+    {
+      "metadataId": "gmv2-n4-shika-limitation",
+      "status": "draft",
+      "topicId": "topic-shika-nai",
+      "jlptLevel": "N4",
+      "coverageRole": "split_lower_level",
+      "titleKo": "한정 조사 しか",
+      "pattern": "N / quantity + しか + negative",
+      "meaningKo": "~밖에",
+      "formationKo": "제한할 명사나 수량 뒤에 しか를 두고 문장 끝을 부정형으로 만든다.",
+      "usageNoteKo": "예상보다 적거나 제한된 수량, 대상만 있음을 말할 때 쓴다.",
+      "nuanceKo": "반드시 부정형과 함께 쓰며, だけ보다 부족하거나 아쉬운 느낌을 줄 수 있다.",
+      "commonMistakesKo": "しか 뒤 문장을 긍정형으로 만들지 않는다.",
+      "koreanComparisonKo": "한국어 '~밖에 없다'와 가깝지만 일본어에서는 しか와 부정형이 함께 필요하다.",
+      "register": "neutral",
+      "targetSkills": ["recognition", "context_selection", "contrast"],
+      "exampleIds": [],
+      "existingGrammarRefs": [],
+      "contrastMetadataIds": ["gmv2-n4-shika-nai-no-choice"],
+      "audioPolicy": {
+        "audioTargetType": "grammar",
+        "ttsTargets": ["pattern", "question_prompt"],
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      },
+      "notesKo": "topic-shika-nai의 contrast 용법으로만 두고, 단일 〜しかない grammar row에 합치지 않는다."
+    },
+    {
+      "metadataId": "gmv2-n4-mono-da-norm",
+      "status": "draft",
+      "topicId": "topic-mono-functions",
+      "jlptLevel": "N4",
+      "coverageRole": "primary_topic",
+      "titleKo": "일반 규범 ものだ",
+      "pattern": "V辞書形 / Vない形 + ものだ",
+      "meaningKo": "~하는 법이다 / ~해야 하는 법이다",
+      "formationKo": "일반적인 성질이나 사회적 규범을 말할 문장 뒤에 ものだ를 붙인다.",
+      "usageNoteKo": "개인 의견보다 일반적으로 그렇다고 여겨지는 성질이나 규범을 설명할 때 쓴다.",
+      "nuanceKo": "말하는 사람의 판단을 일반론처럼 제시하는 느낌이 있다.",
+      "commonMistakesKo": "감탄의 ものだ나 역접의 ものの과 섞지 않는다.",
+      "koreanComparisonKo": "한국어 '~하는 법이다'와 가깝다.",
+      "register": "neutral",
+      "targetSkills": ["context_selection", "contrast", "sentence_building"],
+      "exampleIds": [],
+      "existingGrammarRefs": [],
+      "contrastMetadataIds": ["gmv2-n4-mono-da-emotive", "gmv2-n2-monono-concession"],
+      "audioPolicy": {
+        "audioTargetType": "grammar",
+        "ttsTargets": ["pattern", "question_prompt"],
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      },
+      "notesKo": "topic-mono-functions는 이 row를 우선 후보로 두되, 감탄/회상 ものだ와 역접 ものの은 별도로 분리한다."
+    },
+    {
+      "metadataId": "gmv2-n4-mono-da-emotive",
+      "status": "draft",
+      "topicId": "topic-mono-functions",
+      "jlptLevel": "N4",
+      "coverageRole": "split_upper_level",
+      "titleKo": "감탄/회상 ものだ",
+      "pattern": "plain form + ものだ",
+      "meaningKo": "참 ~하구나 / 곧잘 ~하곤 했다",
+      "formationKo": "감탄하거나 과거 습관을 회상할 문장 뒤에 ものだ를 붙인다.",
+      "usageNoteKo": "현재 감탄 또는 과거 회상을 나타낼 수 있어 문맥 구분이 필요하다.",
+      "nuanceKo": "규범 ものだ보다 화자의 감정이나 회상성이 강하다.",
+      "commonMistakesKo": "일반 규범을 말하는 ものだ와 같은 예문 세트로 평가하지 않는다.",
+      "koreanComparisonKo": "한국어 '참 ~하구나', '예전에는 ~하곤 했다'와 문맥별로 대응한다.",
+      "register": "neutral",
+      "targetSkills": ["context_selection", "contrast"],
+      "exampleIds": [],
+      "existingGrammarRefs": [],
+      "contrastMetadataIds": ["gmv2-n4-mono-da-norm"],
+      "audioPolicy": {
+        "audioTargetType": "grammar",
+        "ttsTargets": ["pattern", "question_prompt"],
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      },
+      "notesKo": "초기 grammar row에는 포함하지 말고, 회상/감탄 문항이 준비될 때 별도 후보로 다룬다."
+    },
+    {
+      "metadataId": "gmv2-n2-monono-concession",
+      "status": "draft",
+      "topicId": "topic-mono-functions",
+      "jlptLevel": "N2",
+      "coverageRole": "split_upper_level",
+      "titleKo": "역접 ものの",
+      "pattern": "plain form + ものの",
+      "meaningKo": "~이기는 하지만",
+      "formationKo": "인정할 앞절 뒤에 ものの을 붙이고 기대와 다른 뒤절을 이어 말한다.",
+      "usageNoteKo": "이미 N2 grammar row로 존재하므로 N4 もの topic에 섞지 않는다.",
+      "nuanceKo": "문어적이고 중급 이상의 역접 연결 표현이다.",
+      "commonMistakesKo": "ものだ 계열과 의미가 다르므로 같은 topic mapping으로 묶지 않는다.",
+      "koreanComparisonKo": "한국어 '~이기는 하지만'과 가깝다.",
+      "register": "written",
+      "targetSkills": ["recognition", "contrast"],
+      "exampleIds": [],
+      "existingGrammarRefs": [{ "level": "N2", "order": 7 }],
+      "contrastMetadataIds": ["gmv2-n4-mono-da-norm"],
+      "audioPolicy": {
+        "audioTargetType": "grammar",
+        "ttsTargets": ["pattern", "question_prompt"],
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      },
+      "notesKo": "기존 N2 grammar 7과 연결하고 topic-mono-functions의 N4 후보에서는 제외한다."
     }
   ]
 }

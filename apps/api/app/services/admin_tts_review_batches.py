@@ -46,6 +46,10 @@ def _default_topic_vocabulary_map_path() -> Path:
     return _default_curriculum_contract_path("topic-vocabulary-map.json")
 
 
+def _default_tts_review_manual_mapping_overrides_path() -> Path:
+    return _default_curriculum_contract_path("tts-review-manual-mapping-overrides.json")
+
+
 def _default_curriculum_contract_path(file_name: str) -> Path:
     service_file = Path(__file__).resolve()
     bundled_path = service_file.parents[1] / "data/curriculum" / file_name
@@ -63,6 +67,9 @@ CURRICULUM_TTS_REVIEW_BATCH_PATH = _default_tts_review_batch_path()
 CURRICULUM_TTS_TARGET_MANIFEST_PATH = _default_tts_target_manifest_path()
 CURRICULUM_TOPIC_GRAMMAR_MAP_PATH = _default_topic_grammar_map_path()
 CURRICULUM_TOPIC_VOCABULARY_MAP_PATH = _default_topic_vocabulary_map_path()
+CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH = _default_tts_review_manual_mapping_overrides_path()
+MANUAL_MAPPING_SOURCE_MATCH_TYPES = {"exact", "partial", "related"}
+MANUAL_MAPPING_RESOLUTION_TYPES = {"exact_mapping", "partial_override"}
 
 
 class AdminTtsReviewBatchServiceError(Exception):
@@ -125,6 +132,7 @@ def get_admin_tts_review_generation_plan(
     manifest_path: Path = CURRICULUM_TTS_TARGET_MANIFEST_PATH,
     topic_grammar_map_path: Path = CURRICULUM_TOPIC_GRAMMAR_MAP_PATH,
     topic_vocabulary_map_path: Path = CURRICULUM_TOPIC_VOCABULARY_MAP_PATH,
+    manual_mapping_overrides_path: Path = CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH,
 ) -> AdminTtsReviewGenerationPlanResponse:
     """Dry-run existing-admin TTS generation feasibility without writing audio."""
     target_response = get_admin_tts_review_batch_targets(
@@ -134,12 +142,14 @@ def get_admin_tts_review_generation_plan(
     )
     grammar_candidates_by_topic = _load_topic_grammar_candidates(topic_grammar_map_path)
     vocabulary_candidates_by_topic = _load_topic_vocabulary_candidates(topic_vocabulary_map_path)
+    manual_mapping_overrides_by_target = _load_manual_mapping_overrides(manual_mapping_overrides_path)
     items = [
         _build_generation_plan_item(
             target,
             batch=target_response.batch,
             grammar_candidates_by_topic=grammar_candidates_by_topic,
             vocabulary_candidates_by_topic=vocabulary_candidates_by_topic,
+            manual_mapping_overrides_by_target=manual_mapping_overrides_by_target,
         )
         for target in target_response.targets
     ]
@@ -161,6 +171,7 @@ async def get_admin_tts_review_execute_preview(
     manifest_path: Path = CURRICULUM_TTS_TARGET_MANIFEST_PATH,
     topic_grammar_map_path: Path = CURRICULUM_TOPIC_GRAMMAR_MAP_PATH,
     topic_vocabulary_map_path: Path = CURRICULUM_TOPIC_VOCABULARY_MAP_PATH,
+    manual_mapping_overrides_path: Path = CURRICULUM_TTS_REVIEW_MANUAL_MAPPING_OVERRIDES_PATH,
 ) -> AdminTtsReviewExecutePreviewResponse:
     """Resolve dry-run items to current admin DB rows without generating audio."""
     plan = get_admin_tts_review_generation_plan(
@@ -169,6 +180,7 @@ async def get_admin_tts_review_execute_preview(
         manifest_path=manifest_path,
         topic_grammar_map_path=topic_grammar_map_path,
         topic_vocabulary_map_path=topic_vocabulary_map_path,
+        manual_mapping_overrides_path=manual_mapping_overrides_path,
     )
     items = [await _build_execute_preview_item(db, item) for item in plan.items]
 
@@ -285,12 +297,92 @@ def _load_topic_vocabulary_candidates(path: Path) -> dict[str, list[AdminTtsRevi
     return candidates_by_topic
 
 
+def _load_manual_mapping_overrides(path: Path) -> dict[str, AdminTtsReviewGenerationPlanCandidate]:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise AdminTtsReviewBatchServiceError(
+            status_code=500,
+            detail="TTS review manual mapping override contract is missing",
+        ) from exc
+    except json.JSONDecodeError as exc:
+        raise AdminTtsReviewBatchServiceError(
+            status_code=500,
+            detail="TTS review manual mapping override contract is invalid JSON",
+        ) from exc
+
+    candidates_by_target: dict[str, AdminTtsReviewGenerationPlanCandidate] = {}
+    try:
+        decisions = raw["decisions"]
+        for decision in decisions:
+            if str(decision["decisionStatus"]) != "approved":
+                raise ValueError("manual mapping decisions must be approved")
+            source_match_type = str(decision.get("sourceMatchType", "exact"))
+            resolution_type = str(decision.get("resolutionType", "exact_mapping"))
+            if source_match_type not in MANUAL_MAPPING_SOURCE_MATCH_TYPES:
+                raise ValueError("manual mapping sourceMatchType is invalid")
+            if resolution_type not in MANUAL_MAPPING_RESOLUTION_TYPES:
+                raise ValueError("manual mapping resolutionType is invalid")
+            if source_match_type == "exact" and resolution_type != "exact_mapping":
+                raise ValueError("exact manual mappings must use exact_mapping resolutionType")
+            if source_match_type != "exact" and resolution_type != "partial_override":
+                raise ValueError("non-exact manual mappings must use partial_override resolutionType")
+
+            target_id = str(decision["targetId"])
+            if target_id in candidates_by_target:
+                raise ValueError(f"duplicate manual mapping decision for target {target_id}")
+
+            content_type = str(decision["contentType"])
+            lookup_type = str(decision["lookupType"])
+            if content_type == "vocabulary":
+                if lookup_type != "vocabulary_level_order":
+                    raise ValueError("vocabulary manual mappings must use vocabulary_level_order")
+                candidate = AdminTtsReviewGenerationPlanCandidate(
+                    content_type="vocabulary",
+                    lookup_type="vocabulary_level_order",
+                    topic_id=str(decision["topicId"]),
+                    admin_field=str(decision["adminField"]),
+                    jlpt_level=str(decision["jlptLevel"]),
+                    vocabulary_order=int(decision["vocabularyOrder"]),
+                    content_label=str(decision["contentLabel"]),
+                    content_reading=str(decision["contentReading"]),
+                    meaning_ko=str(decision["meaningKo"]),
+                    match_type=source_match_type,
+                    note_ko=str(decision["notesKo"]),
+                )
+            elif content_type == "grammar":
+                if lookup_type != "grammar_level_order":
+                    raise ValueError("grammar manual mappings must use grammar_level_order")
+                candidate = AdminTtsReviewGenerationPlanCandidate(
+                    content_type="grammar",
+                    lookup_type="grammar_level_order",
+                    topic_id=str(decision["topicId"]),
+                    admin_field=str(decision["adminField"]),
+                    jlpt_level=str(decision["jlptLevel"]),
+                    grammar_order=int(decision["grammarOrder"]),
+                    match_type=source_match_type,
+                    note_ko=str(decision["notesKo"]),
+                )
+            else:
+                raise ValueError("manual mapping contentType must be vocabulary or grammar")
+
+            candidates_by_target[target_id] = candidate
+    except (KeyError, TypeError, ValueError, ValidationError) as exc:
+        raise AdminTtsReviewBatchServiceError(
+            status_code=500,
+            detail="TTS review manual mapping override contract is malformed",
+        ) from exc
+
+    return candidates_by_target
+
+
 def _build_generation_plan_item(
     target: AdminTtsReviewTargetItem,
     *,
     batch: AdminTtsReviewBatchItem,
     grammar_candidates_by_topic: dict[str, list[AdminTtsReviewGenerationPlanCandidate]],
     vocabulary_candidates_by_topic: dict[str, list[AdminTtsReviewGenerationPlanCandidate]],
+    manual_mapping_overrides_by_target: dict[str, AdminTtsReviewGenerationPlanCandidate],
 ) -> AdminTtsReviewGenerationPlanItem:
     admin_content_type = batch.admin_export.content_type
     admin_field = _admin_field_for_target(batch, target)
@@ -324,6 +416,40 @@ def _build_generation_plan_item(
             candidates=[],
             blocker_codes=blocker_codes,
             notes_ko="Review batch field mapping이 현재 admin TTS service 필드와 맞지 않는다.",
+        )
+
+    manual_override = manual_mapping_overrides_by_target.get(target.target_id)
+    if manual_override is not None:
+        if manual_override.topic_id != target.topic_id:
+            raise AdminTtsReviewBatchServiceError(
+                status_code=500,
+                detail="TTS review manual mapping override contract is malformed",
+            )
+        if manual_override.content_type != admin_content_type or manual_override.admin_field != admin_field:
+            raise AdminTtsReviewBatchServiceError(
+                status_code=500,
+                detail="TTS review manual mapping override contract is malformed",
+            )
+        if manual_override.content_type == "vocabulary" and manual_override.lookup_type != "vocabulary_level_order":
+            raise AdminTtsReviewBatchServiceError(
+                status_code=500,
+                detail="TTS review manual mapping override contract is malformed",
+            )
+        if manual_override.content_type == "grammar" and manual_override.lookup_type != "grammar_level_order":
+            raise AdminTtsReviewBatchServiceError(
+                status_code=500,
+                detail="TTS review manual mapping override contract is malformed",
+            )
+
+        return AdminTtsReviewGenerationPlanItem(
+            target=target,
+            admin_content_type=admin_content_type,
+            admin_field=admin_field,
+            operation_status="ready_after_db_lookup",
+            existing_admin_tts_supported=True,
+            candidates=[manual_override],
+            blocker_codes=[],
+            notes_ko="수동 매핑 override가 확정되어 DB lookup 후 기존 admin TTS service를 호출할 수 있다.",
         )
 
     if admin_content_type == "vocabulary":

@@ -277,6 +277,23 @@
       "candidates": "후보 {count}개",
       "summary": "가능 {ready} · 매핑 {manual} · 차단 {blocked}"
     },
+    "generationPlanBlocker": {
+      "admin_extension_required": "관리자 확장 필요",
+      "unsupported_admin_tts_field": "미지원 TTS 필드",
+      "missing_admin_field_mapping": "필드 매핑 누락",
+      "topic_vocabulary_mapping_required": "어휘 topic 매핑 필요",
+      "ambiguous_or_partial_vocabulary_mapping": "어휘 후보 확인 필요",
+      "topic_grammar_mapping_required": "문법 topic 매핑 필요",
+      "ambiguous_or_partial_grammar_mapping": "문법 후보 확인 필요"
+    },
+    "manualQueue": {
+      "title": "수동 매핑 큐",
+      "count": "{count}개",
+      "target": "대상",
+      "blockers": "차단 사유",
+      "candidates": "후보",
+      "noCandidates": "후보 없음"
+    },
     "executePreview": {
       "resolved": "DB 연결됨",
       "missing": "DB 누락",

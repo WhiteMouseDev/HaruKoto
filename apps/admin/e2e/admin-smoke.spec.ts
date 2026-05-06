@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import {
   cappedQuizReviewQueueResponse,
   emptyVocabularyReviewQueueResponse,
@@ -32,6 +32,172 @@ function latestQueueParam(contentType: string, key: string): string {
   return latestRequest?.searchParams[key] ?? '';
 }
 
+async function mockTtsReviewApis(page: Page) {
+  const batch = {
+    batchId: 'tts-review-admin-vocabulary-fields',
+    status: 'draft',
+    reviewSurface: 'admin_existing_tts',
+    sourceKind: 'topic_vocabulary_fields',
+    targetIds: ['tts-vocabulary-word', 'tts-vocabulary-reading'],
+    targetCount: 2,
+    requiredBeforePublishCount: 2,
+    generationStatusSummary: {
+      missing: 2,
+      generated: 0,
+      approved: 0,
+      rejected: 0,
+      stale: 0,
+    },
+    adminExport: {
+      mode: 'existing_admin_tts_fields',
+      contentType: 'vocabulary',
+      fieldMappings: [
+        { audioField: 'word', adminField: 'word' },
+        { audioField: 'reading', adminField: 'reading' },
+      ],
+      blockers: [],
+    },
+    reviewerChecklist: ['candidate mapping'],
+    notesKo: 'review',
+  };
+  const targets = [
+    {
+      targetId: 'tts-vocabulary-word',
+      topicId: 'topic-personal-pronouns',
+      audioTargetType: 'vocabulary',
+      audioField: 'word',
+      textSource: 'curriculum-topics:topic-personal-pronouns:word',
+      defaultSpeed: 0.9,
+      requiredBeforePublish: true,
+      preferredVoiceId: null,
+      generationStatus: 'missing',
+      cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
+      notesKo: 'review',
+    },
+    {
+      targetId: 'tts-vocabulary-reading',
+      topicId: 'topic-personal-pronouns',
+      audioTargetType: 'vocabulary',
+      audioField: 'reading',
+      textSource: 'curriculum-topics:topic-personal-pronouns:reading',
+      defaultSpeed: 0.9,
+      requiredBeforePublish: true,
+      preferredVoiceId: 'japanese_female_1',
+      generationStatus: 'missing',
+      cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
+      notesKo: 'review',
+    },
+  ];
+  const planItems = targets.map((target) => ({
+    target,
+    adminContentType: 'vocabulary',
+    adminField: target.audioField,
+    operationStatus: 'manual_mapping_required',
+    existingAdminTtsSupported: true,
+    candidates: [
+      {
+        contentType: 'vocabulary',
+        lookupType: 'vocabulary_level_order',
+        topicId: target.topicId,
+        adminField: target.audioField,
+        jlptLevel: 'N5',
+        grammarOrder: null,
+        vocabularyOrder: 605,
+        contentLabel: '私',
+        contentReading: 'わたし',
+        meaningKo: '저',
+        matchType: 'partial',
+        noteKo: 'review',
+      },
+    ],
+    blockerCodes: ['topic_vocabulary_mapping_required'],
+    notesKo: 'review',
+  }));
+  const previewItems = targets.map((target) => ({
+    target,
+    adminContentType: 'vocabulary',
+    adminField: target.audioField,
+    lookupStatus: 'not_lookup_ready',
+    canGenerateWithCurrentService: false,
+    candidate: planItems[0].candidates[0],
+    contentItemId: null,
+    contentLabel: null,
+    notesKo: 'review',
+  }));
+  const baseUrl =
+    'https://api.e2e.test/api/v1/admin/content/tts/review-batches';
+
+  await page.route(new RegExp(`${baseUrl}(?:\\?.*)?$`), async (route) => {
+    await route.fulfill({
+      json: {
+        schemaVersion: 1,
+        status: 'draft',
+        summary: {
+          totalBatches: 1,
+          totalTargets: 2,
+          adminReadyTargets: 2,
+          extensionRequiredTargets: 0,
+          requiredBeforePublishTargets: 2,
+          generationStatusSummary: batch.generationStatusSummary,
+        },
+        batches: [batch],
+      },
+    });
+  });
+  await page.route(`${baseUrl}/${batch.batchId}/targets`, async (route) => {
+    await route.fulfill({
+      json: {
+        schemaVersion: 1,
+        status: 'draft',
+        batch,
+        targets,
+      },
+    });
+  });
+  await page.route(
+    `${baseUrl}/${batch.batchId}/generation-plan`,
+    async (route) => {
+      await route.fulfill({
+        json: {
+          schemaVersion: 1,
+          status: 'draft',
+          batch,
+          summary: {
+            totalTargets: 2,
+            supportedTargets: 2,
+            readyAfterDbLookupTargets: 0,
+            manualMappingRequiredTargets: 2,
+            blockedTargets: 0,
+          },
+          items: planItems,
+        },
+      });
+    }
+  );
+  await page.route(
+    `${baseUrl}/${batch.batchId}/execute-preview`,
+    async (route) => {
+      await route.fulfill({
+        json: {
+          schemaVersion: 1,
+          status: 'draft',
+          batch,
+          summary: {
+            totalTargets: 2,
+            resolvedTargets: 0,
+            missingTargets: 0,
+            ambiguousTargets: 0,
+            notLookupReadyTargets: 2,
+            blockedTargets: 0,
+            generatableTargets: 0,
+          },
+          items: previewItems,
+        },
+      });
+    }
+  );
+}
+
 test('renders the login page without a live Supabase session', async ({
   page,
 }) => {
@@ -62,6 +228,22 @@ test('renders the protected dashboard with mocked admin stats', async ({
   await expect(mainContent.getByText('単語')).toBeVisible();
   await expect(mainContent.getByText('3').first()).toBeVisible();
   await expect(mainContent.getByText('64% 承認済み')).toBeVisible();
+});
+
+test('renders the TTS review manual mapping queue', async ({ page }) => {
+  await mockTtsReviewApis(page);
+
+  await page.goto('/tts-review');
+  await expect(
+    page.getByRole('heading', { name: 'TTS確認バッチ' })
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: /対象を見る/ }).click();
+
+  await expect(page.getByText('手動マッピングキュー')).toBeVisible();
+  await expect(page.getByText('語彙topicマッピング必要').first()).toBeVisible();
+  await expect(page.getByText('N5 #605 私').first()).toBeVisible();
+  await expect(page.getByText('わたし · 저').first()).toBeVisible();
 });
 
 test('renders the vocabulary list and keeps filter state in the URL', async ({

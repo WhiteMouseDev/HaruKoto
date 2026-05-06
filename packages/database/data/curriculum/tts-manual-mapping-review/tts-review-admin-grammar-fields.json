@@ -1,0 +1,4186 @@
+[
+  {
+    "reviewId": "tts-map-tts-demonstratives-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-demonstratives-pattern",
+    "topicId": "topic-demonstratives",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-demonstratives:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 35,
+        "contentLabel": "これ・それ・あれ",
+        "meaningKo": "이것·그것·저것 (지시대명사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 36,
+        "contentLabel": "この・その・あの",
+        "meaningKo": "이·그·저 + 명사 (연체사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 40,
+        "contentLabel": "ここ・そこ・あそこ",
+        "meaningKo": "여기·거기·저기 (장소 지시어)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 41,
+        "contentLabel": "どこ",
+        "meaningKo": "어디 (장소 의문사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-demonstratives-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-demonstratives-example-sentence",
+    "topicId": "topic-demonstratives",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-demonstratives:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 35,
+        "contentLabel": "これ・それ・あれ",
+        "meaningKo": "이것·그것·저것 (지시대명사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 36,
+        "contentLabel": "この・その・あの",
+        "meaningKo": "이·그·저 + 명사 (연체사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 40,
+        "contentLabel": "ここ・そこ・あそこ",
+        "meaningKo": "여기·거기·저기 (장소 지시어)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-demonstratives",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 41,
+        "contentLabel": "どこ",
+        "meaningKo": "어디 (장소 의문사)",
+        "matchType": "partial",
+        "noteKo": "PDF 007 지시대명사 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-basic-particles-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-basic-particles-pattern",
+    "topicId": "topic-basic-particles",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-basic-particles:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 31,
+        "contentLabel": "〜か",
+        "meaningKo": "~인가요? / ~입니까? (의문 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 32,
+        "contentLabel": "〜は",
+        "meaningKo": "~은/는 (주제 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 33,
+        "contentLabel": "〜も",
+        "meaningKo": "~도 (첨가·동류 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 4,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 42,
+        "contentLabel": "〜に",
+        "meaningKo": "~에 (존재 위치 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 5,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 43,
+        "contentLabel": "〜で",
+        "meaningKo": "~에서 / ~으로 (장소/수단 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 6,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 44,
+        "contentLabel": "〜へ",
+        "meaningKo": "~으로 / ~에 (방향 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 7,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 46,
+        "contentLabel": "〜を",
+        "meaningKo": "~을/를 (목적어 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-basic-particles-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-basic-particles-example-sentence",
+    "topicId": "topic-basic-particles",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-basic-particles:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 31,
+        "contentLabel": "〜か",
+        "meaningKo": "~인가요? / ~입니까? (의문 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 32,
+        "contentLabel": "〜は",
+        "meaningKo": "~은/는 (주제 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 33,
+        "contentLabel": "〜も",
+        "meaningKo": "~도 (첨가·동류 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 4,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 42,
+        "contentLabel": "〜に",
+        "meaningKo": "~에 (존재 위치 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 5,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 43,
+        "contentLabel": "〜で",
+        "meaningKo": "~에서 / ~으로 (장소/수단 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 6,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 44,
+        "contentLabel": "〜へ",
+        "meaningKo": "~으로 / ~에 (방향 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      },
+      {
+        "candidateIndex": 7,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-basic-particles",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 46,
+        "contentLabel": "〜を",
+        "meaningKo": "~을/를 (목적어 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 010 조사 총정리 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-i-adjective-nominalization-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-i-adjective-nominalization-pattern",
+    "topicId": "topic-i-adjective-nominalization",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-i-adjective-nominalization:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-i-adjective-nominalization",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 38,
+        "contentLabel": "い形容詞 / な形容詞",
+        "meaningKo": "い형용사 / な형용사 기본",
+        "matchType": "related",
+        "noteKo": "PDF 019 い형용사의 명사화 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-i-adjective-nominalization",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 39,
+        "contentLabel": "い-Adj+N / な-Adj+N",
+        "meaningKo": "형용사+명사 수식",
+        "matchType": "related",
+        "noteKo": "PDF 019 い형용사의 명사화 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-i-adjective-nominalization-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-i-adjective-nominalization-example-sentence",
+    "topicId": "topic-i-adjective-nominalization",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-i-adjective-nominalization:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-i-adjective-nominalization",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 38,
+        "contentLabel": "い形容詞 / な形容詞",
+        "meaningKo": "い형용사 / な형용사 기본",
+        "matchType": "related",
+        "noteKo": "PDF 019 い형용사의 명사화 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-i-adjective-nominalization",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 39,
+        "contentLabel": "い-Adj+N / な-Adj+N",
+        "meaningKo": "형용사+명사 수식",
+        "matchType": "related",
+        "noteKo": "PDF 019 い형용사의 명사화 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-na-attributive-linker-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-na-attributive-linker-pattern",
+    "topicId": "topic-na-attributive-linker",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-na-attributive-linker:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-na-attributive-linker",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 39,
+        "contentLabel": "い-Adj+N / な-Adj+N",
+        "meaningKo": "형용사+명사 수식",
+        "matchType": "partial",
+        "noteKo": "PDF 020 な coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N5 #39 형용사+명사 수식 row로 확인. topic title な는 이 row의 な-Adj+N 하위 용법에 대응한다."
+  },
+  {
+    "reviewId": "tts-map-tts-na-attributive-linker-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-na-attributive-linker-example-sentence",
+    "topicId": "topic-na-attributive-linker",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-na-attributive-linker:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-na-attributive-linker",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 39,
+        "contentLabel": "い-Adj+N / な-Adj+N",
+        "meaningKo": "형용사+명사 수식",
+        "matchType": "partial",
+        "noteKo": "PDF 020 な coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N5 #39 형용사+명사 수식 row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-groups-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-groups-pattern",
+    "topicId": "topic-verb-groups",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-verb-groups:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 45,
+        "contentLabel": "る動詞 / う動詞",
+        "meaningKo": "1그룹 / 2그룹 동사 분류",
+        "matchType": "partial",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 47,
+        "contentLabel": "する・くる",
+        "meaningKo": "하다·오다 (불규칙 동사)",
+        "matchType": "partial",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "related",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-groups-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-groups-example-sentence",
+    "topicId": "topic-verb-groups",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-verb-groups:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 45,
+        "contentLabel": "る動詞 / う動詞",
+        "meaningKo": "1그룹 / 2그룹 동사 분류",
+        "matchType": "partial",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 47,
+        "contentLabel": "する・くる",
+        "meaningKo": "하다·오다 (불규칙 동사)",
+        "matchType": "partial",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-groups",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "related",
+        "noteKo": "PDF 023 동사의 종류와 특징 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-polite-verb-forms-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-polite-verb-forms-pattern",
+    "topicId": "topic-polite-verb-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-polite-verb-forms:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 2,
+        "contentLabel": "〜ます",
+        "meaningKo": "~합니다 (정중한 동사 어미)",
+        "matchType": "exact",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 3,
+        "contentLabel": "〜ません",
+        "meaningKo": "~하지 않습니다 (정중한 부정)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 4,
+        "contentLabel": "〜ました",
+        "meaningKo": "~했습니다 (정중한 과거)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 5,
+        "contentLabel": "〜ませんでした",
+        "meaningKo": "~하지 않았습니다 (정중한 과거 부정)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 4개 중 N5 #2 〜ます만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-polite-verb-forms-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-polite-verb-forms-example-sentence",
+    "topicId": "topic-polite-verb-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-polite-verb-forms:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 2,
+        "contentLabel": "〜ます",
+        "meaningKo": "~합니다 (정중한 동사 어미)",
+        "matchType": "exact",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 3,
+        "contentLabel": "〜ません",
+        "meaningKo": "~하지 않습니다 (정중한 부정)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 4,
+        "contentLabel": "〜ました",
+        "meaningKo": "~했습니다 (정중한 과거)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      },
+      {
+        "candidateIndex": 3,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-verb-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 5,
+        "contentLabel": "〜ませんでした",
+        "meaningKo": "~하지 않았습니다 (정중한 과거 부정)",
+        "matchType": "related",
+        "noteKo": "PDF 024 동사의 정중형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 4개 중 N5 #2 〜ます만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-polite-form-applications-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-polite-form-applications-pattern",
+    "topicId": "topic-polite-form-applications",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-polite-form-applications:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-form-applications",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 11,
+        "contentLabel": "〜ましょう",
+        "meaningKo": "~합시다 / ~하겠습니다",
+        "matchType": "related",
+        "noteKo": "PDF 026 정중형의 응용표현 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-form-applications",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 12,
+        "contentLabel": "〜に行きます",
+        "meaningKo": "~하러 갑니다",
+        "matchType": "related",
+        "noteKo": "PDF 026 정중형의 응용표현 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-polite-form-applications-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-polite-form-applications-example-sentence",
+    "topicId": "topic-polite-form-applications",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-polite-form-applications:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-form-applications",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 11,
+        "contentLabel": "〜ましょう",
+        "meaningKo": "~합시다 / ~하겠습니다",
+        "matchType": "related",
+        "noteKo": "PDF 026 정중형의 응용표현 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-polite-form-applications",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 12,
+        "contentLabel": "〜に行きます",
+        "meaningKo": "~하러 갑니다",
+        "matchType": "related",
+        "noteKo": "PDF 026 정중형의 응용표현 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-nagara-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-nagara-pattern",
+    "topicId": "topic-nagara",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-nagara:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nagara",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 14,
+        "contentLabel": "〜ながら",
+        "meaningKo": "~하면서",
+        "matchType": "exact",
+        "noteKo": "PDF 028 ながら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nagara",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 34,
+        "contentLabel": "〜ながら",
+        "meaningKo": "~하면서 (동시동작/역접)",
+        "matchType": "related",
+        "noteKo": "PDF 028 ながら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #14 〜ながら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-nagara-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-nagara-example-sentence",
+    "topicId": "topic-nagara",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-nagara:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nagara",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 14,
+        "contentLabel": "〜ながら",
+        "meaningKo": "~하면서",
+        "matchType": "exact",
+        "noteKo": "PDF 028 ながら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nagara",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 34,
+        "contentLabel": "〜ながら",
+        "meaningKo": "~하면서 (동시동작/역접)",
+        "matchType": "related",
+        "noteKo": "PDF 028 ながら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #14 〜ながら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-sugiru-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-sugiru-pattern",
+    "topicId": "topic-sugiru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-sugiru:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-sugiru",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 24,
+        "contentLabel": "〜すぎます",
+        "meaningKo": "너무 ~합니다",
+        "matchType": "exact",
+        "noteKo": "PDF 029 すぎる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-sugiru",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 36,
+        "contentLabel": "〜すぎる",
+        "meaningKo": "너무 ~하다 (과도)",
+        "matchType": "related",
+        "noteKo": "PDF 029 すぎる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #24 〜すぎます만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-sugiru-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-sugiru-example-sentence",
+    "topicId": "topic-sugiru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-sugiru:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-sugiru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 24,
+        "contentLabel": "〜すぎます",
+        "meaningKo": "너무 ~합니다",
+        "matchType": "exact",
+        "noteKo": "PDF 029 すぎる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-sugiru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 36,
+        "contentLabel": "〜すぎる",
+        "meaningKo": "너무 ~하다 (과도)",
+        "matchType": "related",
+        "noteKo": "PDF 029 すぎる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #24 〜すぎます만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-yasui-nikui-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-yasui-nikui-pattern",
+    "topicId": "topic-yasui-nikui",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-yasui-nikui:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-yasui-nikui",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 26,
+        "contentLabel": "〜やすい/にくい",
+        "meaningKo": "~하기 쉽다 / ~하기 어렵다",
+        "matchType": "exact",
+        "noteKo": "PDF 030 やすい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-yasui-nikui",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 37,
+        "contentLabel": "〜やすい/〜にくい",
+        "meaningKo": "~하기 쉽다 / ~하기 어렵다 (용이/곤란)",
+        "matchType": "related",
+        "noteKo": "PDF 030 やすい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #26 〜やすい/にくい만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-yasui-nikui-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-yasui-nikui-example-sentence",
+    "topicId": "topic-yasui-nikui",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-yasui-nikui:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-yasui-nikui",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 26,
+        "contentLabel": "〜やすい/にくい",
+        "meaningKo": "~하기 쉽다 / ~하기 어렵다",
+        "matchType": "exact",
+        "noteKo": "PDF 030 やすい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-yasui-nikui",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 37,
+        "contentLabel": "〜やすい/〜にくい",
+        "meaningKo": "~하기 쉽다 / ~하기 어렵다 (용이/곤란)",
+        "matchType": "related",
+        "noteKo": "PDF 030 やすい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #26 〜やすい/にくい만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-shi-reason-listing-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-shi-reason-listing-pattern",
+    "topicId": "topic-shi-reason-listing",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-shi-reason-listing:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-shi-reason-listing",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 24,
+        "contentLabel": "〜し",
+        "meaningKo": "~하고, ~하기도 하고 (이유 나열)",
+        "matchType": "exact",
+        "noteKo": "PDF 034 し coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-shi-reason-listing",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 23,
+        "contentLabel": "〜し",
+        "meaningKo": "~하기도 하고 / ~이고 (이유 나열)",
+        "matchType": "related",
+        "noteKo": "PDF 034 し coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #24 〜し만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-shi-reason-listing-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-shi-reason-listing-example-sentence",
+    "topicId": "topic-shi-reason-listing",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-shi-reason-listing:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-shi-reason-listing",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 24,
+        "contentLabel": "〜し",
+        "meaningKo": "~하고, ~하기도 하고 (이유 나열)",
+        "matchType": "exact",
+        "noteKo": "PDF 034 し coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-shi-reason-listing",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 23,
+        "contentLabel": "〜し",
+        "meaningKo": "~하기도 하고 / ~이고 (이유 나열)",
+        "matchType": "related",
+        "noteKo": "PDF 034 し coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #24 〜し만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-no-functions-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-no-functions-pattern",
+    "topicId": "topic-no-functions",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-no-functions:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-no-functions",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 28,
+        "contentLabel": "〜のが好きです",
+        "meaningKo": "~하는 것을 좋아합니다",
+        "matchType": "partial",
+        "noteKo": "PDF 035 の coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-no-functions",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 035 の coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-no-functions-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-no-functions-example-sentence",
+    "topicId": "topic-no-functions",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-no-functions:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-no-functions",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 28,
+        "contentLabel": "〜のが好きです",
+        "meaningKo": "~하는 것을 좋아합니다",
+        "matchType": "partial",
+        "noteKo": "PDF 035 の coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-no-functions",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "partial",
+        "noteKo": "PDF 035 の coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-connection-forms-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-connection-forms-pattern",
+    "topicId": "topic-verb-connection-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-verb-connection-forms:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "partial",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 50,
+        "contentLabel": "Verb+て",
+        "meaningKo": "동사て형 연결 (~하고, ~해서)",
+        "matchType": "partial",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 25,
+        "contentLabel": "〜て/〜ないで",
+        "meaningKo": "~해서 / ~하지 않고 (수단/부대상황)",
+        "matchType": "related",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-connection-forms-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-connection-forms-example-sentence",
+    "topicId": "topic-verb-connection-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-verb-connection-forms:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "partial",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 50,
+        "contentLabel": "Verb+て",
+        "meaningKo": "동사て형 연결 (~하고, ~해서)",
+        "matchType": "partial",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-connection-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 25,
+        "contentLabel": "〜て/〜ないで",
+        "meaningKo": "~해서 / ~하지 않고 (수단/부대상황)",
+        "matchType": "related",
+        "noteKo": "PDF 036 동사의 연결형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-shimau-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-shimau-pattern",
+    "topicId": "topic-te-shimau",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-te-shimau:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-shimau",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 1,
+        "contentLabel": "〜てしまう",
+        "meaningKo": "~해 버리다 (완료/유감)",
+        "matchType": "exact",
+        "noteKo": "PDF 040 てしまう coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-shimau",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 25,
+        "contentLabel": "〜てしまう",
+        "meaningKo": "~해 버리다 (완료·유감)",
+        "matchType": "related",
+        "noteKo": "PDF 040 てしまう coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #1 〜てしまう만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-shimau-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-shimau-example-sentence",
+    "topicId": "topic-te-shimau",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-te-shimau:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-shimau",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 1,
+        "contentLabel": "〜てしまう",
+        "meaningKo": "~해 버리다 (완료/유감)",
+        "matchType": "exact",
+        "noteKo": "PDF 040 てしまう coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-shimau",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 25,
+        "contentLabel": "〜てしまう",
+        "meaningKo": "~해 버리다 (완료·유감)",
+        "matchType": "related",
+        "noteKo": "PDF 040 てしまう coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #1 〜てしまう만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-temo-ii-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-temo-ii-pattern",
+    "topicId": "topic-temo-ii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-temo-ii:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-temo-ii",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 8,
+        "contentLabel": "〜てもいいですか",
+        "meaningKo": "~해도 되나요?",
+        "matchType": "exact",
+        "noteKo": "PDF 041 てもいい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-temo-ii",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 20,
+        "contentLabel": "〜ても",
+        "meaningKo": "~해도 / ~하더라도 (양보)",
+        "matchType": "related",
+        "noteKo": "PDF 041 てもいい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #8 〜てもいいですか만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-temo-ii-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-temo-ii-example-sentence",
+    "topicId": "topic-temo-ii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-temo-ii:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-temo-ii",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 8,
+        "contentLabel": "〜てもいいですか",
+        "meaningKo": "~해도 되나요?",
+        "matchType": "exact",
+        "noteKo": "PDF 041 てもいい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-temo-ii",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 20,
+        "contentLabel": "〜ても",
+        "meaningKo": "~해도 / ~하더라도 (양보)",
+        "matchType": "related",
+        "noteKo": "PDF 041 てもいい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N5 #8 〜てもいいですか만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-iru-progress-state-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-iru-progress-state-pattern",
+    "topicId": "topic-te-iru-progress-state",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-te-iru-progress-state:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iru-progress-state",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 20,
+        "contentLabel": "〜ています",
+        "meaningKo": "~하고 있습니다 / ~해 있습니다",
+        "matchType": "partial",
+        "noteKo": "PDF 043 진행과 상태 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iru-progress-state",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 5,
+        "contentLabel": "〜ている (N4 확장)",
+        "meaningKo": "~하고 있다 / ~해 있다 (반복·경력·외모)",
+        "matchType": "partial",
+        "noteKo": "PDF 043 진행과 상태 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-iru-progress-state-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-iru-progress-state-example-sentence",
+    "topicId": "topic-te-iru-progress-state",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-te-iru-progress-state:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iru-progress-state",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 20,
+        "contentLabel": "〜ています",
+        "meaningKo": "~하고 있습니다 / ~해 있습니다",
+        "matchType": "partial",
+        "noteKo": "PDF 043 진행과 상태 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iru-progress-state",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 5,
+        "contentLabel": "〜ている (N4 확장)",
+        "meaningKo": "~하고 있다 / ~해 있다 (반복·경력·외모)",
+        "matchType": "partial",
+        "noteKo": "PDF 043 진행과 상태 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-hoshii-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-hoshii-pattern",
+    "topicId": "topic-hoshii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-hoshii:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hoshii",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 39,
+        "contentLabel": "〜てほしい",
+        "meaningKo": "~해 주었으면 좋겠다 (희망/요청)",
+        "matchType": "partial",
+        "noteKo": "PDF 045 ほしい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "topic note가 명사+ほしい와 동사て形+ほしい 분리를 요구하고, 이 target은 기존 N4 #39 〜てほしい row로 다루는 동사て形+ほしい 용법에 해당한다. pattern TTS는 N4 #39를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-hoshii-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-hoshii-example-sentence",
+    "topicId": "topic-hoshii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-hoshii:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hoshii",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 39,
+        "contentLabel": "〜てほしい",
+        "meaningKo": "~해 주었으면 좋겠다 (희망/요청)",
+        "matchType": "partial",
+        "noteKo": "PDF 045 ほしい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "topic note가 명사+ほしい와 동사て形+ほしい 분리를 요구하고, 이 target은 기존 N4 #39 〜てほしい row로 다루는 동사て形+ほしい 용법에 해당한다. example_sentence TTS는 N4 #39를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-iku-te-kuru-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-iku-te-kuru-pattern",
+    "topicId": "topic-te-iku-te-kuru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-te-iku-te-kuru:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iku-te-kuru",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 28,
+        "contentLabel": "〜ていく",
+        "meaningKo": "~해 가다 / 점점 ~하게 되다",
+        "matchType": "partial",
+        "noteKo": "PDF 047 ていく・てくる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iku-te-kuru",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 29,
+        "contentLabel": "〜てくる",
+        "meaningKo": "~해 오다 / 점점 ~해지다",
+        "matchType": "partial",
+        "noteKo": "PDF 047 ていく・てくる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-te-iku-te-kuru-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-te-iku-te-kuru-example-sentence",
+    "topicId": "topic-te-iku-te-kuru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-te-iku-te-kuru:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iku-te-kuru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 28,
+        "contentLabel": "〜ていく",
+        "meaningKo": "~해 가다 / 점점 ~하게 되다",
+        "matchType": "partial",
+        "noteKo": "PDF 047 ていく・てくる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-te-iku-te-kuru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 29,
+        "contentLabel": "〜てくる",
+        "meaningKo": "~해 오다 / 점점 ~해지다",
+        "matchType": "partial",
+        "noteKo": "PDF 047 ていく・てくる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-past-forms-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-past-forms-pattern",
+    "topicId": "topic-verb-past-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-verb-past-forms:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 4,
+        "contentLabel": "〜ました",
+        "meaningKo": "~했습니다 (정중한 과거)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 5,
+        "contentLabel": "〜ませんでした",
+        "meaningKo": "~하지 않았습니다 (정중한 과거 부정)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-verb-past-forms-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-verb-past-forms-example-sentence",
+    "topicId": "topic-verb-past-forms",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-verb-past-forms:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 4,
+        "contentLabel": "〜ました",
+        "meaningKo": "~했습니다 (정중한 과거)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 5,
+        "contentLabel": "〜ませんでした",
+        "meaningKo": "~하지 않았습니다 (정중한 과거 부정)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-verb-past-forms",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 49,
+        "contentLabel": "て/た形",
+        "meaningKo": "て형 / た형 변형 규칙 (동사 활용)",
+        "matchType": "partial",
+        "noteKo": "PDF 051 동사의 과거형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-tara-conditional-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tara-conditional-pattern",
+    "topicId": "topic-tara-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-tara-conditional:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tara-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 21,
+        "contentLabel": "〜たら",
+        "meaningKo": "~하면 / ~했더니 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 052 たら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tara-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 21,
+        "contentLabel": "〜たら",
+        "meaningKo": "~하면 / ~했더니 (조건·발견)",
+        "matchType": "related",
+        "noteKo": "PDF 052 たら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #21 〜たら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-tara-conditional-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tara-conditional-example-sentence",
+    "topicId": "topic-tara-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-tara-conditional:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tara-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 21,
+        "contentLabel": "〜たら",
+        "meaningKo": "~하면 / ~했더니 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 052 たら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tara-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 21,
+        "contentLabel": "〜たら",
+        "meaningKo": "~하면 / ~했더니 (조건·발견)",
+        "matchType": "related",
+        "noteKo": "PDF 052 たら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #21 〜たら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-ta-bakari-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ta-bakari-pattern",
+    "topicId": "topic-ta-bakari",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-ta-bakari:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ta-bakari",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 9,
+        "contentLabel": "〜たばかり",
+        "meaningKo": "막 ~한 참이다 / 방금 ~했다",
+        "matchType": "exact",
+        "noteKo": "PDF 054 たばかりだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ta-bakari",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 32,
+        "contentLabel": "〜ばかり",
+        "meaningKo": "방금 ~했다 / ~만 (방금/한정)",
+        "matchType": "related",
+        "noteKo": "PDF 054 たばかりだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N3 #9 〜たばかり만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-ta-bakari-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ta-bakari-example-sentence",
+    "topicId": "topic-ta-bakari",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-ta-bakari:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ta-bakari",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 9,
+        "contentLabel": "〜たばかり",
+        "meaningKo": "막 ~한 참이다 / 방금 ~했다",
+        "matchType": "exact",
+        "noteKo": "PDF 054 たばかりだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ta-bakari",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 32,
+        "contentLabel": "〜ばかり",
+        "meaningKo": "방금 ~했다 / ~만 (방금/한정)",
+        "matchType": "related",
+        "noteKo": "PDF 054 たばかりだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N3 #9 〜たばかり만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-ku-naru-ni-naru-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ku-naru-ni-naru-pattern",
+    "topicId": "topic-ku-naru-ni-naru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-ku-naru-ni-naru:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 8,
+        "contentLabel": "〜ようになる",
+        "meaningKo": "~하게 되다 (변화)",
+        "matchType": "related",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 5,
+        "contentLabel": "〜ようになる",
+        "meaningKo": "~하게 되다 / ~할 수 있게 되다",
+        "matchType": "related",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-ku-naru-ni-naru-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ku-naru-ni-naru-example-sentence",
+    "topicId": "topic-ku-naru-ni-naru",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-ku-naru-ni-naru:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 8,
+        "contentLabel": "〜ようになる",
+        "meaningKo": "~하게 되다 (변화)",
+        "matchType": "related",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 5,
+        "contentLabel": "〜ようになる",
+        "meaningKo": "~하게 되다 / ~할 수 있게 되다",
+        "matchType": "related",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-prohibitive-na-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-prohibitive-na-pattern",
+    "topicId": "topic-prohibitive-na",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-prohibitive-na:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-prohibitive-na",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 7,
+        "contentLabel": "〜ないでください",
+        "meaningKo": "~하지 말아 주세요",
+        "matchType": "related",
+        "noteKo": "PDF 062 な coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-prohibitive-na",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 9,
+        "contentLabel": "〜てはいけません",
+        "meaningKo": "~하면 안 됩니다",
+        "matchType": "related",
+        "noteKo": "PDF 062 な coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-prohibitive-na-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-prohibitive-na-example-sentence",
+    "topicId": "topic-prohibitive-na",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-prohibitive-na:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-prohibitive-na",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 7,
+        "contentLabel": "〜ないでください",
+        "meaningKo": "~하지 말아 주세요",
+        "matchType": "related",
+        "noteKo": "PDF 062 な coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-prohibitive-na",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 9,
+        "contentLabel": "〜てはいけません",
+        "meaningKo": "~하면 안 됩니다",
+        "matchType": "related",
+        "noteKo": "PDF 062 な coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-kara-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-kara-pattern",
+    "topicId": "topic-kara",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-kara:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-kara",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 17,
+        "contentLabel": "〜から",
+        "meaningKo": "~이니까 / ~때문에",
+        "matchType": "partial",
+        "noteKo": "PDF 067 から coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N5 #17 〜から row로 확인. topic title から와 pattern이 직접 대응한다."
+  },
+  {
+    "reviewId": "tts-map-tts-kara-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-kara-example-sentence",
+    "topicId": "topic-kara",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-kara:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-kara",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 17,
+        "contentLabel": "〜から",
+        "meaningKo": "~이니까 / ~때문에",
+        "matchType": "partial",
+        "noteKo": "PDF 067 から coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N5 #17 〜から row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-noni-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-noni-pattern",
+    "topicId": "topic-noni",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-noni:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-noni",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 19,
+        "contentLabel": "〜のに",
+        "meaningKo": "~인데도 / ~하는데도 (역접)",
+        "matchType": "exact",
+        "noteKo": "PDF 078 のに coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-noni",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 2,
+        "contentLabel": "〜のに",
+        "meaningKo": "~인데도 / ~임에도 불구하고",
+        "matchType": "related",
+        "noteKo": "PDF 078 のに coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #19 〜のに만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-noni-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-noni-example-sentence",
+    "topicId": "topic-noni",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-noni:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-noni",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 19,
+        "contentLabel": "〜のに",
+        "meaningKo": "~인데도 / ~하는데도 (역접)",
+        "matchType": "exact",
+        "noteKo": "PDF 078 のに coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-noni",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 2,
+        "contentLabel": "〜のに",
+        "meaningKo": "~인데도 / ~임에도 불구하고",
+        "matchType": "related",
+        "noteKo": "PDF 078 のに coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #19 〜のに만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-passive-form-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-passive-form-pattern",
+    "topicId": "topic-passive-form",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-passive-form:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-passive-form",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 26,
+        "contentLabel": "수동형 〜(ら)れる",
+        "meaningKo": "~되다 / ~당하다 (수동)",
+        "matchType": "exact",
+        "noteKo": "PDF 080 동사의 수동형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-passive-form",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 30,
+        "contentLabel": "〜受身形 (られる/あれる)",
+        "meaningKo": "~되다 / ~당하다 (수동형)",
+        "matchType": "related",
+        "noteKo": "PDF 080 동사의 수동형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #26 수동형 〜(ら)れる만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-passive-form-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-passive-form-example-sentence",
+    "topicId": "topic-passive-form",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-passive-form:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-passive-form",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 26,
+        "contentLabel": "수동형 〜(ら)れる",
+        "meaningKo": "~되다 / ~당하다 (수동)",
+        "matchType": "exact",
+        "noteKo": "PDF 080 동사의 수동형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-passive-form",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 30,
+        "contentLabel": "〜受身形 (られる/あれる)",
+        "meaningKo": "~되다 / ~당하다 (수동형)",
+        "matchType": "related",
+        "noteKo": "PDF 080 동사의 수동형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #26 수동형 〜(ら)れる만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-causative-form-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-causative-form-pattern",
+    "topicId": "topic-causative-form",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-causative-form:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-causative-form",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 27,
+        "contentLabel": "사역형 〜(さ)せる",
+        "meaningKo": "~시키다 / ~하게 하다 (사역)",
+        "matchType": "exact",
+        "noteKo": "PDF 081 동사의 사역형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-causative-form",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 31,
+        "contentLabel": "〜使役形 (させる/あせる)",
+        "meaningKo": "~시키다 / ~하게 하다 (사역형)",
+        "matchType": "related",
+        "noteKo": "PDF 081 동사의 사역형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #27 사역형 〜(さ)せる만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-causative-form-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-causative-form-example-sentence",
+    "topicId": "topic-causative-form",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-causative-form:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-causative-form",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 27,
+        "contentLabel": "사역형 〜(さ)せる",
+        "meaningKo": "~시키다 / ~하게 하다 (사역)",
+        "matchType": "exact",
+        "noteKo": "PDF 081 동사의 사역형 coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-causative-form",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 31,
+        "contentLabel": "〜使役形 (させる/あせる)",
+        "meaningKo": "~시키다 / ~하게 하다 (사역형)",
+        "matchType": "related",
+        "noteKo": "PDF 081 동사의 사역형 coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #27 사역형 〜(さ)せる만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-tameni-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tameni-pattern",
+    "topicId": "topic-tameni",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-tameni:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tameni",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 17,
+        "contentLabel": "〜ために",
+        "meaningKo": "~하기 위해 / ~때문에 (목적/원인)",
+        "matchType": "partial",
+        "noteKo": "PDF 083 ために coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tameni",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 15,
+        "contentLabel": "〜ために",
+        "meaningKo": "~하기 위해 / ~때문에",
+        "matchType": "related",
+        "noteKo": "PDF 083 ために coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-tameni-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tameni-example-sentence",
+    "topicId": "topic-tameni",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-tameni:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tameni",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 17,
+        "contentLabel": "〜ために",
+        "meaningKo": "~하기 위해 / ~때문에 (목적/원인)",
+        "matchType": "partial",
+        "noteKo": "PDF 083 ために coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tameni",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 15,
+        "contentLabel": "〜ために",
+        "meaningKo": "~하기 위해 / ~때문에",
+        "matchType": "related",
+        "noteKo": "PDF 083 ために coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-to-conditional-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-to-conditional-pattern",
+    "topicId": "topic-to-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-to-conditional:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 40,
+        "contentLabel": "〜と (条件)",
+        "meaningKo": "~하면 (필연적 조건/발견)",
+        "matchType": "partial",
+        "noteKo": "PDF 084 と coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N4 #40 〜と 조건 row로 확인. topic title と는 조건 용법으로 pattern이 직접 대응한다."
+  },
+  {
+    "reviewId": "tts-map-tts-to-conditional-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-to-conditional-example-sentence",
+    "topicId": "topic-to-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-to-conditional:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 40,
+        "contentLabel": "〜と (条件)",
+        "meaningKo": "~하면 (필연적 조건/발견)",
+        "matchType": "partial",
+        "noteKo": "PDF 084 と coverage anchor"
+      }
+    ],
+    "reviewerNotes": "단일 N4 #40 〜と 조건 row로 확인. example_sentences TTS도 같은 grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-to-quotation-or-condition-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-to-quotation-or-condition-pattern",
+    "topicId": "topic-to-quotation-or-condition",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-to-quotation-or-condition:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-quotation-or-condition",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 40,
+        "contentLabel": "〜と (条件)",
+        "meaningKo": "~하면 (필연적 조건/발견)",
+        "matchType": "partial",
+        "noteKo": "PDF 087 と coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-quotation-or-condition",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 19,
+        "contentLabel": "〜と思います",
+        "meaningKo": "~라고 생각합니다",
+        "matchType": "related",
+        "noteKo": "PDF 087 と coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-to-quotation-or-condition-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-to-quotation-or-condition-example-sentence",
+    "topicId": "topic-to-quotation-or-condition",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-to-quotation-or-condition:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-quotation-or-condition",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 40,
+        "contentLabel": "〜と (条件)",
+        "meaningKo": "~하면 (필연적 조건/발견)",
+        "matchType": "partial",
+        "noteKo": "PDF 087 と coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-to-quotation-or-condition",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 19,
+        "contentLabel": "〜と思います",
+        "meaningKo": "~라고 생각합니다",
+        "matchType": "related",
+        "noteKo": "PDF 087 と coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-ba-conditional-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ba-conditional-pattern",
+    "topicId": "topic-ba-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-ba-conditional:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ba-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 22,
+        "contentLabel": "〜ば",
+        "meaningKo": "~하면 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 088 ば coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ba-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 20,
+        "contentLabel": "〜ば",
+        "meaningKo": "~하면 (가정 조건)",
+        "matchType": "related",
+        "noteKo": "PDF 088 ば coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #22 〜ば만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-ba-conditional-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-ba-conditional-example-sentence",
+    "topicId": "topic-ba-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-ba-conditional:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ba-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 22,
+        "contentLabel": "〜ば",
+        "meaningKo": "~하면 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 088 ば coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ba-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 20,
+        "contentLabel": "〜ば",
+        "meaningKo": "~하면 (가정 조건)",
+        "matchType": "related",
+        "noteKo": "PDF 088 ば coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #22 〜ば만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-nara-conditional-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-nara-conditional-pattern",
+    "topicId": "topic-nara-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-nara-conditional:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nara-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 23,
+        "contentLabel": "〜なら",
+        "meaningKo": "~라면 / ~이라면 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 089 なら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nara-conditional",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 22,
+        "contentLabel": "〜なら",
+        "meaningKo": "~라면 / ~이라면 (조건·화제)",
+        "matchType": "related",
+        "noteKo": "PDF 089 なら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #23 〜なら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-nara-conditional-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-nara-conditional-example-sentence",
+    "topicId": "topic-nara-conditional",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-nara-conditional:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nara-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 23,
+        "contentLabel": "〜なら",
+        "meaningKo": "~라면 / ~이라면 (조건)",
+        "matchType": "exact",
+        "noteKo": "PDF 089 なら coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-nara-conditional",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 22,
+        "contentLabel": "〜なら",
+        "meaningKo": "~라면 / ~이라면 (조건·화제)",
+        "matchType": "related",
+        "noteKo": "PDF 089 なら coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #23 〜なら만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-tsumori-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tsumori-pattern",
+    "topicId": "topic-tsumori",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-tsumori:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 1,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tsumori",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 22,
+        "contentLabel": "〜つもりです",
+        "meaningKo": "~할 생각입니다 / ~할 예정입니다",
+        "matchType": "related",
+        "noteKo": "PDF 090 つもり coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tsumori",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 12,
+        "contentLabel": "〜つもり",
+        "meaningKo": "~할 생각이다 / ~할 의도이다",
+        "matchType": "exact",
+        "noteKo": "PDF 090 つもり coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #12 〜つもり만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-tsumori-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-tsumori-example-sentence",
+    "topicId": "topic-tsumori",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-tsumori:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 1,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tsumori",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 22,
+        "contentLabel": "〜つもりです",
+        "meaningKo": "~할 생각입니다 / ~할 예정입니다",
+        "matchType": "related",
+        "noteKo": "PDF 090 つもり coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-tsumori",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 12,
+        "contentLabel": "〜つもり",
+        "meaningKo": "~할 생각이다 / ~할 의도이다",
+        "matchType": "exact",
+        "noteKo": "PDF 090 つもり coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #12 〜つもり만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-souda-hearsay-appearance-a-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-souda-hearsay-appearance-a-pattern",
+    "topicId": "topic-souda-hearsay-appearance-a",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-souda-hearsay-appearance-a:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 14,
+        "contentLabel": "〜そう",
+        "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 13,
+        "contentLabel": "〜そうだ (伝聞)",
+        "meaningKo": "~라고 한다 / ~라고 들었다 (전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 14,
+        "contentLabel": "〜そうな (様態)",
+        "meaningKo": "~할 것 같은 / ~해 보이는 (양태)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-souda-hearsay-appearance-a-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-souda-hearsay-appearance-a-example-sentence",
+    "topicId": "topic-souda-hearsay-appearance-a",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-souda-hearsay-appearance-a:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 14,
+        "contentLabel": "〜そう",
+        "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 13,
+        "contentLabel": "〜そうだ (伝聞)",
+        "meaningKo": "~라고 한다 / ~라고 들었다 (전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-a",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 14,
+        "contentLabel": "〜そうな (様態)",
+        "meaningKo": "~할 것 같은 / ~해 보이는 (양태)",
+        "matchType": "partial",
+        "noteKo": "PDF 091 そうだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-souda-hearsay-appearance-b-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-souda-hearsay-appearance-b-pattern",
+    "topicId": "topic-souda-hearsay-appearance-b",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-souda-hearsay-appearance-b:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 14,
+        "contentLabel": "〜そう",
+        "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 13,
+        "contentLabel": "〜そうだ (伝聞)",
+        "meaningKo": "~라고 한다 / ~라고 들었다 (전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 14,
+        "contentLabel": "〜そうな (様態)",
+        "meaningKo": "~할 것 같은 / ~해 보이는 (양태)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-souda-hearsay-appearance-b-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-souda-hearsay-appearance-b-example-sentence",
+    "topicId": "topic-souda-hearsay-appearance-b",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-souda-hearsay-appearance-b:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "NEEDS_TOPIC_SPLIT",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 14,
+        "contentLabel": "〜そう",
+        "meaningKo": "~할 것 같다 / ~라고 한다 (양태/전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 13,
+        "contentLabel": "〜そうだ (伝聞)",
+        "meaningKo": "~라고 한다 / ~라고 들었다 (전문)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      },
+      {
+        "candidateIndex": 2,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-souda-hearsay-appearance-b",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 14,
+        "contentLabel": "〜そうな (様態)",
+        "meaningKo": "~할 것 같은 / ~해 보이는 (양태)",
+        "matchType": "partial",
+        "noteKo": "PDF 092 そうだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-rashii-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-rashii-pattern",
+    "topicId": "topic-rashii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-rashii:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-rashii",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 15,
+        "contentLabel": "〜らしい",
+        "meaningKo": "~인 것 같다 / ~답다 (추측/전형)",
+        "matchType": "exact",
+        "noteKo": "PDF 094 らしい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-rashii",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 12,
+        "contentLabel": "〜らしい",
+        "meaningKo": "~인 것 같다 / ~라고 한다 (전문)",
+        "matchType": "related",
+        "noteKo": "PDF 094 らしい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #15 〜らしい만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-rashii-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-rashii-example-sentence",
+    "topicId": "topic-rashii",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-rashii:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-rashii",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 15,
+        "contentLabel": "〜らしい",
+        "meaningKo": "~인 것 같다 / ~답다 (추측/전형)",
+        "matchType": "exact",
+        "noteKo": "PDF 094 らしい coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-rashii",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 12,
+        "contentLabel": "〜らしい",
+        "meaningKo": "~인 것 같다 / ~라고 한다 (전문)",
+        "matchType": "related",
+        "noteKo": "PDF 094 らしい coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #15 〜らしい만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-mono-functions-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-mono-functions-pattern",
+    "topicId": "topic-mono-functions",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-mono-functions:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "topic_grammar_mapping_required"
+    ],
+    "decision": "NEEDS_MAPPING",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [],
+    "reviewerNotes": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-mono-functions-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-mono-functions-example-sentence",
+    "topicId": "topic-mono-functions",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-mono-functions:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "topic_grammar_mapping_required"
+    ],
+    "decision": "NEEDS_MAPPING",
+    "selectedCandidateIndex": null,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [],
+    "reviewerNotes": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다."
+  },
+  {
+    "reviewId": "tts-map-tts-hazu-da-pattern",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-hazu-da-pattern",
+    "topicId": "topic-hazu-da",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "pattern",
+    "adminField": "pattern",
+    "textSource": "curriculum-topics:topic-hazu-da:pattern",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hazu-da",
+        "adminField": "pattern",
+        "jlptLevel": "N4",
+        "grammarOrder": 13,
+        "contentLabel": "〜はず",
+        "meaningKo": "~할 것이다 / ~일 것이다 (당연/예상)",
+        "matchType": "exact",
+        "noteKo": "PDF 100 はずだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hazu-da",
+        "adminField": "pattern",
+        "jlptLevel": "N3",
+        "grammarOrder": 11,
+        "contentLabel": "〜はず",
+        "meaningKo": "~할 것이다 / ~일 것이다 (당연히)",
+        "matchType": "related",
+        "noteKo": "PDF 100 はずだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #13 〜はず만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
+  },
+  {
+    "reviewId": "tts-map-tts-hazu-da-example-sentence",
+    "batchId": "tts-review-admin-grammar-fields",
+    "targetId": "tts-hazu-da-example-sentence",
+    "topicId": "topic-hazu-da",
+    "contentType": "grammar",
+    "audioTargetType": "grammar",
+    "audioField": "example_sentence",
+    "adminField": "example_sentences",
+    "textSource": "curriculum-topics:topic-hazu-da:example_sentence",
+    "requiredBeforePublish": false,
+    "operationStatus": "manual_mapping_required",
+    "blockerCodes": [
+      "ambiguous_or_partial_grammar_mapping"
+    ],
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
+    "selected": {
+      "lookupType": "grammar_level_order",
+      "jlptLevel": null,
+      "grammarOrder": null
+    },
+    "candidates": [
+      {
+        "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hazu-da",
+        "adminField": "example_sentences",
+        "jlptLevel": "N4",
+        "grammarOrder": 13,
+        "contentLabel": "〜はず",
+        "meaningKo": "~할 것이다 / ~일 것이다 (당연/예상)",
+        "matchType": "exact",
+        "noteKo": "PDF 100 はずだ coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-hazu-da",
+        "adminField": "example_sentences",
+        "jlptLevel": "N3",
+        "grammarOrder": 11,
+        "contentLabel": "〜はず",
+        "meaningKo": "~할 것이다 / ~일 것이다 (당연히)",
+        "matchType": "related",
+        "noteKo": "PDF 100 はずだ coverage anchor"
+      }
+    ],
+    "reviewerNotes": "후보 2개 중 N4 #13 〜はず만 exact이고 나머지는 related로 확인. example_sentence TTS는 exact grammar row를 사용한다."
+  }
+]

@@ -144,6 +144,7 @@ const GRAMMAR_MAPPINGS = {
     ['N5', 41, 'partial'],
   ],
   '008': [['N5', 1, 'exact']],
+  '009': [['N5', 58, 'exact']],
   '010': [
     ['N5', 31, 'partial'],
     ['N5', 32, 'partial'],
@@ -157,6 +158,10 @@ const GRAMMAR_MAPPINGS = {
   '015': [['N5', 34, 'partial']],
   '016': [['N5', 34, 'partial']],
   '018': [['N5', 38, 'exact']],
+  '019': [
+    ['N5', 38, 'related'],
+    ['N5', 39, 'related'],
+  ],
   '020': [['N5', 39, 'partial']],
   '021': [['N5', 38, 'exact']],
   '022': [['N5', 18, 'exact']],
@@ -171,6 +176,7 @@ const GRAMMAR_MAPPINGS = {
     ['N5', 4, 'related'],
     ['N5', 5, 'related'],
   ],
+  '025': [['N5', 55, 'exact']],
   '026': [
     ['N5', 11, 'related'],
     ['N5', 12, 'related'],
@@ -188,6 +194,7 @@ const GRAMMAR_MAPPINGS = {
     ['N5', 26, 'exact'],
     ['N4', 37, 'related'],
   ],
+  '031': [['N4', 42, 'exact']],
   '032': [['N5', 10, 'exact']],
   '033': [['N5', 12, 'exact']],
   '034': [
@@ -242,19 +249,35 @@ const GRAMMAR_MAPPINGS = {
     ['N3', 9, 'exact'],
     ['N4', 32, 'related'],
   ],
+  '055': [['N4', 43, 'exact']],
   '056': [['N4', 6, 'exact']],
   '057': [['N5', 23, 'exact']],
+  '058': [
+    ['N4', 8, 'related'],
+    ['N3', 5, 'related'],
+  ],
   '060': [['N5', 48, 'exact']],
   '061': [['N5', 7, 'exact']],
+  '062': [
+    ['N5', 7, 'related'],
+    ['N5', 9, 'related'],
+  ],
   '063': [['N5', 27, 'exact']],
+  '064': [['N4', 41, 'exact']],
+  '065': [['N4', 48, 'exact']],
+  '066': [['N5', 56, 'exact']],
   '067': [['N5', 17, 'partial']],
   '068': [['N3', 1, 'exact']],
+  '069': [['N4', 44, 'exact']],
+  '070': [['N4', 45, 'exact']],
+  '073': [['N4', 46, 'exact']],
   '075': [['N5', 19, 'exact']],
-  '077': [['N4', 10, 'related']],
+  '077': [['N5', 59, 'exact']],
   '078': [
     ['N4', 19, 'exact'],
     ['N3', 2, 'related'],
   ],
+  '079': [['N4', 47, 'exact']],
   '080': [
     ['N4', 26, 'exact'],
     ['N3', 30, 'related'],
@@ -269,6 +292,8 @@ const GRAMMAR_MAPPINGS = {
     ['N3', 15, 'related'],
   ],
   '084': [['N4', 40, 'partial']],
+  '085': [['N5', 57, 'exact']],
+  '086': [['N3', 51, 'exact']],
   '087': [
     ['N4', 40, 'partial'],
     ['N5', 19, 'related'],
@@ -339,7 +364,7 @@ const VOCABULARY_MAPPINGS = {
     ['N5', 393, 'partial'],
     ['N5', 122, 'partial'],
   ],
-  '095': [['N5', 189, 'related']],
+  '095': [['N4', 173, 'exact']],
 };
 
 const CURRENT_LESSON_QUESTION_TYPES = ['VOCAB_MCQ', 'CONTEXT_CLOZE', 'SENTENCE_REORDER'];
@@ -1051,7 +1076,17 @@ function buildCoveragePriorities(lessonDrafts, topics, questionBlueprints) {
   });
 }
 
-function printSummary(topics, grammarMappings, vocabularyMappings, blueprints, ttsTargets, ttsReviewBatches, lessonDrafts, priorities) {
+function printSummary(
+  topics,
+  grammarMappings,
+  vocabularyMappings,
+  blueprints,
+  ttsTargets,
+  ttsReviewBatches,
+  ttsReviewManualMappingOverrides,
+  lessonDrafts,
+  priorities,
+) {
   const coverage = {};
   const types = {};
   const waves = {};
@@ -1069,6 +1104,7 @@ function printSummary(topics, grammarMappings, vocabularyMappings, blueprints, t
   console.log(`- question blueprints: ${blueprints.length}`);
   console.log(`- tts targets: ${ttsTargets.length}`);
   console.log(`- tts review batches: ${ttsReviewBatches.length}`);
+  console.log(`- tts manual mapping overrides: ${ttsReviewManualMappingOverrides.decisions?.length ?? 0}`);
   console.log(`- lesson draft blueprints: ${lessonDrafts.length}`);
   console.log(`- coverage priorities: ${priorities.length}`);
   console.log('- api topic grammar bundle: apps/api/app/data/curriculum/topic-grammar-map.json');
@@ -1094,6 +1130,14 @@ function main() {
   const blueprints = buildQuestionBlueprints(topics);
   const ttsTargets = buildTtsTargetManifest(topics, exampleBank.examples, seedCandidates, vocabularyMappings);
   const ttsReviewBatches = buildTtsReviewBatches(ttsTargets);
+  const ttsReviewManualMappingOverrides = readOptionalJson(
+    join(CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json'),
+    {
+      schemaVersion: 1,
+      status: 'draft',
+      decisions: [],
+    },
+  );
   const lessonDrafts = buildLessonDraftBlueprints(topics, blueprints, exampleBank.examples);
   const priorities = buildCoveragePriorities(lessonDrafts, topics, blueprints);
 
@@ -1148,6 +1192,8 @@ function main() {
     status: 'draft',
     batches: ttsReviewBatches,
   });
+  writeJson(join(CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json'), ttsReviewManualMappingOverrides);
+  writeJson(join(API_CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json'), ttsReviewManualMappingOverrides);
   writeJson(join(CURRICULUM_DIR, 'lesson-draft-blueprints.json'), {
     schemaVersion: 1,
     status: 'draft',
@@ -1159,7 +1205,17 @@ function main() {
     priorities,
   });
 
-  printSummary(topics, mappings, vocabularyMappings, blueprints, ttsTargets, ttsReviewBatches, lessonDrafts, priorities);
+  printSummary(
+    topics,
+    mappings,
+    vocabularyMappings,
+    blueprints,
+    ttsTargets,
+    ttsReviewBatches,
+    ttsReviewManualMappingOverrides,
+    lessonDrafts,
+    priorities,
+  );
 }
 
 main();

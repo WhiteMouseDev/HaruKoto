@@ -39,6 +39,13 @@ Wave 0 keeps these files as validated staging contracts:
   to `apps/api/app/data/curriculum/tts-review-batches.json` so the API Docker
   image can serve the read-only admin endpoint without depending on repo-root
   package files.
+- `tts-review-manual-mapping-overrides.json`: approved reviewer decisions that
+  resolve manual TTS mapping rows to a concrete grammar or vocabulary level/order
+  before admin execute preview, plus audit-only `reviewOutcomes` for unresolved
+  rows that still need topic mapping, topic split, partial override review, or
+  rejection handling. It is source-controlled and bundled to
+  `apps/api/app/data/curriculum/tts-review-manual-mapping-overrides.json` by
+  `scripts/derive-curriculum-topics.mjs`.
 - `lesson-draft-blueprints.json`: draft lesson planning records for missing or
   partial topics. These are not seedable lessons.
 - `lesson-seed-candidates.json`: seed-shaped lesson drafts that are validated
@@ -59,6 +66,16 @@ Wave 0 keeps these files as validated staging contracts:
   topics.
 - `scripts/derive-curriculum-topics.mjs`: derives topic and grammar-map draft
   data from the inventory plus curated internal mappings.
+- `scripts/prepare-tts-manual-mapping-review.mjs`: generates reviewer-editable
+  TTS manual mapping rows from current review batches and topic maps.
+- `scripts/prepare-tts-manual-mapping-followups.mjs`: groups unresolved TTS
+  manual mapping rows into reviewer follow-up queues.
+- `scripts/compile-tts-manual-mapping-overrides.mjs`: compiles approved TTS
+  manual mapping rows into executable `decisions` and unresolved rows into
+  audit-only `reviewOutcomes` in `tts-review-manual-mapping-overrides.json`.
+- `scripts/validate-tts-manual-mapping-review.mjs`: validates source-controlled
+  TTS review rows against current target, batch, topic map, vocabulary, and
+  grammar contracts. It runs as part of `curriculum:validate`.
 
 Rules:
 
@@ -85,12 +102,41 @@ Rules:
   `admin_existing_tts` may map to current admin TTS fields; batches marked
   `admin_extension_required` must not be generated until the listed blocker has
   a matching review/export surface.
+- Use `curriculum:tts-review:prepare` to create review rows. Rows with no
+  current topic-map candidate stay `NEEDS_MAPPING`; rows with candidates stay
+  `PENDING` only when a reviewer can approve a concrete candidate. Rows with
+  multiple non-exact candidates stay `NEEDS_TOPIC_SPLIT`; rows with one
+  non-exact candidate stay `NEEDS_PARTIAL_OVERRIDE` until a reviewer either
+  improves the map or writes a partial override rationale.
+- A reviewer marks a row `APPROVED` and selects either `selectedCandidateIndex`
+  or a fully populated `selected` object before running
+  `curriculum:tts-review:compile`.
+- Approved decisions must preserve `sourceMatchType` and `resolutionType` in
+  the compiled override file. Non-exact selections are target-level
+  `partial_override` decisions; they do not make the parent topic map exact.
+- Run `curriculum:tts-review:followups` after reviewer edits so
+  `tts-manual-mapping-review/_followups.json` stays synchronized with the
+  unresolved queue. Run `curriculum:tts-review:compile -- --replace` so
+  `reviewOutcomes` stays synchronized with the unresolved queue.
+  `curriculum:validate` fails if either artifact drifts.
+- Mechanical triage may approve a row only when there is exactly one `exact`
+  candidate. Rows with multiple non-exact candidates should stay
+  `NEEDS_TOPIC_SPLIT`, and rows with a single non-exact candidate should stay
+  `NEEDS_PARTIAL_OVERRIDE` until the topic is split, a stronger map is added,
+  or a reviewer writes an explicit rationale for a partial override.
+- Keep `tts-manual-mapping-review/*.json` aligned with current contracts. Run
+  `curriculum:tts-review:prepare` after topic/TTS map changes, and
+  `curriculum:validate` will fail if the review artifact becomes stale.
+- Keep `tts-review-manual-mapping-overrides.json` in `draft` while decisions are
+  used only to unblock generation dry-run and execute preview. Run
+  `curriculum:derive` after compilation so the API bundled copy stays current.
 - Treat `packages/database/data/curriculum/topic-grammar-map.json`,
   `packages/database/data/curriculum/topic-vocabulary-map.json`,
   `packages/database/data/curriculum/tts-target-manifest.json`, and
-  `packages/database/data/curriculum/tts-review-batches.json` as the source
-  contracts. The API bundled copies are generated output for deployment
-  packaging and must be refreshed with `curriculum:derive`.
+  `packages/database/data/curriculum/tts-review-batches.json`, and
+  `packages/database/data/curriculum/tts-review-manual-mapping-overrides.json`
+  as the source contracts. The API bundled copies are generated output for
+  deployment packaging and must be refreshed with `curriculum:derive`.
 - Keep scaffold candidates and topic anchor policies in `draft` until their
   review gates are resolved. They explain why a P0 topic is not yet seedable or
   which anchor decision produced a draft seed candidate.

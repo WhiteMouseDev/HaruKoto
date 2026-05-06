@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-05-06T06:35:15.921Z",
+  "outDir": "data/curriculum/tts-manual-mapping-review",
+  "includeReady": false,
+  "sourceContracts": {
+    "targetManifest": "data/curriculum/tts-target-manifest.json",
+    "reviewBatches": "data/curriculum/tts-review-batches.json",
+    "topicGrammarMap": "data/curriculum/topic-grammar-map.json",
+    "topicVocabularyMap": "data/curriculum/topic-vocabulary-map.json"
+  },
+  "totals": {
+    "batches": 2,
+    "targets": 174,
+    "readyRows": 86,
+    "manualRows": 88,
+    "blockedRows": 0,
+    "writtenRows": 88
+  },
+  "batches": [
+    {
+      "batchId": "tts-review-admin-vocabulary-fields",
+      "contentType": "vocabulary",
+      "targetCount": 18,
+      "readyRows": 6,
+      "manualRows": 12,
+      "blockedRows": 0,
+      "writtenRows": 12,
+      "outputFile": "data/curriculum/tts-manual-mapping-review/tts-review-admin-vocabulary-fields.json"
+    },
+    {
+      "batchId": "tts-review-admin-grammar-fields",
+      "contentType": "grammar",
+      "targetCount": 156,
+      "readyRows": 80,
+      "manualRows": 76,
+      "blockedRows": 0,
+      "writtenRows": 76,
+      "outputFile": "data/curriculum/tts-manual-mapping-review/tts-review-admin-grammar-fields.json"
+    }
+  ],
+  "workflow": {
+    "step1": "Open the generated batch JSON files and inspect rows with decision=PENDING, NEEDS_MAPPING, NEEDS_TOPIC_SPLIT, or NEEDS_PARTIAL_OVERRIDE.",
+    "step2": "For a row to approve, set decision=APPROVED and either selectedCandidateIndex or selected.",
+    "step3": "Run compile-tts-manual-mapping-overrides.mjs, then curriculum:derive and curriculum:validate."
+  }
+}

@@ -296,7 +296,7 @@
         "estimated_minutes": 10,
         "grammar": {
           "level": "N5",
-          "grammar_order": 1,
+          "grammar_order": 58,
           "pattern": "〜ではありません",
           "meaning_ko": "~이/가 아닙니다",
           "supporting_grammar_orders": [31, 32, 37]
@@ -2471,7 +2471,7 @@
         "estimated_minutes": 10,
         "grammar": {
           "level": "N5",
-          "grammar_order": 47,
+          "grammar_order": 59,
           "pattern": "N + にします",
           "meaning_ko": "~로 하겠습니다",
           "supporting_grammar_orders": [42]
