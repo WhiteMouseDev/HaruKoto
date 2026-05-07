@@ -487,7 +487,7 @@
       "inferredLevels": ["N5", "N4"],
       "levelConfidence": "medium",
       "coverageAction": "create_topic",
-      "notesKo": "N4 ようになる과 구분되는 변화 표현으로 추가한다."
+      "notesKo": "N5 상태 변화 〜くなる/〜になる을 primary row로 두고, N4/N3 〜ようになる은 능력·동작 변화 contrast로 분리한다."
     },
     {
       "pdfRef": "059",

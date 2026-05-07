@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "status": "draft",
-  "generatedAt": "2026-05-07T00:42:20.824Z",
+  "generatedAt": "2026-05-07T01:09:17.762Z",
   "sourceReviewDir": "data/curriculum/tts-manual-mapping-review",
   "summary": {
     "totalRows": 86,
-    "approvedRows": 44,
+    "approvedRows": 46,
     "pendingRows": 0,
-    "unresolvedRows": 42,
-    "followupGroups": 19,
+    "unresolvedRows": 40,
+    "followupGroups": 18,
     "byDecision": {
-      "APPROVED": 44,
+      "APPROVED": 46,
       "PENDING": 0,
       "NEEDS_MAPPING": 0,
-      "NEEDS_TOPIC_SPLIT": 42,
+      "NEEDS_TOPIC_SPLIT": 40,
       "NEEDS_PARTIAL_OVERRIDE": 0,
       "REJECTED": 0
     }
@@ -272,64 +272,6 @@
           "meaningKo": "형용사+명사 수식",
           "noteKo": "PDF 019 い형용사의 명사화 coverage anchor",
           "grammarOrder": 39
-        }
-      ],
-      "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",
-      "resolutionContract": {
-        "executableDecisionAllowed": false,
-        "expectedResolutionType": "topic_split_required",
-        "nextStepKo": "넓은 parent topic을 child topic으로 분리하거나 단일 exact mapping으로 좁힌 뒤 review artifact를 재생성한다."
-      }
-    },
-    {
-      "followupId": "tts-followup-needs-topic-split-ku-naru-ni-naru-grammar",
-      "actionType": "split_topic_or_strengthen_mapping",
-      "decision": "NEEDS_TOPIC_SPLIT",
-      "contentType": "grammar",
-      "topicId": "topic-ku-naru-ni-naru",
-      "rowCount": 2,
-      "reviewIds": [
-        "tts-map-tts-ku-naru-ni-naru-example-sentence",
-        "tts-map-tts-ku-naru-ni-naru-pattern"
-      ],
-      "targetIds": [
-        "tts-ku-naru-ni-naru-example-sentence",
-        "tts-ku-naru-ni-naru-pattern"
-      ],
-      "audioFields": [
-        "example_sentence",
-        "pattern"
-      ],
-      "adminFields": [
-        "example_sentences",
-        "pattern"
-      ],
-      "blockerCodes": [
-        "ambiguous_or_partial_grammar_mapping"
-      ],
-      "candidateCount": 2,
-      "candidates": [
-        {
-          "contentType": "grammar",
-          "lookupType": "grammar_level_order",
-          "topicId": "topic-ku-naru-ni-naru",
-          "jlptLevel": "N3",
-          "matchType": "related",
-          "contentLabel": "〜ようになる",
-          "meaningKo": "~하게 되다 / ~할 수 있게 되다",
-          "noteKo": "PDF 058 くなる・になる coverage anchor",
-          "grammarOrder": 5
-        },
-        {
-          "contentType": "grammar",
-          "lookupType": "grammar_level_order",
-          "topicId": "topic-ku-naru-ni-naru",
-          "jlptLevel": "N4",
-          "matchType": "related",
-          "contentLabel": "〜ようになる",
-          "meaningKo": "~하게 되다 (변화)",
-          "noteKo": "PDF 058 くなる・になる coverage anchor",
-          "grammarOrder": 8
         }
       ],
       "recommendedActionKo": "복수의 non-exact 후보가 있으므로 topic을 더 작은 학습 항목으로 쪼개거나 exact/stronger mapping을 추가한다.",

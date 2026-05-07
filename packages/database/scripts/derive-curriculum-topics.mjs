@@ -253,6 +253,7 @@ const GRAMMAR_MAPPINGS = {
   '056': [['N4', 6, 'exact']],
   '057': [['N5', 23, 'exact']],
   '058': [
+    ['N5', 60, 'exact'],
     ['N4', 8, 'related'],
     ['N3', 5, 'related'],
   ],

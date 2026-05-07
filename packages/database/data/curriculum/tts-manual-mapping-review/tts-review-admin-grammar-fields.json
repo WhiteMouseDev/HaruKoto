@@ -2484,16 +2484,29 @@
     "blockerCodes": [
       "ambiguous_or_partial_grammar_mapping"
     ],
-    "decision": "NEEDS_TOPIC_SPLIT",
-    "selectedCandidateIndex": null,
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
     "selected": {
       "lookupType": "grammar_level_order",
-      "jlptLevel": null,
-      "grammarOrder": null
+      "jlptLevel": "N5",
+      "grammarOrder": 60
     },
     "candidates": [
       {
         "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "pattern",
+        "jlptLevel": "N5",
+        "grammarOrder": 60,
+        "contentLabel": "〜くなる / 〜になる",
+        "meaningKo": "~해지다 / ~이 되다",
+        "matchType": "exact",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
         "contentType": "grammar",
         "lookupType": "grammar_level_order",
         "topicId": "topic-ku-naru-ni-naru",
@@ -2506,7 +2519,7 @@
         "noteKo": "PDF 058 くなる・になる coverage anchor"
       },
       {
-        "candidateIndex": 1,
+        "candidateIndex": 2,
         "contentType": "grammar",
         "lookupType": "grammar_level_order",
         "topicId": "topic-ku-naru-ni-naru",
@@ -2519,7 +2532,7 @@
         "noteKo": "PDF 058 くなる・になる coverage anchor"
       }
     ],
-    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+    "reviewerNotes": "PDF 058 くなる・になる topic은 N5 상태 변화 〜くなる/〜になる을 primary TTS source로 승인한다. N4/N3 〜ようになる은 능력·동작 변화 contrast로 분리한다."
   },
   {
     "reviewId": "tts-map-tts-ku-naru-ni-naru-example-sentence",
@@ -2536,16 +2549,29 @@
     "blockerCodes": [
       "ambiguous_or_partial_grammar_mapping"
     ],
-    "decision": "NEEDS_TOPIC_SPLIT",
-    "selectedCandidateIndex": null,
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
     "selected": {
       "lookupType": "grammar_level_order",
-      "jlptLevel": null,
-      "grammarOrder": null
+      "jlptLevel": "N5",
+      "grammarOrder": 60
     },
     "candidates": [
       {
         "candidateIndex": 0,
+        "contentType": "grammar",
+        "lookupType": "grammar_level_order",
+        "topicId": "topic-ku-naru-ni-naru",
+        "adminField": "example_sentences",
+        "jlptLevel": "N5",
+        "grammarOrder": 60,
+        "contentLabel": "〜くなる / 〜になる",
+        "meaningKo": "~해지다 / ~이 되다",
+        "matchType": "exact",
+        "noteKo": "PDF 058 くなる・になる coverage anchor"
+      },
+      {
+        "candidateIndex": 1,
         "contentType": "grammar",
         "lookupType": "grammar_level_order",
         "topicId": "topic-ku-naru-ni-naru",
@@ -2558,7 +2584,7 @@
         "noteKo": "PDF 058 くなる・になる coverage anchor"
       },
       {
-        "candidateIndex": 1,
+        "candidateIndex": 2,
         "contentType": "grammar",
         "lookupType": "grammar_level_order",
         "topicId": "topic-ku-naru-ni-naru",
@@ -2571,7 +2597,7 @@
         "noteKo": "PDF 058 くなる・になる coverage anchor"
       }
     ],
-    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+    "reviewerNotes": "PDF 058 くなる・になる topic은 N5 상태 변화 〜くなる/〜になる을 primary TTS source로 승인한다. N4/N3 〜ようになる은 능력·동작 변화 contrast로 분리한다."
   },
   {
     "reviewId": "tts-map-tts-prohibitive-na-pattern",
