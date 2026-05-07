@@ -132,11 +132,27 @@ void main() {
           'totalAnswers': 10,
           'xpEarned': 120,
           'goalProgress': 0.5,
+          'hasStudied': true,
         },
-        'streak': {'current': 3, 'longest': 7},
+        'streak': {
+          'current': 3,
+          'longest': 7,
+          'studiedToday': true,
+          'needsActionToday': false,
+        },
         'weeklyStats': [
-          {'date': '2026-03-10', 'wordsStudied': 5, 'xpEarned': 50},
-          {'date': '2026-03-11', 'wordsStudied': 10, 'xpEarned': 100},
+          {
+            'date': '2026-03-10',
+            'wordsStudied': 5,
+            'xpEarned': 50,
+            'hasStudied': true,
+          },
+          {
+            'date': '2026-03-11',
+            'wordsStudied': 0,
+            'xpEarned': 100,
+            'hasStudied': true,
+          },
         ],
         'kanaProgress': {
           'hiragana': {'learned': 20, 'total': 46, 'pct': 43.5},
@@ -150,12 +166,37 @@ void main() {
       final model = DashboardModel.fromJson(json);
       expect(model.showKana, true);
       expect(model.today.wordsStudied, 5);
+      expect(model.today.hasStudied, true);
       expect(model.streak.current, 3);
       expect(model.streak.longest, 7);
+      expect(model.streak.studiedToday, true);
+      expect(model.streak.needsActionToday, false);
       expect(model.weeklyStats.length, 2);
       expect(model.weeklyStats[0].wordsStudied, 5);
+      expect(model.weeklyStats[1].hasStudied, true);
       expect(model.kanaProgress!.hiragana.learned, 20);
       expect(model.levelProgress!.vocabulary.total, 100);
+    });
+
+    test('fromJson derives study flags for older dashboard responses', () {
+      final json = <String, dynamic>{
+        'today': {
+          'wordsStudied': 0,
+          'quizzesCompleted': 0,
+          'xpEarned': 25,
+        },
+        'streak': {'current': 1, 'longest': 2},
+        'weeklyStats': [
+          {'date': '2026-03-10', 'wordsStudied': 0, 'xpEarned': 25},
+        ],
+      };
+
+      final model = DashboardModel.fromJson(json);
+
+      expect(model.today.hasStudied, true);
+      expect(model.streak.studiedToday, true);
+      expect(model.streak.needsActionToday, false);
+      expect(model.weeklyStats.single.hasStudied, true);
     });
 
     test('fromJson handles null optional nested models', () {
@@ -168,7 +209,10 @@ void main() {
       expect(model.levelProgress, isNull);
       expect(model.weeklyStats, isEmpty);
       expect(model.today.wordsStudied, 0);
+      expect(model.today.hasStudied, false);
       expect(model.streak.current, 0);
+      expect(model.streak.studiedToday, false);
+      expect(model.streak.needsActionToday, false);
     });
   });
 }

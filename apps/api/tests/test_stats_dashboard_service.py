@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
+from datetime import UTC, date, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -57,6 +57,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
         daily_goal=10,
         streak_count=4,
         longest_streak=9,
+        last_study_date=date(2026, 4, 23),
         show_kana=True,
     )
     today_progress = SimpleNamespace(
@@ -93,11 +94,15 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert response.show_kana is True
     assert response.today.words_studied == 8
     assert response.today.goal_progress == 1.0
+    assert response.today.has_studied is True
     assert response.streak.current == 4
     assert response.streak.longest == 9
+    assert response.streak.studied_today is True
+    assert response.streak.needs_action_today is False
     assert len(response.weekly_stats) == 7
     assert response.weekly_stats[3].date == "2026-04-20"
     assert response.weekly_stats[3].words_studied == 3
+    assert response.weekly_stats[3].has_studied is True
     assert response.level_progress.vocabulary.total == 100
     assert response.level_progress.vocabulary.mastered == 12
     assert response.level_progress.vocabulary.in_progress == 3
@@ -108,3 +113,58 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert response.kana_progress.hiragana.mastered == 12
     assert response.kana_progress.katakana.learned == 5
     assert response.kana_progress.katakana.mastered == 0
+
+
+def test_build_streak_info_marks_yesterday_streak_as_needing_action() -> None:
+    user = SimpleNamespace(
+        streak_count=4,
+        longest_streak=9,
+        last_study_date=date(2026, 4, 22),
+    )
+
+    streak = stats_dashboard._build_streak_info(
+        user=user,
+        today_progress=None,
+        today=date(2026, 4, 23),
+    )
+
+    assert streak.current == 4
+    assert streak.longest == 9
+    assert streak.studied_today is False
+    assert streak.needs_action_today is True
+
+
+def test_build_streak_info_expires_stale_streak_for_dashboard() -> None:
+    user = SimpleNamespace(
+        streak_count=4,
+        longest_streak=9,
+        last_study_date=date(2026, 4, 20),
+    )
+
+    streak = stats_dashboard._build_streak_info(
+        user=user,
+        today_progress=None,
+        today=date(2026, 4, 23),
+    )
+
+    assert streak.current == 0
+    assert streak.longest == 9
+    assert streak.studied_today is False
+    assert streak.needs_action_today is False
+
+
+def test_has_study_activity_counts_xp_only_progress() -> None:
+    progress = SimpleNamespace(
+        words_studied=0,
+        quizzes_completed=0,
+        conversation_count=0,
+        xp_earned=20,
+    )
+
+    assert stats_dashboard._has_study_activity(progress) is True
+
+
+def test_last_study_day_uses_kst_for_aware_datetime() -> None:
+    last_study_at = datetime(2026, 4, 22, 15, 30, tzinfo=UTC)
+
+    assert stats_dashboard._last_study_day(last_study_at) == date(2026, 4, 23)

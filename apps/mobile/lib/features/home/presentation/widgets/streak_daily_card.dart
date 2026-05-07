@@ -27,7 +27,8 @@ class StreakDailyCard extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label: '${streak.current}일 연속 학습, 오늘 ${today.wordsStudied}개 단어 학습',
+      label:
+          '${streak.current}일 연속 학습, ${today.hasStudied ? '오늘 학습 완료' : '오늘 학습 전'}',
       child: Padding(
         padding:
             const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
@@ -61,7 +62,7 @@ class StreakDailyCard extends ConsumerWidget {
                   // Top row: Streak info + chevron
                   Row(
                     children: [
-                      _StreakHeader(streak: streak.current),
+                      _StreakHeader(streak: streak),
                       const Spacer(),
                       Icon(
                         LucideIcons.chevronRight,
@@ -139,9 +140,7 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
     final studiedDates = <String>{};
     if (historyAsync.hasValue) {
       for (final record in historyAsync.value!) {
-        if (record.wordsStudied > 0 ||
-            record.quizzesCompleted > 0 ||
-            record.conversationCount > 0) {
+        if (record.hasStudyActivity) {
           studiedDates.add(record.date);
         }
       }
@@ -355,7 +354,7 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
 }
 
 class _StreakHeader extends StatefulWidget {
-  final int streak;
+  final StreakData streak;
 
   const _StreakHeader({required this.streak});
 
@@ -389,8 +388,7 @@ class _StreakHeaderState extends State<_StreakHeader>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final text =
-        widget.streak > 0 ? '${widget.streak}일째 연속 학습 중!' : '오늘 첫 학습을 시작해보세요!';
+    final text = _headerText(widget.streak);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -413,6 +411,16 @@ class _StreakHeaderState extends State<_StreakHeader>
       ],
     );
   }
+
+  String _headerText(StreakData streak) {
+    if (streak.current <= 0) {
+      return '오늘 첫 학습을 시작해보세요!';
+    }
+    if (streak.studiedToday) {
+      return '${streak.current}일째 연속 학습 완료!';
+    }
+    return '${streak.current}일 연속 기록 유지 중';
+  }
 }
 
 class _StreakWeek extends StatelessWidget {
@@ -423,7 +431,6 @@ class _StreakWeek extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
     final todayStr = _formatDate(DateTime.now());
     final inactiveDayColor = AppColors.streakContainer.withValues(alpha: 0.42);
     final pastDayColor = AppColors.streakContainer.withValues(alpha: 0.3);
@@ -432,15 +439,16 @@ class _StreakWeek extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(7, (i) {
         final hasDate = i < weeklyStats.length;
-        final date = hasDate ? weeklyStats[i].date : '';
-        final studied = hasDate ? weeklyStats[i].wordsStudied : 0;
+        final entry = hasDate ? weeklyStats[i] : null;
+        final date = entry?.date ?? '';
+        final studied = entry?.hasStudied ?? false;
         final isToday = date == todayStr;
         final isPast = hasDate && date.compareTo(todayStr) < 0;
 
         Color bgColor;
         Widget child;
 
-        if (studied > 0) {
+        if (studied) {
           bgColor = AppColors.streak;
           child = const Icon(LucideIcons.check,
               color: AppColors.onGradient, size: 14);
@@ -471,7 +479,7 @@ class _StreakWeek extends StatelessWidget {
         return Column(
           children: [
             Text(
-              dayLabels[i],
+              hasDate ? _weekdayLabel(date) : '',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 11,
@@ -495,5 +503,14 @@ class _StreakWeek extends StatelessWidget {
 
   String _formatDate(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+  }
+
+  String _weekdayLabel(String date) {
+    const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+    try {
+      return dayLabels[DateTime.parse(date).weekday - 1];
+    } catch (_) {
+      return '';
+    }
   }
 }

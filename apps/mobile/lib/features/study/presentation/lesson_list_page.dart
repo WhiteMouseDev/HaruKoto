@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/constants/colors.dart';
-import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
+import 'widgets/lesson_continue_banner.dart';
 
 class LessonListPage extends ConsumerStatefulWidget {
   const LessonListPage({super.key});
@@ -42,17 +41,25 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('전체 레슨')),
+      appBar: AppBar(title: const Text('학습')),
       body: chaptersAsync.when(
         data: (data) => SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _LessonListIntro(target: recommendedLesson),
+              _LessonListHeader(
+                jlptLevel: jlptLevel,
+                target: recommendedLesson,
+              ),
+              if (recommendedLesson != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
+                  child: LessonContinueBanner(target: recommendedLesson),
+                ),
               LessonChapterList(
                 chapters: data.chapters,
                 recommendedLessonId: recommendedLesson?.lesson.id,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               ),
             ],
           ),
@@ -104,9 +111,13 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
   }
 }
 
-class _LessonListIntro extends StatelessWidget {
-  const _LessonListIntro({required this.target});
+class _LessonListHeader extends StatelessWidget {
+  const _LessonListHeader({
+    required this.jlptLevel,
+    required this.target,
+  });
 
+  final String jlptLevel;
   final RecommendedLessonTarget? target;
 
   @override
@@ -121,16 +132,29 @@ class _LessonListIntro extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                LucideIcons.compass,
-                size: 20,
-                color: theme.colorScheme.primary,
+              Expanded(
+                child: Text(
+                  '전체 레슨',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                '추천 경로와 전체 레슨',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.neutralContainer,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  jlptLevel,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: AppColors.neutralOn,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ],
@@ -139,28 +163,11 @@ class _LessonListIntro extends StatelessWidget {
           Text(
             target == null
                 ? '관심 있는 주제부터 골라도 돼요'
-                : '추천은 먼저 펼쳐두고, 관심 있는 주제도 바로 시작할 수 있어요',
+                : '이어갈 위치를 먼저 보여주고, 전체 경로도 함께 확인해요',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.lightSubtext,
             ),
           ),
-          if (target != null) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.primaryStrong.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(AppSizes.radiusFull),
-              ),
-              child: Text(
-                '${target.reason} · Ch.${target.chapter.chapterNo} ${target.lesson.title}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.primaryStrong,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );

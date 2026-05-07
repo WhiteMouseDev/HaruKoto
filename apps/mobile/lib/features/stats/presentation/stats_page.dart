@@ -146,6 +146,7 @@ class _StatsPageState extends ConsumerState<StatsPage> {
                           totalAnswers: 0,
                           xpEarned: 0,
                           goalProgress: 0.0,
+                          hasStudied: false,
                         ),
                     historyRecords: historyRecords,
                     heatmapYear: _heatmapYear,

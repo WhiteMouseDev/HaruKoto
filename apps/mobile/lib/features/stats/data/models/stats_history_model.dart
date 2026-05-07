@@ -19,6 +19,13 @@ class StatsHistoryRecord {
     required this.xpEarned,
   });
 
+  bool get hasStudyActivity =>
+      wordsStudied > 0 ||
+      quizzesCompleted > 0 ||
+      conversationCount > 0 ||
+      xpEarned > 0 ||
+      studyTimeSeconds > 0;
+
   factory StatsHistoryRecord.fromJson(Map<String, dynamic> json) {
     return StatsHistoryRecord(
       date: json['date'] as String? ?? '',
