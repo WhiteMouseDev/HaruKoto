@@ -73,7 +73,7 @@
       "register": "polite",
       "targetSkills": ["form_recall", "context_selection", "contrast"],
       "exampleIds": ["ex-ku-naru-ni-naru-001"],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N5", "order": 60 }],
       "contrastMetadataIds": ["gmv2-n5-na-noun-ni-naru"],
       "audioPolicy": {
         "audioTargetType": "grammar",
@@ -100,7 +100,7 @@
       "register": "polite",
       "targetSkills": ["form_recall", "context_selection", "contrast"],
       "exampleIds": ["ex-ku-naru-ni-naru-001"],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N5", "order": 60 }],
       "contrastMetadataIds": ["gmv2-n5-i-adj-ku-naru"],
       "audioPolicy": {
         "audioTargetType": "grammar",

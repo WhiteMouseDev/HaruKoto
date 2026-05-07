@@ -543,6 +543,13 @@
     },
     {
       "topicId": "topic-ku-naru-ni-naru",
+      "grammarLevel": "N5",
+      "grammarOrder": 60,
+      "matchType": "exact",
+      "notesKo": "PDF 058 くなる・になる coverage anchor"
+    },
+    {
+      "topicId": "topic-ku-naru-ni-naru",
       "grammarLevel": "N4",
       "grammarOrder": 8,
       "matchType": "related",
