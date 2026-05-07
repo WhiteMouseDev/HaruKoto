@@ -202,8 +202,8 @@ const GRAMMAR_MAPPINGS = {
     ['N3', 23, 'related'],
   ],
   '035': [
-    ['N5', 28, 'partial'],
-    ['N5', 37, 'partial'],
+    ['N5', 37, 'exact'],
+    ['N5', 28, 'related'],
   ],
   '036': [
     ['N5', 49, 'partial'],

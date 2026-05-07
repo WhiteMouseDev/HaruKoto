@@ -1418,12 +1418,12 @@
     "blockerCodes": [
       "ambiguous_or_partial_grammar_mapping"
     ],
-    "decision": "NEEDS_TOPIC_SPLIT",
-    "selectedCandidateIndex": null,
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
     "selected": {
       "lookupType": "grammar_level_order",
-      "jlptLevel": null,
-      "grammarOrder": null
+      "jlptLevel": "N5",
+      "grammarOrder": 37
     },
     "candidates": [
       {
@@ -1433,10 +1433,10 @@
         "topicId": "topic-no-functions",
         "adminField": "pattern",
         "jlptLevel": "N5",
-        "grammarOrder": 28,
-        "contentLabel": "〜のが好きです",
-        "meaningKo": "~하는 것을 좋아합니다",
-        "matchType": "partial",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "exact",
         "noteKo": "PDF 035 の coverage anchor"
       },
       {
@@ -1446,14 +1446,14 @@
         "topicId": "topic-no-functions",
         "adminField": "pattern",
         "jlptLevel": "N5",
-        "grammarOrder": 37,
-        "contentLabel": "〜の",
-        "meaningKo": "~의 (소유 조사)",
-        "matchType": "partial",
+        "grammarOrder": 28,
+        "contentLabel": "〜のが好きです",
+        "meaningKo": "~하는 것을 좋아합니다",
+        "matchType": "related",
         "noteKo": "PDF 035 の coverage anchor"
       }
     ],
-    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+    "reviewerNotes": "PDF 035 の topic은 소유 조사 〜の을 primary TTS source로 승인한다. 동사 명사화 〜のが好きです와 설명 のだ/んです는 split topic으로 분리한다."
   },
   {
     "reviewId": "tts-map-tts-no-functions-example-sentence",
@@ -1470,12 +1470,12 @@
     "blockerCodes": [
       "ambiguous_or_partial_grammar_mapping"
     ],
-    "decision": "NEEDS_TOPIC_SPLIT",
-    "selectedCandidateIndex": null,
+    "decision": "APPROVED",
+    "selectedCandidateIndex": 0,
     "selected": {
       "lookupType": "grammar_level_order",
-      "jlptLevel": null,
-      "grammarOrder": null
+      "jlptLevel": "N5",
+      "grammarOrder": 37
     },
     "candidates": [
       {
@@ -1485,10 +1485,10 @@
         "topicId": "topic-no-functions",
         "adminField": "example_sentences",
         "jlptLevel": "N5",
-        "grammarOrder": 28,
-        "contentLabel": "〜のが好きです",
-        "meaningKo": "~하는 것을 좋아합니다",
-        "matchType": "partial",
+        "grammarOrder": 37,
+        "contentLabel": "〜の",
+        "meaningKo": "~의 (소유 조사)",
+        "matchType": "exact",
         "noteKo": "PDF 035 の coverage anchor"
       },
       {
@@ -1498,14 +1498,14 @@
         "topicId": "topic-no-functions",
         "adminField": "example_sentences",
         "jlptLevel": "N5",
-        "grammarOrder": 37,
-        "contentLabel": "〜の",
-        "meaningKo": "~의 (소유 조사)",
-        "matchType": "partial",
+        "grammarOrder": 28,
+        "contentLabel": "〜のが好きです",
+        "meaningKo": "~하는 것을 좋아합니다",
+        "matchType": "related",
         "noteKo": "PDF 035 の coverage anchor"
       }
     ],
-    "reviewerNotes": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다."
+    "reviewerNotes": "PDF 035 の topic은 소유 조사 〜の을 primary TTS source로 승인한다. 동사 명사화 〜のが好きです와 설명 のだ/んです는 split topic으로 분리한다."
   },
   {
     "reviewId": "tts-map-tts-verb-connection-forms-pattern",
