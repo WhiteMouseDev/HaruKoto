@@ -1147,11 +1147,11 @@
       "mappedGrammarOrders": [
         {
           "level": "N5",
-          "order": 28
+          "order": 37
         },
         {
           "level": "N5",
-          "order": 37
+          "order": 28
         }
       ],
       "mappedLessonIds": [],
@@ -1168,7 +1168,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "소유/명사화/설명 용법을 분리한다."
+      "notesKo": "소유 조사 〜の을 primary row로 두고, 동사 명사화 〜のが好きです와 설명 のだ/んです는 세부 topic으로 분리한다."
     },
     {
       "topicId": "topic-verb-connection-forms",

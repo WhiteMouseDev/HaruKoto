@@ -313,15 +313,15 @@
     {
       "topicId": "topic-no-functions",
       "grammarLevel": "N5",
-      "grammarOrder": 28,
-      "matchType": "partial",
+      "grammarOrder": 37,
+      "matchType": "exact",
       "notesKo": "PDF 035 の coverage anchor"
     },
     {
       "topicId": "topic-no-functions",
       "grammarLevel": "N5",
-      "grammarOrder": 37,
-      "matchType": "partial",
+      "grammarOrder": 28,
+      "matchType": "related",
       "notesKo": "PDF 035 の coverage anchor"
     },
     {

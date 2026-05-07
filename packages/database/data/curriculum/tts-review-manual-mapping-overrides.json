@@ -211,6 +211,32 @@
       "notesKo": "후보 2개 중 N4 #23 〜なら만 exact이고 나머지는 related로 확인. pattern TTS는 exact grammar row를 사용한다."
     },
     {
+      "targetId": "tts-no-functions-example-sentence",
+      "topicId": "topic-no-functions",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "example_sentences",
+      "jlptLevel": "N5",
+      "grammarOrder": 37,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "PDF 035 の topic은 소유 조사 〜の을 primary TTS source로 승인한다. 동사 명사화 〜のが好きです와 설명 のだ/んです는 split topic으로 분리한다."
+    },
+    {
+      "targetId": "tts-no-functions-pattern",
+      "topicId": "topic-no-functions",
+      "contentType": "grammar",
+      "lookupType": "grammar_level_order",
+      "adminField": "pattern",
+      "jlptLevel": "N5",
+      "grammarOrder": 37,
+      "decisionStatus": "approved",
+      "sourceMatchType": "exact",
+      "resolutionType": "exact_mapping",
+      "notesKo": "PDF 035 の topic은 소유 조사 〜の을 primary TTS source로 승인한다. 동사 명사화 〜のが好きです와 설명 のだ/んです는 split topic으로 분리한다."
+    },
+    {
       "targetId": "tts-noni-example-sentence",
       "topicId": "topic-noni",
       "contentType": "grammar",
@@ -915,62 +941,6 @@
           "noteKo": "PDF 058 くなる・になる coverage anchor",
           "grammarOrder": 5,
           "meaningKo": "~하게 되다 / ~할 수 있게 되다"
-        }
-      ]
-    },
-    {
-      "targetId": "tts-no-functions-example-sentence",
-      "topicId": "topic-no-functions",
-      "contentType": "grammar",
-      "adminField": "example_sentences",
-      "decisionStatus": "needs_topic_split",
-      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
-      "candidateRefs": [
-        {
-          "lookupType": "grammar_level_order",
-          "jlptLevel": "N5",
-          "matchType": "partial",
-          "contentLabel": "〜のが好きです",
-          "noteKo": "PDF 035 の coverage anchor",
-          "grammarOrder": 28,
-          "meaningKo": "~하는 것을 좋아합니다"
-        },
-        {
-          "lookupType": "grammar_level_order",
-          "jlptLevel": "N5",
-          "matchType": "partial",
-          "contentLabel": "〜の",
-          "noteKo": "PDF 035 の coverage anchor",
-          "grammarOrder": 37,
-          "meaningKo": "~의 (소유 조사)"
-        }
-      ]
-    },
-    {
-      "targetId": "tts-no-functions-pattern",
-      "topicId": "topic-no-functions",
-      "contentType": "grammar",
-      "adminField": "pattern",
-      "decisionStatus": "needs_topic_split",
-      "notesKo": "복수의 non-exact 후보가 있어 topic split 또는 stronger topic map이 필요하다.",
-      "candidateRefs": [
-        {
-          "lookupType": "grammar_level_order",
-          "jlptLevel": "N5",
-          "matchType": "partial",
-          "contentLabel": "〜のが好きです",
-          "noteKo": "PDF 035 の coverage anchor",
-          "grammarOrder": 28,
-          "meaningKo": "~하는 것을 좋아합니다"
-        },
-        {
-          "lookupType": "grammar_level_order",
-          "jlptLevel": "N5",
-          "matchType": "partial",
-          "contentLabel": "〜の",
-          "noteKo": "PDF 035 の coverage anchor",
-          "grammarOrder": 37,
-          "meaningKo": "~의 (소유 조사)"
         }
       ]
     },
