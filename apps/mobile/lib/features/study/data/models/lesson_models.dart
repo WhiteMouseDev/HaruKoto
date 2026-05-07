@@ -224,6 +224,7 @@ class LessonQuestionModel {
   final String? cognitiveLevel;
   final String prompt;
   final List<QuizOptionModel>? options;
+  final String? correctAnswer;
   final List<String>? tokens; // SENTENCE_REORDER
   final String? explanation;
 
@@ -233,6 +234,7 @@ class LessonQuestionModel {
     this.cognitiveLevel,
     required this.prompt,
     this.options,
+    this.correctAnswer,
     this.tokens,
     this.explanation,
   });
@@ -246,6 +248,7 @@ class LessonQuestionModel {
       options: (json['options'] as List<dynamic>?)
           ?.map((e) => QuizOptionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      correctAnswer: json['correctAnswer'] as String?,
       tokens:
           (json['tokens'] as List<dynamic>?)?.map((e) => e as String).toList(),
       explanation: json['explanation'] as String?,

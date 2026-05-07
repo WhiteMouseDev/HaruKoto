@@ -34,6 +34,35 @@ class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
     }).toList();
   }
 
+  String _partOfSpeechLabel(String value) {
+    switch (value.trim().toUpperCase()) {
+      case 'NOUN':
+        return '명사';
+      case 'VERB':
+        return '동사';
+      case 'ADJECTIVE':
+      case 'I_ADJECTIVE':
+      case 'NA_ADJECTIVE':
+        return '형용사';
+      case 'ADVERB':
+        return '부사';
+      case 'PRONOUN':
+        return '대명사';
+      case 'PARTICLE':
+        return '조사';
+      case 'EXPRESSION':
+        return '표현';
+      case 'PHRASE':
+        return '구문';
+      case 'INTERJECTION':
+        return '감탄사';
+      case 'CONJUNCTION':
+        return '접속사';
+      default:
+        return value;
+    }
+  }
+
   void _next() {
     final vocab = _uniqueVocab;
     if (_currentIndex < vocab.length - 1) {
@@ -179,7 +208,7 @@ class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
                           ),
                           const SizedBox(height: AppSizes.md),
                           Text(
-                            item.partOfSpeech,
+                            _partOfSpeechLabel(item.partOfSpeech),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.lightSubtext,
                             ),

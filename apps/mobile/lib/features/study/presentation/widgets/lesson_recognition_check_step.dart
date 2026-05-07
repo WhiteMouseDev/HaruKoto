@@ -86,27 +86,85 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
     );
   }
 
-  Color _optionBgColor(QuizOptionModel option) {
+  bool _hasAnswerKey(LessonQuestionModel question) =>
+      question.correctAnswer != null && question.correctAnswer!.isNotEmpty;
+
+  bool _isCorrectOption(LessonQuestionModel question, QuizOptionModel option) =>
+      _hasAnswerKey(question) && option.id == question.correctAnswer;
+
+  bool _isSelectedCorrect(LessonQuestionModel question) =>
+      _hasAnswerKey(question) && _selected == question.correctAnswer;
+
+  QuizOptionModel? _correctOption(LessonQuestionModel question) {
+    if (!_hasAnswerKey(question)) return null;
+    for (final option in question.options ?? const <QuizOptionModel>[]) {
+      if (option.id == question.correctAnswer) return option;
+    }
+    return null;
+  }
+
+  Color _optionBgColor(LessonQuestionModel question, QuizOptionModel option) {
+    if (_selected == null) return AppColors.lightCard;
     if (_selected == option.id) {
-      return AppColors.sakuraTrack;
+      if (!_hasAnswerKey(question)) return AppColors.sakuraTrack;
+      return _isSelectedCorrect(question)
+          ? AppColors.quizCorrectBg
+          : AppColors.quizWrongBg;
+    }
+    if (_isCorrectOption(question, option)) {
+      return AppColors.quizCorrectBg.withValues(alpha: 0.75);
     }
     return AppColors.lightCard;
   }
 
-  Color _optionBorderColor(QuizOptionModel option) {
-    if (_selected == option.id) return AppColors.sakura;
+  Color _optionBorderColor(
+    LessonQuestionModel question,
+    QuizOptionModel option,
+  ) {
+    if (_selected == null) return AppColors.lightBorder;
+    if (_selected == option.id) {
+      if (!_hasAnswerKey(question)) return AppColors.sakura;
+      return _isSelectedCorrect(question)
+          ? AppColors.quizCorrectText
+          : AppColors.quizWrongText;
+    }
+    if (_isCorrectOption(question, option)) return AppColors.quizCorrectText;
     return AppColors.lightBorder;
+  }
+
+  IconData? _optionIcon(LessonQuestionModel question, QuizOptionModel option) {
+    if (_selected == null) return null;
+    if (_selected == option.id) {
+      if (!_hasAnswerKey(question)) return LucideIcons.check;
+      return _isSelectedCorrect(question)
+          ? LucideIcons.checkCircle2
+          : LucideIcons.xCircle;
+    }
+    if (_isCorrectOption(question, option)) return LucideIcons.checkCircle2;
+    return null;
+  }
+
+  Color _optionIconColor(LessonQuestionModel question, QuizOptionModel option) {
+    if (_selected == option.id && _hasAnswerKey(question)) {
+      return _isSelectedCorrect(question)
+          ? AppColors.quizCorrectText
+          : AppColors.quizWrongText;
+    }
+    if (_isCorrectOption(question, option)) return AppColors.quizCorrectText;
+    return AppColors.sakura;
   }
 
   void _select(String id) {
     setState(() => _selected = id);
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      widget.onAnswer({
-        'order': widget.questions[widget.currentIndex].order,
-        'selectedAnswer': _selected,
-        'responseMs': 0,
-      });
+  }
+
+  void _continue() {
+    final selected = _selected;
+    if (selected == null) return;
+    widget.onAnswer({
+      'order': widget.questions[widget.currentIndex].order,
+      'selectedAnswer': selected,
+      'responseMs': 0,
     });
   }
 
@@ -114,6 +172,23 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final question = widget.questions[widget.currentIndex];
+    final selectedCorrect = _isSelectedCorrect(question);
+    final correctOption = _correctOption(question);
+    final feedbackAccent = !_hasAnswerKey(question)
+        ? AppColors.sakura
+        : selectedCorrect
+            ? AppColors.quizCorrectText
+            : AppColors.quizWrongText;
+    final feedbackBg = !_hasAnswerKey(question)
+        ? AppColors.sakuraTrack
+        : selectedCorrect
+            ? AppColors.quizCorrectBg
+            : AppColors.quizWrongBg;
+    final feedbackTitle = !_hasAnswerKey(question)
+        ? '확인했어요'
+        : selectedCorrect
+            ? '정답이에요!'
+            : '아쉬워요';
 
     return Padding(
       padding: const EdgeInsets.all(AppSizes.md),
@@ -179,10 +254,10 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
                     width: double.infinity,
                     padding: const EdgeInsets.all(AppSizes.md),
                     decoration: BoxDecoration(
-                      color: _optionBgColor(option),
+                      color: _optionBgColor(question, option),
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                       border: Border.all(
-                        color: _optionBorderColor(option),
+                        color: _optionBorderColor(question, option),
                         width: _selected == option.id ? 1.5 : 1.0,
                       ),
                     ),
@@ -196,12 +271,12 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
                             ),
                           ),
                         ),
-                        if (_selected == option.id) ...[
+                        if (_optionIcon(question, option) != null) ...[
                           const SizedBox(width: AppSizes.sm),
-                          const Icon(
-                            LucideIcons.check,
+                          Icon(
+                            _optionIcon(question, option),
                             size: 18,
-                            color: AppColors.sakura,
+                            color: _optionIconColor(question, option),
                           ),
                         ],
                       ],
@@ -211,37 +286,94 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
               ),
             );
           }),
-          if (_selected != null && question.explanation != null) ...[
+          if (_selected != null) ...[
             const SizedBox(height: AppSizes.md),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppSizes.gap),
               decoration: BoxDecoration(
-                color: AppColors.sakuraTrack,
+                color: feedbackBg,
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                border:
+                    Border.all(color: feedbackAccent.withValues(alpha: 0.2)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    LucideIcons.lightbulb,
+                  Icon(
+                    !_hasAnswerKey(question)
+                        ? LucideIcons.lightbulb
+                        : selectedCorrect
+                            ? LucideIcons.checkCircle2
+                            : LucideIcons.xCircle,
                     size: 16,
-                    color: AppColors.sakura,
+                    color: feedbackAccent,
                   ),
                   const SizedBox(width: AppSizes.sm),
                   Expanded(
-                    child: Text(
-                      question.explanation!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightText,
-                        height: 1.4,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          feedbackTitle,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: feedbackAccent,
+                            fontWeight: FontWeight.w700,
+                            height: 1.4,
+                          ),
+                        ),
+                        if (!selectedCorrect && correctOption != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            '정답: ${correctOption.text}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.lightText,
+                              fontWeight: FontWeight.w600,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                        if (question.explanation != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            question.explanation!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.lightText,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ],
+          const Spacer(),
+          SafeArea(
+            top: false,
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: _selected == null ? null : _continue,
+                icon: const Icon(LucideIcons.chevronRight),
+                label: const Text('다음으로'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.sakura,
+                  disabledBackgroundColor:
+                      AppColors.lightBorder.withValues(alpha: 0.5),
+                  foregroundColor: AppColors.onGradient,
+                  disabledForegroundColor: AppColors.lightSubtext,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

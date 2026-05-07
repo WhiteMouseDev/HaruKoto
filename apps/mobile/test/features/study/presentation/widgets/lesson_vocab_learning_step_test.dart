@@ -57,4 +57,54 @@ void main() {
     expect(button.vocabId, isNull);
     expect(button.text, 'がくせい');
   });
+
+  testWidgets('LessonVocabLearningStep shows Korean part-of-speech labels',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: LessonVocabLearningStep(
+            vocabItems: const [
+              VocabItemModel(
+                id: 'vocab-1',
+                word: 'はじめまして',
+                reading: 'はじめまして',
+                meaningKo: '처음 뵙겠습니다',
+                partOfSpeech: 'EXPRESSION',
+              ),
+            ],
+            onNext: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('표현'), findsOneWidget);
+    expect(find.text('EXPRESSION'), findsNothing);
+  });
+
+  testWidgets('LessonVocabLearningStep normalizes lowercase part-of-speech',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: LessonVocabLearningStep(
+            vocabItems: const [
+              VocabItemModel(
+                id: 'vocab-1',
+                word: '私',
+                reading: 'わたし',
+                meaningKo: '저',
+                partOfSpeech: 'pronoun',
+              ),
+            ],
+            onNext: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('대명사'), findsOneWidget);
+    expect(find.text('pronoun'), findsNothing);
+  });
 }

@@ -23,6 +23,7 @@ void main() {
                     QuizOptionModel(id: 'a', text: '안녕하세요'),
                     QuizOptionModel(id: 'b', text: '처음 뵙겠습니다'),
                   ],
+                  correctAnswer: 'b',
                 ),
               ],
               currentIndex: 0,
@@ -35,10 +36,63 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('처음 뵙겠습니다'));
-      await tester.pump(const Duration(milliseconds: 801));
+      await tester.pump();
+
+      expect(answer, isNull);
+      expect(find.text('정답이에요!'), findsOneWidget);
+      expect(find.text('다음으로'), findsOneWidget);
+
+      await tester.tap(find.text('다음으로'));
+      await tester.pump();
 
       expect(answer?['order'], 2);
       expect(answer?['selectedAnswer'], 'b');
+    });
+
+    testWidgets('recognition step distinguishes incorrect feedback',
+        (tester) async {
+      Map<String, dynamic>? answer;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: LessonRecognitionCheckStep(
+              questions: const [
+                LessonQuestionModel(
+                  order: 2,
+                  type: 'VOCAB_MCQ',
+                  prompt: '「はじめまして」の 의미는?',
+                  options: [
+                    QuizOptionModel(id: 'a', text: '안녕하세요'),
+                    QuizOptionModel(id: 'b', text: '처음 뵙겠습니다'),
+                  ],
+                  correctAnswer: 'b',
+                  explanation: '첫 만남에서 쓰는 표현이에요.',
+                ),
+              ],
+              currentIndex: 0,
+              totalSteps: 8,
+              onAnswer: (value) => answer = value,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('안녕하세요'));
+      await tester.pump();
+
+      expect(answer, isNull);
+      expect(find.text('아쉬워요'), findsOneWidget);
+      expect(find.text('정답: 처음 뵙겠습니다'), findsOneWidget);
+      expect(find.text('첫 만남에서 쓰는 표현이에요.'), findsOneWidget);
+      expect(find.text('다음으로'), findsOneWidget);
+
+      await tester.tap(find.text('다음으로'));
+      await tester.pump();
+
+      expect(answer?['order'], 2);
+      expect(answer?['selectedAnswer'], 'a');
     });
 
     testWidgets('matching step completes after all pairs are matched',
@@ -130,6 +184,66 @@ void main() {
 
       expect(answer?['order'], 5);
       expect(answer?['submittedOrder'], ['私は', '学生', 'です']);
+    });
+
+    testWidgets('sentence reorder compacts after removing selected token',
+        (tester) async {
+      Map<String, dynamic>? answer;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: LessonSentenceReorderStep(
+              questions: const [
+                LessonQuestionModel(
+                  order: 5,
+                  type: 'SENTENCE_REORDER',
+                  prompt: '문장을 완성하세요',
+                  tokens: ['私は', '学生', 'です'],
+                ),
+              ],
+              currentIndex: 0,
+              totalSteps: 8,
+              vocabItems: const [],
+              onAnswer: (value) => answer = value,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('私は'));
+      await tester.pump();
+      await tester.tap(find.text('学生'));
+      await tester.pump();
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is LongPressDraggable<int>,
+        ),
+        findsNWidgets(2),
+      );
+      final firstTargetTopLeft = tester.getTopLeft(
+        find.byKey(const ValueKey('answer-target-0')),
+      );
+      final secondTargetTopLeft = tester.getTopLeft(
+        find.byKey(const ValueKey('answer-target-1')),
+      );
+      expect(secondTargetTopLeft.dy, firstTargetTopLeft.dy);
+      expect(secondTargetTopLeft.dx, greaterThan(firstTargetTopLeft.dx));
+
+      await tester.tap(find.text('私は'));
+      await tester.pump();
+
+      expect(find.text('선택 1/3'), findsOneWidget);
+
+      await tester.tap(find.text('です'));
+      await tester.pump();
+      await tester.tap(find.text('私は'));
+      await tester.pump();
+      await tester.tap(find.text('확인'));
+      await tester.pump(const Duration(milliseconds: 301));
+
+      expect(answer?['submittedOrder'], ['学生', 'です', '私は']);
     });
   });
 }
