@@ -16,6 +16,7 @@ import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
+import 'widgets/lesson_continue_banner.dart';
 import 'widgets/study_skeleton.dart';
 
 /// Represents a study category tab.
@@ -198,8 +199,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
-                    child: _RecommendedLessonCard(
+                    child: LessonContinueBanner(
                       target: recommendedLesson,
+                      compact: true,
                     ),
                   ),
                 ),
@@ -466,153 +468,6 @@ class _ReviewIdleBar extends StatelessWidget {
               const Icon(LucideIcons.arrowRight,
                   size: 18, color: AppColors.primaryStrong),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RecommendedLessonCard extends StatelessWidget {
-  const _RecommendedLessonCard({required this.target});
-
-  final RecommendedLessonTarget target;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isLight = theme.brightness == Brightness.light;
-    final cardColor =
-        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
-    final borderColor =
-        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
-    final lesson = target.lesson;
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        onTap: () => context.push('/study/lessons/${lesson.id}'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(color: borderColor),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: AppColors.sakuraTrack,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  lesson.status == 'IN_PROGRESS'
-                      ? LucideIcons.playCircle
-                      : LucideIcons.sparkles,
-                  size: 22,
-                  color: AppColors.sakura,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.sakuraTrack,
-                        borderRadius: BorderRadius.circular(
-                          AppSizes.radiusFull,
-                        ),
-                      ),
-                      child: Text(
-                        target.reason,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.sakura,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      target.lesson.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Ch.${target.chapter.chapterNo} · ${lesson.estimatedMinutes}분 · ${lesson.topic}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightSubtext,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () => context.push('/study/lessons'),
-                            icon: const Icon(LucideIcons.list, size: 16),
-                            label: const Text('전체 레슨'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.sakura,
-                              side: const BorderSide(
-                                color: AppColors.lightBorderStrong,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: () =>
-                                context.push('/study/lessons/${lesson.id}'),
-                            icon: Icon(
-                              lesson.status == 'IN_PROGRESS'
-                                  ? LucideIcons.playCircle
-                                  : LucideIcons.arrowRight,
-                              size: 16,
-                            ),
-                            label: Text(
-                              lesson.status == 'IN_PROGRESS' ? '이어하기' : '시작하기',
-                            ),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.sakura,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
