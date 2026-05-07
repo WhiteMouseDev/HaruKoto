@@ -919,24 +919,6 @@
       ]
     },
     {
-      "targetId": "tts-mono-functions-example-sentence",
-      "topicId": "topic-mono-functions",
-      "contentType": "grammar",
-      "adminField": "example_sentences",
-      "decisionStatus": "needs_mapping",
-      "notesKo": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다.",
-      "candidateRefs": []
-    },
-    {
-      "targetId": "tts-mono-functions-pattern",
-      "topicId": "topic-mono-functions",
-      "contentType": "grammar",
-      "adminField": "pattern",
-      "decisionStatus": "needs_mapping",
-      "notesKo": "현재 topic map 후보가 없어 grammar/vocabulary mapping 보강이 먼저 필요하다.",
-      "candidateRefs": []
-    },
-    {
       "targetId": "tts-no-functions-example-sentence",
       "topicId": "topic-no-functions",
       "contentType": "grammar",

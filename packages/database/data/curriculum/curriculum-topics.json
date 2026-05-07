@@ -3496,7 +3496,7 @@
     {
       "topicId": "topic-mono-functions",
       "titleKo": "もの",
-      "canonicalPattern": "〜もの",
+      "canonicalPattern": "〜ものだ",
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
@@ -3507,7 +3507,12 @@
           "ref": "099"
         }
       ],
-      "mappedGrammarOrders": [],
+      "mappedGrammarOrders": [
+        {
+          "level": "N4",
+          "order": 49
+        }
+      ],
       "mappedLessonIds": [],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
@@ -3522,7 +3527,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "ものは/ものだ 등 세부 topic을 분리한다."
+      "notesKo": "일반 규범의 ものだ를 primary row로 두고, 이유/감탄/회상 もの와 역접 ものの은 세부 topic으로 분리한다."
     },
     {
       "topicId": "topic-hazu-da",

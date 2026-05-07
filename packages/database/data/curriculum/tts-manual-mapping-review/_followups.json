@@ -1,59 +1,24 @@
 {
   "schemaVersion": 1,
   "status": "draft",
-  "generatedAt": "2026-05-06T07:06:26.892Z",
+  "generatedAt": "2026-05-07T00:25:16.951Z",
   "sourceReviewDir": "data/curriculum/tts-manual-mapping-review",
   "summary": {
-    "totalRows": 88,
+    "totalRows": 86,
     "approvedRows": 42,
     "pendingRows": 0,
-    "unresolvedRows": 46,
-    "followupGroups": 21,
+    "unresolvedRows": 44,
+    "followupGroups": 20,
     "byDecision": {
       "APPROVED": 42,
       "PENDING": 0,
-      "NEEDS_MAPPING": 2,
+      "NEEDS_MAPPING": 0,
       "NEEDS_TOPIC_SPLIT": 44,
       "NEEDS_PARTIAL_OVERRIDE": 0,
       "REJECTED": 0
     }
   },
   "followups": [
-    {
-      "followupId": "tts-followup-needs-mapping-mono-functions-grammar",
-      "actionType": "add_topic_mapping",
-      "decision": "NEEDS_MAPPING",
-      "contentType": "grammar",
-      "topicId": "topic-mono-functions",
-      "rowCount": 2,
-      "reviewIds": [
-        "tts-map-tts-mono-functions-example-sentence",
-        "tts-map-tts-mono-functions-pattern"
-      ],
-      "targetIds": [
-        "tts-mono-functions-example-sentence",
-        "tts-mono-functions-pattern"
-      ],
-      "audioFields": [
-        "example_sentence",
-        "pattern"
-      ],
-      "adminFields": [
-        "example_sentences",
-        "pattern"
-      ],
-      "blockerCodes": [
-        "topic_grammar_mapping_required"
-      ],
-      "candidateCount": 0,
-      "candidates": [],
-      "recommendedActionKo": "topic map 후보가 없으므로 topic-grammar-map 또는 topic-vocabulary-map에 후보를 추가한다.",
-      "resolutionContract": {
-        "executableDecisionAllowed": false,
-        "expectedResolutionType": "topic_mapping_required",
-        "nextStepKo": "정확한 학습 항목을 source grammar/vocabulary row에 매핑한 뒤 review artifact를 재생성한다."
-      }
-    },
     {
       "followupId": "tts-followup-needs-topic-split-basic-particles-grammar",
       "actionType": "split_topic_or_strengthen_mapping",

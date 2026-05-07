@@ -852,11 +852,11 @@
     {
       "pdfRef": "099",
       "titleKo": "もの",
-      "topicCandidates": ["〜もの", "이유/일반화/감정"],
+      "topicCandidates": ["〜ものだ", "일반 규범", "〜もの", "이유/감정"],
       "inferredLevels": ["N4", "N3"],
       "levelConfidence": "medium",
       "coverageAction": "split_topic",
-      "notesKo": "ものは/ものだ 등 세부 topic을 분리한다."
+      "notesKo": "일반 규범의 ものだ를 primary row로 두고, 이유/감탄/회상 もの와 역접 ものの은 세부 topic으로 분리한다."
     },
     {
       "pdfRef": "100",
