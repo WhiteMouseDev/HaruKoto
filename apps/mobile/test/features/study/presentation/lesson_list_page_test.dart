@@ -48,12 +48,15 @@ void main() {
         ],
       );
 
+      expect(find.text('학습'), findsOneWidget);
       expect(find.text('전체 레슨'), findsOneWidget);
-      expect(find.text('추천 경로와 전체 레슨'), findsOneWidget);
-      expect(find.text('추천은 먼저 펼쳐두고, 관심 있는 주제도 바로 시작할 수 있어요'), findsOneWidget);
-      expect(find.text('추천 레슨 · Ch.1 Lesson 2'), findsOneWidget);
+      expect(find.text('이어갈 위치를 먼저 보여주고, 전체 경로도 함께 확인해요'), findsOneWidget);
+      expect(find.text('추천 레슨 · Ch.1 · 2/2'), findsOneWidget);
+      expect(find.text('바로 시작'), findsOneWidget);
+      expect(find.text('추천 · 이어하기'), findsOneWidget);
+      expect(find.text('다음'), findsOneWidget);
       expect(find.text('Lesson 1'), findsOneWidget);
-      expect(find.text('Lesson 2'), findsOneWidget);
+      expect(find.text('Lesson 2'), findsWidgets);
 
       final viewedEvent = events.singleWhere(
         (event) => event.name == LessonPilotEventNames.lessonListViewed,
