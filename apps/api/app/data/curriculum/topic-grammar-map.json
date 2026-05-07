@@ -878,6 +878,13 @@
       "notesKo": "PDF 096 ばかり coverage anchor"
     },
     {
+      "topicId": "topic-mono-functions",
+      "grammarLevel": "N4",
+      "grammarOrder": 49,
+      "matchType": "exact",
+      "notesKo": "PDF 099 もの coverage anchor"
+    },
+    {
       "topicId": "topic-hazu-da",
       "grammarLevel": "N4",
       "grammarOrder": 13,

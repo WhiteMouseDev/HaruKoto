@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-06T06:35:15.921Z",
+  "generatedAt": "2026-05-07T00:25:16.523Z",
   "outDir": "data/curriculum/tts-manual-mapping-review",
   "includeReady": false,
   "sourceContracts": {
@@ -11,10 +11,10 @@
   "totals": {
     "batches": 2,
     "targets": 174,
-    "readyRows": 86,
-    "manualRows": 88,
+    "readyRows": 88,
+    "manualRows": 86,
     "blockedRows": 0,
-    "writtenRows": 88
+    "writtenRows": 86
   },
   "batches": [
     {
@@ -31,10 +31,10 @@
       "batchId": "tts-review-admin-grammar-fields",
       "contentType": "grammar",
       "targetCount": 156,
-      "readyRows": 80,
-      "manualRows": 76,
+      "readyRows": 82,
+      "manualRows": 74,
       "blockedRows": 0,
-      "writtenRows": 76,
+      "writtenRows": 74,
       "outputFile": "data/curriculum/tts-manual-mapping-review/tts-review-admin-grammar-fields.json"
     }
   ],

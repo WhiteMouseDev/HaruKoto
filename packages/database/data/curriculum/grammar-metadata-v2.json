@@ -316,7 +316,7 @@
       "register": "neutral",
       "targetSkills": ["context_selection", "contrast", "sentence_building"],
       "exampleIds": [],
-      "existingGrammarRefs": [],
+      "existingGrammarRefs": [{ "level": "N4", "order": 49 }],
       "contrastMetadataIds": ["gmv2-n4-mono-da-emotive", "gmv2-n2-monono-concession"],
       "audioPolicy": {
         "audioTargetType": "grammar",
