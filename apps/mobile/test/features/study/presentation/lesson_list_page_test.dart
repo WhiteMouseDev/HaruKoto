@@ -53,7 +53,7 @@ void main() {
       expect(find.text('이어갈 위치를 먼저 보여주고, 전체 경로도 함께 확인해요'), findsOneWidget);
       expect(find.text('추천 레슨 · Ch.1 · 2/2'), findsOneWidget);
       expect(find.text('바로 시작'), findsOneWidget);
-      expect(find.text('추천 · 이어하기'), findsOneWidget);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('다음'), findsOneWidget);
       expect(find.text('Lesson 1'), findsOneWidget);
       expect(find.text('Lesson 2'), findsWidgets);
