@@ -5,8 +5,14 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/lesson_models.dart';
 
+final _kanaTtsTextPattern =
+    RegExp(r'^[\u3040-\u309F\u30A0-\u30FF\u3000-\u303F\uFF66-\uFF9F]+$');
+final _kanjiPattern = RegExp(r'[\u4E00-\u9FFF]');
+
 class LessonDialogueBubble extends StatelessWidget {
   final ScriptLineModel line;
+  final String? lessonId;
+  final int? scriptLineIndex;
   final bool showTranslation;
   final bool isRightAligned;
   final List<String> highlights;
@@ -14,6 +20,8 @@ class LessonDialogueBubble extends StatelessWidget {
   const LessonDialogueBubble({
     super.key,
     required this.line,
+    this.lessonId,
+    this.scriptLineIndex,
     this.showTranslation = true,
     this.isRightAligned = false,
     this.highlights = const [],
@@ -56,11 +64,20 @@ class LessonDialogueBubble extends StatelessWidget {
     return spans;
   }
 
+  bool _canUseKanaTts(String text) {
+    final normalized = text.trim();
+    return normalized.isNotEmpty &&
+        normalized.length <= 10 &&
+        !_kanjiPattern.hasMatch(normalized) &&
+        _kanaTtsTextPattern.hasMatch(normalized);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final crossAxisAlignment =
         isRightAligned ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final hasLessonScriptTarget = lessonId != null && scriptLineIndex != null;
 
     final bubbleRadius = isRightAligned
         ? const BorderRadius.only(
@@ -133,7 +150,14 @@ class LessonDialogueBubble extends StatelessWidget {
                           ),
                         ),
                       ),
-                      TtsPlayButton(text: line.text, iconSize: 16),
+                      if (hasLessonScriptTarget)
+                        TtsPlayButton(
+                          lessonId: lessonId,
+                          scriptLineIndex: scriptLineIndex,
+                          iconSize: 16,
+                        )
+                      else if (_canUseKanaTts(line.text))
+                        TtsPlayButton(text: line.text.trim(), iconSize: 16),
                     ],
                   ),
                   if (showTranslation && line.translation != null) ...[

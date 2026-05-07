@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +15,7 @@ from app.services.tts_generation import (
     TtsUploader,
     tts_generation_lock,
 )
+from app.services.tts_target_resolver import TtsTargetResolverError, resolve_vocabulary_reading_tts_target
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,11 @@ async def generate_vocabulary_tts(
 
     active_generations = _GENERATING if generating is None else generating
     with tts_generation_lock(vocab_id_str, active_generations, error_cls=VocabTtsServiceError):
-        text = _resolve_vocabulary_tts_text(vocab)
+        try:
+            target = resolve_vocabulary_reading_tts_target(vocab)
+        except TtsTargetResolverError as exc:
+            raise VocabTtsServiceError(status_code=exc.status_code, detail=exc.detail) from exc
+        text = target.text
 
         try:
             tts_result = await tts_generator(text)
@@ -76,13 +80,13 @@ async def generate_vocabulary_tts(
         db.add(
             TtsAudio(
                 target_type="vocabulary",
-                target_id=vocab_id_str,
+                target_id=target.target_id,
                 text=text,
                 speed=1.0,
                 provider=tts_result.provider,
                 model=tts_result.model,
                 audio_url=audio_url,
-                field="reading",
+                field=target.field,
             )
         )
 
@@ -90,9 +94,3 @@ async def generate_vocabulary_tts(
         await db.commit()
 
         return VocabTtsResult(audio_url=audio_url)
-
-
-def _resolve_vocabulary_tts_text(vocab: Any) -> str:
-    if vocab.reading and vocab.reading != vocab.word:
-        return str(vocab.reading)
-    return str(vocab.word)

@@ -5,6 +5,8 @@ import '../../core/services/tts_service.dart';
 
 class TtsPlayButton extends StatefulWidget {
   final String? vocabId;
+  final String? lessonId;
+  final int? scriptLineIndex;
   final String? text;
   final String? url;
   final double iconSize;
@@ -12,11 +14,18 @@ class TtsPlayButton extends StatefulWidget {
   const TtsPlayButton({
     super.key,
     this.vocabId,
+    this.lessonId,
+    this.scriptLineIndex,
     this.text,
     this.url,
     this.iconSize = 20,
-  }) : assert(vocabId != null || text != null || url != null,
-            'Either vocabId, text, or url must be provided');
+  }) : assert(
+          vocabId != null ||
+              (lessonId != null && scriptLineIndex != null) ||
+              text != null ||
+              url != null,
+          'Either vocabId, lessonId/scriptLineIndex, text, or url must be provided',
+        );
 
   @override
   State<TtsPlayButton> createState() => _TtsPlayButtonState();
@@ -40,6 +49,9 @@ class _TtsPlayButtonState extends State<TtsPlayButton> {
         await tts.playUrl(widget.url!);
       } else if (widget.vocabId != null) {
         await tts.play(widget.vocabId!);
+      } else if (widget.lessonId != null && widget.scriptLineIndex != null) {
+        await tts.playLessonScriptLine(
+            widget.lessonId!, widget.scriptLineIndex!);
       } else {
         await tts.playText(widget.text!);
       }

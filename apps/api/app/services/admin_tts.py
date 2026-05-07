@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import ClozeQuestion, ConversationScenario, Grammar, SentenceArrangeQuestion, Vocabulary
 from app.models.tts import TtsAudio
+from app.services.tts_target_resolver import TtsTargetResolverError, resolve_content_tts_text
 
 TTS_FIELDS: dict[str, list[str]] = {
     "vocabulary": ["reading", "word", "example_sentence"],
@@ -160,13 +161,7 @@ async def get_admin_tts_map(
 
 def resolve_tts_text(content_type: str, field: str, obj: object) -> str:
     """Extract text value for TTS from a content model instance by field name."""
-    if content_type == "grammar" and field == "example_sentences":
-        sentences = getattr(obj, "example_sentences", None) or []
-        if sentences and isinstance(sentences[0], dict):
-            return str(sentences[0].get("japanese") or sentences[0].get("sentence") or "")
-        return getattr(obj, "pattern", "") or ""
-
-    value = getattr(obj, field, None)
-    if not value:
-        raise AdminTtsServiceError(status_code=422, detail=f"Field '{field}' is empty or unavailable")
-    return str(value)
+    try:
+        return resolve_content_tts_text(content_type, field, obj)
+    except TtsTargetResolverError as exc:
+        raise AdminTtsServiceError(status_code=exc.status_code, detail=exc.detail) from exc

@@ -5901,6 +5901,68 @@
         }
       }
     },
+    "/api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Lesson Script Line Tts",
+        "description": "레슨 대화문 한 줄의 TTS URL을 반환한다.",
+        "operationId": "lesson_script_line_tts_api_v1_lessons__lesson_id__script_lines__line_index__tts_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "line_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Line Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Lesson Script Line Tts Api V1 Lessons  Lesson Id  Script Lines  Line Index  Tts Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/lessons/{lesson_id}": {
       "get": {
         "tags": [
