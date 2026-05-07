@@ -69,8 +69,6 @@ class _LessonChapterListState extends State<LessonChapterList> {
         final chapter = widget.chapters[index];
         return ChapterCard(
           chapter: chapter,
-          isFirst: index == 0,
-          isLast: index == widget.chapters.length - 1,
           recommendedLessonId: widget.recommendedLessonId,
           isExpanded: _expandedChapterId == chapter.id,
           onToggle: () {

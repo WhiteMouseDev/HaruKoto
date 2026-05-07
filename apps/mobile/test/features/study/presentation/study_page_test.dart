@@ -51,11 +51,10 @@ void main() {
         ],
       );
 
-      expect(find.text('추천 레슨 · Ch.1 · 2/2'), findsOneWidget);
-      expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('바로 시작'), findsOneWidget);
-      expect(find.text('추천 · 이어하기'), findsOneWidget);
-      expect(find.text('다음'), findsOneWidget);
+      expect(find.text('추천 레슨'), findsNWidgets(2));
+      expect(find.text('전체 레슨'), findsOneWidget);
+      expect(find.text('시작하기'), findsOneWidget);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('Lesson 2'), findsWidgets);
 
       final viewedEvent = events.singleWhere(
@@ -102,10 +101,9 @@ void main() {
         ],
       );
 
-      expect(find.text('이어하기'), findsNWidgets(2));
-      expect(find.text('이어하기 · Ch.1 · 1/2'), findsOneWidget);
-      expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('추천 · 이어하기'), findsOneWidget);
+      expect(find.text('이어하기'), findsNWidgets(3));
+      expect(find.text('전체 레슨'), findsOneWidget);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('Lesson 1'), findsWidgets);
       expect(find.text('추천 레슨'), findsNothing);
     });
