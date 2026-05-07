@@ -127,6 +127,10 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
   }
 
   Widget _buildAnswerArea() {
+    if (_selected.isEmpty) {
+      return const _EmptyAnswerArea();
+    }
+
     final children = <Widget>[];
 
     for (int index = 0; index < _selected.length; index++) {
@@ -160,7 +164,6 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
                   color: Colors.transparent,
                   child: _AnswerToken(
                     text: token,
-                    index: index,
                     isDragging: true,
                     isHovered: false,
                   ),
@@ -169,7 +172,6 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
                   opacity: 0.3,
                   child: _AnswerToken(
                     text: token,
-                    index: index,
                     isDragging: false,
                     isHovered: false,
                   ),
@@ -184,7 +186,6 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
                     onTap: _submitting ? null : () => _deselectToken(index),
                     child: _AnswerToken(
                       text: token,
-                      index: index,
                       isDragging: false,
                       isHovered: isHovered,
                     ),
@@ -192,29 +193,6 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
                 ),
               );
             },
-          ),
-        ),
-      );
-    }
-
-    for (int index = _selected.length; index < _correctTokenCount; index++) {
-      children.add(
-        Container(
-          constraints: const BoxConstraints(minHeight: 48, minWidth: 56),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.lightCard,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.lightBorder),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            '${index + 1}',
-            style: TextStyle(
-              color: AppColors.lightSubtext.withValues(alpha: 0.55),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
           ),
         ),
       );
@@ -373,77 +351,71 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
   }
 }
 
+class _EmptyAnswerArea extends StatelessWidget {
+  const _EmptyAnswerArea();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          key: const ValueKey('answer-empty-line'),
+          height: 1,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.lightBorder.withValues(alpha: 0.65),
+            borderRadius: BorderRadius.circular(1),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _AnswerToken extends StatelessWidget {
   final String text;
-  final int index;
   final bool isDragging;
   final bool isHovered;
 
   const _AnswerToken({
     required this.text,
-    required this.index,
     required this.isDragging,
     required this.isHovered,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          constraints: const BoxConstraints(minHeight: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          decoration: BoxDecoration(
-            color:
-                isHovered ? AppColors.purpleContainer : AppColors.purpleTrack,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.purple,
-              width: isHovered ? 2.0 : 1.5,
-            ),
-            boxShadow: isDragging
-                ? [
-                    BoxShadow(
-                      color: AppColors.purple.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              color: AppColors.lightText,
-              fontSize: isDragging ? 17 : 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      constraints: const BoxConstraints(minHeight: 48),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      decoration: BoxDecoration(
+        color: isHovered ? AppColors.purpleContainer : AppColors.purpleTrack,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.purple,
+          width: isHovered ? 2.0 : 1.5,
         ),
-        Positioned(
-          top: -6,
-          left: -6,
-          child: Container(
-            width: 20,
-            height: 20,
-            decoration: const BoxDecoration(
-              color: AppColors.purple,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '${index + 1}',
-              style: const TextStyle(
-                color: AppColors.onGradient,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+        boxShadow: isDragging
+            ? [
+                BoxShadow(
+                  color: AppColors.purple.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: AppColors.lightText,
+          fontSize: isDragging ? 17 : 16,
+          fontWeight: FontWeight.w600,
         ),
-      ],
+      ),
     );
   }
 }

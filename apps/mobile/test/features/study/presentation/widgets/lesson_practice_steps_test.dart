@@ -186,6 +186,35 @@ void main() {
       expect(answer?['submittedOrder'], ['私は', '学生', 'です']);
     });
 
+    testWidgets('sentence reorder starts with a blank answer canvas',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: LessonSentenceReorderStep(
+              questions: const [
+                LessonQuestionModel(
+                  order: 5,
+                  type: 'SENTENCE_REORDER',
+                  prompt: '문장을 완성하세요',
+                  tokens: ['私は', '学生', 'です'],
+                ),
+              ],
+              currentIndex: 0,
+              totalSteps: 8,
+              vocabItems: const [],
+              onAnswer: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byKey(const ValueKey('answer-empty-line')), findsOneWidget);
+      expect(find.byKey(const ValueKey('answer-placeholder-0')), findsNothing);
+      expect(find.byKey(const ValueKey('answer-placeholder-1')), findsNothing);
+      expect(find.byKey(const ValueKey('answer-placeholder-2')), findsNothing);
+    });
+
     testWidgets('sentence reorder compacts after removing selected token',
         (tester) async {
       Map<String, dynamic>? answer;
@@ -230,6 +259,8 @@ void main() {
       );
       expect(secondTargetTopLeft.dy, firstTargetTopLeft.dy);
       expect(secondTargetTopLeft.dx, greaterThan(firstTargetTopLeft.dx));
+      expect(find.text('1'), findsNothing);
+      expect(find.text('2'), findsNothing);
 
       await tester.tap(find.text('私は'));
       await tester.pump();
