@@ -5,6 +5,10 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/lesson_models.dart';
 
+final _kanaTtsTextPattern =
+    RegExp(r'^[\u3040-\u309F\u30A0-\u30FF\u3000-\u303F\uFF66-\uFF9F]+$');
+final _kanjiPattern = RegExp(r'[\u4E00-\u9FFF]');
+
 class LessonDialogueBubble extends StatelessWidget {
   final ScriptLineModel line;
   final bool showTranslation;
@@ -54,6 +58,14 @@ class LessonDialogueBubble extends StatelessWidget {
     }
 
     return spans;
+  }
+
+  bool _canUseKanaTts(String text) {
+    final normalized = text.trim();
+    return normalized.isNotEmpty &&
+        normalized.length <= 10 &&
+        !_kanjiPattern.hasMatch(normalized) &&
+        _kanaTtsTextPattern.hasMatch(normalized);
   }
 
   @override
@@ -133,7 +145,8 @@ class LessonDialogueBubble extends StatelessWidget {
                           ),
                         ),
                       ),
-                      TtsPlayButton(text: line.text, iconSize: 16),
+                      if (_canUseKanaTts(line.text))
+                        TtsPlayButton(text: line.text.trim(), iconSize: 16),
                     ],
                   ),
                   if (showTranslation && line.translation != null) ...[

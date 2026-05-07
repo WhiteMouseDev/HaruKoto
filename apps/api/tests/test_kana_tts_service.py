@@ -79,6 +79,30 @@ async def test_generate_kana_tts_generates_uploads_and_persists() -> None:
 
 
 @pytest.mark.asyncio
+async def test_generate_kana_tts_rejects_vocabulary_word_misuse() -> None:
+    db = _FakeDb([])
+
+    async def fake_generate(text: str) -> FakeTtsResult:
+        raise AssertionError("generator should not be called")
+
+    async def fake_upload(gcs_path: str, audio: bytes) -> str:
+        raise AssertionError("upload should not be called")
+
+    with pytest.raises(KanaTtsServiceError) as exc_info:
+        await generate_kana_tts(
+            db,  # type: ignore[arg-type]
+            text="学生",
+            tts_generator=fake_generate,
+            upload_to_gcs=fake_upload,
+        )
+
+    assert exc_info.value.status_code == 422
+    assert "히라가나/가타카나" in exc_info.value.detail
+    assert db.execute_calls == 0
+    assert db.commit_calls == 0
+
+
+@pytest.mark.asyncio
 async def test_generate_kana_tts_rejects_duplicate_generation() -> None:
     text_hash = _kana_hash("あ")
     db = _FakeDb([_ScalarOneOrNoneResult(None)])

@@ -186,7 +186,8 @@ class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
                           ),
                           const SizedBox(height: AppSizes.md),
                           TtsPlayButton(
-                            text: item.word,
+                            vocabId: item.id.isNotEmpty ? item.id : null,
+                            text: item.id.isEmpty ? item.reading : null,
                             iconSize: 28,
                           ),
                         ],

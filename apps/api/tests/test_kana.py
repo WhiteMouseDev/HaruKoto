@@ -67,6 +67,15 @@ async def test_get_kana_characters(client, mock_kana_char):
 
 
 @pytest.mark.asyncio
+async def test_kana_tts_rejects_kanji_vocabulary_word(client):
+    """Kana TTS is not a vocabulary-word TTS endpoint."""
+    response = await client.post("/api/v1/kana/tts", json={"text": "学生"})
+
+    assert response.status_code == 422
+    assert "히라가나/가타카나" in response.text
+
+
+@pytest.mark.asyncio
 async def test_get_kana_stages(client, mock_user, mock_kana_stage):
     """Test GET /api/v1/kana/stages returns learning stages with user progress."""
     from app.main import app

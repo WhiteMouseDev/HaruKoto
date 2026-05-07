@@ -15,11 +15,11 @@ from app.services.tts_generation import (
     stable_tts_key,
     tts_generation_lock,
 )
+from app.services.tts_target_resolver import KANA_TTS_FIELD, TtsTargetResolverError, resolve_kana_tts_text
 
 logger = logging.getLogger(__name__)
 
 _GENERATING: set[str] = set()
-KANA_TTS_FIELD = "reading"
 
 
 class KanaTtsServiceError(TtsServiceError):
@@ -39,7 +39,12 @@ async def generate_kana_tts(
     upload_to_gcs: TtsUploader,
     generating: set[str] | None = None,
 ) -> KanaTtsResult:
-    text_hash = stable_tts_key(text)
+    try:
+        resolved_text = resolve_kana_tts_text(text)
+    except TtsTargetResolverError as exc:
+        raise KanaTtsServiceError(status_code=exc.status_code, detail=exc.detail) from exc
+
+    text_hash = stable_tts_key(resolved_text)
 
     cached = await db.execute(
         select(TtsAudio).where(
@@ -56,9 +61,9 @@ async def generate_kana_tts(
     active_generations = _GENERATING if generating is None else generating
     with tts_generation_lock(text_hash, active_generations, error_cls=KanaTtsServiceError):
         try:
-            tts_result = await tts_generator(text)
+            tts_result = await tts_generator(resolved_text)
         except RuntimeError:
-            logger.exception("TTS generation failed for text=%r", text)
+            logger.exception("TTS generation failed for text=%r", resolved_text)
             raise KanaTtsServiceError(status_code=502, detail=TTS_GENERATION_FAILED_DETAIL) from None
 
         audio_url = await upload_to_gcs(f"tts/kana/{text_hash}.mp3", tts_result.audio)
@@ -67,7 +72,7 @@ async def generate_kana_tts(
             TtsAudio(
                 target_type="kana",
                 target_id=text_hash,
-                text=text,
+                text=resolved_text,
                 speed=1.0,
                 provider=tts_result.provider,
                 model=tts_result.model,
