@@ -306,6 +306,67 @@ async def test_get_lesson_detail(client, mock_user):
 
 
 @pytest.mark.asyncio
+async def test_lesson_script_line_tts_uses_server_lesson_text(client, mock_user):
+    """POST /lessons/{id}/script-lines/{index}/tts resolves text server-side."""
+    from app.main import app
+
+    lesson_id = uuid.uuid4()
+    lesson = MagicMock()
+    lesson.id = lesson_id
+    lesson.content_jsonb = {
+        "reading": {
+            "script": [
+                {
+                    "speaker": "A",
+                    "voice_id": "voice-a",
+                    "text": "学生です。",
+                }
+            ]
+        }
+    }
+
+    lesson_result = MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+
+    cached_result = MagicMock()
+    cached_result.scalar_one_or_none.return_value = None
+
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=[lesson_result, cached_result])
+    mock_session.add = MagicMock()
+    mock_session.commit = AsyncMock()
+
+    async def override_get_db():
+        yield mock_session
+
+    async def fake_generate_tts(text: str):
+        assert text == "学生です。"
+        return MagicMock(audio=b"mp3", provider="elevenlabs", model="eleven_multilingual_v2")
+
+    async def fake_upload(path: str, audio: bytes):
+        assert path == f"tts/lesson/{lesson_id}/script-line-0.mp3"
+        assert audio == b"mp3"
+        return "https://cdn.example.com/lesson-script.mp3"
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    with (
+        patch("app.routers.lessons.generate_tts", side_effect=fake_generate_tts),
+        patch(
+            "app.routers.lessons.upload_tts_to_gcs",
+            side_effect=fake_upload,
+        ),
+    ):
+        response = await client.post(f"/api/v1/lessons/{lesson_id}/script-lines/0/tts")
+
+    assert response.status_code == 200
+    assert response.json() == {"audioUrl": "https://cdn.example.com/lesson-script.mp3"}
+    assert mock_session.add.call_args.args[0].target_type == "lesson_script_line"
+    assert mock_session.add.call_args.args[0].text == "学生です。"
+    mock_session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
 async def test_start_lesson(client, mock_user):
     """Test POST /api/v1/lessons/{lesson_id}/start returns in-progress status."""
     from app.main import app

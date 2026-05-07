@@ -39,12 +39,14 @@ void showLessonDialogueSheet(BuildContext context, LessonDetailModel detail) {
             ),
           ),
           const SizedBox(height: AppSizes.md),
-          ...detail.content.reading.script.map(
-            (line) => LessonDialogueBubble(
-              line: line,
-              showTranslation: true,
-            ),
-          ),
+          ...detail.content.reading.script.asMap().entries.map(
+                (entry) => LessonDialogueBubble(
+                  line: entry.value,
+                  lessonId: detail.id,
+                  scriptLineIndex: entry.key,
+                  showTranslation: true,
+                ),
+              ),
         ],
       ),
     ),

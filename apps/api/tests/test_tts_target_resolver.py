@@ -9,6 +9,7 @@ from app.services.tts_target_resolver import (
     TtsTargetResolverError,
     resolve_content_tts_text,
     resolve_kana_tts_text,
+    resolve_lesson_script_line_tts_target,
     resolve_vocabulary_reading_tts_target,
 )
 
@@ -37,6 +38,40 @@ def test_resolve_content_tts_text_uses_first_grammar_example_sentence() -> None:
     )
 
     assert resolve_content_tts_text("grammar", "example_sentences", grammar) == "日本語の例文"
+
+
+def test_resolve_lesson_script_line_tts_target_uses_server_content() -> None:
+    lesson_id = uuid.uuid4()
+    content = {
+        "reading": {
+            "script": [
+                {"text": "こんにちは。"},
+                {"text": "学生です。"},
+            ]
+        }
+    }
+
+    target = resolve_lesson_script_line_tts_target(
+        lesson_id=lesson_id,
+        content=content,
+        line_index=1,
+    )
+
+    assert target.target_type == "lesson_script_line"
+    assert target.target_id == f"{lesson_id}:script:1"
+    assert target.field == "script_line"
+    assert target.text == "学生です。"
+
+
+def test_resolve_lesson_script_line_tts_target_rejects_missing_line() -> None:
+    with pytest.raises(TtsTargetResolverError) as exc_info:
+        resolve_lesson_script_line_tts_target(
+            lesson_id=uuid.uuid4(),
+            content={"reading": {"script": []}},
+            line_index=0,
+        )
+
+    assert exc_info.value.status_code == 404
 
 
 def test_resolve_kana_tts_text_rejects_kanji_vocabulary_word() -> None:

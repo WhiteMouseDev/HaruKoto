@@ -18,6 +18,10 @@ class TtsService {
     await _playUrl(() => _fetchVocabUrl(vocabId));
   }
 
+  Future<void> playLessonScriptLine(String lessonId, int lineIndex) async {
+    await _playUrl(() => _fetchLessonScriptLineUrl(lessonId, lineIndex));
+  }
+
   /// Play TTS for arbitrary Japanese text (e.g. kana characters).
   Future<void> playText(String text) async {
     await _playUrl(() => _fetchKanaUrl(text));
@@ -85,6 +89,27 @@ class TtsService {
       return audioUrl;
     } catch (e) {
       debugPrint('[TtsService] fetch kana TTS URL error: $e');
+      return null;
+    }
+  }
+
+  Future<String?> _fetchLessonScriptLineUrl(
+      String lessonId, int lineIndex) async {
+    final cacheKey = 'lesson-script:$lessonId:$lineIndex';
+    if (_urlCache.containsKey(cacheKey)) {
+      return _urlCache[cacheKey];
+    }
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/lessons/$lessonId/script-lines/$lineIndex/tts',
+      );
+      final audioUrl = response.data?['audioUrl'] as String?;
+      if (audioUrl != null) {
+        _urlCache[cacheKey] = audioUrl;
+      }
+      return audioUrl;
+    } catch (e) {
+      debugPrint('[TtsService] fetch lesson script TTS URL error: $e');
       return null;
     }
   }

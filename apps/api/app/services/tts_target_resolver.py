@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -9,6 +10,8 @@ KANA_TTS_FIELD = "reading"
 # Vocabulary words must resolve through vocabulary targets so TTS uses reading.
 _KANA_TTS_TEXT_RE = re.compile(r"^[\u3040-\u309F\u30A0-\u30FF\u3000-\u303F\uFF66-\uFF9F]+$")
 _KANJI_RE = re.compile(r"[\u4E00-\u9FFF]")
+LESSON_SCRIPT_LINE_TTS_TARGET_TYPE = "lesson_script_line"
+LESSON_SCRIPT_LINE_TTS_FIELD = "script_line"
 
 
 class TtsTargetResolverError(Exception):
@@ -52,6 +55,31 @@ def resolve_content_tts_text(content_type: str, field: str, obj: object) -> str:
     return _require_text(getattr(obj, field, None), field=field)
 
 
+def resolve_lesson_script_line_tts_target(
+    *,
+    lesson_id: Any,
+    content: Any,
+    line_index: int,
+) -> ResolvedTtsTarget:
+    """Resolve a lesson dialogue line from server-owned lesson content."""
+    if line_index < 0:
+        raise TtsTargetResolverError(status_code=404, detail="Script line not found")
+
+    reading = _field_value(content, "reading")
+    script = _field_value(reading, "script")
+    if not _is_sequence(script) or line_index >= len(script):
+        raise TtsTargetResolverError(status_code=404, detail="Script line not found")
+
+    line = script[line_index]
+    text = _require_text(_field_value(line, "text"), field=LESSON_SCRIPT_LINE_TTS_FIELD)
+    return ResolvedTtsTarget(
+        target_type=LESSON_SCRIPT_LINE_TTS_TARGET_TYPE,
+        target_id=f"{lesson_id}:script:{line_index}",
+        field=LESSON_SCRIPT_LINE_TTS_FIELD,
+        text=text,
+    )
+
+
 def resolve_kana_tts_text(text: str) -> str:
     """Resolve text for kana-only TTS. Vocabulary words must use /vocab/tts."""
     normalized = text.strip()
@@ -84,3 +112,13 @@ def _optional_text(value: Any) -> str:
     if value is None:
         return ""
     return str(value).strip()
+
+
+def _field_value(obj: Any, field: str) -> Any:
+    if isinstance(obj, Mapping):
+        return obj.get(field)
+    return getattr(obj, field, None)
+
+
+def _is_sequence(value: Any) -> bool:
+    return isinstance(value, Sequence) and not isinstance(value, (bytes, str))

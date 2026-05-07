@@ -176,6 +176,8 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
                       entry.key,
                       LessonDialogueBubble(
                         line: entry.value,
+                        lessonId: widget.detail.id,
+                        scriptLineIndex: entry.key,
                         showTranslation: _showTranslation,
                         isRightAligned:
                             (_speakerIndex[entry.value.speaker] ?? 0) == 1,

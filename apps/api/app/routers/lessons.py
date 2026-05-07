@@ -3,6 +3,7 @@
 GET  /api/v1/lessons/chapters          — 챕터 목록 + 유저 진도
 GET  /api/v1/lessons/review/summary    — SRS 복습 요약 (due/new 카드 수)
 GET  /api/v1/lessons/{lesson_id}       — 레슨 상세 (대화문 + 문제, 정답 제거)
+POST /api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts — 대화문 한 줄 TTS
 POST /api/v1/lessons/{lesson_id}/start — 레슨 시작
 POST /api/v1/lessons/{lesson_id}/submit — 퀴즈 결과 제출
 """
@@ -17,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
+from app.middleware.rate_limit import rate_limit
 from app.models.user import User
 from app.schemas.lesson import (
     ChapterListResponse,
@@ -31,6 +33,7 @@ from app.schemas.lesson import (
     ReviewSummaryResponse,
     VocabItem,
 )
+from app.services.ai import generate_tts
 from app.services.lesson_chapter_query import get_chapters_data
 from app.services.lesson_command import (
     LessonServiceError,
@@ -39,6 +42,9 @@ from app.services.lesson_command import (
 )
 from app.services.lesson_detail_query import get_lesson_detail_data
 from app.services.lesson_review_summary_query import get_review_summary_data
+from app.services.lesson_script_tts import LessonScriptTtsServiceError, generate_lesson_script_line_tts
+from app.services.tts_storage import upload_tts_to_gcs
+from app.utils.constants import RATE_LIMITS
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
 
@@ -116,6 +122,32 @@ async def get_review_summary(
 
 
 # ── GET /{lesson_id} ──
+
+
+@router.post("/{lesson_id}/script-lines/{line_index}/tts", status_code=200)
+async def lesson_script_line_tts(
+    lesson_id: UUID,
+    line_index: int,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, str]:
+    """레슨 대화문 한 줄의 TTS URL을 반환한다."""
+    rl = await rate_limit(f"tts:{user.id}", RATE_LIMITS.AI.max_requests, RATE_LIMITS.AI.window_seconds)
+    if not rl.success:
+        raise HTTPException(status_code=429, detail="요청이 너무 많습니다")
+
+    try:
+        result = await generate_lesson_script_line_tts(
+            db,
+            lesson_id=lesson_id,
+            line_index=line_index,
+            tts_generator=generate_tts,
+            upload_to_gcs=upload_tts_to_gcs,
+        )
+    except LessonScriptTtsServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+    return {"audioUrl": result.audio_url}
 
 
 @router.get("/{lesson_id}", response_model=LessonDetailResponse, status_code=200)

@@ -11,6 +11,8 @@ final _kanjiPattern = RegExp(r'[\u4E00-\u9FFF]');
 
 class LessonDialogueBubble extends StatelessWidget {
   final ScriptLineModel line;
+  final String? lessonId;
+  final int? scriptLineIndex;
   final bool showTranslation;
   final bool isRightAligned;
   final List<String> highlights;
@@ -18,6 +20,8 @@ class LessonDialogueBubble extends StatelessWidget {
   const LessonDialogueBubble({
     super.key,
     required this.line,
+    this.lessonId,
+    this.scriptLineIndex,
     this.showTranslation = true,
     this.isRightAligned = false,
     this.highlights = const [],
@@ -73,6 +77,7 @@ class LessonDialogueBubble extends StatelessWidget {
     final theme = Theme.of(context);
     final crossAxisAlignment =
         isRightAligned ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final hasLessonScriptTarget = lessonId != null && scriptLineIndex != null;
 
     final bubbleRadius = isRightAligned
         ? const BorderRadius.only(
@@ -145,7 +150,13 @@ class LessonDialogueBubble extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (_canUseKanaTts(line.text))
+                      if (hasLessonScriptTarget)
+                        TtsPlayButton(
+                          lessonId: lessonId,
+                          scriptLineIndex: scriptLineIndex,
+                          iconSize: 16,
+                        )
+                      else if (_canUseKanaTts(line.text))
                         TtsPlayButton(text: line.text.trim(), iconSize: 16),
                     ],
                   ),
