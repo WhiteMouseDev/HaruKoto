@@ -11785,12 +11785,22 @@
           "longest": {
             "type": "integer",
             "title": "Longest"
+          },
+          "studiedToday": {
+            "type": "boolean",
+            "title": "Studiedtoday"
+          },
+          "needsActionToday": {
+            "type": "boolean",
+            "title": "Needsactiontoday"
           }
         },
         "type": "object",
         "required": [
           "current",
-          "longest"
+          "longest",
+          "studiedToday",
+          "needsActionToday"
         ],
         "title": "StreakInfo"
       },
@@ -12213,6 +12223,10 @@
           "goalProgress": {
             "type": "number",
             "title": "Goalprogress"
+          },
+          "hasStudied": {
+            "type": "boolean",
+            "title": "Hasstudied"
           }
         },
         "type": "object",
@@ -12222,7 +12236,8 @@
           "correctAnswers",
           "totalAnswers",
           "xpEarned",
-          "goalProgress"
+          "goalProgress",
+          "hasStudied"
         ],
         "title": "TodayStats"
       },
@@ -12973,13 +12988,18 @@
           "xpEarned": {
             "type": "integer",
             "title": "Xpearned"
+          },
+          "hasStudied": {
+            "type": "boolean",
+            "title": "Hasstudied"
           }
         },
         "type": "object",
         "required": [
           "date",
           "wordsStudied",
-          "xpEarned"
+          "xpEarned",
+          "hasStudied"
         ],
         "title": "WeeklyStatItem"
       },

@@ -22,17 +22,21 @@ class TodayStats(CamelModel):
     total_answers: int
     xp_earned: int
     goal_progress: float
+    has_studied: bool
 
 
 class StreakInfo(CamelModel):
     current: int
     longest: int
+    studied_today: bool
+    needs_action_today: bool
 
 
 class WeeklyStatItem(CamelModel):
     date: str
     words_studied: int
     xp_earned: int
+    has_studied: bool
 
 
 class DashboardResponse(CamelModel):

@@ -3950,6 +3950,10 @@ export interface components {
             current: number;
             /** Longest */
             longest: number;
+            /** Studiedtoday */
+            studiedToday: boolean;
+            /** Needsactiontoday */
+            needsActionToday: boolean;
         };
         /** StudyCapabilitiesResponse */
         StudyCapabilitiesResponse: {
@@ -4090,6 +4094,8 @@ export interface components {
             xpEarned: number;
             /** Goalprogress */
             goalProgress: number;
+            /** Hasstudied */
+            hasStudied: boolean;
         };
         /** TtsGenerationStatusSummary */
         TtsGenerationStatusSummary: {
@@ -4332,6 +4338,8 @@ export interface components {
             wordsStudied: number;
             /** Xpearned */
             xpEarned: number;
+            /** Hasstudied */
+            hasStudied: boolean;
         };
         /** WordbookCreateRequest */
         WordbookCreateRequest: {

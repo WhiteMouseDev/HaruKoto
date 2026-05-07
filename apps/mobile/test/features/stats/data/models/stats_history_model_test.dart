@@ -23,6 +23,7 @@ void main() {
       expect(model.conversationCount, 3);
       expect(model.studyTimeSeconds, 3600);
       expect(model.xpEarned, 200);
+      expect(model.hasStudyActivity, true);
     });
 
     test('fromJson handles missing fields with defaults', () {
@@ -35,6 +36,16 @@ void main() {
       expect(model.conversationCount, 0);
       expect(model.studyTimeSeconds, 0);
       expect(model.xpEarned, 0);
+      expect(model.hasStudyActivity, false);
+    });
+
+    test('hasStudyActivity counts xp-only progress', () {
+      final model = StatsHistoryRecord.fromJson({
+        'date': '2024-01-15',
+        'xpEarned': 25,
+      });
+
+      expect(model.hasStudyActivity, true);
     });
   });
 }

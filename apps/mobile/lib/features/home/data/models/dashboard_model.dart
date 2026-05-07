@@ -16,11 +16,15 @@ class DashboardModel {
   });
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
+    final today =
+        TodayStats.fromJson(json['today'] as Map<String, dynamic>? ?? {});
     return DashboardModel(
       showKana: json['showKana'] as bool? ?? false,
-      today: TodayStats.fromJson(json['today'] as Map<String, dynamic>? ?? {}),
-      streak:
-          StreakData.fromJson(json['streak'] as Map<String, dynamic>? ?? {}),
+      today: today,
+      streak: StreakData.fromJson(
+        json['streak'] as Map<String, dynamic>? ?? {},
+        studiedTodayFallback: today.hasStudied,
+      ),
       weeklyStats: (json['weeklyStats'] as List<dynamic>?)
               ?.map((e) => WeeklyStatEntry.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -44,6 +48,7 @@ class TodayStats {
   final int totalAnswers;
   final int xpEarned;
   final double goalProgress;
+  final bool hasStudied;
 
   const TodayStats({
     required this.wordsStudied,
@@ -52,16 +57,22 @@ class TodayStats {
     required this.totalAnswers,
     required this.xpEarned,
     required this.goalProgress,
+    required this.hasStudied,
   });
 
   factory TodayStats.fromJson(Map<String, dynamic> json) {
+    final wordsStudied = json['wordsStudied'] as int? ?? 0;
+    final quizzesCompleted = json['quizzesCompleted'] as int? ?? 0;
+    final xpEarned = json['xpEarned'] as int? ?? 0;
     return TodayStats(
-      wordsStudied: json['wordsStudied'] as int? ?? 0,
-      quizzesCompleted: json['quizzesCompleted'] as int? ?? 0,
+      wordsStudied: wordsStudied,
+      quizzesCompleted: quizzesCompleted,
       correctAnswers: json['correctAnswers'] as int? ?? 0,
       totalAnswers: json['totalAnswers'] as int? ?? 0,
-      xpEarned: json['xpEarned'] as int? ?? 0,
+      xpEarned: xpEarned,
       goalProgress: (json['goalProgress'] as num?)?.toDouble() ?? 0.0,
+      hasStudied: json['hasStudied'] as bool? ??
+          (wordsStudied > 0 || quizzesCompleted > 0 || xpEarned > 0),
     );
   }
 }
@@ -69,13 +80,28 @@ class TodayStats {
 class StreakData {
   final int current;
   final int longest;
+  final bool studiedToday;
+  final bool needsActionToday;
 
-  const StreakData({required this.current, required this.longest});
+  const StreakData({
+    required this.current,
+    required this.longest,
+    required this.studiedToday,
+    required this.needsActionToday,
+  });
 
-  factory StreakData.fromJson(Map<String, dynamic> json) {
+  factory StreakData.fromJson(
+    Map<String, dynamic> json, {
+    bool studiedTodayFallback = false,
+  }) {
+    final current = json['current'] as int? ?? 0;
+    final studiedToday = json['studiedToday'] as bool? ?? studiedTodayFallback;
     return StreakData(
-      current: json['current'] as int? ?? 0,
+      current: current,
       longest: json['longest'] as int? ?? 0,
+      studiedToday: studiedToday,
+      needsActionToday:
+          json['needsActionToday'] as bool? ?? (current > 0 && !studiedToday),
     );
   }
 }
@@ -84,18 +110,24 @@ class WeeklyStatEntry {
   final String date;
   final int wordsStudied;
   final int xpEarned;
+  final bool hasStudied;
 
   const WeeklyStatEntry({
     required this.date,
     required this.wordsStudied,
     required this.xpEarned,
+    required this.hasStudied,
   });
 
   factory WeeklyStatEntry.fromJson(Map<String, dynamic> json) {
+    final wordsStudied = json['wordsStudied'] as int? ?? 0;
+    final xpEarned = json['xpEarned'] as int? ?? 0;
     return WeeklyStatEntry(
       date: json['date'] as String? ?? '',
-      wordsStudied: json['wordsStudied'] as int? ?? 0,
-      xpEarned: json['xpEarned'] as int? ?? 0,
+      wordsStudied: wordsStudied,
+      xpEarned: xpEarned,
+      hasStudied:
+          json['hasStudied'] as bool? ?? (wordsStudied > 0 || xpEarned > 0),
     );
   }
 }

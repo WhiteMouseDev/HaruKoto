@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +27,7 @@ from app.schemas.stats import (
     TodayStats,
     WeeklyStatItem,
 )
-from app.utils.date import get_today_kst
+from app.utils.date import KST, get_today_kst
 
 
 async def get_dashboard_data(
@@ -42,7 +43,7 @@ async def get_dashboard_data(
     return DashboardResponse(
         show_kana=user.show_kana,
         today=_build_today_stats(today_progress, daily_goal=user.daily_goal),
-        streak=StreakInfo(current=user.streak_count, longest=user.longest_streak),
+        streak=_build_streak_info(user=user, today_progress=today_progress, today=today),
         weekly_stats=weekly_stats,
         level_progress=level_progress,
         kana_progress=kana_progress,
@@ -80,6 +81,68 @@ def _build_today_stats(
         total_answers=progress.total_answers if progress else 0,
         xp_earned=progress.xp_earned if progress else 0,
         goal_progress=goal_progress,
+        has_studied=_has_study_activity(progress),
+    )
+
+
+def _build_streak_info(
+    *,
+    user: Any,
+    today_progress: DailyProgress | None,
+    today: date,
+) -> StreakInfo:
+    last_study_day = _last_study_day(getattr(user, "last_study_date", None))
+    studied_today = _has_study_activity(today_progress) or last_study_day == today
+    current_streak = _effective_current_streak(
+        current_streak=getattr(user, "streak_count", 0),
+        last_study_day=last_study_day,
+        today=today,
+    )
+
+    return StreakInfo(
+        current=current_streak,
+        longest=getattr(user, "longest_streak", 0),
+        studied_today=studied_today,
+        needs_action_today=current_streak > 0 and not studied_today,
+    )
+
+
+def _last_study_day(value: date | datetime | None) -> date | None:
+    if isinstance(value, datetime):
+        if value.tzinfo is not None:
+            return value.astimezone(KST).date()
+        return value.date()
+    return value
+
+
+def _effective_current_streak(
+    *,
+    current_streak: int,
+    last_study_day: date | None,
+    today: date,
+) -> int:
+    if last_study_day is None:
+        return 0
+    return current_streak if (today - last_study_day).days <= 1 else 0
+
+
+def _has_study_activity(progress: DailyProgress | None) -> bool:
+    if progress is None:
+        return False
+
+    return any(
+        (getattr(progress, field, 0) or 0) > 0
+        for field in (
+            "words_studied",
+            "quizzes_completed",
+            "conversation_count",
+            "xp_earned",
+            "kana_learned",
+            "grammar_studied",
+            "sentences_studied",
+            "study_time_seconds",
+            "study_minutes",
+        )
     )
 
 
@@ -109,6 +172,7 @@ async def _get_weekly_stats(
                 date=str(day),
                 words_studied=progress.words_studied if progress else 0,
                 xp_earned=progress.xp_earned if progress else 0,
+                has_studied=_has_study_activity(progress),
             )
         )
     return stats

@@ -212,8 +212,14 @@ DashboardModel _dashboard() {
       totalAnswers: 0,
       xpEarned: 0,
       goalProgress: 0,
+      hasStudied: false,
     ),
-    streak: StreakData(current: 0, longest: 0),
+    streak: StreakData(
+      current: 0,
+      longest: 0,
+      studiedToday: false,
+      needsActionToday: false,
+    ),
     weeklyStats: [],
   );
 }
