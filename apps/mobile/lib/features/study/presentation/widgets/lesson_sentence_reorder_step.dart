@@ -86,6 +86,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
 
   void _deselectToken(int index) {
     if (_submitting) return;
+    if (index < 0 || index >= _selected.length) return;
     setState(() {
       final token = _selected.removeAt(index);
       _available.add(token);
@@ -103,8 +104,8 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
       return;
     }
     setState(() {
-      final item = _selected.removeAt(fromIndex);
-      _selected.insert(toIndex, item);
+      final token = _selected.removeAt(fromIndex);
+      _selected.insert(toIndex, token);
       _dragHoverIndex = -1;
     });
   }
@@ -112,104 +113,107 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
   void _submit() {
     if (!_isFull || _submitting) return;
     final question = widget.questions[widget.currentIndex];
+    final submittedOrder = List<String>.from(_selected);
     setState(() => _submitting = true);
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!mounted) return;
       setState(() => _submitting = false);
       widget.onAnswer({
         'order': question.order,
-        'submittedOrder': List<String>.from(_selected),
+        'submittedOrder': submittedOrder,
         'responseMs': 0,
       });
     });
   }
 
   Widget _buildAnswerArea() {
-    final remaining = _correctTokenCount - _selected.length;
     final children = <Widget>[];
 
     for (int index = 0; index < _selected.length; index++) {
       final token = _selected[index];
-      final isJustAdded = _lastAddedToken == token;
       final isHovered = _dragHoverIndex == index;
 
       children.add(
-        DragTarget<int>(
-          key: ValueKey('answer-target-$index'),
-          onWillAcceptWithDetails: (details) {
-            if (details.data != index) {
-              setState(() => _dragHoverIndex = index);
-            }
-            return details.data != index;
-          },
-          onLeave: (_) {
-            if (_dragHoverIndex == index) {
-              setState(() => _dragHoverIndex = -1);
-            }
-          },
-          onAcceptWithDetails: (details) {
-            _onReorder(details.data, index);
-          },
-          builder: (context, candidateData, rejectedData) {
-            return LongPressDraggable<int>(
-              data: index,
-              delay: const Duration(milliseconds: 200),
-              feedback: Material(
-                color: Colors.transparent,
-                child: _AnswerToken(
-                  text: token,
-                  index: index,
-                  isDragging: true,
-                  isHovered: false,
+        IntrinsicWidth(
+          child: DragTarget<int>(
+            key: ValueKey('answer-target-$index'),
+            onWillAcceptWithDetails: (details) {
+              if (details.data != index) {
+                setState(() => _dragHoverIndex = index);
+              }
+              return details.data != index;
+            },
+            onLeave: (_) {
+              if (_dragHoverIndex == index) {
+                setState(() => _dragHoverIndex = -1);
+              }
+            },
+            onAcceptWithDetails: (details) {
+              _onReorder(details.data, index);
+            },
+            builder: (context, candidateData, rejectedData) {
+              final isJustAdded = _lastAddedToken == token;
+              return LongPressDraggable<int>(
+                data: index,
+                delay: const Duration(milliseconds: 200),
+                feedback: Material(
+                  color: Colors.transparent,
+                  child: _AnswerToken(
+                    text: token,
+                    index: index,
+                    isDragging: true,
+                    isHovered: false,
+                  ),
                 ),
-              ),
-              childWhenDragging: Opacity(
-                opacity: 0.3,
-                child: _AnswerToken(
-                  text: token,
-                  index: index,
-                  isDragging: false,
-                  isHovered: false,
-                ),
-              ),
-              child: TweenAnimationBuilder<double>(
-                tween: Tween(begin: isJustAdded ? 0.8 : 1.0, end: 1.0),
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                builder: (context, scale, child) =>
-                    Transform.scale(scale: scale, child: child),
-                child: GestureDetector(
-                  onTap: _submitting ? null : () => _deselectToken(index),
+                childWhenDragging: Opacity(
+                  opacity: 0.3,
                   child: _AnswerToken(
                     text: token,
                     index: index,
                     isDragging: false,
-                    isHovered: isHovered,
+                    isHovered: false,
                   ),
                 ),
-              ),
-            );
-          },
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: isJustAdded ? 0.8 : 1.0, end: 1.0),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  builder: (context, scale, child) =>
+                      Transform.scale(scale: scale, child: child),
+                  child: GestureDetector(
+                    onTap: _submitting ? null : () => _deselectToken(index),
+                    child: _AnswerToken(
+                      text: token,
+                      index: index,
+                      isDragging: false,
+                      isHovered: isHovered,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       );
     }
 
-    for (int index = 0; index < remaining; index++) {
+    for (int index = _selected.length; index < _correctTokenCount; index++) {
       children.add(
         Container(
-          key: ValueKey('empty-slot-${_selected.length + index}'),
-          constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+          constraints: const BoxConstraints(minHeight: 48, minWidth: 56),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
+            color: AppColors.lightCard,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.lightBorder),
           ),
+          alignment: Alignment.center,
           child: Text(
-            '　',
+            '${index + 1}',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.lightSubtext.withValues(alpha: 0.3),
+              color: AppColors.lightSubtext.withValues(alpha: 0.55),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

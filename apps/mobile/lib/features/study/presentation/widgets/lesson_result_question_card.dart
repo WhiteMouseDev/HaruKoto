@@ -22,6 +22,25 @@ class LessonResultQuestionCard extends StatelessWidget {
     return LucideIcons.arrowLeftRight;
   }
 
+  String _srsStateLabel(String state) {
+    switch (state.trim().toUpperCase()) {
+      case 'UNSEEN':
+        return '새로 배운 항목';
+      case 'PROVISIONAL':
+        return '복습 준비 중';
+      case 'LEARNING':
+        return '학습 중';
+      case 'REVIEW':
+        return '복습 예정';
+      case 'RELEARNING':
+        return '다시 학습 필요';
+      case 'MASTERED':
+        return '익혔어요';
+      default:
+        return '복습 상태 업데이트';
+    }
+  }
+
   Color _srsTransitionColor(
     Brightness brightness,
     String before,
@@ -112,7 +131,7 @@ class LessonResultQuestionCard extends StatelessWidget {
                     ),
                     const SizedBox(width: AppSizes.xs),
                     Text(
-                      '$stateBefore → $stateAfter',
+                      _srsStateLabel(stateAfter),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: _srsTransitionColor(
                           brightness,

@@ -30,7 +30,7 @@ void main() {
 
       expect(find.text('100%'), findsOneWidget);
       expect(find.text('5/5 정답'), findsOneWidget);
-      expect(find.text('6개 항목이 복습 예약되었습니다'), findsOneWidget);
+      expect(find.text('오늘 배운 6개를 복습 일정에 넣었어요'), findsOneWidget);
       expect(find.text('학습으로 돌아가기'), findsOneWidget);
       expect(find.text('다시 풀기'), findsOneWidget);
 
@@ -60,6 +60,31 @@ void main() {
 
       expect(find.text('5/5 정답'), findsOneWidget);
       expect(find.textContaining('복습 예약되었습니다'), findsNothing);
+    });
+
+    testWidgets(
+        'shows learner-facing SRS state label instead of raw transition',
+        (tester) async {
+      await _pumpLessonResultStep(
+        tester,
+        result: const LessonSubmitResultModel(
+          scoreCorrect: 1,
+          scoreTotal: 1,
+          results: [
+            QuestionResultModel(
+              order: 1,
+              isCorrect: true,
+              stateBefore: 'LEARNING',
+              stateAfter: 'LEARNING',
+            ),
+          ],
+          status: 'COMPLETED',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('학습 중'), findsOneWidget);
+      expect(find.text('LEARNING → LEARNING'), findsNothing);
     });
   });
 }
@@ -93,7 +118,13 @@ const _detail = LessonDetailModel(
   estimatedMinutes: 10,
   content: LessonContentModel(
     reading: ReadingModel(script: []),
-    questions: [],
+    questions: [
+      LessonQuestionModel(
+        order: 1,
+        type: 'VOCAB_MCQ',
+        prompt: '「学生」の 의미는?',
+      ),
+    ],
   ),
   vocabItems: [],
   grammarItems: [],

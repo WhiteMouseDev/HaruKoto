@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
-stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated/build green, manual UAT pending
-last_updated: "2026-04-23T08:05:07.000Z"
-last_activity: 2026-04-23
+stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated/build green, manual target-runtime UAT still open
+last_updated: "2026-05-07T03:10:52.000Z"
+last_activity: 2026-05-07
 progress:
   total_phases: 0
   completed_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-04-23 — stabilization checkpoint recorded; automated API/admin/mobile validation and iOS/Android release build smoke green; manual UAT pending
+Last activity: 2026-05-07 — release gate refreshed; current main CI and API/web Sentry are green, mobile tests/contracts are green, target-runtime microphone/study-flow sign-off remains open
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -44,13 +44,13 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Release Gate
 
 - v1.1 tag stays fixed at `d7a8c89`; post-tag commits (`950681d`, `c629aae`) are stabilization.
-- Current checkpoint: automated/build-green / manual-UAT-pending. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
+- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
 - If manual UAT passes and the post-tag mobile fix should ship, cut `v1.1.1` at `c629aae`.
 - Do not start new API/mobile refactoring until the manual UAT gate is closed or intentionally deferred.
 
 ### Blockers/Concerns
 
-Manual UAT remains pending for the v1.1 stabilization checkpoint. Automated checks plus iOS/Android release builds are green.
+Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Automated checks, current main CI, mobile tests/contracts, and API/web Sentry refresh are green.
 
 ### Resolved Carry-overs (2026-04-23 PM)
 
@@ -60,6 +60,6 @@ Manual UAT remains pending for the v1.1 stabilization checkpoint. Automated chec
 
 ## Session Continuity
 
-Last session: 2026-04-23T17:05:07+09:00
-Stopped at: v1.1 stabilization checkpoint recorded; automated validation and mobile release build smoke green; manual UAT pending
+Last session: 2026-05-07T12:10:52+09:00
+Stopped at: v1.1 stabilization checkpoint refreshed; automated validation and API/web observability green; target-runtime microphone/study-flow UAT still needs human execution or explicit release-owner defer
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`
