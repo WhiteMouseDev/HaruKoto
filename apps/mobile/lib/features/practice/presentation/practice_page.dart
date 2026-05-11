@@ -371,6 +371,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     if (_selectedCategory.usesFreeQuizSheet) {
       final selection = await showModalBottomSheet<FreeQuizSelection>(
         context: context,
+        useRootNavigator: true,
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
