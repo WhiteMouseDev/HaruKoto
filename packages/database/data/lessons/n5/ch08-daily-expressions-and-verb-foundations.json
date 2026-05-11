@@ -5,7 +5,7 @@
     "jlpt_level": "N5",
     "part_no": 1,
     "chapter_no": 8,
-    "lesson_count": 5,
+    "lesson_count": 9,
     "status": "DRAFT",
     "created_at": "2026-05-11",
     "author": "Codex"
@@ -1016,6 +1016,787 @@
         "99": "書く (쓰다)",
         "102": "する (하다)",
         "513": "パン (빵)"
+      }
+    },
+    {
+      "lesson_id": "HN5-041",
+      "lesson_no": 41,
+      "chapter_lesson_no": 6,
+      "title": "도서관에 공부하러 갑시다",
+      "subtitle": "ましょう와 〜に行きます로 정중하게 제안하기",
+      "topic": "정중형의 응용표현",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 11,
+        "pattern": "〜ましょう",
+        "meaning_ko": "~합시다 / ~하겠습니다",
+        "supporting_grammar_orders": [
+          12,
+          44
+        ]
+      },
+      "vocab_orders": [
+        20,
+        32,
+        81,
+        93,
+        102,
+        188
+      ],
+      "vocab_detail": {
+        "20": "昼 (낮, 점심)",
+        "32": "図書館 (도서관)",
+        "81": "勉強 (공부)",
+        "93": "行く (가다)",
+        "102": "する (하다)",
+        "188": "一緒に (함께)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "점심 이후 도서관에서 함께 공부하자고 제안",
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "昼に図書館へ行きましょう。",
+              "translation": "점심에 도서관에 갑시다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいですね。勉強しに行きましょう。",
+              "translation": "좋네요. 공부하러 갑시다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "一緒に日本語を勉強します。",
+              "translation": "함께 일본어를 공부합니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、行きましょう。",
+              "translation": "네, 갑시다."
+            }
+          ],
+          "highlights": [
+            "行きましょう",
+            "勉強しに行きましょう",
+            "一緒に"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "図書館의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "도서관"
+              },
+              {
+                "id": "b",
+                "text": "학교"
+              },
+              {
+                "id": "c",
+                "text": "역"
+              },
+              {
+                "id": "d",
+                "text": "가게"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "図書館(としょかん)는 '도서관'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "一緒に의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "혼자"
+              },
+              {
+                "id": "b",
+                "text": "함께"
+              },
+              {
+                "id": "c",
+                "text": "가끔"
+              },
+              {
+                "id": "d",
+                "text": "다시"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "一緒に(いっしょに)는 '함께'라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "図書館へ行き___。(도서관에 갑시다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ません"
+              },
+              {
+                "id": "b",
+                "text": "ました"
+              },
+              {
+                "id": "c",
+                "text": "ましょう"
+              },
+              {
+                "id": "d",
+                "text": "たいです"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "제안할 때는 동사의 ます형 어간에 ましょう를 붙입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "勉強し___行きます。(공부하러 갑니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "を"
+              },
+              {
+                "id": "b",
+                "text": "で"
+              },
+              {
+                "id": "c",
+                "text": "の"
+              },
+              {
+                "id": "d",
+                "text": "に"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "목적을 말할 때 동사 ます형 어간 + に行きます를 씁니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'도서관에 공부하러 갑시다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "行きましょう",
+              "図書館へ",
+              "勉強しに"
+            ],
+            "correct_order": [
+              "図書館へ",
+              "勉強しに",
+              "行きましょう"
+            ],
+            "explanation": "장소 図書館へ 뒤에 목적 勉強しに를 두고 行きましょう로 제안합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-042",
+      "lesson_no": 42,
+      "chapter_lesson_no": 7,
+      "title": "영화를 보는 것을 좋아합니다",
+      "subtitle": "の의 소유와 명사화 용법 구분하기",
+      "topic": "の",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 28,
+        "pattern": "〜のが好きです",
+        "meaning_ko": "~하는 것을 좋아합니다",
+        "supporting_grammar_orders": [
+          37
+        ]
+      },
+      "vocab_orders": [
+        45,
+        76,
+        96,
+        162,
+        398,
+        605
+      ],
+      "vocab_detail": {
+        "45": "本 (책)",
+        "76": "映画 (영화)",
+        "96": "見る (보다)",
+        "162": "好き (좋아하다)",
+        "398": "好きな (좋아하는)",
+        "605": "私 (저)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "취미를 이야기하며 소유의 の와 명사화 の를 구분",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "私は映画を見るのが好きです。",
+              "translation": "저는 영화를 보는 것을 좋아합니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "その本はキムさんの本ですか。",
+              "translation": "그 책은 김 씨의 책입니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、私の本です。",
+              "translation": "네, 제 책입니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "読むのも好きですか。",
+              "translation": "읽는 것도 좋아합니까?"
+            }
+          ],
+          "highlights": [
+            "見るの",
+            "読むの",
+            "私の",
+            "本"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "映画의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "영화"
+              },
+              {
+                "id": "b",
+                "text": "음악"
+              },
+              {
+                "id": "c",
+                "text": "책"
+              },
+              {
+                "id": "d",
+                "text": "노트"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "映画(えいが)는 '영화'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "好きです의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "싫어합니다"
+              },
+              {
+                "id": "b",
+                "text": "좋아합니다"
+              },
+              {
+                "id": "c",
+                "text": "읽습니다"
+              },
+              {
+                "id": "d",
+                "text": "봅니다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "好きです는 '좋아합니다'라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "映画を見る___が好きです。(영화를 보는 것을 좋아합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "を"
+              },
+              {
+                "id": "b",
+                "text": "で"
+              },
+              {
+                "id": "c",
+                "text": "の"
+              },
+              {
+                "id": "d",
+                "text": "か"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "동사 뒤의 の는 '~하는 것'처럼 동작을 명사처럼 만듭니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "私___本です。(제 책입니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "を"
+              },
+              {
+                "id": "b",
+                "text": "で"
+              },
+              {
+                "id": "c",
+                "text": "へ"
+              },
+              {
+                "id": "d",
+                "text": "の"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "명사 뒤의 の는 소유를 나타내며, 私の本은 '제 책'입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'영화를 보는 것을 좋아합니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "好きです",
+              "映画を見るのが",
+              "私は"
+            ],
+            "correct_order": [
+              "私は",
+              "映画を見るのが",
+              "好きです"
+            ],
+            "explanation": "동작을 명사화한 映画を見るのが 뒤에 好きです를 붙입니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-043",
+      "lesson_no": 43,
+      "chapter_lesson_no": 8,
+      "title": "이름을 쓰고 기다립니다",
+      "subtitle": "て형으로 동작을 자연스럽게 연결하기",
+      "topic": "동사의 연결형",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 50,
+        "pattern": "Verb+て",
+        "meaning_ko": "동사て형 연결",
+        "supporting_grammar_orders": [
+          49
+        ]
+      },
+      "vocab_orders": [
+        5,
+        45,
+        74,
+        98,
+        99,
+        112
+      ],
+      "vocab_detail": {
+        "5": "友達 (친구)",
+        "45": "本 (책)",
+        "74": "名前 (이름)",
+        "98": "読む (읽다)",
+        "99": "書く (쓰다)",
+        "112": "待つ (기다리다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "접수표에 이름을 쓰고 친구를 기다리는 상황",
+          "script": [
+            {
+              "speaker": "受付",
+              "voice_id": "japanese_female_1",
+              "text": "ここに名前を書いてください。",
+              "translation": "여기에 이름을 써 주세요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、名前を書いて、友だちを待ちます。",
+              "translation": "네, 이름을 쓰고 친구를 기다립니다."
+            },
+            {
+              "speaker": "受付",
+              "voice_id": "japanese_female_1",
+              "text": "この本を読んでください。",
+              "translation": "이 책을 읽어 주세요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "分かりました。",
+              "translation": "알겠습니다."
+            }
+          ],
+          "highlights": [
+            "書いて",
+            "読んで",
+            "待ちます",
+            "ください"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "書く의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "쓰다"
+              },
+              {
+                "id": "b",
+                "text": "읽다"
+              },
+              {
+                "id": "c",
+                "text": "기다리다"
+              },
+              {
+                "id": "d",
+                "text": "보다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "書く(かく)는 '쓰다'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "待つ의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "사다"
+              },
+              {
+                "id": "b",
+                "text": "기다리다"
+              },
+              {
+                "id": "c",
+                "text": "오다"
+              },
+              {
+                "id": "d",
+                "text": "마시다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "待つ(まつ)는 '기다리다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "名前を___、友だちを待ちます。(이름을 쓰고 친구를 기다립니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "書く"
+              },
+              {
+                "id": "b",
+                "text": "書きます"
+              },
+              {
+                "id": "c",
+                "text": "書いて"
+              },
+              {
+                "id": "d",
+                "text": "書きません"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "동작을 이어 말할 때는 て형 書いて를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "この本を___ください。(이 책을 읽어 주세요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "読む"
+              },
+              {
+                "id": "b",
+                "text": "読みます"
+              },
+              {
+                "id": "c",
+                "text": "読まない"
+              },
+              {
+                "id": "d",
+                "text": "読んで"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "てください 앞에는 동사의 て형이 옵니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'이름을 쓰고 친구를 기다립니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "友だちを",
+              "名前を書いて、",
+              "待ちます"
+            ],
+            "correct_order": [
+              "名前を書いて、",
+              "友だちを",
+              "待ちます"
+            ],
+            "explanation": "첫 동작 名前を書いて 뒤에 다음 동작 友だちを待ちます를 연결합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN5-044",
+      "lesson_no": 44,
+      "chapter_lesson_no": 9,
+      "title": "지금 책을 읽고 있습니다",
+      "subtitle": "〜ている로 진행 중인 동작 말하기",
+      "topic": "진행과 상태",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 20,
+        "pattern": "〜ています",
+        "meaning_ko": "하고 있습니다 / 해 있습니다",
+        "supporting_grammar_orders": [
+          49,
+          52
+        ]
+      },
+      "vocab_orders": [
+        22,
+        45,
+        96,
+        98,
+        105,
+        106
+      ],
+      "vocab_detail": {
+        "22": "今 (지금)",
+        "45": "本 (책)",
+        "96": "見る (보다)",
+        "98": "読む (읽다)",
+        "105": "起きる (일어나다)",
+        "106": "寝る (자다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "스터디 중에 지금 무엇을 하고 있는지 묻고 답하기",
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "キムさんは今、何をしていますか。",
+              "translation": "김 씨는 지금 무엇을 하고 있습니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "本を読んでいます。",
+              "translation": "책을 읽고 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "私は映画を見ています。",
+              "translation": "저는 영화를 보고 있습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "友だちは寝ていますか。",
+              "translation": "친구는 자고 있습니까?"
+            }
+          ],
+          "highlights": [
+            "読んでいます",
+            "見ています",
+            "寝ています",
+            "今"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "今의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "지금"
+              },
+              {
+                "id": "b",
+                "text": "내일"
+              },
+              {
+                "id": "c",
+                "text": "어제"
+              },
+              {
+                "id": "d",
+                "text": "아침"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "今(いま)는 '지금'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "読む의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "보다"
+              },
+              {
+                "id": "b",
+                "text": "읽다"
+              },
+              {
+                "id": "c",
+                "text": "자다"
+              },
+              {
+                "id": "d",
+                "text": "일어나다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "読む(よむ)는 '읽다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "本を読んで___。(책을 읽고 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ください"
+              },
+              {
+                "id": "b",
+                "text": "ましょう"
+              },
+              {
+                "id": "c",
+                "text": "います"
+              },
+              {
+                "id": "d",
+                "text": "ません"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "진행 중인 동작은 동사 て형 + います로 말합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "映画を___います。(영화를 보고 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "見る"
+              },
+              {
+                "id": "b",
+                "text": "見ます"
+              },
+              {
+                "id": "c",
+                "text": "見ません"
+              },
+              {
+                "id": "d",
+                "text": "見て"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "見る의 て형은 見て입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'지금 책을 읽고 있습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "読んでいます",
+              "今、",
+              "本を"
+            ],
+            "correct_order": [
+              "今、",
+              "本を",
+              "読んでいます"
+            ],
+            "explanation": "시간 今 뒤에 목적어 本を를 두고 読んでいます로 진행을 말합니다."
+          }
+        ]
       }
     }
   ]

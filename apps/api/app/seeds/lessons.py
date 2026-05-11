@@ -38,6 +38,7 @@ CONTENT_FILES = [
     "ch06-progress-and-habits.json",
     "ch07-foundation-expression-reinforcement.json",
     "ch08-daily-expressions-and-verb-foundations.json",
+    "ch09-expression-contrast-and-choice.json",
 ]
 
 PUBLISHABLE_META_STATUSES = {"PILOT", "PUBLISHED"}
