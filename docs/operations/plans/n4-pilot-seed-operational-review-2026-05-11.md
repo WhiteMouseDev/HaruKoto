@@ -1,15 +1,17 @@
 # N4 Pilot Seed Operational Review
 
 > Date: 2026-05-11
-> Scope: PR #74 N4 pilot lesson seeds on `main`
-> Commit: `2a1ec4a3ecae2f2a20822f42b2d032c504b3d101`
-> Status: ready for human curriculum review
+> Scope: PR #74 N4 pilot lesson seeds plus PR #77 runtime answer-key redaction
+> Commit: `16afbb66ac9eccdfd0516d5fe6d58be205034daa`
+> Status: seeded and runtime-smoked; human curriculum review, TTS scope, and mobile UAT remain open
 
 ## Summary
 
 PR #74 promoted the first N4 pilot batch from seed candidates into official lesson seed files. This review checks whether the batch is operationally ready for the next gate, not whether the Japanese pedagogy is finally approved.
 
-Result: the N4 pilot batch is structurally ready to enter human curriculum review and staging seed dry-run. It should not be seeded directly to production until a reviewer accepts the curriculum order and a staging/disposable DB seed run verifies runtime behavior.
+Result: the N4 pilot batch is structurally ready and has been applied to the current configured API DB target. Runtime API smoke verified N4 chapter/list/detail access and confirmed lesson-detail answer keys are redacted. This is not a final learner rollout decision: human curriculum review, TTS scope, and target-runtime mobile UAT still need to pass.
+
+ASSUMPTION: "configured API DB target" means the database selected by the current `apps/api` runtime environment used for the seed and smoke. This document intentionally does not record database URLs, tokens, or credentials.
 
 ## Source Files
 
@@ -27,6 +29,9 @@ Both files state that paid PDFs were used only for topic coverage reference, and
 | Lesson schema/reference validation | `pnpm --filter @harukoto/database lessons:validate` | PASS |
 | N4 lesson quality heuristics | `pnpm --filter @harukoto/database lessons:quality -- --level N4` | PASS, 7 PASS / 0 WARN / 0 FAIL |
 | N4 seed policy tests | `cd apps/api && uv run pytest tests/test_lesson_seed_policy.py` | PASS, 12 passed |
+| Configured DB seed sync | `cd apps/api && uv run python -m app.seeds.lessons --check --level N4` | PASS, 2 chapters / 10 lessons / 0 missing / 0 mismatches |
+| Runtime API smoke | authenticated local API smoke against configured DB target | PASS, N4 chapters=2, lessons=10, first lesson detail=200 |
+| Lesson-detail answer-key redaction | `cd apps/api && uv run pytest tests/test_lessons.py::test_get_lesson_detail` | PASS, `correctAnswer` and `correctOrder` redacted in lesson detail |
 
 Quality gate summary:
 
@@ -75,16 +80,20 @@ Every lesson currently uses the runtime-supported question mix:
 5. FLAG - TTS generation is not complete.
    Reading script lines and question prompts are TTS-addressable, but this batch should enter the TTS scope and batch review process before production learner rollout.
 
-6. FLAG - Production seed is not executed.
-   This review does not prove that the production DB contains the N4 chapters/lessons. Run a staging or disposable DB seed dry-run before any production seed execution.
+6. PASS - Configured DB seed and runtime smoke are complete.
+   The configured API DB target contains 2 N4 chapters and 10 N4 lessons. The first N4 lesson detail returned 4 script lines, 5 questions, 5 vocabulary items, and 1 grammar item. This does not by itself approve broad learner rollout.
+
+7. PASS - Lesson detail no longer leaks answer keys.
+   PR #77 redacts both `correctAnswer` and `correctOrder` in lesson detail responses. Authoritative correctness remains available through lesson submission results.
 
 ## Next Gate Checklist
 
 - [ ] Human curriculum review: approve lesson order, grammar coverage, Korean explanations, and examples.
 - [ ] TTS scope: add or confirm TTS targets for N4 reading script lines and question prompts.
-- [ ] Staging seed dry-run: seed N4 into a non-production DB and verify chapter/lesson rows plus `lesson_item_links`.
+- [x] Configured DB seed sync: N4 seed check passes with 2 chapters, 10 lessons, and no mismatches.
+- [x] Runtime API smoke: authenticated N4 list/detail smoke passes and answer keys are redacted.
 - [ ] Mobile UAT: select N4, open lesson list, complete one N4 lesson, verify result/SRS/wrong-answer behavior.
-- [ ] Production decision: only after the above gates pass, decide whether to seed N4 pilot into production.
+- [ ] Learner rollout decision: only after the remaining gates pass, decide whether this N4 pilot is approved for broader learner exposure.
 
 ## Release Gate Boundary
 
