@@ -219,6 +219,7 @@
     "table": {
       "batch": "배치",
       "surface": "검토 경로",
+      "reviewStatus": "검토 상태",
       "targets": "대상",
       "required": "필수",
       "missing": "미생성",
@@ -268,6 +269,11 @@
       "approved": "승인됨",
       "rejected": "반려됨",
       "stale": "갱신 필요"
+    },
+    "batchStatus": {
+      "draft": "초안",
+      "review": "검토 중",
+      "approved": "승인됨"
     },
     "generationPlan": {
       "ready_after_db_lookup": "DB 조회 후 가능",

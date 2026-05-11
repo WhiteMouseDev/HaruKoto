@@ -67,22 +67,50 @@ void main() {
       expect(viewedEvent.properties['lessonCount'], 2);
       expect(viewedEvent.properties['recommendedLessonId'], 'lesson-2');
     });
+
+    testWidgets('shows a readiness empty state for levels without lessons',
+        (tester) async {
+      final events = <LessonPilotEvent>[];
+
+      await _pumpLessonListPage(
+        tester,
+        jlptLevel: 'N4',
+        telemetryEvents: events,
+        chapters: const [],
+      );
+
+      expect(find.text('전체 레슨'), findsOneWidget);
+      expect(find.text('N4'), findsOneWidget);
+      expect(find.text('N4 레슨 준비 중'), findsOneWidget);
+      expect(find.text('N5 레슨 보기'), findsOneWidget);
+      expect(find.text('추천 레슨'), findsNothing);
+
+      final viewedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonListViewed,
+      );
+      expect(viewedEvent.properties['source'], 'lesson_list');
+      expect(viewedEvent.properties['jlptLevel'], 'N4');
+      expect(viewedEvent.properties['chapterCount'], 0);
+      expect(viewedEvent.properties['lessonCount'], 0);
+      expect(viewedEvent.properties['recommendedLessonId'], isNull);
+    });
   });
 }
 
 Future<void> _pumpLessonListPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
+  String jlptLevel = 'N5',
   List<LessonPilotEvent>? telemetryEvents,
 }) async {
-  SharedPreferences.setMockInitialValues({});
+  SharedPreferences.setMockInitialValues({'user_jlpt_level': jlptLevel});
   final prefs = await SharedPreferences.getInstance();
 
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWith((ref) => prefs),
-        chaptersProvider('N5').overrideWith(
+        chaptersProvider(jlptLevel).overrideWith(
           (ref) => Future.value(ChapterListModel(chapters: chapters)),
         ),
         if (telemetryEvents != null)

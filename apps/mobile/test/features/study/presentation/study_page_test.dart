@@ -162,12 +162,40 @@ void main() {
       expect(event.properties['grammarDue'], 5);
       expect(event.properties['quizType'], 'GRAMMAR');
     });
+
+    testWidgets('shows level readiness copy when selected level has no lessons',
+        (tester) async {
+      final events = <LessonPilotEvent>[];
+
+      await _pumpStudyPage(
+        tester,
+        jlptLevel: 'N4',
+        telemetryEvents: events,
+        chapters: const [],
+      );
+
+      expect(find.text('체계적 학습'), findsOneWidget);
+      expect(find.text('N4 레슨 준비 중'), findsOneWidget);
+      expect(find.text('N5 레슨 보기'), findsOneWidget);
+      expect(find.text('첫 레슨을 시작해보세요'), findsNothing);
+      expect(find.text('추천 레슨'), findsNothing);
+
+      final viewedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonListViewed,
+      );
+      expect(viewedEvent.properties['source'], 'study_home');
+      expect(viewedEvent.properties['jlptLevel'], 'N4');
+      expect(viewedEvent.properties['chapterCount'], 0);
+      expect(viewedEvent.properties['lessonCount'], 0);
+      expect(viewedEvent.properties['recommendedLessonId'], isNull);
+    });
   });
 }
 
 Future<void> _pumpStudyPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
+  String jlptLevel = 'N5',
   List<LessonPilotEvent>? telemetryEvents,
   ReviewSummaryModel reviewSummary = const ReviewSummaryModel(
     wordDue: 0,
@@ -177,7 +205,7 @@ Future<void> _pumpStudyPage(
     grammarNew: 0,
   ),
 }) async {
-  SharedPreferences.setMockInitialValues({});
+  SharedPreferences.setMockInitialValues({'user_jlpt_level': jlptLevel});
   final prefs = await SharedPreferences.getInstance();
 
   await tester.pumpWidget(
@@ -187,10 +215,10 @@ Future<void> _pumpStudyPage(
         dashboardProvider.overrideWith(
           (ref) => Future.value(_dashboard()),
         ),
-        reviewSummaryProvider('N5').overrideWith(
+        reviewSummaryProvider(jlptLevel).overrideWith(
           (ref) => Future.value(reviewSummary),
         ),
-        chaptersProvider('N5').overrideWith(
+        chaptersProvider(jlptLevel).overrideWith(
           (ref) => Future.value(ChapterListModel(chapters: chapters)),
         ),
         if (telemetryEvents != null)

@@ -17,6 +17,7 @@ import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_continue_banner.dart';
+import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/study_skeleton.dart';
 
 /// Represents a study category tab.
@@ -149,9 +150,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                           },
                         );
                       }
-                      if (!hasEverStudied) {
+                      if (!hasEverStudied && recommendedLesson != null) {
                         return _ReviewIdleBar(
-                          firstLessonId: recommendedLesson?.lesson.id,
+                          firstLessonId: recommendedLesson.lesson.id,
                         );
                       }
                       return const SizedBox.shrink();
@@ -211,14 +212,15 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 child: chaptersAsync.when(
                   data: (data) => data.chapters.isEmpty
                       ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 16),
-                          child: Text(
-                            '준비 중인 콘텐츠입니다',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.5),
-                            ),
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                          child: LessonLevelEmptyState(
+                            jlptLevel: jlptLevel,
+                            compact: true,
+                            onSwitchToN5: jlptLevel == 'N5'
+                                ? null
+                                : () => ref
+                                    .read(settingsSyncServiceProvider)
+                                    .updateJlptLevel('N5'),
                           ),
                         )
                       : LessonChapterList(

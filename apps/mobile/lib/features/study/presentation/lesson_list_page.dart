@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/colors.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../my/providers/settings_sync_provider.dart';
 import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_continue_banner.dart';
+import 'widgets/lesson_level_empty_state.dart';
 
 class LessonListPage extends ConsumerStatefulWidget {
   const LessonListPage({super.key});
@@ -56,11 +58,24 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
                   child: LessonContinueBanner(target: recommendedLesson),
                 ),
-              LessonChapterList(
-                chapters: data.chapters,
-                recommendedLessonId: recommendedLesson?.lesson.id,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              ),
+              if (data.chapters.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  child: LessonLevelEmptyState(
+                    jlptLevel: jlptLevel,
+                    onSwitchToN5: jlptLevel == 'N5'
+                        ? null
+                        : () => ref
+                            .read(settingsSyncServiceProvider)
+                            .updateJlptLevel('N5'),
+                  ),
+                )
+              else
+                LessonChapterList(
+                  chapters: data.chapters,
+                  recommendedLessonId: recommendedLesson?.lesson.id,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                ),
             ],
           ),
         ),

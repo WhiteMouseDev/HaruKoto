@@ -219,6 +219,7 @@
     "table": {
       "batch": "Batch",
       "surface": "Review path",
+      "reviewStatus": "Review status",
       "targets": "Targets",
       "required": "Required",
       "missing": "Missing",
@@ -268,6 +269,11 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "stale": "Stale"
+    },
+    "batchStatus": {
+      "draft": "Draft",
+      "review": "In review",
+      "approved": "Approved"
     },
     "generationPlan": {
       "ready_after_db_lookup": "Ready after DB lookup",

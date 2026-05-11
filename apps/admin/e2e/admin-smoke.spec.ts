@@ -237,6 +237,7 @@ test('renders the TTS review manual mapping queue', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'TTS確認バッチ' })
   ).toBeVisible();
+  await expect(page.getByText('下書き')).toBeVisible();
 
   await page.getByRole('button', { name: /対象を見る/ }).click();
 

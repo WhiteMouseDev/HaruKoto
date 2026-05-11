@@ -219,6 +219,7 @@
     "table": {
       "batch": "バッチ",
       "surface": "確認経路",
+      "reviewStatus": "確認状態",
       "targets": "対象",
       "required": "必須",
       "missing": "未生成",
@@ -268,6 +269,11 @@
       "approved": "承認済み",
       "rejected": "差し戻し",
       "stale": "更新必要"
+    },
+    "batchStatus": {
+      "draft": "下書き",
+      "review": "確認中",
+      "approved": "承認済み"
     },
     "generationPlan": {
       "ready_after_db_lookup": "DB検索後に可能",
