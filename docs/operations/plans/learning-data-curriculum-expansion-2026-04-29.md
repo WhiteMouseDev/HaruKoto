@@ -439,16 +439,33 @@ Metadata가 채워진 anchor policy 5개는 `grammar_metadata_v2` blocker를 해
 
 Anchor policy는 이제 미승격 blocker만이 아니라 draft seed candidate를 만든 근거로도 남긴다. validator는 anchor, contrast policy, seed candidate가 같은 topic, lesson blueprint, example을 가리키는 경우에만 이 공존을 허용한다.
 
-TTS readiness도 seed candidate 단위로 확장했다. `tts-target-manifest.json`은 이제 498개 target을 추적한다.
+Wave 2 N4 foundation의 첫 seed-shaped draft도 `lesson-seed-candidates.json`에 추가했다. 이 단계는 공식 `data/lessons/**` 승격이 아니라 N4 레슨 후보의 human review, TTS readiness, API/mobile 노출 정책 검토를 위한 staging이다.
 
-- topic/example 기반 target: 320개
-- lesson seed candidate 기반 target: 178개
-- seed script line target: 78개
-- seed question prompt target: 100개
+| Lesson candidate | Topic | Promotion target | 남은 gate |
+|---|---|---|---|
+| `lsc-n4-nasai-001` | `topic-nasai` | N4 lesson 1 draft | TTS readiness, human curriculum review |
+| `lsc-n4-ta-hou-ga-ii-001` | `topic-ta-hou-ga-ii` | N4 lesson 2 draft | TTS readiness, human curriculum review |
+| `lsc-n4-kamoshirenai-001` | `topic-kamoshirenai` | N4 lesson 3 draft | TTS readiness, human curriculum review |
+| `lsc-n4-shika-nai-001` | `topic-shika-nai` | N4 lesson 4 draft | contrast review, TTS readiness, human curriculum review |
+| `lsc-n4-potential-form-001` | `topic-potential-form` | N4 lesson 5 draft | TTS readiness, human curriculum review |
+| `lsc-n4-adjective-sa-001` | `topic-adjective-sa` | N4 lesson 6 draft | TTS readiness, human curriculum review |
+| `lsc-n4-volitional-form-001` | `topic-volitional-form` | N4 lesson 7 draft | TTS readiness, human curriculum review |
+| `lsc-n4-noda-ndesu-001` | `topic-noda-ndesu` | N4 lesson 8 draft | TTS readiness, human curriculum review |
+| `lsc-n4-tameni-001` | `topic-tameni` | N4 lesson 9 draft | contrast review, TTS readiness, human curriculum review |
+| `lsc-n4-to-conditional-001` | `topic-to-conditional` | N4 lesson 10 draft | contrast review, TTS readiness, human curriculum review |
+
+ASSUMPTION: N4 lesson numbering은 level-local로 1부터 시작한다. 전체 PDF coverage 진행률은 별도 topic/candidate 수로 추적하고, 공식 DB lesson 번호는 `jlpt_level + lesson_no` unique contract를 따른다.
+
+TTS readiness도 seed candidate 단위로 확장했다. `tts-target-manifest.json`은 이제 598개 target을 추적한다.
+
+- topic/example 기반 target: 330개
+- lesson seed candidate 기반 target: 268개
+- seed script line target: 118개
+- seed question prompt target: 150개
 
 validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 reading script line과 question prompt마다 `lesson-seed-candidates:<candidateId>:script:<order>` 또는 `lesson-seed-candidates:<candidateId>:question:<order>` target이 있는지 확인한다.
 
-`tts-review-batches.json`은 498개 target을 7개 review/export batch로 묶는다. 현재 admin/backend TTS 경로가 직접 지원하는 batch와, admin/API 확장이 필요한 batch를 분리해 TTS 생성 순서를 고정한다.
+`tts-review-batches.json`은 598개 target을 7개 review/export batch로 묶는다. 현재 admin/backend TTS 경로가 직접 지원하는 batch와, admin/API 확장이 필요한 batch를 분리해 TTS 생성 순서를 고정한다.
 
 | Batch | 대상 수 | Review surface | Export 상태 |
 |---|---:|---|---|
@@ -456,17 +473,17 @@ validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 read
 | `tts-review-admin-grammar-fields` | 156 | `admin_existing_tts` | grammar `pattern`, `example_sentences` |
 | `tts-review-gap-grammar-question-prompts` | 78 | `admin_extension_required` | `admin_tts_field_gap` |
 | `tts-review-gap-kana-fields` | 3 | `admin_extension_required` | `admin_content_type_gap` |
-| `tts-review-gap-example-sentence-fields` | 65 | `admin_extension_required` | `admin_content_type_gap` |
-| `tts-review-gap-seed-script-lines` | 78 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
-| `tts-review-gap-seed-question-prompts` | 100 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-example-sentence-fields` | 75 | `admin_extension_required` | `admin_content_type_gap` |
+| `tts-review-gap-seed-script-lines` | 118 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-seed-question-prompts` | 150 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
 
 ASSUMPTION: 이번 단계의 TTS review/export 계약은 아직 생성 action이 아니다. Read-only Admin UI/API는 검토용으로 연결했지만, 기존 `apps/admin` TTS field와 `apps/api` admin TTS service를 통한 batch 생성/쓰기 확장은 후속 단계에서 다룬다.
 
 Read-only admin backend 연결도 추가했다. `GET /api/v1/admin/content/tts/review-batches`는 생성된 `tts-review-batches.json`을 읽어 reviewer 전용 응답으로 반환한다.
 
-- `summary.totalTargets`: 498
+- `summary.totalTargets`: 598
 - `summary.adminReadyTargets`: 174
-- `summary.extensionRequiredTargets`: 324
+- `summary.extensionRequiredTargets`: 424
 - `review_surface=admin_existing_tts` query로 현재 admin TTS 필드에 연결 가능한 batch만 조회할 수 있다.
 
 ASSUMPTION: 이 endpoint는 검토/대시보드용 조회 계약이다. 실제 batch 기반 TTS 생성, `tts_audio` 쓰기, GCS 업로드, admin bulk action은 후속 구현에서 별도로 다룬다.
@@ -504,5 +521,6 @@ Admin app에는 `/tts-review` read-only 화면을 추가한다. 이 화면은 `s
 7. `missing / partial` topic은 `coverage-priorities.json`와 `lesson-draft-blueprints.json`으로 먼저 우선순위화한 뒤 실제 seedable lesson JSON으로 승격한다.
 8. `lesson-seed-candidates.json`에서 human review와 TTS readiness를 통과한 후보만 공식 `data/lessons/**` 파일로 승격한다.
 9. `topic-kanji-reading-basics`와 `topic-kana-hiragana`는 grammar-linked seed shape가 아니라 kana/kanji scaffold shape로 따로 승격한다.
-10. lesson 45-50 draft seed candidates는 TTS readiness와 human review를 통과한 뒤 공식 `data/lessons/**` 승격 후보가 된다.
-11. `topic-shiru-wakaru`는 vocabulary/skill contrast 특성상 runtime question review를 추가로 통과해야 한다.
+10. N4 lesson 1-10 draft seed candidates는 TTS readiness와 human review를 통과한 뒤 공식 `data/lessons/n4/**` 승격 후보가 된다.
+11. N4 공식 승격 전에는 API seed loader의 multi-level 입력, 모바일 level-local lesson 번호 노출, admin review 상태 표시를 별도 확인한다.
+12. `topic-shiru-wakaru`, `topic-shika-nai`, `topic-tameni`, `topic-to-conditional`처럼 contrast 성격이 강한 topic은 runtime question review를 추가로 통과해야 한다.

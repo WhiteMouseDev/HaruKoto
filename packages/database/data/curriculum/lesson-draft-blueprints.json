@@ -483,8 +483,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-nasai-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -681,8 +683,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-ta-hou-ga-ii-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -806,8 +810,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-kamoshirenai-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -837,8 +843,10 @@
       "draftFutureQuestionTypes": [
         "USAGE_CONTRAST"
       ],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-shika-nai-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "split_partial_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -898,8 +906,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-potential-form-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -927,8 +937,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-adjective-sa-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -1022,8 +1034,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-volitional-form-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -1151,8 +1165,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-noda-ndesu-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -1182,8 +1198,10 @@
       "draftFutureQuestionTypes": [
         "USAGE_CONTRAST"
       ],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-tameni-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "split_partial_topic",
       "validationGates": [
         "ExampleOriginalityGate",
@@ -1214,8 +1232,10 @@
       "draftFutureQuestionTypes": [
         "USAGE_CONTRAST"
       ],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-to-conditional-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "split_partial_topic",
       "validationGates": [
         "ExampleOriginalityGate",

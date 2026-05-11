@@ -13,7 +13,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["kana", "pronunciation", "starter"],
+      "tags": [
+        "kana",
+        "pronunciation",
+        "starter"
+      ],
       "notesKo": "가나 발음 학습용 신규 예문.",
       "audio": {
         "audioTargetType": "kana",
@@ -33,7 +37,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["pronouns", "self-introduction", "n5"],
+      "tags": [
+        "pronouns",
+        "self-introduction",
+        "n5"
+      ],
       "notesKo": "한국어 화자가 자기소개에서 바로 쓰는 맥락.",
       "audio": {
         "audioTargetType": "example_sentence",
@@ -53,7 +61,10 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["demonstratives", "n5"],
+      "tags": [
+        "demonstratives",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -72,7 +83,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["desu", "classroom", "n5"],
+      "tags": [
+        "desu",
+        "classroom",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -91,7 +106,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["negative", "desu", "n5"],
+      "tags": [
+        "negative",
+        "desu",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -110,7 +129,13 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["particles", "wa", "de", "wo", "n5"],
+      "tags": [
+        "particles",
+        "wa",
+        "de",
+        "wo",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -129,7 +154,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["greetings", "conversation", "n5"],
+      "tags": [
+        "greetings",
+        "conversation",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -148,7 +177,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["numbers", "counters", "n5"],
+      "tags": [
+        "numbers",
+        "counters",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -167,7 +200,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["time", "weekday", "n5"],
+      "tags": [
+        "time",
+        "weekday",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -186,7 +223,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["request", "conversation", "n5"],
+      "tags": [
+        "request",
+        "conversation",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -205,7 +246,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["sentence-final-particle", "yo", "conversation"],
+      "tags": [
+        "sentence-final-particle",
+        "yo",
+        "conversation"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -224,7 +269,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["sentence-final-particle", "ne", "conversation"],
+      "tags": [
+        "sentence-final-particle",
+        "ne",
+        "conversation"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -243,7 +292,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["kanji", "reading", "n5"],
+      "tags": [
+        "kanji",
+        "reading",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -262,7 +315,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["i-adjective", "noun-modifier", "n5"],
+      "tags": [
+        "i-adjective",
+        "noun-modifier",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -281,7 +338,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["na-adjective", "noun-modifier", "n5"],
+      "tags": [
+        "na-adjective",
+        "noun-modifier",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -300,7 +361,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["existence", "aru", "n5"],
+      "tags": [
+        "existence",
+        "aru",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -319,7 +384,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["verb-groups", "masu-form", "n5"],
+      "tags": [
+        "verb-groups",
+        "masu-form",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -338,7 +407,12 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["polite-form", "mashou", "purpose", "n5"],
+      "tags": [
+        "polite-form",
+        "mashou",
+        "purpose",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -357,7 +431,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["nominalizer", "no", "n5"],
+      "tags": [
+        "nominalizer",
+        "no",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -376,7 +454,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["te-form", "connection", "n5"],
+      "tags": [
+        "te-form",
+        "connection",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -395,7 +477,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["te-iru", "progress", "n5"],
+      "tags": [
+        "te-iru",
+        "progress",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -414,7 +500,12 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["know", "wakaru", "vocabulary", "n5"],
+      "tags": [
+        "know",
+        "wakaru",
+        "vocabulary",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -433,7 +524,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["desire", "hoshii", "n5"],
+      "tags": [
+        "desire",
+        "hoshii",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -452,7 +547,12 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["change", "adjective", "naru", "n5"],
+      "tags": [
+        "change",
+        "adjective",
+        "naru",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -471,7 +571,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["limitation", "dake", "n5"],
+      "tags": [
+        "limitation",
+        "dake",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -490,7 +594,11 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["choice", "ni-suru", "n5"],
+      "tags": [
+        "choice",
+        "ni-suru",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
@@ -509,12 +617,257 @@
       "sourceKind": "harukoto_authored",
       "originalityStatus": "authored_not_source_copied",
       "reviewStatus": "needs_review",
-      "tags": ["definition", "toiu", "n5"],
+      "tags": [
+        "definition",
+        "toiu",
+        "n5"
+      ],
       "audio": {
         "audioTargetType": "example_sentence",
         "audioField": "example_sentence",
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-nasai-001",
+      "topicId": "topic-nasai",
+      "jlptLevel": "N4",
+      "japanese": "宿題を出す前に、名前を書きなさい。",
+      "reading": "しゅくだいをだすまえに、なまえをかきなさい。",
+      "korean": "숙제를 내기 전에 이름을 쓰세요.",
+      "register": "polite_instruction",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "instruction",
+        "classroom",
+        "n4"
+      ],
+      "notesKo": "가벼운 지시 상황에서 なさい의 지시 뉘앙스를 보여주는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-ta-hou-ga-ii-001",
+      "topicId": "topic-ta-hou-ga-ii",
+      "jlptLevel": "N4",
+      "japanese": "風邪なら、今日は早く寝たほうがいいです。",
+      "reading": "かぜなら、きょうははやくねたほうがいいです。",
+      "korean": "감기라면 오늘은 일찍 자는 편이 좋습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "advice",
+        "health",
+        "n4"
+      ],
+      "notesKo": "조언 표현을 일상 건강 상황에 연결한 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-kamoshirenai-001",
+      "topicId": "topic-kamoshirenai",
+      "jlptLevel": "N4",
+      "japanese": "台風で電車が遅れるかもしれません。",
+      "reading": "たいふうででんしゃがおくれるかもしれません。",
+      "korean": "태풍 때문에 전철이 늦을지도 모릅니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "possibility",
+        "weather",
+        "transportation",
+        "n4"
+      ],
+      "notesKo": "불확실한 추측을 교통 상황으로 연습하는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-shika-nai-001",
+      "topicId": "topic-shika-nai",
+      "jlptLevel": "N4",
+      "japanese": "時間がないので、駅まで走るしかありません。",
+      "reading": "じかんがないので、えきまではしるしかありません。",
+      "korean": "시간이 없어서 역까지 달릴 수밖에 없습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "limitation",
+        "transportation",
+        "n4"
+      ],
+      "notesKo": "선택지가 제한된 상황에서 しかない를 쓰는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-potential-form-001",
+      "topicId": "topic-potential-form",
+      "jlptLevel": "N4",
+      "japanese": "このアプリで漢字を調べられます。",
+      "reading": "このアプリでかんじをしらべられます。",
+      "korean": "이 앱으로 한자를 찾아볼 수 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "potential",
+        "study",
+        "n4"
+      ],
+      "notesKo": "가능형을 학습 앱 사용 맥락과 연결한 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-adjective-sa-001",
+      "topicId": "topic-adjective-sa",
+      "jlptLevel": "N4",
+      "japanese": "湖の深さを地図で確認しました。",
+      "reading": "みずうみのふかさをちずでかくにんしました。",
+      "korean": "호수의 깊이를 지도에서 확인했습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "nominalization",
+        "adjective",
+        "n4"
+      ],
+      "notesKo": "형용사를 명사화해 수치/특징을 말하는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-volitional-form-001",
+      "topicId": "topic-volitional-form",
+      "jlptLevel": "N4",
+      "japanese": "週末のイベントに参加しようと思っています。",
+      "reading": "しゅうまつのイベントにさんかしようとおもっています。",
+      "korean": "주말 이벤트에 참가하려고 생각하고 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "volitional",
+        "plan",
+        "n4"
+      ],
+      "notesKo": "의지형을 계획 표현으로 연결한 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-noda-ndesu-001",
+      "topicId": "topic-noda-ndesu",
+      "jlptLevel": "N4",
+      "japanese": "返事が遅れたのは、会議が長かったのです。",
+      "reading": "へんじがおくれたのは、かいぎがながかったのです。",
+      "korean": "답장이 늦은 것은 회의가 길었기 때문입니다.",
+      "register": "polite_explanatory",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "explanation",
+        "work",
+        "n4"
+      ],
+      "notesKo": "상황의 이유를 설명하는 のです 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-tameni-001",
+      "topicId": "topic-tameni",
+      "jlptLevel": "N4",
+      "japanese": "面接のために、自己紹介を練習しています。",
+      "reading": "めんせつのために、じこしょうかいをれんしゅうしています。",
+      "korean": "면접을 위해 자기소개를 연습하고 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "purpose",
+        "work",
+        "n4"
+      ],
+      "notesKo": "목적 표현 ために를 취업 맥락으로 연습하는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-to-conditional-001",
+      "topicId": "topic-to-conditional",
+      "jlptLevel": "N4",
+      "japanese": "このボタンを押すと、画面が変わります。",
+      "reading": "このボタンをおすと、がめんがかわります。",
+      "korean": "이 버튼을 누르면 화면이 바뀝니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "condition",
+        "instruction",
+        "n4"
+      ],
+      "notesKo": "필연적 조건 と를 앱 조작 맥락으로 설명하는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
       }
     }
   ]
