@@ -99,4 +99,4 @@ def test_lesson_seed_source_answers_are_not_collapsed_to_first_option() -> None:
                 answer_counts[correct_answer] += 1
 
     assert set(answer_counts) == {"a", "b", "c", "d"}
-    assert answer_counts["a"] < sum(answer_counts.values())
+    assert len(set(answer_counts.values())) == 1
