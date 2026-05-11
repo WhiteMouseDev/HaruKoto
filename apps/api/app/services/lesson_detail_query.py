@@ -87,6 +87,7 @@ async def get_lesson_detail_data(
 
     content = LessonContent.model_validate(lesson.content_jsonb or {})
     for question in content.questions:
+        question.correct_answer = None
         question.correct_order = None
 
     vocab_ids = [link.vocabulary_id for link in lesson.item_links if link.item_type == "WORD" and link.vocabulary_id]
