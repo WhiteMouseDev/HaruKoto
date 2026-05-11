@@ -300,7 +300,9 @@ async def test_get_lesson_detail(client, mock_user):
             "explanation": "정중한 요청 표현",
         }
     ]
-    assert data["content"]["questions"][0]["correctAnswer"] == "a"
+    assert data["content"]["questions"][0]["correctAnswer"] is None
+    assert data["content"]["questions"][0]["correctOrder"] is None
+    assert data["content"]["questions"][1]["correctAnswer"] is None
     assert data["content"]["questions"][1]["correctOrder"] is None
     assert data["progress"]["status"] == "IN_PROGRESS"
 
