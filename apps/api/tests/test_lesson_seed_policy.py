@@ -1,6 +1,12 @@
-import pytest
+import json
+import uuid
+from collections import Counter
+from unittest.mock import AsyncMock, MagicMock
 
-from app.seeds.lessons import _lesson_is_published
+import pytest
+from sqlalchemy.sql.dml import Delete
+
+from app.seeds.lessons import CONTENT_DIR, CONTENT_FILES, _lesson_is_published, _replace_item_links
 
 
 @pytest.mark.parametrize("status", ["PILOT", "PUBLISHED"])
@@ -15,3 +21,82 @@ def test_lesson_seed_does_not_publish_draft_status() -> None:
 def test_lesson_seed_rejects_unknown_status() -> None:
     with pytest.raises(ValueError, match="Unsupported lesson meta.status: ARCHIVED"):
         _lesson_is_published({"status": "ARCHIVED"})
+
+
+@pytest.mark.asyncio
+async def test_lesson_seed_replaces_existing_item_links_after_reference_resolution() -> None:
+    lesson = MagicMock()
+    lesson.id = uuid.uuid4()
+    lesson.jlpt_level = "N5"
+
+    vocab_one = MagicMock()
+    vocab_one.id = uuid.uuid4()
+    vocab_two = MagicMock()
+    vocab_two.id = uuid.uuid4()
+    grammar = MagicMock()
+    grammar.id = uuid.uuid4()
+
+    vocab_one_result = MagicMock()
+    vocab_one_result.scalar_one_or_none.return_value = vocab_one
+    vocab_two_result = MagicMock()
+    vocab_two_result.scalar_one_or_none.return_value = vocab_two
+    grammar_result = MagicMock()
+    grammar_result.scalar_one_or_none.return_value = grammar
+    delete_result = MagicMock()
+    delete_result.rowcount = 4
+
+    db = AsyncMock()
+    db.execute = AsyncMock(
+        side_effect=[
+            vocab_one_result,
+            vocab_two_result,
+            grammar_result,
+            delete_result,
+            MagicMock(),
+            MagicMock(),
+            MagicMock(),
+        ]
+    )
+
+    result = await _replace_item_links(db, lesson, vocab_orders=[1, 2], grammar_order=3)
+
+    assert result == {"created": 3, "deleted": 4}
+    assert isinstance(db.execute.await_args_list[3].args[0], Delete)
+
+
+@pytest.mark.asyncio
+async def test_lesson_seed_does_not_delete_links_when_reference_resolution_fails() -> None:
+    lesson = MagicMock()
+    lesson.id = uuid.uuid4()
+    lesson.jlpt_level = "N5"
+
+    missing_vocab_result = MagicMock()
+    missing_vocab_result.scalar_one_or_none.return_value = None
+
+    db = AsyncMock()
+    db.execute = AsyncMock(return_value=missing_vocab_result)
+
+    with pytest.raises(ValueError, match="Vocabulary order=999 not found for N5"):
+        await _replace_item_links(db, lesson, vocab_orders=[999], grammar_order=None)
+
+    assert len(db.execute.await_args_list) == 1
+    assert not isinstance(db.execute.await_args.args[0], Delete)
+
+
+def test_lesson_seed_source_answers_are_not_collapsed_to_first_option() -> None:
+    answer_counts: Counter[str] = Counter()
+
+    for filename in CONTENT_FILES:
+        data = json.loads((CONTENT_DIR / filename).read_text(encoding="utf-8"))
+        for lesson in data["lessons"]:
+            for question in lesson["content_jsonb"]["questions"]:
+                if question["type"] not in ("VOCAB_MCQ", "CONTEXT_CLOZE"):
+                    continue
+
+                option_ids = {option["id"] for option in question["options"]}
+                correct_answer = question["correct_answer"]
+                assert correct_answer in option_ids
+                answer_counts[correct_answer] += 1
+
+    assert set(answer_counts) == {"a", "b", "c", "d"}
+    assert answer_counts["a"] < sum(answer_counts.values())
