@@ -4,8 +4,8 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated/build green, manual target-runtime UAT still open
-last_updated: "2026-05-07T03:10:52.000Z"
-last_activity: 2026-05-07
+last_updated: "2026-05-11T07:10:10.000Z"
+last_activity: 2026-05-11
 progress:
   total_phases: 0
   completed_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — awaiting v1.2 scope. Leading candidate: Ch.01 pilot content (see `docs/domain/learning/n5-curriculum-map.md`).
+**Current focus:** v1.1 shipped — target-runtime UAT gate still open. v1.2 leading track is curriculum expansion, now starting with N4 pilot seed operationalization after PR #74.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-07 — release gate refreshed; current main CI and API/web Sentry are green, mobile tests/contracts are green, target-runtime microphone/study-flow sign-off remains open
+Last activity: 2026-05-11 — PR #74 merged the first N4 pilot lesson seeds; current main CI and Deploy API are green at `f6cdb8a`, while target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,18 +39,19 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- Ch.01 파일럿 콘텐츠 제작 (if v1.2 goes that direction) — blueprint → AI generation → admin review → TTS
+- v1.1 release-owner decision: close or explicitly defer the remaining target-runtime microphone/study-flow and observability acceptance items.
+- N4 pilot seed operationalization — admin/human curriculum review → TTS scope → staging seed dry-run → target-runtime N4 study UAT.
 
 ### Release Gate
 
 - v1.1 tag stays fixed at `d7a8c89`; post-tag commits (`950681d`, `c629aae`) are stabilization.
-- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
+- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. Current main `f6cdb8a` has green CI and Deploy API, but this does not close human target-runtime UAT. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
 - If manual UAT passes and the post-tag mobile fix should ship, cut `v1.1.1` at `c629aae`.
 - Do not start new API/mobile refactoring until the manual UAT gate is closed or intentionally deferred.
 
 ### Blockers/Concerns
 
-Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Automated checks, current main CI, mobile tests/contracts, and API/web Sentry refresh are green.
+Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Automated checks, current main CI and Deploy API, mobile tests/contracts, and API/web Sentry refresh are green; release-owner acceptance is still required for remaining target-runtime and observability gaps.
 
 ### Resolved Carry-overs (2026-04-23 PM)
 
@@ -60,6 +61,6 @@ Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Au
 
 ## Session Continuity
 
-Last session: 2026-05-07T12:10:52+09:00
-Stopped at: v1.1 stabilization checkpoint refreshed; automated validation and API/web observability green; target-runtime microphone/study-flow UAT still needs human execution or explicit release-owner defer
+Last session: 2026-05-11T16:10:10+09:00
+Stopped at: PR #74 N4 pilot seeds merged and main checks green; v1.1 target-runtime microphone/study-flow UAT still needs human execution or explicit release-owner defer
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`
