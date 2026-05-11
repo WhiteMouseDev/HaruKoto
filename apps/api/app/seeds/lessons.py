@@ -7,15 +7,19 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 import sqlalchemy as sa
 from sqlalchemy import cast, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.models.content import Grammar, Vocabulary
@@ -36,6 +40,14 @@ CONTENT_FILES = [
 
 PUBLISHABLE_META_STATUSES = {"PILOT", "PUBLISHED"}
 ALLOWED_META_STATUSES = {"DRAFT", *PUBLISHABLE_META_STATUSES}
+
+
+@dataclass(frozen=True, slots=True)
+class SeedItemLink:
+    item_type: str
+    vocabulary_id: UUID | None
+    grammar_id: UUID | None
+    item_order: int
 
 
 def _jlpt_str(level: object) -> str:
@@ -115,65 +127,98 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[s
     return result.scalar_one()
 
 
-async def _link_items(
+async def _resolve_vocabulary(db: AsyncSession, *, jlpt_level: object, order: int) -> Vocabulary:
+    result = await db.execute(
+        select(Vocabulary).where(
+            cast(Vocabulary.jlpt_level, sa.Text()) == _jlpt_str(jlpt_level),
+            Vocabulary.order == order,
+        )
+    )
+    vocab = result.scalar_one_or_none()
+    if vocab is None:
+        raise ValueError(f"Vocabulary order={order} not found for {_jlpt_str(jlpt_level)}")
+    return vocab
+
+
+async def _resolve_grammar(db: AsyncSession, *, jlpt_level: object, order: int) -> Grammar:
+    result = await db.execute(
+        select(Grammar).where(
+            cast(Grammar.jlpt_level, sa.Text()) == _jlpt_str(jlpt_level),
+            Grammar.order == order,
+        )
+    )
+    grammar = result.scalar_one_or_none()
+    if grammar is None:
+        raise ValueError(f"Grammar order={order} not found for {_jlpt_str(jlpt_level)}")
+    return grammar
+
+
+async def _build_expected_item_links(
     db: AsyncSession,
-    lesson: Lesson,
+    *,
+    jlpt_level: object,
     vocab_orders: list[int],
     grammar_order: int | None,
-) -> int:
-    """Link vocabulary and grammar items to a lesson. Returns count of links created."""
-    count = 0
+) -> list[SeedItemLink]:
+    """Resolve seed order references into the exact link list a lesson should have."""
+    expected_links: list[SeedItemLink] = []
 
-    # Link vocabulary items
     for idx, order in enumerate(vocab_orders):
-        result = await db.execute(
-            select(Vocabulary).where(
-                cast(Vocabulary.jlpt_level, sa.Text()) == _jlpt_str(lesson.jlpt_level),
-                Vocabulary.order == order,
+        vocab = await _resolve_vocabulary(db, jlpt_level=jlpt_level, order=order)
+        expected_links.append(
+            SeedItemLink(
+                item_type="WORD",
+                vocabulary_id=vocab.id,
+                grammar_id=None,
+                item_order=idx + 1,
             )
         )
-        vocab = result.scalar_one_or_none()
-        if vocab is None:
-            print(f"  ⚠️  Vocabulary order={order} not found, skipping")
-            continue
 
-        stmt = pg_insert(LessonItemLink).values(
-            lesson_id=lesson.id,
-            item_type="WORD",
-            vocabulary_id=vocab.id,
-            grammar_id=None,
-            item_order=idx + 1,
-            is_core=True,
-        )
-        stmt = stmt.on_conflict_do_nothing()
-        await db.execute(stmt)
-        count += 1
-
-    # Link grammar item
     if grammar_order is not None:
-        result = await db.execute(
-            select(Grammar).where(
-                cast(Grammar.jlpt_level, sa.Text()) == _jlpt_str(lesson.jlpt_level),
-                Grammar.order == grammar_order,
-            )
-        )
-        grammar = result.scalar_one_or_none()
-        if grammar is None:
-            print(f"  ⚠️  Grammar order={grammar_order} not found, skipping")
-        else:
-            stmt = pg_insert(LessonItemLink).values(
-                lesson_id=lesson.id,
+        grammar = await _resolve_grammar(db, jlpt_level=jlpt_level, order=grammar_order)
+        expected_links.append(
+            SeedItemLink(
                 item_type="GRAMMAR",
                 vocabulary_id=None,
                 grammar_id=grammar.id,
                 item_order=len(vocab_orders) + 1,
-                is_core=True,
             )
-            stmt = stmt.on_conflict_do_nothing()
-            await db.execute(stmt)
-            count += 1
+        )
 
-    return count
+    return expected_links
+
+
+async def _replace_item_links(
+    db: AsyncSession,
+    lesson: Lesson,
+    vocab_orders: list[int],
+    grammar_order: int | None,
+) -> dict[str, int]:
+    """Replace lesson item links with the seed file's canonical order."""
+    expected_links = await _build_expected_item_links(
+        db,
+        jlpt_level=lesson.jlpt_level,
+        vocab_orders=vocab_orders,
+        grammar_order=grammar_order,
+    )
+
+    delete_result = await db.execute(sa.delete(LessonItemLink).where(LessonItemLink.lesson_id == lesson.id))
+    rowcount = getattr(delete_result, "rowcount", 0) or 0
+    deleted_count = max(int(rowcount), 0)
+
+    for expected_link in expected_links:
+        stmt = pg_insert(LessonItemLink).values(
+            lesson_id=lesson.id,
+            item_type=expected_link.item_type,
+            vocabulary_id=expected_link.vocabulary_id,
+            grammar_id=expected_link.grammar_id,
+            item_order=expected_link.item_order,
+            is_core=True,
+        )
+        stmt = stmt.on_conflict_do_nothing()
+        await db.execute(stmt)
+
+    return {"created": len(expected_links), "deleted": deleted_count}
 
 
 async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
@@ -188,28 +233,30 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
 
     lesson_count = 0
     link_count = 0
+    deleted_link_count = 0
 
     for ld in lessons_data:
         lesson = await _upsert_lesson(db, chapter, ld, is_published=is_published)
         print(f"  ✅ Lesson {ld['lesson_id']}: {ld['title']}")
 
-        links = await _link_items(
+        links = await _replace_item_links(
             db,
             lesson,
             vocab_orders=ld["vocab_orders"],
             grammar_order=ld["grammar"]["grammar_order"],
         )
-        print(f"     → {links} items linked")
+        print(f"     → {links['created']} items linked ({links['deleted']} stale removed)")
 
         lesson_count += 1
-        link_count += links
+        link_count += links["created"]
+        deleted_link_count += links["deleted"]
 
-    return {"chapters": 1, "lessons": lesson_count, "item_links": link_count}
+    return {"chapters": 1, "lessons": lesson_count, "item_links": link_count, "item_links_deleted": deleted_link_count}
 
 
 async def seed_lessons(db: AsyncSession) -> dict[str, int]:
     """Seed Part 1 lessons (Ch.01~06). Returns counts summary."""
-    totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0}
+    totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
 
     for filename in CONTENT_FILES:
         filepath = CONTENT_DIR / filename
@@ -225,17 +272,109 @@ async def seed_lessons(db: AsyncSession) -> dict[str, int]:
     return totals
 
 
+def _item_link_identity(item: SeedItemLink | LessonItemLink) -> tuple[str, str | None, str | None, int]:
+    return (
+        item.item_type,
+        str(item.vocabulary_id) if item.vocabulary_id is not None else None,
+        str(item.grammar_id) if item.grammar_id is not None else None,
+        item.item_order,
+    )
+
+
+async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+    data = json.loads(filepath.read_text(encoding="utf-8"))
+    meta = data["meta"]
+    lessons_data = data["lessons"]
+    counts = {"chapters": 1, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+
+    for ld in lessons_data:
+        result = await db.execute(
+            select(Lesson)
+            .where(
+                cast(Lesson.jlpt_level, sa.Text()) == meta["jlpt_level"],
+                Lesson.lesson_no == ld["lesson_no"],
+            )
+            .options(selectinload(Lesson.item_links))
+        )
+        lesson = result.scalar_one_or_none()
+        counts["lessons"] += 1
+        if lesson is None:
+            print(f"  Missing lesson: {ld['lesson_id']} ({meta['jlpt_level']} #{ld['lesson_no']})")
+            counts["missing_lessons"] += 1
+            continue
+
+        if lesson.content_jsonb != ld["content_jsonb"]:
+            print(f"  Content mismatch: {ld['lesson_id']} ({meta['jlpt_level']} #{ld['lesson_no']})")
+            counts["content_mismatches"] += 1
+
+        expected_links = await _build_expected_item_links(
+            db,
+            jlpt_level=meta["jlpt_level"],
+            vocab_orders=ld["vocab_orders"],
+            grammar_order=ld["grammar"]["grammar_order"],
+        )
+        expected_identities = sorted((_item_link_identity(link) for link in expected_links), key=lambda item: item[3])
+        actual_identities = sorted((_item_link_identity(link) for link in lesson.item_links), key=lambda item: item[3])
+        if actual_identities != expected_identities:
+            print(f"  Item link mismatch: {ld['lesson_id']} (expected={len(expected_identities)}, actual={len(actual_identities)})")
+            counts["item_link_mismatches"] += 1
+
+    return counts
+
+
+async def audit_lesson_seed_sync(db: AsyncSession) -> dict[str, int]:
+    """Compare current DB lessons against the seed source without writing data."""
+    totals = {"chapters": 0, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+
+    for filename in CONTENT_FILES:
+        filepath = CONTENT_DIR / filename
+        if not filepath.exists():
+            print(f"⚠️  {filename} not found, skipping")
+            continue
+
+        counts = await _audit_one_chapter(db, filepath)
+        for key in totals:
+            totals[key] += counts[key]
+
+    return totals
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Seed or audit Part 1 lesson data.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Compare DB lessons with seed files without writing changes.",
+    )
+    return parser.parse_args()
+
+
 async def main() -> None:
+    args = _parse_args()
     engine = create_async_engine(settings.DATABASE_URL, echo=False)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
+    has_mismatch = False
 
-    print("Seeding Part 1 lessons (Ch.01~06)...")
-    async with async_session() as db:
-        counts = await seed_lessons(db)
-        for key, val in counts.items():
-            print(f"  {key}: {val}")
+    try:
+        if args.check:
+            print("Checking Part 1 lesson seed sync (Ch.01~06)...")
+            async with async_session() as db:
+                counts = await audit_lesson_seed_sync(db)
+                for key, val in counts.items():
+                    print(f"  {key}: {val}")
+            has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
+        else:
+            print("Seeding Part 1 lessons (Ch.01~06)...")
+            async with async_session() as db:
+                counts = await seed_lessons(db)
+                for key, val in counts.items():
+                    print(f"  {key}: {val}")
+    finally:
+        await engine.dispose()
 
-    await engine.dispose()
+    if has_mismatch:
+        raise SystemExit(1)
+
     print("Done!")
 
 
