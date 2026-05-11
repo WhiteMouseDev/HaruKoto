@@ -1,0 +1,979 @@
+{
+  "meta": {
+    "chapter_id": "N4-CH02",
+    "chapter_title": "이유・조건・의도 표현",
+    "jlpt_level": "N4",
+    "part_no": 1,
+    "chapter_no": 2,
+    "lesson_count": 5,
+    "topic": "さ・意向形・のだ・ために・と条件",
+    "status": "PILOT",
+    "created_at": "2026-05-11",
+    "author": "Codex",
+    "source_note": "Generated from HaruKoto N4 seed candidates; paid PDFs were used only for topic coverage reference."
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN4-006",
+      "lesson_no": 6,
+      "chapter_lesson_no": 1,
+      "title": "호수의 깊이를 말해요",
+      "subtitle": "い형용사 stem + さ로 정도를 명사화하기",
+      "topic": "さ",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜さ",
+        "meaning_ko": "~함 / ~이 (형용사의 명사화)",
+        "grammar_order": 45,
+        "supporting_grammar_orders": [
+          36
+        ]
+      },
+      "vocab_orders": [
+        142,
+        143,
+        144,
+        145,
+        146
+      ],
+      "vocab_detail": {
+        "142": "正しい (올바르다)",
+        "143": "深い (깊다)",
+        "144": "浅い (얕다)",
+        "145": "太い (굵다, 뚱뚱하다)",
+        "146": "細い (가늘다, 날씬하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "지도와 사진을 보며 길이와 깊이 같은 정도를 말함",
+          "highlights": [
+            "深さ",
+            "正しさ",
+            "太さ",
+            "細さ"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "湖の深さを地図で確認しました。",
+              "translation": "호수의 깊이를 지도에서 확인했습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "この川は浅さも分かりますか。",
+              "translation": "이 강은 얕이도 알 수 있나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。道の太さや細さも見られます。",
+              "translation": "네. 길의 굵기나 가늘기도 볼 수 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "情報の正しさも大切ですね。",
+              "translation": "정보의 정확성도 중요하네요."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "深い의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "깊다"
+              },
+              {
+                "id": "b",
+                "text": "얕다"
+              },
+              {
+                "id": "c",
+                "text": "굵다"
+              },
+              {
+                "id": "d",
+                "text": "가늘다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "深い(ふかい)는 깊다입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "正しい의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "부끄럽다"
+              },
+              {
+                "id": "b",
+                "text": "올바르다"
+              },
+              {
+                "id": "c",
+                "text": "부드럽다"
+              },
+              {
+                "id": "d",
+                "text": "시끄럽다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "正しい(ただしい)는 올바르다입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "湖の深___を確認します。 (호수의 깊이를 확인합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "に"
+              },
+              {
+                "id": "b",
+                "text": "な"
+              },
+              {
+                "id": "c",
+                "text": "さ"
+              },
+              {
+                "id": "d",
+                "text": "しか"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "い형용사 深い는 い를 빼고 さ를 붙여 深さ가 됩니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "道の太___を見ます。 (길의 굵기를 봅니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "なさい"
+              },
+              {
+                "id": "b",
+                "text": "ため"
+              },
+              {
+                "id": "c",
+                "text": "よう"
+              },
+              {
+                "id": "d",
+                "text": "さ"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "太い도 太さ로 정도를 명사화합니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'호수의 깊이를 확인했습니다'를 배열하세요.",
+            "tokens": [
+              "確認しました",
+              "湖の",
+              "深さを"
+            ],
+            "correct_order": [
+              "湖の",
+              "深さを",
+              "確認しました"
+            ],
+            "explanation": "명사화된 深さ를 목적어로 사용합니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-007",
+      "lesson_no": 7,
+      "chapter_lesson_no": 2,
+      "title": "참가하려고 생각해요",
+      "subtitle": "意向形 + と思っています로 계획 말하기",
+      "topic": "의지형",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "意向形",
+        "meaning_ko": "의지형 (~하자 / ~하려고 하다)",
+        "grammar_order": 46,
+        "supporting_grammar_orders": [
+          12
+        ]
+      },
+      "vocab_orders": [
+        127,
+        83,
+        85,
+        128,
+        88
+      ],
+      "vocab_detail": {
+        "83": "送る (보내다)",
+        "85": "集める (모으다)",
+        "88": "決める (정하다, 결정하다)",
+        "127": "参加する (참가하다)",
+        "128": "紹介する (소개하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "주말 계획과 행사 준비를 이야기함",
+          "highlights": [
+            "参加しよう",
+            "送ろう",
+            "集めよう",
+            "紹介しよう"
+          ],
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "週末のイベントに参加しようと思っています。",
+              "translation": "주말 이벤트에 참가하려고 생각하고 있습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "私は友達に案内を送ろうと思っています。",
+              "translation": "저는 친구에게 안내를 보내려고 생각하고 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "資料も集めようと思います。",
+              "translation": "자료도 모으려고 합니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "新しい先生を紹介しようと思います。",
+              "translation": "새 선생님을 소개하려고 합니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "参加する의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "참가하다"
+              },
+              {
+                "id": "b",
+                "text": "소개하다"
+              },
+              {
+                "id": "c",
+                "text": "정하다"
+              },
+              {
+                "id": "d",
+                "text": "배달하다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "参加する는 참가하다입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "集める의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "비교하다"
+              },
+              {
+                "id": "b",
+                "text": "모으다"
+              },
+              {
+                "id": "c",
+                "text": "익숙해지다"
+              },
+              {
+                "id": "d",
+                "text": "망가지다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "集める는 모으다입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "イベントに参加___と思っています。",
+            "options": [
+              {
+                "id": "a",
+                "text": "します"
+              },
+              {
+                "id": "b",
+                "text": "できる"
+              },
+              {
+                "id": "c",
+                "text": "しよう"
+              },
+              {
+                "id": "d",
+                "text": "なさい"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "参加する의 의지형은 参加しよう입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "案内を送___と思っています。",
+            "options": [
+              {
+                "id": "a",
+                "text": "るなさい"
+              },
+              {
+                "id": "b",
+                "text": "ったほう"
+              },
+              {
+                "id": "c",
+                "text": "れます"
+              },
+              {
+                "id": "d",
+                "text": "ろう"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "送る의 의지형은 送ろう입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'행사에 참가하려고 생각하고 있습니다'를 배열하세요.",
+            "tokens": [
+              "イベントに",
+              "参加しようと",
+              "思っています"
+            ],
+            "correct_order": [
+              "イベントに",
+              "参加しようと",
+              "思っています"
+            ],
+            "explanation": "의지형 뒤에 と思っています를 붙입니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-008",
+      "lesson_no": 8,
+      "chapter_lesson_no": 3,
+      "title": "회의가 길었던 거예요",
+      "subtitle": "〜のです로 이유와 배경 설명하기",
+      "topic": "のだ・んです",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜のだ",
+        "meaning_ko": "~인 것이다 / ~한 것이다 (설명)",
+        "grammar_order": 47,
+        "supporting_grammar_orders": [
+          24
+        ]
+      },
+      "vocab_orders": [
+        55,
+        59,
+        76,
+        54,
+        61
+      ],
+      "vocab_detail": {
+        "54": "連絡 (연락)",
+        "55": "理由 (이유)",
+        "59": "原因 (원인)",
+        "61": "相談 (상담)",
+        "76": "返事 (대답, 답장)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "답장이 늦은 이유를 정중하게 설명함",
+          "highlights": [
+            "長かったのです",
+            "理由",
+            "原因",
+            "返事"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "返事が遅れてすみません。",
+              "translation": "답장이 늦어서 죄송합니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "何か理由があったんですか。",
+              "translation": "무슨 이유가 있었나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "会議が長かったのです。",
+              "translation": "회의가 길었던 것입니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "そうだったんですね。連絡ありがとうございます。",
+              "translation": "그랬군요. 연락 감사합니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "理由의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "이유"
+              },
+              {
+                "id": "b",
+                "text": "의견"
+              },
+              {
+                "id": "c",
+                "text": "교통"
+              },
+              {
+                "id": "d",
+                "text": "신호"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "理由(りゆう)는 이유입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "返事의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "원인"
+              },
+              {
+                "id": "b",
+                "text": "대답, 답장"
+              },
+              {
+                "id": "c",
+                "text": "기술"
+              },
+              {
+                "id": "d",
+                "text": "규칙"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "返事(へんじ)는 대답 또는 답장입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "会議が長かった___。 (회의가 길었던 것입니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "なさい"
+              },
+              {
+                "id": "b",
+                "text": "しかありません"
+              },
+              {
+                "id": "c",
+                "text": "のです"
+              },
+              {
+                "id": "d",
+                "text": "かもしれません"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "이유나 배경 설명에는 普通形 + のです를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "理由があった___か。 (이유가 있었던 건가요?)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ために"
+              },
+              {
+                "id": "b",
+                "text": "ように"
+              },
+              {
+                "id": "c",
+                "text": "さ"
+              },
+              {
+                "id": "d",
+                "text": "んです"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "회화에서는 のです가 んです로 자주 줄어듭니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'회의가 길었던 것입니다'를 배열하세요.",
+            "tokens": [
+              "長かった",
+              "会議が",
+              "のです"
+            ],
+            "correct_order": [
+              "会議が",
+              "長かった",
+              "のです"
+            ],
+            "explanation": "보통형 과거 뒤에 のです를 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-009",
+      "lesson_no": 9,
+      "chapter_lesson_no": 4,
+      "title": "면접을 위해 준비해요",
+      "subtitle": "Nの / V辞書形 + ために로 목적 말하기",
+      "topic": "ために",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜ために",
+        "meaning_ko": "~하기 위해 / ~때문에 (목적/원인)",
+        "grammar_order": 17,
+        "supporting_grammar_orders": [
+          18
+        ]
+      },
+      "vocab_orders": [
+        38,
+        39,
+        16,
+        62,
+        33
+      ],
+      "vocab_detail": {
+        "16": "準備 (준비)",
+        "33": "教育 (교육)",
+        "38": "就職 (취직)",
+        "39": "面接 (면접)",
+        "62": "技術 (기술)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "면접 준비 목적을 설명함",
+          "highlights": [
+            "面接のために",
+            "就職するために",
+            "準備",
+            "技術"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "面接のために、自己紹介を練習しています。",
+              "translation": "면접을 위해 자기소개를 연습하고 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "就職するために、準備しているんですね。",
+              "translation": "취직하기 위해 준비하고 있군요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。新しい技術も勉強しています。",
+              "translation": "네. 새로운 기술도 공부하고 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "教育のためにも役に立ちそうです。",
+              "translation": "교육을 위해서도 도움이 될 것 같습니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "面接의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "면접"
+              },
+              {
+                "id": "b",
+                "text": "졸업"
+              },
+              {
+                "id": "c",
+                "text": "연구"
+              },
+              {
+                "id": "d",
+                "text": "상담"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "面接(めんせつ)는 면접입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "準備의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "도착"
+              },
+              {
+                "id": "b",
+                "text": "준비"
+              },
+              {
+                "id": "c",
+                "text": "원인"
+              },
+              {
+                "id": "d",
+                "text": "번역"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "準備(じゅんび)는 준비입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "面接___、練習しています。 (면접을 위해 연습하고 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "しかない"
+              },
+              {
+                "id": "b",
+                "text": "かもしれない"
+              },
+              {
+                "id": "c",
+                "text": "のために"
+              },
+              {
+                "id": "d",
+                "text": "なさい"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "명사 뒤에는 のために를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "就職する___、準備します。 (취직하기 위해 준비합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "のです"
+              },
+              {
+                "id": "b",
+                "text": "さ"
+              },
+              {
+                "id": "c",
+                "text": "と"
+              },
+              {
+                "id": "d",
+                "text": "ために"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "동사 사전형 뒤에는 바로 ために를 붙입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'면접을 위해 준비하고 있습니다'를 배열하세요.",
+            "tokens": [
+              "準備しています",
+              "面接のために",
+              "今"
+            ],
+            "correct_order": [
+              "今",
+              "面接のために",
+              "準備しています"
+            ],
+            "explanation": "목적 표현 面接のために를 서술 앞에 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-010",
+      "lesson_no": 10,
+      "chapter_lesson_no": 5,
+      "title": "누르면 바뀌어요",
+      "subtitle": "普通形 + と로 자연스러운 결과 말하기",
+      "topic": "조건 と",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜と (条件)",
+        "meaning_ko": "~하면 (필연적 조건/발견)",
+        "grammar_order": 40,
+        "supporting_grammar_orders": [
+          21,
+          22,
+          23
+        ]
+      },
+      "vocab_orders": [
+        21,
+        20,
+        100,
+        82,
+        118
+      ],
+      "vocab_detail": {
+        "20": "交差点 (교차로)",
+        "21": "信号 (신호등)",
+        "82": "届く (도착하다, 닿다)",
+        "100": "壊れる (고장나다, 부서지다)",
+        "118": "乾く (마르다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "앱 화면과 교통 상황에서 필연적 조건을 설명함",
+          "highlights": [
+            "押すと",
+            "変わります",
+            "信号",
+            "届く"
+          ],
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "このボタンを押すと、画面が変わります。",
+              "translation": "이 버튼을 누르면 화면이 바뀝니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "信号が青になると、車が進みますね。",
+              "translation": "신호가 파란색이 되면 차가 나아가네요."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "はい。自然な結果を言うときに使います。",
+              "translation": "네. 자연스러운 결과를 말할 때 씁니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "荷物が届くと、連絡します。",
+              "translation": "짐이 도착하면 연락하겠습니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "信号의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "신호등"
+              },
+              {
+                "id": "b",
+                "text": "교차로"
+              },
+              {
+                "id": "c",
+                "text": "주차장"
+              },
+              {
+                "id": "d",
+                "text": "절"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "信号(しんごう)는 신호등입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "届く의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "고치다"
+              },
+              {
+                "id": "b",
+                "text": "도착하다, 닿다"
+              },
+              {
+                "id": "c",
+                "text": "줍다"
+              },
+              {
+                "id": "d",
+                "text": "마르다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "届く는 도착하다, 닿다입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "ボタンを押す___、画面が変わります。",
+            "options": [
+              {
+                "id": "a",
+                "text": "ために"
+              },
+              {
+                "id": "b",
+                "text": "しか"
+              },
+              {
+                "id": "c",
+                "text": "と"
+              },
+              {
+                "id": "d",
+                "text": "なさい"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "필연적 결과를 말할 때 普通形 + と를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "信号が青になる___、車が進みます。",
+            "options": [
+              {
+                "id": "a",
+                "text": "のです"
+              },
+              {
+                "id": "b",
+                "text": "さ"
+              },
+              {
+                "id": "c",
+                "text": "よう"
+              },
+              {
+                "id": "d",
+                "text": "と"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "자연스럽게 이어지는 결과에는 と가 어울립니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'버튼을 누르면 화면이 바뀝니다'를 배열하세요.",
+            "tokens": [
+              "画面が変わります",
+              "ボタンを押すと",
+              "この"
+            ],
+            "correct_order": [
+              "この",
+              "ボタンを押すと",
+              "画面が変わります"
+            ],
+            "explanation": "条件句 ボタンを押すと 뒤에 결과를 둡니다."
+          }
+        ]
+      }
+    }
+  ]
+}
