@@ -186,7 +186,7 @@ class _FreeQuizSheetStartButton extends StatelessWidget {
           color: theme.colorScheme.onPrimary,
         ),
         label: Text(
-          '$modeLabel 학습 시작 (10문제)',
+          '$modeLabel 퀴즈 시작 (10문제)',
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
