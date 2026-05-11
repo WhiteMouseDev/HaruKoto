@@ -1,0 +1,1022 @@
+{
+  "meta": {
+    "chapter_id": "CH08",
+    "chapter_title": "생활 표현과 동사 기초",
+    "jlpt_level": "N5",
+    "part_no": 1,
+    "chapter_no": 8,
+    "lesson_count": 5,
+    "status": "DRAFT",
+    "created_at": "2026-05-11",
+    "author": "Codex"
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN5-036",
+      "lesson_no": 36,
+      "chapter_lesson_no": 1,
+      "title": "종이를 두 장 삽니다",
+      "subtitle": "숫자와 조수사를 묶어 수량 말하기",
+      "topic": "숫자・조수사",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 46,
+        "pattern": "数量 + 助数詞",
+        "meaning_ko": "수량 표현",
+        "supporting_grammar_orders": [
+          1,
+          43
+        ]
+      },
+      "vocab_orders": [
+        191,
+        192,
+        193,
+        299,
+        547,
+        101,
+        534,
+        199
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "문구점에서 종이와 펜 수량을 말하며 구입",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "紙を二枚買います。",
+              "translation": "종이를 두 장 삽니다."
+            },
+            {
+              "speaker": "店員",
+              "voice_id": "japanese_female_1",
+              "text": "ペンも一つ買いますか。",
+              "translation": "펜도 하나 사십니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、紙を三枚お願いします。",
+              "translation": "아니요, 종이를 세 장 부탁합니다."
+            },
+            {
+              "speaker": "店員",
+              "voice_id": "japanese_female_1",
+              "text": "はい、三枚ですね。",
+              "translation": "네, 세 장이군요."
+            }
+          ],
+          "highlights": [
+            "一つ",
+            "二枚",
+            "三枚",
+            "紙",
+            "買います"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "二つ의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "둘"
+              },
+              {
+                "id": "b",
+                "text": "하나"
+              },
+              {
+                "id": "c",
+                "text": "셋"
+              },
+              {
+                "id": "d",
+                "text": "열"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "二つ(ふたつ)는 일반적인 물건을 셀 때 쓰는 '둘'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "-枚의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "-명"
+              },
+              {
+                "id": "b",
+                "text": "-장"
+              },
+              {
+                "id": "c",
+                "text": "-시"
+              },
+              {
+                "id": "d",
+                "text": "-분"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "枚(まい)는 종이처럼 얇고 평평한 물건을 셀 때 쓰는 조수사입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "紙を二___買います。(종이를 두 장 삽니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "時"
+              },
+              {
+                "id": "b",
+                "text": "人"
+              },
+              {
+                "id": "c",
+                "text": "枚"
+              },
+              {
+                "id": "d",
+                "text": "日"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "종이는 얇은 물건이므로 枚를 사용합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "ペンも一___買いますか。(펜도 하나 사십니까?)",
+            "options": [
+              {
+                "id": "a",
+                "text": "枚"
+              },
+              {
+                "id": "b",
+                "text": "時"
+              },
+              {
+                "id": "c",
+                "text": "分"
+              },
+              {
+                "id": "d",
+                "text": "つ"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "일반적인 물건 하나를 말할 때 一つ를 쓸 수 있습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'종이를 세 장 부탁합니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "お願いします",
+              "紙を",
+              "三枚"
+            ],
+            "correct_order": [
+              "紙を",
+              "三枚",
+              "お願いします"
+            ],
+            "explanation": "대상 紙を 뒤에 수량 三枚를 두고 お願いします로 부탁합니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "101": "買う (사다)",
+        "191": "一つ (하나)",
+        "192": "二つ (둘)",
+        "193": "三つ (셋)",
+        "199": "お願いします (부탁합니다)",
+        "299": "紙 (종이)",
+        "534": "ペン (펜)",
+        "547": "-枚 (-장)"
+      }
+    },
+    {
+      "lesson_id": "HN5-037",
+      "lesson_no": 37,
+      "chapter_lesson_no": 2,
+      "title": "수요일 세 시에 만납니다",
+      "subtitle": "요일과 시각 뒤에 に 붙이기",
+      "topic": "시간・요일",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 42,
+        "pattern": "時間 + に",
+        "meaning_ko": "시간에",
+        "supporting_grammar_orders": [
+          31,
+          37
+        ]
+      },
+      "vocab_orders": [
+        16,
+        17,
+        202,
+        374,
+        377,
+        388,
+        395,
+        514,
+        532
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "스터디 일정을 정하며 요일과 시각을 확인",
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "水曜日の三時に会いますか。",
+              "translation": "수요일 세 시에 만납니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい、三時に会います。",
+              "translation": "네, 세 시에 만납니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "明日は十時半に会いますか。",
+              "translation": "내일은 열 시 반에 만납니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、今日は水曜日です。",
+              "translation": "아니요, 오늘은 수요일입니다."
+            }
+          ],
+          "highlights": [
+            "水曜日",
+            "三時",
+            "十時半",
+            "に",
+            "会います"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "水曜日의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "수요일"
+              },
+              {
+                "id": "b",
+                "text": "월요일"
+              },
+              {
+                "id": "c",
+                "text": "토요일"
+              },
+              {
+                "id": "d",
+                "text": "일요일"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "水曜日(すいようび)는 수요일입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "-時의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "-분"
+              },
+              {
+                "id": "b",
+                "text": "-시"
+              },
+              {
+                "id": "c",
+                "text": "-장"
+              },
+              {
+                "id": "d",
+                "text": "-개"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "時(じ)는 시각의 '-시'를 나타냅니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "水曜日の三時___会います。(수요일 세 시에 만납니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "を"
+              },
+              {
+                "id": "b",
+                "text": "で"
+              },
+              {
+                "id": "c",
+                "text": "に"
+              },
+              {
+                "id": "d",
+                "text": "の"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "구체적인 시각 뒤에는 に를 붙입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "十時___に会います。(열 시 반에 만납니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "枚"
+              },
+              {
+                "id": "b",
+                "text": "人"
+              },
+              {
+                "id": "c",
+                "text": "本"
+              },
+              {
+                "id": "d",
+                "text": "半"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "半(はん)은 '반, 30분'을 뜻해 十時半은 열 시 반입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'수요일 세 시에 만납니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "会います",
+              "三時に",
+              "水曜日の"
+            ],
+            "correct_order": [
+              "水曜日の",
+              "三時に",
+              "会います"
+            ],
+            "explanation": "요일 水曜日の 뒤에 시각 三時に를 두고 동사 会います로 끝냅니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "16": "今日 (오늘)",
+        "17": "明日 (내일)",
+        "202": "会う ((-に+) 만나다)",
+        "374": "三 (삼. 셋)",
+        "377": "-時 (-시)",
+        "388": "十 (십. 열)",
+        "395": "水曜日 (수요일)",
+        "514": "-半 (-반. 30분)",
+        "532": "-分 (-분)"
+      }
+    },
+    {
+      "lesson_id": "HN5-038",
+      "lesson_no": 38,
+      "chapter_lesson_no": 3,
+      "title": "이 종이를 한 장 부탁합니다",
+      "subtitle": "お願いします로 물건이나 도움을 정중하게 부탁하기",
+      "topic": "おねがいします",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 6,
+        "pattern": "お願いします",
+        "meaning_ko": "부탁합니다",
+        "supporting_grammar_orders": [
+          36,
+          46
+        ]
+      },
+      "vocab_orders": [
+        198,
+        199,
+        299,
+        354,
+        426,
+        538,
+        547
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "접수 데스크에서 종이와 볼펜을 정중하게 부탁",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "すみません。この紙を一枚お願いします。",
+              "translation": "실례합니다. 이 종이를 한 장 부탁합니다."
+            },
+            {
+              "speaker": "受付",
+              "voice_id": "japanese_female_1",
+              "text": "はい、一枚ですね。",
+              "translation": "네, 한 장이군요."
+            },
+            {
+              "speaker": "受付",
+              "voice_id": "japanese_female_1",
+              "text": "ボールペンもお願いしますか。",
+              "translation": "볼펜도 필요하십니까?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "いいえ、紙だけお願いします。",
+              "translation": "아니요, 종이만 부탁합니다."
+            }
+          ],
+          "highlights": [
+            "すみません",
+            "この紙",
+            "一枚",
+            "お願いします",
+            "だけ"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "お願いします의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "부탁합니다"
+              },
+              {
+                "id": "b",
+                "text": "감사합니다"
+              },
+              {
+                "id": "c",
+                "text": "안녕하세요"
+              },
+              {
+                "id": "d",
+                "text": "괜찮습니다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "お願いします는 정중하게 부탁할 때 쓰는 표현입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "この의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "그"
+              },
+              {
+                "id": "b",
+                "text": "이"
+              },
+              {
+                "id": "c",
+                "text": "저"
+              },
+              {
+                "id": "d",
+                "text": "어느"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "この는 명사 앞에서 '이'라는 뜻으로 씁니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "この紙を一枚___。(이 종이를 한 장 부탁합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "あります"
+              },
+              {
+                "id": "b",
+                "text": "会います"
+              },
+              {
+                "id": "c",
+                "text": "お願いします"
+              },
+              {
+                "id": "d",
+                "text": "分かります"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "대상 뒤에 お願いします를 붙이면 정중한 부탁이 됩니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "紙___お願いします。(종이만 부탁합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "まで"
+              },
+              {
+                "id": "b",
+                "text": "から"
+              },
+              {
+                "id": "c",
+                "text": "より"
+              },
+              {
+                "id": "d",
+                "text": "だけ"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "だけ는 '-만'이라는 뜻입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'이 종이를 한 장 부탁합니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "一枚",
+              "お願いします",
+              "この紙を"
+            ],
+            "correct_order": [
+              "この紙を",
+              "一枚",
+              "お願いします"
+            ],
+            "explanation": "부탁할 대상 この紙を 뒤에 수량 一枚를 두고 お願いします로 끝냅니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "198": "すみません (실례합니다, 죄송합니다)",
+        "199": "お願いします (부탁합니다)",
+        "299": "紙 (종이)",
+        "354": "この (이)",
+        "426": "だけ (-만. -만큼)",
+        "538": "ボールペン (볼펜)",
+        "547": "-枚 (-장)"
+      }
+    },
+    {
+      "lesson_id": "HN5-039",
+      "lesson_no": 39,
+      "chapter_lesson_no": 4,
+      "title": "책상 위에 펜이 있습니다",
+      "subtitle": "ある・いる로 사물과 생물의 존재 말하기",
+      "topic": "ある・いる",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 42,
+        "pattern": "ある・いる",
+        "meaning_ko": "있다",
+        "supporting_grammar_orders": [
+          37,
+          40
+        ]
+      },
+      "vocab_orders": [
+        35,
+        103,
+        104,
+        236,
+        244,
+        439,
+        494,
+        534
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "교실에서 책상 위 물건과 방 안의 동물을 설명",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "部屋に机があります。",
+              "translation": "방에 책상이 있습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "机の上にペンがあります。",
+              "translation": "책상 위에 펜이 있습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "部屋に猫もいますか。",
+              "translation": "방에 고양이도 있습니까?"
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "いいえ、犬がいます。",
+              "translation": "아니요, 개가 있습니다."
+            }
+          ],
+          "highlights": [
+            "あります",
+            "います",
+            "部屋",
+            "机の上",
+            "猫",
+            "犬"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "ある의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "있다(사물)"
+              },
+              {
+                "id": "b",
+                "text": "있다(생물)"
+              },
+              {
+                "id": "c",
+                "text": "가다"
+              },
+              {
+                "id": "d",
+                "text": "사다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "ある는 주로 사물이나 식물이 '있다'고 말할 때 씁니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "いる의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "있다(사물)"
+              },
+              {
+                "id": "b",
+                "text": "있다(생물)"
+              },
+              {
+                "id": "c",
+                "text": "만나다"
+              },
+              {
+                "id": "d",
+                "text": "걷다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "いる는 사람이나 동물처럼 생물이 '있다'고 말할 때 씁니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "机の上にペンが___。(책상 위에 펜이 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "います"
+              },
+              {
+                "id": "b",
+                "text": "会います"
+              },
+              {
+                "id": "c",
+                "text": "あります"
+              },
+              {
+                "id": "d",
+                "text": "買います"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "펜은 사물이므로 あります를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "部屋に猫が___。(방에 고양이가 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "あります"
+              },
+              {
+                "id": "b",
+                "text": "買います"
+              },
+              {
+                "id": "c",
+                "text": "行きます"
+              },
+              {
+                "id": "d",
+                "text": "います"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "고양이는 생물이므로 います를 씁니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'책상 위에 펜이 있습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "ペンが",
+              "机の上に",
+              "あります"
+            ],
+            "correct_order": [
+              "机の上に",
+              "ペンが",
+              "あります"
+            ],
+            "explanation": "위치 표현 机の上に 뒤에 존재하는 대상 ペンが를 두고 あります로 끝냅니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "35": "部屋 (방)",
+        "103": "ある (있다(사물))",
+        "104": "いる (있다(생물))",
+        "236": "犬 (개)",
+        "244": "上 (위)",
+        "439": "机 (책상)",
+        "494": "猫 (고양이)",
+        "534": "ペン (펜)"
+      }
+    },
+    {
+      "lesson_id": "HN5-040",
+      "lesson_no": 40,
+      "chapter_lesson_no": 5,
+      "title": "먹습니다, 마십니다",
+      "subtitle": "る동사・う동사・불규칙 동사 구분하기",
+      "topic": "동사의 종류와 특징",
+      "estimated_minutes": 10,
+      "grammar": {
+        "level": "N5",
+        "grammar_order": 45,
+        "pattern": "る動詞 / う動詞",
+        "meaning_ko": "1그룹 / 2그룹 동사 분류",
+        "supporting_grammar_orders": [
+          47,
+          49
+        ]
+      },
+      "vocab_orders": [
+        91,
+        92,
+        93,
+        94,
+        96,
+        98,
+        99,
+        102,
+        513
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "아침 식사와 공부 계획을 말하며 여러 동사를 비교",
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "私は朝、パンを食べます。",
+              "translation": "저는 아침에 빵을 먹습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "私は水を飲みます。",
+              "translation": "저는 물을 마십니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "昼に図書館へ行きます。",
+              "translation": "점심에 도서관에 갑니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "図書館で勉強します。",
+              "translation": "도서관에서 공부합니다."
+            }
+          ],
+          "highlights": [
+            "食べます",
+            "飲みます",
+            "行きます",
+            "します"
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "食べる의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "먹다"
+              },
+              {
+                "id": "b",
+                "text": "마시다"
+              },
+              {
+                "id": "c",
+                "text": "보다"
+              },
+              {
+                "id": "d",
+                "text": "쓰다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "食べる(たべる)는 '먹다'입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "飲む의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "가다"
+              },
+              {
+                "id": "b",
+                "text": "마시다"
+              },
+              {
+                "id": "c",
+                "text": "오다"
+              },
+              {
+                "id": "d",
+                "text": "읽다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "飲む(のむ)는 '마시다'입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "パンを___。(빵을 먹습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "飲みます"
+              },
+              {
+                "id": "b",
+                "text": "来ます"
+              },
+              {
+                "id": "c",
+                "text": "食べます"
+              },
+              {
+                "id": "d",
+                "text": "書きます"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "パン은 먹는 대상이므로 食べます를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "図書館で勉強___。(도서관에서 공부합니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "来ます"
+              },
+              {
+                "id": "b",
+                "text": "見ます"
+              },
+              {
+                "id": "c",
+                "text": "読みます"
+              },
+              {
+                "id": "d",
+                "text": "します"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "勉強する는 '공부하다'이며, 정중형은 勉強します입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'저는 빵을 먹습니다'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "食べます",
+              "パンを",
+              "私は"
+            ],
+            "correct_order": [
+              "私は",
+              "パンを",
+              "食べます"
+            ],
+            "explanation": "주제 私は 뒤에 목적어 パンを를 두고 동사 食べます로 끝냅니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "91": "食べる (먹다)",
+        "92": "飲む (마시다)",
+        "93": "行く (가다)",
+        "94": "来る (오다)",
+        "96": "見る (보다)",
+        "98": "読む (읽다)",
+        "99": "書く (쓰다)",
+        "102": "する (하다)",
+        "513": "パン (빵)"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-"""Seed Ch.01 pilot lessons from 08-CH01-PILOT-CONTENT.json.
+"""Seed N5 lesson content from package lesson JSON files.
 
 Usage:
     cd apps/api
@@ -28,7 +28,7 @@ from app.models.lesson import Chapter, Lesson, LessonItemLink
 # Content JSON directory (relative to project root)
 CONTENT_DIR = Path(__file__).resolve().parents[4] / "packages" / "database" / "data" / "lessons" / "n5"
 
-# All Part 1 content files (Ch.01~06)
+# N5 lesson content files. Files can be PILOT/PUBLISHED or DRAFT.
 CONTENT_FILES = [
     "ch01-greetings-and-first-meetings.json",
     "ch02-introducing-things-and-people.json",
@@ -36,6 +36,8 @@ CONTENT_FILES = [
     "ch04-verb-basics.json",
     "ch05-past-and-sequence.json",
     "ch06-progress-and-habits.json",
+    "ch07-foundation-expression-reinforcement.json",
+    "ch08-daily-expressions-and-verb-foundations.json",
 ]
 
 PUBLISHABLE_META_STATUSES = {"PILOT", "PUBLISHED"}
@@ -255,7 +257,7 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
 
 
 async def seed_lessons(db: AsyncSession) -> dict[str, int]:
-    """Seed Part 1 lessons (Ch.01~06). Returns counts summary."""
+    """Seed N5 lessons. Returns counts summary."""
     totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
 
     for filename in CONTENT_FILES:
@@ -357,14 +359,14 @@ async def main() -> None:
 
     try:
         if args.check:
-            print("Checking Part 1 lesson seed sync (Ch.01~06)...")
+            print("Checking N5 lesson seed sync...")
             async with async_session() as db:
                 counts = await audit_lesson_seed_sync(db)
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
             has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
         else:
-            print("Seeding Part 1 lessons (Ch.01~06)...")
+            print("Seeding N5 lessons...")
             async with async_session() as db:
                 counts = await seed_lessons(db)
                 for key, val in counts.items():
