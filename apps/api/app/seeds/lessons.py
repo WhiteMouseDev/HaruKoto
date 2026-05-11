@@ -44,6 +44,10 @@ CONTENT_FILES_BY_LEVEL = {
         "ch08-daily-expressions-and-verb-foundations.json",
         "ch09-expression-contrast-and-choice.json",
     ],
+    "N4": [
+        "ch01-core-directions-and-judgment.json",
+        "ch02-reasons-conditions-and-intent.json",
+    ],
 }
 
 # Backwards-compatible aliases for tests and one-off scripts that still inspect

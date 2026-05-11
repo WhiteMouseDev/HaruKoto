@@ -1,0 +1,977 @@
+{
+  "meta": {
+    "chapter_id": "N4-CH01",
+    "chapter_title": "지시와 판단 표현",
+    "jlpt_level": "N4",
+    "part_no": 1,
+    "chapter_no": 1,
+    "lesson_count": 5,
+    "topic": "なさい・ほうがいい・かもしれない・しかない・可能形",
+    "status": "PILOT",
+    "created_at": "2026-05-11",
+    "author": "Codex",
+    "source_note": "Generated from HaruKoto N4 seed candidates; paid PDFs were used only for topic coverage reference."
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN4-001",
+      "lesson_no": 1,
+      "chapter_lesson_no": 1,
+      "title": "이름을 쓰세요",
+      "subtitle": "Vます stem + なさい로 부드럽게 지시하기",
+      "topic": "なさい",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜なさい",
+        "meaning_ko": "~하시오 / ~해라 (부드러운 명령)",
+        "grammar_order": 42,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        79,
+        75,
+        35,
+        115,
+        153
+      ],
+      "vocab_detail": {
+        "35": "授業 (수업)",
+        "75": "注意 (주의)",
+        "79": "規則 (규칙)",
+        "115": "叱る (꾸짖다, 야단치다)",
+        "153": "丁寧 (정중하다, 꼼꼼하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "교실에서 선생님이 과제 제출 전 주의사항을 안내함",
+          "highlights": [
+            "書きなさい",
+            "確認しなさい",
+            "注意",
+            "規則"
+          ],
+          "script": [
+            {
+              "speaker": "先生",
+              "voice_id": "japanese_female_1",
+              "text": "宿題を出す前に、名前を書きなさい。",
+              "translation": "숙제를 내기 전에 이름을 쓰세요."
+            },
+            {
+              "speaker": "学生",
+              "voice_id": "japanese_male_1",
+              "text": "はい、ここに書けばいいですか。",
+              "translation": "네, 여기에 쓰면 되나요?"
+            },
+            {
+              "speaker": "先生",
+              "voice_id": "japanese_female_1",
+              "text": "はい。それから、規則をもう一度確認しなさい。",
+              "translation": "네. 그리고 규칙을 한 번 더 확인하세요."
+            },
+            {
+              "speaker": "学生",
+              "voice_id": "japanese_male_1",
+              "text": "分かりました。丁寧に確認します。",
+              "translation": "알겠습니다. 꼼꼼히 확인하겠습니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "規則의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "규칙"
+              },
+              {
+                "id": "b",
+                "text": "이유"
+              },
+              {
+                "id": "c",
+                "text": "예약"
+              },
+              {
+                "id": "d",
+                "text": "경치"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "規則(きそく)는 규칙입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "注意의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "축하"
+              },
+              {
+                "id": "b",
+                "text": "주의"
+              },
+              {
+                "id": "c",
+                "text": "연락"
+              },
+              {
+                "id": "d",
+                "text": "안심"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "注意(ちゅうい)는 주의입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "名前を書き___. (이름을 쓰세요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "かもしれません"
+              },
+              {
+                "id": "b",
+                "text": "しかありません"
+              },
+              {
+                "id": "c",
+                "text": "なさい"
+              },
+              {
+                "id": "d",
+                "text": "たほうがいいです"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "지시할 때 동사 ます형 어간 뒤에 なさい를 붙입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "規則を確認___. (규칙을 확인하세요.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "できません"
+              },
+              {
+                "id": "b",
+                "text": "しよう"
+              },
+              {
+                "id": "c",
+                "text": "したほう"
+              },
+              {
+                "id": "d",
+                "text": "しなさい"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "確認する는 しなさい로 바뀝니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'이름을 쓰세요'를 올바른 순서로 배열하세요.",
+            "tokens": [
+              "名前を",
+              "書きなさい",
+              "ここに"
+            ],
+            "correct_order": [
+              "ここに",
+              "名前を",
+              "書きなさい"
+            ],
+            "explanation": "장소-목적어-지시 표현 순서로 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-002",
+      "lesson_no": 2,
+      "chapter_lesson_no": 2,
+      "title": "일찍 쉬는 편이 좋아요",
+      "subtitle": "Vた + ほうがいい로 조언하기",
+      "topic": "たほうがいい",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜たほうがいい",
+        "meaning_ko": "~하는 편이 좋다 (조언)",
+        "grammar_order": 43,
+        "supporting_grammar_orders": [
+          21,
+          23
+        ]
+      },
+      "vocab_orders": [
+        40,
+        41,
+        126,
+        61,
+        55
+      ],
+      "vocab_detail": {
+        "40": "心配 (걱정)",
+        "41": "安心 (안심)",
+        "55": "理由 (이유)",
+        "61": "相談 (상담)",
+        "126": "治る (낫다, 치료되다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "친구가 몸 상태를 걱정하며 조언함",
+          "highlights": [
+            "寝たほうがいい",
+            "相談",
+            "心配",
+            "安心"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "少し頭が痛いです。",
+              "translation": "머리가 조금 아픕니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "心配ですね。今日は早く寝たほうがいいです。",
+              "translation": "걱정이네요. 오늘은 일찍 자는 편이 좋습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "病院に相談したほうがいいですか。",
+              "translation": "병원에 상담하는 편이 좋을까요?"
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "熱があれば、相談したほうが安心です。",
+              "translation": "열이 있으면 상담하는 편이 안심됩니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "心配의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "걱정"
+              },
+              {
+                "id": "b",
+                "text": "자신감"
+              },
+              {
+                "id": "c",
+                "text": "연락"
+              },
+              {
+                "id": "d",
+                "text": "문화"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "心配(しんぱい)는 걱정입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "相談의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "교차로"
+              },
+              {
+                "id": "b",
+                "text": "상담"
+              },
+              {
+                "id": "c",
+                "text": "축하"
+              },
+              {
+                "id": "d",
+                "text": "교통"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "相談(そうだん)는 상담입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "早く寝___。 (일찍 자는 편이 좋습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "なさい"
+              },
+              {
+                "id": "b",
+                "text": "かもしれません"
+              },
+              {
+                "id": "c",
+                "text": "たほうがいいです"
+              },
+              {
+                "id": "d",
+                "text": "しかありません"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "조언은 Vた + ほうがいいです로 말합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "病院に相談___。 (병원에 상담하는 편이 좋습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "しなさいです"
+              },
+              {
+                "id": "b",
+                "text": "できたほうです"
+              },
+              {
+                "id": "c",
+                "text": "するしかです"
+              },
+              {
+                "id": "d",
+                "text": "したほうがいいです"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "する는 したほうがいいです가 됩니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'오늘은 일찍 자는 편이 좋습니다'를 배열하세요.",
+            "tokens": [
+              "寝たほうがいいです",
+              "今日は",
+              "早く"
+            ],
+            "correct_order": [
+              "今日は",
+              "早く",
+              "寝たほうがいいです"
+            ],
+            "explanation": "시간 표현 뒤에 부사와 조언 표현을 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-003",
+      "lesson_no": 3,
+      "chapter_lesson_no": 3,
+      "title": "늦을지도 몰라요",
+      "subtitle": "普通形 + かもしれない로 불확실한 추측 말하기",
+      "topic": "かもしれない",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜かもしれない",
+        "meaning_ko": "~일지도 모른다 (불확실한 추측)",
+        "grammar_order": 41,
+        "supporting_grammar_orders": [
+          14,
+          15
+        ]
+      },
+      "vocab_orders": [
+        44,
+        45,
+        97,
+        40,
+        77
+      ],
+      "vocab_detail": {
+        "40": "心配 (걱정)",
+        "44": "台風 (태풍)",
+        "45": "地震 (지진)",
+        "77": "最近 (최근)",
+        "97": "間に合う (시간에 맞다, 늦지 않다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "태풍 때문에 약속 시간에 늦을 가능성을 이야기함",
+          "highlights": [
+            "遅れるかもしれません",
+            "台風",
+            "間に合う",
+            "最近"
+          ],
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "台風で電車が遅れるかもしれません。",
+              "translation": "태풍 때문에 전철이 늦을지도 모릅니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "じゃあ、会議に間に合わないかもしれませんね。",
+              "translation": "그럼 회의에 맞추지 못할지도 모르겠네요."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "最近、天気がよく変わります。",
+              "translation": "최근 날씨가 자주 바뀝니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "少し心配ですが、早めに出発します。",
+              "translation": "조금 걱정되지만 일찍 출발하겠습니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "台風의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "태풍"
+              },
+              {
+                "id": "b",
+                "text": "지진"
+              },
+              {
+                "id": "c",
+                "text": "호수"
+              },
+              {
+                "id": "d",
+                "text": "섬"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "台風(たいふう)는 태풍입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "間に合う의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "전달하다"
+              },
+              {
+                "id": "b",
+                "text": "시간에 맞다"
+              },
+              {
+                "id": "c",
+                "text": "사과하다"
+              },
+              {
+                "id": "d",
+                "text": "비교하다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "間に合う는 시간에 맞다라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "電車が遅れる___。 (전철이 늦을지도 모릅니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "なさい"
+              },
+              {
+                "id": "b",
+                "text": "しかありません"
+              },
+              {
+                "id": "c",
+                "text": "かもしれません"
+              },
+              {
+                "id": "d",
+                "text": "たほうがいいです"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "불확실한 추측에는 かもしれません을 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "間に合わない___。 (시간에 맞지 못할지도 모릅니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "つもりです"
+              },
+              {
+                "id": "b",
+                "text": "ために"
+              },
+              {
+                "id": "c",
+                "text": "なさい"
+              },
+              {
+                "id": "d",
+                "text": "かもしれません"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "부정 보통형 뒤에도 かもしれません을 붙입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'전철이 늦을지도 모릅니다'를 배열하세요.",
+            "tokens": [
+              "遅れる",
+              "電車が",
+              "かもしれません"
+            ],
+            "correct_order": [
+              "電車が",
+              "遅れる",
+              "かもしれません"
+            ],
+            "explanation": "보통형 遅れる 뒤에 かもしれません을 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-004",
+      "lesson_no": 4,
+      "chapter_lesson_no": 4,
+      "title": "달릴 수밖에 없어요",
+      "subtitle": "N/辞書形 + しかない로 제한된 선택 말하기",
+      "topic": "しかない",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "〜しかない",
+        "meaning_ko": "~밖에 없다 / ~할 수밖에 없다",
+        "grammar_order": 48,
+        "supporting_grammar_orders": [
+          32
+        ]
+      },
+      "vocab_orders": [
+        94,
+        87,
+        88,
+        16,
+        17
+      ],
+      "vocab_detail": {
+        "16": "準備 (준비)",
+        "17": "予定 (예정)",
+        "87": "諦める (포기하다)",
+        "88": "決める (정하다, 결정하다)",
+        "94": "足りる (충분하다, 족하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "시간이 부족해 선택지가 없는 상황을 설명함",
+          "highlights": [
+            "走るしかありません",
+            "足りる",
+            "諦める",
+            "予定"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "時間が足りません。駅まで走るしかありません。",
+              "translation": "시간이 부족합니다. 역까지 달릴 수밖에 없습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "次の予定がありますからね。",
+              "translation": "다음 일정이 있으니까요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "タクシーは高いので、電車に乗るしかありません。",
+              "translation": "택시는 비싸서 전철을 탈 수밖에 없습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "諦めないで、急いで行きましょう。",
+              "translation": "포기하지 말고 서둘러 갑시다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "足りる의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "충분하다"
+              },
+              {
+                "id": "b",
+                "text": "결정하다"
+              },
+              {
+                "id": "c",
+                "text": "익숙해지다"
+              },
+              {
+                "id": "d",
+                "text": "도착하다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "足りる는 충분하다, 모자라지 않다는 뜻입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "予定의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "경험"
+              },
+              {
+                "id": "b",
+                "text": "예정"
+              },
+              {
+                "id": "c",
+                "text": "문법"
+              },
+              {
+                "id": "d",
+                "text": "공기"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "予定(よてい)는 예정입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "走る___。 (달릴 수밖에 없습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "かもしれません"
+              },
+              {
+                "id": "b",
+                "text": "なさい"
+              },
+              {
+                "id": "c",
+                "text": "しかありません"
+              },
+              {
+                "id": "d",
+                "text": "たほうがいいです"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "선택지가 없을 때 辞書形 + しかありません을 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "電車に乗る___。 (전철을 탈 수밖에 없습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "ために"
+              },
+              {
+                "id": "b",
+                "text": "ようです"
+              },
+              {
+                "id": "c",
+                "text": "なさい"
+              },
+              {
+                "id": "d",
+                "text": "しかありません"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "다른 선택이 없음을 나타내는 표현입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'역까지 달릴 수밖에 없습니다'를 배열하세요.",
+            "tokens": [
+              "駅まで",
+              "走るしか",
+              "ありません"
+            ],
+            "correct_order": [
+              "駅まで",
+              "走るしか",
+              "ありません"
+            ],
+            "explanation": "장소 뒤에 동사 사전형 + しかありません을 둡니다."
+          }
+        ]
+      }
+    },
+    {
+      "lesson_id": "HN4-005",
+      "lesson_no": 5,
+      "chapter_lesson_no": 5,
+      "title": "한자를 찾아볼 수 있어요",
+      "subtitle": "가능형으로 할 수 있는 일 말하기",
+      "topic": "가능형",
+      "estimated_minutes": 12,
+      "grammar": {
+        "pattern": "可能形",
+        "meaning_ko": "가능형 (~할 수 있다)",
+        "grammar_order": 44,
+        "supporting_grammar_orders": [
+          37
+        ]
+      },
+      "vocab_orders": [
+        27,
+        52,
+        90,
+        98,
+        42
+      ],
+      "vocab_detail": {
+        "27": "運転 (운전)",
+        "42": "自信 (자신감)",
+        "52": "翻訳 (번역)",
+        "90": "調べる (조사하다, 찾아보다)",
+        "98": "申し込む (신청하다)"
+      },
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "학습 앱에서 할 수 있는 기능을 설명함",
+          "highlights": [
+            "調べられます",
+            "翻訳できます",
+            "申し込めます",
+            "自信"
+          ],
+          "script": [
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "このアプリで漢字を調べられます。",
+              "translation": "이 앱으로 한자를 찾아볼 수 있습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "文も翻訳できますか。",
+              "translation": "문장도 번역할 수 있나요?"
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "はい。授業の予約にも申し込めます。",
+              "translation": "네. 수업 예약도 신청할 수 있습니다."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "それなら自信を持って勉強できます。",
+              "translation": "그렇다면 자신감을 갖고 공부할 수 있습니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "翻訳의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "번역"
+              },
+              {
+                "id": "b",
+                "text": "운전"
+              },
+              {
+                "id": "c",
+                "text": "환승"
+              },
+              {
+                "id": "d",
+                "text": "주의"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "翻訳(ほんやく)는 번역입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "申し込む의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "도망치다"
+              },
+              {
+                "id": "b",
+                "text": "신청하다"
+              },
+              {
+                "id": "c",
+                "text": "칭찬하다"
+              },
+              {
+                "id": "d",
+                "text": "배달하다"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "申し込む는 신청하다입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "漢字を調べ___。 (한자를 찾아볼 수 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "なさい"
+              },
+              {
+                "id": "b",
+                "text": "しかありません"
+              },
+              {
+                "id": "c",
+                "text": "られます"
+              },
+              {
+                "id": "d",
+                "text": "かもしれません"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "調べる의 가능형은 調べられます입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "文を翻訳___。 (문장을 번역할 수 있습니다.)",
+            "options": [
+              {
+                "id": "a",
+                "text": "しますしか"
+              },
+              {
+                "id": "b",
+                "text": "しなさい"
+              },
+              {
+                "id": "c",
+                "text": "したほう"
+              },
+              {
+                "id": "d",
+                "text": "できます"
+              }
+            ],
+            "correct_answer": "d",
+            "explanation": "する동사의 가능형은 できます입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'이 앱으로 한자를 찾아볼 수 있습니다'를 배열하세요.",
+            "tokens": [
+              "漢字を",
+              "このアプリで",
+              "調べられます"
+            ],
+            "correct_order": [
+              "このアプリで",
+              "漢字を",
+              "調べられます"
+            ],
+            "explanation": "수단 このアプリで 뒤에 목적어와 가능형을 둡니다."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -47,9 +47,27 @@ def test_lesson_seed_level_selection_normalizes_and_deduplicates_levels() -> Non
     assert _selected_lesson_levels(["n5", " N5 "]) == ("N5",)
 
 
-def test_lesson_seed_rejects_unconfigured_n4_until_official_sources_exist() -> None:
-    with pytest.raises(ValueError, match="Unsupported lesson seed level: N4"):
-        _normalize_lesson_level("N4")
+def test_lesson_seed_level_selection_supports_n4_sources() -> None:
+    assert _normalize_lesson_level("N4") == "N4"
+    assert CONTENT_FILES_BY_LEVEL["N4"] == [
+        "ch01-core-directions-and-judgment.json",
+        "ch02-reasons-conditions-and-intent.json",
+    ]
+
+
+def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
+    lesson_count = 0
+
+    for filename in CONTENT_FILES_BY_LEVEL["N4"]:
+        data = json.loads((CONTENT_ROOT / "n4" / filename).read_text(encoding="utf-8"))
+
+        assert data["meta"]["jlpt_level"] == "N4"
+        assert data["meta"]["status"] == "PILOT"
+        assert _lesson_is_published(data["meta"]) is True
+        assert data["meta"]["lesson_count"] == len(data["lessons"])
+        lesson_count += len(data["lessons"])
+
+    assert lesson_count == 10
 
 
 @pytest.mark.asyncio
