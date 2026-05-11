@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-11 — PR #77 fixed lesson-detail answer-key redaction after the configured DB target was seeded with the first N4 pilot lessons. Current main CI and Deploy API are green at `16afbb6`; target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate.
+Last activity: 2026-05-11 — PR #78 synchronized UAT and N4 operational evidence after PR #77 fixed lesson-detail answer-key redaction. The latest code-bearing checkpoint `16afbb6` has green CI and Deploy API; the doc-only sync merge `d67c7cb` has green CI. Target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -45,7 +45,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Release Gate
 
 - v1.1 tag stays fixed at `d7a8c89`; post-tag commits (`950681d`, `c629aae`) are stabilization.
-- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. Current main `16afbb6` has green CI and Deploy API, but this does not close human target-runtime UAT. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
+- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. The latest code-bearing checkpoint `16afbb6` has green CI and Deploy API, and the doc-only sync merge `d67c7cb` has green CI, but this does not close human target-runtime UAT. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
 - If manual UAT passes and the post-tag mobile fix should ship, cut `v1.1.1` at `c629aae`.
 - Do not start new API/mobile refactoring until the manual UAT gate is closed or intentionally deferred.
 
