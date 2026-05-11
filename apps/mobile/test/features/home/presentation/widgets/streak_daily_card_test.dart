@@ -39,13 +39,47 @@ void main() {
       expect(find.text('2일째 연속 학습 완료!'), findsOneWidget);
     });
 
-    testWidgets('uses entry dates and semantic study flags for week marks',
+    testWidgets('renders the current week from Monday to Sunday',
         (tester) async {
+      final currentWeek = _currentWeekDates();
+
       await _pumpCard(
         tester,
-        weeklyStats: const [
+        weeklyStats: [
           WeeklyStatEntry(
-            date: '2026-05-07',
+            date: _formatDate(currentWeek[6]),
+            wordsStudied: 0,
+            xpEarned: 25,
+            hasStudied: true,
+          ),
+          WeeklyStatEntry(
+            date: _formatDate(currentWeek[0]),
+            wordsStudied: 0,
+            xpEarned: 25,
+            hasStudied: true,
+          ),
+        ],
+      );
+
+      final labels = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((widget) => widget.data)
+          .where((text) => _weekdayLabels.contains(text))
+          .toList();
+
+      expect(labels, _weekdayLabels);
+      expect(find.byIcon(LucideIcons.check), findsNWidgets(2));
+    });
+
+    testWidgets('uses current-week entry dates and semantic study flags',
+        (tester) async {
+      final currentWeek = _currentWeekDates();
+
+      await _pumpCard(
+        tester,
+        weeklyStats: [
+          WeeklyStatEntry(
+            date: _formatDate(currentWeek[3]),
             wordsStudied: 0,
             xpEarned: 25,
             hasStudied: true,
@@ -56,7 +90,42 @@ void main() {
       expect(find.text('목'), findsOneWidget);
       expect(find.byIcon(LucideIcons.check), findsOneWidget);
     });
+
+    testWidgets('ignores study marks outside the current week', (tester) async {
+      final currentWeek = _currentWeekDates();
+      final previousSunday =
+          currentWeek.first.subtract(const Duration(days: 1));
+
+      await _pumpCard(
+        tester,
+        weeklyStats: [
+          WeeklyStatEntry(
+            date: _formatDate(previousSunday),
+            wordsStudied: 0,
+            xpEarned: 25,
+            hasStudied: true,
+          ),
+        ],
+      );
+
+      expect(find.byIcon(LucideIcons.check), findsNothing);
+    });
   });
+}
+
+const _weekdayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+
+List<DateTime> _currentWeekDates() {
+  final today = _dateOnly(DateTime.now());
+  final startOfWeek =
+      today.subtract(Duration(days: today.weekday - DateTime.monday));
+  return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+}
+
+DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+
+String _formatDate(DateTime date) {
+  return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 }
 
 Future<void> _pumpCard(

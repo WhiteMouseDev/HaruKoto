@@ -431,19 +431,18 @@ class _StreakWeek extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final todayStr = _formatDate(DateTime.now());
+    final today = _dateOnly(DateTime.now());
+    final weekDays = _currentWeekDays(today);
     final inactiveDayColor = AppColors.streakContainer.withValues(alpha: 0.42);
     final pastDayColor = AppColors.streakContainer.withValues(alpha: 0.3);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(7, (i) {
-        final hasDate = i < weeklyStats.length;
-        final entry = hasDate ? weeklyStats[i] : null;
-        final date = entry?.date ?? '';
+      children: weekDays.map((day) {
+        final entry = day.entry;
         final studied = entry?.hasStudied ?? false;
-        final isToday = date == todayStr;
-        final isPast = hasDate && date.compareTo(todayStr) < 0;
+        final isToday = _isSameDate(day.date, today);
+        final isPast = day.date.isBefore(today);
 
         Color bgColor;
         Widget child;
@@ -479,7 +478,7 @@ class _StreakWeek extends StatelessWidget {
         return Column(
           children: [
             Text(
-              hasDate ? _weekdayLabel(date) : '',
+              _weekdayLabel(day.date),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 11,
@@ -497,20 +496,61 @@ class _StreakWeek extends StatelessWidget {
             ),
           ],
         );
-      }),
+      }).toList(),
     );
+  }
+
+  List<_WeekDayEntry> _currentWeekDays(DateTime today) {
+    final startOfWeek =
+        today.subtract(Duration(days: today.weekday - DateTime.monday));
+    final entriesByDate = <String, WeeklyStatEntry>{};
+
+    for (final entry in weeklyStats) {
+      final date = _parseDate(entry.date);
+      if (date != null) {
+        entriesByDate[_formatDate(date)] = entry;
+      }
+    }
+
+    return List.generate(7, (index) {
+      final date = startOfWeek.add(Duration(days: index));
+      return _WeekDayEntry(
+        date: date,
+        entry: entriesByDate[_formatDate(date)],
+      );
+    });
+  }
+
+  DateTime? _parseDate(String date) {
+    try {
+      return _dateOnly(DateTime.parse(date).toLocal());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  DateTime _dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+  bool _isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _formatDate(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  String _weekdayLabel(String date) {
+  String _weekdayLabel(DateTime date) {
     const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
-    try {
-      return dayLabels[DateTime.parse(date).weekday - 1];
-    } catch (_) {
-      return '';
-    }
+    return dayLabels[date.weekday - 1];
   }
+}
+
+class _WeekDayEntry {
+  final DateTime date;
+  final WeeklyStatEntry? entry;
+
+  const _WeekDayEntry({
+    required this.date,
+    required this.entry,
+  });
 }
