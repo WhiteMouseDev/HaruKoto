@@ -522,5 +522,5 @@ Admin app에는 `/tts-review` read-only 화면을 추가한다. 이 화면은 `s
 8. `lesson-seed-candidates.json`에서 human review와 TTS readiness를 통과한 후보만 공식 `data/lessons/**` 파일로 승격한다.
 9. `topic-kanji-reading-basics`와 `topic-kana-hiragana`는 grammar-linked seed shape가 아니라 kana/kanji scaffold shape로 따로 승격한다.
 10. N4 lesson 1-10 draft seed candidates는 TTS readiness와 human review를 통과한 뒤 공식 `data/lessons/n4/**` 승격 후보가 된다.
-11. N4 공식 승격 전에는 API seed loader의 multi-level 입력, 모바일 level-local lesson 번호 노출, admin review 상태 표시를 별도 확인한다.
+11. API seed loader는 level-aware registry 구조로 준비하되, 공식 `data/lessons/n4/**` 파일이 생기기 전에는 N4 seed가 성공하지 않도록 unsupported level로 막는다. N4 공식 승격 전 남은 확인 항목은 모바일 level-local lesson 번호 노출과 admin review 상태 표시다.
 12. `topic-shiru-wakaru`, `topic-shika-nai`, `topic-tameni`, `topic-to-conditional`처럼 contrast 성격이 강한 topic은 runtime question review를 추가로 통과해야 한다.
