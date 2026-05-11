@@ -6,7 +6,17 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from sqlalchemy.sql.dml import Delete
 
-from app.seeds.lessons import CONTENT_DIR, CONTENT_FILES, _lesson_is_published, _replace_item_links
+from app.seeds.lessons import (
+    CONTENT_DIR,
+    CONTENT_FILES,
+    CONTENT_FILES_BY_LEVEL,
+    CONTENT_ROOT,
+    DEFAULT_LESSON_LEVEL,
+    _lesson_is_published,
+    _normalize_lesson_level,
+    _replace_item_links,
+    _selected_lesson_levels,
+)
 
 
 @pytest.mark.parametrize("status", ["PILOT", "PUBLISHED"])
@@ -21,6 +31,25 @@ def test_lesson_seed_does_not_publish_draft_status() -> None:
 def test_lesson_seed_rejects_unknown_status() -> None:
     with pytest.raises(ValueError, match="Unsupported lesson meta.status: ARCHIVED"):
         _lesson_is_published({"status": "ARCHIVED"})
+
+
+def test_lesson_seed_registry_keeps_n5_as_default_source() -> None:
+    assert DEFAULT_LESSON_LEVEL == "N5"
+    assert CONTENT_DIR == CONTENT_ROOT / "n5"
+    assert CONTENT_FILES_BY_LEVEL[DEFAULT_LESSON_LEVEL] == CONTENT_FILES
+
+
+def test_lesson_seed_level_selection_defaults_to_n5() -> None:
+    assert _selected_lesson_levels() == ("N5",)
+
+
+def test_lesson_seed_level_selection_normalizes_and_deduplicates_levels() -> None:
+    assert _selected_lesson_levels(["n5", " N5 "]) == ("N5",)
+
+
+def test_lesson_seed_rejects_unconfigured_n4_until_official_sources_exist() -> None:
+    with pytest.raises(ValueError, match="Unsupported lesson seed level: N4"):
+        _normalize_lesson_level("N4")
 
 
 @pytest.mark.asyncio

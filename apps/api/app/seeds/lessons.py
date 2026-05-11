@@ -1,4 +1,4 @@
-"""Seed N5 lesson content from package lesson JSON files.
+"""Seed lesson content from package lesson JSON files.
 
 Usage:
     cd apps/api
@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -25,21 +26,30 @@ from app.config import settings
 from app.models.content import Grammar, Vocabulary
 from app.models.lesson import Chapter, Lesson, LessonItemLink
 
-# Content JSON directory (relative to project root)
-CONTENT_DIR = Path(__file__).resolve().parents[4] / "packages" / "database" / "data" / "lessons" / "n5"
+DEFAULT_LESSON_LEVEL = "N5"
 
-# N5 lesson content files. Files can be PILOT/PUBLISHED or DRAFT.
-CONTENT_FILES = [
-    "ch01-greetings-and-first-meetings.json",
-    "ch02-introducing-things-and-people.json",
-    "ch03-location-and-movement.json",
-    "ch04-verb-basics.json",
-    "ch05-past-and-sequence.json",
-    "ch06-progress-and-habits.json",
-    "ch07-foundation-expression-reinforcement.json",
-    "ch08-daily-expressions-and-verb-foundations.json",
-    "ch09-expression-contrast-and-choice.json",
-]
+# Content JSON root directory (relative to project root)
+CONTENT_ROOT = Path(__file__).resolve().parents[4] / "packages" / "database" / "data" / "lessons"
+
+# Lesson content files by JLPT level. Files can be PILOT/PUBLISHED or DRAFT.
+CONTENT_FILES_BY_LEVEL = {
+    "N5": [
+        "ch01-greetings-and-first-meetings.json",
+        "ch02-introducing-things-and-people.json",
+        "ch03-location-and-movement.json",
+        "ch04-verb-basics.json",
+        "ch05-past-and-sequence.json",
+        "ch06-progress-and-habits.json",
+        "ch07-foundation-expression-reinforcement.json",
+        "ch08-daily-expressions-and-verb-foundations.json",
+        "ch09-expression-contrast-and-choice.json",
+    ],
+}
+
+# Backwards-compatible aliases for tests and one-off scripts that still inspect
+# the default N5 seed source directly.
+CONTENT_DIR = CONTENT_ROOT / DEFAULT_LESSON_LEVEL.lower()
+CONTENT_FILES = CONTENT_FILES_BY_LEVEL[DEFAULT_LESSON_LEVEL]
 
 PUBLISHABLE_META_STATUSES = {"PILOT", "PUBLISHED"}
 ALLOWED_META_STATUSES = {"DRAFT", *PUBLISHABLE_META_STATUSES}
@@ -56,6 +66,30 @@ class SeedItemLink:
 def _jlpt_str(level: object) -> str:
     """Extract string value from JlptLevel enum or plain string."""
     return level.value if hasattr(level, "value") else str(level)
+
+
+def _normalize_lesson_level(level: str) -> str:
+    normalized = level.strip().upper()
+    if normalized not in CONTENT_FILES_BY_LEVEL:
+        supported = ", ".join(sorted(CONTENT_FILES_BY_LEVEL))
+        raise ValueError(f"Unsupported lesson seed level: {normalized} (supported: {supported})")
+    return normalized
+
+
+def _selected_lesson_levels(levels: Sequence[str] | None = None) -> tuple[str, ...]:
+    selected_levels = levels or (DEFAULT_LESSON_LEVEL,)
+    return tuple(dict.fromkeys(_normalize_lesson_level(level) for level in selected_levels))
+
+
+def _content_dir_for_level(level: str) -> Path:
+    return CONTENT_ROOT / level.lower()
+
+
+def _iter_content_filepaths(levels: Sequence[str] | None = None) -> Iterator[Path]:
+    for level in _selected_lesson_levels(levels):
+        content_dir = _content_dir_for_level(level)
+        for filename in CONTENT_FILES_BY_LEVEL[level]:
+            yield content_dir / filename
 
 
 def _lesson_is_published(meta: dict[str, Any]) -> bool:
@@ -257,14 +291,13 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
     return {"chapters": 1, "lessons": lesson_count, "item_links": link_count, "item_links_deleted": deleted_link_count}
 
 
-async def seed_lessons(db: AsyncSession) -> dict[str, int]:
-    """Seed N5 lessons. Returns counts summary."""
+async def seed_lessons(db: AsyncSession, *, levels: Sequence[str] | None = None) -> dict[str, int]:
+    """Seed lessons for configured levels. Returns counts summary."""
     totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
 
-    for filename in CONTENT_FILES:
-        filepath = CONTENT_DIR / filename
+    for filepath in _iter_content_filepaths(levels):
         if not filepath.exists():
-            print(f"⚠️  {filename} not found, skipping")
+            print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
         counts = await _seed_one_chapter(db, filepath)
@@ -325,14 +358,13 @@ async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]
     return counts
 
 
-async def audit_lesson_seed_sync(db: AsyncSession) -> dict[str, int]:
+async def audit_lesson_seed_sync(db: AsyncSession, *, levels: Sequence[str] | None = None) -> dict[str, int]:
     """Compare current DB lessons against the seed source without writing data."""
     totals = {"chapters": 0, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
 
-    for filename in CONTENT_FILES:
-        filepath = CONTENT_DIR / filename
+    for filepath in _iter_content_filepaths(levels):
         if not filepath.exists():
-            print(f"⚠️  {filename} not found, skipping")
+            print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
         counts = await _audit_one_chapter(db, filepath)
@@ -349,27 +381,52 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Compare DB lessons with seed files without writing changes.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--level",
+        action="append",
+        dest="levels",
+        help="JLPT lesson level to process. Repeat for multiple levels. Defaults to N5.",
+    )
+    parser.add_argument(
+        "--all-levels",
+        action="store_true",
+        help="Process every configured lesson seed level.",
+    )
+    args = parser.parse_args()
+    if args.all_levels and args.levels:
+        parser.error("--level cannot be combined with --all-levels")
+    return args
+
+
+def _levels_from_args(args: argparse.Namespace) -> tuple[str, ...]:
+    if args.all_levels:
+        return tuple(CONTENT_FILES_BY_LEVEL)
+    return _selected_lesson_levels(args.levels)
+
+
+def _levels_label(levels: Sequence[str]) -> str:
+    return ", ".join(levels)
 
 
 async def main() -> None:
     args = _parse_args()
+    levels = _levels_from_args(args)
     engine = create_async_engine(settings.DATABASE_URL, echo=False)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
     has_mismatch = False
 
     try:
         if args.check:
-            print("Checking N5 lesson seed sync...")
+            print(f"Checking lesson seed sync for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await audit_lesson_seed_sync(db)
+                counts = await audit_lesson_seed_sync(db, levels=levels)
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
             has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
         else:
-            print("Seeding N5 lessons...")
+            print(f"Seeding lessons for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await seed_lessons(db)
+                counts = await seed_lessons(db, levels=levels)
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
     finally:
