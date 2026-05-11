@@ -68,7 +68,7 @@ const response: TtsReviewBatchListResponse = {
     },
     {
       batchId: 'tts-review-gap-seed-script-lines',
-      status: 'draft',
+      status: 'review',
       reviewSurface: 'admin_extension_required',
       sourceKind: 'seed_candidate_script_lines',
       targetIds: ['tts-seed-script-1'],
@@ -259,6 +259,9 @@ describe('TtsReviewPage', () => {
     expect(screen.getByText('title')).toBeTruthy();
     expect(screen.getByText('tts-review-admin-vocabulary-fields')).toBeTruthy();
     expect(screen.getByText('tts-review-gap-seed-script-lines')).toBeTruthy();
+    expect(screen.getByText('table.reviewStatus')).toBeTruthy();
+    expect(screen.getByText('batchStatus.draft')).toBeTruthy();
+    expect(screen.getByText('batchStatus.review')).toBeTruthy();
     expect(screen.getAllByText('2').length).toBeGreaterThan(0);
     expect(screen.getAllByText('3').length).toBeGreaterThan(0);
   });

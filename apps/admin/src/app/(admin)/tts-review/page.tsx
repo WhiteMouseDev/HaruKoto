@@ -56,6 +56,17 @@ function surfaceClassName(surface: TtsReviewSurface): string {
     : 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300';
 }
 
+function batchStatusClassName(status: TtsReviewBatchItem['status']): string {
+  switch (status) {
+    case 'approved':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300';
+    case 'review':
+      return 'bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300';
+    case 'draft':
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+  }
+}
+
 function SourceKindLabel({ kind }: { kind: TtsReviewBatchItem['sourceKind'] }) {
   const t = useTranslations('ttsReview');
   switch (kind) {
@@ -81,6 +92,24 @@ function SurfaceLabel({ surface }: { surface: TtsReviewSurface }) {
   return surface === 'admin_existing_tts'
     ? t('surface.adminExisting')
     : t('surface.adminExtension');
+}
+
+function BatchStatusBadge({
+  status,
+}: {
+  status: TtsReviewBatchItem['status'];
+}) {
+  const t = useTranslations('ttsReview');
+  return (
+    <span
+      className={cn(
+        'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+        batchStatusClassName(status),
+      )}
+    >
+      {t(`batchStatus.${status}`)}
+    </span>
+  );
 }
 
 function BlockerLabel({
@@ -221,7 +250,7 @@ function SkeletonRows() {
     <>
       {Array.from({ length: 5 }).map((_, index) => (
         <TableRow key={index}>
-          <TableCell colSpan={7}>
+          <TableCell colSpan={8}>
             <div className="h-9 animate-pulse rounded-md bg-muted" />
           </TableCell>
         </TableRow>
@@ -250,11 +279,22 @@ function BatchTable({
           <TableRow>
             <TableHead className="min-w-64 px-4">{t('table.batch')}</TableHead>
             <TableHead className="min-w-40">{t('table.surface')}</TableHead>
-            <TableHead className="w-28 text-right">{t('table.targets')}</TableHead>
-            <TableHead className="w-28 text-right">{t('table.required')}</TableHead>
-            <TableHead className="w-32 text-right">{t('table.missing')}</TableHead>
+            <TableHead className="min-w-32">
+              {t('table.reviewStatus')}
+            </TableHead>
+            <TableHead className="w-28 text-right">
+              {t('table.targets')}
+            </TableHead>
+            <TableHead className="w-28 text-right">
+              {t('table.required')}
+            </TableHead>
+            <TableHead className="w-32 text-right">
+              {t('table.missing')}
+            </TableHead>
             <TableHead className="min-w-64">{t('table.blockers')}</TableHead>
-            <TableHead className="w-32 text-right">{t('table.actions')}</TableHead>
+            <TableHead className="w-32 text-right">
+              {t('table.actions')}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -284,6 +324,9 @@ function BatchTable({
                   >
                     <SurfaceLabel surface={batch.reviewSurface} />
                   </span>
+                </TableCell>
+                <TableCell>
+                  <BatchStatusBadge status={batch.status} />
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {batch.targetCount}
