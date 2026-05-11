@@ -106,7 +106,7 @@ class _FreeQuizSummaryHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$selectedLevel $contentLabel 학습',
+                '$selectedLevel $contentLabel 퀴즈',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -156,7 +156,7 @@ class _FreeQuizProgress extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '학습 진행률',
+              '퀴즈 진행률',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
@@ -203,7 +203,7 @@ class _FreeQuizStartButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('학습 시작하기', style: TextStyle(fontSize: 16)),
+            const Text('퀴즈 시작하기', style: TextStyle(fontSize: 16)),
             const SizedBox(width: 6),
             Icon(
               LucideIcons.flower2,
