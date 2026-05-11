@@ -144,10 +144,14 @@ void main() {
         ],
       );
 
-      expect(find.text('복습 대기 7개'), findsOneWidget);
-      expect(find.text('단어 2 · 문법 5'), findsOneWidget);
+      expect(find.text('오늘의 학습 루틴'), findsOneWidget);
+      expect(find.text('복습하고 시작해요'), findsOneWidget);
+      expect(find.text('어제 배운 단어와 문법을 먼저 확인해요'), findsOneWidget);
+      expect(find.text('복습 7개'), findsOneWidget);
+      expect(find.text('단어 2'), findsOneWidget);
+      expect(find.text('문법 5'), findsOneWidget);
 
-      await tester.tap(find.text('복습 시작'));
+      await tester.tap(find.text('복습하고 시작하기'));
 
       final event = events.singleWhere(
         (event) => event.name == LessonPilotEventNames.reviewCtaClicked,

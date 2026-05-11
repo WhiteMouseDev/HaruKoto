@@ -365,58 +365,127 @@ class _ReviewDueCard extends StatelessWidget {
                   ]
                 : null,
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: AppColors.sakuraContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    LucideIcons.rotateCcw,
-                    size: 22,
-                    color: AppColors.sakuraOn,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: const BoxDecoration(
+                      color: AppColors.sakuraContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        LucideIcons.rotateCcw,
+                        size: 22,
+                        color: AppColors.sakuraOn,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '복습 대기 ${summary.totalDue}개',
-                      style: theme.textTheme.titleSmall?.copyWith(
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '오늘의 학습 루틴',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.primaryStrong,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          '복습하고 시작해요',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '어제 배운 단어와 문법을 먼저 확인해요',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.lightSubtext,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      '복습 ${summary.totalDue}개',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primaryStrong,
                         fontWeight: FontWeight.w800,
-                        color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '단어 ${summary.wordDue} · 문법 ${summary.grammarDue}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightSubtext,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              FilledButton(
-                onPressed: () => _openReview(context),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryStrong,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  textStyle: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w600),
-                ),
-                child: const Text('복습 시작'),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  _ReviewCountPill(label: '단어', count: summary.wordDue),
+                  const SizedBox(width: 8),
+                  _ReviewCountPill(label: '문법', count: summary.grammarDue),
+                  const Spacer(),
+                  FilledButton(
+                    onPressed: () => _openReview(context),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryStrong,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      textStyle: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                    child: const Text('복습하고 시작하기'),
+                  ),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReviewCountPill extends StatelessWidget {
+  final String label;
+  final int count;
+
+  const _ReviewCountPill({
+    required this.label,
+    required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$label $count',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: AppColors.lightSubtext,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
