@@ -55,6 +55,12 @@
             ]
           },
           "textSource": { "type": "string", "minLength": 1 },
+          "reviewText": { "type": "string", "minLength": 1 },
+          "reviewTranslationKo": { "type": "string", "minLength": 1 },
+          "reviewSpeaker": { "type": "string", "minLength": 1 },
+          "reviewSourceId": { "type": "string", "minLength": 1 },
+          "reviewSourceTitle": { "type": "string", "minLength": 1 },
+          "reviewSourceOrder": { "type": "integer", "minimum": 1 },
           "defaultSpeed": { "type": "number", "minimum": 0.5, "maximum": 1.5 },
           "requiredBeforePublish": { "type": "boolean" },
           "preferredVoiceId": { "type": "string" },

@@ -809,6 +809,40 @@ function validateGrammarMetadataV2(data, rows, topicContext, exampleIds, grammar
   return { metadataIds, metadataById, metadataIdsByTopicId };
 }
 
+function validateTtsReviewPreview(rows, scope, target, expected, options = {}) {
+  const allowTranslation = options.allowTranslation ?? true;
+  const allowSpeaker = options.allowSpeaker ?? true;
+
+  if (target.reviewText !== expected.reviewText) {
+    addIssue(rows, 'FAIL', scope, 'TTS reviewText must match the source text.');
+  }
+  if (target.reviewSourceId !== expected.reviewSourceId) {
+    addIssue(rows, 'FAIL', scope, 'TTS reviewSourceId must match the source id.');
+  }
+  if (target.reviewSourceOrder !== expected.reviewSourceOrder) {
+    addIssue(rows, 'FAIL', scope, 'TTS reviewSourceOrder must match the source order.');
+  }
+  if (typeof expected.reviewSourceTitle === 'string' && target.reviewSourceTitle !== expected.reviewSourceTitle) {
+    addIssue(rows, 'FAIL', scope, 'TTS reviewSourceTitle must match the source title.');
+  }
+
+  if (allowTranslation) {
+    if (typeof expected.reviewTranslationKo === 'string' && target.reviewTranslationKo !== expected.reviewTranslationKo) {
+      addIssue(rows, 'FAIL', scope, 'TTS reviewTranslationKo must match the source translation.');
+    }
+  } else if (Object.hasOwn(target, 'reviewTranslationKo')) {
+    addIssue(rows, 'FAIL', scope, 'Question prompt TTS targets must not expose reviewTranslationKo.');
+  }
+
+  if (allowSpeaker) {
+    if (typeof expected.reviewSpeaker === 'string' && target.reviewSpeaker !== expected.reviewSpeaker) {
+      addIssue(rows, 'FAIL', scope, 'TTS reviewSpeaker must match the source speaker.');
+    }
+  } else if (Object.hasOwn(target, 'reviewSpeaker')) {
+    addIssue(rows, 'FAIL', scope, 'Question prompt TTS targets must not expose reviewSpeaker.');
+  }
+}
+
 function validateTtsTargetManifest(
   data,
   rows,
@@ -919,6 +953,16 @@ function validateTtsTargetManifest(
           if (line?.voice_id && target.preferredVoiceId !== line.voice_id) {
             addIssue(rows, 'FAIL', scope, 'Seed script target preferredVoiceId must match script voice_id.');
           }
+          if (line) {
+            validateTtsReviewPreview(rows, scope, target, {
+              reviewText: line.text,
+              reviewTranslationKo: line.translation,
+              reviewSpeaker: line.speaker,
+              reviewSourceId: candidateId,
+              reviewSourceTitle: candidate.seedShape?.title,
+              reviewSourceOrder: order,
+            });
+          }
           seedScriptTargetKeys.add(`${candidateId}:${order}`);
         } else if (sourceKind === 'question') {
           const question = (candidate.seedShape?.content_jsonb?.questions ?? []).find(
@@ -929,6 +973,20 @@ function validateTtsTargetManifest(
           }
           if (target.audioTargetType !== 'question_prompt' || target.audioField !== 'question_prompt') {
             addIssue(rows, 'FAIL', scope, 'Seed question targets must use question_prompt/question_prompt.');
+          }
+          if (question) {
+            validateTtsReviewPreview(
+              rows,
+              scope,
+              target,
+              {
+                reviewText: question.prompt,
+                reviewSourceId: candidateId,
+                reviewSourceTitle: candidate.seedShape?.title,
+                reviewSourceOrder: question.order,
+              },
+              { allowTranslation: false, allowSpeaker: false },
+            );
           }
           seedQuestionTargetKeys.add(`${candidateId}:${order}`);
         } else {
@@ -961,6 +1019,16 @@ function validateTtsTargetManifest(
           if (line?.voice_id && target.preferredVoiceId !== line.voice_id) {
             addIssue(rows, 'FAIL', scope, 'Official lesson seed script target preferredVoiceId must match script voice_id.');
           }
+          if (line) {
+            validateTtsReviewPreview(rows, scope, target, {
+              reviewText: line.text,
+              reviewTranslationKo: line.translation,
+              reviewSpeaker: line.speaker,
+              reviewSourceId: lessonId,
+              reviewSourceTitle: record.lesson?.title,
+              reviewSourceOrder: order,
+            });
+          }
           lessonSeedScriptTargetKeys.add(`${lessonId}:${order}`);
         } else if (sourceKind === 'question') {
           const question = (record.lesson?.content_jsonb?.questions ?? []).find((item) => item.order === order);
@@ -969,6 +1037,20 @@ function validateTtsTargetManifest(
           }
           if (target.audioTargetType !== 'question_prompt' || target.audioField !== 'question_prompt') {
             addIssue(rows, 'FAIL', scope, 'Official lesson seed question targets must use question_prompt/question_prompt.');
+          }
+          if (question) {
+            validateTtsReviewPreview(
+              rows,
+              scope,
+              target,
+              {
+                reviewText: question.prompt,
+                reviewSourceId: lessonId,
+                reviewSourceTitle: record.lesson?.title,
+                reviewSourceOrder: question.order,
+              },
+              { allowTranslation: false, allowSpeaker: false },
+            );
           }
           lessonSeedQuestionTargetKeys.add(`${lessonId}:${order}`);
         } else {

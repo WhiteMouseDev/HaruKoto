@@ -2195,6 +2195,18 @@ export interface components {
             audioField: "word" | "reading" | "japanese" | "pattern" | "example_sentence" | "script_line" | "question_prompt";
             /** Textsource */
             textSource: string;
+            /** Reviewtext */
+            reviewText?: string | null;
+            /** Reviewtranslationko */
+            reviewTranslationKo?: string | null;
+            /** Reviewspeaker */
+            reviewSpeaker?: string | null;
+            /** Reviewsourceid */
+            reviewSourceId?: string | null;
+            /** Reviewsourcetitle */
+            reviewSourceTitle?: string | null;
+            /** Reviewsourceorder */
+            reviewSourceOrder?: number | null;
             /** Defaultspeed */
             defaultSpeed: number;
             /** Requiredbeforepublish */
