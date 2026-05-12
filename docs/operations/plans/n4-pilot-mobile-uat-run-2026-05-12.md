@@ -2,14 +2,16 @@
 
 > Date: 2026-05-12
 > Scope: N4 pilot lesson list/detail/start/complete flow on target mobile runtime
-> Basis: `origin/main@71accab` plus local seed sync fix in `codex/n4-mobile-uat-seed-sync`
-> Status: happy-path mobile UAT passed; learner-rollout decision remains open
+> Basis: happy-path run on `origin/main@71accab` plus local seed sync fix in `codex/n4-mobile-uat-seed-sync`; wrong-answer spot check on `origin/main@110ca01` in `codex/n4-wrong-answer-uat`
+> Status: happy-path and wrong-answer retry mobile UAT passed; learner-rollout decision remains open
 
 ## Summary
 
 The N4 pilot happy path was verified on the iPhone 17 Pro simulator against the configured Cloud Run API target. The run found one reference-data drift issue before completion: HN4-001 lesson detail showed the old `〜なさい` Korean meaning, even though the source JSON already says `직접적인 지시`.
 
 The drift was traced to the shared Prisma seed path. `packages/database/prisma/seed.ts` did not load `packages/database/.env` at runtime and the vocabulary/grammar loops swallowed Prisma errors as if rows already existed. The target DB was synced from the current N4 vocabulary and grammar JSON, then the mobile flow was rerun and passed.
+
+A follow-up HN4-002 wrong-answer run intentionally missed one vocabulary question, then completed the remaining practice steps. The result screen highlighted the missed `心配` item, preserved the explanation, registered review items, and the `다시 풀기` CTA returned to the HN4-002 lesson start surface.
 
 ASSUMPTION: The existing simulator test account is acceptable for UAT state mutations such as lesson progress and review-schedule registration.
 
@@ -49,12 +51,24 @@ The broad `pnpm --filter @harukoto/database db:seed` command was interrupted aft
 | SRS registration | Result screen showed `오늘 배운 6개를 복습 일정에 넣었어요` and per-item next review `3일 후` |
 | Progress return | N4 Ch.1 progress updated to `20%`; HN4-001 showed `5/5`; recommended lesson advanced to HN4-002 |
 
+## Wrong-Answer Retry Evidence
+
+| Step | Evidence |
+|---|---|
+| Lesson detail | HN4-002 `일찍 쉬는 편이 좋아요` loaded with grammar `〜たほうがいい — ~하는 편이 좋다 (조언)` |
+| Intentional miss | First recognition prompt `心配의 뜻은?` was answered with `자신감` instead of `걱정` |
+| Immediate feedback | The screen showed `心配(しんぱい)는 걱정입니다.` before continuing |
+| Remaining practice | Q2 `相談`, both `たほうがいい` cloze items, the vocabulary matching step, and sentence reorder `今日は` / `早く` / `寝たほうがいいです` completed |
+| Submit/result | Result screen showed `80%`, `4/5 정답` |
+| Wrong-answer display | The missed `心配` item appeared as the red result card with the explanation and review status `학습 중`, `다음 복습: 1일 후` |
+| SRS registration | Result screen showed `오늘 배운 6개를 복습 일정에 넣었어요`; submitted telemetry recorded `scoreCorrect: 4`, `scoreTotal: 5`, and `srsItemsRegistered: 6` |
+| Retry entry | `다시 풀기` returned to the HN4-002 lesson detail with `학습 시작하기`, confirming the retry CTA reaches the lesson restart path |
+
 ## Outcome
 
-N4 target-runtime mobile happy path is ready for learner-rollout decision review. This run does not replace native-speaker curriculum validation; it verifies that the delegated AI-approved seed can be selected, opened, played through, submitted, and reflected in progress/SRS on the current mobile runtime.
+N4 target-runtime mobile happy path and N4-specific wrong-answer retry entry are ready for learner-rollout decision review. This run does not replace native-speaker curriculum validation; it verifies that the delegated AI-approved seed can be selected, opened, played through, submitted, reflected in progress/SRS, and retried after an incorrect answer on the current mobile runtime.
 
 ## Follow-Ups
 
-- Run a wrong-answer retry spot check before broad learner exposure if the rollout decision requires N4-specific wrong-answer UI evidence.
 - Consider adding a narrow `db:seed` mode for level/reference subsets so future UAT syncs do not require the full vocabulary seed path.
 - Keep the delegated AI curriculum approval boundary visible until native-speaker review becomes available.
