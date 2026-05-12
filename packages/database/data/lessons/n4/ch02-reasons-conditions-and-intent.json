@@ -63,14 +63,14 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "この川は浅さも分かりますか。",
-              "translation": "이 강은 얕이도 알 수 있나요?"
+              "text": "この川の浅さも分かりますか。",
+              "translation": "이 강의 얕은 정도도 알 수 있나요?"
             },
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "はい。道の太さや細さも見られます。",
-              "translation": "네. 길의 굵기나 가늘기도 볼 수 있습니다."
+              "text": "はい。線の太さや細さも見られます。",
+              "translation": "네. 선의 굵기나 가늘기도 볼 수 있습니다."
             },
             {
               "speaker": "佐藤",
@@ -163,7 +163,7 @@
             "order": 4,
             "type": "CONTEXT_CLOZE",
             "cognitive_level": "적용",
-            "prompt": "道の太___を見ます。 (길의 굵기를 봅니다.)",
+            "prompt": "線の太___を見ます。 (선의 굵기를 봅니다.)",
             "options": [
               {
                 "id": "a",
@@ -454,7 +454,7 @@
               "speaker": "キム",
               "voice_id": "japanese_male_1",
               "text": "会議が長かったのです。",
-              "translation": "회의가 길었던 것입니다."
+              "translation": "회의가 길었던 거예요."
             },
             {
               "speaker": "佐藤",
@@ -521,7 +521,7 @@
             "order": 3,
             "type": "CONTEXT_CLOZE",
             "cognitive_level": "적용",
-            "prompt": "会議が長かった___。 (회의가 길었던 것입니다.)",
+            "prompt": "会議が長かった___。 (회의가 길었던 거예요.)",
             "options": [
               {
                 "id": "a",
@@ -573,7 +573,7 @@
             "order": 5,
             "type": "SENTENCE_REORDER",
             "cognitive_level": "산출유사",
-            "prompt": "'회의가 길었던 것입니다'를 배열하세요.",
+            "prompt": "'회의가 길었던 거예요'를 배열하세요.",
             "tokens": [
               "長かった",
               "会議が",

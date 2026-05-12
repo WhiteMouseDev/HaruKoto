@@ -26,21 +26,21 @@
     {
       "reviewId": "lesson-human-review-HN4-001",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: 교실 지시 맥락은 적절하나 `〜なさい`를 부드러운 조언으로 오해하지 않도록 metadata label을 직접적인 지시로 정정함. Human approval required.",
       "lessonId": "HN4-001",
       "lessonNo": 1,
       "chapterId": "N4-CH01",
       "chapterTitle": "지시와 판단 표현",
       "title": "이름을 쓰세요",
-      "subtitle": "Vます stem + なさい로 부드럽게 지시하기",
+      "subtitle": "Vます stem + なさい로 직접 지시하기",
       "topic": "なさい",
       "estimatedMinutes": 12,
       "grammar": {
         "order": 42,
         "pattern": "〜なさい",
-        "meaningKo": "~하시오 / ~해라 (부드러운 명령)",
+        "meaningKo": "~하시오 / ~해라 (직접적인 지시)",
         "referencePattern": "〜なさい",
-        "referenceMeaningKo": "~하시오 / ~해라 (부드러운 명령)"
+        "referenceMeaningKo": "~하시오 / ~해라 (직접적인 지시)"
       },
       "vocabulary": [
         {
@@ -336,7 +336,7 @@
     {
       "reviewId": "lesson-human-review-HN4-002",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: `病院に相談する`를 `医者に相談する`로 정정해 일본어와 한국어 조언 맥락을 자연스럽게 맞춤. Human approval required.",
       "lessonId": "HN4-002",
       "lessonNo": 2,
       "chapterId": "N4-CH01",
@@ -432,8 +432,8 @@
             "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "病院に相談したほうがいいですか。",
-            "translationKo": "병원에 상담하는 편이 좋을까요?",
+            "text": "医者に相談したほうがいいですか。",
+            "translationKo": "의사와 상담하는 편이 좋을까요?",
             "ttsTarget": {
               "targetId": "tts-hn4-002-script-3",
               "textSource": "lesson-seeds:HN4-002:script:3",
@@ -447,8 +447,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "熱があれば、相談したほうが安心です。",
-            "translationKo": "열이 있으면 상담하는 편이 안심됩니다.",
+            "text": "熱があれば、医者に相談したほうが安心です。",
+            "translationKo": "열이 있으면 의사와 상담하는 편이 안심이 됩니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-002-script-4",
               "textSource": "lesson-seeds:HN4-002:script:4",
@@ -570,7 +570,7 @@
           "order": 4,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "病院に相談___。 (병원에 상담하는 편이 좋습니다.)",
+          "prompt": "医者に相談___。 (의사와 상담하는 편이 좋습니다.)",
           "explanation": "する는 したほうがいいです가 됩니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-002-question-4",
@@ -646,7 +646,7 @@
     {
       "reviewId": "lesson-human-review-HN4-003",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: uncertainty nuance, vocabulary links, answer keys, and explanations checked; no concrete blocker found. Human approval required.",
       "lessonId": "HN4-003",
       "lessonNo": 3,
       "chapterId": "N4-CH01",
@@ -956,7 +956,7 @@
     {
       "reviewId": "lesson-human-review-HN4-004",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: no-other-option nuance, dialogue context, answer keys, and explanations checked; no concrete blocker found. Human approval required.",
       "lessonId": "HN4-004",
       "lessonNo": 4,
       "chapterId": "N4-CH01",
@@ -1266,7 +1266,7 @@
     {
       "reviewId": "lesson-human-review-HN4-005",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: potential-form examples are introductory but coherent for a first N4 pilot lesson; no concrete blocker found. Human approval required.",
       "lessonId": "HN4-005",
       "lessonNo": 5,
       "chapterId": "N4-CH01",
@@ -1576,7 +1576,7 @@
     {
       "reviewId": "lesson-human-review-HN4-006",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: `浅さ` translation and `道の太さ` example were revised to more natural `この川の浅さ` / `線の太さ`. Human approval required.",
       "lessonId": "HN4-006",
       "lessonNo": 6,
       "chapterId": "N4-CH02",
@@ -1657,8 +1657,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "この川は浅さも分かりますか。",
-            "translationKo": "이 강은 얕이도 알 수 있나요?",
+            "text": "この川の浅さも分かりますか。",
+            "translationKo": "이 강의 얕은 정도도 알 수 있나요?",
             "ttsTarget": {
               "targetId": "tts-hn4-006-script-2",
               "textSource": "lesson-seeds:HN4-006:script:2",
@@ -1672,8 +1672,8 @@
             "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "はい。道の太さや細さも見られます。",
-            "translationKo": "네. 길의 굵기나 가늘기도 볼 수 있습니다.",
+            "text": "はい。線の太さや細さも見られます。",
+            "translationKo": "네. 선의 굵기나 가늘기도 볼 수 있습니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-006-script-3",
               "textSource": "lesson-seeds:HN4-006:script:3",
@@ -1810,7 +1810,7 @@
           "order": 4,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "道の太___を見ます。 (길의 굵기를 봅니다.)",
+          "prompt": "線の太___を見ます。 (선의 굵기를 봅니다.)",
           "explanation": "太い도 太さ로 정도를 명사화합니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-006-question-4",
@@ -1886,7 +1886,7 @@
     {
       "reviewId": "lesson-human-review-HN4-007",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: `意向形 + と思っています` usage, vocabulary links, answer keys, and explanations checked; no concrete blocker found. Human approval required.",
       "lessonId": "HN4-007",
       "lessonNo": 7,
       "chapterId": "N4-CH02",
@@ -2196,7 +2196,7 @@
     {
       "reviewId": "lesson-human-review-HN4-008",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: Korean translation for `会議が長かったのです` was made more learner-natural as `회의가 길었던 거예요`; no remaining concrete blocker found. Human approval required.",
       "lessonId": "HN4-008",
       "lessonNo": 8,
       "chapterId": "N4-CH02",
@@ -2293,7 +2293,7 @@
             "speaker": "キム",
             "voiceId": "japanese_male_1",
             "text": "会議が長かったのです。",
-            "translationKo": "회의가 길었던 것입니다.",
+            "translationKo": "회의가 길었던 거예요.",
             "ttsTarget": {
               "targetId": "tts-hn4-008-script-3",
               "textSource": "lesson-seeds:HN4-008:script:3",
@@ -2395,7 +2395,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "会議が長かった___。 (회의가 길었던 것입니다.)",
+          "prompt": "会議が長かった___。 (회의가 길었던 거예요.)",
           "explanation": "이유나 배경 설명에는 普通形 + のです를 씁니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-008-question-3",
@@ -2465,7 +2465,7 @@
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'회의가 길었던 것입니다'를 배열하세요.",
+          "prompt": "'회의가 길었던 거예요'를 배열하세요.",
           "explanation": "보통형 과거 뒤에 のです를 둡니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-008-question-5",
@@ -2506,7 +2506,7 @@
     {
       "reviewId": "lesson-human-review-HN4-009",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: local content is structurally coherent, but sequencing remains a human decision: confirm whether `〜ために` should stay before higher-priority N4 expressions. Human approval required.",
       "lessonId": "HN4-009",
       "lessonNo": 9,
       "chapterId": "N4-CH02",
@@ -2816,7 +2816,7 @@
     {
       "reviewId": "lesson-human-review-HN4-010",
       "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerNotes": "AI pre-review 2026-05-12: after the automatic-result correction to `荷物が届くと、メールが来ます`, `〜と` examples and answer keys show no concrete blocker. Human approval required.",
       "lessonId": "HN4-010",
       "lessonNo": 10,
       "chapterId": "N4-CH02",

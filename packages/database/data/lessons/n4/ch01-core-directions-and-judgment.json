@@ -18,12 +18,12 @@
       "lesson_no": 1,
       "chapter_lesson_no": 1,
       "title": "이름을 쓰세요",
-      "subtitle": "Vます stem + なさい로 부드럽게 지시하기",
+      "subtitle": "Vます stem + なさい로 직접 지시하기",
       "topic": "なさい",
       "estimated_minutes": 12,
       "grammar": {
         "pattern": "〜なさい",
-        "meaning_ko": "~하시오 / ~해라 (부드러운 명령)",
+        "meaning_ko": "~하시오 / ~해라 (직접적인 지시)",
         "grammar_order": 42,
         "supporting_grammar_orders": []
       },
@@ -260,14 +260,14 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "病院に相談したほうがいいですか。",
-              "translation": "병원에 상담하는 편이 좋을까요?"
+              "text": "医者に相談したほうがいいですか。",
+              "translation": "의사와 상담하는 편이 좋을까요?"
             },
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "熱があれば、相談したほうが安心です。",
-              "translation": "열이 있으면 상담하는 편이 안심됩니다."
+              "text": "熱があれば、医者に相談したほうが安心です。",
+              "translation": "열이 있으면 의사와 상담하는 편이 안심이 됩니다."
             }
           ]
         },
@@ -354,7 +354,7 @@
             "order": 4,
             "type": "CONTEXT_CLOZE",
             "cognitive_level": "적용",
-            "prompt": "病院に相談___。 (병원에 상담하는 편이 좋습니다.)",
+            "prompt": "医者に相談___。 (의사와 상담하는 편이 좋습니다.)",
             "options": [
               {
                 "id": "a",
