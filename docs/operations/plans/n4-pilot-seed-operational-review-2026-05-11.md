@@ -33,6 +33,7 @@ Both files state that paid PDFs were used only for topic coverage reference, and
 | Runtime API smoke | authenticated local API smoke against configured DB target | PASS, N4 chapters=2, lessons=10, first lesson detail=200 |
 | Lesson-detail answer-key redaction | `cd apps/api && uv run pytest tests/test_lessons.py::test_get_lesson_detail` | PASS, `correctAnswer` and `correctOrder` redacted in lesson detail |
 | Official lesson seed TTS scope | `pnpm --filter @harukoto/database curriculum:validate` | PASS, `lesson-seeds:HN4-*` covers 40 script lines and 50 question prompts |
+| Human review packet preparation | `pnpm --filter @harukoto/database lessons:review:prepare -- --level N4` | PASS, `lesson-human-review/n4-pilot-review.json` covers 10 lessons, 40 script TTS targets, and 50 question TTS targets |
 
 Quality gate summary:
 
@@ -81,15 +82,19 @@ Every lesson currently uses the runtime-supported question mix:
 5. PASS - TTS scope is attached to official lesson seed files.
    The generated TTS manifest now uses `lesson-seeds:HN4-*` sources for the 40 N4 reading script lines and 50 N4 question prompts. Actual audio generation and playback review remain part of the lesson seed admin surface follow-up.
 
-6. PASS - Configured DB seed and runtime smoke are complete.
+6. PASS - Human review packet is prepared.
+   `packages/database/data/curriculum/lesson-human-review/n4-pilot-review.json` joins each N4 lesson with reference grammar, vocabulary, script lines, questions, answer keys, explanations, and linked TTS targets. This prepares the human curriculum review but does not approve it.
+
+7. PASS - Configured DB seed and runtime smoke are complete.
    The configured API DB target contains 2 N4 chapters and 10 N4 lessons. The first N4 lesson detail returned 4 script lines, 5 questions, 5 vocabulary items, and 1 grammar item. This does not by itself approve broad learner rollout.
 
-7. PASS - Lesson detail no longer leaks answer keys.
+8. PASS - Lesson detail no longer leaks answer keys.
    PR #77 redacts both `correctAnswer` and `correctOrder` in lesson detail responses. Authoritative correctness remains available through lesson submission results.
 
 ## Next Gate Checklist
 
 - [ ] Human curriculum review: approve lesson order, grammar coverage, Korean explanations, and examples.
+- [x] Human review packet preparation: N4 review packet generated with lesson/TTS/answer-key context for reviewer use.
 - [x] TTS scope: official `lesson-seeds:HN4-*` targets cover 40 reading script lines and 50 question prompts.
 - [x] Configured DB seed sync: N4 seed check passes with 2 chapters, 10 lessons, and no mismatches.
 - [x] Runtime API smoke: authenticated N4 list/detail smoke passes and answer keys are redacted.
