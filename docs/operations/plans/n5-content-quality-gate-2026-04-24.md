@@ -1,6 +1,7 @@
 # N5 콘텐츠 품질 게이트
 
 > 작성일: 2026-04-24
+> 최신 갱신: 2026-05-12
 > 대상: `packages/database/data/lessons/n5/`
 > 목적: N5 파일럿 레슨을 확대하기 전에 콘텐츠 데이터가 프로덕션 검수에 들어갈 수 있는 상태인지 반복 확인한다.
 
@@ -26,17 +27,17 @@ pnpm --filter @harukoto/database lessons:quality -- --level N5 --strict-warnings
 
 ## 3. 현재 스냅샷
 
-2026-04-24 로컬 실행 기준:
+2026-05-12 로컬 실행 기준:
 
 | 항목 | 값 |
 |---|---:|
 | overall | PASS |
-| chapters | 6 |
-| lessons | 30 |
-| questions | 150 |
-| reading script lines | 120 |
-| vocabulary links | 176 |
-| grammar links | 30 |
+| chapters | 9 |
+| lessons | 50 |
+| questions | 250 |
+| reading script lines | 198 |
+| vocabulary links | 291 |
+| grammar links | 50 |
 | checks | 7 PASS / 0 WARN / 0 FAIL |
 
 ## 4. 현재 판정
@@ -46,11 +47,11 @@ pnpm --filter @harukoto/database lessons:quality -- --level N5 --strict-warnings
 | PASS | Data load | N5 lesson/reference JSON 파일 로딩 성공 |
 | PASS | Chapter metadata | 챕터/레슨 번호, lesson count, lesson id 중복 없음 |
 | PASS | Reference links | `vocab_orders`, `grammar.grammar_order`가 기준 vocabulary/grammar 데이터에 연결됨 |
-| PASS | Reading script | 30레슨 모두 speaker, voice id, 일본어 본문, 한국어 번역 포함 |
-| PASS | Questions | 150문항 모두 타입별 구조와 정답 키가 유효함 |
-| PASS | Learning quality heuristics | 객관식/빈칸 문제 정답 option이 `a/b/c/d = 30/30/30/30`으로 분산됨 |
+| PASS | Reading script | 50레슨 모두 speaker, voice id, 일본어 본문, 한국어 번역 포함 |
+| PASS | Questions | 250문항 모두 타입별 구조와 정답 키가 유효함 |
+| PASS | Learning quality heuristics | 파일럿 기준 duration, vocab density, grammar alias, 문제 구성이 strict warning 없이 통과함 |
 | PASS | Learning quality heuristics | 기준 문법명과 다른 레슨용 친화 표기는 `grammar_order`별 alias로 명시됨 |
-| PASS | Publish status | N5 6개 챕터 파일이 `meta.status: PILOT`이며 seed는 `PILOT`/`PUBLISHED`만 publish함 |
+| PASS | Publish status | N5 9개 챕터 파일이 `meta.status: PILOT`이며 seed는 `PILOT`/`PUBLISHED`만 publish함 |
 
 ## 5. 후속 처리 기준
 

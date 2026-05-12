@@ -14,21 +14,26 @@ const QUESTION_TYPES = new Set(['VOCAB_MCQ', 'CONTEXT_CLOZE', 'SENTENCE_REORDER'
 const COGNITIVE_LEVELS = new Set(['인식', '적용', '산출유사']);
 const PLACEHOLDER_RE = /\b(TODO|TBD|FIXME|PLACEHOLDER|LOREM)\b|임시|테스트용/i;
 const GRAMMAR_TEACHING_PATTERN_ALIASES = new Map([
-  [20, new Set(['〜ている'])],
+  [1, new Set(['定型表現 + です/ます'])],
+  [6, new Set(['お願いします'])],
+  [10, new Set(['N + が欲しいです'])],
+  [20, new Set(['〜ている', '知っています / 分かります'])],
   [35, new Set(['これ / それ / あれ'])],
   [36, new Set(['この / その / あの + 名詞'])],
   [37, new Set(['名詞 + の + 名詞'])],
   [38, new Set(['い形容詞 / な形容詞 + です'])],
   [39, new Set(['い形容詞 + 名詞 / な形容詞 + な + 名詞'])],
   [40, new Set(['ここ / そこ / あそこ'])],
-  [42, new Set(['〜に ある / いる'])],
+  [42, new Set(['〜に ある / いる', '時間 + に'])],
   [45, new Set(['動詞の辞書形 (る動詞 / う動詞)'])],
+  [46, new Set(['数量 + 助数詞'])],
   [47, new Set(['する / 来る (불규칙 동사)'])],
   [48, new Set(['〜ない / 〜ません'])],
   [49, new Set(['Verb て-form'])],
   [50, new Set(['Verb+て、Verb'])],
   [51, new Set(['Verb+てから'])],
   [54, new Set(['もう〜ました'])],
+  [58, new Set(['〜ではありません'])],
 ]);
 
 const CHECKS = [

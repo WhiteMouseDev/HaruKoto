@@ -6,7 +6,7 @@
     "part_no": 1,
     "chapter_no": 9,
     "lesson_count": 6,
-    "status": "DRAFT",
+    "status": "PILOT",
     "created_at": "2026-05-11",
     "author": "Codex"
   },
@@ -406,8 +406,8 @@
       "estimated_minutes": 10,
       "grammar": {
         "level": "N5",
-        "grammar_order": 38,
-        "pattern": "いAdj stem + くなります / なAdj・N + になります",
+        "grammar_order": 60,
+        "pattern": "〜くなる / 〜になる",
         "meaning_ko": "~해집니다 / ~이 됩니다",
         "supporting_grammar_orders": [
           39
@@ -445,8 +445,8 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "寒いは寒く、静かは静かになりますね。",
-              "translation": "춥다는 寒く, 조용하다는 静かになります군요."
+              "text": "「寒い」は寒く、「静か」は静かに、ですね。",
+              "translation": "춥다는 寒く, 조용하다는 静かに군요."
             }
           ],
           "highlights": [
@@ -591,8 +591,8 @@
       "estimated_minutes": 10,
       "grammar": {
         "level": "N5",
-        "grammar_order": 33,
-        "pattern": "N / quantity + だけ",
+        "grammar_order": 56,
+        "pattern": "〜だけ",
         "meaning_ko": "~만",
         "supporting_grammar_orders": [
           46
@@ -776,7 +776,7 @@
       "grammar": {
         "level": "N5",
         "grammar_order": 59,
-        "pattern": "N + にします",
+        "pattern": "N + にする",
         "meaning_ko": "~로 하겠습니다",
         "supporting_grammar_orders": [
           42
@@ -967,7 +967,7 @@
       "estimated_minutes": 10,
       "grammar": {
         "level": "N5",
-        "grammar_order": 1,
+        "grammar_order": 57,
         "pattern": "N + という + N",
         "meaning_ko": "~이라는 ~",
         "supporting_grammar_orders": [
