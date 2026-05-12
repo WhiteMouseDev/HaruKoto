@@ -94,6 +94,33 @@ void main() {
       expect(viewedEvent.properties['lessonCount'], 0);
       expect(viewedEvent.properties['recommendedLessonId'], isNull);
     });
+
+    testWidgets('reports the full N5 pilot path as 9 chapters and 50 lessons', (
+      tester,
+    ) async {
+      final events = <LessonPilotEvent>[];
+
+      await _pumpLessonListPage(
+        tester,
+        telemetryEvents: events,
+        chapters: _n5PilotPathChapters(),
+      );
+
+      expect(find.text('전체 레슨'), findsOneWidget);
+      expect(find.text('N5'), findsOneWidget);
+      expect(find.text('인사와 첫 만남'), findsOneWidget);
+      expect(find.text('기초 표현 보강'), findsOneWidget);
+      expect(find.text('생활 표현과 동사 기초'), findsOneWidget);
+      expect(find.text('표현 대조와 선택'), findsOneWidget);
+
+      final viewedEvent = events.singleWhere(
+        (event) => event.name == LessonPilotEventNames.lessonListViewed,
+      );
+      expect(viewedEvent.properties['source'], 'lesson_list');
+      expect(viewedEvent.properties['jlptLevel'], 'N5');
+      expect(viewedEvent.properties['chapterCount'], 9);
+      expect(viewedEvent.properties['lessonCount'], 50);
+    });
   });
 }
 
@@ -129,16 +156,67 @@ Future<void> _pumpLessonListPage(
 ChapterModel _chapter({
   required int chapterNo,
   required List<LessonSummaryModel> lessons,
+  String? title,
 }) {
   return ChapterModel(
     id: 'chapter-$chapterNo',
     jlptLevel: 'N5',
     partNo: 1,
     chapterNo: chapterNo,
-    title: 'Chapter $chapterNo',
+    title: title ?? 'Chapter $chapterNo',
     lessons: lessons,
     completedLessons:
         lessons.where((lesson) => lesson.status == 'COMPLETED').length,
     totalLessons: lessons.length,
+  );
+}
+
+List<ChapterModel> _n5PilotPathChapters() {
+  const chapterLessonCounts = [5, 5, 5, 5, 5, 5, 5, 9, 6];
+  const chapterTitles = [
+    '인사와 첫 만남',
+    '사물과 사람 소개',
+    '장소와 이동',
+    '동사 기초',
+    '과거와 순서',
+    '진행과 습관',
+    '기초 표현 보강',
+    '생활 표현과 동사 기초',
+    '표현 대조와 선택',
+  ];
+
+  var nextLessonNo = 1;
+  return [
+    for (var index = 0; index < chapterLessonCounts.length; index++)
+      _chapter(
+        chapterNo: index + 1,
+        title: chapterTitles[index],
+        lessons: [
+          for (var offset = 0; offset < chapterLessonCounts[index]; offset++)
+            _lesson(
+              lessonNo: nextLessonNo++,
+              chapterLessonNo: offset + 1,
+              title: 'N5 Lesson ${nextLessonNo - 1}',
+            ),
+        ],
+      ),
+  ];
+}
+
+LessonSummaryModel _lesson({
+  required int lessonNo,
+  required int chapterLessonNo,
+  required String title,
+}) {
+  return LessonSummaryModel(
+    id: 'lesson-$lessonNo',
+    lessonNo: lessonNo,
+    chapterLessonNo: chapterLessonNo,
+    title: title,
+    topic: 'Topic $lessonNo',
+    estimatedMinutes: 10,
+    status: 'NOT_STARTED',
+    scoreCorrect: 0,
+    scoreTotal: 0,
   );
 }
