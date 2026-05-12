@@ -55,6 +55,21 @@ def test_lesson_seed_level_selection_supports_n4_sources() -> None:
     ]
 
 
+def test_lesson_seed_n5_sources_are_pilot_publishable() -> None:
+    lesson_count = 0
+
+    for filename in CONTENT_FILES_BY_LEVEL["N5"]:
+        data = json.loads((CONTENT_ROOT / "n5" / filename).read_text(encoding="utf-8"))
+
+        assert data["meta"]["jlpt_level"] == "N5"
+        assert data["meta"]["status"] == "PILOT"
+        assert _lesson_is_published(data["meta"]) is True
+        assert data["meta"]["lesson_count"] == len(data["lessons"])
+        lesson_count += len(data["lessons"])
+
+    assert lesson_count == 50
+
+
 def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
     lesson_count = 0
 
