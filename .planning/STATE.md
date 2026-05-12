@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-12T14:55:00.000+09:00"
+last_updated: "2026-05-12T15:10:37.000+09:00"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — N4 pilot target-runtime mobile happy-path and wrong-answer retry UAT passed on iPhone 17 Pro Simulator after the N4 reference-data drift was synced from source JSON. HN4-001 completed with 100% / 5 of 5, SRS registration visible, and N4 Ch.1 progress updated to 20%. HN4-002 completed with one intentional miss, showed 80% / 4 of 5, displayed the missed `心配` explanation, and routed `다시 풀기` back to lesson start. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
+Last activity: 2026-05-12 — N4 pilot target-runtime mobile happy-path and wrong-answer retry UAT passed on iPhone 17 Pro Simulator after the N4 reference-data drift was synced from source JSON. HN4-001 completed with 100% / 5 of 5, SRS registration visible, and N4 Ch.1 progress updated to 20%. HN4-002 completed with one intentional miss, showed 80% / 4 of 5, displayed the missed `心配` explanation, and routed `다시 풀기` back to lesson start. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,7 +39,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- Mobile MY tab launch smoke — code hardening and automated verification are complete at `b2262b465a9efce64102f93be780171b58066a00`; next gate is physical-device smoke using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
+- Mobile MY tab launch smoke — code hardening, automated verification, and physical-device install/launch precheck are complete; next gate is screen-level physical-device smoke using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
 - N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, delegated AI curriculum approval, target-runtime mobile happy-path UAT, and N4 wrong-answer retry spot check are done; next gate is the learner-rollout decision.
 
 ### Release Gate
