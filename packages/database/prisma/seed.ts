@@ -1,6 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
+import { loadEnvFile } from 'process';
+
+const envPath = join(__dirname, '..', '.env');
+if (!process.env.DATABASE_URL && existsSync(envPath)) {
+  loadEnvFile(envPath);
+}
 
 const prisma = new PrismaClient();
 
@@ -32,37 +38,33 @@ async function seedVocabulary() {
     total += vocabData.length;
 
     for (const v of vocabData) {
-      try {
-        await prisma.vocabulary.upsert({
-          where: {
-            word_reading_jlptLevel: { word: v.word, reading: v.reading, jlptLevel: v.jlptLevel },
-          },
-          update: {
-            meaningKo: v.meaningKo,
-            partOfSpeech: v.partOfSpeech,
-            exampleSentence: v.exampleSentence,
-            exampleReading: v.exampleReading,
-            exampleTranslation: v.exampleTranslation,
-            tags: v.tags,
-            order: v.order,
-          },
-          create: {
-            word: v.word,
-            reading: v.reading,
-            meaningKo: v.meaningKo,
-            partOfSpeech: v.partOfSpeech,
-            jlptLevel: v.jlptLevel,
-            exampleSentence: v.exampleSentence,
-            exampleReading: v.exampleReading,
-            exampleTranslation: v.exampleTranslation,
-            tags: v.tags,
-            order: v.order,
-          },
-        });
-        created++;
-      } catch {
-        // Duplicate — skip
-      }
+      await prisma.vocabulary.upsert({
+        where: {
+          word_reading_jlptLevel: { word: v.word, reading: v.reading, jlptLevel: v.jlptLevel },
+        },
+        update: {
+          meaningKo: v.meaningKo,
+          partOfSpeech: v.partOfSpeech,
+          exampleSentence: v.exampleSentence,
+          exampleReading: v.exampleReading,
+          exampleTranslation: v.exampleTranslation,
+          tags: v.tags,
+          order: v.order,
+        },
+        create: {
+          word: v.word,
+          reading: v.reading,
+          meaningKo: v.meaningKo,
+          partOfSpeech: v.partOfSpeech,
+          jlptLevel: v.jlptLevel,
+          exampleSentence: v.exampleSentence,
+          exampleReading: v.exampleReading,
+          exampleTranslation: v.exampleTranslation,
+          tags: v.tags,
+          order: v.order,
+        },
+      });
+      created++;
     }
   }
 
@@ -87,25 +89,26 @@ async function seedGrammar() {
     total += grammarData.length;
 
     for (const g of grammarData) {
-      try {
-        await prisma.grammar.upsert({
-          where: {
-            pattern_jlptLevel: { pattern: g.pattern, jlptLevel: g.jlptLevel },
-          },
-          update: {},
-          create: {
-            pattern: g.pattern,
-            meaningKo: g.meaningKo,
-            explanation: g.explanation,
-            jlptLevel: g.jlptLevel,
-            exampleSentences: g.exampleSentences,
-            order: g.order,
-          },
-        });
-        created++;
-      } catch {
-        // Duplicate — skip
-      }
+      await prisma.grammar.upsert({
+        where: {
+          pattern_jlptLevel: { pattern: g.pattern, jlptLevel: g.jlptLevel },
+        },
+        update: {
+          meaningKo: g.meaningKo,
+          explanation: g.explanation,
+          exampleSentences: g.exampleSentences,
+          order: g.order,
+        },
+        create: {
+          pattern: g.pattern,
+          meaningKo: g.meaningKo,
+          explanation: g.explanation,
+          jlptLevel: g.jlptLevel,
+          exampleSentences: g.exampleSentences,
+          order: g.order,
+        },
+      });
+      created++;
     }
   }
 
