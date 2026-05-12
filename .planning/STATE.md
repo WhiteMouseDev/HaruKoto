@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
-stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated/build green, manual target-runtime UAT still open
-last_updated: "2026-05-12T00:34:04.000Z"
+stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
+last_updated: "2026-05-12T02:13:37.000Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — target-runtime UAT gate still open. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, and official lesson-seed TTS scope are complete, while human curriculum review and mobile target-runtime UAT remain open.
+**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, and official lesson-seed TTS scope are complete, while human curriculum review and mobile target-runtime UAT remain open.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — official lesson-seed TTS targets now track promoted N4 lesson JSON sources (`lesson-seeds:HN4-*`) instead of candidate-only sources. Target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate.
+Last activity: 2026-05-12 — v1.1 stabilization gate closed after H2 automated-only acceptance and H5 visible-Sentry-scope acceptance. Official lesson-seed TTS targets track promoted N4 lesson JSON sources (`lesson-seeds:HN4-*`) instead of candidate-only sources.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,19 +39,18 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- v1.1 release-owner decision: close or explicitly defer the remaining target-runtime microphone/study-flow and observability acceptance items.
 - N4 pilot seed operationalization — configured DB seed, API smoke, and official lesson-seed TTS scope are done; next gates are admin/human curriculum review → target-runtime N4 study UAT → learner-rollout decision.
 
 ### Release Gate
 
 - v1.1 tag stays fixed at `d7a8c89`; post-tag commits (`950681d`, `c629aae`) are stabilization.
-- Current checkpoint: automated/build-green / manual-target-runtime-UAT-open. The latest code-bearing checkpoint `16afbb6` has green CI and Deploy API, and the doc-only sync merge `d67c7cb` has green CI, but this does not close human target-runtime UAT. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
-- If manual UAT passes and the post-tag mobile fix should ship, cut `v1.1.1` at `c629aae`.
-- Do not start new API/mobile refactoring until the manual UAT gate is closed or intentionally deferred.
+- Current checkpoint: closed-with-accepted-P2. Physical H1/H3 target-runtime UAT passed, H2 generation-failure path is accepted as automated-only coverage because no safe production fault-injection target is approved, and H5 is accepted within visible API/web Sentry scope because no separate mobile/admin Sentry projects are available in the current org view. See `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`.
+- If the post-tag mobile fix should ship as a release artifact, cut `v1.1.1` at `c629aae`.
+- New API/mobile work should now follow the v1.2 planning and validation path rather than the v1.1 stabilization gate.
 
 ### Blockers/Concerns
 
-Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Automated checks, current main CI and Deploy API, mobile tests/contracts, and API/web Sentry refresh are green; release-owner acceptance is still required for remaining target-runtime and observability gaps.
+v1.1 stabilization checkpoint is closed with accepted P2 follow-ups. Keep the accepted H2 automated-only decision and H5 mobile/admin Sentry enhancement visible during v1.2 planning, but they are not v1.1 release blockers.
 
 ### Resolved Carry-overs (2026-04-23 PM)
 
@@ -62,5 +61,5 @@ Manual target-runtime UAT remains open for the v1.1 stabilization checkpoint. Au
 ## Session Continuity
 
 Last session: 2026-05-11T17:01:44+09:00
-Stopped at: PR #77 merged, N4 configured DB seed/API smoke passed, and main checks green; v1.1 target-runtime microphone/study-flow UAT still needs human execution or explicit release-owner defer
+Stopped at: v1.1 stabilization gate closed with accepted P2 follow-ups; next release work should resume from v1.2 curriculum human review and target-runtime N4 study UAT
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`
