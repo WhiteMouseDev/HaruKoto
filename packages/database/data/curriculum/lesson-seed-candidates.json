@@ -4247,7 +4247,7 @@
       },
       "seedShape": {
         "title": "이름을 쓰세요",
-        "subtitle": "Vます stem + なさい로 부드럽게 지시하기",
+        "subtitle": "Vます stem + なさい로 직접 지시하기",
         "topic": "なさい",
         "estimated_minutes": 12,
         "grammar": {
@@ -4432,7 +4432,7 @@
         "KoreanLearnerGate",
         "AudioReadinessGate"
       ],
-      "notesKo": "PDF 031 なさい topic의 N4 foundation seed 후보. 명령형보다 부드러운 지시라는 사용 맥락을 새 교실 예문으로 다룬다."
+      "notesKo": "PDF 031 なさい topic의 N4 foundation seed 후보. 교실/가정에서 쓰는 직접적인 지시 맥락을 새 교실 예문으로 다룬다."
     },
     {
       "candidateId": "lsc-n4-ta-hou-ga-ii-001",
@@ -4500,14 +4500,14 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "病院に相談したほうがいいですか。",
-                "translation": "병원에 상담하는 편이 좋을까요?"
+                "text": "医者に相談したほうがいいですか。",
+                "translation": "의사와 상담하는 편이 좋을까요?"
               },
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "熱があれば、相談したほうが安心です。",
-                "translation": "열이 있으면 상담하는 편이 안심됩니다."
+                "text": "熱があれば、医者に相談したほうが安心です。",
+                "translation": "열이 있으면 의사와 상담하는 편이 안심이 됩니다."
               }
             ]
           },
@@ -4594,7 +4594,7 @@
               "order": 4,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "病院に相談___。 (병원에 상담하는 편이 좋습니다.)",
+              "prompt": "医者に相談___。 (의사와 상담하는 편이 좋습니다.)",
               "options": [
                 {
                   "id": "a",
@@ -5332,14 +5332,14 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "この川は浅さも分かりますか。",
-                "translation": "이 강은 얕이도 알 수 있나요?"
+                "text": "この川の浅さも分かりますか。",
+                "translation": "이 강의 얕은 정도도 알 수 있나요?"
               },
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "はい。道の太さや細さも見られます。",
-                "translation": "네. 길의 굵기나 가늘기도 볼 수 있습니다."
+                "text": "はい。線の太さや細さも見られます。",
+                "translation": "네. 선의 굵기나 가늘기도 볼 수 있습니다."
               },
               {
                 "speaker": "佐藤",
@@ -5432,7 +5432,7 @@
               "order": 4,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "道の太___を見ます。 (길의 굵기를 봅니다.)",
+              "prompt": "線の太___を見ます。 (선의 굵기를 봅니다.)",
               "options": [
                 {
                   "id": "a",
@@ -5757,7 +5757,7 @@
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
                 "text": "会議が長かったのです。",
-                "translation": "회의가 길었던 것입니다."
+                "translation": "회의가 길었던 거예요."
               },
               {
                 "speaker": "佐藤",
@@ -5824,7 +5824,7 @@
               "order": 3,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "会議が長かった___。 (회의가 길었던 것입니다.)",
+              "prompt": "会議が長かった___。 (회의가 길었던 거예요.)",
               "options": [
                 {
                   "id": "a",
@@ -5876,7 +5876,7 @@
               "order": 5,
               "type": "SENTENCE_REORDER",
               "cognitive_level": "산출유사",
-              "prompt": "'회의가 길었던 것입니다'를 배열하세요.",
+              "prompt": "'회의가 길었던 거예요'를 배열하세요.",
               "tokens": [
                 "長かった",
                 "会議が",

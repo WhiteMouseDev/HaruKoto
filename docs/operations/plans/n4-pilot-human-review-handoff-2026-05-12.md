@@ -2,7 +2,8 @@
 
 > Date: 2026-05-12
 > Scope: first N4 pilot batch, 2 chapters / 10 lessons
-> Status: ready for human curriculum review; not approved for learner rollout
+> Status: AI-assisted pre-review complete; pending human curriculum approval;
+> not approved for learner rollout
 
 ## Source of Truth
 
@@ -84,6 +85,29 @@ HN4-010 was corrected before this handoff: `荷物が届くと、連絡します
 with `荷物が届くと、メールが来ます。` so the example follows the automatic-result
 constraint of `〜と`.
 
+## AI-Assisted Pre-Review - 2026-05-12
+
+Codex performed an AI-assisted pre-review to reduce obvious reviewer burden.
+This is not human curriculum approval. All packet rows remain `PENDING`, with
+`reviewerNotes` describing the pre-review outcome and the remaining human
+approval requirement.
+
+Pre-review fixes applied before human approval:
+
+- HN4-001: changed `〜なさい` metadata from "부드러운 명령" to "직접적인
+  지시" so learners do not read it as soft advice.
+- HN4-002: replaced `病院に相談する` with `医者に相談する` in script/question
+  surfaces for more natural advice language.
+- HN4-006: corrected the `浅さ` Korean translation and replaced the awkward
+  `道の太さ` context with `線の太さ`.
+- HN4-008: changed the Korean rendering of `会議が長かったのです` from the
+  overly literal "회의가 길었던 것입니다" to "회의가 길었던 거예요".
+
+Rows with no concrete blocker found in pre-review still require human
+curriculum approval. HN4-009 remains a specific sequencing decision for the
+human reviewer: confirm whether `〜ために` should stay in lesson 9 before
+target-runtime N4 UAT.
+
 ## Gate Commands
 
 Run these after reviewer decisions are entered:
@@ -97,7 +121,8 @@ Expected current state:
 
 - `lessons:review:validate` should pass while rows are `PENDING`.
 - `lessons:review:gate -- --level N4` should remain blocked until all 10 rows
-  are `APPROVED`.
+  are `APPROVED`. It should print 10 `PENDING` blockers with AI pre-review
+  notes.
 
 ## Closeout Rule
 
