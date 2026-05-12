@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-12T02:53:45.000Z"
+last_updated: "2026-05-12T14:27:00.000+09:00"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, and delegated AI curriculum approval are complete, while mobile target-runtime UAT and learner-rollout approval remain open.
+**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, delegated AI curriculum approval, and mobile target-runtime happy-path UAT are complete, while learner-rollout approval remains open.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — N4 pilot delegated AI curriculum review approved all 10 rows for target-runtime mobile UAT after the user confirmed no human expert is available and asked Codex to perform the review. The approval record explicitly states this is not native-speaker human validation.
+Last activity: 2026-05-12 — N4 pilot target-runtime mobile happy-path UAT passed on iPhone 17 Pro Simulator after the N4 reference-data drift was synced from source JSON. HN4-001 completed with 100% / 5 of 5, SRS registration visible, and N4 Ch.1 progress updated to 20%. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,7 +39,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, and delegated AI curriculum approval are done; next gates are target-runtime N4 study UAT → learner-rollout decision.
+- N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, delegated AI curriculum approval, and target-runtime mobile happy-path UAT are done; next gate is the learner-rollout decision, with an optional N4 wrong-answer retry spot check if rollout approval requires that evidence.
 
 ### Release Gate
 

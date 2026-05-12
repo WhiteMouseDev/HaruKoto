@@ -4,13 +4,13 @@
 > Scope: PR #74 N4 pilot lesson seeds plus PR #77 runtime answer-key redaction
 > Commit: `16afbb66ac9eccdfd0516d5fe6d58be205034daa`
 > Status: seeded, runtime-smoked, TTS-scoped, and delegated AI curriculum
-> review approved; mobile UAT remains open
+> review approved; mobile happy-path UAT passed; rollout decision remains open
 
 ## Summary
 
 PR #74 promoted the first N4 pilot batch from seed candidates into official lesson seed files. This review checks whether the batch is operationally ready for the next gate, not whether the Japanese pedagogy is finally approved.
 
-Result: the N4 pilot batch is structurally ready and has been applied to the current configured API DB target. Runtime API smoke verified N4 chapter/list/detail access and confirmed lesson-detail answer keys are redacted. The TTS manifest now tracks the official N4 lesson seed files directly. The review handoff is prepared at `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md`, and the user delegated curriculum approval to Codex because no human expert is currently available. All 10 rows are now `APPROVED` for target-runtime N4 mobile UAT. This is delegated AI curriculum approval, not native-speaker human approval, and it is not a final learner rollout decision: target-runtime mobile UAT and learner-rollout approval still need to pass.
+Result: the N4 pilot batch is structurally ready and has been applied to the current configured API DB target. Runtime API smoke verified N4 chapter/list/detail access and confirmed lesson-detail answer keys are redacted. The TTS manifest now tracks the official N4 lesson seed files directly. The review handoff is prepared at `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md`, and the user delegated curriculum approval to Codex because no human expert is currently available. All 10 rows are now `APPROVED` for target-runtime N4 mobile UAT. This is delegated AI curriculum approval, not native-speaker human approval, and it is not a final learner rollout decision: target-runtime mobile happy-path UAT passed on 2026-05-12, while learner-rollout approval remains open.
 
 ASSUMPTION: "configured API DB target" means the database selected by the current `apps/api` runtime environment used for the seed and smoke. This document intentionally does not record database URLs, tokens, or credentials.
 
@@ -38,6 +38,7 @@ Both files state that paid PDFs were used only for topic coverage reference, and
 | Review packet drift gate | `pnpm --filter @harukoto/database lessons:review:validate` | PASS, packet structure matches current lesson/TTS sources and reviewer decisions remain valid |
 | Delegated AI review approval gate | `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` | PASS, 10 `APPROVED` rows / 0 blockers |
 | Delegated AI curriculum review | packet row notes in `lesson-human-review/n4-pilot-review.json` | PASS, obvious wording fixes applied; all rows approved for target-runtime N4 mobile UAT; not native-speaker human approval |
+| Target-runtime mobile happy-path UAT | `docs/operations/plans/n4-pilot-mobile-uat-run-2026-05-12.md` | PASS, N4 selected, HN4-001 completed, result 100% / 5 of 5, SRS registration visible, Ch.1 progress 20% |
 
 Quality gate summary:
 
@@ -99,6 +100,9 @@ Every lesson currently uses the runtime-supported question mix:
 8. PASS - Lesson detail no longer leaks answer keys.
    PR #77 redacts both `correctAnswer` and `correctOrder` in lesson detail responses. Authoritative correctness remains available through lesson submission results.
 
+9. PASS - Target-runtime mobile happy path is complete.
+   On 2026-05-12, the iPhone 17 Pro simulator selected N4, opened HN4-001, verified the synced `〜なさい` grammar meaning, triggered a dialogue-line TTS control without visible UI error, completed all five practice questions, showed 100% / 5 of 5, registered 6 review items, and returned to the N4 list with Ch.1 progress at 20%. See `docs/operations/plans/n4-pilot-mobile-uat-run-2026-05-12.md`.
+
 ## Next Gate Checklist
 
 - [x] Delegated AI curriculum review: lesson order, grammar coverage, Korean explanations, and examples approved by Codex per user authorization; not native-speaker human approval.
@@ -109,7 +113,8 @@ Every lesson currently uses the runtime-supported question mix:
 - [x] TTS scope: official `lesson-seeds:HN4-*` targets cover 40 reading script lines and 50 question prompts.
 - [x] Configured DB seed sync: N4 seed check passes with 2 chapters, 10 lessons, and no mismatches.
 - [x] Runtime API smoke: authenticated N4 list/detail smoke passes and answer keys are redacted.
-- [ ] Mobile UAT: select N4, open lesson list, complete one N4 lesson, verify result/SRS/wrong-answer behavior.
+- [x] Mobile UAT happy path: select N4, open lesson list, complete one N4 lesson, verify result/SRS/progress.
+- [ ] Mobile wrong-answer retry spot check: only needed if the learner-rollout decision requires N4-specific wrong-answer UI evidence.
 - [ ] Learner rollout decision: only after the remaining gates pass, decide whether this N4 pilot is approved for broader learner exposure.
 
 ## Release Gate Boundary
