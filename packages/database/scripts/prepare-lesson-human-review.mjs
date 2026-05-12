@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = join(SCRIPT_DIR, '..');
@@ -226,7 +226,7 @@ function buildReviewRow(chapter, lesson, vocabByOrder, grammarByOrder, targetByT
   };
 }
 
-function buildPacket(level) {
+export function buildPacket(level) {
   const levelDir = join(LESSONS_DIR, level.toLowerCase());
   const lessonFiles = listJsonFiles(levelDir);
   const vocabByOrder = loadRowsByOrder(VOCAB_DIR, level);
@@ -280,7 +280,7 @@ function buildPacket(level) {
   };
 }
 
-function preserveReviewerState(packet, outFile) {
+export function preserveReviewerState(packet, outFile) {
   if (!existsSync(outFile)) return packet;
 
   const previous = readJson(outFile);
@@ -324,4 +324,6 @@ function main() {
   console.log(`- question TTS targets: ${packet.summary.questionTtsTargets}/${packet.summary.questions}`);
 }
 
-main();
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main();
+}

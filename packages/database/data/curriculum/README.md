@@ -75,6 +75,10 @@ Wave 0 keeps these files as validated staging contracts:
   review packets from official lesson JSON, vocabulary/grammar references, and
   the TTS target manifest. Existing `reviewerDecision` and `reviewerNotes`
   values are preserved when the packet is regenerated.
+- `scripts/validate-lesson-human-review.mjs`: validates source-controlled
+  lesson human review packets against current lesson JSON, vocabulary/grammar
+  references, and TTS targets while preserving reviewer decisions. It runs as
+  part of `curriculum:validate`.
 - `scripts/prepare-tts-manual-mapping-review.mjs`: generates reviewer-editable
   TTS manual mapping rows from current review batches and topic maps.
 - `scripts/prepare-tts-manual-mapping-followups.mjs`: groups unresolved TTS
@@ -104,6 +108,11 @@ Rules:
   reviewer may change `reviewerDecision` to `APPROVED`, `NEEDS_EDIT`, or
   `REJECTED`, but final curriculum approval still belongs in the operational
   review record.
+- Keep `lesson-human-review/*.json` aligned with current lesson and TTS source
+  data. Run `lessons:review:prepare` after lesson, vocabulary, grammar, or TTS
+  target changes. `curriculum:validate` fails if packet structure drifts, if a
+  decision is invalid, or if `NEEDS_EDIT`/`REJECTED` is missing
+  `reviewerNotes`.
 - Every lesson seed candidate must remain covered by `tts-target-manifest.json`
   before promotion: one target per reading script line and one target per
   question prompt.
