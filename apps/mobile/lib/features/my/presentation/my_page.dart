@@ -38,10 +38,10 @@ class _MyPageState extends ConsumerState<MyPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('MY')),
-      body: isInitialLoading
-          ? _buildSkeleton(context)
-          : hasError
-              ? _buildError(context)
+      body: hasError
+          ? _buildError(context)
+          : isInitialLoading
+              ? _buildSkeleton(context)
               : data == null
                   ? _buildSkeleton(context)
                   : _buildContent(context, theme, data),

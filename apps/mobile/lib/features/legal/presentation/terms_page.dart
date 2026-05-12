@@ -70,7 +70,7 @@ class TermsPage extends StatelessWidget {
           ]),
           _sectionTitle(theme, '제8조 (구독 해지 및 취소)'),
           _numberedList([
-            '이용자는 언제든지 서비스 내 "MY > 구독 관리" 메뉴에서 구독을 해지할 수 있습니다.',
+            '이용자는 이메일(whitemousedev@whitemouse.dev)을 통해 구독 해지를 요청할 수 있습니다.',
             '구독 해지 시 즉시 서비스가 중단되지 않으며, 현재 결제한 구독 기간이 만료될 때까지 프리미엄 서비스를 이용할 수 있습니다.',
             '구독 기간 만료 후에는 무료 플랜으로 자동 전환되며, 학습 데이터는 유지됩니다.',
           ]),
