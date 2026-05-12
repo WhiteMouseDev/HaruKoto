@@ -23,6 +23,7 @@
     "curriculum:tts-review:validate": "node scripts/validate-tts-manual-mapping-review.mjs",
     "lessons:validate": "node scripts/validate-lessons.mjs",
     "lessons:quality": "node scripts/lesson-quality-gate.mjs",
+    "lessons:review:prepare": "node scripts/prepare-lesson-human-review.mjs",
     "build": "prisma generate",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"

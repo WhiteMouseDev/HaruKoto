@@ -51,6 +51,11 @@ Wave 0 keeps these files as validated staging contracts:
 - `lesson-seed-candidates.json`: seed-shaped lesson drafts that are validated
   against topics, examples, vocabulary, grammar, current question runtime types,
   and reading-script TTS fields before any promotion into `data/lessons/**`.
+- `lesson-human-review/*.json`: reviewer-editable packets generated from
+  official `data/lessons/**` files. They collect lesson metadata, reference
+  vocabulary/grammar, script lines, questions, answer keys, explanations, and
+  linked TTS targets so a human reviewer can inspect a level batch without
+  manually joining source files.
 - `scaffold-candidates.json`: kana/kanji scaffold drafts that do not require a
   grammar order but still validate topic, example, runtime question, and TTS
   readiness links.
@@ -66,6 +71,10 @@ Wave 0 keeps these files as validated staging contracts:
   topics.
 - `scripts/derive-curriculum-topics.mjs`: derives topic and grammar-map draft
   data from the inventory plus curated internal mappings.
+- `scripts/prepare-lesson-human-review.mjs`: generates lesson human curriculum
+  review packets from official lesson JSON, vocabulary/grammar references, and
+  the TTS target manifest. Existing `reviewerDecision` and `reviewerNotes`
+  values are preserved when the packet is regenerated.
 - `scripts/prepare-tts-manual-mapping-review.mjs`: generates reviewer-editable
   TTS manual mapping rows from current review batches and topic maps.
 - `scripts/prepare-tts-manual-mapping-followups.mjs`: groups unresolved TTS
@@ -91,6 +100,10 @@ Rules:
   review surfaces can support publishing the resulting lesson JSON.
 - Keep lesson seed candidates in `draft` and outside `data/lessons/**` until the
   candidate passes human review, TTS readiness review, and promotion planning.
+- Keep `lesson-human-review/*.json` decisions as preparation state only. A
+  reviewer may change `reviewerDecision` to `APPROVED`, `NEEDS_EDIT`, or
+  `REJECTED`, but final curriculum approval still belongs in the operational
+  review record.
 - Every lesson seed candidate must remain covered by `tts-target-manifest.json`
   before promotion: one target per reading script line and one target per
   question prompt.
