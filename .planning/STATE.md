@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-12T02:52:00.000Z"
+last_updated: "2026-05-12T02:53:45.000Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, human-review handoff, and AI-assisted pre-review are complete, while human curriculum approval and mobile target-runtime UAT remain open.
+**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, and delegated AI curriculum approval are complete, while mobile target-runtime UAT and learner-rollout approval remain open.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — N4 pilot AI-assisted pre-review added row-level notes, kept all rows `PENDING` for human approval, and fixed obvious wording issues in HN4-001, HN4-002, HN4-006, HN4-008, and HN4-010.
+Last activity: 2026-05-12 — N4 pilot delegated AI curriculum review approved all 10 rows for target-runtime mobile UAT after the user confirmed no human expert is available and asked Codex to perform the review. The approval record explicitly states this is not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,7 +39,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, review handoff, and AI-assisted pre-review are done; next gates are human curriculum approval → target-runtime N4 study UAT → learner-rollout decision.
+- N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, and delegated AI curriculum approval are done; next gates are target-runtime N4 study UAT → learner-rollout decision.
 
 ### Release Gate
 
@@ -61,5 +61,5 @@ v1.1 stabilization checkpoint is closed with accepted P2 follow-ups. Keep the ac
 ## Session Continuity
 
 Last session: 2026-05-11T17:01:44+09:00
-Stopped at: N4 pilot AI-assisted pre-review complete; next release work should collect human reviewer decisions, pass `lessons:review:gate -- --level N4`, then run target-runtime N4 study UAT
+Stopped at: N4 pilot delegated AI curriculum approval complete; next release work should run target-runtime N4 study UAT, then make the learner-rollout decision
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`
