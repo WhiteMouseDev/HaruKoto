@@ -2,8 +2,8 @@
 
 > Date: 2026-05-12
 > Scope: first N4 pilot batch, 2 chapters / 10 lessons
-> Status: delegated AI curriculum review approved; pending target-runtime N4
-> mobile UAT; not approved for learner rollout
+> Status: delegated AI curriculum review approved; target-runtime N4 mobile UAT
+> passed; limited learner pilot approved
 
 ## Source of Truth
 
@@ -113,9 +113,11 @@ Review fixes applied before approval:
 All 10 packet rows are now `APPROVED` for target-runtime N4 mobile UAT. HN4-009
 sequencing is explicitly accepted as non-blocking for this pilot because the
 lesson is internally coherent and introduces a useful purpose-expression bridge.
-If a native-speaker curriculum reviewer becomes available later, treat that
-review as a higher-authority P1/P2 refinement source before broad learner
-rollout.
+Target-runtime mobile happy-path and wrong-answer retry UAT passed after this
+handoff. The learner rollout decision is LIMITED GO for controlled pilot
+exposure only; broad/full N4 rollout remains HOLD. If a native-speaker
+curriculum reviewer becomes available later, treat that review as a
+higher-authority P1/P2 refinement source before broad rollout.
 
 ## Gate Commands
 
@@ -143,7 +145,6 @@ because:
 - accepted P2 curriculum concerns are explicitly listed,
 - the approval record states that this is not native-speaker human approval.
 
-Mobile N4 UAT must still run from the approved packet before any learner rollout
-decision.
-
-Do not make a learner rollout decision from this handoff alone.
+Mobile N4 UAT has run from the approved packet, and the learner rollout decision
+is recorded in `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
+Do not use this handoff alone to broaden N4 beyond controlled pilot exposure.

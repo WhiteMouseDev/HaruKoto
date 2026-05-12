@@ -66,7 +66,7 @@ The broad `pnpm --filter @harukoto/database db:seed` command was interrupted aft
 
 ## Outcome
 
-N4 target-runtime mobile happy path and N4-specific wrong-answer retry entry are ready for learner-rollout decision review. This run does not replace native-speaker curriculum validation; it verifies that the delegated AI-approved seed can be selected, opened, played through, submitted, reflected in progress/SRS, and retried after an incorrect answer on the current mobile runtime.
+N4 target-runtime mobile happy path and N4-specific wrong-answer retry entry are ready for learner-rollout decision review. This run does not replace native-speaker curriculum validation; it verifies that the delegated AI-approved seed can be selected, opened, played through, submitted, reflected in progress/SRS, and retried after an incorrect answer on the current mobile runtime. The rollout decision is recorded separately as LIMITED GO for controlled pilot exposure in `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
 
 ## Follow-Ups
 
