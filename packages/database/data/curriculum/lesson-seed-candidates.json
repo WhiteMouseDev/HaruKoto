@@ -6183,8 +6183,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "荷物が届くと、連絡します。",
-                "translation": "짐이 도착하면 연락하겠습니다."
+                "text": "荷物が届くと、メールが来ます。",
+                "translation": "짐이 도착하면 메일이 옵니다."
               }
             ]
           },
