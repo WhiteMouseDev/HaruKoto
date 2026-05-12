@@ -16,7 +16,7 @@
     "vocab:review:compile": "node scripts/compile-vocab-reviewed-final.mjs",
     "vocab:recorrect:priority": "node scripts/recorrect-priority-vocab-v3.mjs",
     "curriculum:derive": "node scripts/derive-curriculum-topics.mjs",
-    "curriculum:validate": "node scripts/validate-curriculum-contracts.mjs && node scripts/validate-tts-manual-mapping-review.mjs",
+    "curriculum:validate": "node scripts/validate-curriculum-contracts.mjs && node scripts/validate-tts-manual-mapping-review.mjs && node scripts/validate-lesson-human-review.mjs",
     "curriculum:tts-review:prepare": "node scripts/prepare-tts-manual-mapping-review.mjs",
     "curriculum:tts-review:followups": "node scripts/prepare-tts-manual-mapping-followups.mjs",
     "curriculum:tts-review:compile": "node scripts/compile-tts-manual-mapping-overrides.mjs",
@@ -24,6 +24,7 @@
     "lessons:validate": "node scripts/validate-lessons.mjs",
     "lessons:quality": "node scripts/lesson-quality-gate.mjs",
     "lessons:review:prepare": "node scripts/prepare-lesson-human-review.mjs",
+    "lessons:review:validate": "node scripts/validate-lesson-human-review.mjs",
     "build": "prisma generate",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"

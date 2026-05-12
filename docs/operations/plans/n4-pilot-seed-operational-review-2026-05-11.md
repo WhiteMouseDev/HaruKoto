@@ -34,6 +34,7 @@ Both files state that paid PDFs were used only for topic coverage reference, and
 | Lesson-detail answer-key redaction | `cd apps/api && uv run pytest tests/test_lessons.py::test_get_lesson_detail` | PASS, `correctAnswer` and `correctOrder` redacted in lesson detail |
 | Official lesson seed TTS scope | `pnpm --filter @harukoto/database curriculum:validate` | PASS, `lesson-seeds:HN4-*` covers 40 script lines and 50 question prompts |
 | Human review packet preparation | `pnpm --filter @harukoto/database lessons:review:prepare -- --level N4` | PASS, `lesson-human-review/n4-pilot-review.json` covers 10 lessons, 40 script TTS targets, and 50 question TTS targets |
+| Human review packet drift gate | `pnpm --filter @harukoto/database lessons:review:validate` | PASS, packet structure matches current lesson/TTS sources and reviewer decisions remain valid |
 
 Quality gate summary:
 
@@ -84,6 +85,7 @@ Every lesson currently uses the runtime-supported question mix:
 
 6. PASS - Human review packet is prepared.
    `packages/database/data/curriculum/lesson-human-review/n4-pilot-review.json` joins each N4 lesson with reference grammar, vocabulary, script lines, questions, answer keys, explanations, and linked TTS targets. This prepares the human curriculum review but does not approve it.
+   `pnpm --filter @harukoto/database lessons:review:validate` now guards this packet against lesson/TTS drift and invalid reviewer decisions.
 
 7. PASS - Configured DB seed and runtime smoke are complete.
    The configured API DB target contains 2 N4 chapters and 10 N4 lessons. The first N4 lesson detail returned 4 script lines, 5 questions, 5 vocabulary items, and 1 grammar item. This does not by itself approve broad learner rollout.
