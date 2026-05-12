@@ -137,6 +137,81 @@ const TOPIC_TYPE_OVERRIDES = {
   '102': 'register',
 };
 
+const PILOT_LESSON_COVERAGE_OVERRIDES = {
+  '031': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-001'],
+    notesKo: 'HN4-001 공식 N4 pilot lesson으로 대표 coverage가 확보되었다. 명령형 대비는 별도 topic에서 다룬다.',
+  },
+  '055': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-002'],
+    notesKo: 'HN4-002 공식 N4 pilot lesson으로 조언 표현 coverage가 확보되었다.',
+  },
+  '064': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-003'],
+    notesKo: 'HN4-003 공식 N4 pilot lesson으로 불확실한 추측 표현 coverage가 확보되었다.',
+  },
+  '065': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-004'],
+    notesKo:
+      'HN4-004 공식 N4 pilot lesson으로 선택지 없음의 しかない coverage가 확보되었다. 한정 조사 しか 대비는 별도 topic/contrast로 다룬다.',
+  },
+  '069': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-005'],
+    notesKo: 'HN4-005 공식 N4 pilot lesson으로 가능형 coverage가 확보되었다.',
+  },
+  '070': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-006'],
+    notesKo: 'HN4-006 공식 N4 pilot lesson으로 い형용사 어간 + さ coverage가 확보되었다.',
+  },
+  '073': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-007'],
+    notesKo: 'HN4-007 공식 N4 pilot lesson으로 의지형 + と思っています coverage가 확보되었다.',
+  },
+  '079': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-008'],
+    notesKo: 'HN4-008 공식 N4 pilot lesson으로 설명의 のだ/んです coverage가 확보되었다.',
+  },
+  '083': {
+    coverageStatus: 'partial',
+    mappedLessonIds: ['HN4-009'],
+    notesKo:
+      'HN4-009 공식 N4 pilot lesson이 목적 표현 ために를 다룬다. N3 확장 및 목적/원인 대비 follow-up은 partial로 유지한다.',
+  },
+  '084': {
+    coverageStatus: 'partial',
+    mappedLessonIds: ['HN4-010'],
+    notesKo:
+      'HN4-010 공식 N4 pilot lesson이 자동 결과 조건의 〜と를 다룬다. 인용/조건 대비와 N5 と 용법 분리는 partial follow-up으로 유지한다.',
+  },
+};
+
+const COVERAGE_PRIORITY_TEXT_OVERRIDES = {
+  'topic-tameni': {
+    rationaleKo:
+      'HN4-009가 N4 목적 표현을 다루지만, N3 확장 및 목적/원인 대비 follow-up이 남아 partial 보강 queue에 유지한다.',
+    notesKo: '공식 pilot coverage는 연결됐으나, lesson 11+ 후보 선정 시 contrast closeout 결정을 먼저 기록한다.',
+  },
+  'topic-to-conditional': {
+    rationaleKo:
+      'HN4-010이 자동 결과 조건의 〜と를 다루지만, 인용/조건 대비와 N5 と 용법 분리가 남아 partial 보강 queue에 유지한다.',
+    notesKo: '공식 pilot coverage는 연결됐으나, lesson 11+ 후보 선정 시 contrast closeout 결정을 먼저 기록한다.',
+  },
+};
+
+const PROMOTED_SEED_LINEAGE_TOPIC_IDS = new Set(
+  Object.entries(PILOT_LESSON_COVERAGE_OVERRIDES)
+    .filter(([, override]) => override.coverageStatus === 'covered')
+    .map(([pdfRef]) => topicIdFor(pdfRef)),
+);
+
 const GRAMMAR_MAPPINGS = {
   '007': [
     ['N5', 35, 'partial'],
@@ -514,6 +589,7 @@ function vocabularyMappingsFor(item, orderIndex) {
 
 function buildTopic(item, orderIndex) {
   const topicType = topicTypeFor(item);
+  const pilotCoverageOverride = PILOT_LESSON_COVERAGE_OVERRIDES[item.pdfRef] ?? {};
   const mappedGrammarOrders = grammarMappingsFor(item, orderIndex).map(({ level, order }) => ({
     level,
     order,
@@ -526,15 +602,15 @@ function buildTopic(item, orderIndex) {
     topicType,
     inferredJlptLevel: item.inferredLevels[0],
     levelConfidence: item.levelConfidence,
-    coverageStatus: coverageStatusFor(item.coverageAction),
+    coverageStatus: pilotCoverageOverride.coverageStatus ?? coverageStatusFor(item.coverageAction),
     sourceRefs: [{ type: 'pdf', ref: item.pdfRef }],
     mappedGrammarOrders,
-    mappedLessonIds: [],
+    mappedLessonIds: pilotCoverageOverride.mappedLessonIds ?? [],
     prerequisiteTopicIds: [],
     contrastTopicIds: [],
     audioPolicy: audioPolicyFor(topicType),
     reviewStatus: 'needs_review',
-    notesKo: item.notesKo,
+    notesKo: pilotCoverageOverride.notesKo ?? item.notesKo,
   };
 }
 
@@ -1156,7 +1232,7 @@ function buildLessonDraftBlueprints(topics, questionBlueprints, examples) {
   const examplesByTopicId = topicExamplesByTopicId(examples);
 
   return topics
-    .filter((topic) => topic.coverageStatus !== 'covered')
+    .filter((topic) => topic.coverageStatus !== 'covered' || PROMOTED_SEED_LINEAGE_TOPIC_IDS.has(topic.topicId))
     .map((topic) => {
       const track = trackForTopic(topic);
       const questionBlueprint = questionBlueprintByTopicId.get(topic.topicId);
@@ -1190,12 +1266,14 @@ function buildCoveragePriorities(lessonDrafts, topics, questionBlueprints) {
   const questionBlueprintByTopicId = new Map(
     questionBlueprints.map((blueprint) => [blueprint.topicId, blueprint]),
   );
-  return lessonDrafts.map((lesson) => {
+  return lessonDrafts.flatMap((lesson) => {
     const topic = topicById.get(lesson.primaryTopicId);
     if (!topic) throw new Error(`Missing topic for lesson draft ${lesson.lessonBlueprintId}.`);
+    if (topic.coverageStatus === 'covered') return [];
     const questionBlueprint = questionBlueprintByTopicId.get(topic.topicId);
     const track = lesson.track;
-    return {
+    const textOverride = COVERAGE_PRIORITY_TEXT_OVERRIDES[topic.topicId] ?? {};
+    return [{
       priorityId: `priority-${lesson.lessonBlueprintId.replace(/^ldb-/, '')}`,
       topicId: topic.topicId,
       track,
@@ -1203,13 +1281,16 @@ function buildCoveragePriorities(lessonDrafts, topics, questionBlueprints) {
       recommendedWave: recommendedWaveForTrack(track),
       coverageStatus: topic.coverageStatus,
       rationaleKo:
-        topic.coverageStatus === 'partial'
+        textOverride.rationaleKo ??
+        (topic.coverageStatus === 'partial'
           ? '기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.'
-          : 'PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.',
+          : 'PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.'),
       blockers: blockersForTopic(topic, track, questionBlueprint),
       targetLessonBlueprintIds: [lesson.lessonBlueprintId],
-      notesKo: '우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다.',
-    };
+      notesKo:
+        textOverride.notesKo ??
+        '우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다.',
+    }];
   });
 }
 

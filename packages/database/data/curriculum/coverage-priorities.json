@@ -273,24 +273,6 @@
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
     {
-      "priorityId": "priority-nasai",
-      "topicId": "topic-nasai",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-nasai"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
       "priorityId": "priority-no-functions",
       "topicId": "topic-no-functions",
       "track": "N5_REINFORCEMENT",
@@ -387,24 +369,6 @@
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
     {
-      "priorityId": "priority-ta-hou-ga-ii",
-      "topicId": "topic-ta-hou-ga-ii",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-ta-hou-ga-ii"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
       "priorityId": "priority-ku-naru-ni-naru",
       "topicId": "topic-ku-naru-ni-naru",
       "track": "N5_REINFORCEMENT",
@@ -462,43 +426,6 @@
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
     {
-      "priorityId": "priority-kamoshirenai",
-      "topicId": "topic-kamoshirenai",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-kamoshirenai"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
-      "priorityId": "priority-shika-nai",
-      "topicId": "topic-shika-nai",
-      "track": "N4_FOUNDATION",
-      "priority": "P1",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "partial",
-      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review",
-        "needs_runtime_support"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-shika-nai"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
       "priorityId": "priority-dake",
       "topicId": "topic-dake",
       "track": "N5_REINFORCEMENT",
@@ -513,42 +440,6 @@
       ],
       "targetLessonBlueprintIds": [
         "ldb-dake"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
-      "priorityId": "priority-potential-form",
-      "topicId": "topic-potential-form",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-potential-form"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
-      "priorityId": "priority-adjective-sa",
-      "topicId": "topic-adjective-sa",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-adjective-sa"
       ],
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
@@ -589,24 +480,6 @@
       ],
       "targetLessonBlueprintIds": [
         "ldb-imperative-form"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
-      "priorityId": "priority-volitional-form",
-      "topicId": "topic-volitional-form",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-volitional-form"
       ],
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
@@ -670,31 +543,13 @@
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
     {
-      "priorityId": "priority-noda-ndesu",
-      "topicId": "topic-noda-ndesu",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-noda-ndesu"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
       "priorityId": "priority-tameni",
       "topicId": "topic-tameni",
       "track": "N4_FOUNDATION",
       "priority": "P1",
       "recommendedWave": "WAVE_2_N4_FOUNDATION",
       "coverageStatus": "partial",
-      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "rationaleKo": "HN4-009가 N4 목적 표현을 다루지만, N3 확장 및 목적/원인 대비 follow-up이 남아 partial 보강 queue에 유지한다.",
       "blockers": [
         "needs_original_examples",
         "needs_lesson_slot",
@@ -704,7 +559,7 @@
       "targetLessonBlueprintIds": [
         "ldb-tameni"
       ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+      "notesKo": "공식 pilot coverage는 연결됐으나, lesson 11+ 후보 선정 시 contrast closeout 결정을 먼저 기록한다."
     },
     {
       "priorityId": "priority-to-conditional",
@@ -713,7 +568,7 @@
       "priority": "P1",
       "recommendedWave": "WAVE_2_N4_FOUNDATION",
       "coverageStatus": "partial",
-      "rationaleKo": "기존 grammar와 일부 연결되어 있으나 PDF coverage 기준으로 용법 분리와 대조 학습이 필요하다.",
+      "rationaleKo": "HN4-010이 자동 결과 조건의 〜と를 다루지만, 인용/조건 대비와 N5 と 용법 분리가 남아 partial 보강 queue에 유지한다.",
       "blockers": [
         "needs_original_examples",
         "needs_lesson_slot",
@@ -723,7 +578,7 @@
       "targetLessonBlueprintIds": [
         "ldb-to-conditional"
       ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
+      "notesKo": "공식 pilot coverage는 연결됐으나, lesson 11+ 후보 선정 시 contrast closeout 결정을 먼저 기록한다."
     },
     {
       "priorityId": "priority-toiu",

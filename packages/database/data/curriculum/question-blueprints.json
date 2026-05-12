@@ -1262,17 +1262,14 @@
       "cognitiveLevels": [
         "recognition",
         "application",
-        "production",
-        "contrast"
+        "production"
       ],
       "minDraftQuestions": 5,
       "audioRequired": false,
       "requiresOriginalExample": true,
       "reviewStatus": "needs_review",
-      "draftFutureQuestionTypes": [
-        "USAGE_CONTRAST"
-      ],
-      "notesKo": "분리/대조가 필요한 topic이므로 유사 문법 비교 문항을 draft 후보로 둔다."
+      "draftFutureQuestionTypes": [],
+      "notesKo": "기존 lesson runtime 호환 문항 3종을 우선 생성한다."
     },
     {
       "blueprintId": "qb-dake",
