@@ -319,8 +319,8 @@
       "topicGrammarQuestionPrompts": "문법 질문 프롬프트",
       "topicKanaFields": "가나 필드",
       "exampleSentenceFields": "예문 필드",
-      "seedCandidateScriptLines": "Seed 대화문",
-      "seedCandidateQuestionPrompts": "Seed 문항 프롬프트"
+      "lessonSeedScriptLines": "Lesson seed 대화문",
+      "lessonSeedQuestionPrompts": "Lesson seed 문항 프롬프트"
     },
     "blocker": {
       "adminTtsFieldGap": "관리자 TTS 필드 필요",

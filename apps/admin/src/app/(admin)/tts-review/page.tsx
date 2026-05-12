@@ -80,10 +80,10 @@ function SourceKindLabel({ kind }: { kind: TtsReviewBatchItem['sourceKind'] }) {
       return t('sourceKind.topicKanaFields');
     case 'example_sentence_fields':
       return t('sourceKind.exampleSentenceFields');
-    case 'seed_candidate_script_lines':
-      return t('sourceKind.seedCandidateScriptLines');
-    case 'seed_candidate_question_prompts':
-      return t('sourceKind.seedCandidateQuestionPrompts');
+    case 'lesson_seed_script_lines':
+      return t('sourceKind.lessonSeedScriptLines');
+    case 'lesson_seed_question_prompts':
+      return t('sourceKind.lessonSeedQuestionPrompts');
   }
 }
 

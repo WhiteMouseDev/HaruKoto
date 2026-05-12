@@ -4,8 +4,8 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint automated/build green, manual target-runtime UAT still open
-last_updated: "2026-05-11T08:01:44.000Z"
-last_activity: 2026-05-11
+last_updated: "2026-05-12T00:34:04.000Z"
+last_activity: 2026-05-12
 progress:
   total_phases: 0
   completed_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — target-runtime UAT gate still open. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, and runtime API smoke are complete, while human curriculum review, TTS scope, and mobile target-runtime UAT remain open.
+**Current focus:** v1.1 shipped — target-runtime UAT gate still open. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, and official lesson-seed TTS scope are complete, while human curriculum review and mobile target-runtime UAT remain open.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-11 — PR #78 synchronized UAT and N4 operational evidence after PR #77 fixed lesson-detail answer-key redaction. The latest code-bearing checkpoint `16afbb6` has green CI and Deploy API; the doc-only sync merge `d67c7cb` has green CI. Target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate.
+Last activity: 2026-05-12 — official lesson-seed TTS targets now track promoted N4 lesson JSON sources (`lesson-seeds:HN4-*`) instead of candidate-only sources. Target-runtime microphone/study-flow sign-off remains open for the v1.1 stabilization gate.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -40,7 +40,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Pending Todos
 
 - v1.1 release-owner decision: close or explicitly defer the remaining target-runtime microphone/study-flow and observability acceptance items.
-- N4 pilot seed operationalization — configured DB seed and API smoke are done; next gates are admin/human curriculum review → TTS scope → target-runtime N4 study UAT → learner-rollout decision.
+- N4 pilot seed operationalization — configured DB seed, API smoke, and official lesson-seed TTS scope are done; next gates are admin/human curriculum review → target-runtime N4 study UAT → learner-rollout decision.
 
 ### Release Gate
 

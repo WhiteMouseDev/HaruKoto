@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,6 +7,7 @@ const PACKAGE_DIR = join(SCRIPT_DIR, '..');
 const DATA_DIR = join(PACKAGE_DIR, 'data', 'curriculum');
 const SCHEMA_DIR = join(PACKAGE_DIR, 'schemas');
 const GRAMMAR_DIR = join(PACKAGE_DIR, 'data', 'grammar');
+const LESSONS_DIR = join(PACKAGE_DIR, 'data', 'lessons');
 const VOCAB_DIR = join(PACKAGE_DIR, 'data', 'vocabulary');
 
 const CONTRACT_FILES = [
@@ -157,8 +158,8 @@ const TTS_REVIEW_SOURCE_KINDS = new Set([
   'topic_grammar_question_prompts',
   'topic_kana_fields',
   'example_sentence_fields',
-  'seed_candidate_script_lines',
-  'seed_candidate_question_prompts',
+  'lesson_seed_script_lines',
+  'lesson_seed_question_prompts',
 ]);
 const TTS_ADMIN_EXPORT_MODES = new Set(['existing_admin_tts_fields', 'requires_admin_extension']);
 const TTS_ADMIN_EXPORT_CONTENT_TYPES = new Set([
@@ -166,7 +167,7 @@ const TTS_ADMIN_EXPORT_CONTENT_TYPES = new Set([
   'grammar',
   'kana',
   'example_sentence_pool',
-  'lesson_seed_candidate',
+  'lesson_seed',
 ]);
 const TTS_ADMIN_EXPORT_BLOCKERS = new Set([
   'admin_tts_field_gap',
@@ -326,6 +327,87 @@ function vocabularyOrdersByLevel() {
     byLevel.set(level, new Map(rows.map((row) => [row.order, row])));
   }
   return byLevel;
+}
+
+function readOfficialLessonSeedRecords(rows) {
+  const records = [];
+  for (const level of LEVELS) {
+    const levelDir = join(LESSONS_DIR, level.toLowerCase());
+    if (!existsSync(levelDir)) continue;
+    const files = readdirSync(levelDir)
+      .filter((fileName) => fileName.endsWith('.json'))
+      .sort();
+
+    for (const fileName of files) {
+      const filePath = join(levelDir, fileName);
+      const data = readJson(filePath);
+      const fileScope = `lesson seed ${level.toLowerCase()}/${fileName}`;
+      if (!Array.isArray(data.lessons)) {
+        addIssue(rows, 'FAIL', fileScope, 'lessons must be an array.');
+        continue;
+      }
+      for (const lesson of data.lessons) {
+        records.push({
+          filePath,
+          level: data.meta?.jlpt_level ?? level,
+          chapterId: data.meta?.chapter_id,
+          lesson,
+        });
+      }
+    }
+  }
+  return records;
+}
+
+function promotionKeyForCandidate(candidate) {
+  const target = candidate.promotionTarget;
+  if (!target?.level || !Number.isInteger(target.lessonNo) || !candidate.seedShape?.title) return null;
+  return `${target.level}:${target.lessonNo}:${candidate.seedShape.title}`;
+}
+
+function promotionKeyForLesson(record) {
+  const lesson = record.lesson;
+  if (!record.level || !Number.isInteger(lesson.lesson_no) || !lesson.title) return null;
+  return `${record.level}:${lesson.lesson_no}:${lesson.title}`;
+}
+
+function officialLessonSeedContext(rows, seedCandidateContext) {
+  const lessonById = new Map();
+  const promotedCandidateByLessonId = new Map();
+  const promotedLessonByCandidateId = new Map();
+  const candidateByPromotionKey = new Map();
+
+  for (const candidate of seedCandidateContext.candidateById.values()) {
+    const key = promotionKeyForCandidate(candidate);
+    if (!key) continue;
+    if (candidateByPromotionKey.has(key)) {
+      addIssue(rows, 'FAIL', candidate.candidateId, `Duplicate promotion target ${key}.`);
+      continue;
+    }
+    candidateByPromotionKey.set(key, candidate);
+  }
+
+  for (const record of readOfficialLessonSeedRecords(rows)) {
+    const lessonId = record.lesson?.lesson_id;
+    if (!lessonId) {
+      addIssue(rows, 'FAIL', record.filePath, 'Official lesson seed is missing lesson_id.');
+      continue;
+    }
+    if (lessonById.has(lessonId)) {
+      addIssue(rows, 'FAIL', lessonId, 'Duplicate official lesson seed id.');
+      continue;
+    }
+    lessonById.set(lessonId, record);
+
+    const key = promotionKeyForLesson(record);
+    if (!key) continue;
+    const candidate = candidateByPromotionKey.get(key);
+    if (!candidate) continue;
+    promotedCandidateByLessonId.set(lessonId, candidate);
+    promotedLessonByCandidateId.set(candidate.candidateId, record);
+  }
+
+  return { lessonById, promotedCandidateByLessonId, promotedLessonByCandidateId };
 }
 
 function validateContractShell(file, rows) {
@@ -733,6 +815,7 @@ function validateTtsTargetManifest(
   topicsById,
   exampleIds,
   seedCandidateContext,
+  officialLessonContext,
   vocabularyMapContext,
   vocabularyOrders,
 ) {
@@ -742,6 +825,8 @@ function validateTtsTargetManifest(
   const exampleTargetKeys = new Set();
   const seedScriptTargetKeys = new Set();
   const seedQuestionTargetKeys = new Set();
+  const lessonSeedScriptTargetKeys = new Set();
+  const lessonSeedQuestionTargetKeys = new Set();
   if (!data || !Array.isArray(data.targets)) return { targetIds, targetById };
 
   for (const target of data.targets) {
@@ -850,12 +935,52 @@ function validateTtsTargetManifest(
           addIssue(rows, 'FAIL', scope, 'Seed candidate TTS source kind must be script or question.');
         }
       }
+    } else if (typeof target.textSource === 'string' && target.textSource.startsWith('lesson-seeds:')) {
+      const [, lessonId, sourceKind, rawOrder] = target.textSource.split(':');
+      const record = officialLessonContext.lessonById.get(lessonId);
+      const candidate = officialLessonContext.promotedCandidateByLessonId.get(lessonId);
+      const order = Number(rawOrder);
+      if (!record) {
+        addIssue(rows, 'FAIL', scope, `textSource references unknown official lesson seed ${lessonId}.`);
+      } else {
+        if (!candidate) {
+          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS target must map to a promoted seed candidate.');
+        } else if (!(candidate.sourceTopicIds ?? []).includes(target.topicId)) {
+          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS target topicId must match promoted candidate sourceTopicIds.');
+        }
+        if (!Number.isInteger(order) || order < 1) {
+          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS textSource order must be a positive integer.');
+        } else if (sourceKind === 'script') {
+          const line = record.lesson?.content_jsonb?.reading?.script?.[order - 1];
+          if (!line) {
+            addIssue(rows, 'FAIL', scope, `textSource references missing official lesson script line ${order}.`);
+          }
+          if (target.audioTargetType !== 'lesson_script' || target.audioField !== 'script_line') {
+            addIssue(rows, 'FAIL', scope, 'Official lesson seed script targets must use lesson_script/script_line.');
+          }
+          if (line?.voice_id && target.preferredVoiceId !== line.voice_id) {
+            addIssue(rows, 'FAIL', scope, 'Official lesson seed script target preferredVoiceId must match script voice_id.');
+          }
+          lessonSeedScriptTargetKeys.add(`${lessonId}:${order}`);
+        } else if (sourceKind === 'question') {
+          const question = (record.lesson?.content_jsonb?.questions ?? []).find((item) => item.order === order);
+          if (!question) {
+            addIssue(rows, 'FAIL', scope, `textSource references missing official lesson question ${order}.`);
+          }
+          if (target.audioTargetType !== 'question_prompt' || target.audioField !== 'question_prompt') {
+            addIssue(rows, 'FAIL', scope, 'Official lesson seed question targets must use question_prompt/question_prompt.');
+          }
+          lessonSeedQuestionTargetKeys.add(`${lessonId}:${order}`);
+        } else {
+          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS source kind must be script or question.');
+        }
+      }
     } else {
       addIssue(
         rows,
         'FAIL',
         scope,
-        'textSource must start with curriculum-topics:, example-bank:, or lesson-seed-candidates:.',
+        'textSource must start with curriculum-topics:, example-bank:, lesson-seed-candidates:, or lesson-seeds:.',
       );
     }
   }
@@ -874,6 +999,8 @@ function validateTtsTargetManifest(
   }
   for (const [candidateId, candidate] of seedCandidateContext.candidateById) {
     if (!(candidate.validationGates ?? []).includes('AudioReadinessGate')) continue;
+    const promotedLesson = officialLessonContext.promotedLessonByCandidateId.get(candidateId);
+    if (promotedLesson) continue;
     const script = candidate.seedShape?.content_jsonb?.reading?.script ?? [];
     script.forEach((_, index) => {
       const order = index + 1;
@@ -884,6 +1011,23 @@ function validateTtsTargetManifest(
     for (const question of candidate.seedShape?.content_jsonb?.questions ?? []) {
       if (!seedQuestionTargetKeys.has(`${candidateId}:${question.order}`)) {
         addIssue(rows, 'FAIL', candidateId, `No TTS manifest target covers question prompt ${question.order}.`);
+      }
+    }
+  }
+  for (const [candidateId, record] of officialLessonContext.promotedLessonByCandidateId) {
+    const candidate = seedCandidateContext.candidateById.get(candidateId);
+    if (!(candidate?.validationGates ?? []).includes('AudioReadinessGate')) continue;
+    const lessonId = record.lesson.lesson_id;
+    const script = record.lesson?.content_jsonb?.reading?.script ?? [];
+    script.forEach((_, index) => {
+      const order = index + 1;
+      if (!lessonSeedScriptTargetKeys.has(`${lessonId}:${order}`)) {
+        addIssue(rows, 'FAIL', lessonId, `No TTS manifest target covers official lesson script line ${order}.`);
+      }
+    });
+    for (const question of record.lesson?.content_jsonb?.questions ?? []) {
+      if (!lessonSeedQuestionTargetKeys.has(`${lessonId}:${question.order}`)) {
+        addIssue(rows, 'FAIL', lessonId, `No TTS manifest target covers official lesson question prompt ${question.order}.`);
       }
     }
   }
@@ -2375,12 +2519,14 @@ function main() {
     grammarOrders,
     vocabularyOrders,
   );
+  const officialLessonContext = officialLessonSeedContext(rows, seedCandidateContext);
   const ttsTargetContext = validateTtsTargetManifest(
     data.get('TTS target manifest'),
     rows,
     topicContext.topicsById,
     exampleIds,
     seedCandidateContext,
+    officialLessonContext,
     vocabularyMapContext,
     vocabularyOrders,
   );
