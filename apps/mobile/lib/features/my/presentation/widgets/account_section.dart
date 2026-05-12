@@ -78,70 +78,80 @@ class AccountSection extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context) {
-    final controller = TextEditingController();
-
     showDialog(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('회원 탈퇴'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '탈퇴하면 다음 데이터가 모두 삭제되며 복구할 수 없습니다.',
-                  ),
-                  const SizedBox(height: 12),
-                  const Text('- 학습 진행 상황', style: TextStyle(fontSize: 13)),
-                  const Text('- 퀴즈 기록', style: TextStyle(fontSize: 13)),
-                  const Text('- AI 회화 기록', style: TextStyle(fontSize: 13)),
-                  const Text('- 단어장', style: TextStyle(fontSize: 13)),
-                  const Text('- 업적', style: TextStyle(fontSize: 13)),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '확인을 위해 "탈퇴"를 입력해주세요.',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      hintText: '탈퇴',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    controller.dispose();
-                  },
-                  child: const Text('취소'),
-                ),
-                TextButton(
-                  onPressed: controller.text == '탈퇴'
-                      ? () {
-                          Navigator.pop(context);
-                          controller.dispose();
-                          onDeleteAccount();
-                        }
-                      : null,
-                  style: TextButton.styleFrom(
-                      foregroundColor:
-                          AppColors.error(Theme.of(context).brightness)),
-                  child: const Text('회원 탈퇴'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (context) => _DeleteAccountDialog(onDelete: onDeleteAccount),
+    );
+  }
+}
+
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog({required this.onDelete});
+
+  final VoidCallback onDelete;
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('회원 탈퇴'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('탈퇴하면 다음 데이터가 모두 삭제되며 복구할 수 없습니다.'),
+          const SizedBox(height: 12),
+          const Text('- 학습 진행 상황', style: TextStyle(fontSize: 13)),
+          const Text('- 퀴즈 기록', style: TextStyle(fontSize: 13)),
+          const Text('- AI 회화 기록', style: TextStyle(fontSize: 13)),
+          const Text('- 단어장', style: TextStyle(fontSize: 13)),
+          const Text('- 업적', style: TextStyle(fontSize: 13)),
+          const SizedBox(height: 16),
+          const Text(
+            '확인을 위해 "탈퇴"를 입력해주세요.',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              hintText: '탈퇴',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('취소'),
+        ),
+        TextButton(
+          onPressed: _controller.text == '탈퇴'
+              ? () {
+                  Navigator.pop(context);
+                  widget.onDelete();
+                }
+              : null,
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.error(Theme.of(context).brightness),
+          ),
+          child: const Text('회원 탈퇴'),
+        ),
+      ],
     );
   }
 }

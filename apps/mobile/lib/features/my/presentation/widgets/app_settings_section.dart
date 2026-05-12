@@ -147,7 +147,7 @@ class AppSettingsSection extends ConsumerWidget {
                     size: 20, color: AppColors.streak),
                 title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
                 subtitle: Text(
-                  '오늘 학습 미완료 시 22:00에 알림',
+                  '매일 22:00에 학습 리마인더',
                   style: TextStyle(
                       fontSize: 12,
                       color:
