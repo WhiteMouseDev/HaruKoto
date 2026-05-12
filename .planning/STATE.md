@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-12T02:13:37.000Z"
+last_updated: "2026-05-12T02:35:00.000Z"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, and official lesson-seed TTS scope are complete, while human curriculum review and mobile target-runtime UAT remain open.
+**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, and human-review handoff are complete, while human curriculum approval and mobile target-runtime UAT remain open.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — v1.1 stabilization gate closed after H2 automated-only acceptance and H5 visible-Sentry-scope acceptance. Official lesson-seed TTS targets track promoted N4 lesson JSON sources (`lesson-seeds:HN4-*`) instead of candidate-only sources.
+Last activity: 2026-05-12 — N4 pilot human-review handoff prepared, and HN4-010 `〜と` script text was corrected before review to model an automatic result. Official lesson-seed TTS targets track promoted N4 lesson JSON sources (`lesson-seeds:HN4-*`) instead of candidate-only sources.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -39,7 +39,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 
 ### Pending Todos
 
-- N4 pilot seed operationalization — configured DB seed, API smoke, and official lesson-seed TTS scope are done; next gates are admin/human curriculum review → target-runtime N4 study UAT → learner-rollout decision.
+- N4 pilot seed operationalization — configured DB seed, API smoke, official lesson-seed TTS scope, and review handoff are done; next gates are human curriculum approval → target-runtime N4 study UAT → learner-rollout decision.
 
 ### Release Gate
 
@@ -61,5 +61,5 @@ v1.1 stabilization checkpoint is closed with accepted P2 follow-ups. Keep the ac
 ## Session Continuity
 
 Last session: 2026-05-11T17:01:44+09:00
-Stopped at: v1.1 stabilization gate closed with accepted P2 follow-ups; next release work should resume from v1.2 curriculum human review and target-runtime N4 study UAT
+Stopped at: N4 pilot human-review handoff prepared; next release work should collect reviewer decisions, pass `lessons:review:gate -- --level N4`, then run target-runtime N4 study UAT
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`

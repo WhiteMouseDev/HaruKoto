@@ -25,6 +25,7 @@
     "lessons:quality": "node scripts/lesson-quality-gate.mjs",
     "lessons:review:prepare": "node scripts/prepare-lesson-human-review.mjs",
     "lessons:review:validate": "node scripts/validate-lesson-human-review.mjs",
+    "lessons:review:gate": "node scripts/validate-lesson-human-review.mjs && node scripts/check-lesson-human-review-gate.mjs",
     "build": "prisma generate",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
