@@ -3,14 +3,14 @@
 > Date: 2026-05-11
 > Scope: PR #74 N4 pilot lesson seeds plus PR #77 runtime answer-key redaction
 > Commit: `16afbb66ac9eccdfd0516d5fe6d58be205034daa`
-> Status: seeded, runtime-smoked, TTS-scoped, and AI pre-reviewed; human
-> curriculum approval and mobile UAT remain open
+> Status: seeded, runtime-smoked, TTS-scoped, and delegated AI curriculum
+> review approved; mobile UAT remains open
 
 ## Summary
 
 PR #74 promoted the first N4 pilot batch from seed candidates into official lesson seed files. This review checks whether the batch is operationally ready for the next gate, not whether the Japanese pedagogy is finally approved.
 
-Result: the N4 pilot batch is structurally ready and has been applied to the current configured API DB target. Runtime API smoke verified N4 chapter/list/detail access and confirmed lesson-detail answer keys are redacted. The TTS manifest now tracks the official N4 lesson seed files directly. The human-review handoff is prepared at `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md`, and an AI-assisted pre-review has removed obvious wording issues while keeping all rows `PENDING`. This is not a final learner rollout decision: human curriculum approval and target-runtime mobile UAT still need to pass.
+Result: the N4 pilot batch is structurally ready and has been applied to the current configured API DB target. Runtime API smoke verified N4 chapter/list/detail access and confirmed lesson-detail answer keys are redacted. The TTS manifest now tracks the official N4 lesson seed files directly. The review handoff is prepared at `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md`, and the user delegated curriculum approval to Codex because no human expert is currently available. All 10 rows are now `APPROVED` for target-runtime N4 mobile UAT. This is delegated AI curriculum approval, not native-speaker human approval, and it is not a final learner rollout decision: target-runtime mobile UAT and learner-rollout approval still need to pass.
 
 ASSUMPTION: "configured API DB target" means the database selected by the current `apps/api` runtime environment used for the seed and smoke. This document intentionally does not record database URLs, tokens, or credentials.
 
@@ -34,10 +34,10 @@ Both files state that paid PDFs were used only for topic coverage reference, and
 | Runtime API smoke | authenticated local API smoke against configured DB target | PASS, N4 chapters=2, lessons=10, first lesson detail=200 |
 | Lesson-detail answer-key redaction | `cd apps/api && uv run pytest tests/test_lessons.py::test_get_lesson_detail` | PASS, `correctAnswer` and `correctOrder` redacted in lesson detail |
 | Official lesson seed TTS scope | `pnpm --filter @harukoto/database curriculum:validate` | PASS, `lesson-seeds:HN4-*` covers 40 script lines and 50 question prompts |
-| Human review packet preparation | `pnpm --filter @harukoto/database lessons:review:prepare -- --level N4` | PASS, `lesson-human-review/n4-pilot-review.json` covers 10 lessons, 40 script TTS targets, and 50 question TTS targets |
-| Human review packet drift gate | `pnpm --filter @harukoto/database lessons:review:validate` | PASS, packet structure matches current lesson/TTS sources and reviewer decisions remain valid |
-| Human review approval gate | `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` | BLOCKED as expected until human review approves all 10 rows |
-| AI-assisted pre-review | packet row notes in `lesson-human-review/n4-pilot-review.json` | PASS, obvious wording fixes applied; all rows remain `PENDING` for human approval |
+| Review packet preparation | `pnpm --filter @harukoto/database lessons:review:prepare -- --level N4` | PASS, `lesson-human-review/n4-pilot-review.json` covers 10 lessons, 40 script TTS targets, and 50 question TTS targets |
+| Review packet drift gate | `pnpm --filter @harukoto/database lessons:review:validate` | PASS, packet structure matches current lesson/TTS sources and reviewer decisions remain valid |
+| Delegated AI review approval gate | `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` | PASS, 10 `APPROVED` rows / 0 blockers |
+| Delegated AI curriculum review | packet row notes in `lesson-human-review/n4-pilot-review.json` | PASS, obvious wording fixes applied; all rows approved for target-runtime N4 mobile UAT; not native-speaker human approval |
 
 Quality gate summary:
 
@@ -80,18 +80,18 @@ Every lesson currently uses the runtime-supported question mix:
 3. PASS - Reference links resolve.
    The quality gate confirms vocabulary and grammar orders resolve to current reference data.
 
-4. FLAG - Curriculum order still needs human review.
-   The grammar order is coherent for an N4 foundation pilot, but a Japanese curriculum reviewer should confirm whether `〜ために` should remain in lesson 9 after higher-priority N4 expressions such as potential/volitional/conditionals.
+4. PASS - Delegated AI curriculum review is complete for mobile UAT entry.
+   The grammar order is coherent for an N4 foundation pilot. `〜ために` can remain in lesson 9 as a purpose-expression bridge before conditional `〜と`; broader ordering refinements are accepted as a non-blocking P2 curriculum follow-up.
    The handoff also asks reviewers to re-check HN4-010 `〜と` examples for automatic-result usage. Before handoff, `荷物が届くと、連絡します。` was corrected to `荷物が届くと、メールが来ます。` so the seed no longer models an intentional next action after `〜と`.
-   AI-assisted pre-review also corrected HN4-002 `病院に相談する`, HN4-006 `浅さ`/`太さ` wording, and HN4-008 Korean explanation tone before human approval.
+   Review also corrected HN4-002 `病院に相談する`, HN4-006 `浅さ`/`太さ` wording, and HN4-008 Korean explanation tone before approval. This approval is explicitly delegated AI review, not native-speaker human validation.
 
 5. PASS - TTS scope is attached to official lesson seed files.
    The generated TTS manifest now uses `lesson-seeds:HN4-*` sources for the 40 N4 reading script lines and 50 N4 question prompts. Actual audio generation and playback review remain part of the lesson seed admin surface follow-up.
 
-6. PASS - Human review packet is prepared.
-   `packages/database/data/curriculum/lesson-human-review/n4-pilot-review.json` joins each N4 lesson with reference grammar, vocabulary, script lines, questions, answer keys, explanations, and linked TTS targets. This prepares the human curriculum review but does not approve it.
+6. PASS - Review packet is approved for target-runtime mobile UAT.
+   `packages/database/data/curriculum/lesson-human-review/n4-pilot-review.json` joins each N4 lesson with reference grammar, vocabulary, script lines, questions, answer keys, explanations, and linked TTS targets. The user delegated the curriculum decision to Codex, and all 10 N4 rows are now `APPROVED`.
    `pnpm --filter @harukoto/database lessons:review:validate` now guards this packet against lesson/TTS drift and invalid reviewer decisions.
-   `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` remains blocked while rows are `PENDING`; this is the machine-readable closeout queue for human curriculum review.
+   `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` now passes with 10 `APPROVED` rows and 0 blockers.
 
 7. PASS - Configured DB seed and runtime smoke are complete.
    The configured API DB target contains 2 N4 chapters and 10 N4 lessons. The first N4 lesson detail returned 4 script lines, 5 questions, 5 vocabulary items, and 1 grammar item. This does not by itself approve broad learner rollout.
@@ -101,11 +101,11 @@ Every lesson currently uses the runtime-supported question mix:
 
 ## Next Gate Checklist
 
-- [ ] Human curriculum review: approve lesson order, grammar coverage, Korean explanations, and examples.
-- [ ] Human review approval gate: `lessons:review:gate -- --level N4` passes after all rows are `APPROVED`.
-- [x] Human review handoff: `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md` prepared with lesson queue, review standard, and closeout rule.
-- [x] AI-assisted pre-review: obvious wording issues fixed and row-level notes added; not a substitute for human approval.
-- [x] Human review packet preparation: N4 review packet generated with lesson/TTS/answer-key context for reviewer use.
+- [x] Delegated AI curriculum review: lesson order, grammar coverage, Korean explanations, and examples approved by Codex per user authorization; not native-speaker human approval.
+- [x] Review approval gate: `lessons:review:gate -- --level N4` passes after all rows are `APPROVED`.
+- [x] Review handoff: `docs/operations/plans/n4-pilot-human-review-handoff-2026-05-12.md` prepared with lesson queue, review standard, and closeout rule.
+- [x] AI-assisted pre-review: obvious wording issues fixed and row-level notes added before delegated AI approval.
+- [x] Review packet preparation: N4 review packet generated with lesson/TTS/answer-key context for reviewer use.
 - [x] TTS scope: official `lesson-seeds:HN4-*` targets cover 40 reading script lines and 50 question prompts.
 - [x] Configured DB seed sync: N4 seed check passes with 2 chapters, 10 lessons, and no mismatches.
 - [x] Runtime API smoke: authenticated N4 list/detail smoke passes and answer keys are redacted.
