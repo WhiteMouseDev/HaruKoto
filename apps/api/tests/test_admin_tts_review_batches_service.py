@@ -101,6 +101,19 @@ def test_get_admin_tts_review_batch_targets_returns_ordered_targets(tmp_path: Pa
     assert result.targets[0].required_before_publish is True
 
 
+def test_get_admin_tts_review_batch_targets_includes_lesson_seed_preview() -> None:
+    result = get_admin_tts_review_batch_targets("tts-review-gap-seed-script-lines")
+
+    target = next(item for item in result.targets if item.target_id == "tts-hn4-001-script-1")
+    assert target.text_source == "lesson-seeds:HN4-001:script:1"
+    assert target.review_text == "宿題を出す前に、名前を書きなさい。"
+    assert target.review_translation_ko == "숙제를 내기 전에 이름을 쓰세요."
+    assert target.review_speaker == "先生"
+    assert target.review_source_id == "HN4-001"
+    assert target.review_source_title == "이름을 쓰세요"
+    assert target.review_source_order == 1
+
+
 def test_get_admin_tts_review_batch_targets_rejects_missing_batch(tmp_path: Path) -> None:
     batch_path = _write_contract(tmp_path)
     manifest_path = _write_manifest(tmp_path)

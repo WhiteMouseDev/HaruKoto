@@ -7001,6 +7001,72 @@
             "type": "string",
             "title": "Textsource"
           },
+          "reviewText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewtext"
+          },
+          "reviewTranslationKo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewtranslationko"
+          },
+          "reviewSpeaker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewspeaker"
+          },
+          "reviewSourceId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewsourceid"
+          },
+          "reviewSourceTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewsourcetitle"
+          },
+          "reviewSourceOrder": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewsourceorder"
+          },
           "defaultSpeed": {
             "type": "number",
             "title": "Defaultspeed"

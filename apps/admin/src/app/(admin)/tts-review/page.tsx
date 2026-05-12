@@ -623,6 +623,45 @@ function ExecutePreviewBadge({
   );
 }
 
+function TargetSourceCell({ target }: { target: TtsReviewTargetItem }) {
+  const previewMeta = [
+    target.reviewSourceTitle,
+    target.reviewSourceOrder ? `#${target.reviewSourceOrder}` : null,
+    target.reviewSpeaker,
+  ].filter(Boolean);
+
+  return (
+    <div className="space-y-1.5">
+      {target.reviewText ? (
+        <div className="rounded-md border bg-muted/30 px-2 py-1.5">
+          <div
+            lang={target.audioTargetType === 'lesson_script' ? 'ja' : undefined}
+            className="text-sm font-medium leading-relaxed"
+          >
+            {target.reviewText}
+          </div>
+          {target.reviewTranslationKo ? (
+            <div className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              {target.reviewTranslationKo}
+            </div>
+          ) : null}
+          {previewMeta.length > 0 ? (
+            <div className="mt-1 truncate text-[11px] text-muted-foreground">
+              {previewMeta.join(' · ')}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      <div className="font-mono text-xs">{target.textSource}</div>
+      {target.preferredVoiceId ? (
+        <div className="text-xs text-muted-foreground">
+          {target.preferredVoiceId}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function TargetDetailPanel({
   selectedBatchId,
   data,
@@ -801,14 +840,7 @@ function TargetDetailPanel({
                       />
                     </TableCell>
                     <TableCell className="whitespace-normal">
-                      <div className="font-mono text-xs">
-                        {target.textSource}
-                      </div>
-                      {target.preferredVoiceId ? (
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {target.preferredVoiceId}
-                        </div>
-                      ) : null}
+                      <TargetSourceCell target={target} />
                     </TableCell>
                   </TableRow>
                 ))

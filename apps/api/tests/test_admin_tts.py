@@ -178,6 +178,26 @@ async def test_get_tts_review_batch_targets_returns_manifest_targets(client):
 
 
 @pytest.mark.asyncio
+async def test_get_tts_review_batch_targets_returns_lesson_seed_preview(client):
+    """GET includes read-only source text for lesson seed TTS review targets."""
+    ac, mock_db = client
+
+    resp = await ac.get("/api/v1/admin/content/tts/review-batches/tts-review-gap-seed-script-lines/targets")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    target = next(item for item in data["targets"] if item["targetId"] == "tts-hn4-001-script-1")
+    assert target["textSource"] == "lesson-seeds:HN4-001:script:1"
+    assert target["reviewText"] == "宿題を出す前に、名前を書きなさい。"
+    assert target["reviewTranslationKo"] == "숙제를 내기 전에 이름을 쓰세요."
+    assert target["reviewSpeaker"] == "先生"
+    assert target["reviewSourceId"] == "HN4-001"
+    assert target["reviewSourceTitle"] == "이름을 쓰세요"
+    assert target["reviewSourceOrder"] == 1
+    mock_db.execute.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_get_tts_review_batch_targets_returns_404_for_unknown_batch(client):
     """GET returns 404 when the requested generated batch id does not exist."""
     ac, _mock_db = client

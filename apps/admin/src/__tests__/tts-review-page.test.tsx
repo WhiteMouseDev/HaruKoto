@@ -104,6 +104,12 @@ const targetResponse: TtsReviewBatchTargetsResponse = {
       audioTargetType: 'vocabulary',
       audioField: 'word',
       textSource: 'curriculum-topics:topic-personal-pronouns:word',
+      reviewText: '私はキムです。',
+      reviewTranslationKo: '저는 김입니다.',
+      reviewSpeaker: 'キム',
+      reviewSourceId: 'HN5-031',
+      reviewSourceTitle: '나는 학생입니다',
+      reviewSourceOrder: 1,
       defaultSpeed: 0.9,
       requiredBeforePublish: true,
       preferredVoiceId: null,
@@ -281,6 +287,9 @@ describe('TtsReviewPage', () => {
 
     expect(screen.getAllByText('tts-vocabulary-word').length).toBeGreaterThan(0);
     expect(screen.getAllByText('tts-vocabulary-reading').length).toBeGreaterThan(0);
+    expect(screen.getByText('私はキムです。')).toBeTruthy();
+    expect(screen.getByText('저는 김입니다.')).toBeTruthy();
+    expect(screen.getByText('나는 학생입니다 · #1 · キム')).toBeTruthy();
     expect(screen.getByText('curriculum-topics:topic-personal-pronouns:word')).toBeTruthy();
     expect(screen.getByText('japanese_female_1')).toBeTruthy();
     expect(screen.getByText('manualQueue.title')).toBeTruthy();

@@ -311,6 +311,12 @@ class AdminTtsReviewTargetItem(CamelModel):
         "question_prompt",
     ]
     text_source: str
+    review_text: str | None = None
+    review_translation_ko: str | None = None
+    review_speaker: str | None = None
+    review_source_id: str | None = None
+    review_source_title: str | None = None
+    review_source_order: int | None = None
     default_speed: float
     required_before_publish: bool
     preferred_voice_id: str | None = None

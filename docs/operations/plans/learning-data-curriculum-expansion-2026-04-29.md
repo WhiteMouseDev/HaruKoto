@@ -522,6 +522,8 @@ API 배포 이미지에서도 이 endpoint가 동작하도록 `curriculum:derive
 
 Batch별 target drilldown도 read-only로 연결했다. `GET /api/v1/admin/content/tts/review-batches/{batch_id}/targets`는 `tts-review-batches.json`의 target id 순서대로 `tts-target-manifest.json` metadata를 반환한다. API 배포 이미지에서 이 상세 조회가 동작하도록 `curriculum:derive`는 `apps/api/app/data/curriculum/tts-target-manifest.json` 번들 사본도 함께 생성한다.
 
+Lesson seed script/question target은 사람이 batch 화면에서 실제 TTS 원문을 바로 검토할 수 있도록 `reviewText`, `reviewTranslationKo`, `reviewSpeaker`, `reviewSourceId`, `reviewSourceTitle`, `reviewSourceOrder`를 manifest/API 응답에 포함한다. validator는 이 preview 값이 `data/lessons/**` 또는 `lesson-seed-candidates.json`의 원본과 일치하는지 검사하고, question prompt target에는 정답/해설로 오해될 수 있는 번역/화자 preview를 싣지 않는다.
+
 Batch별 generation dry-run도 read-only로 연결했다. `GET /api/v1/admin/content/tts/review-batches/{batch_id}/generation-plan`은 실제 TTS 생성/쓰기 없이 현재 admin TTS service field와 호환되는 target, DB lookup 이후 바로 생성 가능한 target, 수동 매핑이 필요한 target, 확장 전 차단되는 target을 구분한다. 이 dry-run은 grammar topic mapping을 위해 `apps/api/app/data/curriculum/topic-grammar-map.json` 번들 사본을 사용한다.
 
 Vocabulary topic mapping도 별도 계약으로 분리했다. `topic-vocabulary-map.json`은 넓은 어휘 topic과 현재 seed vocabulary row를 연결하되, 단일 exact mapping만 `ready_after_db_lookup`으로 승격한다. 현재 vocabulary batch 18개 target 중 `topic-kanji-reading-basics`의 3개 target은 N5 vocabulary order 309 `漢字`로 해석 가능하고, target도 `tts-vocabulary-n5-309-word`, `tts-vocabulary-n5-309-reading`, `tts-vocabulary-n5-309-example-sentence`처럼 row-level source로 생성한다. 나머지 15개 target은 personal pronouns, numbers, weekdays, `知る/分かる`, `きっと`처럼 topic 범위가 넓거나 정확 row가 없어 수동 매핑으로 유지한다.

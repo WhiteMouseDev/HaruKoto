@@ -344,6 +344,12 @@ export type TtsReviewTargetItem = {
     | 'script_line'
     | 'question_prompt';
   textSource: string;
+  reviewText?: string | null;
+  reviewTranslationKo?: string | null;
+  reviewSpeaker?: string | null;
+  reviewSourceId?: string | null;
+  reviewSourceTitle?: string | null;
+  reviewSourceOrder?: number | null;
   defaultSpeed: number;
   requiredBeforePublish: boolean;
   preferredVoiceId: string | null;
