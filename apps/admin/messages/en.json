@@ -319,8 +319,8 @@
       "topicGrammarQuestionPrompts": "Grammar question prompts",
       "topicKanaFields": "Kana fields",
       "exampleSentenceFields": "Example sentence fields",
-      "seedCandidateScriptLines": "Seed script lines",
-      "seedCandidateQuestionPrompts": "Seed question prompts"
+      "lessonSeedScriptLines": "Lesson seed script lines",
+      "lessonSeedQuestionPrompts": "Lesson seed question prompts"
     },
     "blocker": {
       "adminTtsFieldGap": "Admin TTS field needed",

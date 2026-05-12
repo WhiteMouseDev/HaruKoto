@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,6 +7,7 @@ const PACKAGE_DIR = join(SCRIPT_DIR, '..');
 const REPO_ROOT = join(PACKAGE_DIR, '..', '..');
 const CURRICULUM_DIR = join(PACKAGE_DIR, 'data', 'curriculum');
 const GRAMMAR_DIR = join(PACKAGE_DIR, 'data', 'grammar');
+const LESSONS_DIR = join(PACKAGE_DIR, 'data', 'lessons');
 const VOCABULARY_DIR = join(PACKAGE_DIR, 'data', 'vocabulary');
 const API_CURRICULUM_DIR = join(REPO_ROOT, 'apps', 'api', 'app', 'data', 'curriculum');
 
@@ -386,6 +387,31 @@ function writeJson(filePath, data) {
   writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`);
 }
 
+function readOfficialLessonSeeds() {
+  const records = [];
+  for (const level of LEVELS) {
+    const levelDir = join(LESSONS_DIR, level.toLowerCase());
+    if (!existsSync(levelDir)) continue;
+    const files = readdirSync(levelDir)
+      .filter((fileName) => fileName.endsWith('.json'))
+      .sort();
+
+    for (const fileName of files) {
+      const filePath = join(levelDir, fileName);
+      const data = readJson(filePath);
+      for (const lesson of data.lessons ?? []) {
+        records.push({
+          filePath,
+          level: data.meta?.jlpt_level ?? level,
+          chapterId: data.meta?.chapter_id,
+          lesson,
+        });
+      }
+    }
+  }
+  return records;
+}
+
 function topicIdFor(pdfRef) {
   const slug = TOPIC_SLUGS[pdfRef];
   if (!slug) throw new Error(`Missing topic slug override for pdf ${pdfRef}.`);
@@ -607,7 +633,47 @@ function buildQuestionBlueprints(topics) {
 }
 
 function targetIdPart(value) {
-  return value.replace(/^topic-/, '').replace(/^ex-/, '').replace(/_/g, '-');
+  return value.toLowerCase().replace(/^topic-/, '').replace(/^ex-/, '').replace(/_/g, '-');
+}
+
+function promotionKeyForCandidate(candidate) {
+  const target = candidate.promotionTarget;
+  if (!target?.level || !Number.isInteger(target.lessonNo) || !candidate.seedShape?.title) return null;
+  return `${target.level}:${target.lessonNo}:${candidate.seedShape.title}`;
+}
+
+function promotionKeyForLesson(record) {
+  const lesson = record.lesson;
+  if (!record.level || !Number.isInteger(lesson.lesson_no) || !lesson.title) return null;
+  return `${record.level}:${lesson.lesson_no}:${lesson.title}`;
+}
+
+function promotedOfficialLessonIndex(seedCandidates, officialLessonSeeds) {
+  const candidateByPromotionKey = new Map();
+  for (const candidate of seedCandidates?.candidates ?? []) {
+    const key = promotionKeyForCandidate(candidate);
+    if (!key) continue;
+    if (candidateByPromotionKey.has(key)) {
+      throw new Error(`Duplicate lesson seed candidate promotion target: ${key}`);
+    }
+    candidateByPromotionKey.set(key, candidate);
+  }
+
+  const officialByLessonId = new Map();
+  const officialByCandidateId = new Map();
+  for (const record of officialLessonSeeds) {
+    const key = promotionKeyForLesson(record);
+    if (!key) continue;
+    const candidate = candidateByPromotionKey.get(key);
+    if (!candidate) continue;
+    if (officialByLessonId.has(record.lesson.lesson_id)) {
+      throw new Error(`Duplicate official lesson id in TTS seed index: ${record.lesson.lesson_id}`);
+    }
+    officialByLessonId.set(record.lesson.lesson_id, { ...record, candidate });
+    officialByCandidateId.set(candidate.candidateId, record);
+  }
+
+  return { officialByLessonId, officialByCandidateId };
 }
 
 function exactVocabularyMappingByTopicId(vocabularyMappings) {
@@ -693,10 +759,11 @@ function buildExampleTtsTargets(examples) {
   return targets;
 }
 
-function buildSeedCandidateTtsTargets(seedCandidates) {
+function buildSeedCandidateTtsTargets(seedCandidates, promotedCandidateIds = new Set()) {
   const targets = [];
   for (const candidate of seedCandidates?.candidates ?? []) {
     if (!(candidate.validationGates ?? []).includes('AudioReadinessGate')) continue;
+    if (promotedCandidateIds.has(candidate.candidateId)) continue;
     const targetIdPrefix = targetIdPart(candidate.candidateId);
     const topicId = candidate.sourceTopicIds?.[0];
     const script = candidate.seedShape?.content_jsonb?.reading?.script ?? [];
@@ -736,11 +803,59 @@ function buildSeedCandidateTtsTargets(seedCandidates) {
   return targets;
 }
 
-function buildTtsTargetManifest(topics, examples, seedCandidates, vocabularyMappings) {
+function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates) {
+  const { officialByLessonId } = promotedOfficialLessonIndex(seedCandidates, officialLessonSeeds);
+  const targets = [];
+
+  for (const { lesson, candidate } of officialByLessonId.values()) {
+    if (!(candidate.validationGates ?? []).includes('AudioReadinessGate')) continue;
+    const targetIdPrefix = targetIdPart(lesson.lesson_id);
+    const topicId = candidate.sourceTopicIds?.[0];
+    const script = lesson.content_jsonb?.reading?.script ?? [];
+    script.forEach((line, index) => {
+      const order = index + 1;
+      targets.push({
+        targetId: `tts-${targetIdPrefix}-script-${order}`,
+        topicId,
+        audioTargetType: 'lesson_script',
+        audioField: 'script_line',
+        textSource: `lesson-seeds:${lesson.lesson_id}:script:${order}`,
+        defaultSpeed: 0.9,
+        requiredBeforePublish: true,
+        preferredVoiceId: line.voice_id,
+        generationStatus: 'missing',
+        cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
+        notesKo: `Official lesson seed script target promoted from ${candidate.candidateId}; not yet persisted to tts_audio.`,
+      });
+    });
+
+    const questions = lesson.content_jsonb?.questions ?? [];
+    for (const question of questions) {
+      targets.push({
+        targetId: `tts-${targetIdPrefix}-question-${question.order}`,
+        topicId,
+        audioTargetType: 'question_prompt',
+        audioField: 'question_prompt',
+        textSource: `lesson-seeds:${lesson.lesson_id}:question:${question.order}`,
+        defaultSpeed: 0.9,
+        requiredBeforePublish: true,
+        generationStatus: 'missing',
+        cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
+        notesKo: `Official lesson seed question prompt target promoted from ${candidate.candidateId}; not yet persisted to tts_audio.`,
+      });
+    }
+  }
+
+  return targets;
+}
+
+function buildTtsTargetManifest(topics, examples, seedCandidates, officialLessonSeeds, vocabularyMappings) {
+  const { officialByCandidateId } = promotedOfficialLessonIndex(seedCandidates, officialLessonSeeds);
   return [
     ...buildTopicTtsTargets(topics, vocabularyMappings),
     ...buildExampleTtsTargets(examples),
-    ...buildSeedCandidateTtsTargets(seedCandidates),
+    ...buildSeedCandidateTtsTargets(seedCandidates, new Set(officialByCandidateId.keys())),
+    ...buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates),
   ];
 }
 
@@ -875,28 +990,28 @@ function buildTtsReviewBatches(ttsTargets) {
     {
       batchId: 'tts-review-gap-seed-script-lines',
       reviewSurface: 'admin_extension_required',
-      sourceKind: 'seed_candidate_script_lines',
+      sourceKind: 'lesson_seed_script_lines',
       matches: (target) => target.audioTargetType === 'lesson_script',
       adminExport: {
         mode: 'requires_admin_extension',
-        contentType: 'lesson_seed_candidate',
+        contentType: 'lesson_seed',
         fieldMappings: [{ audioField: 'script_line', adminField: 'script_line' }],
         blockers: ['lesson_seed_admin_surface_gap'],
       },
       reviewerChecklist: [
-        'Seed candidate script line은 voice_id와 speaker가 함께 검수되어야 한다.',
-        '공식 lesson JSON 승격 전 script line별 TTS 생성/재생 UI가 있는지 확인한다.',
+        'Lesson seed script line은 voice_id와 speaker가 함께 검수되어야 한다.',
+        '공식 lesson JSON 기준으로 script line별 TTS 생성/재생 UI가 있는지 확인한다.',
       ],
-      notesKo: 'Lesson seed reading script line 오디오는 seed candidate review surface가 필요한 묶음이다.',
+      notesKo: 'Lesson seed reading script line 오디오는 lesson seed review surface가 필요한 묶음이다.',
     },
     {
       batchId: 'tts-review-gap-seed-question-prompts',
       reviewSurface: 'admin_extension_required',
-      sourceKind: 'seed_candidate_question_prompts',
+      sourceKind: 'lesson_seed_question_prompts',
       matches: (target) => target.audioTargetType === 'question_prompt',
       adminExport: {
         mode: 'requires_admin_extension',
-        contentType: 'lesson_seed_candidate',
+        contentType: 'lesson_seed',
         fieldMappings: [{ audioField: 'question_prompt', adminField: 'question_prompt' }],
         blockers: ['lesson_seed_admin_surface_gap'],
       },
@@ -904,7 +1019,7 @@ function buildTtsReviewBatches(ttsTargets) {
         'Question prompt TTS가 실제 학습 UX에서 재생되는지 확인한 뒤 생성 우선순위를 정한다.',
         '문항 prompt는 정답/해설 오디오와 구분해 관리한다.',
       ],
-      notesKo: 'Seed candidate question prompt 오디오는 lesson seed review surface가 필요한 묶음이다.',
+      notesKo: 'Lesson seed question prompt 오디오는 lesson seed review surface가 필요한 묶음이다.',
     },
   ].map((config) => buildTtsReviewBatch(config, ttsTargets));
 
@@ -1124,13 +1239,20 @@ function main() {
   const seedCandidates = readOptionalJson(join(CURRICULUM_DIR, 'lesson-seed-candidates.json'), {
     candidates: [],
   });
+  const officialLessonSeeds = readOfficialLessonSeeds();
   const orderIndex = grammarOrderIndex();
   const vocabularyIndex = vocabularyOrderIndex();
   const topics = inventory.items.map((item) => buildTopic(item, orderIndex));
   const mappings = buildGrammarMap(inventory.items, orderIndex);
   const vocabularyMappings = buildVocabularyMap(inventory.items, vocabularyIndex);
   const blueprints = buildQuestionBlueprints(topics);
-  const ttsTargets = buildTtsTargetManifest(topics, exampleBank.examples, seedCandidates, vocabularyMappings);
+  const ttsTargets = buildTtsTargetManifest(
+    topics,
+    exampleBank.examples,
+    seedCandidates,
+    officialLessonSeeds,
+    vocabularyMappings,
+  );
   const ttsReviewBatches = buildTtsReviewBatches(ttsTargets);
   const ttsReviewManualMappingOverrides = readOptionalJson(
     join(CURRICULUM_DIR, 'tts-review-manual-mapping-overrides.json'),

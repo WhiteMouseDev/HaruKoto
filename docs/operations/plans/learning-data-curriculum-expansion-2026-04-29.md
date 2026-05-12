@@ -487,14 +487,14 @@ ASSUMPTION: 이 문서의 "configured API DB target"은 seed와 smoke 실행 시
 - Learner rollout decision은 human review, TTS scope, mobile UAT 이후 별도로 결정한다.
 - N4 전체 커버리지와 N4 lesson 11+ 배치는 별도 wave로 다룬다.
 
-TTS readiness도 seed candidate 단위로 확장했다. `tts-target-manifest.json`은 이제 598개 target을 추적한다.
+TTS readiness도 lesson seed 단위로 확장했다. `tts-target-manifest.json`은 이제 598개 target을 추적한다.
 
 - topic/example 기반 target: 330개
-- lesson seed candidate 기반 target: 268개
+- 공식 lesson seed 기반 target: 268개
 - seed script line target: 118개
 - seed question prompt target: 150개
 
-validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 reading script line과 question prompt마다 `lesson-seed-candidates:<candidateId>:script:<order>` 또는 `lesson-seed-candidates:<candidateId>:question:<order>` target이 있는지 확인한다.
+validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 공식 `data/lessons/**`로 승격된 경우 `lesson-seeds:<lessonId>:script:<order>` 또는 `lesson-seeds:<lessonId>:question:<order>` target이 있는지 확인한다. 아직 공식 lesson seed로 승격되지 않은 후보는 기존 `lesson-seed-candidates:<candidateId>:...` source를 계속 허용한다.
 
 `tts-review-batches.json`은 598개 target을 7개 review/export batch로 묶는다. 현재 admin/backend TTS 경로가 직접 지원하는 batch와, admin/API 확장이 필요한 batch를 분리해 TTS 생성 순서를 고정한다.
 
@@ -505,8 +505,8 @@ validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 read
 | `tts-review-gap-grammar-question-prompts` | 78 | `admin_extension_required` | `admin_tts_field_gap` |
 | `tts-review-gap-kana-fields` | 3 | `admin_extension_required` | `admin_content_type_gap` |
 | `tts-review-gap-example-sentence-fields` | 75 | `admin_extension_required` | `admin_content_type_gap` |
-| `tts-review-gap-seed-script-lines` | 118 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
-| `tts-review-gap-seed-question-prompts` | 150 | `admin_extension_required` | `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-seed-script-lines` | 118 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-seed-question-prompts` | 150 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
 
 ASSUMPTION: 이번 단계의 TTS review/export 계약은 아직 생성 action이 아니다. Read-only Admin UI/API는 검토용으로 연결했지만, 기존 `apps/admin` TTS field와 `apps/api` admin TTS service를 통한 batch 생성/쓰기 확장은 후속 단계에서 다룬다.
 

@@ -70,7 +70,7 @@ const response: TtsReviewBatchListResponse = {
       batchId: 'tts-review-gap-seed-script-lines',
       status: 'review',
       reviewSurface: 'admin_extension_required',
-      sourceKind: 'seed_candidate_script_lines',
+      sourceKind: 'lesson_seed_script_lines',
       targetIds: ['tts-seed-script-1'],
       targetCount: 1,
       requiredBeforePublishCount: 0,
@@ -83,7 +83,7 @@ const response: TtsReviewBatchListResponse = {
       },
       adminExport: {
         mode: 'requires_admin_extension',
-        contentType: 'lesson_seed_candidate',
+        contentType: 'lesson_seed',
         fieldMappings: [{ audioField: 'script_line', adminField: 'script_line' }],
         blockers: ['lesson_seed_admin_surface_gap'],
       },

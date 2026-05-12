@@ -295,7 +295,7 @@ export type TtsReviewExportInfo = {
     | 'grammar'
     | 'kana'
     | 'example_sentence_pool'
-    | 'lesson_seed_candidate';
+    | 'lesson_seed';
   fieldMappings: TtsReviewFieldMapping[];
   blockers: Array<
     | 'admin_tts_field_gap'
@@ -314,8 +314,8 @@ export type TtsReviewBatchItem = {
     | 'topic_grammar_question_prompts'
     | 'topic_kana_fields'
     | 'example_sentence_fields'
-    | 'seed_candidate_script_lines'
-    | 'seed_candidate_question_prompts';
+    | 'lesson_seed_script_lines'
+    | 'lesson_seed_question_prompts';
   targetIds: string[];
   targetCount: number;
   requiredBeforePublishCount: number;

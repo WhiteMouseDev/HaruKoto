@@ -319,8 +319,8 @@
       "topicGrammarQuestionPrompts": "文法質問プロンプト",
       "topicKanaFields": "かなフィールド",
       "exampleSentenceFields": "例文フィールド",
-      "seedCandidateScriptLines": "Seed会話文",
-      "seedCandidateQuestionPrompts": "Seed問題プロンプト"
+      "lessonSeedScriptLines": "Lesson seed会話文",
+      "lessonSeedQuestionPrompts": "Lesson seed問題プロンプト"
     },
     "blocker": {
       "adminTtsFieldGap": "管理者TTSフィールドが必要",

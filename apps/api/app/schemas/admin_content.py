@@ -263,7 +263,7 @@ class AdminTtsReviewFieldMapping(CamelModel):
 
 class AdminTtsReviewExportInfo(CamelModel):
     mode: Literal["existing_admin_tts_fields", "requires_admin_extension"]
-    content_type: Literal["vocabulary", "grammar", "kana", "example_sentence_pool", "lesson_seed_candidate"]
+    content_type: Literal["vocabulary", "grammar", "kana", "example_sentence_pool", "lesson_seed"]
     field_mappings: list[AdminTtsReviewFieldMapping]
     blockers: list[Literal["admin_tts_field_gap", "admin_content_type_gap", "lesson_seed_admin_surface_gap"]]
 
@@ -278,8 +278,8 @@ class AdminTtsReviewBatchItem(CamelModel):
         "topic_grammar_question_prompts",
         "topic_kana_fields",
         "example_sentence_fields",
-        "seed_candidate_script_lines",
-        "seed_candidate_question_prompts",
+        "lesson_seed_script_lines",
+        "lesson_seed_question_prompts",
     ]
     target_ids: list[str]
     target_count: int

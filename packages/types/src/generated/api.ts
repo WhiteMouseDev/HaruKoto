@@ -1974,7 +1974,7 @@ export interface components {
              * Sourcekind
              * @enum {string}
              */
-            sourceKind: "topic_vocabulary_fields" | "topic_grammar_fields" | "topic_grammar_question_prompts" | "topic_kana_fields" | "example_sentence_fields" | "seed_candidate_script_lines" | "seed_candidate_question_prompts";
+            sourceKind: "topic_vocabulary_fields" | "topic_grammar_fields" | "topic_grammar_question_prompts" | "topic_kana_fields" | "example_sentence_fields" | "lesson_seed_script_lines" | "lesson_seed_question_prompts";
             /** Targetids */
             targetIds: string[];
             /** Targetcount */
@@ -2083,7 +2083,7 @@ export interface components {
              * Contenttype
              * @enum {string}
              */
-            contentType: "vocabulary" | "grammar" | "kana" | "example_sentence_pool" | "lesson_seed_candidate";
+            contentType: "vocabulary" | "grammar" | "kana" | "example_sentence_pool" | "lesson_seed";
             /** Fieldmappings */
             fieldMappings: components["schemas"]["AdminTtsReviewFieldMapping"][];
             /** Blockers */
