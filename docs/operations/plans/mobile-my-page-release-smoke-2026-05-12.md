@@ -3,7 +3,7 @@
 > Date: 2026-05-12
 > Scope: Mobile `MY` tab launch-readiness smoke after account/settings hardening
 > Code checkpoint: `b2262b465a9efce64102f93be780171b58066a00`
-> Status: automated gate passed; physical-device smoke pending
+> Status: automated gate and physical-device install/launch precheck passed; on-screen smoke pending
 
 ## Summary
 
@@ -25,6 +25,23 @@ primary account.
 | Mobile analyzer | `cd apps/mobile && make analyze` | PASS, no issues |
 | Full mobile tests | `cd apps/mobile && make test` | PASS, 525 tests |
 | Device availability | `cd apps/mobile && flutter devices` | PASS, iPhone 17 Pro simulator and `Kun Woo's iPhone` wireless detected |
+
+## Physical-Device Pre-Smoke Evidence
+
+| Check | Command | Result |
+|---|---|---|
+| Current checkpoint | `git status --short --branch && git log --oneline --decorate -4` | PASS, `main...origin/main` clean at `7c1b760` |
+| Device availability | `cd apps/mobile && flutter devices` | PASS, `Kun Woo's iPhone` wireless detected as `00008150-000A20881E88401C` |
+| Profile install and launch | `cd apps/mobile && flutter run --profile -d 00008150-000A20881E88401C --dart-define-from-file=.env --no-resident` | PASS, Xcode build completed and install/launch command exited 0 |
+| Installed app lookup | `xcrun devicectl device info apps --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55 --bundle-id com.harukoto.app` | PASS, `하루코토 / com.harukoto.app / 1.0.0 / 1` listed |
+| Foreground launch | `xcrun devicectl device process launch --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55 --terminate-existing com.harukoto.app` | PASS, application launched by bundle identifier |
+| Lock state | `xcrun devicectl device info lockState --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55` | PASS, `unlockedSinceBoot: true` |
+| Process listing | `xcrun devicectl device info processes --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55` | PASS, `/Runner.app/Runner` observed in process list |
+
+Note: wireless profile launch reported that the Dart VM Service was not
+discovered within 75 seconds. This is a debug attach limitation on the wireless
+device path, not a failed install. The installed app lookup, foreground launch,
+and process listing above are the release-smoke precheck evidence.
 
 ## Fixed Before Smoke
 
@@ -52,6 +69,9 @@ primary account.
 
 Run on `Kun Woo's iPhone` wireless or a connected physical iPhone. Record
 `Pass`, `Flag`, or `Block` for each scenario.
+
+Precondition status: app is installed and launched on the physical iPhone.
+The remaining checks require reading and interacting with the device screen.
 
 ### Scenario A. My Tab Load And Error-Free Profile
 
