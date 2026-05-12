@@ -869,6 +869,30 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_male_1"
       }
+    },
+    {
+      "exampleId": "ex-n4-i-adjective-nominalization-001",
+      "topicId": "topic-i-adjective-nominalization",
+      "jlptLevel": "N4",
+      "japanese": "紙の厚さと柔らかさを比べました。",
+      "reading": "かみのあつさとやわらかさをくらべました。",
+      "korean": "종이의 두께와 부드러운 정도를 비교했습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "nominalization",
+        "adjective",
+        "n4"
+      ],
+      "notesKo": "い형용사 어간에 さ를 붙여 성질의 정도를 명사로 말하는 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
     }
   ]
 }

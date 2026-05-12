@@ -489,12 +489,13 @@
         "tts-n4-volitional-form-001-example-sentence",
         "tts-n4-noda-ndesu-001-example-sentence",
         "tts-n4-tameni-001-example-sentence",
-        "tts-n4-to-conditional-001-example-sentence"
+        "tts-n4-to-conditional-001-example-sentence",
+        "tts-n4-i-adjective-nominalization-001-example-sentence"
       ],
-      "targetCount": 75,
-      "requiredBeforePublishCount": 75,
+      "targetCount": 76,
+      "requiredBeforePublishCount": 76,
       "generationStatusSummary": {
-        "missing": 75,
+        "missing": 76,
         "generated": 0,
         "approved": 0,
         "rejected": 0,
@@ -533,6 +534,10 @@
       "reviewSurface": "admin_extension_required",
       "sourceKind": "lesson_seed_script_lines",
       "targetIds": [
+        "tts-lsc-n4-i-adjective-nominalization-001-script-1",
+        "tts-lsc-n4-i-adjective-nominalization-001-script-2",
+        "tts-lsc-n4-i-adjective-nominalization-001-script-3",
+        "tts-lsc-n4-i-adjective-nominalization-001-script-4",
         "tts-hn5-031-script-1",
         "tts-hn5-031-script-2",
         "tts-hn5-031-script-3",
@@ -652,10 +657,10 @@
         "tts-hn4-010-script-3",
         "tts-hn4-010-script-4"
       ],
-      "targetCount": 118,
-      "requiredBeforePublishCount": 118,
+      "targetCount": 122,
+      "requiredBeforePublishCount": 122,
       "generationStatusSummary": {
-        "missing": 118,
+        "missing": 122,
         "generated": 0,
         "approved": 0,
         "rejected": 0,
@@ -686,6 +691,11 @@
       "reviewSurface": "admin_extension_required",
       "sourceKind": "lesson_seed_question_prompts",
       "targetIds": [
+        "tts-lsc-n4-i-adjective-nominalization-001-question-1",
+        "tts-lsc-n4-i-adjective-nominalization-001-question-2",
+        "tts-lsc-n4-i-adjective-nominalization-001-question-3",
+        "tts-lsc-n4-i-adjective-nominalization-001-question-4",
+        "tts-lsc-n4-i-adjective-nominalization-001-question-5",
         "tts-hn5-031-question-1",
         "tts-hn5-031-question-2",
         "tts-hn5-031-question-3",
@@ -837,10 +847,10 @@
         "tts-hn4-010-question-4",
         "tts-hn4-010-question-5"
       ],
-      "targetCount": 150,
-      "requiredBeforePublishCount": 150,
+      "targetCount": 155,
+      "requiredBeforePublishCount": 155,
       "generationStatusSummary": {
-        "missing": 150,
+        "missing": 155,
         "generated": 0,
         "approved": 0,
         "rejected": 0,

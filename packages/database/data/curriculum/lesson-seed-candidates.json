@@ -6321,6 +6321,213 @@
         "ContrastGate"
       ],
       "notesKo": "PDF 084 조건 と topic의 N4 foundation seed 후보. たら/ば/なら와의 비교는 ContrastGate 후속 검수 대상으로 남긴다."
+    },
+    {
+      "candidateId": "lsc-n4-i-adjective-nominalization-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-i-adjective-nominalization",
+      "sourceTopicIds": [
+        "topic-i-adjective-nominalization"
+      ],
+      "exampleIds": [
+        "ex-n4-i-adjective-nominalization-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 3,
+        "lessonNo": 11,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "종이의 두께를 비교해요",
+        "subtitle": "い형용사 stem + さ로 성질의 정도를 명사화하기",
+        "topic": "い형용사의 명사화",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "grammar_order": 45,
+          "pattern": "いAdj stem + さ",
+          "meaning_ko": "~함 / ~이 / ~정도",
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          215,
+          260,
+          136,
+          137,
+          91
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "노트를 고르기 전에 종이의 두께와 부드러운 정도를 비교함",
+            "highlights": [
+              "厚さ",
+              "柔らかさ",
+              "硬さ",
+              "比べる"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "ノートを選ぶ前に、紙の厚さを比べています。",
+                "translation": "노트를 고르기 전에 종이의 두께를 비교하고 있습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "厚い紙と薄い紙がありますね。",
+                "translation": "두꺼운 종이와 얇은 종이가 있네요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。この紙の柔らかさも確認します。",
+                "translation": "네. 이 종이의 부드러운 정도도 확인합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "厚さと柔らかさを比べて選びましょう。",
+                "translation": "두께와 부드러운 정도를 비교해서 고릅시다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "厚い의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "얇다"
+                },
+                {
+                  "id": "b",
+                  "text": "두껍다"
+                },
+                {
+                  "id": "c",
+                  "text": "부드럽다"
+                },
+                {
+                  "id": "d",
+                  "text": "딱딱하다"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "厚い(あつい)는 두껍다입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "柔らかい의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "부드럽다"
+                },
+                {
+                  "id": "b",
+                  "text": "얇다"
+                },
+                {
+                  "id": "c",
+                  "text": "엄격하다"
+                },
+                {
+                  "id": "d",
+                  "text": "신기하다"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "柔らかい(やわらかい)는 부드럽다입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "紙の厚___を比べます。 (종이의 두께를 비교합니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "に"
+                },
+                {
+                  "id": "b",
+                  "text": "さ"
+                },
+                {
+                  "id": "c",
+                  "text": "ため"
+                },
+                {
+                  "id": "d",
+                  "text": "そう"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "い형용사 厚い는 い를 빼고 さ를 붙여 厚さ가 됩니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "な"
+                },
+                {
+                  "id": "b",
+                  "text": "しか"
+                },
+                {
+                  "id": "c",
+                  "text": "さ"
+                },
+                {
+                  "id": "d",
+                  "text": "と"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "柔らかい도 い를 빼고 さ를 붙여 柔らかさ로 명사화합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'종이의 두께를 비교합니다'를 배열하세요.",
+              "tokens": [
+                "比べます",
+                "紙の",
+                "厚さを"
+              ],
+              "correct_order": [
+                "紙の",
+                "厚さを",
+                "比べます"
+              ],
+              "explanation": "명사화된 厚さ를 목적어로 사용합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 019 い형용사 명사화 topic의 HN4-011 seed 후보. 기존 HN4-006 さ coverage를 반복하지 않도록 두께/부드러움 비교 맥락의 적용 연습으로 제한한다."
     }
   ]
 }
