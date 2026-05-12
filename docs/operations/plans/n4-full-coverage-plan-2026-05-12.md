@@ -2,7 +2,7 @@
 
 > Date: 2026-05-12
 > Scope: N4 pilot aftercare and lesson 11+ promotion planning
-> Status: coverage-contract sync completed; broad/full N4 rollout remains HOLD
+> Status: lesson 11 closeout completed; broad/full N4 rollout remains HOLD
 
 ## Decision
 
@@ -233,16 +233,31 @@ Stop expansion and keep broad/full rollout on HOLD if any of these occur:
 - No native-speaker or delegated explicit curriculum approval exists for the
   batch.
 
+## Lesson 11+ Closeout Result
+
+The lesson 11+ queue has been recalculated and partial-topic closeouts are now
+recorded in
+`docs/operations/plans/n4-lesson-11-queue-decision-2026-05-12.md`.
+
+Result:
+
+- Select `topic-i-adjective-nominalization` as the first HN4-011 candidate.
+- Keep `topic-kitto` deferred until adverb/discourse scope, TTS, and runtime
+  question support are decided.
+- Keep the seven partial N4 foundation rows out of automatic seed drafting until
+  their split, contrast, or mobile-feature decisions are satisfied.
+- Broad/full N4 rollout remains HOLD.
+
 ## Recommended Next Work Order
 
-1. Recalculate the lesson 11+ queue from only true missing or partial topics.
-2. Close out each partial topic as `split`, `runtime-compatible lesson`,
-   `defer`, or `requires mobile feature`.
-3. Draft one small N4 expansion batch, preferably 1 chapter / 5 lessons.
-4. Prepare and validate the human-review packet.
-5. Generate or verify TTS targets before DB seed.
-6. Run configured DB seed check and API smoke.
-7. Run mobile UAT and record a new rollout decision.
+1. Draft one HN4-011 seed candidate for `topic-i-adjective-nominalization`.
+2. Regenerate curriculum contracts and TTS target manifests.
+3. Prepare and validate the N4 human-review packet.
+4. Generate or verify TTS targets before DB seed.
+5. Run configured DB seed check and API smoke.
+6. Run mobile UAT and record a new rollout decision.
+7. Return to the partial-topic queue only after the closeout decision for that
+   topic is satisfied.
 
 ## Current Release Boundary
 
