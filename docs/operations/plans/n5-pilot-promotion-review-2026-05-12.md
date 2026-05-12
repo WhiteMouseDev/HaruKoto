@@ -2,8 +2,8 @@
 
 > Date: 2026-05-12
 > Scope: N5 Ch.07-Ch.09 lesson seed promotion
-> Status: source-level pilot promotion complete; target DB seed sync and
-> mobile UAT remain separate gates
+> Status: source-level pilot promotion, configured target DB seed sync, and
+> runtime API smoke complete; mobile UAT remains a separate gate
 
 ## Summary
 
@@ -12,9 +12,9 @@ reviewed against the lesson schema, reference links, N5 quality heuristics, and
 API seed publish policy before changing their `meta.status` from `DRAFT` to
 `PILOT`.
 
-This is a source and automated-quality promotion. It does not claim native
-speaker final curriculum approval or that any production database has already
-been reseeded.
+This is a source and automated-quality promotion with configured target DB seed
+sync completed after merge. It does not claim native speaker final curriculum
+approval or mobile UAT completion.
 
 ASSUMPTION: "review" in this document means Codex-assisted structural and
 content sanity review plus automated gates, not final human curriculum approval.
@@ -65,6 +65,15 @@ Total N5 source scope after promotion:
 | Database package typecheck | `pnpm --filter @harukoto/database typecheck` | PASS |
 | API seed policy tests | `cd apps/api && uv run pytest tests/test_lesson_seed_policy.py -q` | PASS, 13 passed |
 
+## Post-Merge Runtime Gate Results
+
+| Gate | Command / Path | Result |
+|---|---|---|
+| Configured DB seed apply | `cd apps/api && uv run python -m app.seeds.lessons --level N5` | PASS, 9 chapters / 50 lessons seeded as `PILOT`, `published=True` |
+| Configured DB seed check | `cd apps/api && uv run python -m app.seeds.lessons --check --level N5` | PASS, 9 chapters / 50 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
+| Local ASGI API smoke | `GET /api/v1/lessons/chapters?jlptLevel=N5` | PASS, 9 chapters / 50 lessons, Ch.08 = 9 lessons, Ch.09 = 6 lessons |
+| Local ASGI detail smoke | `GET /api/v1/lessons/{lessonId}` for HN5-037 and HN5-047 | PASS, HN5-037 returns 8 vocabulary items + 1 grammar item; HN5-047 returns `〜くなる / 〜になる` and redacted answer keys |
+
 ## Operational Findings
 
 1. PASS - Ch.07-Ch.09 are structurally publishable.
@@ -79,9 +88,9 @@ Total N5 source scope after promotion:
    The promoted lessons only use existing supported types:
    `VOCAB_MCQ`, `CONTEXT_CLOZE`, and `SENTENCE_REORDER`.
 
-4. FLAG - Target database sync is not part of this source promotion.
-   After merge, run the configured seed/check path against the intended DB
-   target before saying deployed learners can see all 50 N5 lessons.
+4. PASS - Configured target database sync is complete.
+   The post-merge seed apply and check both passed for N5, with 0 missing
+   lessons, 0 content mismatches, and 0 item-link mismatches.
 
 5. FLAG - Human curriculum review remains useful before broad expansion.
    The automated gate is now clean, but the next expansion decision should still
@@ -93,7 +102,9 @@ Total N5 source scope after promotion:
 - [x] Source-level Ch.07-Ch.09 promotion to `PILOT`.
 - [x] Strict N5 quality gate has 0 warnings and 0 failures.
 - [x] API seed policy test covers the 50-lesson N5 pilot set.
-- [ ] Target DB seed/check for N5 after merge.
+- [x] Target DB seed/check for N5 after merge.
+- [x] API smoke confirms N5 9 chapters / 50 lessons are available through the
+  lesson endpoints.
 - [ ] Mobile UAT after target DB sync: open N5 lesson list and confirm 9
   chapters / 50 lessons are visible.
 - [ ] Complete at least one lesson from Ch.07-Ch.09 on device and verify result
