@@ -2,7 +2,7 @@
 
 > Date: 2026-05-12
 > Scope: N4 pilot aftercare and lesson 11+ promotion planning
-> Status: planning gate opened; broad/full N4 rollout remains HOLD
+> Status: coverage-contract sync completed; broad/full N4 rollout remains HOLD
 
 ## Decision
 
@@ -37,22 +37,49 @@ interact with the physical iPhone screen.
 | Contract | Count | Current meaning |
 |---|---:|---|
 | N4 curriculum topics | 39 | Topic inventory derived from reference coverage |
-| Covered N4 topics | 20 | Existing coverage in the staging contract |
-| Partial N4 topics | 8 | Needs split, contrast, or runtime-support decision |
-| Missing N4 topics | 11 | Needs authored examples and lesson slot |
-| N4 foundation priorities | 17 | Candidate queue for WAVE_2_N4_FOUNDATION |
-| P1 N4 foundation priorities | 8 | Higher-risk partial topics, mostly runtime-support blockers |
-| P2 N4 foundation priorities | 9 | Runtime-compatible missing topics plus one `きっと` blocker |
+| Covered N4 topics | 28 | Pilot-covered topics are now reflected in the staging contract |
+| Partial N4 topics | 7 | Remaining N4 foundation queue; needs split, contrast, or runtime-support decision |
+| Missing N4 topics | 4 | 2 N4 foundation topics plus 2 later register/business topics |
+| N4 foundation priorities | 9 | Remaining candidate queue for WAVE_2_N4_FOUNDATION |
+| P1 N4 foundation priorities | 7 | Higher-risk partial topics, mostly runtime-support blockers |
+| P2 N4 foundation priorities | 2 | Runtime-compatible missing topic plus one `きっと` blocker |
 
-Important: the staging coverage files still describe some promoted pilot topics
-as `missing` or `partial`. For example, `topic-nasai`,
-`topic-ta-hou-ga-ii`, `topic-kamoshirenai`, `topic-potential-form`,
-`topic-adjective-sa`, `topic-volitional-form`, and `topic-noda-ndesu` now have
-official lesson coverage through HN4-001 through HN4-008, but the staging
-coverage contract has not been synchronized to that runtime truth.
+The staging coverage contract has now been synchronized to the approved pilot
+runtime truth. HN4-001 through HN4-008 are marked as covered where the pilot
+lesson fully represents the topic. HN4-009 and HN4-010 remain partial because
+`ために` and `〜と` still need contrast/follow-up decisions beyond the current
+pilot lesson.
 
-This is not a learner-facing bug, but it is a planning-contract drift. It must
-be resolved before using the coverage contract to select lesson 11+.
+This sync is not broad rollout approval. It only makes the planning contract
+usable for selecting true lesson 11+ candidates.
+
+## Coverage Contract Sync Result
+
+| Area | Before sync | After sync |
+|---|---:|---:|
+| N4 covered topics | 20 | 28 |
+| N4 partial topics | 8 | 7 |
+| N4 missing topics | 11 | 4 |
+| N4 foundation priority rows | 17 | 9 |
+| N4 P1 priority rows | 8 | 7 |
+| N4 P2 priority rows | 9 | 2 |
+
+Pilot topics marked covered and removed from the lesson 11+ priority queue:
+
+- `topic-nasai` -> HN4-001
+- `topic-ta-hou-ga-ii` -> HN4-002
+- `topic-kamoshirenai` -> HN4-003
+- `topic-shika-nai` -> HN4-004
+- `topic-potential-form` -> HN4-005
+- `topic-adjective-sa` -> HN4-006
+- `topic-volitional-form` -> HN4-007
+- `topic-noda-ndesu` -> HN4-008
+
+Pilot topics mapped to lessons but intentionally kept partial:
+
+- `topic-tameni` -> HN4-009; N3 expansion and purpose/cause contrast remain.
+- `topic-to-conditional` -> HN4-010; quotation/condition and N5 `と` contrast
+  remain.
 
 ## Current Approved Pilot Lessons
 
@@ -78,14 +105,18 @@ These lessons may remain available only under the limited pilot decision in
 
 Goal: make the staging coverage contracts reflect the official 10-lesson pilot.
 
-Required actions:
+Status: complete as of 2026-05-12.
 
-- Mark pilot-covered topic anchors as covered by HN4 lesson IDs where the topic
+Completed actions:
+
+- Marked pilot-covered topic anchors as covered by HN4 lesson IDs where the topic
   is fully represented by the official seed.
-- Keep ambiguous or contrast-sensitive topics as partial where a pilot lesson
+- Kept ambiguous or contrast-sensitive topics as partial where a pilot lesson
   covers only one usage and the topic still needs split treatment.
-- Re-run `pnpm --filter @harukoto/database curriculum:validate`.
-- Re-run `pnpm --filter @harukoto/database lessons:validate`.
+- Kept promoted seed-candidate lesson draft blueprints only as lineage while
+  excluding HN4-001 through HN4-008 from the lesson 11+ priority queue.
+- Re-ran `pnpm --filter @harukoto/database curriculum:validate`.
+- Re-ran `pnpm --filter @harukoto/database lessons:validate`.
 
 Exit criteria:
 
@@ -102,14 +133,23 @@ contracts.
 Candidate class:
 
 - Topics that need original examples, lesson slot, and human review.
-- No immediate new runtime question type required.
+- No immediate new runtime question type required, or the blocker is explicitly
+  called out before selection.
 - Suitable for the existing 5-question lesson shape:
   `VOCAB_MCQ`, `CONTEXT_CLOZE`, `SENTENCE_REORDER`.
 
 Initial queue after contract sync:
 
-- `topic-i-adjective-nominalization`
-- Any pilot topic that remains missing after deliberate review, not by drift.
+- `topic-i-adjective-nominalization` - current best first lesson 11 candidate.
+- `topic-kitto` - keep in P2 queue, but do not select until adverb/discourse
+  scope, TTS decision, and runtime-safe question shape are closed.
+
+N4 missing topics excluded from the foundation lesson 11+ queue:
+
+- `topic-imperative-form` - belongs to `CONVERSATION_REGISTER` /
+  `WAVE_4_REGISTER_BUSINESS` because register/risk policy is required.
+- `topic-keigo-sonkeigo-kenjougo` - belongs to `BUSINESS_KEIGO` /
+  `WAVE_4_REGISTER_BUSINESS`, not the immediate foundation expansion.
 
 Exit criteria:
 
@@ -124,7 +164,6 @@ Goal: avoid papering over N4 topics that need distinction or runtime support.
 Current P1 queue:
 
 - `topic-prohibitive-na`
-- `topic-shika-nai`
 - `topic-tameni`
 - `topic-to-conditional`
 - `topic-to-quotation-or-condition`
@@ -196,8 +235,9 @@ Stop expansion and keep broad/full rollout on HOLD if any of these occur:
 
 ## Recommended Next Work Order
 
-1. Sync the N4 staging coverage contracts with HN4-001 through HN4-010.
-2. Recalculate the lesson 11+ queue from only true missing or partial topics.
+1. Recalculate the lesson 11+ queue from only true missing or partial topics.
+2. Close out each partial topic as `split`, `runtime-compatible lesson`,
+   `defer`, or `requires mobile feature`.
 3. Draft one small N4 expansion batch, preferably 1 chapter / 5 lessons.
 4. Prepare and validate the human-review packet.
 5. Generate or verify TTS targets before DB seed.

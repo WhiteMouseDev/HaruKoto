@@ -989,7 +989,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -1002,7 +1002,9 @@
           "order": 42
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-001"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1016,7 +1018,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "명령형/관계 맥락과 함께 다룬다."
+      "notesKo": "HN4-001 공식 N4 pilot lesson으로 대표 coverage가 확보되었다. 명령형 대비는 별도 topic에서 다룬다."
     },
     {
       "topicId": "topic-tai-desire",
@@ -1896,7 +1898,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -1909,7 +1911,9 @@
           "order": 43
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-002"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1923,7 +1927,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "현재 grammar JSON 명시 항목은 없어 추가 후보로 둔다."
+      "notesKo": "HN4-002 공식 N4 pilot lesson으로 조언 표현 coverage가 확보되었다."
     },
     {
       "topicId": "topic-tari-tari-suru",
@@ -2227,7 +2231,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "high",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2240,7 +2244,9 @@
           "order": 41
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-003"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2254,7 +2260,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "현재 grammar JSON 명시 항목은 없어 추가 후보로 둔다."
+      "notesKo": "HN4-003 공식 N4 pilot lesson으로 불확실한 추측 표현 coverage가 확보되었다."
     },
     {
       "topicId": "topic-shika-nai",
@@ -2263,7 +2269,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "partial",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2276,7 +2282,9 @@
           "order": 48
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-004"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2290,7 +2298,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "한정 조사 しか와 선택지 없음의 しかない를 구분한다."
+      "notesKo": "HN4-004 공식 N4 pilot lesson으로 선택지 없음의 しかない coverage가 확보되었다. 한정 조사 しか 대비는 별도 topic/contrast로 다룬다."
     },
     {
       "topicId": "topic-dake",
@@ -2407,7 +2415,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2420,7 +2428,9 @@
           "order": 44
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-005"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2434,7 +2444,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "현재 grammar JSON 명시 항목은 없어 추가 후보로 둔다."
+      "notesKo": "HN4-005 공식 N4 pilot lesson으로 가능형 coverage가 확보되었다."
     },
     {
       "topicId": "topic-adjective-sa",
@@ -2443,7 +2453,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2456,7 +2466,9 @@
           "order": 45
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-006"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2470,7 +2482,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "PDF 019와 연결한다."
+      "notesKo": "HN4-006 공식 N4 pilot lesson으로 い형용사 어간 + さ coverage가 확보되었다."
     },
     {
       "topicId": "topic-sentence-final-zo",
@@ -2541,7 +2553,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "high",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2554,7 +2566,9 @@
           "order": 46
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-007"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2568,7 +2582,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "ましょう와 선행 관계를 둔다."
+      "notesKo": "HN4-007 공식 N4 pilot lesson으로 의지형 + と思っています coverage가 확보되었다."
     },
     {
       "topicId": "topic-sentence-final-ze",
@@ -2751,7 +2765,7 @@
       "topicType": "grammar",
       "inferredJlptLevel": "N4",
       "levelConfidence": "medium",
-      "coverageStatus": "missing",
+      "coverageStatus": "covered",
       "sourceRefs": [
         {
           "type": "pdf",
@@ -2764,7 +2778,9 @@
           "order": 47
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-008"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2778,7 +2794,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "구어 んです와 함께 다룬다."
+      "notesKo": "HN4-008 공식 N4 pilot lesson으로 설명의 のだ/んです coverage가 확보되었다."
     },
     {
       "topicId": "topic-passive-form",
@@ -2920,7 +2936,9 @@
           "order": 15
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-009"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2934,7 +2952,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "목적/원인 용법을 분리한다."
+      "notesKo": "HN4-009 공식 N4 pilot lesson이 목적 표현 ために를 다룬다. N3 확장 및 목적/원인 대비 follow-up은 partial로 유지한다."
     },
     {
       "topicId": "topic-to-conditional",
@@ -2956,7 +2974,9 @@
           "order": 40
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-010"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -2970,7 +2990,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "제목만으로 조건/인용 구분이 어려워 후속 확인 필요."
+      "notesKo": "HN4-010 공식 N4 pilot lesson이 자동 결과 조건의 〜と를 다룬다. 인용/조건 대비와 N5 と 용법 분리는 partial follow-up으로 유지한다."
     },
     {
       "topicId": "topic-toiu",

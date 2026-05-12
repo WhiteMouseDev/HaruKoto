@@ -487,7 +487,7 @@
         "ex-n4-nasai-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -687,7 +687,7 @@
         "ex-n4-ta-hou-ga-ii-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -814,7 +814,7 @@
         "ex-n4-kamoshirenai-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -827,8 +827,8 @@
       "status": "draft",
       "track": "N4_FOUNDATION",
       "jlptLevel": "N4",
-      "lessonKind": "reinforcement",
-      "titleKo": "しかない 보강",
+      "lessonKind": "new_lesson",
+      "titleKo": "しかない 도입",
       "primaryTopicId": "topic-shika-nai",
       "topicIds": [
         "topic-shika-nai"
@@ -840,19 +840,16 @@
         "CONTEXT_CLOZE",
         "SENTENCE_REORDER"
       ],
-      "draftFutureQuestionTypes": [
-        "USAGE_CONTRAST"
-      ],
+      "draftFutureQuestionTypes": [],
       "exampleIds": [
         "ex-n4-shika-nai-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "split_partial_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
-        "KoreanLearnerGate",
-        "ContrastGate"
+        "KoreanLearnerGate"
       ],
       "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
     },
@@ -910,7 +907,7 @@
         "ex-n4-potential-form-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -941,7 +938,7 @@
         "ex-n4-adjective-sa-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -1038,7 +1035,7 @@
         "ex-n4-volitional-form-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
@@ -1169,7 +1166,7 @@
         "ex-n4-noda-ndesu-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",

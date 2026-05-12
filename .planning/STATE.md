@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-12T16:20:16.000+09:00"
+last_updated: "2026-05-12T17:02:55+09:00"
 last_activity: 2026-05-12
 progress:
   total_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — N4 pilot learner rollout decision recorded LIMITED GO for controlled pilot exposure only; broad/full N4 rollout remains HOLD. The follow-up N4 full coverage plan is now opened in `docs/operations/plans/n4-full-coverage-plan-2026-05-12.md`, with the next N4 expansion gate set to coverage-contract sync before any lesson 11+ promotion. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
+Last activity: 2026-05-12 — N4 pilot learner rollout decision recorded LIMITED GO for controlled pilot exposure only; broad/full N4 rollout remains HOLD. The follow-up N4 full coverage plan is opened in `docs/operations/plans/n4-full-coverage-plan-2026-05-12.md`, and the staging coverage contracts plus derived priority queue now reflect HN4-001 through HN4-010 pilot coverage before lesson 11+ selection. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -40,7 +40,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Pending Todos
 
 - Mobile MY tab launch smoke — code hardening, automated verification, and physical-device install/launch precheck are complete; next gate is screen-level physical-device smoke using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
-- N4 pilot seed operationalization — controlled learner-pilot exposure is approved and full N4 coverage planning is opened; next gate is syncing staging coverage contracts with HN4-001 through HN4-010 before selecting lesson 11+ candidates. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
+- N4 pilot seed operationalization — controlled learner-pilot exposure is approved, full N4 coverage planning is opened, and staging coverage contracts plus derived priority queue are synced to HN4-001 through HN4-010. Next gate is recalculating the lesson 11+ queue from the remaining true missing/partial topics, then closing partial-topic decisions before drafting the next 1-chapter expansion batch. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
 
 ### Release Gate
 
