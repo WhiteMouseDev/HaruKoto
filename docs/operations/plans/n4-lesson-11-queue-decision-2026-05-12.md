@@ -2,7 +2,7 @@
 
 > Date: 2026-05-12
 > Scope: remaining N4 foundation priority queue after pilot coverage sync
-> Decision: do not draft a 5-lesson N4 expansion batch yet
+> Decision: HN4-011 seed candidate drafted; do not draft a 5-lesson N4 expansion batch yet
 
 ## Decision
 
@@ -62,6 +62,16 @@ Recommended next artifact:
 
 - One HN4-011 seed candidate focused on nominalizing い-adjective quality, not a
   full 5-lesson chapter.
+
+Draft result:
+
+- Candidate: `lsc-n4-i-adjective-nominalization-001`
+- Promotion target: HN4-011 / chapter 3 lesson 1 / `DRAFT`
+- Example: `ex-n4-i-adjective-nominalization-001`
+- TTS coverage: one authored example, four script lines, and five question
+  prompts are present in `tts-target-manifest.json`.
+- Boundary: this is still a seed candidate, not an official lesson JSON or
+  learner-exposure approval.
 
 ### HOLD: `topic-kitto`
 
@@ -183,10 +193,11 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Draft one HN4-011 candidate for `topic-i-adjective-nominalization`.
-2. Add HaruKoto-authored examples and lesson seed content.
-3. Extend TTS target coverage for HN4-011.
-4. Run curriculum/lesson validation and prepare the review packet.
+1. Review the HN4-011 seed candidate content and TTS target coverage.
+2. Prepare or extend the N4 human-review workflow for candidate review before
+   promotion.
+3. Promote HN4-011 into official lesson JSON only after review approval.
+4. Run configured DB seed check, API smoke, and mobile UAT after promotion.
 5. Decide whether to expose HN4-011 as a second limited pilot wave.
 
 ## Boundary

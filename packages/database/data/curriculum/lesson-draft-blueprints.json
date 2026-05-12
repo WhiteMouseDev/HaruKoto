@@ -355,8 +355,10 @@
         "SENTENCE_REORDER"
       ],
       "draftFutureQuestionTypes": [],
-      "exampleIds": [],
-      "ttsRequired": false,
+      "exampleIds": [
+        "ex-n4-i-adjective-nominalization-001"
+      ],
+      "ttsRequired": true,
       "coverageGoal": "cover_missing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
