@@ -38,7 +38,7 @@ development phase, not an externally marketed full N4 launch.
 | Seed sync | PASS | Configured DB seed check passed with 2 chapters / 10 lessons / 0 missing / 0 mismatches |
 | API smoke | PASS | Authenticated N4 list/detail smoke passed; lesson detail answer keys are redacted |
 | TTS target scope | PASS for target coverage | `lesson-seeds:HN4-*` targets cover 40 script lines and 50 question prompts |
-| TTS audio QA | PARTIAL | HN4-001 dialogue-line TTS control had no visible mobile error; full batch generation/audio review is still a broad-rollout blocker |
+| TTS audio QA | PARTIAL | HN4-001 dialogue-line TTS control had no visible mobile error. The 2026-05-13 full published N4 pilot-batch audit found 10/99 generated lesson TTS records overall, with HN4-001 through HN4-010 still incomplete; full batch generation/audio review is still a broad-rollout blocker |
 | Curriculum review | PASS for delegated AI path | 10 review packet rows are `APPROVED`; this is not native-speaker validation |
 | Mobile happy path | PASS | HN4-001 completed on iPhone 17 Pro Simulator with `100%`, `5/5 정답`, SRS registration, and progress update |
 | Mobile wrong-answer path | PASS | HN4-002 completed with one intentional miss, `80%`, `4/5 정답`, wrong-answer explanation, SRS registration, and retry entry |
@@ -71,4 +71,6 @@ If the N4 pilot shows a P0/P1 runtime or content issue:
 - Pilot feedback review after controlled learner exposure.
 - Full N4 coverage report before lesson 11+ promotion.
 - Native-speaker review when a reviewer becomes available.
-- Full lesson-seed TTS generation and audio QA before broad rollout.
+- Full lesson-seed TTS generation and audio QA before broad rollout. Current
+  audit:
+  `docs/operations/plans/n4-pilot-tts-coverage-audit-2026-05-13.md`.
