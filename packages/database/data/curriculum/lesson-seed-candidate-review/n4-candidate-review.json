@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "reviewKind": "lesson_seed_candidate_curriculum_review",
+  "level": "N4",
+  "includePromoted": false,
+  "summary": {
+    "candidates": 1,
+    "examples": 1,
+    "questions": 5,
+    "scriptLines": 4,
+    "vocabularyLinks": 5,
+    "grammarLinks": 1,
+    "exampleTtsTargets": 1,
+    "scriptTtsTargets": 4,
+    "questionTtsTargets": 5
+  },
+  "sourceFiles": [
+    "data/curriculum/lesson-seed-candidates.json",
+    "data/curriculum/example-bank.json",
+    "data/curriculum/curriculum-topics.json",
+    "data/curriculum/tts-target-manifest.json",
+    "data/grammar/n4-grammar.json",
+    "data/vocabulary/n4-words.json"
+  ],
+  "reviewerInstructions": [
+    "APPROVED, NEEDS_EDIT, REJECTED 중 하나로 reviewerDecision을 바꾼다.",
+    "NEEDS_EDIT 또는 REJECTED이면 reviewerNotes에 수정 근거를 남긴다.",
+    "이 파일은 공식 lesson 승격 전 candidate review packet이다.",
+    "승격 후에는 공식 lesson human review packet을 별도로 생성한다."
+  ],
+  "reviewRows": [
+    {
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-i-adjective-nominalization-001",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "Delegated AI candidate review 2026-05-13: HN4-011 candidate reviewed for いAdj stem + さ scope, paper thickness/softness context, Korean translations, answer keys, runtime-supported question types, HaruKoto-authored example status, and TTS coverage. Approved for official lesson promotion planning; not native-speaker human approval.",
+      "candidateId": "lsc-n4-i-adjective-nominalization-001",
+      "candidateStatus": "draft",
+      "lessonBlueprintId": "ldb-i-adjective-nominalization",
+      "sourceTopics": [
+        {
+          "topicId": "topic-i-adjective-nominalization",
+          "titleKo": "い형용사의 명사화",
+          "coverageStatus": "missing",
+          "inferredJlptLevel": "N4",
+          "reviewStatus": "needs_review"
+        }
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 3,
+        "lessonNo": 11,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "title": "종이의 두께를 비교해요",
+      "subtitle": "い형용사 stem + さ로 성질의 정도를 명사화하기",
+      "topic": "い형용사의 명사화",
+      "estimatedMinutes": 12,
+      "grammar": {
+        "order": 45,
+        "pattern": "いAdj stem + さ",
+        "meaningKo": "~함 / ~이 / ~정도",
+        "referencePattern": "〜さ",
+        "referenceMeaningKo": "~함 / ~이 (형용사의 명사화)"
+      },
+      "vocabulary": [
+        {
+          "order": 215,
+          "word": "厚い",
+          "reading": "あつい",
+          "meaningKo": "두껍다. 두텁다",
+          "partOfSpeech": "I_ADJECTIVE"
+        },
+        {
+          "order": 260,
+          "word": "薄い",
+          "reading": "うすい",
+          "meaningKo": "얇다. 엷다. 싱겁다",
+          "partOfSpeech": "I_ADJECTIVE"
+        },
+        {
+          "order": 136,
+          "word": "柔らかい",
+          "reading": "やわらかい",
+          "meaningKo": "부드럽다",
+          "partOfSpeech": "I_ADJECTIVE"
+        },
+        {
+          "order": 137,
+          "word": "硬い",
+          "reading": "かたい",
+          "meaningKo": "딱딱하다",
+          "partOfSpeech": "I_ADJECTIVE"
+        },
+        {
+          "order": 91,
+          "word": "比べる",
+          "reading": "くらべる",
+          "meaningKo": "비교하다",
+          "partOfSpeech": "VERB"
+        }
+      ],
+      "examples": [
+        {
+          "exampleId": "ex-n4-i-adjective-nominalization-001",
+          "topicId": "topic-i-adjective-nominalization",
+          "japanese": "紙の厚さと柔らかさを比べました。",
+          "reading": "かみのあつさとやわらかさをくらべました。",
+          "korean": "종이의 두께와 부드러운 정도를 비교했습니다.",
+          "sourceKind": "harukoto_authored",
+          "originalityStatus": "authored_not_source_copied",
+          "reviewStatus": "needs_review",
+          "ttsTarget": {
+            "targetId": "tts-n4-i-adjective-nominalization-001-example-sentence",
+            "textSource": "example-bank:ex-n4-i-adjective-nominalization-001:japanese",
+            "audioTargetType": "example_sentence",
+            "audioField": "example_sentence",
+            "generationStatus": "missing",
+            "preferredVoiceId": "japanese_female_1"
+          }
+        }
+      ],
+      "reading": {
+        "scene": "노트를 고르기 전에 종이의 두께와 부드러운 정도를 비교함",
+        "highlights": [
+          "厚さ",
+          "柔らかさ",
+          "硬さ",
+          "比べる"
+        ],
+        "script": [
+          {
+            "order": 1,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "ノートを選ぶ前に、紙の厚さを比べています。",
+            "translationKo": "노트를 고르기 전에 종이의 두께를 비교하고 있습니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-i-adjective-nominalization-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:script:1",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 2,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "厚い紙と薄い紙がありますね。",
+            "translationKo": "두꺼운 종이와 얇은 종이가 있네요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-i-adjective-nominalization-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:script:2",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 3,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "はい。この紙の柔らかさも確認します。",
+            "translationKo": "네. 이 종이의 부드러운 정도도 확인합니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-i-adjective-nominalization-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:script:3",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 4,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "厚さと柔らかさを比べて選びましょう。",
+            "translationKo": "두께와 부드러운 정도를 비교해서 고릅시다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-i-adjective-nominalization-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:script:4",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "厚い의 뜻은?",
+          "explanation": "厚い(あつい)는 두껍다입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-i-adjective-nominalization-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:question:1",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "얇다"
+            },
+            {
+              "id": "b",
+              "text": "두껍다"
+            },
+            {
+              "id": "c",
+              "text": "부드럽다"
+            },
+            {
+              "id": "d",
+              "text": "딱딱하다"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "두껍다"
+        },
+        {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "柔らかい의 뜻은?",
+          "explanation": "柔らかい(やわらかい)는 부드럽다입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-i-adjective-nominalization-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:question:2",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "부드럽다"
+            },
+            {
+              "id": "b",
+              "text": "얇다"
+            },
+            {
+              "id": "c",
+              "text": "엄격하다"
+            },
+            {
+              "id": "d",
+              "text": "신기하다"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "부드럽다"
+        },
+        {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "紙の厚___を比べます。 (종이의 두께를 비교합니다.)",
+          "explanation": "い형용사 厚い는 い를 빼고 さ를 붙여 厚さ가 됩니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-i-adjective-nominalization-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:question:3",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "に"
+            },
+            {
+              "id": "b",
+              "text": "さ"
+            },
+            {
+              "id": "c",
+              "text": "ため"
+            },
+            {
+              "id": "d",
+              "text": "そう"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "さ"
+        },
+        {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.)",
+          "explanation": "柔らかい도 い를 빼고 さ를 붙여 柔らかさ로 명사화합니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-i-adjective-nominalization-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:question:4",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "な"
+            },
+            {
+              "id": "b",
+              "text": "しか"
+            },
+            {
+              "id": "c",
+              "text": "さ"
+            },
+            {
+              "id": "d",
+              "text": "と"
+            }
+          ],
+          "correctAnswer": "c",
+          "correctOptionText": "さ"
+        },
+        {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "cognitiveLevel": "산출유사",
+          "prompt": "'종이의 두께를 비교합니다'를 배열하세요.",
+          "explanation": "명사화된 厚さ를 목적어로 사용합니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-i-adjective-nominalization-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-i-adjective-nominalization-001:question:5",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "tokens": [
+            "比べます",
+            "紙の",
+            "厚さを"
+          ],
+          "correctOrder": [
+            "紙の",
+            "厚さを",
+            "比べます"
+          ]
+        }
+      ],
+      "automatedSummary": {
+        "examples": 1,
+        "scriptLines": 4,
+        "questions": 5,
+        "exampleTtsTargets": 1,
+        "scriptTtsTargets": 4,
+        "questionTtsTargets": 5,
+        "vocabularyLinks": 5,
+        "grammarLinked": true
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 019 い형용사 명사화 topic의 HN4-011 seed 후보. 기존 HN4-006 さ coverage를 반복하지 않도록 두께/부드러움 비교 맥락의 적용 연습으로 제한한다.",
+      "reviewerChecklist": [
+        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
+        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
+        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
+        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
+        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
+      ]
+    }
+  ]
+}

@@ -27,7 +27,7 @@ See: .planning/PROJECT.md
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-12 — N4 pilot learner rollout decision recorded LIMITED GO for controlled pilot exposure only; broad/full N4 rollout remains HOLD. The follow-up N4 full coverage plan is opened in `docs/operations/plans/n4-full-coverage-plan-2026-05-12.md`, the staging coverage contracts plus derived priority queue now reflect HN4-001 through HN4-010 pilot coverage, and `docs/operations/plans/n4-lesson-11-queue-decision-2026-05-12.md` now records `lsc-n4-i-adjective-nominalization-001` as the HN4-011 seed candidate draft. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
+Last activity: 2026-05-13 — N4 HN4-011 seed candidate review workflow added. `lsc-n4-i-adjective-nominalization-001` remains an unpromoted draft candidate, and `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json` now holds an `APPROVED` delegated AI candidate review packet with 1 candidate, 1/1 example TTS target, 4/4 script TTS targets, and 5/5 question TTS targets. Broad/full N4 rollout remains HOLD. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -40,7 +40,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Pending Todos
 
 - Mobile MY tab launch smoke — code hardening, automated verification, and physical-device install/launch precheck are complete; next gate is screen-level physical-device smoke using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
-- N4 pilot seed operationalization — controlled learner-pilot exposure is approved, full N4 coverage planning is opened, and staging coverage contracts plus derived priority queue are synced to HN4-001 through HN4-010. Lesson 11+ closeout selected `topic-i-adjective-nominalization`; `lsc-n4-i-adjective-nominalization-001` is now drafted with HaruKoto-authored example, script, questions, and TTS target coverage. Next gate is candidate review, then official lesson promotion only after review approval. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
+- N4 pilot seed operationalization — controlled learner-pilot exposure is approved, full N4 coverage planning is opened, and staging coverage contracts plus derived priority queue are synced to HN4-001 through HN4-010. Lesson 11+ closeout selected `topic-i-adjective-nominalization`; `lsc-n4-i-adjective-nominalization-001` is drafted and now has an `APPROVED` source-controlled delegated AI candidate review packet. Next gate is official lesson promotion, then official N4 lesson human-review packet regeneration and DB/API/mobile validation. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
 
 ### Release Gate
 
