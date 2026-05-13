@@ -54,11 +54,12 @@ iPhone rerun remains useful before treating this as release-device smoke.
   by the temporary-user API write smoke, not by this simulator run.
 - This UAT does not replace native-speaker curriculum review or human audio
   quality review.
-- This UAT does not cover full question-prompt/batch TTS generation.
+- This UAT does not cover full N4 pilot-batch TTS generation or human audio
+  quality review.
 
 ## Result
 
 HN4-011 learner-facing mobile runtime UAT passes for the second controlled
-limited-pilot wave. Broad/full N4 rollout remains on HOLD until pilot feedback,
-native-speaker review when available, and full prompt/batch TTS audio QA are
-complete.
+limited-pilot wave. Broad/full N4 rollout remains on HOLD until continued pilot
+feedback, native-speaker review when available, and full N4 pilot-batch TTS
+audio QA are complete.

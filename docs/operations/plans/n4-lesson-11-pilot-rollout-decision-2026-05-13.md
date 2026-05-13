@@ -2,7 +2,7 @@
 
 > Date: 2026-05-13
 > Scope: HN4-011 second limited pilot wave
-> Decision: LIMITED GO for controlled pilot exposure; DB seed, API smoke, script-line TTS audio QA, and simulator mobile UAT passed
+> Decision: LIMITED GO for controlled pilot exposure; DB seed, API smoke, lesson TTS audio QA, and simulator mobile UAT passed
 
 ## Decision
 
@@ -33,7 +33,7 @@ human approval.
 | Official review | PASS | `HN4-011` review row is `APPROVED` with 0 blockers |
 | Runtime question shape | PASS | Uses existing `VOCAB_MCQ`, `CONTEXT_CLOZE`, and `SENTENCE_REORDER` question types |
 | TTS target scope | PASS for target coverage | `lesson-seeds:HN4-011:*` covers 4 script lines and 5 question prompts |
-| TTS audio QA | PASS for learner-facing script lines | HN4-011 generated 4/4 dialogue script-line MP3s through the lesson TTS API; each URL returned `200 audio/mpeg` and decoded as MP3. Question-prompt TTS remains a broad-rollout/admin-surface follow-up |
+| TTS audio QA | PASS for HN4-011 lesson TTS | HN4-011 generated 4/4 dialogue script-line MP3s and 5/5 question-prompt MP3s through the lesson TTS API/service path; each URL returned `200 audio/mpeg` and decoded as MP3 |
 | Local validation | PASS | Database validation, curriculum validation, review gates, database typecheck, full API pytest, and full mobile widget/unit tests passed locally |
 | Configured DB seed apply | PASS | 3 N4 chapters / 11 lessons / 66 item links applied; HN4-011 seeded as published |
 | Configured DB seed check | PASS | 3 N4 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
@@ -41,6 +41,7 @@ human approval.
 | API start/submit write smoke | PASS | `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items, wrote review events, and cleanup left 0 smoke residue rows |
 | Mobile lesson-flow regression | PASS | `flutter test` passed 526 tests, including lesson session, TTS lesson-target bubble, and practice-step widget coverage |
 | Mobile target-runtime UAT | PASS on simulator target | `docs/operations/plans/n4-lesson-11-mobile-uat-2026-05-13.md`: iPhone 17 Pro Simulator opened HN4-011, started the lesson, triggered line-0 TTS `200`, reached a `4/5` result screen with review/retry UI, retried from the lesson detail screen, submitted a corrected `5/5` path, and returned to the learning surface |
+| Pilot feedback baseline | PASS for first aggregate monitor | `docs/operations/plans/n4-lesson-11-pilot-feedback-baseline-2026-05-13.md`: 1 non-smoke learner progress row, 30 review events, script-line TTS 4/4, question-prompt TTS 5/5, and no automatic rollback trigger observed |
 
 ## Pilot Guardrails
 
@@ -66,8 +67,9 @@ If HN4-011 shows a P0/P1 runtime or content issue:
 
 ## Next Gates
 
-1. Monitor the controlled learner pilot for HN4-011 runtime/content feedback.
-2. Keep full lesson-seed prompt/batch TTS generation and human audio-quality
-   review as broad-rollout blockers.
+1. Continue monitoring the controlled learner pilot for HN4-011 runtime/content
+   feedback as more traffic arrives.
+2. Keep full N4 lesson-seed batch TTS generation and human audio-quality review
+   as broad-rollout blockers.
 3. Re-run physical-device smoke before release-artifact claims if this simulator
    evidence needs to become device-release evidence.
