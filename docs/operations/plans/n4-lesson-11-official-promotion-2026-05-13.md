@@ -62,7 +62,7 @@ curriculum approval.
 | Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `PILOT`, published `true` |
 | Configured DB seed check | PASS: 3 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
 | Published list/detail route smoke | PASS: route-service smoke returns 3 N4 chapters / 11 lessons; HN4-011 detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
-| API start/submit write smoke | PASS: temporary configured-DB smoke users completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items and cleanup left 0 smoke rows |
+| API start/submit write smoke | PASS: `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items |
 | Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 
