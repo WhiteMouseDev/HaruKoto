@@ -71,12 +71,12 @@ def test_lesson_seed_n5_sources_are_pilot_publishable() -> None:
     assert lesson_count == 50
 
 
-def test_lesson_seed_n4_sources_include_pilot_and_draft_promotion_sources() -> None:
+def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
     lesson_count = 0
     expected_statuses = {
         "ch01-core-directions-and-judgment.json": "PILOT",
         "ch02-reasons-conditions-and-intent.json": "PILOT",
-        "ch03-quality-and-degree.json": "DRAFT",
+        "ch03-quality-and-degree.json": "PILOT",
     }
 
     for filename in CONTENT_FILES_BY_LEVEL["N4"]:

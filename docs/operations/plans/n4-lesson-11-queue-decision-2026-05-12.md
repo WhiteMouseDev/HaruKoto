@@ -2,7 +2,7 @@
 
 > Date: 2026-05-12
 > Scope: remaining N4 foundation priority queue after pilot coverage sync
-> Decision: HN4-011 seed candidate drafted and promoted to official DRAFT; do not draft a 5-lesson N4 expansion batch yet
+> Decision: HN4-011 seed candidate drafted, promoted to official lesson, and later moved to limited PILOT; do not draft a 5-lesson N4 expansion batch yet
 
 ## Decision
 
@@ -65,16 +65,16 @@ Recommended next artifact:
 Draft result:
 
 - Candidate: `lsc-n4-i-adjective-nominalization-001`
-- Promotion target: HN4-011 / chapter 3 lesson 1 / `DRAFT`
-- Promotion result: official DRAFT lesson file
+- Promotion target: HN4-011 / chapter 3 lesson 1
+- Promotion result: official lesson file
   `packages/database/data/lessons/n4/ch03-quality-and-degree.json`
 - Example: `ex-n4-i-adjective-nominalization-001`
 - TTS coverage: one authored example, four script lines, and five question
   prompts are present in `tts-target-manifest.json`.
-- Configured DB seed check: PASS with 3 N4 chapters / 11 N4 lessons; HN4-011
-  remains `DRAFT` and unpublished.
-- Boundary: this is now official DRAFT lesson JSON, not learner-facing API/mobile
-  exposure or broad/full N4 rollout approval.
+- Second limited-pilot decision: HN4-011 moved to `PILOT` source status in
+  `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md`.
+- Boundary: this is now controlled pilot exposure planning, not broad/full N4
+  rollout approval.
 
 ### HOLD: `topic-kitto`
 
@@ -196,11 +196,12 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Decide whether to move HN4-011 from `DRAFT` to `PILOT` for a second limited
-   pilot wave.
-2. After publish-status change, run HN4-011 target mobile UAT for one correct
-   path and one wrong-answer retry path.
-3. Return to `topic-kitto` or a partial-topic closeout only after its blockers
+1. Resolve or work around configured-DB smoke-user creation for HN4-011 API
+   start/submit write smoke.
+2. Run HN4-011 target mobile UAT for one correct path and one wrong-answer
+   retry path.
+3. Verify HN4-011 TTS audio playback before broader rollout.
+4. Return to `topic-kitto` or a partial-topic closeout only after its blockers
    are explicitly resolved.
 
 ## Boundary
