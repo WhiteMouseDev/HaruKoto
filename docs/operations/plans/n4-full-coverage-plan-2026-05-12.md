@@ -271,7 +271,7 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Resolve or work around configured-DB smoke-user creation for API
+1. Resolve or work around configured-DB smoke-user setup for API
    start/submit write smoke.
 2. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
    retry evidence.

@@ -58,12 +58,12 @@ curriculum approval.
 | Curriculum validation | PASS: 0 warnings / 0 failures; review packet rows 11 |
 | Candidate review gate | PASS: 1 `APPROVED` / 0 blockers |
 | Official review gate | PASS: 11 `APPROVED` / 0 blockers |
-| API policy/TTS tests | PASS: 56 pytest tests |
+| API regression suite | PASS: 443 passed / 13 skipped |
 | Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `PILOT`, published `true` |
 | Configured DB seed check | PASS: 3 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
 | Published list/detail route smoke | PASS: route-service smoke returns 3 N4 chapters / 11 lessons; HN4-011 detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
-| API start/submit write smoke | PENDING: temporary configured-DB smoke user creation failed on `users.updated_at` NOT NULL/default drift |
-| Mobile lesson-flow regression | PASS: lesson session, TTS lesson-target bubble, and practice-step widget tests |
+| API start/submit write smoke | PENDING: read-only schema check shows `users.updated_at` is NOT NULL with no DB default; needs a real configured smoke user or explicit setup path |
+| Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 
 ## Validation Boundary
@@ -71,10 +71,10 @@ curriculum approval.
 HN4-011 is promoted to official `PILOT` source status and synced to the
 configured API DB target. The remaining learner-readiness gates are:
 
-1. Learner-facing mobile UAT for one correct path and one wrong-answer
+1. API start/submit write smoke after defining the configured-DB smoke-user
+   setup path.
+2. Learner-facing mobile UAT for one correct path and one wrong-answer
    retry path after the publish-status change.
-2. API start/submit write smoke after resolving the configured-DB temporary
-   user insertion drift.
 3. TTS audio generation/playback QA before any broader N4 rollout.
 
 Broad/full N4 rollout remains HOLD until pilot feedback, native-speaker review

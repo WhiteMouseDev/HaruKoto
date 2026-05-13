@@ -196,7 +196,7 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Resolve or work around configured-DB smoke-user creation for HN4-011 API
+1. Resolve or work around configured-DB smoke-user setup for HN4-011 API
    start/submit write smoke.
 2. Run HN4-011 target mobile UAT for one correct path and one wrong-answer
    retry path.
