@@ -39,7 +39,8 @@ human approval.
 | Published list/detail API smoke | PASS | N4 list returns 3 chapters / 11 lessons including HN4-011; detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
 | API start/submit write smoke | PASS | `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items, wrote review events, and cleanup left 0 smoke residue rows |
 | Mobile lesson-flow regression | PASS | `flutter test` passed 526 tests, including lesson session, TTS lesson-target bubble, and practice-step widget coverage |
-| Mobile UAT | PENDING | Verify one HN4-011 correct path and one wrong-answer retry path on target runtime |
+| Mobile target-runtime probe | PARTIAL PASS | iPhone 17 Pro Simulator opened HN4-011 from Study, rendered lesson detail, word/dialogue/quiz/matching/sentence-reorder steps, and did not visibly crash. See `docs/operations/plans/n4-lesson-11-mobile-uat-2026-05-13.md` |
+| Mobile submit-path UAT | PENDING | Verify one clean HN4-011 correct path through result/progress persistence and one wrong-answer retry path on target runtime |
 
 ## Pilot Guardrails
 
@@ -65,6 +66,7 @@ If HN4-011 shows a P0/P1 runtime or content issue:
 
 ## Next Gates
 
-1. Run target mobile UAT for the correct path and wrong-answer retry path.
+1. Run target mobile submit-path UAT for the correct path and wrong-answer
+   retry path.
 2. Keep full lesson-seed prompt/batch TTS generation and human audio-quality
    review as broad-rollout blockers.
