@@ -30,10 +30,33 @@ void attachClientDiagnostics(Dio dio) {
       requestBody: false,
       responseBody: false,
       error: true,
-      logPrint: (msg) => debugPrint('[DIO] $msg'),
+      logPrint: (msg) => debugPrint('[DIO] ${redactDioLogMessage(msg)}'),
     ));
   }
   dio.interceptors.add(AppErrorInterceptor());
+}
+
+@visibleForTesting
+String redactDioLogMessage(Object? message) {
+  final text = '$message';
+  final headerPattern = RegExp(
+    r'\b(authorization|apikey|x-api-key|cookie|set-cookie)(\s*:\s*)[^\r\n]+',
+    caseSensitive: false,
+  );
+  final tokenParamPattern = RegExp(
+    r'\b(access_token|refresh_token|id_token|token|api_key)=([^&\s]+)',
+    caseSensitive: false,
+  );
+
+  return text
+      .replaceAllMapped(
+        headerPattern,
+        (match) => '${match.group(1)}${match.group(2)}<redacted>',
+      )
+      .replaceAllMapped(
+        tokenParamPattern,
+        (match) => '${match.group(1)}=<redacted>',
+      );
 }
 
 class AppErrorInterceptor extends Interceptor {
