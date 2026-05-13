@@ -1,57 +1,49 @@
-# N4 Lesson 11 Mobile UAT Probe
+# N4 Lesson 11 Mobile UAT Run
 
 > Date: 2026-05-13
-> Scope: HN4-011 target mobile runtime probe
-> Status: PARTIAL PASS for lesson entry and learning-step rendering; submit-path UAT still pending
+> Scope: HN4-011 learner-facing mobile lesson flow
+> Status: PASS on iPhone 17 Pro Simulator
 
-## Boundary
-
-This run verifies that HN4-011 is reachable in the iPhone 17 Pro Simulator and
-that the learner flow can enter the published lesson content without crashing.
-
-It does not close the full target mobile UAT gate. Correct-path submit and
-wrong-answer retry evidence still need a clean end-to-end run from lesson start
-through result/progress persistence.
-
-ASSUMPTION: Simulator evidence is sufficient to record target-runtime rendering
-coverage, but not sufficient to replace the requested full mobile UAT submit
-paths.
-
-## Environment
+## Runtime
 
 | Field | Value |
 |---|---|
+| App | `apps/mobile` Flutter debug run |
 | Device | iPhone 17 Pro Simulator |
 | OS | iOS 26.4 |
-| Lesson | `HN4-011` |
+| API | `https://harukoto-api-842843944454.asia-northeast3.run.app` |
+| Lesson | `HN4-011` / `03cfdb15-c916-450c-8168-9052f3e754aa` |
 | Title | `종이의 두께를 비교해요` |
-| Backend target | local configured API used by the running mobile debug build |
+| Auth | Existing test learner session; raw auth material intentionally omitted |
 
-## Evidence
+ASSUMPTION: Simulator UAT is sufficient for the HN4-011 controlled-pilot
+runtime gate because this check validates learner navigation, API integration,
+TTS playback entry, answer submission, retry, and result handling. Physical
+iPhone rerun remains useful before treating this as release-device smoke.
 
-Observed through `xcrun simctl io ... screenshot` and Simulator coordinate
-automation:
+## Scenario Evidence
 
 | Step | Result | Evidence |
 |---|---|---|
-| Study tab route | PASS | N4 chapter list rendered and HN4-011 was reachable from the Study tab |
-| Lesson detail | PASS | HN4-011 detail rendered with title, lesson 11 badge, duration, objective, vocabulary preview, grammar card, and `학습 시작하기` CTA |
-| Word study continuation | PASS | Previously started HN4-011 state resumed on the word-study step and advanced with `다음 단어` |
-| Dialogue reading | PASS | Dialogue/scene reading screen rendered with script lines and speaker controls |
-| In-flow quiz cards | PASS | Vocabulary MCQ and grammar cloze cards rendered with HN4-011 content |
-| Matching step | PASS | Word matching screen rendered and accepted correct pair selections |
-| Sentence reorder step | PASS with caveat | Sentence reorder screen rendered for `종이의 두께를 비교합니다`; a coordinate-click mistake selected the wrong token during automation, so this does not count as clean correct-path submit evidence |
+| Lesson discovery | PASS | Home -> `학습` -> N4 -> Ch.3 exposed `HN4-011` and opened the lesson detail screen |
+| Lesson start | PASS | `POST /api/v1/lessons/03cfdb15-c916-450c-8168-9052f3e754aa/start` returned `200` |
+| Dialogue TTS entry | PASS | Dialogue speaker action called `POST /api/v1/lessons/03cfdb15-c916-450c-8168-9052f3e754aa/script-lines/0/tts` and returned `200` |
+| Correct path submit | PASS | Completed vocab, grammar, dialogue, recognition, matching, and sentence-reorder steps; submit returned `200`, `scoreCorrect=5`, `scoreTotal=5`, `status=COMPLETED` |
+| Wrong-answer retry path | PASS | From retry flow, intentionally submitted wrong recognition/cloze/reorder answers; submit returned `200`, `scoreCorrect=0`, `scoreTotal=5`, `status=COMPLETED` |
+| Retry affordance | PASS | Result-screen retry action fired and returned to the HN4-011 lesson detail/start screen |
 
-Captured screenshots were saved under `/tmp/hn4-*.png` during the probe. They
-are local run artifacts, not committed release assets.
+## Boundary
+
+- This UAT used an existing learner account with prior HN4-011 progress, so
+  repeated submits reported `srsItemsRegistered=0`. The temporary-user API write
+  smoke already verified fresh-path SRS registration with 6 items per path.
+- This UAT does not replace native-speaker curriculum review or human audio
+  quality review.
+- This UAT does not cover full question-prompt/batch TTS generation.
 
 ## Result
 
-HN4-011 passes the mobile target-runtime rendering and navigation probe. The
-lesson can be opened on the Simulator, shows the expected learner-facing content,
-and reaches the exercise steps without a visible crash.
-
-The remaining HN4-011 mobile UAT gate is still open:
-
-1. Clean correct-path run through final result/progress persistence.
-2. Wrong-answer retry path on the same target runtime.
+HN4-011 learner-facing mobile runtime UAT passes for the second controlled
+limited-pilot wave. Broad/full N4 rollout remains on HOLD until pilot feedback,
+native-speaker review when available, and full prompt/batch TTS audio QA are
+complete.
