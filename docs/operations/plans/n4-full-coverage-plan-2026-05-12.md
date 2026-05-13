@@ -287,8 +287,9 @@ Result:
    Machine preflight for all 99 generated targets passed with 0 blockers and 11
    silence-ratio warnings; see
    `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
-   The representative Chapter 1 human review packet is prepared at
-   `docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md`.
+   Human review packets for all 99 generated N4 pilot TTS targets are prepared;
+   see
+   `docs/operations/plans/n4-pilot-human-audio-qa-packets-2026-05-13.md`.
 3. Re-run physical-device smoke before release-artifact claims if required.
 4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
