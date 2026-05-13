@@ -101,14 +101,14 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
-| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed and list/detail/start-submit API smoke passed; mobile/TTS QA pending |
+| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed, list/detail/start-submit API smoke, and learner-facing script-line TTS audio QA passed; mobile UAT pending |
 
 HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
 HN4-011 is governed by
 `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md` and
-still needs target mobile UAT and TTS audio playback QA before the second pilot
-wave is runtime-verified.
+still needs target mobile UAT before the second pilot wave is
+runtime-verified.
 
 ## Lesson 11+ Candidate Buckets
 
@@ -273,7 +273,8 @@ Result:
 
 1. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
    retry evidence.
-2. Generate or verify TTS audio before any broader N4 rollout.
+2. Keep full prompt/batch TTS generation and human audio-quality review as
+   broad-rollout blockers.
 3. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 

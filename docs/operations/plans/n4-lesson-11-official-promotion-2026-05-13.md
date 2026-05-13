@@ -65,6 +65,7 @@ curriculum approval.
 | API start/submit write smoke | PASS: `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items and cleanup left 0 smoke residue rows |
 | Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
+| TTS audio QA | PASS for learner-facing script lines: 4/4 HN4-011 dialogue line TTS calls returned `200`, produced `audio/mpeg` URLs, and decoded as MP3 |
 
 ## Validation Boundary
 
@@ -73,7 +74,8 @@ configured API DB target. The remaining learner-readiness gates are:
 
 1. Learner-facing mobile UAT for one correct path and one wrong-answer
    retry path after the publish-status change.
-2. TTS audio generation/playback QA before any broader N4 rollout.
+2. Full lesson-seed prompt/batch TTS generation and human audio-quality review
+   before any broader N4 rollout.
 
 Broad/full N4 rollout remains HOLD until pilot feedback, native-speaker review
 when available, and generated/audio-QA evidence are complete.
