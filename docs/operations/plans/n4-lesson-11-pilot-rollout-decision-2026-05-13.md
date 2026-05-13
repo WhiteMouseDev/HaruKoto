@@ -42,6 +42,7 @@ human approval.
 | Mobile lesson-flow regression | PASS | `flutter test` passed 526 tests, including lesson session, TTS lesson-target bubble, and practice-step widget coverage |
 | Mobile target-runtime UAT | PASS on simulator target | `docs/operations/plans/n4-lesson-11-mobile-uat-2026-05-13.md`: iPhone 17 Pro Simulator opened HN4-011, started the lesson, triggered line-0 TTS `200`, reached a `4/5` result screen with review/retry UI, retried from the lesson detail screen, submitted a corrected `5/5` path, and returned to the learning surface |
 | Pilot feedback baseline | PASS for first aggregate monitor | `docs/operations/plans/n4-lesson-11-pilot-feedback-baseline-2026-05-13.md`: 1 non-smoke learner progress row, 30 review events, script-line TTS 4/4, question-prompt TTS 5/5, and no automatic rollback trigger observed |
+| Pilot feedback refresh | PASS for aggregate refresh | `docs/operations/plans/n4-lesson-11-pilot-feedback-refresh-2026-05-13.md`: counters match the first baseline, no new aggregate traffic is visible, and no automatic rollback trigger observed |
 
 ## Pilot Guardrails
 
@@ -68,7 +69,8 @@ If HN4-011 shows a P0/P1 runtime or content issue:
 ## Next Gates
 
 1. Continue monitoring the controlled learner pilot for HN4-011 runtime/content
-   feedback as more traffic arrives.
+   feedback as more traffic arrives. The first refresh is recorded in
+   `docs/operations/plans/n4-lesson-11-pilot-feedback-refresh-2026-05-13.md`.
 2. Keep full N4 lesson-seed batch TTS generation and human audio-quality review
    as broad-rollout blockers.
 3. Re-run physical-device smoke before release-artifact claims if this simulator

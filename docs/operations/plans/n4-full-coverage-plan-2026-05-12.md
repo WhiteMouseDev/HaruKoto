@@ -280,7 +280,9 @@ Result:
 
 1. Continue monitoring HN4-011 controlled-pilot feedback and keep rollback
    triggers visible. First aggregate baseline is recorded in
-   `docs/operations/plans/n4-lesson-11-pilot-feedback-baseline-2026-05-13.md`.
+   `docs/operations/plans/n4-lesson-11-pilot-feedback-baseline-2026-05-13.md`;
+   the first refresh is recorded in
+   `docs/operations/plans/n4-lesson-11-pilot-feedback-refresh-2026-05-13.md`.
 2. Keep human audio-quality review as a broad-rollout blocker after generation
    evidence exists. The generation run is recorded in
    `docs/operations/plans/n4-pilot-batch-tts-generation-run-2026-05-13.md`.
