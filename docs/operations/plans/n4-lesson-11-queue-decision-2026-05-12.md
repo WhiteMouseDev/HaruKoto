@@ -71,7 +71,8 @@ Draft result:
 - Example: `ex-n4-i-adjective-nominalization-001`
 - TTS coverage: one authored example, four script lines, and five question
   prompts are present in `tts-target-manifest.json`.
-- Configured DB seed check: PASS with 3 N4 chapters / 11 N4 lessons.
+- Configured DB seed check: PASS with 3 N4 chapters / 11 N4 lessons; HN4-011
+  remains `DRAFT` and unpublished.
 - Boundary: this is now official DRAFT lesson JSON, not learner-facing API/mobile
   exposure or broad/full N4 rollout approval.
 
@@ -195,9 +196,10 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Run HN4-011 target mobile UAT for one correct path and one wrong-answer retry
-   path.
-2. Decide whether to include HN4-011 in a second limited pilot wave.
+1. Decide whether to move HN4-011 from `DRAFT` to `PILOT` for a second limited
+   pilot wave.
+2. After publish-status change, run HN4-011 target mobile UAT for one correct
+   path and one wrong-answer retry path.
 3. Return to `topic-kitto` or a partial-topic closeout only after its blockers
    are explicitly resolved.
 

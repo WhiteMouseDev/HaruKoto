@@ -85,7 +85,7 @@ Pilot topics mapped to lessons but intentionally kept partial:
 - `topic-to-conditional` -> HN4-010; quotation/condition and N5 `と` contrast
   remain.
 
-## Current Official Pilot Lessons
+## Current Official Lesson Set
 
 | Lesson | Grammar order | Topic | Runtime status |
 |---|---:|---|---|
@@ -99,11 +99,12 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
-| HN4-011 | 45 | `〜さ` | Seeded/API-smoked; mobile UAT pending |
+| HN4-011 | 45 | `〜さ` | Seeded as DRAFT; published-route guard passed |
 
 HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
-HN4-011 needs its own target mobile UAT and second limited-pilot rollout record.
+HN4-011 needs a publish-status decision, target mobile UAT, and second
+limited-pilot rollout record.
 
 ## Lesson 11+ Candidate Buckets
 
@@ -266,10 +267,12 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Run HN4-011 target mobile UAT and record a second limited-pilot rollout
-   decision.
-2. Generate or verify TTS audio before any broader N4 rollout.
-3. Return to the partial-topic queue only after the closeout decision for that
+1. Decide whether to move HN4-011 from `DRAFT` to `PILOT` for a second limited
+   pilot wave.
+2. After publish-status change, run HN4-011 target mobile UAT and record the
+   rollout decision.
+3. Generate or verify TTS audio before any broader N4 rollout.
+4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary

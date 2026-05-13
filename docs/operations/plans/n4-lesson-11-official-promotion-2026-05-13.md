@@ -51,14 +51,15 @@ curriculum approval.
 
 | Gate | Result |
 |---|---|
-| Lesson validation | PASS: 12 chapters / 61 lessons / 305 questions |
+| Lesson validation | PASS: 12 chapters / 61 lessons / 305 questions; DRAFT warning expected |
 | N4 quality gate | WARN: DRAFT file included intentionally; 0 failures |
 | Curriculum validation | PASS: 0 warnings / 0 failures; review packet rows 11 |
 | Candidate review gate | PASS: 1 `APPROVED` / 0 blockers |
 | Official review gate | PASS: 11 `APPROVED` / 0 blockers |
-| Database typecheck | PASS: `tsc --noEmit` |
-| API lint/type/tests | PASS: ruff check, ruff format check, mypy, 443 pytest passed / 13 skipped |
+| API policy/TTS tests | PASS: 55 pytest tests |
+| Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `DRAFT`, published `false` |
 | Configured DB seed check | PASS: 3 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
+| Published route guard smoke | PASS: HN4-011 DB row exists with `is_published=false`; N4 published route returns 2 chapters / 10 lessons and HN4-011 detail returns 404 |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 
 ## Validation Boundary
