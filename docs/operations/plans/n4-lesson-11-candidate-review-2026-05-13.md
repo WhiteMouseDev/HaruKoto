@@ -69,5 +69,4 @@ Promotion and second limited-pilot decision records:
 - `docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`
 - `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md`
 
-Next gate: target mobile UAT, API start/submit write smoke, and TTS audio
-playback QA for HN4-011.
+Next gate: target mobile UAT and TTS audio playback QA for HN4-011.

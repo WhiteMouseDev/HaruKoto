@@ -11,8 +11,8 @@ Do not promote N4 as a complete course yet.
 The official N4 source set is now 11 lessons. HN4-001 through HN4-010 have the
 earlier controlled-pilot mobile/rollout decision; HN4-011 has a second
 limited-pilot publish-status decision, configured DB seed apply/check, and
-published list/detail API smoke. It still needs target mobile UAT, API
-start/submit write smoke, and TTS audio playback QA before the pilot wave can be
+published list/detail plus start/submit API smoke. It still needs target mobile
+UAT and TTS audio playback QA before the pilot wave can be
 treated as runtime-verified. The next automated workstream is not broad rollout;
 it is closing the remaining N4 foundation queue without padding a chapter with
 unresolved contrast topics.
@@ -101,14 +101,14 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
-| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed and list/detail API smoke passed; mobile/start-submit/TTS QA pending |
+| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed and list/detail/start-submit API smoke passed; mobile/TTS QA pending |
 
 HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
 HN4-011 is governed by
 `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md` and
-still needs target mobile UAT, API start/submit write smoke, and TTS audio
-playback QA before the second pilot wave is runtime-verified.
+still needs target mobile UAT and TTS audio playback QA before the second pilot
+wave is runtime-verified.
 
 ## Lesson 11+ Candidate Buckets
 
@@ -271,12 +271,10 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Resolve or work around configured-DB smoke-user setup for API
-   start/submit write smoke.
-2. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
+1. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
    retry evidence.
-3. Generate or verify TTS audio before any broader N4 rollout.
-4. Return to the partial-topic queue only after the closeout decision for that
+2. Generate or verify TTS audio before any broader N4 rollout.
+3. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary

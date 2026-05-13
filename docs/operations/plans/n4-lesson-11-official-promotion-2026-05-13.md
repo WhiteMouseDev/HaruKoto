@@ -62,7 +62,7 @@ curriculum approval.
 | Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `PILOT`, published `true` |
 | Configured DB seed check | PASS: 3 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
 | Published list/detail route smoke | PASS: route-service smoke returns 3 N4 chapters / 11 lessons; HN4-011 detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
-| API start/submit write smoke | PENDING: read-only schema check shows `users.updated_at` is NOT NULL with no DB default; needs a real configured smoke user or explicit setup path |
+| API start/submit write smoke | PASS: `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items and cleanup left 0 smoke residue rows |
 | Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 
@@ -71,11 +71,9 @@ curriculum approval.
 HN4-011 is promoted to official `PILOT` source status and synced to the
 configured API DB target. The remaining learner-readiness gates are:
 
-1. API start/submit write smoke after defining the configured-DB smoke-user
-   setup path.
-2. Learner-facing mobile UAT for one correct path and one wrong-answer
+1. Learner-facing mobile UAT for one correct path and one wrong-answer
    retry path after the publish-status change.
-3. TTS audio generation/playback QA before any broader N4 rollout.
+2. TTS audio generation/playback QA before any broader N4 rollout.
 
 Broad/full N4 rollout remains HOLD until pilot feedback, native-speaker review
 when available, and generated/audio-QA evidence are complete.

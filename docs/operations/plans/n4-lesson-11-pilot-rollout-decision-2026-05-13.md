@@ -37,7 +37,7 @@ human approval.
 | Configured DB seed apply | PASS | 3 N4 chapters / 11 lessons / 66 item links applied; HN4-011 seeded as published |
 | Configured DB seed check | PASS | 3 N4 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
 | Published list/detail API smoke | PASS | N4 list returns 3 chapters / 11 lessons including HN4-011; detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
-| API start/submit write smoke | PENDING | Read-only schema check shows `users.updated_at` is NOT NULL with no DB default; use a real configured smoke user or explicit setup path before claiming start/submit runtime proof |
+| API start/submit write smoke | PASS | `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items, wrote review events, and cleanup left 0 smoke residue rows |
 | Mobile lesson-flow regression | PASS | `flutter test` passed 526 tests, including lesson session, TTS lesson-target bubble, and practice-step widget coverage |
 | Mobile UAT | PENDING | Verify one HN4-011 correct path and one wrong-answer retry path on target runtime |
 
@@ -65,6 +65,5 @@ If HN4-011 shows a P0/P1 runtime or content issue:
 
 ## Next Gates
 
-1. Resolve or work around configured-DB smoke-user setup for API start/submit write smoke.
-2. Run target mobile UAT for the correct path and wrong-answer retry path.
-3. Generate or verify HN4-011 TTS audio before any broader N4 rollout.
+1. Run target mobile UAT for the correct path and wrong-answer retry path.
+2. Generate or verify HN4-011 TTS audio before any broader N4 rollout.
