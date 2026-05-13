@@ -3,7 +3,7 @@
 > Date: 2026-05-12
 > Scope: Mobile `MY` tab launch-readiness smoke after account/settings hardening
 > Code checkpoint: `b2262b465a9efce64102f93be780171b58066a00`
-> Status: automated gate and physical-device install/launch precheck passed; on-screen smoke pending
+> Status: automated gate and physical-device install/launch precheck passed; on-screen smoke blocked by unavailable physical device
 
 ## Summary
 
@@ -42,6 +42,22 @@ Note: wireless profile launch reported that the Dart VM Service was not
 discovered within 75 seconds. This is a debug attach limitation on the wireless
 device path, not a failed install. The installed app lookup, foreground launch,
 and process listing above are the release-smoke precheck evidence.
+
+## 2026-05-13 Recheck
+
+| Check | Command | Result |
+|---|---|---|
+| Current workspace | `git status --short --branch` | FLAG: workspace was on `codex/n4-human-audio-qa-packet` with unrelated untracked N4 audio-QA files; no MY code changes were present |
+| Device availability | `cd apps/mobile && flutter devices` | BLOCK: only iPhone 17 Pro Simulator, macOS, and Chrome were detected; no wireless/physical iPhone was found |
+| CoreDevice availability | `xcrun devicectl list devices` | BLOCK: CoreDevice timed out waiting for `CoreDeviceService` to initialize |
+| Simulator fallback launch | `xcrun simctl launch 5549AFB7-FF41-4697-BBC5-F9E3181E4DDF com.harukoto.app` | PARTIAL: app launched to the authenticated learning surface |
+| Simulator fallback interaction | Simulator click-through to `MY` | BLOCK: CoreSimulatorService became invalid during fallback interaction, so screen-level MY smoke could not be completed |
+| Targeted MY widget test | `cd apps/mobile && flutter test test/features/my/presentation/my_page_test.dart` | PASS: 4 tests passed |
+
+Result: the screen-level physical-device smoke remains blocked by environment
+availability, not by a newly observed MY page failure. Do not mark the release
+smoke as passed until a real physical iPhone is visible to Flutter/CoreDevice
+and scenarios A-G below are executed on screen.
 
 ## Fixed Before Smoke
 
