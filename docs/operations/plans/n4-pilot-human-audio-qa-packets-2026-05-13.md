@@ -45,13 +45,18 @@ cd apps/api
 uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
   --transcribe \
-  --json
+  --json \
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
 ```
 
 `TRANSCRIPTION_TEXT_MISMATCH` should be treated as a review-priority signal
 unless strict blocker mode is explicitly selected. It must not be used to
 auto-fill `PASS` verdicts because transcript differences can be orthographic
 rather than pronunciation failures.
+
+The Markdown output is the handoff artifact for reviewing mismatches, STT
+errors, and existing machine warnings before editing the chapter-packet
+verdicts.
 
 ## Review Rules
 

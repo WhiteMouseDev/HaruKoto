@@ -38,7 +38,8 @@ cd apps/api
 uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
   --transcribe \
-  --json
+  --json \
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
 ```
 
 Use strict mode only after accepting exact transcript matching as the rollout
@@ -50,7 +51,8 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
   --transcribe \
   --block-on-transcription-mismatch \
-  --fail-on-blocker
+  --fail-on-blocker \
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
 ```
 
 ## Summary
@@ -66,7 +68,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
 | Duration max | 8.673s |
 | Duration average | 3.819s |
 | Total audio duration | 378.044s |
-| AI STT assist | Available as opt-in; not part of the recorded baseline above |
+| AI STT assist | Available as opt-in Markdown/JSON report; not part of the recorded baseline above |
 
 ## Warnings For Human Review
 
