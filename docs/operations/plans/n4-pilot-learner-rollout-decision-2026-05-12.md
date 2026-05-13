@@ -38,7 +38,7 @@ development phase, not an externally marketed full N4 launch.
 | Seed sync | PASS | Configured DB seed check passed with 2 chapters / 10 lessons / 0 missing / 0 mismatches |
 | API smoke | PASS | Authenticated N4 list/detail smoke passed; lesson detail answer keys are redacted |
 | TTS target scope | PASS for target coverage | `lesson-seeds:HN4-*` targets cover 40 script lines and 50 question prompts |
-| TTS audio QA | PARTIAL | HN4-001 dialogue-line TTS control had no visible mobile error. The 2026-05-13 full published N4 pilot-batch audit now has 99/99 generated lesson TTS records and 99/99 generated URLs passing read-only HTTP validation; human audio-quality review remains a broad-rollout blocker |
+| TTS audio QA | PARTIAL | HN4-001 dialogue-line TTS control had no visible mobile error. The 2026-05-13 full published N4 pilot-batch audit now has 99/99 generated lesson TTS records, 99/99 generated URLs passing read-only HTTP validation, and 99/99 machine audio preflight pass with 0 blockers. A Chapter 1 human review packet is prepared, but human audio-quality verdicts remain a broad-rollout blocker |
 | Curriculum review | PASS for delegated AI path | 10 review packet rows are `APPROVED`; this is not native-speaker validation |
 | Mobile happy path | PASS | HN4-001 completed on iPhone 17 Pro Simulator with `100%`, `5/5 정답`, SRS registration, and progress update |
 | Mobile wrong-answer path | PASS | HN4-002 completed with one intentional miss, `80%`, `4/5 정답`, wrong-answer explanation, SRS registration, and retry entry |
@@ -72,5 +72,8 @@ If the N4 pilot shows a P0/P1 runtime or content issue:
 - Full N4 coverage report before lesson 11+ promotion.
 - Native-speaker review when a reviewer becomes available.
 - Human audio-quality review before broad rollout. Generated lesson-seed TTS
-  coverage is complete in the current audit:
-  `docs/operations/plans/n4-pilot-tts-coverage-audit-2026-05-13.md`.
+  coverage and machine preflight are complete in the current audits:
+  `docs/operations/plans/n4-pilot-tts-coverage-audit-2026-05-13.md` and
+  `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
+  The representative Chapter 1 packet is prepared at
+  `docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md`.
