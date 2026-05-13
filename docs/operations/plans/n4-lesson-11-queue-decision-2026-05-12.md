@@ -196,12 +196,10 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Resolve or work around configured-DB smoke-user setup for HN4-011 API
-   start/submit write smoke.
-2. Run HN4-011 target mobile UAT for one correct path and one wrong-answer
+1. Run HN4-011 target mobile UAT for one correct path and one wrong-answer
    retry path.
-3. Verify HN4-011 TTS audio playback before broader rollout.
-4. Return to `topic-kitto` or a partial-topic closeout only after its blockers
+2. Verify HN4-011 TTS audio playback before broader rollout.
+3. Return to `topic-kitto` or a partial-topic closeout only after its blockers
    are explicitly resolved.
 
 ## Boundary
