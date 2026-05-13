@@ -244,6 +244,10 @@ Result:
 - Select `topic-i-adjective-nominalization` as the first HN4-011 candidate.
 - Draft `lsc-n4-i-adjective-nominalization-001` as the HN4-011 seed candidate
   with HaruKoto-authored content and generated TTS targets.
+- Create and approve
+  `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`
+  for delegated AI candidate review before official lesson JSON promotion.
+  Operational record: `docs/operations/plans/n4-lesson-11-candidate-review-2026-05-13.md`.
 - Keep `topic-kitto` deferred until adverb/discourse scope, TTS, and runtime
   question support are decided.
 - Keep the seven partial N4 foundation rows out of automatic seed drafting until
@@ -252,13 +256,13 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Review and approve or edit `lsc-n4-i-adjective-nominalization-001`.
-2. Promote HN4-011 into official lesson JSON only after review approval.
-3. Prepare and validate the N4 human-review packet after promotion.
-4. Generate or verify TTS audio before DB seed.
-5. Run configured DB seed check and API smoke.
-6. Run mobile UAT and record a new rollout decision.
-7. Return to the partial-topic queue only after the closeout decision for that
+1. Promote HN4-011 into official lesson JSON after candidate review approval.
+2. Prepare and validate the N4 official lesson human-review packet after
+   promotion.
+3. Generate or verify TTS audio before DB seed.
+4. Run configured DB seed check and API smoke.
+5. Run mobile UAT and record a new rollout decision.
+6. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary

@@ -56,6 +56,9 @@ Wave 0 keeps these files as validated staging contracts:
   vocabulary/grammar, script lines, questions, answer keys, explanations, and
   linked TTS targets so a human reviewer can inspect a level batch without
   manually joining source files.
+- `lesson-seed-candidate-review/*.json`: reviewer-editable packets generated
+  from unpromoted `lesson-seed-candidates.json` rows. They provide the same
+  review surface before official `data/lessons/**` promotion.
 - `scaffold-candidates.json`: kana/kanji scaffold drafts that do not require a
   grammar order but still validate topic, example, runtime question, and TTS
   readiness links.
@@ -79,6 +82,17 @@ Wave 0 keeps these files as validated staging contracts:
   lesson human review packets against current lesson JSON, vocabulary/grammar
   references, and TTS targets while preserving reviewer decisions. It runs as
   part of `curriculum:validate`.
+- `scripts/prepare-lesson-seed-candidate-review.mjs`: generates lesson seed
+  candidate review packets from unpromoted seed candidates, examples,
+  vocabulary/grammar references, and TTS targets.
+- `scripts/validate-lesson-seed-candidate-review.mjs`: validates
+  source-controlled candidate review packets against current seed candidate and
+  TTS source data while preserving reviewer decisions. It runs as part of
+  `curriculum:validate`.
+- `scripts/check-lesson-seed-candidate-review-gate.mjs`: blocks candidate
+  promotion until matching candidate review rows are `APPROVED`. The package
+  alias `candidates:review:gate` runs packet validation first, then this
+  approval gate.
 - `scripts/check-lesson-human-review-gate.mjs`: blocks level rollout until all
   rows in the requested lesson human review packet are `APPROVED`. The package
   alias `lessons:review:gate` runs packet validation first, then this approval
@@ -108,6 +122,9 @@ Rules:
   review surfaces can support publishing the resulting lesson JSON.
 - Keep lesson seed candidates in `draft` and outside `data/lessons/**` until the
   candidate passes human review, TTS readiness review, and promotion planning.
+- Keep `lesson-seed-candidate-review/*.json` aligned with unpromoted seed
+  candidates. Run `candidates:review:prepare` after candidate, example,
+  vocabulary, grammar, or TTS target changes.
 - Keep `lesson-human-review/*.json` decisions as preparation state only. A
   reviewer may change `reviewerDecision` to `APPROVED`, `NEEDS_EDIT`, or
   `REJECTED`, but final curriculum approval still belongs in the operational

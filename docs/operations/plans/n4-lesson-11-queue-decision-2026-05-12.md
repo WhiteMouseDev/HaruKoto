@@ -193,12 +193,14 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Review the HN4-011 seed candidate content and TTS target coverage.
-2. Prepare or extend the N4 human-review workflow for candidate review before
-   promotion.
-3. Promote HN4-011 into official lesson JSON only after review approval.
-4. Run configured DB seed check, API smoke, and mobile UAT after promotion.
-5. Decide whether to expose HN4-011 as a second limited pilot wave.
+1. Promote HN4-011 into official lesson JSON after the approved candidate
+   review packet at
+   `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`.
+   Operational review record:
+   `docs/operations/plans/n4-lesson-11-candidate-review-2026-05-13.md`.
+2. Prepare or regenerate the official N4 human-review packet after promotion.
+3. Run configured DB seed check, API smoke, and mobile UAT after promotion.
+4. Decide whether to expose HN4-011 as a second limited pilot wave.
 
 ## Boundary
 
