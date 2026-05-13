@@ -9,9 +9,9 @@
 This packet is for human audio-quality review. It does not regenerate audio,
 change lesson content, update rollout status, or claim native-speaker approval.
 
-ASSUMPTION: One full chapter is the minimum representative playback QA gate
-before considering broader N4 rollout. A flagged or failed item should block
-broad rollout until regenerated or explicitly waived.
+ASSUMPTION: Chapter-level packets keep full N4 playback QA auditable. A flagged
+or failed item should block broad rollout until regenerated or explicitly
+waived.
 
 ## Reviewer Instructions
 
@@ -168,5 +168,5 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 ## Result
 
-Human verdict is pending. This packet closes only the preparation step for
-representative full-chapter playback review.
+Human verdict is pending. This packet closes only the preparation step for this
+chapter's playback review.

@@ -61,6 +61,8 @@ QA because they may indicate long pauses in question-prompt playback.
 The generated N4 pilot TTS set has no machine-detected blockers. This supports
 moving to human listening QA instead of regenerating the batch immediately.
 
-Broad/full N4 rollout remains on HOLD until the representative human audio QA
-packet is reviewed and any `FLAG` or `FAIL` items are resolved or explicitly
-waived.
+Broad/full N4 rollout remains on HOLD until the human audio QA packets are
+reviewed and any `FLAG` or `FAIL` items are resolved or explicitly waived.
+
+Follow-up human review packets are prepared for all 99 generated targets:
+`docs/operations/plans/n4-pilot-human-audio-qa-packets-2026-05-13.md`.
