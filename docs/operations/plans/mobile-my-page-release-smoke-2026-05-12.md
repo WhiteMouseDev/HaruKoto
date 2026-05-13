@@ -3,7 +3,7 @@
 > Date: 2026-05-12
 > Scope: Mobile `MY` tab launch-readiness smoke after account/settings hardening
 > Code checkpoint: `b2262b465a9efce64102f93be780171b58066a00`
-> Status: automated gate and physical-device install/launch precheck passed; on-screen smoke blocked by unavailable physical device
+> Status: automated gate, simulator on-screen smoke, and physical-device install/launch precheck passed; physical-device screen smoke blocked by device lock
 
 ## Summary
 
@@ -43,6 +43,30 @@ discovered within 75 seconds. This is a debug attach limitation on the wireless
 device path, not a failed install. The installed app lookup, foreground launch,
 and process listing above are the release-smoke precheck evidence.
 
+## Simulator On-Screen Smoke Evidence
+
+2026-05-13 continuation: the app was built and launched on the iPhone 17 Pro
+Simulator with `make run DEVICE=5549AFB7-FF41-4697-BBC5-F9E3181E4DDF`.
+Startup reached the authenticated app shell, and production API calls observed
+during launch returned 200 for `/user/profile`, `/stats/dashboard`,
+`/missions/today`, `/notifications`, `/quiz/incomplete`, and
+`/quiz/smart-preview`.
+
+The release owner then manually checked the `MY` tab on the simulator and
+reported that the tested flows operated normally.
+
+| Scenario | Result |
+|---|---|
+| A. My tab load and error-free profile | PASS |
+| B. Nickname update | PASS |
+| C. Settings toggles | PASS |
+| D. Notification settings | PASS |
+| E. Info and legal links | PASS |
+| F. Logout | PASS |
+| G. Account deletion exact-text gate | PASS |
+
+No simulator `Block` or `Flag` was reported.
+
 ## 2026-05-13 Recheck
 
 | Check | Command | Result |
@@ -54,10 +78,10 @@ and process listing above are the release-smoke precheck evidence.
 | Simulator fallback interaction | Simulator click-through to `MY` | BLOCK: CoreSimulatorService became invalid during fallback interaction, so screen-level MY smoke could not be completed |
 | Targeted MY widget test | `cd apps/mobile && flutter test test/features/my/presentation/my_page_test.dart` | PASS: 4 tests passed |
 
-Result: the screen-level physical-device smoke remains blocked by environment
-availability, not by a newly observed MY page failure. Do not mark the release
-smoke as passed until a real physical iPhone is visible to Flutter/CoreDevice
-and scenarios A-G below are executed on screen.
+Result: physical-device screen smoke remained blocked by environment
+availability, not by a newly observed MY page failure. Do not mark the
+physical-device screen smoke as passed until a real physical iPhone is visible
+to Flutter/CoreDevice and scenarios A-G below are executed on screen.
 
 ## 2026-05-13 Locked-Device Recheck
 
@@ -101,7 +125,8 @@ Run on `Kun Woo's iPhone` wireless or a connected physical iPhone. Record
 `Pass`, `Flag`, or `Block` for each scenario.
 
 Precondition status: app is installed and launched on the physical iPhone.
-The remaining checks require reading and interacting with the device screen.
+Simulator on-screen smoke has passed. The remaining higher-fidelity check is
+physical-device screen interaction.
 
 ### Scenario A. My Tab Load And Error-Free Profile
 
