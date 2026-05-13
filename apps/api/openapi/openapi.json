@@ -5963,6 +5963,68 @@
         }
       }
     },
+    "/api/v1/lessons/{lesson_id}/questions/{question_order}/tts": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Lesson Question Prompt Tts",
+        "description": "레슨 문제 prompt의 TTS URL을 반환한다.",
+        "operationId": "lesson_question_prompt_tts_api_v1_lessons__lesson_id__questions__question_order__tts_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "question_order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Question Order"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Lesson Question Prompt Tts Api V1 Lessons  Lesson Id  Questions  Question Order  Tts Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/lessons/{lesson_id}": {
       "get": {
         "tags": [

@@ -14,8 +14,8 @@ class TtsAudio(Base):
     __tablename__ = "tts_audio"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    target_type: Mapped[str] = mapped_column(Text, nullable=False)  # 'vocabulary' | 'kana' | 'lesson_script_line'
-    target_id: Mapped[str] = mapped_column(Text, nullable=False)  # vocab.id, kana text hash, or lesson script target id
+    target_type: Mapped[str] = mapped_column(Text, nullable=False)  # vocabulary | kana | lesson_script_line | lesson_question_prompt
+    target_id: Mapped[str] = mapped_column(Text, nullable=False)  # vocab.id, kana text hash, or lesson-scoped target id
     text: Mapped[str] = mapped_column(Text, nullable=False)  # TTS에 넘긴 실제 텍스트
     speed: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
     provider: Mapped[str] = mapped_column(Text, nullable=False)  # 'elevenlabs' | 'gemini'

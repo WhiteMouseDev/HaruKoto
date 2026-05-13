@@ -1847,6 +1847,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lessons/{lesson_id}/questions/{question_order}/tts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lesson Question Prompt Tts
+         * @description 레슨 문제 prompt의 TTS URL을 반환한다.
+         */
+        post: operations["lesson_question_prompt_tts_api_v1_lessons__lesson_id__questions__question_order__tts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/lessons/{lesson_id}": {
         parameters: {
             query?: never;
@@ -7984,6 +8004,40 @@ export interface operations {
             path: {
                 lesson_id: string;
                 line_index: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lesson_question_prompt_tts_api_v1_lessons__lesson_id__questions__question_order__tts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: string;
+                question_order: number;
             };
             cookie?: never;
         };
