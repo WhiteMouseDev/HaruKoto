@@ -2,20 +2,22 @@
 
 > Date: 2026-05-13
 > Scope: promote approved HN4-011 seed candidate into official lesson JSON
-> Status: official DRAFT lesson promoted; seed validation passed; learner exposure still gated
+> Status: official lesson promoted; HN4-011 moved to limited-pilot publish status
 
 ## Decision
 
 Promote `lsc-n4-i-adjective-nominalization-001` into official lesson seed
-`HN4-011` with chapter `meta.status=DRAFT`.
+`HN4-011`, then move the chapter to `meta.status=PILOT` for a second limited
+pilot wave.
 
 The promotion makes HN4-011 part of the official N4 lesson source set and the
-configured seed-check target. It does not publish HN4-011 to learner-facing
-routes. HN4-011 still needs a second limited-pilot publish-status decision
-before API/mobile UAT can exercise it as learner-ready content.
+configured seed-check target. The follow-up publish-status decision is recorded
+in `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md`.
+After configured DB seed apply, HN4-011 is expected to become learner-facing in
+the same controlled pilot boundary as the first N4 batch.
 
 ASSUMPTION: The user-authorized delegated AI review path is sufficient for
-official DRAFT promotion, but remains lower authority than native-speaker human
+official lesson promotion, but remains lower authority than native-speaker human
 curriculum approval.
 
 ## Promoted Lesson
@@ -24,7 +26,7 @@ curriculum approval.
 |---|---|
 | Lesson ID | `HN4-011` |
 | Chapter | `N4-CH03` / `성질과 정도 표현` |
-| Publish status | `DRAFT` |
+| Publish status | `PILOT` |
 | Source candidate | `lsc-n4-i-adjective-nominalization-001` |
 | Topic | `topic-i-adjective-nominalization` |
 | Grammar anchor | `〜さ` / order 45 |
@@ -51,27 +53,29 @@ curriculum approval.
 
 | Gate | Result |
 |---|---|
-| Lesson validation | PASS: 12 chapters / 61 lessons / 305 questions; DRAFT warning expected |
-| N4 quality gate | WARN: DRAFT file included intentionally; 0 failures |
+| Lesson validation | PASS: 12 chapters / 61 lessons / 305 questions |
+| N4 quality gate | PASS: 0 failures |
 | Curriculum validation | PASS: 0 warnings / 0 failures; review packet rows 11 |
 | Candidate review gate | PASS: 1 `APPROVED` / 0 blockers |
 | Official review gate | PASS: 11 `APPROVED` / 0 blockers |
-| API policy/TTS tests | PASS: 55 pytest tests |
-| Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `DRAFT`, published `false` |
+| API regression suite | PASS: 443 passed / 13 skipped |
+| Configured DB seed apply | PASS: 3 chapters / 11 lessons / 66 item links; HN4-011 chapter status `PILOT`, published `true` |
 | Configured DB seed check | PASS: 3 chapters / 11 lessons / 0 missing / 0 content mismatches / 0 item-link mismatches |
-| Published route guard smoke | PASS: HN4-011 DB row exists with `is_published=false`; N4 published route returns 2 chapters / 10 lessons and HN4-011 detail returns 404 |
+| Published list/detail route smoke | PASS: route-service smoke returns 3 N4 chapters / 11 lessons; HN4-011 detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
+| API start/submit write smoke | PENDING: read-only schema check shows `users.updated_at` is NOT NULL with no DB default; needs a real configured smoke user or explicit setup path |
+| Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 
 ## Validation Boundary
 
-HN4-011 is promoted to official DRAFT and is synced to the configured API DB.
-The remaining learner-readiness gates are:
+HN4-011 is promoted to official `PILOT` source status and synced to the
+configured API DB target. The remaining learner-readiness gates are:
 
-1. A second limited-pilot publish decision that explicitly covers HN4-011.
-2. Move HN4-011 from `DRAFT` to `PILOT` only after that decision.
-3. Learner-facing API/mobile UAT for one correct path and one wrong-answer
+1. API start/submit write smoke after defining the configured-DB smoke-user
+   setup path.
+2. Learner-facing mobile UAT for one correct path and one wrong-answer
    retry path after the publish-status change.
-4. TTS audio generation/playback QA before any broader N4 rollout.
+3. TTS audio generation/playback QA before any broader N4 rollout.
 
 Broad/full N4 rollout remains HOLD until pilot feedback, native-speaker review
 when available, and generated/audio-QA evidence are complete.

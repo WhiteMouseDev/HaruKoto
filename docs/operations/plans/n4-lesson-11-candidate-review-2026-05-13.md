@@ -2,7 +2,7 @@
 
 > Date: 2026-05-13
 > Scope: HN4-011 seed candidate before official lesson promotion
-> Status: delegated AI candidate review approved; promoted to official DRAFT lesson; not native-speaker human approval
+> Status: delegated AI candidate review approved; promoted to official lesson and later moved to limited PILOT; not native-speaker human approval
 
 ## Source of Truth
 
@@ -64,6 +64,10 @@ becomes available.
 Promotion record:
 `docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`.
 
-Configured DB seed check passed after promotion. Next gate: decide whether to
-move HN4-011 from `DRAFT` to `PILOT`; learner-facing API/mobile UAT follows
-that publish-status change.
+Promotion and second limited-pilot decision records:
+
+- `docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`
+- `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md`
+
+Next gate: target mobile UAT, API start/submit write smoke, and TTS audio
+playback QA for HN4-011.

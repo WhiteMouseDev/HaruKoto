@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-05-13T09:38:00+09:00"
+last_updated: "2026-05-13T10:20:00+09:00"
 last_activity: 2026-05-13
 progress:
   total_phases: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** 원어민이 학습 데이터를 쉽고 빠르게 검증·수정할 수 있어야 한다
-**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, delegated AI curriculum approval, mobile target-runtime happy-path UAT, N4 wrong-answer retry spot check, controlled learner-pilot rollout decision, and HN4-011 official DRAFT lesson promotion are complete. HN4-011 publish-status decision, learner-facing API/mobile UAT, and broad/full N4 rollout remain on hold.
+**Current focus:** v1.1 shipped — stabilization UAT gate closed with accepted P2 follow-ups. v1.2 leading track is curriculum expansion; N4 pilot seed source promotion, configured DB seed, runtime API smoke, official lesson-seed TTS scope, review handoff, AI-assisted pre-review, delegated AI curriculum approval, mobile target-runtime happy-path UAT, N4 wrong-answer retry spot check, controlled learner-pilot rollout decision, and HN4-011 official promotion plus second limited-pilot publish are complete. HN4-011 API start/submit write smoke, target mobile UAT, HN4-011 TTS audio playback QA, and broad/full N4 rollout remain on hold.
 
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Last activity: 2026-05-13 — HN4-011 was promoted from the approved seed candidate into official lesson JSON at `packages/database/data/lessons/n4/ch03-quality-and-degree.json` with `meta.status=DRAFT`. The N4 official lesson review packet now includes an `APPROVED` delegated AI review row for HN4-011, the TTS manifest maps official `lesson-seeds:HN4-011:*` script/question targets, and the coverage contract marks `topic-i-adjective-nominalization` covered by HN4-011. Configured N4 DB seed check now passes with 3 chapters / 11 lessons / 0 missing / 0 mismatches. HN4-011 still needs a second limited-pilot publish-status decision before learner-facing API/mobile UAT can exercise it. Broad/full N4 rollout remains HOLD. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
+Last activity: 2026-05-13 — HN4-011 moved from official DRAFT to `meta.status=PILOT` for a second limited N4 pilot wave. The configured N4 seed was applied and checked with 3 chapters / 11 lessons / 0 missing / 0 mismatches. Published API smoke confirmed N4 list/detail exposure for HN4-011 with answer keys redacted, and API regression tests passed. API start/submit write smoke remains pending because configured-DB smoke user setup needs an explicit path; a read-only schema check shows `users.updated_at` is NOT NULL with no DB default. Broad/full N4 rollout remains HOLD. Mobile MY tab launch hardening also landed at `b2262b465a9efce64102f93be780171b58066a00`; physical-device MY install/launch precheck passed on `Kun Woo's iPhone`, while screen-level smoke remains pending in `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`. Delegated AI curriculum approval remains explicitly not native-speaker human validation.
 
 Progress: v1.1 [██████████] 100% shipped
 
@@ -40,7 +40,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 ### Pending Todos
 
 - Mobile MY tab launch smoke — code hardening, automated verification, and physical-device install/launch precheck are complete; next gate is screen-level physical-device smoke using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
-- N4 pilot seed operationalization — controlled learner-pilot exposure is approved for HN4-001 through HN4-010, full N4 coverage planning is opened, and staging coverage contracts plus derived priority queue are synced through HN4-011. Lesson 11+ closeout selected `topic-i-adjective-nominalization`; `lsc-n4-i-adjective-nominalization-001` has an `APPROVED` source-controlled delegated AI candidate review packet and is promoted to official DRAFT lesson HN4-011. Configured DB seed check passes for 3 chapters / 11 lessons. Next gate is a second limited-pilot publish-status decision, then learner-facing API/mobile UAT. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
+- N4 pilot seed operationalization — controlled learner-pilot exposure is approved for HN4-001 through HN4-010, full N4 coverage planning is opened, and staging coverage contracts plus derived priority queue are synced through HN4-011. Lesson 11+ closeout selected `topic-i-adjective-nominalization`; `lsc-n4-i-adjective-nominalization-001` has an `APPROVED` source-controlled delegated AI candidate review packet and is promoted to official limited-pilot lesson HN4-011. Configured DB seed check passes for 3 chapters / 11 lessons and published API list/detail smoke exposes HN4-011. Next gate is API start/submit write smoke, target mobile UAT, and TTS audio playback QA. Pilot feedback review, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain broad-rollout blockers.
 
 ### Release Gate
 
@@ -62,5 +62,5 @@ v1.1 stabilization checkpoint is closed with accepted P2 follow-ups. Keep the ac
 ## Session Continuity
 
 Last session: 2026-05-11T17:01:44+09:00
-Stopped at: HN4-011 official DRAFT promotion plus configured DB seed check complete; publish-status decision, learner-facing API/mobile UAT, pilot feedback, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain blockers for broader N4 rollout
+Stopped at: HN4-011 second limited-pilot publish plus configured DB seed/list-detail API smoke complete; target mobile UAT, API start/submit write smoke, pilot feedback, native-speaker review when available, and full lesson-seed TTS generation/audio QA remain blockers for broader N4 rollout
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`

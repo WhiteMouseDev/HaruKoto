@@ -2,22 +2,24 @@
 
 > Date: 2026-05-12
 > Scope: N4 pilot aftercare and lesson 11+ promotion planning
-> Status: HN4-011 promoted to official DRAFT; broad/full N4 rollout remains HOLD
+> Status: HN4-011 promoted to limited PILOT; broad/full N4 rollout remains HOLD
 
 ## Decision
 
 Do not promote N4 as a complete course yet.
 
 The official N4 source set is now 11 lessons. HN4-001 through HN4-010 have the
-earlier controlled-pilot mobile/rollout decision; HN4-011 is an official DRAFT
-lesson with configured DB seed-check validation. It still needs a second
-limited-pilot publish-status decision before learner-facing API/mobile UAT. The
-next automated workstream is not broad rollout; it is closing the remaining N4
-foundation queue without padding a chapter with unresolved contrast topics.
+earlier controlled-pilot mobile/rollout decision; HN4-011 has a second
+limited-pilot publish-status decision, configured DB seed apply/check, and
+published list/detail API smoke. It still needs target mobile UAT, API
+start/submit write smoke, and TTS audio playback QA before the pilot wave can be
+treated as runtime-verified. The next automated workstream is not broad rollout;
+it is closing the remaining N4 foundation queue without padding a chapter with
+unresolved contrast topics.
 
-ASSUMPTION: DB seed-check validation of HN4-011 can be completed before
-target-device mobile UAT, but learner exposure requires a separate publish
-decision.
+ASSUMPTION: The HN4-011 second limited pilot decision authorizes controlled
+runtime exposure only after configured DB seed apply; target mobile UAT is still
+required before treating the pilot wave as runtime-verified.
 
 ## Current Inventory
 
@@ -27,8 +29,8 @@ decision.
 | N4 grammar rows | 49 | `packages/database/data/grammar/n4-grammar.json` |
 | N4 cloze rows | 60 | `packages/database/data/cloze/n4-cloze.json` |
 | N4 sentence-arrange rows | 60 | `packages/database/data/sentence-arrange/n4-arrange.json` |
-| Official N4 lesson chapters | 3 | `packages/database/data/lessons/n4/*.json`; HN4-011 is `DRAFT` |
-| Official N4 lessons | 11 | HN4-001 through HN4-011; HN4-011 learner exposure still gated |
+| Official N4 lesson chapters | 3 | `packages/database/data/lessons/n4/*.json`; all 3 chapters are `PILOT` |
+| Official N4 lessons | 11 | HN4-001 through HN4-011; HN4-011 target UAT still pending |
 | Official N4 script lines | 44 | 4 reading script lines per lesson |
 | Official N4 lesson questions | 55 | 5 runtime-safe questions per lesson |
 | Official N4 vocabulary links | 55 | 50 unique vocabulary orders |
@@ -99,12 +101,14 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
-| HN4-011 | 45 | `〜さ` | Seeded as DRAFT; published-route guard passed |
+| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed and list/detail API smoke passed; mobile/start-submit/TTS QA pending |
 
 HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
-HN4-011 needs a publish-status decision, target mobile UAT, and second
-limited-pilot rollout record.
+HN4-011 is governed by
+`docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md` and
+still needs target mobile UAT, API start/submit write smoke, and TTS audio
+playback QA before the second pilot wave is runtime-verified.
 
 ## Lesson 11+ Candidate Buckets
 
@@ -249,15 +253,15 @@ recorded in
 Result:
 
 - Select `topic-i-adjective-nominalization` as the first HN4-011 candidate and
-  promote it into official DRAFT lesson JSON.
+  promote it into official lesson JSON.
 - Draft `lsc-n4-i-adjective-nominalization-001` as the HN4-011 seed candidate
   with HaruKoto-authored content and generated TTS targets.
 - Create and approve
   `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`
   for delegated AI candidate review before official lesson JSON promotion.
   Operational record: `docs/operations/plans/n4-lesson-11-candidate-review-2026-05-13.md`.
-- Promote HN4-011 into official DRAFT lesson JSON and verify configured DB seed
-  sync.
+- Promote HN4-011 into official lesson JSON and move it to second limited
+  `PILOT` status.
   Operational record: `docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`.
 - Keep `topic-kitto` deferred until adverb/discourse scope, TTS, and runtime
   question support are decided.
@@ -267,10 +271,10 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Decide whether to move HN4-011 from `DRAFT` to `PILOT` for a second limited
-   pilot wave.
-2. After publish-status change, run HN4-011 target mobile UAT and record the
-   rollout decision.
+1. Resolve or work around configured-DB smoke-user setup for API
+   start/submit write smoke.
+2. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
+   retry evidence.
 3. Generate or verify TTS audio before any broader N4 rollout.
 4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
