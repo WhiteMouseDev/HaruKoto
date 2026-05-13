@@ -10,16 +10,18 @@ Do not promote N4 as a complete course yet.
 
 The official N4 source set is now 11 lessons. HN4-001 through HN4-010 have the
 earlier controlled-pilot mobile/rollout decision; HN4-011 has a second
-limited-pilot publish-status decision, configured DB seed apply/check, and
-published list/detail plus start/submit API smoke. It still needs target mobile
-UAT and TTS audio playback QA before the pilot wave can be
-treated as runtime-verified. The next automated workstream is not broad rollout;
-it is closing the remaining N4 foundation queue without padding a chapter with
-unresolved contrast topics.
+limited-pilot publish-status decision, configured DB seed apply/check,
+published list/detail plus start/submit API smoke, learner-facing script-line
+TTS audio QA, and simulator mobile UAT. The second pilot wave is
+runtime-verified for controlled exposure, but broad/full N4 rollout remains on
+HOLD. The next automated workstream is not broad rollout; it is closing the
+remaining N4 foundation queue without padding a chapter with unresolved
+contrast topics.
 
 ASSUMPTION: The HN4-011 second limited pilot decision authorizes controlled
-runtime exposure only after configured DB seed apply; target mobile UAT is still
-required before treating the pilot wave as runtime-verified.
+runtime exposure after configured DB seed apply, API smoke, learner-facing TTS
+audio QA, and simulator mobile UAT. Physical-device smoke is still useful before
+release-artifact claims.
 
 ## Current Inventory
 
@@ -30,7 +32,7 @@ required before treating the pilot wave as runtime-verified.
 | N4 cloze rows | 60 | `packages/database/data/cloze/n4-cloze.json` |
 | N4 sentence-arrange rows | 60 | `packages/database/data/sentence-arrange/n4-arrange.json` |
 | Official N4 lesson chapters | 3 | `packages/database/data/lessons/n4/*.json`; all 3 chapters are `PILOT` |
-| Official N4 lessons | 11 | HN4-001 through HN4-011; HN4-011 target UAT still pending |
+| Official N4 lessons | 11 | HN4-001 through HN4-011; HN4-011 simulator UAT passed |
 | Official N4 script lines | 44 | 4 reading script lines per lesson |
 | Official N4 lesson questions | 55 | 5 runtime-safe questions per lesson |
 | Official N4 vocabulary links | 55 | 50 unique vocabulary orders |
@@ -101,14 +103,13 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
-| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed and list/detail/start-submit API smoke passed; mobile/TTS QA pending |
+| HN4-011 | 45 | `〜さ` | Approved for second limited pilot; DB seed, list/detail/start-submit API smoke, learner-facing script-line TTS audio QA, and simulator mobile UAT passed |
 
 HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
 HN4-011 is governed by
 `docs/operations/plans/n4-lesson-11-pilot-rollout-decision-2026-05-13.md` and
-still needs target mobile UAT and TTS audio playback QA before the second pilot
-wave is runtime-verified.
+is runtime-verified for controlled simulator-backed pilot exposure.
 
 ## Lesson 11+ Candidate Buckets
 
@@ -271,10 +272,11 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Run HN4-011 target mobile UAT and record correct-path plus wrong-answer
-   retry evidence.
-2. Generate or verify TTS audio before any broader N4 rollout.
-3. Return to the partial-topic queue only after the closeout decision for that
+1. Monitor HN4-011 controlled-pilot feedback and keep rollback triggers visible.
+2. Keep full prompt/batch TTS generation and human audio-quality review as
+   broad-rollout blockers.
+3. Re-run physical-device smoke before release-artifact claims if required.
+4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary
