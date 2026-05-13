@@ -284,6 +284,11 @@ Result:
 2. Keep human audio-quality review as a broad-rollout blocker after generation
    evidence exists. The generation run is recorded in
    `docs/operations/plans/n4-pilot-batch-tts-generation-run-2026-05-13.md`.
+   Machine preflight for all 99 generated targets passed with 0 blockers and 11
+   silence-ratio warnings; see
+   `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
+   The representative Chapter 1 human review packet is prepared at
+   `docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md`.
 3. Re-run physical-device smoke before release-artifact claims if required.
 4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.

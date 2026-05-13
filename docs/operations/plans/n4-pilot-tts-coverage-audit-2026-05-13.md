@@ -88,3 +88,6 @@ This closes the machine-generation blocker that previously held 89 missing
 records. It does not close human audio-quality review, native-speaker curriculum
 review, or broader N4 rollout approval. Human audio-quality review or an
 explicit waiver is still required before broad/full rollout.
+
+The follow-up machine audio preflight is recorded separately in
+`docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
