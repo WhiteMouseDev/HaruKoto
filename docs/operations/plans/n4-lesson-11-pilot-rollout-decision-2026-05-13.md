@@ -39,7 +39,7 @@ human approval.
 | Published list/detail API smoke | PASS | N4 list returns 3 chapters / 11 lessons including HN4-011; detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
 | API start/submit write smoke | PENDING | Temporary configured-DB smoke user creation failed on `users.updated_at` NOT NULL/default drift; do not claim start/submit runtime proof yet |
 | Mobile lesson-flow regression | PASS | `flutter test` passed lesson session, TTS lesson-target bubble, and practice-step widget tests |
-| Simulator availability precheck | PASS | `flutter devices` found the iPhone 17 Pro simulator; wireless physical iPhone was not available |
+| Simulator launch precheck | PASS | `flutter devices` found the iPhone 17 Pro simulator, debug build launched, and authenticated startup API calls returned 200; raw auth logs intentionally not recorded |
 | Mobile UAT | PENDING | Verify one HN4-011 correct path and one wrong-answer retry path on target runtime |
 
 ## Pilot Guardrails
