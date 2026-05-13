@@ -52,6 +52,7 @@ def test_lesson_seed_level_selection_supports_n4_sources() -> None:
     assert CONTENT_FILES_BY_LEVEL["N4"] == [
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
+        "ch03-quality-and-degree.json",
     ]
 
 
@@ -70,19 +71,25 @@ def test_lesson_seed_n5_sources_are_pilot_publishable() -> None:
     assert lesson_count == 50
 
 
-def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
+def test_lesson_seed_n4_sources_include_pilot_and_draft_promotion_sources() -> None:
     lesson_count = 0
+    expected_statuses = {
+        "ch01-core-directions-and-judgment.json": "PILOT",
+        "ch02-reasons-conditions-and-intent.json": "PILOT",
+        "ch03-quality-and-degree.json": "DRAFT",
+    }
 
     for filename in CONTENT_FILES_BY_LEVEL["N4"]:
         data = json.loads((CONTENT_ROOT / "n4" / filename).read_text(encoding="utf-8"))
+        expected_status = expected_statuses[filename]
 
         assert data["meta"]["jlpt_level"] == "N4"
-        assert data["meta"]["status"] == "PILOT"
-        assert _lesson_is_published(data["meta"]) is True
+        assert data["meta"]["status"] == expected_status
+        assert _lesson_is_published(data["meta"]) is (expected_status == "PILOT")
         assert data["meta"]["lesson_count"] == len(data["lessons"])
         lesson_count += len(data["lessons"])
 
-    assert lesson_count == 10
+    assert lesson_count == 11
 
 
 @pytest.mark.asyncio

@@ -2,25 +2,25 @@
 
 > Date: 2026-05-12
 > Scope: remaining N4 foundation priority queue after pilot coverage sync
-> Decision: HN4-011 seed candidate drafted; do not draft a 5-lesson N4 expansion batch yet
+> Decision: HN4-011 seed candidate drafted and promoted to official DRAFT; do not draft a 5-lesson N4 expansion batch yet
 
 ## Decision
 
 The N4 lesson 11+ queue is not ready for a 1-chapter / 5-lesson expansion
 batch.
 
-After syncing HN4-001 through HN4-010 into the staging coverage contracts, the
-remaining N4 foundation priority queue has 9 rows:
+After syncing HN4-001 through HN4-011 into the staging coverage contracts, the
+remaining N4 foundation priority queue has 8 rows:
 
-- 1 immediately usable foundation candidate class.
 - 1 missing vocabulary/adverb candidate that still needs TTS and runtime-shape
   closeout.
 - 7 partial/contrast-sensitive candidates that should not be promoted until the
   split or runtime-support decision is explicit.
 
-The next safe content-generation slice is therefore a single-candidate lesson
-11 preparation path for `topic-i-adjective-nominalization`, not a full 5-lesson
-chapter.
+The lesson 11 single-candidate path for `topic-i-adjective-nominalization` is
+closed by HN4-011. The next safe content-generation slice is not a full
+5-lesson chapter; it should come from the remaining queue only after the
+candidate-specific blockers are closed.
 
 ASSUMPTION: A production-quality N4 expansion batch should not pad the chapter
 with unresolved contrast topics just to reach five lessons.
@@ -29,7 +29,6 @@ with unresolved contrast topics just to reach five lessons.
 
 | Topic | Current status | Blueprint | Decision |
 |---|---|---|---|
-| `topic-i-adjective-nominalization` | missing / P2 | `ldb-i-adjective-nominalization` | SELECT as first lesson 11 candidate |
 | `topic-kitto` | missing / P2 | `ldb-kitto` | HOLD until adverb scope, TTS decision, and runtime-safe question shape are closed |
 | `topic-prohibitive-na` | partial / P1 | `ldb-prohibitive-na` | HOLD; requires register/prohibitive split decision |
 | `topic-tameni` | partial / P1 | `ldb-tameni` | DEFER; HN4-009 already covers the pilot purpose-expression path |
@@ -41,16 +40,16 @@ with unresolved contrast topics just to reach five lessons.
 
 ## Candidate Detail
 
-### SELECT: `topic-i-adjective-nominalization`
+### CLOSED: `topic-i-adjective-nominalization`
 
-Why it can move first:
+Why it moved first:
 
-- It is a true missing N4 foundation topic after pilot coverage sync.
+- It was a true missing N4 foundation topic after pilot coverage sync.
 - The draft blueprint uses existing mobile-supported question types:
   `VOCAB_MCQ`, `CONTEXT_CLOZE`, and `SENTENCE_REORDER`.
 - It does not require a future contrast question type.
 
-Blockers before seed promotion:
+Promotion blockers closed:
 
 - Author HaruKoto-original examples and dialogue.
 - Attach vocabulary and grammar references that do not overreach into N5
@@ -67,11 +66,15 @@ Draft result:
 
 - Candidate: `lsc-n4-i-adjective-nominalization-001`
 - Promotion target: HN4-011 / chapter 3 lesson 1 / `DRAFT`
+- Promotion result: official DRAFT lesson file
+  `packages/database/data/lessons/n4/ch03-quality-and-degree.json`
 - Example: `ex-n4-i-adjective-nominalization-001`
 - TTS coverage: one authored example, four script lines, and five question
   prompts are present in `tts-target-manifest.json`.
-- Boundary: this is still a seed candidate, not an official lesson JSON or
-  learner-exposure approval.
+- Configured DB seed check: PASS with 3 N4 chapters / 11 N4 lessons; HN4-011
+  remains `DRAFT` and unpublished.
+- Boundary: this is now official DRAFT lesson JSON, not learner-facing API/mobile
+  exposure or broad/full N4 rollout approval.
 
 ### HOLD: `topic-kitto`
 
@@ -193,14 +196,12 @@ Until then, N4 expansion should proceed as a micro-batch.
 
 ## Next Work
 
-1. Promote HN4-011 into official lesson JSON after the approved candidate
-   review packet at
-   `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`.
-   Operational review record:
-   `docs/operations/plans/n4-lesson-11-candidate-review-2026-05-13.md`.
-2. Prepare or regenerate the official N4 human-review packet after promotion.
-3. Run configured DB seed check, API smoke, and mobile UAT after promotion.
-4. Decide whether to expose HN4-011 as a second limited pilot wave.
+1. Decide whether to move HN4-011 from `DRAFT` to `PILOT` for a second limited
+   pilot wave.
+2. After publish-status change, run HN4-011 target mobile UAT for one correct
+   path and one wrong-answer retry path.
+3. Return to `topic-kitto` or a partial-topic closeout only after its blockers
+   are explicitly resolved.
 
 ## Boundary
 
