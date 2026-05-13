@@ -9,6 +9,7 @@ from app.services.tts_target_resolver import (
     TtsTargetResolverError,
     resolve_content_tts_text,
     resolve_kana_tts_text,
+    resolve_lesson_question_prompt_tts_target,
     resolve_lesson_script_line_tts_target,
     resolve_vocabulary_reading_tts_target,
 )
@@ -69,6 +70,38 @@ def test_resolve_lesson_script_line_tts_target_rejects_missing_line() -> None:
             lesson_id=uuid.uuid4(),
             content={"reading": {"script": []}},
             line_index=0,
+        )
+
+    assert exc_info.value.status_code == 404
+
+
+def test_resolve_lesson_question_prompt_tts_target_uses_question_order() -> None:
+    lesson_id = uuid.uuid4()
+    content = {
+        "questions": [
+            {"order": 1, "prompt": "첫 번째 문제"},
+            {"order": 2, "prompt": "学生の意味は何ですか。"},
+        ]
+    }
+
+    target = resolve_lesson_question_prompt_tts_target(
+        lesson_id=lesson_id,
+        content=content,
+        question_order=2,
+    )
+
+    assert target.target_type == "lesson_question_prompt"
+    assert target.target_id == f"{lesson_id}:question:2"
+    assert target.field == "question_prompt"
+    assert target.text == "学生の意味は何ですか。"
+
+
+def test_resolve_lesson_question_prompt_tts_target_rejects_missing_question() -> None:
+    with pytest.raises(TtsTargetResolverError) as exc_info:
+        resolve_lesson_question_prompt_tts_target(
+            lesson_id=uuid.uuid4(),
+            content={"questions": [{"order": 1, "prompt": "문제"}]},
+            question_order=2,
         )
 
     assert exc_info.value.status_code == 404

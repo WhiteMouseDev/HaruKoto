@@ -8,7 +8,11 @@ from typing import Any
 import pytest
 
 from app.models.tts import TtsAudio
-from app.services.lesson_script_tts import LessonScriptTtsServiceError, generate_lesson_script_line_tts
+from app.services.lesson_script_tts import (
+    LessonScriptTtsServiceError,
+    generate_lesson_question_prompt_tts,
+    generate_lesson_script_line_tts,
+)
 
 
 @dataclass(frozen=True)
@@ -106,17 +110,57 @@ async def test_generate_lesson_script_line_tts_rejects_missing_line() -> None:
     assert db.commit_calls == 0
 
 
+@pytest.mark.asyncio
+async def test_generate_lesson_question_prompt_tts_generates_uploads_and_persists() -> None:
+    lesson = _make_lesson(questions=[{"order": 2, "prompt": "厚いの意味は何ですか。"}])
+    db = _FakeDb([_ScalarOneOrNoneResult(lesson), _ScalarOneOrNoneResult(None)])
+    generated_texts: list[str] = []
+    uploads: list[tuple[str, bytes]] = []
+    generating: set[str] = set()
+
+    async def fake_generate(text: str) -> FakeTtsResult:
+        generated_texts.append(text)
+        return FakeTtsResult(audio=b"fake-mp3", provider="elevenlabs", model="eleven_multilingual_v2")
+
+    async def fake_upload(gcs_path: str, audio: bytes) -> str:
+        uploads.append((gcs_path, audio))
+        return "https://cdn.example.com/tts/lesson/question.mp3"
+
+    result = await generate_lesson_question_prompt_tts(
+        db,  # type: ignore[arg-type]
+        lesson_id=lesson.id,
+        question_order=2,
+        tts_generator=fake_generate,
+        upload_to_gcs=fake_upload,
+        generating=generating,
+    )
+
+    assert result.audio_url == "https://cdn.example.com/tts/lesson/question.mp3"
+    assert generated_texts == ["厚いの意味は何ですか。"]
+    assert uploads == [(f"tts/lesson/{lesson.id}/question-2.mp3", b"fake-mp3")]
+    assert db.execute_calls == 2
+    assert db.commit_calls == 1
+    assert generating == set()
+    assert isinstance(db.added[0], TtsAudio)
+    assert db.added[0].target_type == "lesson_question_prompt"
+    assert db.added[0].target_id == f"{lesson.id}:question:2"
+    assert db.added[0].text == "厚いの意味は何ですか。"
+    assert db.added[0].field == "question_prompt"
+
+
 def _make_lesson(
     *,
     text: str = "こんにちは。",
     script: list[dict[str, str]] | None = None,
+    questions: list[dict[str, object]] | None = None,
 ) -> SimpleNamespace:
     return SimpleNamespace(
         id=uuid.uuid4(),
         content_jsonb={
             "reading": {
                 "script": script if script is not None else [{"text": text}],
-            }
+            },
+            "questions": questions if questions is not None else [{"order": 1, "prompt": "問題です。"}],
         },
     )
 

@@ -1,24 +1,25 @@
 # N4 Lesson 11 TTS Audio QA
 
 > Date: 2026-05-13
-> Scope: HN4-011 learner-facing dialogue script-line TTS
-> Status: PASS for generated script-line audio and machine playback readiness
+> Scope: HN4-011 lesson TTS audio generation and machine playback readiness
+> Status: PASS for generated script-line and question-prompt audio
 
 ## Boundary
 
-This run verifies the TTS surface that the current mobile lesson UI can play:
-dialogue script lines through
-`POST /api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts`.
+This run verifies the HN4-011 lesson TTS surfaces now supported by the API:
 
-It does not claim native-speaker audio quality approval, nor does it generate
-question-prompt TTS. Question prompts remain part of the broader lesson-seed
-TTS backlog because the current mobile learner flow does not expose a prompt
-playback surface.
+- dialogue script lines through
+  `POST /api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts`
+- question prompts through
+  `POST /api/v1/lessons/{lesson_id}/questions/{question_order}/tts`
 
-ASSUMPTION: For HN4-011 limited pilot exposure, learner-facing dialogue
-script-line TTS generation plus URL/codec verification is sufficient to close
-the immediate mobile playback-readiness gate. Human audio-quality review remains
-required before broad/full N4 rollout.
+It does not claim native-speaker audio quality approval. The mobile learner
+flow currently exercises script-line playback; question-prompt audio is
+generated for lesson-seed completeness and broad-rollout readiness.
+
+ASSUMPTION: For HN4-011 limited pilot exposure, generated lesson TTS plus
+URL/codec verification is sufficient to close the automated playback-readiness
+gate. Human audio-quality review remains required before broad/full N4 rollout.
 
 ## Target
 
@@ -27,12 +28,14 @@ required before broad/full N4 rollout.
 | Lesson | `HN4-011` |
 | Lesson ID | `03cfdb15-c916-450c-8168-9052f3e754aa` |
 | Title | `종이의 두께를 비교해요` |
-| TTS target type | `lesson_script_line` |
-| Field | `script_line` |
+| Script-line target type | `lesson_script_line` |
+| Script-line field | `script_line` |
+| Question target type | `lesson_question_prompt` |
+| Question field | `question_prompt` |
 | Provider | `elevenlabs` |
 | Model | `eleven_multilingual_v2` |
 
-## Evidence
+## Script-Line Evidence
 
 The configured API route was called once per script line with a smoke user
 dependency override. Each call returned `200` and persisted one
@@ -51,7 +54,27 @@ Post-run DB check:
 - Stored provider/model: `elevenlabs` / `eleven_multilingual_v2`
 - Generated paths: `tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-{0..3}.mp3`
 
-Mobile runtime probe:
+## Question-Prompt Evidence
+
+The configured generation path was called once per HN4-011 question order. Each
+call persisted one `tts_audio` row with target IDs shaped as
+`03cfdb15-c916-450c-8168-9052f3e754aa:question:{1..5}`.
+
+| Question order | HTTP audio check | Decode check |
+|---:|---|---|
+| 1 | `200 audio/mpeg`, 25539 bytes | mp3, 1.567347s |
+| 2 | `200 audio/mpeg`, 27211 bytes | mp3, 1.671837s |
+| 3 | `200 audio/mpeg`, 99100 bytes | mp3, 6.164898s |
+| 4 | `200 audio/mpeg`, 139224 bytes | mp3, 8.672653s |
+| 5 | `200 audio/mpeg`, 75276 bytes | mp3, 4.675918s |
+
+Post-run DB check:
+
+- `question_prompt_tts_records`: 5 / 5
+- Stored provider/model: `elevenlabs` / `eleven_multilingual_v2`
+- Generated paths: `tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-{1..5}.mp3`
+
+## Mobile Runtime Probe
 
 - The iPhone 17 Pro Simulator opened HN4-011 and reached the dialogue reading
   screen.
@@ -64,6 +87,7 @@ Mobile runtime probe:
 
 ## Result
 
-HN4-011 learner-facing dialogue TTS is generated, reachable, and decodable.
-The remaining HN4-011 learner-readiness gate is target mobile UAT for one
-correct path and one wrong-answer retry path.
+HN4-011 script-line and question-prompt TTS are generated, reachable, and
+decodable. This closes the automated HN4-011 lesson TTS generation/codec gate.
+Broad/full N4 rollout still requires human audio-quality review and the wider
+pilot/batch TTS decision.

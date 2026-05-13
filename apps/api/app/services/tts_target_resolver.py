@@ -12,6 +12,8 @@ _KANA_TTS_TEXT_RE = re.compile(r"^[\u3040-\u309F\u30A0-\u30FF\u3000-\u303F\uFF66
 _KANJI_RE = re.compile(r"[\u4E00-\u9FFF]")
 LESSON_SCRIPT_LINE_TTS_TARGET_TYPE = "lesson_script_line"
 LESSON_SCRIPT_LINE_TTS_FIELD = "script_line"
+LESSON_QUESTION_PROMPT_TTS_TARGET_TYPE = "lesson_question_prompt"
+LESSON_QUESTION_PROMPT_TTS_FIELD = "question_prompt"
 
 
 class TtsTargetResolverError(Exception):
@@ -78,6 +80,33 @@ def resolve_lesson_script_line_tts_target(
         field=LESSON_SCRIPT_LINE_TTS_FIELD,
         text=text,
     )
+
+
+def resolve_lesson_question_prompt_tts_target(
+    *,
+    lesson_id: Any,
+    content: Any,
+    question_order: int,
+) -> ResolvedTtsTarget:
+    """Resolve a lesson question prompt from server-owned lesson content."""
+    if question_order < 1:
+        raise TtsTargetResolverError(status_code=404, detail="Question prompt not found")
+
+    questions = _field_value(content, "questions")
+    if not _is_sequence(questions):
+        raise TtsTargetResolverError(status_code=404, detail="Question prompt not found")
+
+    for question in questions:
+        if _field_value(question, "order") == question_order:
+            prompt = _require_text(_field_value(question, "prompt"), field=LESSON_QUESTION_PROMPT_TTS_FIELD)
+            return ResolvedTtsTarget(
+                target_type=LESSON_QUESTION_PROMPT_TTS_TARGET_TYPE,
+                target_id=f"{lesson_id}:question:{question_order}",
+                field=LESSON_QUESTION_PROMPT_TTS_FIELD,
+                text=prompt,
+            )
+
+    raise TtsTargetResolverError(status_code=404, detail="Question prompt not found")
 
 
 def resolve_kana_tts_text(text: str) -> str:

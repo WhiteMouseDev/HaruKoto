@@ -16,7 +16,11 @@ from app.services.tts_generation import (
     TtsUploader,
     tts_generation_lock,
 )
-from app.services.tts_target_resolver import TtsTargetResolverError, resolve_lesson_script_line_tts_target
+from app.services.tts_target_resolver import (
+    TtsTargetResolverError,
+    resolve_lesson_question_prompt_tts_target,
+    resolve_lesson_script_line_tts_target,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +33,11 @@ class LessonScriptTtsServiceError(TtsServiceError):
 
 @dataclass(frozen=True, slots=True)
 class LessonScriptTtsResult:
+    audio_url: str
+
+
+@dataclass(frozen=True, slots=True)
+class LessonQuestionPromptTtsResult:
     audio_url: str
 
 
@@ -92,3 +101,69 @@ async def generate_lesson_script_line_tts(
         await db.commit()
 
         return LessonScriptTtsResult(audio_url=audio_url)
+
+
+async def generate_lesson_question_prompt_tts(
+    db: AsyncSession,
+    *,
+    lesson_id: UUID,
+    question_order: int,
+    tts_generator: TtsGenerator,
+    upload_to_gcs: TtsUploader,
+    generating: set[str] | None = None,
+) -> LessonQuestionPromptTtsResult:
+    result = await db.execute(select(Lesson).where(Lesson.id == lesson_id, Lesson.is_published.is_(True)))
+    lesson = result.scalar_one_or_none()
+    if lesson is None:
+        raise LessonScriptTtsServiceError(status_code=404, detail="레슨을 찾을 수 없습니다")
+
+    try:
+        target = resolve_lesson_question_prompt_tts_target(
+            lesson_id=lesson.id,
+            content=lesson.content_jsonb or {},
+            question_order=question_order,
+        )
+    except TtsTargetResolverError as exc:
+        raise LessonScriptTtsServiceError(status_code=exc.status_code, detail=exc.detail) from exc
+
+    cached = await db.execute(
+        select(TtsAudio).where(
+            TtsAudio.target_type == target.target_type,
+            TtsAudio.target_id == target.target_id,
+            TtsAudio.speed == 1.0,
+            TtsAudio.field == target.field,
+        )
+    )
+    tts_record = cached.scalar_one_or_none()
+    if tts_record:
+        return LessonQuestionPromptTtsResult(audio_url=tts_record.audio_url)
+
+    active_generations = _GENERATING if generating is None else generating
+    with tts_generation_lock(target.target_id, active_generations, error_cls=LessonScriptTtsServiceError):
+        try:
+            tts_result = await tts_generator(target.text)
+        except RuntimeError:
+            logger.exception(
+                "TTS generation failed for lesson question prompt target=%s, text=%r",
+                target.target_id,
+                target.text,
+            )
+            raise LessonScriptTtsServiceError(status_code=502, detail=TTS_GENERATION_FAILED_DETAIL) from None
+
+        audio_url = await upload_to_gcs(f"tts/lesson/{lesson.id}/question-{question_order}.mp3", tts_result.audio)
+
+        db.add(
+            TtsAudio(
+                target_type=target.target_type,
+                target_id=target.target_id,
+                text=target.text,
+                speed=1.0,
+                provider=tts_result.provider,
+                model=tts_result.model,
+                audio_url=audio_url,
+                field=target.field,
+            )
+        )
+        await db.commit()
+
+        return LessonQuestionPromptTtsResult(audio_url=audio_url)
