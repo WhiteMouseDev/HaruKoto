@@ -9,9 +9,9 @@ from datetime import UTC, datetime
 from typing import Any
 
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import String, delete, select, text
+from sqlalchemy import String, delete, func, select, text
 
-from app.db.session import async_session_factory
+from app.db.session import async_session_factory, engine
 from app.dependencies import get_current_user
 from app.main import app
 from app.models.enums import JlptLevel
@@ -89,6 +89,16 @@ async def _cleanup_smoke_users(user_ids: list[uuid.UUID]) -> None:
         )
         await session.execute(delete(User).where(User.id.in_(user_ids)))
         await session.commit()
+
+
+async def _smoke_residue_count(user_ids: list[uuid.UUID]) -> int:
+    async with async_session_factory() as session:
+        user_result = await session.execute(select(func.count()).select_from(User).where(User.id.in_(user_ids)))
+        review_event_result = await session.execute(
+            text("SELECT COUNT(*) FROM review_events WHERE user_id = ANY(:user_ids)"),
+            {"user_ids": user_ids},
+        )
+        return int(user_result.scalar_one()) + int(review_event_result.scalar_one())
 
 
 async def _create_smoke_user(user_id: uuid.UUID, email: str, jlpt_level: str) -> User:
@@ -202,6 +212,7 @@ async def _progress_summary(user_id: uuid.UUID, lesson_id: uuid.UUID) -> tuple[s
 
 
 async def run_smoke(target: LessonTarget) -> None:
+    engine.echo = False
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
     correct_user_id = _smoke_user_id(target, "correct")
@@ -251,7 +262,11 @@ async def run_smoke(target: LessonTarget) -> None:
         print(f"wrong_progress {wrong_progress}")
     finally:
         await _cleanup_smoke_users(user_ids)
-        print("smoke_users_cleaned True")
+        residue_count = await _smoke_residue_count(user_ids)
+        if residue_count != 0:
+            msg = f"smoke cleanup left {residue_count} rows"
+            raise RuntimeError(msg)
+        print("smoke_residue_count 0")
 
 
 def parse_args() -> LessonTarget:
