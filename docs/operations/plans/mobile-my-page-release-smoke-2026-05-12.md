@@ -59,6 +59,20 @@ availability, not by a newly observed MY page failure. Do not mark the release
 smoke as passed until a real physical iPhone is visible to Flutter/CoreDevice
 and scenarios A-G below are executed on screen.
 
+## 2026-05-13 Locked-Device Recheck
+
+| Check | Command | Result |
+|---|---|---|
+| Current workspace | `git status --short --branch` | PASS: `main...origin/main` clean at `415d564` |
+| Device availability | `cd apps/mobile && flutter devices` | PARTIAL: physical `Kun Woo's iPhone` detected wirelessly as `00008150-000A20881E88401C` |
+| CoreDevice availability | `xcrun devicectl list devices` | PASS with warning: physical iPhone available as `8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55`; provisioning parameter list warning did not block device listing |
+| Installed app lookup | `xcrun devicectl device info apps --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55 --bundle-id com.harukoto.app` | PASS: `하루코토 / com.harukoto.app / 1.0.0 / 1` listed |
+| Foreground launch | `xcrun devicectl device process launch --device 8C4FE734-227C-5F99-AE4C-BB6EDCFBBD55 --terminate-existing com.harukoto.app` | BLOCK: launch denied by SpringBoard because the device was locked |
+
+Result: physical-device availability improved, but the remaining screen-level
+smoke is still blocked until the iPhone is unlocked and available for direct
+screen interaction. No new MY page runtime failure was observed.
+
 ## Fixed Before Smoke
 
 | Area | File | Result |
