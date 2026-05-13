@@ -7,9 +7,10 @@ import logging
 import re
 import subprocess
 import tempfile
+from collections.abc import Awaitable, Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import httpx
 from sqlalchemy import String, select
@@ -25,6 +26,7 @@ from app.services.tts_target_resolver import (
 )
 
 TargetKind = Literal["script", "question"]
+AudioTranscriber = Callable[[bytes, str], Awaitable[str]]
 
 _PUNCTUATION_RE = re.compile(r"[\s。、！？!?.,，・「」『』（）()\[\]【】…:：;；'\"`~〜-]+")
 
@@ -69,6 +71,14 @@ class AudioProbe:
 
 
 @dataclass(frozen=True)
+class TranscriptionProbe:
+    transcript: str
+    normalized_transcript: str
+    normalized_source: str
+    matches_source: bool
+
+
+@dataclass(frozen=True)
 class AudioQaResult:
     target: TtsSourceTarget
     provider: str | None
@@ -76,6 +86,7 @@ class AudioQaResult:
     audio_url: str | None
     status: str
     probe: AudioProbe | None
+    transcription: TranscriptionProbe | None
     blockers: list[str]
     warnings: list[str]
 
@@ -87,6 +98,10 @@ class AudioQaReport:
     pass_count: int
     blocked_count: int
     warning_count: int
+    transcribed_count: int
+    transcription_match_count: int
+    transcription_mismatch_count: int
+    transcription_error_count: int
     provider_model_counts: dict[str, int]
     duration_min_seconds: float | None
     duration_max_seconds: float | None
@@ -103,6 +118,13 @@ def _lesson_label(level: str, lesson_no: int) -> str:
 
 def _normalized_text(text: str) -> str:
     return _PUNCTUATION_RE.sub("", text).strip()
+
+
+def _compact_signal_text(text: str, *, limit: int = 120) -> str:
+    compact = " ".join(text.split())
+    if len(compact) <= limit:
+        return compact
+    return f"{compact[: limit - 1]}..."
 
 
 def _question_order(question: dict[str, Any], fallback_order: int) -> int:
@@ -219,7 +241,7 @@ async def _load_records(targets: list[TtsSourceTarget]) -> dict[str, TtsStoredRe
 
 def _run_json_command(command: list[str]) -> dict[str, Any]:
     completed = subprocess.run(command, capture_output=True, check=True, text=True)
-    return json.loads(completed.stdout)
+    return cast(dict[str, Any], json.loads(completed.stdout))
 
 
 def _probe_file(path: Path, *, content_type: str, byte_size: int, check_silence: bool) -> AudioProbe:
@@ -254,6 +276,17 @@ def _probe_file(path: Path, *, content_type: str, byte_size: int, check_silence:
         bit_rate=bit_rate,
         silence_seconds=None if silence_seconds is None else round(silence_seconds, 3),
         silence_ratio=silence_ratio,
+    )
+
+
+def build_transcription_probe(*, target: TtsSourceTarget, transcript: str) -> TranscriptionProbe:
+    normalized_transcript = _normalized_text(transcript)
+    normalized_source = _normalized_text(target.source_text)
+    return TranscriptionProbe(
+        transcript=transcript.strip(),
+        normalized_transcript=normalized_transcript,
+        normalized_source=normalized_source,
+        matches_source=normalized_transcript == normalized_source,
     )
 
 
@@ -300,7 +333,10 @@ def evaluate_audio_quality(
     target: TtsSourceTarget,
     record: TtsStoredRecord | None,
     probe: AudioProbe | None,
+    transcription: TranscriptionProbe | None = None,
     error: str | None = None,
+    transcription_error: str | None = None,
+    block_on_transcription_mismatch: bool = False,
 ) -> AudioQaResult:
     blockers: list[str] = []
     warnings: list[str] = []
@@ -314,6 +350,7 @@ def evaluate_audio_quality(
             audio_url=None,
             status="BLOCK",
             probe=None,
+            transcription=None,
             blockers=blockers,
             warnings=warnings,
         )
@@ -329,6 +366,18 @@ def evaluate_audio_quality(
         blockers.extend(_probe_blockers(probe))
         warnings.extend(_probe_warnings(target=target, probe=probe))
 
+    if transcription_error is not None:
+        blockers.append(f"TRANSCRIPTION_FAILED:{_compact_signal_text(transcription_error)}")
+    elif transcription is not None:
+        if not transcription.normalized_transcript:
+            blockers.append("TRANSCRIPTION_EMPTY")
+        elif not transcription.matches_source:
+            signal = f"TRANSCRIPTION_TEXT_MISMATCH:{_compact_signal_text(transcription.transcript)}"
+            if block_on_transcription_mismatch:
+                blockers.append(signal)
+            else:
+                warnings.append(signal)
+
     return AudioQaResult(
         target=target,
         provider=record.provider,
@@ -336,6 +385,7 @@ def evaluate_audio_quality(
         audio_url=record.audio_url,
         status="BLOCK" if blockers else "PASS",
         probe=probe,
+        transcription=transcription,
         blockers=blockers,
         warnings=warnings,
     )
@@ -372,11 +422,12 @@ def _probe_warnings(*, target: TtsSourceTarget, probe: AudioProbe) -> list[str]:
     return warnings
 
 
-async def _download_audio(record: TtsStoredRecord, *, client: httpx.AsyncClient, output_path: Path) -> tuple[str, int]:
+async def _download_audio(record: TtsStoredRecord, *, client: httpx.AsyncClient, output_path: Path) -> tuple[str, int, bytes]:
     response = await client.get(record.audio_url)
     response.raise_for_status()
-    output_path.write_bytes(response.content)
-    return response.headers.get("content-type", ""), len(response.content)
+    audio_bytes = response.content
+    output_path.write_bytes(audio_bytes)
+    return response.headers.get("content-type", ""), len(audio_bytes), audio_bytes
 
 
 async def build_report(
@@ -385,6 +436,9 @@ async def build_report(
     limit: int | None,
     check_silence: bool,
     timeout_seconds: float,
+    run_transcription: bool = False,
+    block_on_transcription_mismatch: bool = False,
+    transcriber: AudioTranscriber | None = None,
 ) -> AudioQaReport:
     engine.echo = False
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
@@ -394,6 +448,10 @@ async def build_report(
     if limit is not None:
         targets = targets[:limit]
     records = await _load_records(targets)
+    if run_transcription and transcriber is None:
+        from app.services.ai import transcribe_audio as default_transcribe_audio
+
+        transcriber = default_transcribe_audio
 
     results: list[AudioQaResult] = []
     with tempfile.TemporaryDirectory(prefix="harukoto-tts-audio-qa-") as tmpdir:
@@ -403,14 +461,34 @@ async def build_report(
                 record = records.get(target.target_id)
                 probe = None
                 error = None
+                transcription = None
+                transcription_error = None
                 if record is not None:
                     output_path = tmpdir_path / f"{index:03d}.mp3"
+                    audio_bytes = None
+                    content_type = ""
                     try:
-                        content_type, byte_size = await _download_audio(record, client=client, output_path=output_path)
+                        content_type, byte_size, audio_bytes = await _download_audio(record, client=client, output_path=output_path)
                         probe = _probe_file(output_path, content_type=content_type, byte_size=byte_size, check_silence=check_silence)
                     except Exception as exc:
                         error = f"{exc.__class__.__name__}: {exc}"
-                results.append(evaluate_audio_quality(target=target, record=record, probe=probe, error=error))
+                    if error is None and run_transcription and transcriber is not None and audio_bytes is not None:
+                        try:
+                            transcript = await transcriber(audio_bytes, content_type or "audio/mpeg")
+                            transcription = build_transcription_probe(target=target, transcript=transcript)
+                        except Exception as exc:
+                            transcription_error = f"{exc.__class__.__name__}: {exc}"
+                results.append(
+                    evaluate_audio_quality(
+                        target=target,
+                        record=record,
+                        probe=probe,
+                        transcription=transcription,
+                        error=error,
+                        transcription_error=transcription_error,
+                        block_on_transcription_mismatch=block_on_transcription_mismatch,
+                    )
+                )
 
     return _build_report(level=level, results=results)
 
@@ -420,6 +498,10 @@ def _build_report(*, level: str, results: list[AudioQaResult]) -> AudioQaReport:
     provider_model_counts: dict[str, int] = {}
     blockers: list[str] = []
     warnings: list[str] = []
+    transcribed_count = 0
+    transcription_match_count = 0
+    transcription_mismatch_count = 0
+    transcription_error_count = 0
 
     for result in results:
         if result.provider and result.model:
@@ -429,6 +511,14 @@ def _build_report(*, level: str, results: list[AudioQaResult]) -> AudioQaReport:
             blockers.append(f"{result.target.display_name}: {', '.join(result.blockers)}")
         if result.warnings:
             warnings.append(f"{result.target.display_name}: {', '.join(result.warnings)}")
+        if result.transcription is not None:
+            transcribed_count += 1
+            if result.transcription.matches_source:
+                transcription_match_count += 1
+            else:
+                transcription_mismatch_count += 1
+        if any(blocker.startswith("TRANSCRIPTION_FAILED") for blocker in result.blockers):
+            transcription_error_count += 1
 
     return AudioQaReport(
         level=level,
@@ -436,6 +526,10 @@ def _build_report(*, level: str, results: list[AudioQaResult]) -> AudioQaReport:
         pass_count=sum(1 for result in results if result.status == "PASS"),
         blocked_count=sum(1 for result in results if result.status == "BLOCK"),
         warning_count=sum(len(result.warnings) for result in results),
+        transcribed_count=transcribed_count,
+        transcription_match_count=transcription_match_count,
+        transcription_mismatch_count=transcription_mismatch_count,
+        transcription_error_count=transcription_error_count,
         provider_model_counts=dict(sorted(provider_model_counts.items())),
         duration_min_seconds=None if not durations else round(min(durations), 3),
         duration_max_seconds=None if not durations else round(max(durations), 3),
@@ -460,6 +554,13 @@ def _print_human(report: AudioQaReport) -> None:
         f"avg={report.duration_average_seconds} "
         f"total={report.total_duration_seconds}"
     )
+    print(
+        "transcription "
+        f"transcribed={report.transcribed_count} "
+        f"exact_match={report.transcription_match_count} "
+        f"mismatch={report.transcription_mismatch_count} "
+        f"errors={report.transcription_error_count}"
+    )
     print("blockers")
     for blocker in report.blockers:
         print(f"- {blocker}")
@@ -474,9 +575,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of targets checked")
     parser.add_argument("--skip-silence-check", action="store_true", help="Skip ffmpeg silencedetect pass")
     parser.add_argument("--timeout-seconds", type=float, default=15.0, help="HTTP download timeout")
+    parser.add_argument("--transcribe", action="store_true", help="Run AI STT and compare transcripts with source text")
+    parser.add_argument(
+        "--block-on-transcription-mismatch",
+        action="store_true",
+        help="Treat exact STT/source mismatches as blockers. Requires --transcribe.",
+    )
     parser.add_argument("--json", action="store_true", help="Print JSON instead of the default line-oriented report")
     parser.add_argument("--fail-on-blocker", action="store_true", help="Exit with status 1 if any blocker is found")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.block_on_transcription_mismatch and not args.transcribe:
+        parser.error("--block-on-transcription-mismatch requires --transcribe")
+    return args
 
 
 async def main() -> None:
@@ -486,6 +596,8 @@ async def main() -> None:
         limit=args.limit,
         check_silence=not args.skip_silence_check,
         timeout_seconds=args.timeout_seconds,
+        run_transcription=args.transcribe,
+        block_on_transcription_mismatch=args.block_on_transcription_mismatch,
     )
     if args.json:
         print(json.dumps(asdict(report), ensure_ascii=False, indent=2))

@@ -37,6 +37,22 @@ prioritized during listening:
 
 Source: `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
 
+The same preflight script now has an opt-in AI STT assist for cases where a
+human listener is not immediately available:
+
+```bash
+cd apps/api
+uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
+  --level N4 \
+  --transcribe \
+  --json
+```
+
+`TRANSCRIPTION_TEXT_MISMATCH` should be treated as a review-priority signal
+unless strict blocker mode is explicitly selected. It must not be used to
+auto-fill `PASS` verdicts because transcript differences can be orthographic
+rather than pronunciation failures.
+
 ## Review Rules
 
 - Every item starts as `PENDING`.
