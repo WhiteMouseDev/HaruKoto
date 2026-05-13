@@ -47,6 +47,28 @@ Source: `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.m
 - A `FAIL` verdict should block broad rollout until fixed.
 - These packets do not replace native-speaker curriculum review.
 
+## Verdict Progress Check
+
+After reviewers update the chapter packets, run the read-only verdict tracker:
+
+```bash
+cd apps/api
+uv run python scripts/report_n4_audio_qa_verdicts.py --fail-on-blocker
+```
+
+Current initial state:
+
+- 3 packets
+- 99 review targets
+- 0 `PASS`
+- 99 `PENDING`
+- 0 `FLAG`
+- 0 `FAIL`
+
+`--fail-on-blocker` exits non-zero while `PENDING`, `FLAG`, `FAIL`, or invalid
+verdict values remain. This is the machine gate for the human audio verdict
+step; it does not perform listening review itself.
+
 ## Decision
 
 All human audio QA packets for the current published N4 pilot TTS set are ready.
