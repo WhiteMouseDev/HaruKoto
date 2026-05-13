@@ -138,6 +138,12 @@ const TOPIC_TYPE_OVERRIDES = {
 };
 
 const PILOT_LESSON_COVERAGE_OVERRIDES = {
+  '019': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-011'],
+    notesKo:
+      'HN4-011 공식 N4 pilot lesson으로 い형용사의 명사화 coverage가 확보되었다. HN4-006의 일반 〜さ coverage와 겹치지 않도록 두께/부드러움 적용 연습으로 제한한다.',
+  },
   '031': {
     coverageStatus: 'covered',
     mappedLessonIds: ['HN4-001'],

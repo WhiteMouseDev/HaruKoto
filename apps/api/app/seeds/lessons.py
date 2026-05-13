@@ -47,6 +47,7 @@ CONTENT_FILES_BY_LEVEL = {
     "N4": [
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
+        "ch03-quality-and-degree.json",
     ],
 }
 

@@ -2,7 +2,7 @@
 
 > Date: 2026-05-13
 > Scope: HN4-011 seed candidate before official lesson promotion
-> Status: delegated AI candidate review approved; not native-speaker human approval
+> Status: delegated AI candidate review approved; promoted to official DRAFT lesson; not native-speaker human approval
 
 ## Source of Truth
 
@@ -57,9 +57,13 @@ Expected current state:
 
 ## Boundary
 
-This review approves HN4-011 for the next promotion-planning slice only. It does
-not seed the DB, expose the lesson to learners, approve broad/full N4 rollout,
-or replace native-speaker curriculum review when one becomes available.
+This review approved HN4-011 for official promotion. It does not approve
+broad/full N4 rollout or replace native-speaker curriculum review when one
+becomes available.
 
-Next gate: promote HN4-011 into official lesson JSON, regenerate the official
-N4 lesson human-review packet, then run DB/API/mobile validation.
+Promotion record:
+`docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`.
+
+Configured DB seed check passed after promotion. Next gate: decide whether to
+move HN4-011 from `DRAFT` to `PILOT`; learner-facing API/mobile UAT follows
+that publish-status change.

@@ -534,10 +534,6 @@
       "reviewSurface": "admin_extension_required",
       "sourceKind": "lesson_seed_script_lines",
       "targetIds": [
-        "tts-lsc-n4-i-adjective-nominalization-001-script-1",
-        "tts-lsc-n4-i-adjective-nominalization-001-script-2",
-        "tts-lsc-n4-i-adjective-nominalization-001-script-3",
-        "tts-lsc-n4-i-adjective-nominalization-001-script-4",
         "tts-hn5-031-script-1",
         "tts-hn5-031-script-2",
         "tts-hn5-031-script-3",
@@ -655,7 +651,11 @@
         "tts-hn4-010-script-1",
         "tts-hn4-010-script-2",
         "tts-hn4-010-script-3",
-        "tts-hn4-010-script-4"
+        "tts-hn4-010-script-4",
+        "tts-hn4-011-script-1",
+        "tts-hn4-011-script-2",
+        "tts-hn4-011-script-3",
+        "tts-hn4-011-script-4"
       ],
       "targetCount": 122,
       "requiredBeforePublishCount": 122,
@@ -691,11 +691,6 @@
       "reviewSurface": "admin_extension_required",
       "sourceKind": "lesson_seed_question_prompts",
       "targetIds": [
-        "tts-lsc-n4-i-adjective-nominalization-001-question-1",
-        "tts-lsc-n4-i-adjective-nominalization-001-question-2",
-        "tts-lsc-n4-i-adjective-nominalization-001-question-3",
-        "tts-lsc-n4-i-adjective-nominalization-001-question-4",
-        "tts-lsc-n4-i-adjective-nominalization-001-question-5",
         "tts-hn5-031-question-1",
         "tts-hn5-031-question-2",
         "tts-hn5-031-question-3",
@@ -845,7 +840,12 @@
         "tts-hn4-010-question-2",
         "tts-hn4-010-question-3",
         "tts-hn4-010-question-4",
-        "tts-hn4-010-question-5"
+        "tts-hn4-010-question-5",
+        "tts-hn4-011-question-1",
+        "tts-hn4-011-question-2",
+        "tts-hn4-011-question-3",
+        "tts-hn4-011-question-4",
+        "tts-hn4-011-question-5"
       ],
       "targetCount": 155,
       "requiredBeforePublishCount": 155,

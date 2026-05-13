@@ -2,20 +2,22 @@
 
 > Date: 2026-05-12
 > Scope: N4 pilot aftercare and lesson 11+ promotion planning
-> Status: lesson 11 closeout completed; broad/full N4 rollout remains HOLD
+> Status: HN4-011 promoted to official DRAFT; broad/full N4 rollout remains HOLD
 
 ## Decision
 
 Do not promote N4 as a complete course yet.
 
-The current N4 learner exposure remains limited to the approved 10-lesson
-pilot. The next automated workstream is not broad rollout. It is a coverage
-planning and contract-sync wave that decides which missing or partial N4 topics
-can become lesson 11+ candidates.
+The official N4 source set is now 11 lessons. HN4-001 through HN4-010 have the
+earlier controlled-pilot mobile/rollout decision; HN4-011 is an official DRAFT
+lesson with configured DB seed-check validation. It still needs a second
+limited-pilot publish-status decision before learner-facing API/mobile UAT. The
+next automated workstream is not broad rollout; it is closing the remaining N4
+foundation queue without padding a chapter with unresolved contrast topics.
 
-ASSUMPTION: The next unblocked task is coverage planning for N4 lesson 11+,
-because mobile MY screen-level smoke still requires a human to read and
-interact with the physical iPhone screen.
+ASSUMPTION: DB seed-check validation of HN4-011 can be completed before
+target-device mobile UAT, but learner exposure requires a separate publish
+decision.
 
 ## Current Inventory
 
@@ -25,46 +27,47 @@ interact with the physical iPhone screen.
 | N4 grammar rows | 49 | `packages/database/data/grammar/n4-grammar.json` |
 | N4 cloze rows | 60 | `packages/database/data/cloze/n4-cloze.json` |
 | N4 sentence-arrange rows | 60 | `packages/database/data/sentence-arrange/n4-arrange.json` |
-| Official N4 lesson chapters | 2 | `packages/database/data/lessons/n4/*.json` |
-| Official N4 lessons | 10 | HN4-001 through HN4-010 |
-| Official N4 script lines | 40 | 4 reading script lines per lesson |
-| Official N4 lesson questions | 50 | 5 runtime-safe questions per lesson |
-| Official N4 vocabulary links | 50 | 45 unique vocabulary orders |
-| Official N4 grammar anchors | 10 | Orders 17, 40, 41, 42, 43, 44, 45, 46, 47, 48 |
+| Official N4 lesson chapters | 3 | `packages/database/data/lessons/n4/*.json`; HN4-011 is `DRAFT` |
+| Official N4 lessons | 11 | HN4-001 through HN4-011; HN4-011 learner exposure still gated |
+| Official N4 script lines | 44 | 4 reading script lines per lesson |
+| Official N4 lesson questions | 55 | 5 runtime-safe questions per lesson |
+| Official N4 vocabulary links | 55 | 50 unique vocabulary orders |
+| Official N4 grammar links | 11 | 10 unique grammar orders; HN4-006 and HN4-011 both use order 45 `〜さ` |
 
 ## Topic Coverage Snapshot
 
 | Contract | Count | Current meaning |
 |---|---:|---|
 | N4 curriculum topics | 39 | Topic inventory derived from reference coverage |
-| Covered N4 topics | 28 | Pilot-covered topics are now reflected in the staging contract |
+| Covered N4 topics | 29 | Pilot-covered topics are reflected in the staging contract through HN4-011 |
 | Partial N4 topics | 7 | Remaining N4 foundation queue; needs split, contrast, or runtime-support decision |
-| Missing N4 topics | 4 | 2 N4 foundation topics plus 2 later register/business topics |
-| N4 foundation priorities | 9 | Remaining candidate queue for WAVE_2_N4_FOUNDATION |
+| Missing N4 topics | 3 | 1 N4 foundation topic plus 2 later register/business topics |
+| N4 foundation priorities | 8 | Remaining candidate queue for WAVE_2_N4_FOUNDATION |
 | P1 N4 foundation priorities | 7 | Higher-risk partial topics, mostly runtime-support blockers |
-| P2 N4 foundation priorities | 2 | Runtime-compatible missing topic plus one `きっと` blocker |
+| P2 N4 foundation priorities | 1 | `きっと` remains blocked on adverb scope, TTS, and runtime-safe question shape |
 
 The staging coverage contract has now been synchronized to the approved pilot
 runtime truth. HN4-001 through HN4-008 are marked as covered where the pilot
-lesson fully represents the topic. HN4-009 and HN4-010 remain partial because
-`ために` and `〜と` still need contrast/follow-up decisions beyond the current
-pilot lesson.
+lesson fully represents the topic. HN4-011 now marks
+`topic-i-adjective-nominalization` as covered. HN4-009 and HN4-010 remain
+partial because `ために` and `〜と` still need contrast/follow-up decisions beyond
+the current pilot lesson.
 
 This sync is not broad rollout approval. It only makes the planning contract
 usable for selecting true lesson 11+ candidates.
 
 ## Coverage Contract Sync Result
 
-| Area | Before sync | After sync |
+| Area | Before sync | After HN4-011 promotion |
 |---|---:|---:|
-| N4 covered topics | 20 | 28 |
+| N4 covered topics | 20 | 29 |
 | N4 partial topics | 8 | 7 |
-| N4 missing topics | 11 | 4 |
-| N4 foundation priority rows | 17 | 9 |
+| N4 missing topics | 11 | 3 |
+| N4 foundation priority rows | 17 | 8 |
 | N4 P1 priority rows | 8 | 7 |
-| N4 P2 priority rows | 9 | 2 |
+| N4 P2 priority rows | 9 | 1 |
 
-Pilot topics marked covered and removed from the lesson 11+ priority queue:
+Topics marked covered and removed from the lesson 11+ priority queue:
 
 - `topic-nasai` -> HN4-001
 - `topic-ta-hou-ga-ii` -> HN4-002
@@ -74,6 +77,7 @@ Pilot topics marked covered and removed from the lesson 11+ priority queue:
 - `topic-adjective-sa` -> HN4-006
 - `topic-volitional-form` -> HN4-007
 - `topic-noda-ndesu` -> HN4-008
+- `topic-i-adjective-nominalization` -> HN4-011
 
 Pilot topics mapped to lessons but intentionally kept partial:
 
@@ -81,7 +85,7 @@ Pilot topics mapped to lessons but intentionally kept partial:
 - `topic-to-conditional` -> HN4-010; quotation/condition and N5 `と` contrast
   remain.
 
-## Current Approved Pilot Lessons
+## Current Official Pilot Lessons
 
 | Lesson | Grammar order | Topic | Runtime status |
 |---|---:|---|---|
@@ -95,15 +99,17 @@ Pilot topics mapped to lessons but intentionally kept partial:
 | HN4-008 | 47 | `〜のだ` | Approved for limited pilot |
 | HN4-009 | 17 | `〜ために` | Approved for limited pilot |
 | HN4-010 | 40 | `〜と` | Approved for limited pilot |
+| HN4-011 | 45 | `〜さ` | Seeded/API-smoked; mobile UAT pending |
 
-These lessons may remain available only under the limited pilot decision in
+HN4-001 through HN4-010 remain governed by the limited pilot decision in
 `docs/operations/plans/n4-pilot-learner-rollout-decision-2026-05-12.md`.
+HN4-011 needs its own target mobile UAT and second limited-pilot rollout record.
 
 ## Lesson 11+ Candidate Buckets
 
 ### Bucket A. Contract Sync Before Expansion
 
-Goal: make the staging coverage contracts reflect the official 10-lesson pilot.
+Goal: make the staging coverage contracts reflect the official pilot lessons.
 
 Status: complete as of 2026-05-12.
 
@@ -114,16 +120,17 @@ Completed actions:
 - Kept ambiguous or contrast-sensitive topics as partial where a pilot lesson
   covers only one usage and the topic still needs split treatment.
 - Kept promoted seed-candidate lesson draft blueprints only as lineage while
-  excluding HN4-001 through HN4-008 from the lesson 11+ priority queue.
+  excluding HN4-001 through HN4-008 and HN4-011 from the lesson 11+ priority
+  queue.
 - Re-ran `pnpm --filter @harukoto/database curriculum:validate`.
 - Re-ran `pnpm --filter @harukoto/database lessons:validate`.
 
 Exit criteria:
 
-- Coverage counts no longer imply that the 10 promoted N4 pilot topics are
+- Coverage counts no longer imply that promoted N4 pilot topics are
   still entirely missing.
 - The coverage-priority queue for lesson 11+ excludes topics already handled by
-  HN4-001 through HN4-010 unless a deliberate contrast follow-up remains.
+  HN4-001 through HN4-011 unless a deliberate contrast follow-up remains.
 
 ### Bucket B. Runtime-Compatible Missing Topics
 
@@ -138,9 +145,8 @@ Candidate class:
 - Suitable for the existing 5-question lesson shape:
   `VOCAB_MCQ`, `CONTEXT_CLOZE`, `SENTENCE_REORDER`.
 
-Initial queue after contract sync:
+Current queue after HN4-011 promotion:
 
-- `topic-i-adjective-nominalization` - current best first lesson 11 candidate.
 - `topic-kitto` - keep in P2 queue, but do not select until adverb/discourse
   scope, TTS decision, and runtime-safe question shape are closed.
 
@@ -241,13 +247,17 @@ recorded in
 
 Result:
 
-- Select `topic-i-adjective-nominalization` as the first HN4-011 candidate.
+- Select `topic-i-adjective-nominalization` as the first HN4-011 candidate and
+  promote it into official DRAFT lesson JSON.
 - Draft `lsc-n4-i-adjective-nominalization-001` as the HN4-011 seed candidate
   with HaruKoto-authored content and generated TTS targets.
 - Create and approve
   `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`
   for delegated AI candidate review before official lesson JSON promotion.
   Operational record: `docs/operations/plans/n4-lesson-11-candidate-review-2026-05-13.md`.
+- Promote HN4-011 into official DRAFT lesson JSON and verify configured DB seed
+  sync.
+  Operational record: `docs/operations/plans/n4-lesson-11-official-promotion-2026-05-13.md`.
 - Keep `topic-kitto` deferred until adverb/discourse scope, TTS, and runtime
   question support are decided.
 - Keep the seven partial N4 foundation rows out of automatic seed drafting until
@@ -256,13 +266,10 @@ Result:
 
 ## Recommended Next Work Order
 
-1. Promote HN4-011 into official lesson JSON after candidate review approval.
-2. Prepare and validate the N4 official lesson human-review packet after
-   promotion.
-3. Generate or verify TTS audio before DB seed.
-4. Run configured DB seed check and API smoke.
-5. Run mobile UAT and record a new rollout decision.
-6. Return to the partial-topic queue only after the closeout decision for that
+1. Run HN4-011 target mobile UAT and record a second limited-pilot rollout
+   decision.
+2. Generate or verify TTS audio before any broader N4 rollout.
+3. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary

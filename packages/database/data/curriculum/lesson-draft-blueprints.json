@@ -359,7 +359,7 @@
         "ex-n4-i-adjective-nominalization-001"
       ],
       "ttsRequired": true,
-      "coverageGoal": "cover_missing_topic",
+      "coverageGoal": "strengthen_existing_topic",
       "validationGates": [
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",

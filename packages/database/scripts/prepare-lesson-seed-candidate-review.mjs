@@ -133,16 +133,16 @@ function loadTtsTargetByTextSource() {
   return new Map(manifest.targets.map((target) => [target.textSource, target]));
 }
 
-function loadPromotedKeys(level) {
-  const promotedKeys = new Set();
+function loadPromotedLessonsByKey(level) {
+  const promotedLessons = new Map();
   const levelDir = join(LESSONS_DIR, level.toLowerCase());
   for (const filePath of listJsonFiles(levelDir)) {
     const chapter = readJson(filePath);
     for (const lesson of chapter.lessons ?? []) {
-      promotedKeys.add(`${level}:${lesson.lesson_no}:${lesson.title}`);
+      promotedLessons.set(`${level}:${lesson.lesson_no}:${lesson.title}`, lesson);
     }
   }
-  return promotedKeys;
+  return promotedLessons;
 }
 
 function promotionKey(candidate) {
@@ -203,13 +203,17 @@ function reviewerChecklistForCandidate(candidate) {
 }
 
 function buildCandidateReviewRow(candidate, context) {
-  const { examplesById, grammarByOrder, targetByTextSource, topicsById, vocabByOrder } = context;
+  const { examplesById, grammarByOrder, promotedLessonsByKey, targetByTextSource, topicsById, vocabByOrder } = context;
   const seedShape = candidate.seedShape ?? {};
   const grammarOrder = seedShape.grammar?.grammar_order;
   const grammarRef = grammarByOrder.get(grammarOrder);
   const script = seedShape.content_jsonb?.reading?.script ?? [];
   const questions = seedShape.content_jsonb?.questions ?? [];
   const candidateId = candidate.candidateId;
+  const promotedLesson = promotedLessonsByKey.get(promotionKey(candidate));
+  const promotedLessonId = promotedLesson?.lesson_id ?? null;
+  const lessonSeedSourceId = promotedLessonId ?? candidateId;
+  const lessonSeedSourcePrefix = promotedLessonId ? 'lesson-seeds' : 'lesson-seed-candidates';
 
   const examples = (candidate.exampleIds ?? []).map((exampleId) => {
     const example = examplesById.get(exampleId);
@@ -234,14 +238,14 @@ function buildCandidateReviewRow(candidate, context) {
       voiceId: line.voice_id,
       text: line.text,
       translationKo: line.translation,
-      ttsTarget: ttsTargetFor(targetByTextSource, `lesson-seed-candidates:${candidateId}:script:${order}`),
+      ttsTarget: ttsTargetFor(targetByTextSource, `${lessonSeedSourcePrefix}:${lessonSeedSourceId}:script:${order}`),
     };
   });
 
   const reviewQuestions = questions.map((question) =>
     buildQuestion(
       question,
-      ttsTargetFor(targetByTextSource, `lesson-seed-candidates:${candidateId}:question:${question.order}`),
+      ttsTargetFor(targetByTextSource, `${lessonSeedSourcePrefix}:${lessonSeedSourceId}:question:${question.order}`),
     ),
   );
 
@@ -251,6 +255,7 @@ function buildCandidateReviewRow(candidate, context) {
     reviewerNotes: '',
     candidateId,
     candidateStatus: candidate.status,
+    promotedLessonId,
     lessonBlueprintId: candidate.lessonBlueprintId,
     sourceTopics: (candidate.sourceTopicIds ?? []).map((topicId) => {
       const topic = topicsById.get(topicId);
@@ -311,10 +316,11 @@ export function buildCandidatePacket(level, options = {}) {
   const includePromoted = options.includePromoted ?? false;
   const candidateIds = new Set(options.candidateIds ?? []);
   const candidates = readJson(join(CURRICULUM_DIR, 'lesson-seed-candidates.json')).candidates ?? [];
-  const promotedKeys = includePromoted ? new Set() : loadPromotedKeys(level);
+  const promotedLessonsByKey = loadPromotedLessonsByKey(level);
   const context = {
     examplesById: loadExamplesById(),
     grammarByOrder: loadRowsByOrder(GRAMMAR_DIR, level),
+    promotedLessonsByKey,
     targetByTextSource: loadTtsTargetByTextSource(),
     topicsById: loadTopicsById(),
     vocabByOrder: loadRowsByOrder(VOCAB_DIR, level),
@@ -324,7 +330,7 @@ export function buildCandidatePacket(level, options = {}) {
     .filter((candidate) => candidate.promotionTarget?.level === level)
     .filter((candidate) => {
       if (candidateIds.size > 0) return candidateIds.has(candidate.candidateId);
-      return includePromoted || !promotedKeys.has(promotionKey(candidate));
+      return includePromoted || !promotedLessonsByKey.has(promotionKey(candidate));
     })
     .sort((left, right) => {
       const leftNo = left.promotionTarget?.lessonNo ?? 0;

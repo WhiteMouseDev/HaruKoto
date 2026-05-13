@@ -199,24 +199,6 @@
       "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
     },
     {
-      "priorityId": "priority-i-adjective-nominalization",
-      "topicId": "topic-i-adjective-nominalization",
-      "track": "N4_FOUNDATION",
-      "priority": "P2",
-      "recommendedWave": "WAVE_2_N4_FOUNDATION",
-      "coverageStatus": "missing",
-      "rationaleKo": "PDF coverage에는 있으나 현재 HaruKoto 기준 데이터에 독립 topic/lesson coverage가 부족하다.",
-      "blockers": [
-        "needs_original_examples",
-        "needs_lesson_slot",
-        "needs_human_review"
-      ],
-      "targetLessonBlueprintIds": [
-        "ldb-i-adjective-nominalization"
-      ],
-      "notesKo": "우선순위는 현재 lesson runtime 호환성과 N5 파일럿 보강 가치를 기준으로 산정했다."
-    },
-    {
       "priorityId": "priority-verb-groups",
       "topicId": "topic-verb-groups",
       "track": "N5_REINFORCEMENT",
