@@ -206,10 +206,9 @@ Goal: prevent a text-only broad rollout.
 Required actions before broad/full N4 rollout:
 
 - Generate or verify all `lesson-seeds:HN4-*` script-line and question-prompt
-  audio for the current pilot batch. HN4-011 now has 4/4 script-line and 5/5
-  question-prompt records generated and machine-decoded. The full published N4
-  pilot batch coverage audit is 10/99 records with 89 missing records, and the
-  10 generated URLs pass read-only HTTP validation; see
+  audio for the current pilot batch. The full published N4 pilot batch now has
+  99/99 generated lesson TTS records, and all 99 generated URLs pass read-only
+  HTTP validation; see
   `docs/operations/plans/n4-pilot-tts-coverage-audit-2026-05-13.md`.
 - Extend the same manifest policy to lesson 11+ candidates.
 - Run admin or API generation only through approved TTS surfaces.
@@ -282,13 +281,11 @@ Result:
 1. Continue monitoring HN4-011 controlled-pilot feedback and keep rollback
    triggers visible. First aggregate baseline is recorded in
    `docs/operations/plans/n4-lesson-11-pilot-feedback-baseline-2026-05-13.md`.
-2. Generate the 89 missing published N4 pilot-batch lesson TTS records through
-   approved API/admin surfaces, then rerun
-   `apps/api/scripts/report_n4_pilot_tts_coverage.py --level N4 --check-audio-urls`.
-3. Keep human audio-quality review as a broad-rollout blocker after generation
-   evidence exists.
-4. Re-run physical-device smoke before release-artifact claims if required.
-5. Return to the partial-topic queue only after the closeout decision for that
+2. Keep human audio-quality review as a broad-rollout blocker after generation
+   evidence exists. The generation run is recorded in
+   `docs/operations/plans/n4-pilot-batch-tts-generation-run-2026-05-13.md`.
+3. Re-run physical-device smoke before release-artifact claims if required.
+4. Return to the partial-topic queue only after the closeout decision for that
    topic is satisfied.
 
 ## Current Release Boundary
