@@ -66,13 +66,15 @@ curriculum approval.
 | Mobile regression suite | PASS: 526 Flutter tests |
 | TTS manifest sync | PASS: package and API manifest/review-batch copies match |
 | TTS audio QA | PASS for learner-facing script lines: 4/4 HN4-011 dialogue line TTS calls returned `200`, produced `audio/mpeg` URLs, and decoded as MP3 |
-| Mobile UAT | PASS on iPhone 17 Pro Simulator: lesson discovery/start, line-0 TTS, correct submit 5/5, retry wrong submit 0/5, and retry return to detail screen |
+| Mobile UAT | PASS on iPhone 17 Pro Simulator: lesson discovery/start, line-0 TTS, result/retry UI after a 4/5 submit, retry return to detail screen, corrected 5/5 retry submit, and return to the learning surface |
 
 ## Validation Boundary
 
 HN4-011 is promoted to official `PILOT` source status, synced to the configured
-API DB target, and simulator-verified through one correct path plus one
-wrong-answer retry path. The remaining broad-rollout gates are:
+API DB target, and simulator-verified through submit/result handling, visible
+retry, corrected 5/5 retry submit, and return to the learning surface. The API
+smoke, not the simulator run, covers the all-wrong `0/5` submit path. The
+remaining broad-rollout gates are:
 
 1. Full lesson-seed prompt/batch TTS generation and human audio-quality review
    before any broader N4 rollout.

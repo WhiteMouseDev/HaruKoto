@@ -13,7 +13,8 @@ This decision only covers the single HN4-011 lesson:
 
 - `HN4-011` / `N4-CH03` / `い形容詞 stem + さ`
 - learner-facing list/detail exposure after configured DB seed apply
-- simulator mobile UAT for one correct path and one wrong-answer retry path
+- simulator mobile UAT for submit/result handling, visible retry, and a retry
+  correct path
 
 It does not approve broad N4 rollout, marketing as complete N4 coverage, or
 native-speaker curriculum validation.
@@ -39,7 +40,7 @@ human approval.
 | Published list/detail API smoke | PASS | N4 list returns 3 chapters / 11 lessons including HN4-011; detail returns 4 script lines / 5 questions / 5 vocab / 1 grammar with answer keys redacted |
 | API start/submit write smoke | PASS | `apps/api/scripts/smoke_lesson_flow.py --level N4 --lesson-no 11 --label HN4-011` completed correct submit 5/5 and wrong submit 0/5; each path registered 6 SRS items, wrote review events, and cleanup left 0 smoke residue rows |
 | Mobile lesson-flow regression | PASS | `flutter test` passed 526 tests, including lesson session, TTS lesson-target bubble, and practice-step widget coverage |
-| Mobile target-runtime UAT | PASS on simulator target | `docs/operations/plans/n4-lesson-11-mobile-uat-2026-05-13.md`: iPhone 17 Pro Simulator opened HN4-011, started the lesson, triggered line-0 TTS `200`, submitted the correct path 5/5, submitted the retry wrong path 0/5, and returned to the lesson detail screen |
+| Mobile target-runtime UAT | PASS on simulator target | `docs/operations/plans/n4-lesson-11-mobile-uat-2026-05-13.md`: iPhone 17 Pro Simulator opened HN4-011, started the lesson, triggered line-0 TTS `200`, reached a `4/5` result screen with review/retry UI, retried from the lesson detail screen, submitted a corrected `5/5` path, and returned to the learning surface |
 
 ## Pilot Guardrails
 
