@@ -5,6 +5,7 @@ import asyncio
 import json
 import logging
 import re
+import shlex
 import subprocess
 import tempfile
 from collections.abc import Awaitable, Callable
@@ -29,6 +30,17 @@ TargetKind = Literal["script", "question"]
 AudioTranscriber = Callable[[bytes, str], Awaitable[str]]
 
 _PUNCTUATION_RE = re.compile(r"[\s。、！？!?.,，・「」『』（）()\[\]【】…:：;；'\"`~〜-]+")
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[3]
+
+
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(_repo_root()))
+    except ValueError:
+        return str(path)
 
 
 @dataclass(frozen=True)
@@ -125,6 +137,15 @@ def _compact_signal_text(text: str, *, limit: int = 120) -> str:
     if len(compact) <= limit:
         return compact
     return f"{compact[: limit - 1]}..."
+
+
+def _markdown_cell(value: str | int | float | None) -> str:
+    text = "" if value is None else str(value)
+    return " ".join(text.split()).replace("|", "\\|")
+
+
+def _seconds_metric(value: float | None) -> str:
+    return "n/a" if value is None else f"{value}s"
 
 
 def _question_order(question: dict[str, Any], fallback_order: int) -> int:
@@ -569,6 +590,131 @@ def _print_human(report: AudioQaReport) -> None:
         print(f"- {warning}")
 
 
+def render_markdown_report(*, report: AudioQaReport, command: str | None = None, strict_mode: bool = False) -> str:
+    status = "BLOCK" if report.blocked_count else "REVIEW" if report.warning_count else "PASS"
+    lines = [
+        f"# {report.level} TTS Audio QA Machine Report",
+        "",
+        f"> Status: {status}",
+        "> Scope: generated lesson script-line and question-prompt TTS targets",
+        "> Boundary: machine/STT evidence only; human audio verdicts remain required",
+        "",
+        "## Command",
+        "",
+    ]
+    if command:
+        lines.extend(["```bash", command, "```", ""])
+    else:
+        lines.extend(["Command was not recorded.", ""])
+
+    lines.extend(
+        [
+            "## Summary",
+            "",
+            "| Metric | Result |",
+            "|---|---:|",
+            f"| Total targets | {report.target_count} |",
+            f"| Machine pass | {report.pass_count} |",
+            f"| Blocked targets | {report.blocked_count} |",
+            f"| Warning count | {report.warning_count} |",
+            f"| Transcribed targets | {report.transcribed_count} |",
+            f"| STT exact matches | {report.transcription_match_count} |",
+            f"| STT mismatches | {report.transcription_mismatch_count} |",
+            f"| STT errors | {report.transcription_error_count} |",
+            f"| Duration min | {_seconds_metric(report.duration_min_seconds)} |",
+            f"| Duration max | {_seconds_metric(report.duration_max_seconds)} |",
+            f"| Duration average | {_seconds_metric(report.duration_average_seconds)} |",
+            f"| Total audio duration | {report.total_duration_seconds}s |",
+            "",
+            "## Provider Models",
+            "",
+        ]
+    )
+    if report.provider_model_counts:
+        for provider_model, count in report.provider_model_counts.items():
+            lines.append(f"- `{provider_model}`: {count}")
+    else:
+        lines.append("- None")
+
+    lines.extend(["", "## Blockers", ""])
+    if report.blockers:
+        lines.extend(f"- {blocker}" for blocker in report.blockers)
+    else:
+        lines.append("- None")
+
+    lines.extend(["", "## Review-Priority Warnings", ""])
+    if report.warnings:
+        lines.extend(f"- {warning}" for warning in report.warnings)
+    else:
+        lines.append("- None")
+
+    mismatches = [result for result in report.results if result.transcription is not None and not result.transcription.matches_source]
+    lines.extend(["", "## STT Mismatches", ""])
+    if mismatches:
+        lines.extend(
+            [
+                "| Target | Source text | STT transcript | Strict blocker mode | Audio |",
+                "|---|---|---|---|---|",
+            ]
+        )
+        for result in mismatches:
+            transcription = result.transcription
+            strict_blocker = any(blocker.startswith("TRANSCRIPTION_TEXT_MISMATCH") for blocker in result.blockers)
+            lines.append(
+                "| "
+                f"{_markdown_cell(result.target.display_name)} | "
+                f"{_markdown_cell(result.target.source_text)} | "
+                f"{_markdown_cell(transcription.transcript if transcription else '')} | "
+                f"{'yes' if strict_blocker else 'no'} | "
+                f"{_markdown_cell(result.audio_url)} |"
+            )
+    else:
+        lines.append("- None")
+
+    lines.extend(["", "## Decision", ""])
+    if report.blocked_count:
+        lines.append("BLOCK: resolve blockers before considering broader rollout.")
+    elif report.transcription_mismatch_count:
+        lines.append("REVIEW: inspect STT mismatches before recording final audio verdicts.")
+    elif report.warning_count:
+        lines.append("REVIEW: inspect non-blocking warnings before recording final audio verdicts.")
+    else:
+        lines.append("PASS: no machine blockers or review-priority warnings were found.")
+    if strict_mode:
+        lines.append("")
+        lines.append("Strict STT mismatch blocker mode was enabled for this run.")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _command_string(args: argparse.Namespace) -> str:
+    parts: list[str] = [
+        "uv",
+        "run",
+        "python",
+        "scripts/audit_n4_pilot_tts_audio_quality.py",
+        "--level",
+        str(args.level).upper(),
+    ]
+    if args.limit is not None:
+        parts.extend(["--limit", str(args.limit)])
+    if args.skip_silence_check:
+        parts.append("--skip-silence-check")
+    if args.timeout_seconds != 15.0:
+        parts.extend(["--timeout-seconds", str(args.timeout_seconds)])
+    if args.transcribe:
+        parts.append("--transcribe")
+    if args.block_on_transcription_mismatch:
+        parts.append("--block-on-transcription-mismatch")
+    if args.json:
+        parts.append("--json")
+    if args.fail_on_blocker:
+        parts.append("--fail-on-blocker")
+    if args.markdown_output is not None:
+        parts.extend(["--markdown-output", str(args.markdown_output)])
+    return " ".join(shlex.quote(part) for part in parts)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run machine audio-quality checks for N4 pilot lesson TTS MP3s.")
     parser.add_argument("--level", default="N4", help="JLPT level, for example N4")
@@ -580,6 +726,12 @@ def parse_args() -> argparse.Namespace:
         "--block-on-transcription-mismatch",
         action="store_true",
         help="Treat exact STT/source mismatches as blockers. Requires --transcribe.",
+    )
+    parser.add_argument(
+        "--markdown-output",
+        type=Path,
+        default=None,
+        help="Write a Markdown QA report artifact after the run.",
     )
     parser.add_argument("--json", action="store_true", help="Print JSON instead of the default line-oriented report")
     parser.add_argument("--fail-on-blocker", action="store_true", help="Exit with status 1 if any blocker is found")
@@ -603,6 +755,17 @@ async def main() -> None:
         print(json.dumps(asdict(report), ensure_ascii=False, indent=2))
     else:
         _print_human(report)
+    if args.markdown_output is not None:
+        args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
+        args.markdown_output.write_text(
+            render_markdown_report(
+                report=report,
+                command=_command_string(args),
+                strict_mode=args.block_on_transcription_mismatch,
+            ),
+            encoding="utf-8",
+        )
+        print(f"markdown_report {_display_path(args.markdown_output)}")
     if args.fail_on_blocker and report.blocked_count:
         raise SystemExit(1)
 

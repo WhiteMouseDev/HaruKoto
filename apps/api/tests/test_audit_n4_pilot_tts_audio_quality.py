@@ -7,6 +7,7 @@ from scripts.audit_n4_pilot_tts_audio_quality import (
     _build_report,
     build_transcription_probe,
     evaluate_audio_quality,
+    render_markdown_report,
     source_targets_from_lesson,
 )
 
@@ -178,3 +179,47 @@ def test_build_report_summarizes_blockers_warnings_and_durations() -> None:
     assert report.duration_average_seconds == 5.0
     assert report.provider_model_counts == {"elevenlabs/eleven_multilingual_v2": 1}
     assert report.warnings == ["HN4-001 script:0: HIGH_SILENCE_RATIO:0.4"]
+
+
+def test_render_markdown_report_includes_transcription_mismatch_triage() -> None:
+    target = _target(source_text="名前を書きなさい。")
+    transcription = build_transcription_probe(target=target, transcript="名前を聞きなさい。")
+    result = evaluate_audio_quality(target=target, record=_record(), probe=_probe(), transcription=transcription)
+    report = _build_report(level="N4", results=[result])
+
+    markdown = render_markdown_report(report=report, command="uv run python script.py --transcribe")
+
+    assert "> Status: REVIEW" in markdown
+    assert "| STT mismatches | 1 |" in markdown
+    assert "TRANSCRIPTION_TEXT_MISMATCH:名前を聞きなさい。" in markdown
+    assert "| HN4-001 script:0 | 名前を書きなさい。 | 名前を聞きなさい。 | no | https://cdn.example.com/audio.mp3 |" in markdown
+    assert "REVIEW: inspect STT mismatches before recording final audio verdicts." in markdown
+
+
+def test_render_markdown_report_marks_strict_transcription_blocker() -> None:
+    target = _target(source_text="名前を書きなさい。")
+    transcription = build_transcription_probe(target=target, transcript="名前を聞きなさい。")
+    result = evaluate_audio_quality(
+        target=target,
+        record=_record(),
+        probe=_probe(),
+        transcription=transcription,
+        block_on_transcription_mismatch=True,
+    )
+    report = _build_report(level="N4", results=[result])
+
+    markdown = render_markdown_report(report=report, strict_mode=True)
+
+    assert "> Status: BLOCK" in markdown
+    assert "| HN4-001 script:0 | 名前を書きなさい。 | 名前を聞きなさい。 | yes | https://cdn.example.com/audio.mp3 |" in markdown
+    assert "Strict STT mismatch blocker mode was enabled for this run." in markdown
+
+
+def test_render_markdown_report_uses_na_for_missing_duration_metrics() -> None:
+    report = _build_report(level="N4", results=[])
+
+    markdown = render_markdown_report(report=report)
+
+    assert "| Duration min | n/a |" in markdown
+    assert "| Duration max | n/a |" in markdown
+    assert "| Duration average | n/a |" in markdown
