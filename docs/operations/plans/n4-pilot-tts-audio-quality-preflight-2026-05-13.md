@@ -8,7 +8,8 @@
 
 This is an automated preflight for generated lesson TTS audio files. It checks
 record/text consistency, HTTP download, MP3 probing, duration bounds, and
-silence ratio heuristics.
+silence ratio heuristics. The script also supports an opt-in AI STT comparison
+pass for teams without immediate human listening capacity.
 
 It does not replace human listening review, native-speaker pronunciation
 judgment, or broad/full N4 rollout approval.
@@ -16,12 +17,39 @@ judgment, or broad/full N4 rollout approval.
 ASSUMPTION: Machine preflight can reject obviously broken audio, but it cannot
 approve pronunciation quality or learner acceptability.
 
+ASSUMPTION: AI STT comparison can catch likely wrong-text audio, but exact
+transcript mismatches may include harmless orthography differences. Treat STT
+mismatches as review-priority evidence unless the strict blocker mode is
+explicitly selected.
+
 ## Command
 
 ```bash
 cd apps/api
 uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
+  --fail-on-blocker
+```
+
+Optional AI STT assist, when `GOOGLE_API_KEY` is configured:
+
+```bash
+cd apps/api
+uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
+  --level N4 \
+  --transcribe \
+  --json
+```
+
+Use strict mode only after accepting exact transcript matching as the rollout
+gate for this batch:
+
+```bash
+cd apps/api
+uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
+  --level N4 \
+  --transcribe \
+  --block-on-transcription-mismatch \
   --fail-on-blocker
 ```
 
@@ -38,6 +66,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
 | Duration max | 8.673s |
 | Duration average | 3.819s |
 | Total audio duration | 378.044s |
+| AI STT assist | Available as opt-in; not part of the recorded baseline above |
 
 ## Warnings For Human Review
 
@@ -60,6 +89,11 @@ QA because they may indicate long pauses in question-prompt playback.
 
 The generated N4 pilot TTS set has no machine-detected blockers. This supports
 moving to human listening QA instead of regenerating the batch immediately.
+
+If a human reviewer is unavailable, run the optional AI STT assist and inspect
+any `TRANSCRIPTION_TEXT_MISMATCH` warnings before recording a final verdict.
+Those warnings should prioritize listening/regeneration work, not silently turn
+into `PASS` verdicts.
 
 Broad/full N4 rollout remains on HOLD until the human audio QA packets are
 reviewed and any `FLAG` or `FAIL` items are resolved or explicitly waived.

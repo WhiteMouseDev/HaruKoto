@@ -5,6 +5,7 @@ from scripts.audit_n4_pilot_tts_audio_quality import (
     TtsSourceTarget,
     TtsStoredRecord,
     _build_report,
+    build_transcription_probe,
     evaluate_audio_quality,
     source_targets_from_lesson,
 )
@@ -113,12 +114,53 @@ def test_evaluate_audio_quality_blocks_text_mismatch_and_bad_probe() -> None:
     ]
 
 
+def test_evaluate_audio_quality_warns_on_transcription_mismatch_by_default() -> None:
+    target = _target()
+    transcription = build_transcription_probe(target=target, transcript="違う文です。")
+
+    result = evaluate_audio_quality(target=target, record=_record(), probe=_probe(), transcription=transcription)
+
+    assert result.status == "PASS"
+    assert result.blockers == []
+    assert result.warnings == ["TRANSCRIPTION_TEXT_MISMATCH:違う文です。"]
+    assert result.transcription == transcription
+
+
+def test_evaluate_audio_quality_can_block_transcription_mismatch() -> None:
+    target = _target()
+    transcription = build_transcription_probe(target=target, transcript="違う文です。")
+
+    result = evaluate_audio_quality(
+        target=target,
+        record=_record(),
+        probe=_probe(),
+        transcription=transcription,
+        block_on_transcription_mismatch=True,
+    )
+
+    assert result.status == "BLOCK"
+    assert result.blockers == ["TRANSCRIPTION_TEXT_MISMATCH:違う文です。"]
+    assert result.warnings == []
+
+
+def test_evaluate_audio_quality_blocks_empty_transcription() -> None:
+    target = _target()
+    transcription = build_transcription_probe(target=target, transcript=" ")
+
+    result = evaluate_audio_quality(target=target, record=_record(), probe=_probe(), transcription=transcription)
+
+    assert result.status == "BLOCK"
+    assert result.blockers == ["TRANSCRIPTION_EMPTY"]
+
+
 def test_build_report_summarizes_blockers_warnings_and_durations() -> None:
     target = _target(source_text="これは少し長い音声チェック文です。")
+    transcription = build_transcription_probe(target=target, transcript="これは少し長い音声チェック文です。")
     result = evaluate_audio_quality(
         target=target,
         record=_record(text="これは少し長い音声チェック文です。"),
         probe=_probe(duration_seconds=5.0, silence_seconds=2.0, silence_ratio=0.4),
+        transcription=transcription,
     )
 
     report = _build_report(level="N4", results=[result])
@@ -127,6 +169,10 @@ def test_build_report_summarizes_blockers_warnings_and_durations() -> None:
     assert report.pass_count == 1
     assert report.blocked_count == 0
     assert report.warning_count == 1
+    assert report.transcribed_count == 1
+    assert report.transcription_match_count == 1
+    assert report.transcription_mismatch_count == 0
+    assert report.transcription_error_count == 0
     assert report.duration_min_seconds == 5.0
     assert report.duration_max_seconds == 5.0
     assert report.duration_average_seconds == 5.0
