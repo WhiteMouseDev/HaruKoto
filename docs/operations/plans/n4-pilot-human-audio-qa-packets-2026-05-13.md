@@ -52,6 +52,10 @@ AI-assisted PASS candidate HTML listening sheet:
 `docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.html`.
 Delegated AI-assisted PASS application report:
 `docs/operations/plans/n4-human-audio-qa-delegated-ai-pass-application-2026-05-14.md`.
+STT mismatch reconciliation report:
+`docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.md`.
+STT mismatch reconciliation CSV:
+`docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.csv`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -85,6 +89,19 @@ Use the generated review queue or static HTML listening sheet in this order:
 P2 no-signal rows were applied as delegated AI-assisted `PASS` verdicts in
 `docs/operations/plans/n4-human-audio-qa-delegated-ai-pass-application-2026-05-14.md`.
 Those verdict notes explicitly state that they are not native-speaker review.
+
+The STT reconciliation report further splits the remaining 73 pending rows into
+review lanes without applying verdicts:
+
+- 11 `P0_MACHINE_WARNING`
+- 8 `LEXICAL_RISK`
+- 11 `NEAR_JAPANESE_MATCH`
+- 3 `CANONICAL_MATCH`
+- 40 `MIXED_PROMPT_STT_UNRELIABLE`
+
+Use that order after the P0 queue: lexical-risk script rows first, then
+near/canonical script rows for delegated PASS consideration after spot listening,
+then mixed/Korean question prompts where STT mismatch alone is weak evidence.
 
 ## CSV Verdict Apply Flow
 
