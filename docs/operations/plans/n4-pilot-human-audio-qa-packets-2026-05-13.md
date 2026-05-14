@@ -56,6 +56,12 @@ STT mismatch reconciliation report:
 `docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.md`.
 STT mismatch reconciliation CSV:
 `docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.csv`.
+LEXICAL_RISK focused review batch:
+`docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.md`.
+LEXICAL_RISK focused review CSV:
+`docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.csv`.
+LEXICAL_RISK focused HTML listening sheet:
+`docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.html`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -102,6 +108,11 @@ review lanes without applying verdicts:
 Use that order after the P0 queue: lexical-risk script rows first, then
 near/canonical script rows for delegated PASS consideration after spot listening,
 then mixed/Korean question prompts where STT mismatch alone is weak evidence.
+
+The LEXICAL_RISK focused batch extracts those 8 highest-risk script rows into
+Markdown, CSV, and a static HTML listening sheet. It applies no verdicts; fill
+only `new_verdict` and `new_notes` in the CSV after direct listening or an
+explicitly delegated review step.
 
 ## CSV Verdict Apply Flow
 
@@ -171,12 +182,12 @@ cd apps/api
 uv run python scripts/report_n4_audio_qa_verdicts.py --fail-on-blocker
 ```
 
-Current initial state:
+Current state after delegated AI-assisted PASS application:
 
 - 3 packets
 - 99 review targets
-- 0 `PASS`
-- 99 `PENDING`
+- 26 `PASS`
+- 73 `PENDING`
 - 0 `FLAG`
 - 0 `FAIL`
 
