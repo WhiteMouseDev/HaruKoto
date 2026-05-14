@@ -9,11 +9,15 @@ from pathlib import Path
 from scripts.report_n4_audio_qa_verdicts import _split_markdown_row
 
 DEFAULT_PACKET_GLOB = "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md"
-DEFAULT_MACHINE_REPORT_GLOB = "docs/operations/plans/n4-pilot-tts-machine-report-*.md"
+DEFAULT_SIGNAL_REPORT_GLOBS = (
+    "docs/operations/plans/n4-pilot-tts-machine-report-*.md",
+    "docs/operations/plans/n4-pilot-tts-stt-assist-run-*.md",
+)
 REVIEW_TARGET_RE = re.compile(r"^(script|question)\s+(\d+)$")
 LESSON_HEADING_RE = re.compile(r"^###\s+(HN4-\d{3})\s+-\s+(.+)$")
-MACHINE_WARNING_RE = re.compile(r"^-\s+(HN4-\d{3})\s+(script|question):(\d+):\s+(.+)$")
+REVIEW_SIGNAL_RE = re.compile(r"^-\s+(HN4-\d{3})\s+(script|question):(\d+):\s+(.+)$")
 AUDIO_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+STT_SIGNAL_PREFIX = "TRANSCRIPTION_"
 
 
 @dataclass(frozen=True)
@@ -31,17 +35,27 @@ class ReviewQueueItem:
     audio_url: str
     verdict: str
     notes: str
-    machine_signals: list[str]
+    review_signals: list[str]
+
+    @property
+    def has_machine_signal(self) -> bool:
+        return any(not signal.startswith(STT_SIGNAL_PREFIX) for signal in self.review_signals)
+
+    @property
+    def has_stt_mismatch_signal(self) -> bool:
+        return any(signal.startswith("TRANSCRIPTION_TEXT_MISMATCH") for signal in self.review_signals)
 
     @property
     def priority(self) -> str:
         if self.verdict in {"FLAG", "FAIL"}:
             return "P0 verdict blocker"
-        if self.machine_signals:
-            return "P0 machine warning"
         if self.verdict == "PENDING":
-            return "P1 pending"
-        return "P2 resolved"
+            if self.has_machine_signal:
+                return "P0 machine warning"
+            if self.has_stt_mismatch_signal:
+                return "P1 STT mismatch"
+            return "P2 pending"
+        return "P3 resolved"
 
 
 @dataclass(frozen=True)
@@ -53,6 +67,8 @@ class ReviewQueueReport:
     fail_count: int
     waived_count: int
     machine_warning_count: int
+    stt_mismatch_count: int
+    review_signal_count: int
     items: list[ReviewQueueItem]
 
 
@@ -94,20 +110,30 @@ def _target_key(lesson_label: str, target: str) -> str | None:
     return f"{lesson_label} {kind}:{order}"
 
 
-def parse_machine_warnings(paths: list[Path]) -> dict[str, list[str]]:
-    warnings: dict[str, list[str]] = {}
+def _split_review_signals(signal_text: str) -> list[str]:
+    return [part.strip() for part in signal_text.split(", ") if part.strip()]
+
+
+def parse_review_signals(paths: list[Path]) -> dict[str, list[str]]:
+    signals: dict[str, list[str]] = {}
     for path in paths:
         for line in path.read_text(encoding="utf-8").splitlines():
-            match = MACHINE_WARNING_RE.match(line.strip())
+            match = REVIEW_SIGNAL_RE.match(line.strip())
             if not match:
                 continue
-            lesson_label, kind, order, signal = match.groups()
+            lesson_label, kind, order, signal_text = match.groups()
             key = f"{lesson_label} {kind}:{order}"
-            warnings.setdefault(key, []).append(signal)
-    return warnings
+            for signal in _split_review_signals(signal_text):
+                if signal not in signals.setdefault(key, []):
+                    signals[key].append(signal)
+    return signals
 
 
-def parse_packet_items(path: Path, machine_warnings: dict[str, list[str]]) -> list[ReviewQueueItem]:
+def parse_machine_warnings(paths: list[Path]) -> dict[str, list[str]]:
+    return parse_review_signals(paths)
+
+
+def parse_packet_items(path: Path, review_signals: dict[str, list[str]]) -> list[ReviewQueueItem]:
     items: list[ReviewQueueItem] = []
     lesson_label = ""
     lesson_title = ""
@@ -149,7 +175,7 @@ def parse_packet_items(path: Path, machine_warnings: dict[str, list[str]]) -> li
                 audio_url=_audio_url(row.get("Audio", "")),
                 verdict=row.get("Reviewer verdict", "").strip().strip("`").upper(),
                 notes=row.get("Notes", ""),
-                machine_signals=machine_warnings.get(key, []),
+                review_signals=review_signals.get(key, []),
             )
         )
     return items
@@ -159,8 +185,9 @@ def _item_sort_key(item: ReviewQueueItem) -> tuple[int, str, int, int, str]:
     priority_order = {
         "P0 verdict blocker": 0,
         "P0 machine warning": 1,
-        "P1 pending": 2,
-        "P2 resolved": 3,
+        "P1 STT mismatch": 2,
+        "P2 pending": 3,
+        "P3 resolved": 4,
     }
     target_match = REVIEW_TARGET_RE.match(item.target)
     if target_match:
@@ -174,10 +201,10 @@ def _item_sort_key(item: ReviewQueueItem) -> tuple[int, str, int, int, str]:
 
 
 def build_queue(packet_paths: list[Path], machine_report_paths: list[Path]) -> ReviewQueueReport:
-    machine_warnings = parse_machine_warnings(machine_report_paths)
+    review_signals = parse_review_signals(machine_report_paths)
     items: list[ReviewQueueItem] = []
     for packet_path in packet_paths:
-        items.extend(parse_packet_items(packet_path, machine_warnings))
+        items.extend(parse_packet_items(packet_path, review_signals))
 
     items.sort(key=_item_sort_key)
 
@@ -188,7 +215,9 @@ def build_queue(packet_paths: list[Path], machine_report_paths: list[Path]) -> R
         flag_count=sum(1 for item in items if item.verdict == "FLAG"),
         fail_count=sum(1 for item in items if item.verdict == "FAIL"),
         waived_count=sum(1 for item in items if item.verdict == "WAIVED"),
-        machine_warning_count=sum(1 for item in items if item.machine_signals),
+        machine_warning_count=sum(1 for item in items if item.has_machine_signal),
+        stt_mismatch_count=sum(1 for item in items if item.has_stt_mismatch_signal),
+        review_signal_count=sum(1 for item in items if item.review_signals),
         items=items,
     )
 
@@ -197,7 +226,7 @@ def _render_items(items: list[ReviewQueueItem]) -> list[str]:
     if not items:
         return ["- None"]
     lines = [
-        "| Priority | Target | Japanese text | Korean/context | Audio | Machine signals | Verdict | Packet |",
+        "| Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |",
         "|---|---|---|---|---|---|---|---|",
     ]
     for item in items:
@@ -209,7 +238,7 @@ def _render_items(items: list[ReviewQueueItem]) -> list[str]:
             f"{_markdown_cell(item.japanese_text)} | "
             f"{_markdown_cell(item.korean_context)} | "
             f"{audio} | "
-            f"{_markdown_cell(', '.join(item.machine_signals) or '-')} | "
+            f"{_markdown_cell(', '.join(item.review_signals) or '-')} | "
             f"{_markdown_cell(item.verdict)} | "
             f"`{_markdown_cell(item.packet)}` |"
         )
@@ -218,8 +247,9 @@ def _render_items(items: list[ReviewQueueItem]) -> list[str]:
 
 def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], machine_report_paths: list[Path]) -> str:
     p0_items = [item for item in report.items if item.priority.startswith("P0")]
-    p1_items = [item for item in report.items if item.priority == "P1 pending"]
-    p2_items = [item for item in report.items if item.priority == "P2 resolved"]
+    p1_items = [item for item in report.items if item.priority == "P1 STT mismatch"]
+    p2_items = [item for item in report.items if item.priority == "P2 pending"]
+    p3_items = [item for item in report.items if item.priority == "P3 resolved"]
 
     lines = [
         "# N4 Audio QA Review Queue",
@@ -234,7 +264,7 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
         "",
     ]
     lines.extend(f"- Packet: `{_display_path(path)}`" for path in packet_paths)
-    lines.extend(f"- Machine report: `{_display_path(path)}`" for path in machine_report_paths)
+    lines.extend(f"- Quality signal report: `{_display_path(path)}`" for path in machine_report_paths)
     lines.extend(
         [
             "",
@@ -248,26 +278,31 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
             f"| FLAG | {report.flag_count} |",
             f"| FAIL | {report.fail_count} |",
             f"| WAIVED | {report.waived_count} |",
-            f"| Machine-warning priority items | {report.machine_warning_count} |",
+            f"| Review-signal items | {report.review_signal_count} |",
+            f"| P0 machine-warning items | {report.machine_warning_count} |",
+            f"| STT-mismatch signal items | {report.stt_mismatch_count} |",
             "",
             "## P0 Review First",
             "",
         ]
     )
     lines.extend(_render_items(p0_items))
-    lines.extend(["", "## P1 Remaining Pending", ""])
+    lines.extend(["", "## P1 STT Mismatch Review", ""])
     lines.extend(_render_items(p1_items))
-    lines.extend(["", "## P2 Resolved Or Waived", ""])
+    lines.extend(["", "## P2 Remaining Pending", ""])
     lines.extend(_render_items(p2_items))
+    lines.extend(["", "## P3 Resolved Or Waived", ""])
+    lines.extend(_render_items(p3_items))
     lines.extend(
         [
             "",
             "## Decision",
             "",
-            "Use this queue to review machine-warning items first, then complete the",
-            "remaining pending packet rows. Broad/full N4 rollout remains blocked until",
-            "the packet verdict tracker has no `PENDING`, `FLAG`, `FAIL`, or invalid",
-            "verdict values.",
+            "Use this queue to review P0 machine/verdict blocker rows first, then P1",
+            "STT mismatch rows, then remaining pending packet rows. STT mismatches are",
+            "review-priority signals, not automatic audio-fail verdicts. Broad/full N4",
+            "rollout remains blocked until the packet verdict tracker has no `PENDING`,",
+            "`FLAG`, `FAIL`, or invalid verdict values.",
             "",
         ]
     )
@@ -275,7 +310,7 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
 
 
 def _html_card(item: ReviewQueueItem) -> str:
-    signals = ", ".join(item.machine_signals) if item.machine_signals else "none"
+    signals = ", ".join(item.review_signals) if item.review_signals else "none"
     notes = item.notes or ""
     return "\n".join(
         [
@@ -305,8 +340,9 @@ def _html_section(title: str, items: list[ReviewQueueItem]) -> str:
 
 def render_html(report: ReviewQueueReport, *, packet_paths: list[Path], machine_report_paths: list[Path]) -> str:
     p0_items = [item for item in report.items if item.priority.startswith("P0")]
-    p1_items = [item for item in report.items if item.priority == "P1 pending"]
-    p2_items = [item for item in report.items if item.priority == "P2 resolved"]
+    p1_items = [item for item in report.items if item.priority == "P1 STT mismatch"]
+    p2_items = [item for item in report.items if item.priority == "P2 pending"]
+    p3_items = [item for item in report.items if item.priority == "P3 resolved"]
     source_items = "\n".join(f"<li><code>{_html_text(_display_path(path))}</code></li>" for path in [*packet_paths, *machine_report_paths])
 
     return "\n".join(
@@ -332,6 +368,7 @@ def render_html(report: ReviewQueueReport, *, packet_paths: list[Path], machine_
             "    .metric strong { display: block; font-size: 24px; margin-top: 4px; }",
             "    .qa-card { background: #fff; border: 1px solid #e8ded4; border-radius: 8px; padding: 18px; margin: 12px 0; }",
             "    .qa-card.p0 { border-color: #f1a0a8; box-shadow: inset 4px 0 0 #e95f73; }",
+            "    .qa-card.p1 { border-color: #f4c27a; box-shadow: inset 4px 0 0 #d9891d; }",
             "    .qa-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }",
             "    .qa-card__meta span { background: #f0e9e2; border-radius: 999px; padding: 5px 10px; font-size: 13px; }",
             "    audio { width: 100%; margin: 10px 0 12px; }",
@@ -351,6 +388,7 @@ def render_html(report: ReviewQueueReport, *, packet_paths: list[Path], machine_
             f'    <div class="metric">Total review items<strong>{report.total_items}</strong></div>',
             f'    <div class="metric">Pending<strong>{report.pending_count}</strong></div>',
             f'    <div class="metric">Machine warnings<strong>{report.machine_warning_count}</strong></div>',
+            f'    <div class="metric">STT mismatches<strong>{report.stt_mismatch_count}</strong></div>',
             '    <div class="metric">Pass / Flag / Fail'
             f"<strong>{report.pass_count} / {report.flag_count} / {report.fail_count}</strong></div>",
             "  </section>",
@@ -359,8 +397,9 @@ def render_html(report: ReviewQueueReport, *, packet_paths: list[Path], machine_
             f"    <ul>{source_items}</ul>",
             "  </section>",
             _html_section("P0 Review First", p0_items),
-            _html_section("P1 Remaining Pending", p1_items),
-            _html_section("P2 Resolved Or Waived", p2_items),
+            _html_section("P1 STT Mismatch Review", p1_items),
+            _html_section("P2 Remaining Pending", p2_items),
+            _html_section("P3 Resolved Or Waived", p3_items),
             "</main>",
             "</body>",
             "</html>",
@@ -373,13 +412,26 @@ def default_packet_paths() -> list[Path]:
 
 
 def default_machine_report_paths() -> list[Path]:
-    return sorted(_repo_root().glob(DEFAULT_MACHINE_REPORT_GLOB))[-1:]
+    paths: list[Path] = []
+    for pattern in DEFAULT_SIGNAL_REPORT_GLOBS:
+        matches = sorted(_repo_root().glob(pattern))
+        if matches:
+            paths.append(matches[-1])
+    return paths
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a prioritized N4 human audio QA review queue.")
     parser.add_argument("--packet", action="append", type=Path, default=None, help="Packet markdown path.")
-    parser.add_argument("--machine-report", action="append", type=Path, default=None, help="Machine report markdown path.")
+    parser.add_argument(
+        "--machine-report",
+        "--signal-report",
+        action="append",
+        dest="machine_report",
+        type=Path,
+        default=None,
+        help="Quality signal report markdown path. Defaults to the latest machine and STT assist reports.",
+    )
     parser.add_argument("--output", "--markdown-output", dest="output", type=Path, required=True, help="Markdown output path.")
     parser.add_argument("--html-output", type=Path, default=None, help="Optional static HTML output path with audio controls.")
     return parser.parse_args()
@@ -402,6 +454,8 @@ def main() -> None:
     print(f"items {report.total_items}")
     print(f"pending {report.pending_count}")
     print(f"machine_warning_priority {report.machine_warning_count}")
+    print(f"stt_mismatch_priority {report.stt_mismatch_count}")
+    print(f"review_signal_priority {report.review_signal_count}")
 
 
 if __name__ == "__main__":
