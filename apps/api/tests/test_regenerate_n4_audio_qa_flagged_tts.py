@@ -131,8 +131,7 @@ def test_write_result_csv_records_planned_dry_run_rows(tmp_path: Path) -> None:
 
     assert count == 1
     assert output.read_text(encoding="utf-8").splitlines()[1] == (
-        f"{task.target_key},{task.target_id},{task.source_text},{task.current_audio_url},"
-        f"{run_result.status},{run_result.gcs_path},,,,,"
+        f"{task.target_key},{task.target_id},{task.source_text},{task.current_audio_url},{run_result.status},{run_result.gcs_path},,,,,"
     )
 
 
