@@ -57,7 +57,7 @@ question prompts. Chapter 3 warning item to prioritize while listening:
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | ノートを選ぶ前に、紙の厚さを比べています。 | 노트를 고르기 전에 종이의 두께를 비교하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-0.mp3) | PENDING |  |
 
-| script 1 | 佐藤 | 厚い紙と薄い紙がありますね。 | 두꺼운 종이와 얇은 종이가 있네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1.mp3) | PENDING |  |
+| script 1 | 佐藤 | 厚い紙と薄い紙がありますね。 | 두꺼운 종이와 얇은 종이가 있네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 
 | script 2 | キム | はい。この紙の柔らかさも確認します。 | 네. 이 종이의 부드러운 정도도 확인합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-2.mp3) | PENDING |  |
 

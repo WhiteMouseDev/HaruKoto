@@ -58,11 +58,11 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 湖の深さを地図で確認しました。 | 호수의 깊이를 지도에서 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0.mp3) | PENDING |  |
+| script 0 | キム | 湖の深さを地図で確認しました。 | 호수의 깊이를 지도에서 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 
 | script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3) | PENDING |  |
 
-| script 2 | キム | はい。線の太さや細さも見られます。 | 네. 선의 굵기나 가늘기도 볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | はい。線の太さや細さも見られます。 | 네. 선의 굵기나 가늘기도 볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 
 | script 3 | 佐藤 | 情報の正しさも大切ですね。 | 정보의 정확성도 중요하네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -102,7 +102,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 返事が遅れてすみません。 | 답장이 늦어서 죄송합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-0.mp3) | PENDING |  |
+| script 0 | キム | 返事が遅れてすみません。 | 답장이 늦어서 죄송합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-0.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 
 | script 1 | 佐藤 | 何か理由があったんですか。 | 무슨 이유가 있었나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -152,7 +152,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | script 2 | 佐藤 | はい。自然な結果を言うときに使います。 | 네. 자연스러운 결과를 말할 때 씁니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | PENDING |  |
 
-| script 3 | キム | 荷物が届くと、メールが来ます。 | 짐이 도착하면 메일이 옵니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3.mp3) | PENDING |  |
+| script 3 | キム | 荷物が届くと、メールが来ます。 | 짐이 도착하면 메일이 옵니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 
 | question 1 |  | 信号의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-1.mp3) | PENDING |  |
 
