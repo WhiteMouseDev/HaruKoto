@@ -39,7 +39,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
   --transcribe \
   --json \
-  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md
 ```
 
 Use strict mode only after accepting exact transcript matching as the rollout
@@ -52,7 +52,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --transcribe \
   --block-on-transcription-mismatch \
   --fail-on-blocker \
-  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md
 ```
 
 ## Summary
@@ -68,13 +68,16 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
 | Duration max | 8.673s |
 | Duration average | 3.819s |
 | Total audio duration | 378.044s |
-| AI STT assist | Available as opt-in Markdown/JSON report; not part of the recorded baseline above |
+| AI STT assist | 99 transcribed, 26 exact matches, 73 transcript mismatches, 0 STT errors |
 
 Latest script-generated machine report:
-`docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`. The
-2026-05-14 run did not include AI STT assist because `GOOGLE_API_KEY` was not
-present in the local shell, so it is a machine blocker and silence-heuristic
-baseline rather than transcript-comparison evidence.
+`docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`.
+
+Latest optional STT assist report:
+`docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md`. It
+transcribed all 99 targets with 0 STT errors. The 73 exact transcript
+mismatches are review-priority signals because exact matching can be noisy for
+mixed Japanese/Korean prompts and orthographic variants.
 
 ## Warnings For Human Review
 

@@ -52,7 +52,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
   --level N4 \
   --transcribe \
   --json \
-  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-13.md
+  --markdown-output ../../docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md
 ```
 
 `TRANSCRIPTION_TEXT_MISMATCH` should be treated as a review-priority signal
@@ -64,9 +64,11 @@ The Markdown output is the handoff artifact for reviewing mismatches, STT
 errors, and existing machine warnings before editing the chapter-packet
 verdicts.
 
-The latest 2026-05-14 machine report was run without STT because
-`GOOGLE_API_KEY` was not present in the local shell. Do not treat the absence of
-STT mismatches in that report as transcript-comparison approval.
+Latest optional STT assist report:
+`docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md`.
+It transcribed all 99 targets with 26 exact matches, 73 transcript mismatches,
+and 0 STT errors. Treat the mismatches as review-priority signals, not automatic
+`FLAG` or `FAIL` verdicts.
 
 Use the generated review queue to handle the 11 machine-warning items first,
 or open the static HTML listening sheet for inline audio controls. Then continue
