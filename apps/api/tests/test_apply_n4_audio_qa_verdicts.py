@@ -41,6 +41,7 @@ def test_write_template_includes_edit_columns_and_priority(tmp_path: Path) -> No
 
     csv_text = output.read_text(encoding="utf-8")
     assert count == 2
+    assert "\r\n" not in csv_text
     assert "target_key,packet,priority" in csv_text
     assert "new_verdict,new_notes" in csv_text
     assert "HN4-001 question:3" in csv_text

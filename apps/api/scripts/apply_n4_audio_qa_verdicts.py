@@ -75,7 +75,7 @@ def write_template(csv_output: Path, *, packet_paths: list[Path], machine_report
     report = build_queue(packet_paths=packet_paths, machine_report_paths=machine_report_paths)
     csv_output.parent.mkdir(parents=True, exist_ok=True)
     with csv_output.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
+        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS, lineterminator="\n")
         writer.writeheader()
         for item in report.items:
             writer.writerow(
