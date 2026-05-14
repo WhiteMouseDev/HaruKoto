@@ -12,6 +12,8 @@ recorded through the existing CSV apply flow.
 
 - Manifest: `docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv`
 - Result CSV: `docs/operations/plans/n4-human-audio-qa-flag-regeneration-results-2026-05-14.csv`
+- Post-regeneration review CSV: `docs/operations/plans/n4-human-audio-qa-flag-post-regeneration-review-2026-05-14.csv`
+- Post-regeneration review sheet: `docs/operations/plans/n4-human-audio-qa-flag-post-regeneration-review-2026-05-14.html`
 - Run id: `20260514T083500Z`
 
 ## Result Summary

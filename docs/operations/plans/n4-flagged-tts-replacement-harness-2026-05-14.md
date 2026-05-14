@@ -69,6 +69,10 @@ uv run python scripts/regenerate_n4_audio_qa_flagged_tts.py \
 records one execution with run id `20260514T083500Z`: 8 regenerated rows and
 0 failed rows. The companion result summary is
 `docs/operations/plans/n4-human-audio-qa-flag-regeneration-results-2026-05-14.md`.
+Post-regeneration listening artifacts are available at
+`docs/operations/plans/n4-human-audio-qa-flag-post-regeneration-review-2026-05-14.csv`
+and
+`docs/operations/plans/n4-human-audio-qa-flag-post-regeneration-review-2026-05-14.html`.
 
 ## Post-Execution Gate
 
