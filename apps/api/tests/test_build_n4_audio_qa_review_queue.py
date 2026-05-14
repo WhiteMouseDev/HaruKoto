@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.build_n4_audio_qa_review_queue import build_queue, parse_machine_warnings, render_markdown
+from scripts.build_n4_audio_qa_review_queue import build_queue, parse_machine_warnings, render_html, render_markdown
 
 
 def _write_packet(path: Path) -> Path:
@@ -97,3 +97,19 @@ def test_render_markdown_groups_priority_sections(tmp_path: Path) -> None:
     assert "| P1 pending | HN4-001 script:0 | 名前を書きなさい。" in markdown
     assert "## P2 Resolved Or Waived" in markdown
     assert "| P2 resolved | HN4-002 question:1 | 医者に相談します。" in markdown
+
+
+def test_render_html_includes_audio_controls_and_escapes_text(tmp_path: Path) -> None:
+    packet = _write_packet(tmp_path / "packet.md")
+    machine_report = _write_machine_report(tmp_path / "machine.md")
+    report = build_queue(packet_paths=[packet], machine_report_paths=[machine_report])
+
+    html = render_html(report, packet_paths=[packet], machine_report_paths=[machine_report])
+
+    assert "<!doctype html>" in html
+    assert "<h1>N4 Audio QA Review Sheet</h1>" in html
+    assert "Record final verdicts in the source packet Markdown files." in html
+    assert '<audio controls preload="none" src="https://example.com/question.mp3"></audio>' in html
+    assert "P0 machine warning" in html
+    assert "HIGH_SILENCE_RATIO:0.3863" in html
+    assert "<h3>規則を守りなさい。</h3>" in html

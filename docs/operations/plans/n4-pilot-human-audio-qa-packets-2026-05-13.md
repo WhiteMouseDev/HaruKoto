@@ -40,6 +40,8 @@ Latest generated machine report:
 `docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`.
 Prioritized human review queue:
 `docs/operations/plans/n4-human-audio-qa-review-queue-2026-05-14.md`.
+Static listening sheet with audio controls:
+`docs/operations/plans/n4-human-audio-qa-review-sheet-2026-05-14.html`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -67,7 +69,8 @@ The latest 2026-05-14 machine report was run without STT because
 STT mismatches in that report as transcript-comparison approval.
 
 Use the generated review queue to handle the 11 machine-warning items first,
-then continue through the remaining pending packet rows.
+or open the static HTML listening sheet for inline audio controls. Then continue
+through the remaining pending packet rows.
 
 ## Review Rules
 
