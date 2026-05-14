@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import re
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 
 from scripts.report_n4_audio_qa_verdicts import _split_markdown_row
@@ -68,6 +69,14 @@ def _display_path(path: Path) -> str:
 
 def _markdown_cell(value: str) -> str:
     return " ".join(value.split()).replace("|", "\\|")
+
+
+def _plain_cell(value: str) -> str:
+    return " ".join(value.split())
+
+
+def _html_text(value: str) -> str:
+    return escape(_plain_cell(value), quote=True)
 
 
 def _audio_url(cell: str) -> str:
@@ -265,6 +274,100 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
     return "\n".join(lines)
 
 
+def _html_card(item: ReviewQueueItem) -> str:
+    signals = ", ".join(item.machine_signals) if item.machine_signals else "none"
+    notes = item.notes or ""
+    return "\n".join(
+        [
+            f'<article class="qa-card {item.priority.split()[0].lower()}">',
+            '  <div class="qa-card__meta">',
+            f"    <span>{_html_text(item.priority)}</span>",
+            f"    <span>{_html_text(item.target_key)}</span>",
+            f"    <span>{_html_text(item.verdict)}</span>",
+            "  </div>",
+            f"  <h3>{_html_text(item.japanese_text)}</h3>",
+            f"  <p>{_html_text(item.korean_context)}</p>",
+            f'  <audio controls preload="none" src="{escape(item.audio_url, quote=True)}"></audio>',
+            '  <dl class="qa-card__details">',
+            f"    <dt>Signals</dt><dd>{_html_text(signals)}</dd>",
+            f"    <dt>Packet</dt><dd>{_html_text(item.packet)}</dd>",
+            f"    <dt>Notes</dt><dd>{_html_text(notes)}</dd>",
+            "  </dl>",
+            "</article>",
+        ]
+    )
+
+
+def _html_section(title: str, items: list[ReviewQueueItem]) -> str:
+    body = '<p class="empty">No items.</p>' if not items else "\n".join(_html_card(item) for item in items)
+    return "\n".join([f"<section><h2>{_html_text(title)}</h2>", body, "</section>"])
+
+
+def render_html(report: ReviewQueueReport, *, packet_paths: list[Path], machine_report_paths: list[Path]) -> str:
+    p0_items = [item for item in report.items if item.priority.startswith("P0")]
+    p1_items = [item for item in report.items if item.priority == "P1 pending"]
+    p2_items = [item for item in report.items if item.priority == "P2 resolved"]
+    source_items = "\n".join(f"<li><code>{_html_text(_display_path(path))}</code></li>" for path in [*packet_paths, *machine_report_paths])
+
+    return "\n".join(
+        [
+            "<!doctype html>",
+            '<html lang="en">',
+            "<head>",
+            '  <meta charset="utf-8">',
+            '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+            "  <title>N4 Audio QA Review Sheet</title>",
+            "  <style>",
+            "    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }",
+            "    body { margin: 0; background: #f8f5f2; color: #24211f; }",
+            "    main { max-width: 1120px; margin: 0 auto; padding: 40px 20px 80px; }",
+            "    header { margin-bottom: 32px; }",
+            "    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }",
+            "    h2 { margin: 36px 0 16px; font-size: 22px; }",
+            "    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }",
+            "    p { color: #625b55; line-height: 1.6; }",
+            "    code { background: #eee7df; border-radius: 4px; padding: 2px 4px; }",
+            "    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }",
+            "    .metric { background: #fff; border: 1px solid #eadfd5; border-radius: 8px; padding: 14px; }",
+            "    .metric strong { display: block; font-size: 24px; margin-top: 4px; }",
+            "    .qa-card { background: #fff; border: 1px solid #e8ded4; border-radius: 8px; padding: 18px; margin: 12px 0; }",
+            "    .qa-card.p0 { border-color: #f1a0a8; box-shadow: inset 4px 0 0 #e95f73; }",
+            "    .qa-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }",
+            "    .qa-card__meta span { background: #f0e9e2; border-radius: 999px; padding: 5px 10px; font-size: 13px; }",
+            "    audio { width: 100%; margin: 10px 0 12px; }",
+            "    .qa-card__details { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; margin: 0; }",
+            "    dt { color: #7a6f67; font-weight: 700; }",
+            "    dd { margin: 0; overflow-wrap: anywhere; }",
+            "    .empty { background: #fff; border: 1px dashed #d8cbc0; border-radius: 8px; padding: 16px; }",
+            "  </style>",
+            "</head>",
+            "<body>",
+            "<main>",
+            "  <header>",
+            "    <h1>N4 Audio QA Review Sheet</h1>",
+            "    <p>Read-only listening surface. Record final verdicts in the source packet Markdown files.</p>",
+            "  </header>",
+            '  <section class="summary" aria-label="Summary">',
+            f'    <div class="metric">Total review items<strong>{report.total_items}</strong></div>',
+            f'    <div class="metric">Pending<strong>{report.pending_count}</strong></div>',
+            f'    <div class="metric">Machine warnings<strong>{report.machine_warning_count}</strong></div>',
+            '    <div class="metric">Pass / Flag / Fail'
+            f"<strong>{report.pass_count} / {report.flag_count} / {report.fail_count}</strong></div>",
+            "  </section>",
+            "  <section>",
+            "    <h2>Sources</h2>",
+            f"    <ul>{source_items}</ul>",
+            "  </section>",
+            _html_section("P0 Review First", p0_items),
+            _html_section("P1 Remaining Pending", p1_items),
+            _html_section("P2 Resolved Or Waived", p2_items),
+            "</main>",
+            "</body>",
+            "</html>",
+        ]
+    )
+
+
 def default_packet_paths() -> list[Path]:
     return sorted(_repo_root().glob(DEFAULT_PACKET_GLOB))
 
@@ -278,6 +381,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--packet", action="append", type=Path, default=None, help="Packet markdown path.")
     parser.add_argument("--machine-report", action="append", type=Path, default=None, help="Machine report markdown path.")
     parser.add_argument("--output", "--markdown-output", dest="output", type=Path, required=True, help="Markdown output path.")
+    parser.add_argument("--html-output", type=Path, default=None, help="Optional static HTML output path with audio controls.")
     return parser.parse_args()
 
 
@@ -289,6 +393,12 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(render_markdown(report, packet_paths=packet_paths, machine_report_paths=machine_report_paths), encoding="utf-8")
     print(f"review_queue {_display_path(args.output)}")
+    if args.html_output:
+        args.html_output.parent.mkdir(parents=True, exist_ok=True)
+        args.html_output.write_text(
+            render_html(report, packet_paths=packet_paths, machine_report_paths=machine_report_paths), encoding="utf-8"
+        )
+        print(f"html_review_sheet {_display_path(args.html_output)}")
     print(f"items {report.total_items}")
     print(f"pending {report.pending_count}")
     print(f"machine_warning_priority {report.machine_warning_count}")
