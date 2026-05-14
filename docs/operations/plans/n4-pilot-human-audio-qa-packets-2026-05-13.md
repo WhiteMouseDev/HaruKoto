@@ -56,6 +56,12 @@ STT mismatch reconciliation report:
 `docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.md`.
 STT mismatch reconciliation CSV:
 `docs/operations/plans/n4-human-audio-qa-stt-reconciliation-2026-05-14.csv`.
+High-risk listening batch:
+`docs/operations/plans/n4-human-audio-qa-high-risk-listening-batch-2026-05-14.md`.
+High-risk listening CSV:
+`docs/operations/plans/n4-human-audio-qa-high-risk-listening-batch-2026-05-14.csv`.
+High-risk listening HTML sheet:
+`docs/operations/plans/n4-human-audio-qa-high-risk-listening-batch-2026-05-14.html`.
 LEXICAL_RISK focused review batch:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.md`.
 LEXICAL_RISK focused review CSV:
@@ -108,6 +114,12 @@ review lanes without applying verdicts:
 Use that order after the P0 queue: lexical-risk script rows first, then
 near/canonical script rows for delegated PASS consideration after spot listening,
 then mixed/Korean question prompts where STT mismatch alone is weak evidence.
+
+The high-risk listening batch extracts the 19 first-listen rows into Markdown,
+CSV, and a static HTML listening sheet: 11 `P0_MACHINE_WARNING` rows plus 8
+`LEXICAL_RISK` rows. It applies no verdicts; fill only `new_verdict` and
+`new_notes` in the CSV after direct listening or an explicitly delegated review
+step.
 
 The LEXICAL_RISK focused batch extracts those 8 highest-risk script rows into
 Markdown, CSV, and a static HTML listening sheet. It applies no verdicts; fill
