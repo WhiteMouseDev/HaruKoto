@@ -21,15 +21,33 @@ from app.services.ai import generate_tts
 from app.services.tts_generation import GeneratedTtsAudio
 from app.services.tts_storage import upload_tts_to_gcs
 from app.services.tts_target_resolver import (
+    LESSON_QUESTION_PROMPT_TTS_FIELD,
+    LESSON_QUESTION_PROMPT_TTS_TARGET_TYPE,
+    LESSON_SCRIPT_LINE_TTS_FIELD,
+    LESSON_SCRIPT_LINE_TTS_TARGET_TYPE,
     TtsTargetResolverError,
     resolve_lesson_question_prompt_tts_target,
     resolve_lesson_script_line_tts_target,
 )
 
 TargetKind = Literal["script", "question"]
-RegenerationStatus = Literal["regenerated", "failed"]
+RegenerationStatus = Literal["planned", "regenerated", "failed"]
 
 DEFAULT_MANIFEST = Path("docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv")
+POST_REGENERATION_COLUMNS = ("regeneration_status", "new_audio_url", "post_regen_verdict", "post_regen_notes")
+RESULT_COLUMNS = [
+    "target_key",
+    "target_id",
+    "source_text",
+    "current_audio_url",
+    "status",
+    "gcs_path",
+    "old_audio_url",
+    "new_audio_url",
+    "provider",
+    "model",
+    "error",
+]
 
 
 class SessionFactory(Protocol):
@@ -62,6 +80,7 @@ class FlaggedTtsTask:
 class RegenerationResult:
     task: FlaggedTtsTask
     status: RegenerationStatus
+    gcs_path: str | None = None
     old_audio_url: str | None = None
     new_audio_url: str | None = None
     provider: str | None = None
@@ -89,6 +108,18 @@ def _target_kind(value: str, *, row_number: int) -> TargetKind:
     if value == "script" or value == "question":
         return cast(TargetKind, value)
     raise ValueError(f"row {row_number}: unsupported target_kind {value!r}")
+
+
+def _expected_target_type(kind: TargetKind) -> str:
+    if kind == "script":
+        return LESSON_SCRIPT_LINE_TTS_TARGET_TYPE
+    return LESSON_QUESTION_PROMPT_TTS_TARGET_TYPE
+
+
+def _expected_field(kind: TargetKind) -> str:
+    if kind == "script":
+        return LESSON_SCRIPT_LINE_TTS_FIELD
+    return LESSON_QUESTION_PROMPT_TTS_FIELD
 
 
 def _task_from_row(row: dict[str, str], *, row_number: int) -> FlaggedTtsTask | None:
@@ -123,6 +154,19 @@ def _task_from_row(row: dict[str, str], *, row_number: int) -> FlaggedTtsTask | 
     if missing:
         raise ValueError(f"row {row_number}: missing required FLAG columns: {', '.join(missing)}")
 
+    try:
+        UUID(lesson_id)
+    except ValueError as exc:
+        raise ValueError(f"row {row_number}: lesson_id must be a UUID") from exc
+
+    expected_target_type = _expected_target_type(target_kind)
+    if target_type != expected_target_type:
+        raise ValueError(f"row {row_number}: target_type {target_type!r} does not match target_kind {target_kind!r}")
+
+    expected_field = _expected_field(target_kind)
+    if field != expected_field:
+        raise ValueError(f"row {row_number}: field {field!r} does not match target_kind {target_kind!r}")
+
     expected_target_id = f"{lesson_id}:{target_kind}:{raw_order}"
     if target_id != expected_target_id:
         raise ValueError(f"row {row_number}: target_id {target_id!r} does not match {expected_target_id!r}")
@@ -131,6 +175,15 @@ def _task_from_row(row: dict[str, str], *, row_number: int) -> FlaggedTtsTask | 
         target_order = int(raw_order)
     except ValueError as exc:
         raise ValueError(f"row {row_number}: target_order must be an integer") from exc
+
+    if target_kind == "script" and target_order < 0:
+        raise ValueError(f"row {row_number}: script target_order must be >= 0")
+    if target_kind == "question" and target_order < 1:
+        raise ValueError(f"row {row_number}: question target_order must be >= 1")
+
+    for column in POST_REGENERATION_COLUMNS:
+        if (row.get(column) or "").strip():
+            raise ValueError(f"row {row_number}: {column} must be blank before regeneration")
 
     return FlaggedTtsTask(
         target_key=target_key,
@@ -162,6 +215,7 @@ def read_manifest(csv_input: Path, *, target_keys: set[str] | None = None, limit
             "source_text",
             "current_audio_url",
             "current_verdict",
+            *POST_REGENERATION_COLUMNS,
         }
         missing_columns = required_columns - set(reader.fieldnames or [])
         if missing_columns:
@@ -253,7 +307,8 @@ async def execute_task(
                 )
 
             tts_result = await tts_generator(text)
-            new_audio_url = await uploader(task.gcs_path(run_id), tts_result.audio)
+            gcs_path = task.gcs_path(run_id)
+            new_audio_url = await uploader(gcs_path, tts_result.audio)
 
             old_audio_url = existing.audio_url
             existing.text = text
@@ -266,6 +321,7 @@ async def execute_task(
             return RegenerationResult(
                 task=task,
                 status="regenerated",
+                gcs_path=gcs_path,
                 old_audio_url=old_audio_url,
                 new_audio_url=new_audio_url,
                 provider=tts_result.provider,
@@ -275,6 +331,35 @@ async def execute_task(
         return RegenerationResult(task=task, status="failed", error=f"{exc.__class__.__name__}: {exc}")
 
 
+def planned_results(tasks: list[FlaggedTtsTask], *, run_id: str) -> list[RegenerationResult]:
+    return [RegenerationResult(task=task, status="planned", gcs_path=task.gcs_path(run_id)) for task in tasks]
+
+
+def write_result_csv(csv_output: Path, results: list[RegenerationResult]) -> int:
+    output_path = csv_output if csv_output.is_absolute() else Path.cwd() / csv_output
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=RESULT_COLUMNS, lineterminator="\n")
+        writer.writeheader()
+        for result in results:
+            writer.writerow(
+                {
+                    "target_key": result.task.target_key,
+                    "target_id": result.task.target_id,
+                    "source_text": result.task.source_text,
+                    "current_audio_url": result.task.current_audio_url,
+                    "status": result.status,
+                    "gcs_path": result.gcs_path or "",
+                    "old_audio_url": result.old_audio_url or "",
+                    "new_audio_url": result.new_audio_url or "",
+                    "provider": result.provider or "",
+                    "model": result.model or "",
+                    "error": result.error or "",
+                }
+            )
+    return len(results)
+
+
 async def run_regeneration(
     tasks: list[FlaggedTtsTask],
     *,
@@ -282,6 +367,7 @@ async def run_regeneration(
     continue_on_error: bool,
     sleep_seconds: float,
     run_id: str,
+    result_output: Path | None = None,
     tts_generator: Callable[[str], Awaitable[GeneratedTtsAudio]] = generate_tts,
     uploader: Callable[[str, bytes], Awaitable[str]] = upload_tts_to_gcs,
     session_factory: SessionFactory = async_session_factory,
@@ -293,7 +379,11 @@ async def run_regeneration(
 
     if not execute:
         print("dry_run true")
-        return []
+        results = planned_results(tasks, run_id=run_id)
+        if result_output is not None:
+            count = write_result_csv(result_output, results)
+            print(f"result_csv {result_output} rows={count}")
+        return results
 
     print("dry_run false")
     results: list[RegenerationResult] = []
@@ -317,6 +407,9 @@ async def run_regeneration(
 
     regenerated_count = sum(1 for result in results if result.status == "regenerated")
     failed_count = sum(1 for result in results if result.status == "failed")
+    if result_output is not None:
+        count = write_result_csv(result_output, results)
+        print(f"result_csv {result_output} rows={count}")
     print(f"summary regenerated={regenerated_count} failed={failed_count}")
     return results
 
@@ -330,6 +423,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--continue-on-error", action="store_true", help="Continue after a failed target.")
     parser.add_argument("--sleep-seconds", type=float, default=0.5, help="Delay between executed regenerations.")
     parser.add_argument("--run-id", default=None, help="Stable suffix for regenerated GCS object paths.")
+    parser.add_argument("--result-output", type=Path, default=None, help="Optional CSV output for planned or executed results.")
     return parser.parse_args()
 
 
@@ -347,6 +441,7 @@ async def main() -> None:
         continue_on_error=args.continue_on_error,
         sleep_seconds=args.sleep_seconds,
         run_id=run_id,
+        result_output=args.result_output,
     )
     if args.execute and any(result.status == "failed" for result in results):
         raise SystemExit(1)
