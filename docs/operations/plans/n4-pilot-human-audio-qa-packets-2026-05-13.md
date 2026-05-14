@@ -44,6 +44,10 @@ Static listening sheet with audio controls:
 `docs/operations/plans/n4-human-audio-qa-review-sheet-2026-05-14.html`.
 Verdict CSV template:
 `docs/operations/plans/n4-human-audio-qa-verdict-template-2026-05-14.csv`.
+AI-assisted PASS candidate report:
+`docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.md`.
+AI-assisted PASS candidate CSV:
+`docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.csv`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -75,11 +79,16 @@ and 0 STT errors. Treat the mismatches as review-priority signals, not automatic
 Use the generated review queue or static HTML listening sheet in this order:
 11 P0 machine-warning rows, 62 P1 STT-only mismatch rows, then 26 P2 remaining
 pending rows.
+The PASS candidate report splits those 26 P2 rows into a listen-once batch with
+no parsed machine/STT review signal. It does not apply or imply final `PASS`
+verdicts.
 
 ## CSV Verdict Apply Flow
 
 Reviewers may fill only `new_verdict` and `new_notes` in the verdict template.
 Leave both columns blank for rows that are not reviewed yet.
+`priority` and `review_signals` are read-only context columns for deciding
+which rows to listen to first.
 
 Dry-run before writing packet Markdown:
 
