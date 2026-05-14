@@ -45,6 +45,31 @@ their current audio records already exist. A targeted replacement path
 must either create a new audio object and update the matching `tts_audio`
 record, or record an explicit direct-listening waiver.
 
+`scripts/regenerate_n4_audio_qa_flagged_tts.py` now provides that targeted
+replacement path from this manifest. It is dry-run by default:
+
+```bash
+cd apps/api
+uv run python scripts/regenerate_n4_audio_qa_flagged_tts.py \
+  --manifest ../../docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv
+```
+
+Execution requires an explicit `--execute` flag because it calls the TTS
+provider, uploads a new audio object, and updates the existing `tts_audio`
+row only after confirming the manifest's current audio URL still matches the
+database row:
+
+```bash
+cd apps/api
+uv run python scripts/regenerate_n4_audio_qa_flagged_tts.py \
+  --manifest ../../docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv \
+  --execute \
+  --continue-on-error
+```
+
+The script writes regenerated audio to `tts/lesson/<lesson-id>/<target>-regen-<run-id>.mp3`
+instead of overwriting the old object path.
+
 ## Manifest
 
 | Target | Source text | STT transcript | Lesson target | Current audio | Action | Packet |

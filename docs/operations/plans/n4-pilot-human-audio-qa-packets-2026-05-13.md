@@ -258,6 +258,11 @@ lesson IDs, target IDs, current audio URLs, STT transcripts, and blank
 post-regeneration review columns so the next execution step can regenerate or
 explicitly waive each flagged row without re-triaging the packets.
 
+The follow-up script
+`apps/api/scripts/regenerate_n4_audio_qa_flagged_tts.py` consumes that CSV and
+is dry-run by default. It requires explicit `--execute` before calling the TTS
+provider, uploading replacement audio, or updating `tts_audio`.
+
 ## Review Rules
 
 - Every item starts as `PENDING`.
