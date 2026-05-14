@@ -38,6 +38,8 @@ prioritized during listening:
 Source: `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
 Latest generated machine report:
 `docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`.
+Prioritized human review queue:
+`docs/operations/plans/n4-human-audio-qa-review-queue-2026-05-14.md`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -63,6 +65,9 @@ verdicts.
 The latest 2026-05-14 machine report was run without STT because
 `GOOGLE_API_KEY` was not present in the local shell. Do not treat the absence of
 STT mismatches in that report as transcript-comparison approval.
+
+Use the generated review queue to handle the 11 machine-warning items first,
+then continue through the remaining pending packet rows.
 
 ## Review Rules
 
