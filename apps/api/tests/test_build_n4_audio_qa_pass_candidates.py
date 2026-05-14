@@ -3,6 +3,7 @@ from pathlib import Path
 
 from scripts.build_n4_audio_qa_pass_candidates import (
     build_candidate_report,
+    render_html,
     render_markdown,
     write_candidate_csv,
 )
@@ -109,3 +110,19 @@ def test_write_candidate_csv_leaves_apply_columns_blank_until_listening_confirma
     assert rows[0]["recommended_action"] == "listen once; if complete and intelligible, set new_verdict=PASS"
     assert rows[0]["new_verdict"] == ""
     assert rows[0]["new_notes"] == ""
+
+
+def test_render_html_includes_candidate_audio_controls_only(tmp_path: Path) -> None:
+    packet = _write_packet(tmp_path / "packet.md")
+    signal_report = _write_signal_report(tmp_path / "signals.md")
+    report = build_candidate_report(packet_paths=[packet], machine_report_paths=[signal_report])
+
+    html = render_html(report, packet_paths=[packet], machine_report_paths=[signal_report])
+
+    assert "N4 Audio QA PASS Candidate Listening Sheet" in html
+    assert "Candidate status is not a final human audio-quality verdict." in html
+    assert "PASS candidates<strong>1</strong>" in html
+    assert "HN4-001 script:0" in html
+    assert '<audio controls preload="none" src="https://example.com/script-0.mp3"></audio>' in html
+    assert "HN4-001 script:1" not in html
+    assert "HIGH_SILENCE_RATIO:0.3863" not in html

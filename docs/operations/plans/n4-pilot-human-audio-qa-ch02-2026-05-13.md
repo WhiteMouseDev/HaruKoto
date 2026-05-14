@@ -64,7 +64,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | script 2 | キム | はい。線の太さや細さも見られます。 | 네. 선의 굵기나 가늘기도 볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2.mp3) | PENDING |  |
 
-| script 3 | 佐藤 | 情報の正しさも大切ですね。 | 정보의 정확성도 중요하네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | 情報の正しさも大切ですね。 | 정보의 정확성도 중요하네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 深い의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-1.mp3) | PENDING |  |
 
@@ -80,13 +80,13 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 佐藤 | 週末のイベントに参加しようと思っています。 | 주말 이벤트에 참가하려고 생각하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-0.mp3) | PENDING |  |
+| script 0 | 佐藤 | 週末のイベントに参加しようと思っています。 | 주말 이벤트에 참가하려고 생각하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 1 | キム | 私は友達に案内を送ろうと思っています。 | 저는 친구에게 안내를 보내려고 생각하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-1.mp3) | PENDING |  |
+| script 1 | キム | 私は友達に案内を送ろうと思っています。 | 저는 친구에게 안내를 보내려고 생각하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 2 | 佐藤 | 資料も集めようと思います。 | 자료도 모으려고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-2.mp3) | PENDING |  |
+| script 2 | 佐藤 | 資料も集めようと思います。 | 자료도 모으려고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | キム | 新しい先生を紹介しようと思います。 | 새 선생님을 소개하려고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-3.mp3) | PENDING |  |
+| script 3 | キム | 新しい先生を紹介しようと思います。 | 새 선생님을 소개하려고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 参加する의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-1.mp3) | PENDING |  |
 
@@ -104,11 +104,11 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | 返事が遅れてすみません。 | 답장이 늦어서 죄송합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-0.mp3) | PENDING |  |
 
-| script 1 | 佐藤 | 何か理由があったんですか。 | 무슨 이유가 있었나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-1.mp3) | PENDING |  |
+| script 1 | 佐藤 | 何か理由があったんですか。 | 무슨 이유가 있었나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 2 | キム | 会議が長かったのです。 | 회의가 길었던 거예요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-2.mp3) | PENDING |  |
 
-| script 3 | 佐藤 | そうだったんですね。連絡ありがとうございます。 | 그랬군요. 연락 감사합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | そうだったんですね。連絡ありがとうございます。 | 그랬군요. 연락 감사합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 理由의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-1.mp3) | PENDING |  |
 
@@ -124,13 +124,13 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 面接のために、自己紹介を練習しています。 | 면접을 위해 자기소개를 연습하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-0.mp3) | PENDING |  |
+| script 0 | キム | 面接のために、自己紹介を練習しています。 | 면접을 위해 자기소개를 연습하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 1 | 佐藤 | 就職するために、準備しているんですね。 | 취직하기 위해 준비하고 있군요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-1.mp3) | PENDING |  |
+| script 1 | 佐藤 | 就職するために、準備しているんですね。 | 취직하기 위해 준비하고 있군요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 2 | キム | はい。新しい技術も勉強しています。 | 네. 새로운 기술도 공부하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | はい。新しい技術も勉強しています。 | 네. 새로운 기술도 공부하고 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | 佐藤 | 教育のためにも役に立ちそうです。 | 교육을 위해서도 도움이 될 것 같습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | 教育のためにも役に立ちそうです。 | 교육을 위해서도 도움이 될 것 같습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 面接의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-1.mp3) | PENDING |  |
 
@@ -146,9 +146,9 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 佐藤 | このボタンを押すと、画面が変わります。 | 이 버튼을 누르면 화면이 바뀝니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-0.mp3) | PENDING |  |
+| script 0 | 佐藤 | このボタンを押すと、画面が変わります。 | 이 버튼을 누르면 화면이 바뀝니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 1 | キム | 信号が青になると、車が進みますね。 | 신호가 파란색이 되면 차가 나아가네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-1.mp3) | PENDING |  |
+| script 1 | キム | 信号が青になると、車が進みますね。 | 신호가 파란색이 되면 차가 나아가네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 2 | 佐藤 | はい。自然な結果を言うときに使います。 | 네. 자연스러운 결과를 말할 때 씁니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | PENDING |  |
 

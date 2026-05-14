@@ -48,6 +48,10 @@ AI-assisted PASS candidate report:
 `docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.md`.
 AI-assisted PASS candidate CSV:
 `docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.csv`.
+AI-assisted PASS candidate HTML listening sheet:
+`docs/operations/plans/n4-human-audio-qa-pass-candidates-2026-05-14.html`.
+Delegated AI-assisted PASS application report:
+`docs/operations/plans/n4-human-audio-qa-delegated-ai-pass-application-2026-05-14.md`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -77,11 +81,10 @@ and 0 STT errors. Treat the mismatches as review-priority signals, not automatic
 `FLAG` or `FAIL` verdicts.
 
 Use the generated review queue or static HTML listening sheet in this order:
-11 P0 machine-warning rows, 62 P1 STT-only mismatch rows, then 26 P2 remaining
-pending rows.
-The PASS candidate report splits those 26 P2 rows into a listen-once batch with
-no parsed machine/STT review signal. It does not apply or imply final `PASS`
-verdicts.
+11 P0 machine-warning rows, then 62 P1 STT-only mismatch rows. The previous 26
+P2 no-signal rows were applied as delegated AI-assisted `PASS` verdicts in
+`docs/operations/plans/n4-human-audio-qa-delegated-ai-pass-application-2026-05-14.md`.
+Those verdict notes explicitly state that they are not native-speaker review.
 
 ## CSV Verdict Apply Flow
 
@@ -109,6 +112,28 @@ uv run python scripts/apply_n4_audio_qa_verdicts.py \
 
 The script rejects unsupported verdict values and fails if a CSV target cannot
 be matched back to the packet Markdown.
+
+## Delegated AI-Assisted PASS Application
+
+Because no native-speaker reviewer is currently available, the project owner
+delegated the no-signal candidate rows to AI-assisted review. The 26 rows with
+machine pass evidence and no parsed machine/STT review signal were applied as
+`PASS` using:
+
+```bash
+cd apps/api
+uv run python scripts/apply_n4_audio_qa_verdicts.py \
+  --csv-input ../../docs/operations/plans/n4-human-audio-qa-pass-candidates-reviewed-2026-05-14.csv \
+  --write
+```
+
+Every applied row carries this note:
+
+> Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.
+
+Post-apply verdict state: 99 targets, 26 `PASS`, 73 `PENDING`, 0 `FLAG`, 0
+`FAIL`, and 0 invalid verdicts. The remaining 73 P0/P1 rows continue to block
+broad/full N4 rollout.
 
 ## Review Rules
 
