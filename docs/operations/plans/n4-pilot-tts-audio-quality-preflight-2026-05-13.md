@@ -70,6 +70,12 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py \
 | Total audio duration | 378.044s |
 | AI STT assist | Available as opt-in Markdown/JSON report; not part of the recorded baseline above |
 
+Latest script-generated machine report:
+`docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`. The
+2026-05-14 run did not include AI STT assist because `GOOGLE_API_KEY` was not
+present in the local shell, so it is a machine blocker and silence-heuristic
+baseline rather than transcript-comparison evidence.
+
 ## Warnings For Human Review
 
 These are not machine blockers. They should be prioritized during human audio

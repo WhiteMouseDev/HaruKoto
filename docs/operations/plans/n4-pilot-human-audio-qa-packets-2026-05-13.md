@@ -36,6 +36,8 @@ prioritized during listening:
 | Chapter 3 | `HN4-011 question:3` |
 
 Source: `docs/operations/plans/n4-pilot-tts-audio-quality-preflight-2026-05-13.md`.
+Latest generated machine report:
+`docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -57,6 +59,10 @@ rather than pronunciation failures.
 The Markdown output is the handoff artifact for reviewing mismatches, STT
 errors, and existing machine warnings before editing the chapter-packet
 verdicts.
+
+The latest 2026-05-14 machine report was run without STT because
+`GOOGLE_API_KEY` was not present in the local shell. Do not treat the absence of
+STT mismatches in that report as transcript-comparison approval.
 
 ## Review Rules
 
