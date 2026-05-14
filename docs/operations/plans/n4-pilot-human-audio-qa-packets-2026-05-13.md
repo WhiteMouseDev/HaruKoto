@@ -72,6 +72,10 @@ LEXICAL_RISK delegated FLAG application report:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-flag-application-2026-05-14.md`.
 LEXICAL_RISK delegated FLAG reviewed CSV:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-flags-reviewed-2026-05-14.csv`.
+CANONICAL_MATCH delegated PASS application report:
+`docs/operations/plans/n4-human-audio-qa-canonical-pass-application-2026-05-14.md`.
+CANONICAL_MATCH delegated PASS reviewed CSV:
+`docs/operations/plans/n4-human-audio-qa-canonical-pass-reviewed-2026-05-14.csv`.
 Near/canonical focused review batch:
 `docs/operations/plans/n4-human-audio-qa-near-canonical-review-2026-05-14.md`.
 Near/canonical focused review CSV:
@@ -143,9 +147,12 @@ only `new_verdict` and `new_notes` in the CSV after direct listening or an
 explicitly delegated review step.
 
 The remaining lower-risk STT lanes are also split into focused Markdown, CSV,
-and HTML listening sheets: 14 `NEAR_JAPANESE_MATCH` / `CANONICAL_MATCH` rows
-and 40 `MIXED_PROMPT_STT_UNRELIABLE` rows. These batches complete the review
-handoff coverage for the unresolved STT lanes, but they do not apply verdicts.
+and HTML listening sheets. After the 3 canonical rows were applied as delegated
+AI-assisted `PASS`, the near/canonical batch now contains 11
+`NEAR_JAPANESE_MATCH` rows and 0 `CANONICAL_MATCH` rows; the mixed-prompt batch
+still contains 40 `MIXED_PROMPT_STT_UNRELIABLE` rows. These batches complete
+the review handoff coverage for the unresolved STT lanes, but they do not apply
+verdicts.
 
 ## CSV Verdict Apply Flow
 
@@ -215,6 +222,25 @@ Post-flag verdict state: 99 targets, 26 `PASS`, 65 `PENDING`, 8 `FLAG`, 0
 `FAIL`, and 0 invalid verdicts. The 8 `FLAG` rows need regeneration, direct
 listening waiver, or native-speaker review before broad/full N4 rollout.
 
+## Delegated AI-Assisted CANONICAL_MATCH PASS Application
+
+The 3 `CANONICAL_MATCH` script rows were marked `PASS` using the reviewed CSV:
+
+```bash
+cd apps/api
+uv run python scripts/apply_n4_audio_qa_verdicts.py \
+  --csv-input ../../docs/operations/plans/n4-human-audio-qa-canonical-pass-reviewed-2026-05-14.csv \
+  --write
+```
+
+Every applied row carries this note:
+
+> Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review.
+
+Post-canonical verdict state: 99 targets, 29 `PASS`, 62 `PENDING`, 8 `FLAG`, 0
+`FAIL`, and 0 invalid verdicts. The near/canonical review batch was regenerated
+after application and now retains only the 11 `NEAR_JAPANESE_MATCH` rows.
+
 ## Review Rules
 
 - Every item starts as `PENDING`.
@@ -234,13 +260,13 @@ cd apps/api
 uv run python scripts/report_n4_audio_qa_verdicts.py --fail-on-blocker
 ```
 
-Current state after delegated AI-assisted PASS application:
+Current state after delegated AI-assisted canonical PASS application:
 
 - 3 packets
 - 99 review targets
-- 26 `PASS`
-- 73 `PENDING`
-- 0 `FLAG`
+- 29 `PASS`
+- 62 `PENDING`
+- 8 `FLAG`
 - 0 `FAIL`
 
 `--fail-on-blocker` exits non-zero while `PENDING`, `FLAG`, `FAIL`, or invalid

@@ -84,11 +84,11 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | 少し頭が痛いです。 | 머리가 조금 아픕니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-0.mp3) | PENDING |  |
 
-| script 1 | 佐藤 | 心配ですね。今日は早く寝たほうがいいです。 | 걱정이네요. 오늘은 일찍 자는 편이 좋습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3) | PENDING |  |
+| script 1 | 佐藤 | 心配ですね。今日は早く寝たほうがいいです。 | 걱정이네요. 오늘은 일찍 자는 편이 좋습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
 | script 2 | キム | 医者に相談したほうがいいですか。 | 의사와 상담하는 편이 좋을까요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-2.mp3) | PENDING |  |
 
-| script 3 | 佐藤 | 熱があれば、医者に相談したほうが安心です。 | 열이 있으면 의사와 상담하는 편이 안심이 됩니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | 熱があれば、医者に相談したほうが安心です。 | 열이 있으면 의사와 상담하는 편이 안심이 됩니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
 | question 1 |  | 心配의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-1.mp3) | PENDING |  |
 
