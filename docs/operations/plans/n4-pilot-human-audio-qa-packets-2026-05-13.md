@@ -72,6 +72,10 @@ LEXICAL_RISK delegated FLAG application report:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-flag-application-2026-05-14.md`.
 LEXICAL_RISK delegated FLAG reviewed CSV:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-flags-reviewed-2026-05-14.csv`.
+FLAG regeneration handoff plan:
+`docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.md`.
+FLAG regeneration manifest CSV:
+`docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv`.
 CANONICAL_MATCH delegated PASS application report:
 `docs/operations/plans/n4-human-audio-qa-canonical-pass-application-2026-05-14.md`.
 CANONICAL_MATCH delegated PASS reviewed CSV:
@@ -240,6 +244,19 @@ Every applied row carries this note:
 Post-canonical verdict state: 99 targets, 29 `PASS`, 62 `PENDING`, 8 `FLAG`, 0
 `FAIL`, and 0 invalid verdicts. The near/canonical review batch was regenerated
 after application and now retains only the 11 `NEAR_JAPANESE_MATCH` rows.
+
+## FLAG Regeneration Handoff
+
+The 8 current `FLAG` rows were extracted into a regeneration handoff plan and
+CSV manifest:
+
+- `docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.md`
+- `docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-2026-05-14.csv`
+
+This handoff does not generate audio or update verdicts. It records exact
+lesson IDs, target IDs, current audio URLs, STT transcripts, and blank
+post-regeneration review columns so the next execution step can regenerate or
+explicitly waive each flagged row without re-triaging the packets.
 
 ## Review Rules
 
