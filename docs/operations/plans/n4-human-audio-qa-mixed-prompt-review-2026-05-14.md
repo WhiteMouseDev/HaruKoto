@@ -20,7 +20,7 @@ reconciliation bucket(s). It does not set `PASS`, `FLAG`, `FAIL`, or
 | Metric | Count |
 |---|---:|
 | Total review items | 99 |
-| Pending review-signal items | 73 |
+| Pending review-signal items | 65 |
 | Selected review items | 40 |
 | Selected buckets | MIXED_PROMPT_STT_UNRELIABLE |
 
