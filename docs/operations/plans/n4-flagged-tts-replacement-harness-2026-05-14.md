@@ -1,6 +1,6 @@
 # N4 FLAG TTS Replacement Harness
 
-> Status: HARNESS READY - dry-run only unless `--execute` is supplied
+> Status: EXECUTED - post-regeneration listening review required
 > Boundary: this does not clear audio QA verdicts, perform native-speaker
 > review, or change packet markdown by itself
 
@@ -62,6 +62,13 @@ uv run python scripts/regenerate_n4_audio_qa_flagged_tts.py \
   --execute \
   --continue-on-error
 ```
+
+## Execution Result
+
+`docs/operations/plans/n4-human-audio-qa-flag-regeneration-results-2026-05-14.csv`
+records one execution with run id `20260514T083500Z`: 8 regenerated rows and
+0 failed rows. The companion result summary is
+`docs/operations/plans/n4-human-audio-qa-flag-regeneration-results-2026-05-14.md`.
 
 ## Post-Execution Gate
 
