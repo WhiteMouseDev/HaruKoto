@@ -71,7 +71,7 @@ question prompts. Chapter 3 warning item to prioritize while listening:
 
 | question 4 |  | この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-4.mp3) | PENDING |  |
 
-| question 5 |  | '종이의 두께를 비교합니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-5.mp3) | PENDING |  |
+| question 5 |  | '종이의 두께를 비교합니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 ## Result
 

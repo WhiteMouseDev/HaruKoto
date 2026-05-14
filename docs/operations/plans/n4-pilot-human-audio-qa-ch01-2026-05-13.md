@@ -60,11 +60,11 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 先生 | 宿題を出す前に、名前を書きなさい。 | 숙제를 내기 전에 이름을 쓰세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-0.mp3) | PENDING |  |
+| script 0 | 先生 | 宿題を出す前に、名前を書きなさい。 | 숙제를 내기 전에 이름을 쓰세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 1 | 学生 | はい、ここに書けばいいですか。 | 네, 여기에 쓰면 되나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-1.mp3) | PENDING |  |
+| script 1 | 学生 | はい、ここに書けばいいですか。 | 네, 여기에 쓰면 되나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 2 | 先生 | はい。それから、規則をもう一度確認しなさい。 | 네. 그리고 규칙을 한 번 더 확인하세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-2.mp3) | PENDING |  |
+| script 2 | 先生 | はい。それから、規則をもう一度確認しなさい。 | 네. 그리고 규칙을 한 번 더 확인하세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 3 | 学生 | 分かりました。丁寧に確認します。 | 알겠습니다. 꼼꼼히 확인하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3.mp3) | PENDING |  |
 
@@ -98,19 +98,19 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 4 |  | 医者に相談___。 (의사와 상담하는 편이 좋습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-4.mp3) | PENDING |  |
 
-| question 5 |  | '오늘은 일찍 자는 편이 좋습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-5.mp3) | PENDING |  |
+| question 5 |  | '오늘은 일찍 자는 편이 좋습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 ### HN4-003 - 늦을지도 몰라요
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 佐藤 | 台風で電車が遅れるかもしれません。 | 태풍 때문에 전철이 늦을지도 모릅니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-0.mp3) | PENDING |  |
+| script 0 | 佐藤 | 台風で電車が遅れるかもしれません。 | 태풍 때문에 전철이 늦을지도 모릅니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 1 | キム | じゃあ、会議に間に合わないかもしれませんね。 | 그럼 회의에 맞추지 못할지도 모르겠네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-1.mp3) | PENDING |  |
 
-| script 2 | 佐藤 | 最近、天気がよく変わります。 | 최근 날씨가 자주 바뀝니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-2.mp3) | PENDING |  |
+| script 2 | 佐藤 | 最近、天気がよく変わります。 | 최근 날씨가 자주 바뀝니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | キム | 少し心配ですが、早めに出発します。 | 조금 걱정되지만 일찍 출발하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-3.mp3) | PENDING |  |
+| script 3 | キム | 少し心配ですが、早めに出発します。 | 조금 걱정되지만 일찍 출발하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 台風의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-1.mp3) | PENDING |  |
 
@@ -120,7 +120,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 4 |  | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4.mp3) | PENDING |  |
 
-| question 5 |  | '전철이 늦을지도 모릅니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-5.mp3) | PENDING |  |
+| question 5 |  | '전철이 늦을지도 모릅니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 ### HN4-004 - 달릴 수밖에 없어요
 
@@ -130,7 +130,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 1 | 佐藤 | 次の予定がありますからね。 | 다음 일정이 있으니까요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-1.mp3) | PENDING |  |
 
-| script 2 | キム | タクシーは高いので、電車に乗るしかありません。 | 택시는 비싸서 전철을 탈 수밖에 없습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | タクシーは高いので、電車に乗るしかありません。 | 택시는 비싸서 전철을 탈 수밖에 없습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 3 | 佐藤 | 諦めないで、急いで行きましょう。 | 포기하지 말고 서둘러 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3.mp3) | PENDING |  |
 
@@ -148,13 +148,13 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 佐藤 | このアプリで漢字を調べられます。 | 이 앱으로 한자를 찾아볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-0.mp3) | PENDING |  |
+| script 0 | 佐藤 | このアプリで漢字を調べられます。 | 이 앱으로 한자를 찾아볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | script 1 | キム | 文も翻訳できますか。 | 문장도 번역할 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-1.mp3) | PENDING |  |
 
 | script 2 | 佐藤 | はい。授業の予約にも申し込めます。 | 네. 수업 예약도 신청할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-2.mp3) | PENDING |  |
 
-| script 3 | キム | それなら自信を持って勉強できます。 | 그렇다면 자신감을 갖고 공부할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-3.mp3) | PENDING |  |
+| script 3 | キム | それなら自信を持って勉強できます。 | 그렇다면 자신감을 갖고 공부할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 | question 1 |  | 翻訳의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-1.mp3) | PENDING |  |
 
@@ -164,7 +164,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 4 |  | 文を翻訳___。 (문장을 번역할 수 있습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-4.mp3) | PENDING |  |
 
-| question 5 |  | '이 앱으로 한자를 찾아볼 수 있습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-5.mp3) | PENDING |  |
+| question 5 |  | '이 앱으로 한자를 찾아볼 수 있습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
 ## Result
 

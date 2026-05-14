@@ -3,11 +3,13 @@ from __future__ import annotations
 import argparse
 import csv
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 
 from scripts.build_n4_audio_qa_review_queue import (
     ReviewQueueItem,
     _display_path,
+    _html_text,
     _markdown_cell,
     build_queue,
     default_machine_report_paths,
@@ -154,6 +156,101 @@ def render_markdown(report: PassCandidateReport, *, packet_paths: list[Path], ma
     return "\n".join(lines)
 
 
+def _html_candidate_card(item: ReviewQueueItem) -> str:
+    return "\n".join(
+        [
+            '<article class="candidate-card">',
+            '  <div class="candidate-card__meta">',
+            f"    <span>{_html_text(item.target_key)}</span>",
+            f"    <span>{_html_text(item.priority)}</span>",
+            f"    <span>{_html_text(item.verdict)}</span>",
+            "  </div>",
+            f"  <h3>{_html_text(item.japanese_text)}</h3>",
+            f"  <p>{_html_text(item.korean_context)}</p>",
+            f'  <audio controls preload="none" src="{escape(item.audio_url, quote=True)}"></audio>',
+            '  <dl class="candidate-card__details">',
+            f"    <dt>Reason</dt><dd>{_html_text(CANDIDATE_REASON)}</dd>",
+            f"    <dt>Action</dt><dd>{_html_text(CANDIDATE_ACTION)}</dd>",
+            f"    <dt>Packet</dt><dd>{_html_text(item.packet)}</dd>",
+            "  </dl>",
+            "</article>",
+        ]
+    )
+
+
+def render_html(report: PassCandidateReport, *, packet_paths: list[Path], machine_report_paths: list[Path]) -> str:
+    source_items = "\n".join(f"<li><code>{_html_text(_display_path(path))}</code></li>" for path in [*packet_paths, *machine_report_paths])
+    candidate_items = (
+        '<p class="empty">No pass candidates.</p>'
+        if not report.candidates
+        else "\n".join(_html_candidate_card(item) for item in report.candidates)
+    )
+
+    return "\n".join(
+        [
+            "<!doctype html>",
+            '<html lang="en">',
+            "<head>",
+            '  <meta charset="utf-8">',
+            '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+            "  <title>N4 Audio QA PASS Candidate Listening Sheet</title>",
+            "  <style>",
+            "    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }",
+            "    body { margin: 0; background: #f8f5f2; color: #24211f; }",
+            "    main { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }",
+            "    header { margin-bottom: 32px; }",
+            "    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }",
+            "    h2 { margin: 36px 0 16px; font-size: 22px; }",
+            "    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }",
+            "    p { color: #625b55; line-height: 1.6; }",
+            "    code { background: #eee7df; border-radius: 4px; padding: 2px 4px; }",
+            "    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }",
+            "    .metric { background: #fff; border: 1px solid #eadfd5; border-radius: 8px; padding: 14px; }",
+            "    .metric strong { display: block; font-size: 24px; margin-top: 4px; }",
+            "    .candidate-card { background: #fff; border: 1px solid #d7eadf; border-radius: 8px; "
+            "padding: 18px; margin: 12px 0; box-shadow: inset 4px 0 0 #1f9d67; }",
+            "    .candidate-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }",
+            "    .candidate-card__meta span { background: #e8f4ed; border-radius: 999px; padding: 5px 10px; font-size: 13px; }",
+            "    audio { width: 100%; margin: 10px 0 12px; }",
+            "    .candidate-card__details { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; margin: 0; }",
+            "    dt { color: #65746b; font-weight: 700; }",
+            "    dd { margin: 0; overflow-wrap: anywhere; }",
+            "    .empty { background: #fff; border: 1px dashed #d8cbc0; border-radius: 8px; padding: 16px; }",
+            "  </style>",
+            "</head>",
+            "<body>",
+            "<main>",
+            "  <header>",
+            "    <h1>N4 Audio QA PASS Candidate Listening Sheet</h1>",
+            "    <p>Read-only listening surface. Use this for listen-once checks, then record final verdicts "
+            "in the candidate CSV or packet workflow.</p>",
+            "  </header>",
+            '  <section class="summary" aria-label="Summary">',
+            f'    <div class="metric">Total review items<strong>{report.total_items}</strong></div>',
+            f'    <div class="metric">Pending<strong>{report.pending_count}</strong></div>',
+            f'    <div class="metric">PASS candidates<strong>{report.candidate_count}</strong></div>',
+            f'    <div class="metric">Held for review<strong>{report.held_for_review_count}</strong></div>',
+            "  </section>",
+            "  <section>",
+            "    <h2>Boundary</h2>",
+            "    <p>Candidate status is not a final human audio-quality verdict. Set PASS only after the audio "
+            "is complete, intelligible, and acceptable for learner playback.</p>",
+            "  </section>",
+            "  <section>",
+            "    <h2>Sources</h2>",
+            f"    <ul>{source_items}</ul>",
+            "  </section>",
+            "  <section>",
+            "    <h2>Listen Once Candidates</h2>",
+            candidate_items,
+            "  </section>",
+            "</main>",
+            "</body>",
+            "</html>",
+        ]
+    )
+
+
 def write_candidate_csv(csv_output: Path, report: PassCandidateReport) -> int:
     csv_output.parent.mkdir(parents=True, exist_ok=True)
     with csv_output.open("w", encoding="utf-8", newline="") as file:
@@ -192,6 +289,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--markdown-output", type=Path, required=True, help="Markdown candidate report output path.")
     parser.add_argument("--csv-output", type=Path, default=None, help="Optional candidate CSV output path.")
+    parser.add_argument("--html-output", type=Path, default=None, help="Optional static HTML listening sheet output path.")
     return parser.parse_args()
 
 
@@ -210,6 +308,13 @@ def main() -> None:
     if args.csv_output:
         write_candidate_csv(args.csv_output, report)
         print(f"pass_candidate_csv {_display_path(args.csv_output)}")
+    if args.html_output:
+        args.html_output.parent.mkdir(parents=True, exist_ok=True)
+        args.html_output.write_text(
+            render_html(report, packet_paths=packet_paths, machine_report_paths=machine_report_paths),
+            encoding="utf-8",
+        )
+        print(f"pass_candidate_html {_display_path(args.html_output)}")
     print(f"items {report.total_items}")
     print(f"pending {report.pending_count}")
     print(f"pass_candidates {report.candidate_count}")
