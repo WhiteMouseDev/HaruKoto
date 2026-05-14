@@ -42,6 +42,8 @@ Prioritized human review queue:
 `docs/operations/plans/n4-human-audio-qa-review-queue-2026-05-14.md`.
 Static listening sheet with audio controls:
 `docs/operations/plans/n4-human-audio-qa-review-sheet-2026-05-14.html`.
+Verdict CSV template:
+`docs/operations/plans/n4-human-audio-qa-verdict-template-2026-05-14.csv`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -70,9 +72,34 @@ It transcribed all 99 targets with 26 exact matches, 73 transcript mismatches,
 and 0 STT errors. Treat the mismatches as review-priority signals, not automatic
 `FLAG` or `FAIL` verdicts.
 
-Use the generated review queue to handle the 11 machine-warning items first,
-or open the static HTML listening sheet for inline audio controls. Then continue
-through the remaining pending packet rows.
+Use the generated review queue or static HTML listening sheet in this order:
+11 P0 machine-warning rows, 62 P1 STT-only mismatch rows, then 26 P2 remaining
+pending rows.
+
+## CSV Verdict Apply Flow
+
+Reviewers may fill only `new_verdict` and `new_notes` in the verdict template.
+Leave both columns blank for rows that are not reviewed yet.
+
+Dry-run before writing packet Markdown:
+
+```bash
+cd apps/api
+uv run python scripts/apply_n4_audio_qa_verdicts.py \
+  --csv-input ../../docs/operations/plans/n4-human-audio-qa-verdict-template-2026-05-14.csv
+```
+
+Apply reviewed rows after the dry-run output matches expectation:
+
+```bash
+cd apps/api
+uv run python scripts/apply_n4_audio_qa_verdicts.py \
+  --csv-input ../../docs/operations/plans/n4-human-audio-qa-verdict-template-2026-05-14.csv \
+  --write
+```
+
+The script rejects unsupported verdict values and fails if a CSV target cannot
+be matched back to the packet Markdown.
 
 ## Review Rules
 
