@@ -68,6 +68,22 @@ LEXICAL_RISK focused review CSV:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.csv`.
 LEXICAL_RISK focused HTML listening sheet:
 `docs/operations/plans/n4-human-audio-qa-lexical-risk-review-2026-05-14.html`.
+LEXICAL_RISK delegated FLAG application report:
+`docs/operations/plans/n4-human-audio-qa-lexical-risk-flag-application-2026-05-14.md`.
+LEXICAL_RISK delegated FLAG reviewed CSV:
+`docs/operations/plans/n4-human-audio-qa-lexical-risk-flags-reviewed-2026-05-14.csv`.
+Near/canonical focused review batch:
+`docs/operations/plans/n4-human-audio-qa-near-canonical-review-2026-05-14.md`.
+Near/canonical focused review CSV:
+`docs/operations/plans/n4-human-audio-qa-near-canonical-review-2026-05-14.csv`.
+Near/canonical focused HTML listening sheet:
+`docs/operations/plans/n4-human-audio-qa-near-canonical-review-2026-05-14.html`.
+Mixed-prompt focused review batch:
+`docs/operations/plans/n4-human-audio-qa-mixed-prompt-review-2026-05-14.md`.
+Mixed-prompt focused review CSV:
+`docs/operations/plans/n4-human-audio-qa-mixed-prompt-review-2026-05-14.csv`.
+Mixed-prompt focused HTML listening sheet:
+`docs/operations/plans/n4-human-audio-qa-mixed-prompt-review-2026-05-14.html`.
 
 The same preflight script now has an opt-in AI STT assist for cases where a
 human listener is not immediately available:
@@ -96,14 +112,14 @@ It transcribed all 99 targets with 26 exact matches, 73 transcript mismatches,
 and 0 STT errors. Treat the mismatches as review-priority signals, not automatic
 `FLAG` or `FAIL` verdicts.
 
-Use the generated review queue or static HTML listening sheet in this order:
+The generated review queue and static HTML listening sheet originally ordered
 11 P0 machine-warning rows, then 62 P1 STT-only mismatch rows. The previous 26
 P2 no-signal rows were applied as delegated AI-assisted `PASS` verdicts in
 `docs/operations/plans/n4-human-audio-qa-delegated-ai-pass-application-2026-05-14.md`.
 Those verdict notes explicitly state that they are not native-speaker review.
 
-The STT reconciliation report further splits the remaining 73 pending rows into
-review lanes without applying verdicts:
+The STT reconciliation report split the 73 unresolved P0/P1 rows into review
+lanes before any lexical-risk flags were applied:
 
 - 11 `P0_MACHINE_WARNING`
 - 8 `LEXICAL_RISK`
@@ -125,6 +141,11 @@ The LEXICAL_RISK focused batch extracts those 8 highest-risk script rows into
 Markdown, CSV, and a static HTML listening sheet. It applies no verdicts; fill
 only `new_verdict` and `new_notes` in the CSV after direct listening or an
 explicitly delegated review step.
+
+The remaining lower-risk STT lanes are also split into focused Markdown, CSV,
+and HTML listening sheets: 14 `NEAR_JAPANESE_MATCH` / `CANONICAL_MATCH` rows
+and 40 `MIXED_PROMPT_STT_UNRELIABLE` rows. These batches complete the review
+handoff coverage for the unresolved STT lanes, but they do not apply verdicts.
 
 ## CSV Verdict Apply Flow
 
@@ -174,6 +195,25 @@ Every applied row carries this note:
 Post-apply verdict state: 99 targets, 26 `PASS`, 73 `PENDING`, 0 `FLAG`, 0
 `FAIL`, and 0 invalid verdicts. The remaining 73 P0/P1 rows continue to block
 broad/full N4 rollout.
+
+## Delegated AI-Assisted LEXICAL_RISK FLAG Application
+
+The 8 `LEXICAL_RISK` script rows were marked `FLAG` using the reviewed CSV:
+
+```bash
+cd apps/api
+uv run python scripts/apply_n4_audio_qa_verdicts.py \
+  --csv-input ../../docs/operations/plans/n4-human-audio-qa-lexical-risk-flags-reviewed-2026-05-14.csv \
+  --write
+```
+
+Every applied row carries this note:
+
+> Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review.
+
+Post-flag verdict state: 99 targets, 26 `PASS`, 65 `PENDING`, 8 `FLAG`, 0
+`FAIL`, and 0 invalid verdicts. The 8 `FLAG` rows need regeneration, direct
+listening waiver, or native-speaker review before broad/full N4 rollout.
 
 ## Review Rules
 

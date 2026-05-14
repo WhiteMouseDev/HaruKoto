@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N4 Audio QA Bucket Review Sheet</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f6f7f4; color: #22251f; }
+    main { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+    header { margin-bottom: 32px; }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    h2 { margin: 36px 0 16px; font-size: 22px; }
+    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }
+    p { color: #5d6558; line-height: 1.6; }
+    code { background: #e8ebe2; border-radius: 4px; padding: 2px 4px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .metric { background: #fff; border: 1px solid #dde4d7; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+    .review-card { background: #fff; border: 1px solid #e2d7cc; border-radius: 8px; padding: 18px; margin: 12px 0; box-shadow: inset 4px 0 0 #bf6f36; }
+    .review-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .review-card__meta span { background: #f3e6da; border-radius: 999px; padding: 5px 10px; font-size: 13px; }
+    audio { width: 100%; margin: 10px 0 12px; }
+    .review-card__details { display: grid; grid-template-columns: 88px 1fr; gap: 6px 10px; margin: 0; }
+    dt { color: #745b46; font-weight: 700; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .empty { background: #fff; border: 1px dashed #cdc9be; border-radius: 8px; padding: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>N4 Audio QA Bucket Review Sheet</h1>
+    <p>Focused listening surface for <code>NEAR_JAPANESE_MATCH, CANONICAL_MATCH</code>. It does not apply packet verdicts.</p>
+  </header>
+  <section class="summary" aria-label="Summary">
+    <div class="metric">Total review items<strong>99</strong></div>
+    <div class="metric">Pending signal items<strong>65</strong></div>
+    <div class="metric">Selected items<strong>14</strong></div>
+    <div class="metric">Buckets<strong>NEAR_JAPANESE_MATCH, CANONICAL_MATCH</strong></div>
+  </section>
+  <section>
+    <h2>Boundary</h2>
+    <p>This sheet is a review aid. Fill verdict CSV rows only after direct listening or an explicitly delegated review step; blank rows remain pending.</p>
+  </section>
+  <section>
+    <h2>Sources</h2>
+    <ul><li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md</code></li></ul>
+  </section>
+  <section>
+    <h2>Review Items</h2>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-002 script:0</span>
+    <span>0.857</span>
+  </div>
+  <h3>少し頭が痛いです。</h3>
+  <p>머리가 조금 아픕니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-0.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>少し頭が痛い</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:少し頭が痛い</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-002 script:2</span>
+    <span>0.966</span>
+  </div>
+  <h3>医者に相談したほうがいいですか。</h3>
+  <p>의사와 상담하는 편이 좋을까요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>医者に相談した方がいいです。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:医者に相談した方がいいです。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-004 script:0</span>
+    <span>0.930</span>
+  </div>
+  <h3>時間が足りません。駅まで走るしかありません。</h3>
+  <p>시간이 부족합니다. 역까지 달릴 수밖에 없습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-0.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>時間が足りません。江木まで走るしかありません。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:時間が足りません。江木まで走るしかありません。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-004 script:1</span>
+    <span>0.957</span>
+  </div>
+  <h3>次の予定がありますからね。</h3>
+  <p>다음 일정이 있으니까요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>次の予定がありますから</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:次の予定がありますから</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-005 script:1</span>
+    <span>0.941</span>
+  </div>
+  <h3>文も翻訳できますか。</h3>
+  <p>문장도 번역할 수 있나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>文も翻訳できます。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:文も翻訳できます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-005 script:2</span>
+    <span>0.933</span>
+  </div>
+  <h3>はい。授業の予約にも申し込めます。</h3>
+  <p>네. 수업 예약도 신청할 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>はい、授業の予約にも申し込みます。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、授業の予約にも申し込みます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-006 script:1</span>
+    <span>0.846</span>
+  </div>
+  <h3>この川の浅さも分かりますか。</h3>
+  <p>이 강의 얕은 정도도 알 수 있나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>この歯の舞さも分かりますか</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:この歯の舞さも分かりますか</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-008 script:2</span>
+    <span>0.824</span>
+  </div>
+  <h3>会議が長かったのです。</h3>
+  <p>회의가 길었던 거예요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>会議が長かった</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:会議が長かった</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-011 script:0</span>
+    <span>0.923</span>
+  </div>
+  <h3>ノートを選ぶ前に、紙の厚さを比べています。</h3>
+  <p>노트를 고르기 전에 종이의 두께를 비교하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-0.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ノートを選ぶ前に コムの厚さを比べています</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ノートを選ぶ前に コムの厚さを比べています</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-011 script:2</span>
+    <span>0.909</span>
+  </div>
+  <h3>はい。この紙の柔らかさも確認します。</h3>
+  <p>네. 이 종이의 부드러운 정도도 확인합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>はい、このシビの柔らかさも確認します。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、このシビの柔らかさも確認します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>NEAR_JAPANESE_MATCH</span>
+    <span>HN4-011 script:3</span>
+    <span>0.909</span>
+  </div>
+  <h3>厚さと柔らかさを比べて選びましょう。</h3>
+  <p>두께와 부드러운 정도를 비교해서 고릅시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>硬さ、柔らかさを比べて選びましょう。</dd>
+    <dt>Action</dt><dd>listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:硬さ、柔らかさを比べて選びましょう。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>CANONICAL_MATCH</span>
+    <span>HN4-002 script:1</span>
+    <span>1.000</span>
+  </div>
+  <h3>心配ですね。今日は早く寝たほうがいいです。</h3>
+  <p>걱정이네요. 오늘은 일찍 자는 편이 좋습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>心配ですね。今日は早く寝た方がいいです。</dd>
+    <dt>Action</dt><dd>candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:心配ですね。今日は早く寝た方がいいです。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>CANONICAL_MATCH</span>
+    <span>HN4-002 script:3</span>
+    <span>1.000</span>
+  </div>
+  <h3>熱があれば、医者に相談したほうが安心です。</h3>
+  <p>열이 있으면 의사와 상담하는 편이 안심이 됩니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>熱があれば医者に相談した方が安心です。</dd>
+    <dt>Action</dt><dd>candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:熱があれば医者に相談した方が安心です。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>CANONICAL_MATCH</span>
+    <span>HN4-010 script:2</span>
+    <span>1.000</span>
+  </div>
+  <h3>はい。自然な結果を言うときに使います。</h3>
+  <p>네. 자연스러운 결과를 말할 때 씁니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>はい、自然な結果を言う時に使います。</dd>
+    <dt>Action</dt><dd>candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、自然な結果を言う時に使います。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+  </section>
+</main>
+</body>
+</html>
