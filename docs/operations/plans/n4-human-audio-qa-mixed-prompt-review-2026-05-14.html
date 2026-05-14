@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N4 Audio QA Bucket Review Sheet</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f6f7f4; color: #22251f; }
+    main { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+    header { margin-bottom: 32px; }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    h2 { margin: 36px 0 16px; font-size: 22px; }
+    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }
+    p { color: #5d6558; line-height: 1.6; }
+    code { background: #e8ebe2; border-radius: 4px; padding: 2px 4px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .metric { background: #fff; border: 1px solid #dde4d7; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+    .review-card { background: #fff; border: 1px solid #e2d7cc; border-radius: 8px; padding: 18px; margin: 12px 0; box-shadow: inset 4px 0 0 #bf6f36; }
+    .review-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .review-card__meta span { background: #f3e6da; border-radius: 999px; padding: 5px 10px; font-size: 13px; }
+    audio { width: 100%; margin: 10px 0 12px; }
+    .review-card__details { display: grid; grid-template-columns: 88px 1fr; gap: 6px 10px; margin: 0; }
+    dt { color: #745b46; font-weight: 700; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .empty { background: #fff; border: 1px dashed #cdc9be; border-radius: 8px; padding: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>N4 Audio QA Bucket Review Sheet</h1>
+    <p>Focused listening surface for <code>MIXED_PROMPT_STT_UNRELIABLE</code>. It does not apply packet verdicts.</p>
+  </header>
+  <section class="summary" aria-label="Summary">
+    <div class="metric">Total review items<strong>99</strong></div>
+    <div class="metric">Pending signal items<strong>73</strong></div>
+    <div class="metric">Selected items<strong>40</strong></div>
+    <div class="metric">Buckets<strong>MIXED_PROMPT_STT_UNRELIABLE</strong></div>
+  </section>
+  <section>
+    <h2>Boundary</h2>
+    <p>This sheet is a review aid. Fill verdict CSV rows only after direct listening or an explicitly delegated review step; blank rows remain pending.</p>
+  </section>
+  <section>
+    <h2>Sources</h2>
+    <ul><li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md</code></li></ul>
+  </section>
+  <section>
+    <h2>Review Items</h2>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-001 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>規則의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>機序、イエッスン</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:機序、イエッスン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-001 question:2</span>
+    <span>0.000</span>
+  </div>
+  <h3>注意의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ジュリー、イェー</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ジュリー、イェー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-001 question:4</span>
+    <span>0.214</span>
+  </div>
+  <h3>規則を確認___. (규칙을 확인하세요.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-4.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>基礎を確認 キジクルファキナセヨ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:基礎を確認 キジクルファキナセヨ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-001 question:5</span>
+    <span>0.154</span>
+  </div>
+  <h3>&#x27;이름을 쓰세요&#x27;를 올바른 순서로 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>名前を쓰세요を正しい順序で配列してください。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:名前を쓰세요を正しい順序で配列してください。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-002 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>心配의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>しんぺいげんつ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:しんぺいげんつ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-002 question:2</span>
+    <span>0.000</span>
+  </div>
+  <h3>相談의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>シャンダンエー</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:シャンダンエー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-002 question:3</span>
+    <span>0.000</span>
+  </div>
+  <h3>早く寝___。 (일찍 자는 편이 좋습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>たやこ へん あら イルチッ ジャヌン ピョニ チョッスムニダ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:たやこ へん あら イルチッ ジャヌン ピョニ チョッスムニダ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-003 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>台風의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>タイフン</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:タイフン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-003 question:2</span>
+    <span>0.286</span>
+  </div>
+  <h3>間に合う의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>カニアウエイト</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カニアウエイト</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-004 question:1</span>
+    <span>0.182</span>
+  </div>
+  <h3>足りる의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>たりとえぬ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:たりとえぬ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-004 question:2</span>
+    <span>0.000</span>
+  </div>
+  <h3>予定의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ゆでやしん</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ゆでやしん</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-004 question:3</span>
+    <span>0.143</span>
+  </div>
+  <h3>走る___。 (달릴 수밖에 없습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>走るかい タリル スバッケ オプスムニダ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:走るかい タリル スバッケ オプスムニダ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-004 question:5</span>
+    <span>0.000</span>
+  </div>
+  <h3>&#x27;역까지 달릴 수밖에 없습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>よっかぢ たっりるしゅばっけ おぷすんにだ を はいれつはぜよ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:よっかぢ たっりるしゅばっけ おぷすんにだ を はいれつはぜよ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-005 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>翻訳의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ファンヤクエトス</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ファンヤクエトス</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-005 question:2</span>
+    <span>0.727</span>
+  </div>
+  <h3>申し込む의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>申し込む</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:申し込む</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-005 question:3</span>
+    <span>0.914</span>
+  </div>
+  <h3>漢字を調べ___。 (한자를 찾아볼 수 있습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>漢字を調べ、赤字ら、한자를 찾아볼 수 있습니다。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:漢字を調べ、赤字ら、한자를 찾아볼 수 있습니다。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-006 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>深い의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>カメヤギ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カメヤギ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-006 question:2</span>
+    <span>0.667</span>
+  </div>
+  <h3>正しい의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>正しい</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:正しい</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-006 question:3</span>
+    <span>0.350</span>
+  </div>
+  <h3>湖の深___を確認します。 (호수의 깊이를 확인합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>国の金を確認します。法成企ビルを確認します。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:国の金を確認します。法成企ビルを確認します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-006 question:5</span>
+    <span>0.000</span>
+  </div>
+  <h3>&#x27;호수의 깊이를 확인했습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ホスエエギピルル確認しましたを配列はせよ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ホスエエギピルル確認しましたを配列はせよ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-007 question:1</span>
+    <span>0.267</span>
+  </div>
+  <h3>参加する의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ジャンカするエポ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ジャンカするエポ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-007 question:2</span>
+    <span>0.333</span>
+  </div>
+  <h3>集める의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>カツメルシン</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カツメルシン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-007 question:3</span>
+    <span>1.000</span>
+  </div>
+  <h3>イベントに参加___と思っています。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>イベントに参加 と思っています。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:イベントに参加 と思っています。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-007 question:4</span>
+    <span>0.833</span>
+  </div>
+  <h3>案内を送___と思っています。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-4.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>案内を奏なちと思っています。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:案内を奏なちと思っています。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-007 question:5</span>
+    <span>0.000</span>
+  </div>
+  <h3>&#x27;행사에 참가하려고 생각하고 있습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>弊社に参加しようと 考えていますを 手配ください</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:弊社に参加しようと 考えていますを 手配ください</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-008 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>理由의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ディユーイェスン</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ディユーイェスン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-008 question:2</span>
+    <span>0.000</span>
+  </div>
+  <h3>返事의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ファンシー</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ファンシー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-008 question:4</span>
+    <span>0.400</span>
+  </div>
+  <h3>理由があった___か。 (이유가 있었던 건가요?)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-4.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>理由があった。なーなか。理由があったんがよ？</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:理由があった。なーなか。理由があったんがよ？</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-008 question:5</span>
+    <span>0.125</span>
+  </div>
+  <h3>&#x27;회의가 길었던 거예요&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>フェイが長かったんですよを配列세요。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:フェイが長かったんですよを配列세요。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-009 question:1</span>
+    <span>0.571</span>
+  </div>
+  <h3>面接의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>面接</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-009 question:2</span>
+    <span>0.444</span>
+  </div>
+  <h3>準備의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>準備役員</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:準備役員</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-009 question:3</span>
+    <span>0.383</span>
+  </div>
+  <h3>面接___、練習しています。 (면접을 위해 연습하고 있습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>面接、アクタ、練習しています。 面接、ウィヘ、練習、ハコイスミダ。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接、アクタ、練習しています。 面接、ウィヘ、練習、ハコイスミダ。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-009 question:5</span>
+    <span>0.000</span>
+  </div>
+  <h3>&#x27;면접을 위해 준비하고 있습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>面接のために準備していますを配列</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接のために準備していますを配列</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-010 question:1</span>
+    <span>0.000</span>
+  </div>
+  <h3>信号의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>新興エコタウン</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:新興エコタウン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-010 question:2</span>
+    <span>0.000</span>
+  </div>
+  <h3>届く의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>得てして</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:得てして</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-010 question:3</span>
+    <span>1.000</span>
+  </div>
+  <h3>ボタンを押す___、画面が変わります。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-3.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ボタンを押す 画面が変わります</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ボタンを押す 画面が変わります</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-010 question:5</span>
+    <span>0.000</span>
+  </div>
+  <h3>&#x27;버튼을 누르면 화면이 바뀝니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-5.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ボタンを押すと画面が変わります。る ベヨルハセヨ</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ボタンを押すと画面が変わります。る ベヨルハセヨ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-011 question:1</span>
+    <span>0.200</span>
+  </div>
+  <h3>厚い의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-1.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>ほ いえすん</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ほ いえすん</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-011 question:2</span>
+    <span>0.500</span>
+  </div>
+  <h3>柔らかい의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-2.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>やわらかい</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:やわらかい</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>MIXED_PROMPT_STT_UNRELIABLE</span>
+    <span>HN4-011 question:4</span>
+    <span>0.369</span>
+  </div>
+  <h3>この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-4.mp3"></audio>
+  <dl class="review-card__details">
+    <dt>STT</dt><dd>この詩の柔らかを確認します。イ チョンゲ ブドロウン ジョンドゥルル ホギナムニダ。</dd>
+    <dt>Action</dt><dd>listen for learner-facing completeness; do not treat STT mismatch alone as a fail</dd>
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:この詩の柔らかを確認します。イ チョンゲ ブドロウン ジョンドゥルル ホギナムニダ。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+  </dl>
+</article>
+  </section>
+</main>
+</body>
+</html>
