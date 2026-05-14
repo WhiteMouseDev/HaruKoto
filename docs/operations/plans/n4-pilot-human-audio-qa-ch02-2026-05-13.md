@@ -150,7 +150,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | script 1 | キム | 信号が青になると、車が進みますね。 | 신호가 파란색이 되면 차가 나아가네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 2 | 佐藤 | はい。自然な結果を言うときに使います。 | 네. 자연스러운 결과를 말할 때 씁니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | PENDING |  |
+| script 2 | 佐藤 | はい。自然な結果を言うときに使います。 | 네. 자연스러운 결과를 말할 때 씁니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
 | script 3 | キム | 荷物が届くと、メールが来ます。 | 짐이 도착하면 메일이 옵니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3.mp3) | FLAG | Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; regenerate or direct-listen before broad rollout; not native-speaker review. |
 

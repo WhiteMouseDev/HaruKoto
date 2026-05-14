@@ -20,8 +20,8 @@ reconciliation bucket(s). It does not set `PASS`, `FLAG`, `FAIL`, or
 | Metric | Count |
 |---|---:|
 | Total review items | 99 |
-| Pending review-signal items | 65 |
-| Selected review items | 14 |
+| Pending review-signal items | 62 |
+| Selected review items | 11 |
 | Selected buckets | NEAR_JAPANESE_MATCH, CANONICAL_MATCH |
 
 ## Selected Bucket Counts
@@ -29,7 +29,7 @@ reconciliation bucket(s). It does not set `PASS`, `FLAG`, `FAIL`, or
 | Bucket | Count |
 |---|---:|
 | NEAR_JAPANESE_MATCH | 11 |
-| CANONICAL_MATCH | 3 |
+| CANONICAL_MATCH | 0 |
 
 ## CSV Apply Boundary
 
@@ -52,9 +52,6 @@ Blank rows are ignored by `scripts/apply_n4_audio_qa_verdicts.py`.
 | NEAR_JAPANESE_MATCH | HN4-011 script:0 | ノートを選ぶ前に、紙の厚さを比べています。 | ノートを選ぶ前に コムの厚さを比べています | 0.923 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-0.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md` |
 | NEAR_JAPANESE_MATCH | HN4-011 script:2 | はい。この紙の柔らかさも確認します。 | はい、このシビの柔らかさも確認します。 | 0.909 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-2.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md` |
 | NEAR_JAPANESE_MATCH | HN4-011 script:3 | 厚さと柔らかさを比べて選びましょう。 | 硬さ、柔らかさを比べて選びましょう。 | 0.909 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-3.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md` |
-| CANONICAL_MATCH | HN4-002 script:1 | 心配ですね。今日は早く寝たほうがいいです。 | 心配ですね。今日は早く寝た方がいいです。 | 1.000 | candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md` |
-| CANONICAL_MATCH | HN4-002 script:3 | 熱があれば、医者に相談したほうが安心です。 | 熱があれば医者に相談した方が安心です。 | 1.000 | candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md` |
-| CANONICAL_MATCH | HN4-010 script:2 | はい。自然な結果を言うときに使います。 | はい、自然な結果を言う時に使います。 | 1.000 | candidate for delegated PASS after optional spot listen; keep native-speaker boundary in notes | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | `docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md` |
 
 ## Decision
 
