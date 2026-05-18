@@ -54,11 +54,11 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 ## Review Items
 
-### HN4-006 - 호수의 깊이를 말해요
+### HN4-006 - 강의 깊이를 말해요
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 水の深さを確認しました。 | 물의 깊이를 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T013503Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:指令の過疎を確認しました。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 0 | キム | この川の深さを確認しました。 | 이 강의 깊이를 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T021000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:この刃の重さを確認しました。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3) | PENDING |  |
 
@@ -70,11 +70,11 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | question 2 |  | 正しい의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-2.mp3) | PENDING |  |
 
-| question 3 |  | 湖の深___を確認します。 (호수의 깊이를 확인합니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-3.mp3) | PENDING |  |
+| question 3 |  | 川の深___を確認します。 (강의 깊이를 확인합니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-3-regen-20260518T021500Z.mp3) | PENDING | Source rewrite v2 question prompt TTS refreshed after 호수/湖 prompt was replaced; still pending human review. |
 
 | question 4 |  | 線の太___を見ます。 (선의 굵기를 봅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-4.mp3) | PENDING |  |
 
-| question 5 |  | '호수의 깊이를 확인했습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-5.mp3) | PENDING |  |
+| question 5 |  | '강의 깊이를 확인했습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-5-regen-20260518T021500Z.mp3) | PENDING | Source rewrite v2 question prompt TTS refreshed after 호수 prompt was replaced; still pending human review. |
 
 ### HN4-007 - 참가하려고 생각해요
 

@@ -1577,12 +1577,12 @@
     {
       "reviewId": "lesson-human-review-HN4-006",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: scripts 1 and 3 simplified to 水の深さ and 線の太さ to keep さ nominalization targets while reducing TTS/STT ambiguity. Approved as N4 さ lesson source wording; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
+      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: script 1 changed to この川の深さを確認しました after final same-source regeneration kept STT divergence for 水の深さを確認しました. Approved as N4 さ nominalization source wording; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
       "lessonId": "HN4-006",
       "lessonNo": 6,
       "chapterId": "N4-CH02",
       "chapterTitle": "이유・조건・의도 표현",
-      "title": "호수의 깊이를 말해요",
+      "title": "강의 깊이를 말해요",
       "subtitle": "い형용사 stem + さ로 정도를 명사화하기",
       "topic": "さ",
       "estimatedMinutes": 12,
@@ -1643,8 +1643,8 @@
             "order": 1,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "水の深さを確認しました。",
-            "translationKo": "물의 깊이를 확인했습니다.",
+            "text": "この川の深さを確認しました。",
+            "translationKo": "이 강의 깊이를 확인했습니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-006-script-1",
               "textSource": "lesson-seeds:HN4-006:script:1",
@@ -1776,7 +1776,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "湖の深___を確認します。 (호수의 깊이를 확인합니다.)",
+          "prompt": "川の深___を確認します。 (강의 깊이를 확인합니다.)",
           "explanation": "い형용사 深い는 い를 빼고 さ를 붙여 深さ가 됩니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-006-question-3",
@@ -1846,7 +1846,7 @@
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'호수의 깊이를 확인했습니다'를 배열하세요.",
+          "prompt": "'강의 깊이를 확인했습니다'를 배열하세요.",
           "explanation": "명사화된 深さ를 목적어로 사용합니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-006-question-5",
@@ -1858,11 +1858,11 @@
           },
           "tokens": [
             "確認しました",
-            "湖の",
+            "川の",
             "深さを"
           ],
           "correctOrder": [
-            "湖の",
+            "川の",
             "深さを",
             "確認しました"
           ]
@@ -3127,7 +3127,7 @@
     {
       "reviewId": "lesson-human-review-HN4-011",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: script 2 changed to 厚さが違う紙がありますね to preserve いAdj stem + さ while avoiding repeated 紙 versus 石 STT confusion. Approved as N4 nominalization source wording; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
+      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: script 2 changed to 紙の厚さが違いますね after final same-source regeneration kept STT divergence for 厚さが違う紙がありますね. Approved as N4 さ nominalization source wording; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
       "lessonId": "HN4-011",
       "lessonNo": 11,
       "chapterId": "N4-CH03",
@@ -3208,8 +3208,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "厚さが違う紙がありますね。",
-            "translationKo": "두께가 다른 종이가 있네요.",
+            "text": "紙の厚さが違いますね。",
+            "translationKo": "종이의 두께가 다르네요.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-2",
               "textSource": "lesson-seeds:HN4-011:script:2",
