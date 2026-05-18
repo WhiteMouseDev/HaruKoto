@@ -4500,8 +4500,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "医者に相談したほうがいいですか。",
-                "translation": "의사와 상담하는 편이 좋을까요?"
+                "text": "医者に相談した方がいいです。",
+                "translation": "의사와 상담하는 편이 좋습니다."
               },
               {
                 "speaker": "佐藤",
@@ -5129,8 +5129,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "はい。授業の予約にも申し込めます。",
-                "translation": "네. 수업 예약도 신청할 수 있습니다."
+                "text": "はい。授業の予約もできます。",
+                "translation": "네. 수업 예약도 할 수 있습니다."
               },
               {
                 "speaker": "キム",
@@ -5332,8 +5332,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "この川の浅さも分かりますか。",
-                "translation": "이 강의 얕은 정도도 알 수 있나요?"
+                "text": "この川の浅さがわかります。",
+                "translation": "이 강의 얕은 정도도 알 수 있습니다."
               },
               {
                 "speaker": "キム",
@@ -5756,7 +5756,7 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "会議が長かったのです。",
+                "text": "会議が長かったんです。",
                 "translation": "회의가 길었던 거예요."
               },
               {
@@ -6391,8 +6391,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "厚さと柔らかさを比べて選びましょう。",
-                "translation": "두께와 부드러운 정도를 비교해서 고릅시다."
+                "text": "ノートの厚さと柔らかさを比べます。",
+                "translation": "노트의 두께와 부드러운 정도를 비교합니다."
               }
             ]
           },

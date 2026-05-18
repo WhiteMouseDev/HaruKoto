@@ -181,8 +181,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "厚さと柔らかさを比べて選びましょう。",
-            "translationKo": "두께와 부드러운 정도를 비교해서 고릅시다.",
+            "text": "ノートの厚さと柔らかさを比べます。",
+            "translationKo": "노트의 두께와 부드러운 정도를 비교합니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-4",
               "textSource": "lesson-seeds:HN4-011:script:4",

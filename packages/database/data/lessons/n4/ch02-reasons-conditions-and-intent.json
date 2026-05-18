@@ -63,8 +63,8 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "この川の浅さも分かりますか。",
-              "translation": "이 강의 얕은 정도도 알 수 있나요?"
+              "text": "この川の浅さがわかります。",
+              "translation": "이 강의 얕은 정도도 알 수 있습니다."
             },
             {
               "speaker": "キム",
@@ -453,7 +453,7 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "会議が長かったのです。",
+              "text": "会議が長かったんです。",
               "translation": "회의가 길었던 거예요."
             },
             {
