@@ -20,8 +20,8 @@ the current verdict gate. It does not set `PASS`, `FLAG`, `FAIL`, or
 | Metric | Count |
 |---|---:|
 | Total review items | 99 |
-| Pending review-signal items | 0 |
-| P0 machine-warning retained first | 0 |
+| Pending review-signal items | 1 |
+| P0 machine-warning retained first | 1 |
 | P1 STT-only items | 0 |
 | Canonical text matches | 0 |
 | Near Japanese matches | 0 |
@@ -48,7 +48,9 @@ columns only after direct listening or an explicitly delegated review step.
 
 ## P0_MACHINE_WARNING
 
-- None
+| Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
+|---|---|---|---|---:|---|---|---|
+| P0_MACHINE_WARNING | HN4-003 question:4 | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) | 間に合わない。 時間に間に合わないかもしれません。 | 0.286 | HIGH_SILENCE_RATIO:0.4078, TRANSCRIPTION_TEXT_MISMATCH:間に合わない。 時間に間に合わないかもしれません。 | listen first; check silence/spacing, intelligibility, and text completeness before setting PASS/FLAG/FAIL | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4-regen-20260518T041500Z.mp3) |
 
 ## LEXICAL_RISK
 
@@ -73,5 +75,5 @@ columns only after direct listening or an explicitly delegated review step.
 ## Decision
 
 Broad/full N4 rollout remains blocked. This triage only narrows the
-remaining 0 pending review-signal audio QA rows
+remaining 1 pending review-signal audio QA rows
 into review lanes and does not lower the verdict gate by itself.

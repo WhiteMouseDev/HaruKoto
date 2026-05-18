@@ -67,7 +67,7 @@ question prompts. Chapter 3 warning item to prioritize while listening:
 
 | question 2 |  | 柔らかい의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-2.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 3 |  | 紙の厚___を比べます。 (종이의 두께를 비교합니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-3-regen-20260518T055500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:紙の厚みを比較; direct-listen or regenerate before rollout; not native-speaker review. |
+| question 3 |  | 紙の厚___を比べます。 (종이의 두께를 비교합니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-3-regen-20260518T055500Z.mp3) | PASS | Delegated AI-assisted PASS: provider fallback MP3 probe passed; remaining STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 | question 4 |  | この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-4.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
