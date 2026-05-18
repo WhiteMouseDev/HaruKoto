@@ -4296,8 +4296,8 @@
               {
                 "speaker": "学生",
                 "voice_id": "japanese_male_1",
-                "text": "分かりました。丁寧に確認します。",
-                "translation": "알겠습니다. 꼼꼼히 확인하겠습니다."
+                "text": "分かりました。注意して確認します。",
+                "translation": "알겠습니다. 주의해서 확인하겠습니다."
               }
             ]
           },
@@ -4925,8 +4925,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "諦めないで、急いで行きましょう。",
-                "translation": "포기하지 말고 서둘러 갑시다."
+                "text": "まだ間に合います。急いで行きましょう。",
+                "translation": "아직 맞출 수 있습니다. 서둘러 갑시다."
               }
             ]
           },
@@ -5326,8 +5326,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "湖の深さを地図で確認しました。",
-                "translation": "호수의 깊이를 지도에서 확인했습니다."
+                "text": "水の深さを確認しました。",
+                "translation": "물의 깊이를 확인했습니다."
               },
               {
                 "speaker": "佐藤",
@@ -5338,8 +5338,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "はい。線の太さや細さも見られます。",
-                "translation": "네. 선의 굵기나 가늘기도 볼 수 있습니다."
+                "text": "はい。線の太さを確認できます。",
+                "translation": "네. 선의 굵기를 확인할 수 있습니다."
               },
               {
                 "speaker": "佐藤",
@@ -6183,8 +6183,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "荷物が届くと、メールが来ます。",
-                "translation": "짐이 도착하면 메일이 옵니다."
+                "text": "商品が届くと、連絡が来ます。",
+                "translation": "상품이 도착하면 연락이 옵니다."
               }
             ]
           },
@@ -6379,8 +6379,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "厚い紙と薄い紙がありますね。",
-                "translation": "두꺼운 종이와 얇은 종이가 있네요."
+                "text": "厚さが違う紙がありますね。",
+                "translation": "두께가 다른 종이가 있네요."
               },
               {
                 "speaker": "キム",

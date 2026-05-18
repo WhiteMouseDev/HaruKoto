@@ -33,7 +33,7 @@
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-i-adjective-nominalization-001",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI candidate review 2026-05-13: HN4-011 candidate reviewed for いAdj stem + さ scope, paper thickness/softness context, Korean translations, answer keys, runtime-supported question types, HaruKoto-authored example status, and TTS coverage. Approved for official lesson promotion planning; not native-speaker human approval.",
+      "reviewerNotes": "Delegated AI candidate re-review 2026-05-18: HN4-011 script 2 rewritten to 厚さが違う紙がありますね for residual audio QA FLAG resolution while preserving いAdj stem + さ scope, paper context, Korean translation, answer keys, runtime-supported question types, and TTS target coverage. Approved for source re-seed and TTS regeneration planning; not native-speaker human approval.",
       "candidateId": "lsc-n4-i-adjective-nominalization-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-011",
@@ -151,8 +151,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "厚い紙と薄い紙がありますね。",
-            "translationKo": "두꺼운 종이와 얇은 종이가 있네요.",
+            "text": "厚さが違う紙がありますね。",
+            "translationKo": "두께가 다른 종이가 있네요.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-2",
               "textSource": "lesson-seeds:HN4-011:script:2",
