@@ -66,7 +66,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 2 | 先生 | はい。それから、規則をもう一度確認しなさい。 | 네. 그리고 규칙을 한 번 더 확인하세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | 学生 | 分かりました。丁寧に確認します。 | 알겠습니다. 꼼꼼히 확인하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:わかりました。艇中に確認します。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | 学生 | 分かりました。注意して確認します。 | 알겠습니다. 주의해서 확인하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260518T013503Z.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with kana/kanji orthographic-only mismatch; not native-speaker review. |
 
 | question 1 |  | 規則의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-1.mp3) | PENDING |  |
 
@@ -132,7 +132,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 2 | キム | タクシーは高いので、電車に乗るしかありません。 | 택시는 비싸서 전철을 탈 수밖에 없습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | 佐藤 | 諦めないで、急いで行きましょう。 | 포기하지 말고 서둘러 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:責めないで築いでいきましょう; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | 佐藤 | まだ間に合います。急いで行きましょう。 | 아직 맞출 수 있습니다. 서둘러 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260518T013503Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | question 1 |  | 足りる의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-1.mp3) | PENDING |  |
 

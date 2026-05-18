@@ -58,11 +58,11 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 湖の深さを地図で確認しました。 | 호수의 깊이를 지도에서 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:小野真央を実で確認しました。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 0 | キム | 水の深さを確認しました。 | 물의 깊이를 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T013503Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:指令の過疎を確認しました。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3) | PENDING |  |
 
-| script 2 | キム | はい。線の太さや細さも見られます。 | 네. 선의 굵기나 가늘기도 볼 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:はい、洗脳邸さや石さもみられます。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 2 | キム | はい。線の太さを確認できます。 | 네. 선의 굵기를 확인할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260518T013503Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | script 3 | 佐藤 | 情報の正しさも大切ですね。 | 정보의 정확성도 중요하네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -152,7 +152,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | script 2 | 佐藤 | はい。自然な結果を言うときに使います。 | 네. 자연스러운 결과를 말할 때 씁니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
-| script 3 | キム | 荷物が届くと、メールが来ます。 | 짐이 도착하면 메일이 옵니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:何もずが届くとミールが来ます。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | キム | 商品が届くと、連絡が来ます。 | 상품이 도착하면 연락이 옵니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3-regen-20260518T013503Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | question 1 |  | 信号의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-1.mp3) | PENDING |  |
 
