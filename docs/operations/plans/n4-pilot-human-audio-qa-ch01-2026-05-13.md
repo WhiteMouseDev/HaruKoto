@@ -86,7 +86,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 1 | 佐藤 | 心配ですね。今日は早く寝たほうがいいです。 | 걱정이네요. 오늘은 일찍 자는 편이 좋습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
-| script 2 | キム | 医者に相談したほうがいいですか。 | 의사와 상담하는 편이 좋을까요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-2-regen-20260518T030500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:医者に相談した方がいいですか？; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 2 | キム | 医者に相談したほうがいいですか。 | 의사와 상담하는 편이 좋을까요? | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-2-regen-20260518T074847Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:医者に相談した方がいいですか？; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 3 | 佐藤 | 熱があれば、医者に相談したほうが安心です。 | 열이 있으면 의사와 상담하는 편이 안심이 됩니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review. |
 
@@ -152,7 +152,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 1 | キム | 文も翻訳できますか。 | 문장도 번역할 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-1-regen-20260518T030500Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
-| script 2 | 佐藤 | はい。授業の予約にも申し込めます。 | 네. 수업 예약도 신청할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-2-regen-20260518T030500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:はい、授業の予約にも申し込みます。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 2 | 佐藤 | はい。授業の予約にも申し込めます。 | 네. 수업 예약도 신청할 수 있습니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-2-regen-20260518T074847Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:はい、授業の予約にも申し込みます。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 3 | キム | それなら自信を持って勉強できます。 | 그렇다면 자신감을 갖고 공부할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
