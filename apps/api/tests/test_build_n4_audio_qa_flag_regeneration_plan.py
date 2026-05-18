@@ -10,6 +10,7 @@ from scripts.build_n4_audio_qa_flag_regeneration_plan import (
 
 def _write_packet(path: Path) -> Path:
     flagged_audio = "https://storage.googleapis.com/harukoto-storage/tts/lesson/11111111-1111-1111-1111-111111111111/script-line-0.mp3"
+    pending_audio = "https://storage.googleapis.com/harukoto-storage/tts/lesson/22222222-2222-2222-2222-222222222222/script-line-1.mp3"
     flag_note = (
         "Delegated AI-assisted FLAG: STT/source lexical divergence suggests possible wrong-word audio; "
         "regenerate or direct-listen before broad rollout; not native-speaker review."
@@ -26,8 +27,7 @@ def _write_packet(path: Path) -> Path:
                 "| script 0 | 先生 | 諦めないで、急いで行きましょう。 | 포기하지 말고 서둘러 갑시다. | elevenlabs / model | ok | "
                 f"[audio]({flagged_audio}) | FLAG | {flag_note} |",
                 "",
-                "| script 1 | 学生 | 心配ですね。 | 걱정이네요. | elevenlabs / model | ok | "
-                "[audio](https://example.com/script-1.mp3) | PENDING |  |",
+                f"| script 1 | 学生 | 心配ですね。 | 걱정이네요. | elevenlabs / model | ok | [audio]({pending_audio}) | PENDING |  |",
                 "",
                 "| question 1 |  | 心配의 뜻은? |  | elevenlabs / model | ok | "
                 "[audio](https://example.com/question-1.mp3) | PASS | checked |",
@@ -79,6 +79,26 @@ def test_build_regeneration_plan_extracts_only_flag_rows(tmp_path: Path) -> None
     assert item.recommended_action == "regenerate audio, then listen before clearing FLAG"
 
 
+def test_build_regeneration_plan_can_extract_pending_rows(tmp_path: Path) -> None:
+    packet = _write_packet(tmp_path / "packet.md")
+    signal_report = _write_signal_report(tmp_path / "signals.md")
+
+    plan = build_regeneration_plan(
+        packet_paths=[packet],
+        machine_report_paths=[signal_report],
+        source_verdicts={"PENDING"},
+    )
+
+    assert plan.source_verdicts == {"PENDING"}
+    assert len(plan.items) == 1
+    item = plan.items[0]
+    assert item.target_key == "HN4-001 script:1"
+    assert item.lesson_id == "22222222-2222-2222-2222-222222222222"
+    assert item.target_id == "22222222-2222-2222-2222-222222222222:script:1"
+    assert item.current_verdict == "PENDING"
+    assert item.recommended_action == "regenerate audio, then STT audit before setting PASS or FLAG"
+
+
 def test_render_markdown_keeps_regeneration_boundary_explicit(tmp_path: Path) -> None:
     packet = _write_packet(tmp_path / "packet.md")
     signal_report = _write_signal_report(tmp_path / "signals.md")
@@ -89,6 +109,7 @@ def test_render_markdown_keeps_regeneration_boundary_explicit(tmp_path: Path) ->
     assert "> Status: REGENERATION HANDOFF - no audio generated" in markdown
     assert "no TTS provider call, storage write" in markdown
     assert "| Current FLAG verdicts | 1 |" in markdown
+    assert "| Source verdict filter | FLAG |" in markdown
     assert "| Script-line rows | 1 |" in markdown
     assert "generate_n4_pilot_tts_batch.py` currently generates missing TTS" in markdown
     assert "HN4-001 script:0" in markdown
