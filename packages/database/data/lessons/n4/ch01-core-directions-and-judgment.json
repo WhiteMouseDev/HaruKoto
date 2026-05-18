@@ -73,8 +73,8 @@
             {
               "speaker": "学生",
               "voice_id": "japanese_male_1",
-              "text": "分かりました。丁寧に確認します。",
-              "translation": "알겠습니다. 꼼꼼히 확인하겠습니다."
+              "text": "分かりました。注意して確認します。",
+              "translation": "알겠습니다. 주의해서 확인하겠습니다."
             }
           ]
         },
@@ -651,8 +651,8 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "諦めないで、急いで行きましょう。",
-              "translation": "포기하지 말고 서둘러 갑시다."
+              "text": "まだ間に合います。急いで行きましょう。",
+              "translation": "아직 맞출 수 있습니다. 서둘러 갑시다."
             }
           ]
         },

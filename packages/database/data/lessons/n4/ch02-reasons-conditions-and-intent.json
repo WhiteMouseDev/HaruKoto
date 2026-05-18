@@ -57,8 +57,8 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "湖の深さを地図で確認しました。",
-              "translation": "호수의 깊이를 지도에서 확인했습니다."
+              "text": "水の深さを確認しました。",
+              "translation": "물의 깊이를 확인했습니다."
             },
             {
               "speaker": "佐藤",
@@ -69,8 +69,8 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "はい。線の太さや細さも見られます。",
-              "translation": "네. 선의 굵기나 가늘기도 볼 수 있습니다."
+              "text": "はい。線の太さを確認できます。",
+              "translation": "네. 선의 굵기를 확인할 수 있습니다."
             },
             {
               "speaker": "佐藤",
@@ -845,8 +845,8 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "荷物が届くと、メールが来ます。",
-              "translation": "짐이 도착하면 메일이 옵니다."
+              "text": "商品が届くと、連絡が来ます。",
+              "translation": "상품이 도착하면 연락이 옵니다."
             }
           ]
         },
