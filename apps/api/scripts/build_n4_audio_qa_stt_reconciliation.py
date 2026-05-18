@@ -294,8 +294,8 @@ def render_markdown(report: SttReconciliationReport, *, packet_paths: list[Path]
             "## Decision",
             "",
             "Broad/full N4 rollout remains blocked. This triage only narrows the",
-            "remaining 73 pending audio QA rows into review lanes and does not lower",
-            "the verdict gate by itself.",
+            f"remaining {report.pending_review_signal_items} pending review-signal audio QA rows",
+            "into review lanes and does not lower the verdict gate by itself.",
             "",
         ]
     )
