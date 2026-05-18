@@ -60,7 +60,8 @@ def test_read_review_targets_rejects_regenerated_audio_url_drift(tmp_path: Path)
 
 
 def test_clean_probe_and_exact_stt_recommend_pass_and_write_apply_csv(tmp_path: Path) -> None:
-    item = read_review_targets(_write_review_csv(tmp_path / "review.csv"))[0]
+    metadata = read_regeneration_metadata(_write_regeneration_csv(tmp_path / "regeneration.csv"))
+    item = read_review_targets(_write_review_csv(tmp_path / "review.csv"), regeneration_metadata=metadata)[0]
     target = item.to_source_target()
     transcription = build_transcription_probe(target=target, transcript=item.japanese_text)
     result = evaluate_audio_quality(
@@ -80,6 +81,7 @@ def test_clean_probe_and_exact_stt_recommend_pass_and_write_apply_csv(tmp_path: 
     assert count == 1
     assert report.recommended_pass_count == 1
     assert report.recommended_flag_count == 0
+    assert rows[0]["provider_model"] == "elevenlabs / eleven_multilingual_v2"
     assert rows[0]["new_verdict"] == "PASS"
     assert "post-regeneration PASS" in rows[0]["new_notes"]
 

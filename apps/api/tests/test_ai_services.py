@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -61,6 +62,30 @@ async def test_generate_tts_falls_back_to_gemini_when_elevenlabs_fails(monkeypat
     assert result.provider == "gemini"
     assert result.model == "gemini-2.5-flash-preview-tts"
     gemini.assert_awaited_once_with("こんにちは", voice="Aoede")
+
+
+@pytest.mark.asyncio
+async def test_generate_tts_gemini_wraps_transcript_in_audio_only_instruction():
+    fake_client = MagicMock()
+    fake_client.aio.models.generate_content = AsyncMock(
+        return_value=SimpleNamespace(
+            candidates=[SimpleNamespace(content=SimpleNamespace(parts=[SimpleNamespace(inline_data=SimpleNamespace(data=b"pcm-audio"))]))]
+        )
+    )
+
+    with (
+        patch("app.services.ai_speech.ensure_google_client", return_value=fake_client),
+        patch("app.services.ai_speech._pcm_to_mp3", return_value=b"mp3-audio"),
+    ):
+        result = await ai_speech._generate_tts_gemini("空欄に入る表現は何ですか？", voice="Aoede", _max_retries=1)
+
+    assert result == b"mp3-audio"
+    call_kwargs = fake_client.aio.models.generate_content.await_args.kwargs
+    assert call_kwargs["model"] == "gemini-2.5-flash-preview-tts"
+    assert call_kwargs["contents"] != "空欄に入る表現は何ですか？"
+    assert "Read aloud the transcript below exactly as written." in call_kwargs["contents"]
+    assert "Do not answer, translate, explain, fill blanks" in call_kwargs["contents"]
+    assert "Transcript:\n空欄に入る表現は何ですか？" in call_kwargs["contents"]
 
 
 @pytest.mark.asyncio
