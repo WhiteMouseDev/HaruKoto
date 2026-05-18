@@ -21,11 +21,11 @@ with remaining STT divergence stayed `FLAG`.
 
 ```bash
 cd apps/api && uv run python scripts/regenerate_n4_audio_qa_flagged_tts.py \
-  --manifest docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-second-pass-2026-05-18.csv \
+  --manifest ../../docs/operations/plans/n4-human-audio-qa-flag-regeneration-plan-second-pass-2026-05-18.csv \
   --run-id 20260518T004000Z \
   --execute \
   --continue-on-error \
-  --result-output /Users/kimkunwoo/WhiteMouseDev/japanese/docs/operations/plans/n4-human-audio-qa-flag-regeneration-second-pass-results-2026-05-18.csv
+  --result-output ../../docs/operations/plans/n4-human-audio-qa-flag-regeneration-second-pass-results-2026-05-18.csv
 ```
 
 ## Regeneration Result
