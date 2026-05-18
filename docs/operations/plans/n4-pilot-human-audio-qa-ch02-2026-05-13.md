@@ -58,7 +58,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | この川の深さを確認しました。 | 이 강의 깊이를 확인했습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T021000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:この刃の重さを確認しました。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 0 | キム | この川の深さを確認しました。 | 이 강의 깊이를 확인했습니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T023000Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3) | PENDING |  |
 
