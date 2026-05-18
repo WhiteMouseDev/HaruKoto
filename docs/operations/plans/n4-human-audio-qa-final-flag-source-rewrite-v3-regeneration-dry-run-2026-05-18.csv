@@ -1,0 +1,2 @@
+target_key,target_id,source_text,current_audio_url,status,gcs_path,old_audio_url,new_audio_url,provider,model,error
+HN4-011 script:1,03cfdb15-c916-450c-8168-9052f3e754aa:script:1,ノートの厚さが違いますね。,https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1-regen-20260518T023000Z.mp3,planned,tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1-regen-20260518T024500Z.mp3,,,,,

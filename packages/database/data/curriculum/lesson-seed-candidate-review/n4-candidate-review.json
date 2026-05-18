@@ -33,7 +33,7 @@
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-i-adjective-nominalization-001",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI candidate re-review 2026-05-18: HN4-011 script 2 rewritten to 紙の厚さが違いますね after final same-source regeneration kept STT divergence for 厚さが違う紙がありますね. Approved for source re-seed and TTS regeneration planning while preserving いAdj stem + さ scope, paper context, Korean translation, answer keys, runtime-supported question types, and TTS target coverage; not native-speaker human approval.",
+      "reviewerNotes": "Delegated AI candidate re-review 2026-05-18: HN4-011 script 2 rewritten to ノートの厚さが違います after final same-source and provider-fallback regenerations kept STT divergence for paper/kami wording, then removed the sentence-final ね after STT consistently omitted it. Approved for source re-seed and TTS regeneration planning while preserving いAdj stem + さ scope, notebook context, Korean translation, answer keys, runtime-supported question types, and TTS target coverage; not native-speaker human approval.",
       "candidateId": "lsc-n4-i-adjective-nominalization-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-011",
@@ -151,8 +151,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "紙の厚さが違いますね。",
-            "translationKo": "종이의 두께가 다르네요.",
+            "text": "ノートの厚さが違います。",
+            "translationKo": "노트의 두께가 다릅니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-2",
               "textSource": "lesson-seeds:HN4-011:script:2",

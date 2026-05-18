@@ -3127,7 +3127,7 @@
     {
       "reviewId": "lesson-human-review-HN4-011",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: script 2 changed to 紙の厚さが違いますね after final same-source regeneration kept STT divergence for 厚さが違う紙がありますね. Approved as N4 さ nominalization source wording; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
+      "reviewerNotes": "Delegated AI source-rewrite re-review 2026-05-18: script 2 changed to ノートの厚さが違います after final same-source and provider-fallback regenerations kept STT divergence for paper/kami wording, then removed the sentence-final ね after STT consistently omitted it. Approved as N4 さ nominalization source wording in the existing notebook context; reseed and regenerated TTS are still required before clearing audio verdicts; not native-speaker human approval.",
       "lessonId": "HN4-011",
       "lessonNo": 11,
       "chapterId": "N4-CH03",
@@ -3208,8 +3208,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "紙の厚さが違いますね。",
-            "translationKo": "종이의 두께가 다르네요.",
+            "text": "ノートの厚さが違います。",
+            "translationKo": "노트의 두께가 다릅니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-2",
               "textSource": "lesson-seeds:HN4-011:script:2",
