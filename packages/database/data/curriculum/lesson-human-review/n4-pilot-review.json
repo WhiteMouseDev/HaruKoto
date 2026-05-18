@@ -433,8 +433,8 @@
             "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "医者に相談したほうがいいですか。",
-            "translationKo": "의사와 상담하는 편이 좋을까요?",
+            "text": "医者に相談した方がいいです。",
+            "translationKo": "의사와 상담하는 편이 좋습니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-002-script-3",
               "textSource": "lesson-seeds:HN4-002:script:3",
@@ -1363,8 +1363,8 @@
             "order": 3,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "はい。授業の予約にも申し込めます。",
-            "translationKo": "네. 수업 예약도 신청할 수 있습니다.",
+            "text": "はい。授業の予約もできます。",
+            "translationKo": "네. 수업 예약도 할 수 있습니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-005-script-3",
               "textSource": "lesson-seeds:HN4-005:script:3",
@@ -1658,8 +1658,8 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "この川の浅さも分かりますか。",
-            "translationKo": "이 강의 얕은 정도도 알 수 있나요?",
+            "text": "この川の浅さがわかります。",
+            "translationKo": "이 강의 얕은 정도도 알 수 있습니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-006-script-2",
               "textSource": "lesson-seeds:HN4-006:script:2",
@@ -2293,7 +2293,7 @@
             "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "会議が長かったのです。",
+            "text": "会議が長かったんです。",
             "translationKo": "회의가 길었던 거예요.",
             "ttsTarget": {
               "targetId": "tts-hn4-008-script-3",
@@ -3238,8 +3238,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "厚さと柔らかさを比べて選びましょう。",
-            "translationKo": "두께와 부드러운 정도를 비교해서 고릅시다.",
+            "text": "ノートの厚さと柔らかさを比べます。",
+            "translationKo": "노트의 두께와 부드러운 정도를 비교합니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-011-script-4",
               "textSource": "lesson-seeds:HN4-011:script:4",

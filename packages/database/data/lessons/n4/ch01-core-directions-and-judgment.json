@@ -260,8 +260,8 @@
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "医者に相談したほうがいいですか。",
-              "translation": "의사와 상담하는 편이 좋을까요?"
+              "text": "医者に相談した方がいいです。",
+              "translation": "의사와 상담하는 편이 좋습니다."
             },
             {
               "speaker": "佐藤",
@@ -837,8 +837,8 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "はい。授業の予約にも申し込めます。",
-              "translation": "네. 수업 예약도 신청할 수 있습니다."
+              "text": "はい。授業の予約もできます。",
+              "translation": "네. 수업 예약도 할 수 있습니다."
             },
             {
               "speaker": "キム",
