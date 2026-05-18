@@ -122,9 +122,9 @@ def _expected_field(kind: TargetKind) -> str:
     return LESSON_QUESTION_PROMPT_TTS_FIELD
 
 
-def _task_from_row(row: dict[str, str], *, row_number: int) -> FlaggedTtsTask | None:
+def _task_from_row(row: dict[str, str], *, row_number: int, source_verdicts: set[str]) -> FlaggedTtsTask | None:
     verdict = (row.get("current_verdict") or "").strip().upper()
-    if verdict != "FLAG":
+    if verdict not in source_verdicts:
         return None
 
     target_key = (row.get("target_key") or "").strip()
@@ -198,9 +198,16 @@ def _task_from_row(row: dict[str, str], *, row_number: int) -> FlaggedTtsTask | 
     )
 
 
-def read_manifest(csv_input: Path, *, target_keys: set[str] | None = None, limit: int | None = None) -> list[FlaggedTtsTask]:
+def read_manifest(
+    csv_input: Path,
+    *,
+    target_keys: set[str] | None = None,
+    limit: int | None = None,
+    source_verdicts: set[str] | None = None,
+) -> list[FlaggedTtsTask]:
     resolved_input = _resolve_path(csv_input)
     tasks: list[FlaggedTtsTask] = []
+    allowed_verdicts = source_verdicts or {"FLAG"}
 
     with resolved_input.open("r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
@@ -222,7 +229,7 @@ def read_manifest(csv_input: Path, *, target_keys: set[str] | None = None, limit
             raise ValueError(f"manifest is missing required columns: {', '.join(sorted(missing_columns))}")
 
         for row_number, row in enumerate(reader, start=2):
-            task = _task_from_row(row, row_number=row_number)
+            task = _task_from_row(row, row_number=row_number, source_verdicts=allowed_verdicts)
             if task is None:
                 continue
             if target_keys is not None and task.target_key not in target_keys:
@@ -235,7 +242,8 @@ def read_manifest(csv_input: Path, *, target_keys: set[str] | None = None, limit
         found_keys = {task.target_key for task in tasks}
         missing_keys = target_keys - found_keys
         if missing_keys:
-            raise ValueError(f"manifest target(s) not found or not FLAG: {', '.join(sorted(missing_keys))}")
+            verdict_label = ", ".join(sorted(allowed_verdicts))
+            raise ValueError(f"manifest target(s) not found or not in source verdict(s) {verdict_label}: {', '.join(sorted(missing_keys))}")
 
     return tasks
 
@@ -372,7 +380,7 @@ async def run_regeneration(
     uploader: Callable[[str, bytes], Awaitable[str]] = upload_tts_to_gcs,
     session_factory: SessionFactory = async_session_factory,
 ) -> list[RegenerationResult]:
-    print(f"planned_flag_tasks {len(tasks)}")
+    print(f"planned_tasks {len(tasks)}")
     print(f"run_id {run_id}")
     for task in tasks:
         print(f"- {task.display_name} gcs_path={task.gcs_path(run_id)}")
@@ -415,10 +423,16 @@ async def run_regeneration(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Regenerate N4 audio QA FLAG targets from the reviewed manifest.")
-    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST, help="FLAG regeneration manifest CSV path.")
+    parser = argparse.ArgumentParser(description="Regenerate N4 audio QA targets from a reviewed manifest.")
+    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST, help="Regeneration manifest CSV path.")
     parser.add_argument("--target-key", action="append", default=None, help="Limit to one target key; repeatable.")
-    parser.add_argument("--limit", type=int, default=None, help="Maximum FLAG targets to process.")
+    parser.add_argument(
+        "--source-verdict",
+        action="append",
+        default=None,
+        help="Include rows with this current_verdict. Defaults to FLAG. Repeatable, for example --source-verdict PENDING.",
+    )
+    parser.add_argument("--limit", type=int, default=None, help="Maximum targets to process.")
     parser.add_argument("--execute", action="store_true", help="Call TTS provider, upload audio, and update existing tts_audio rows.")
     parser.add_argument("--continue-on-error", action="store_true", help="Continue after a failed target.")
     parser.add_argument("--sleep-seconds", type=float, default=0.5, help="Delay between executed regenerations.")
@@ -434,6 +448,7 @@ async def main() -> None:
         args.manifest,
         target_keys=set(args.target_key) if args.target_key else None,
         limit=args.limit,
+        source_verdicts={verdict.upper() for verdict in args.source_verdict} if args.source_verdict else None,
     )
     results = await run_regeneration(
         tasks,
