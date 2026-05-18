@@ -397,7 +397,7 @@ def render_markdown(report: PostRegenerationAuditReport, *, command: str | None,
         "# N4 FLAG Post-Regeneration Audio Audit",
         "",
         f"> Status: {status}",
-        "> Scope: regenerated audio URLs for the 8 current N4 FLAG rows",
+        "> Scope: regenerated audio URLs from the supplied post-regeneration review CSV",
         "> Boundary: delegated AI/STT audio QA only; not native-speaker review",
         "",
         "ASSUMPTION: The project owner delegated this post-regeneration review because no human/native-speaker reviewer is "
