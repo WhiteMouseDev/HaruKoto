@@ -5292,7 +5292,7 @@
         "publishStatus": "DRAFT"
       },
       "seedShape": {
-        "title": "호수의 깊이를 말해요",
+        "title": "강의 깊이를 말해요",
         "subtitle": "い형용사 stem + さ로 정도를 명사화하기",
         "topic": "さ",
         "estimated_minutes": 12,
@@ -5326,8 +5326,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "水の深さを確認しました。",
-                "translation": "물의 깊이를 확인했습니다."
+                "text": "この川の深さを確認しました。",
+                "translation": "이 강의 깊이를 확인했습니다."
               },
               {
                 "speaker": "佐藤",
@@ -5406,7 +5406,7 @@
               "order": 3,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "湖の深___を確認します。 (호수의 깊이를 확인합니다.)",
+              "prompt": "川の深___を確認します。 (강의 깊이를 확인합니다.)",
               "options": [
                 {
                   "id": "a",
@@ -5458,14 +5458,14 @@
               "order": 5,
               "type": "SENTENCE_REORDER",
               "cognitive_level": "산출유사",
-              "prompt": "'호수의 깊이를 확인했습니다'를 배열하세요.",
+              "prompt": "'강의 깊이를 확인했습니다'를 배열하세요.",
               "tokens": [
                 "確認しました",
-                "湖の",
+                "川の",
                 "深さを"
               ],
               "correct_order": [
-                "湖の",
+                "川の",
                 "深さを",
                 "確認しました"
               ],
@@ -6379,8 +6379,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "厚さが違う紙がありますね。",
-                "translation": "두께가 다른 종이가 있네요."
+                "text": "紙の厚さが違いますね。",
+                "translation": "종이의 두께가 다르네요."
               },
               {
                 "speaker": "キム",
