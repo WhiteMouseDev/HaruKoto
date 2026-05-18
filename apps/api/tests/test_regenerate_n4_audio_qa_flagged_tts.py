@@ -57,6 +57,25 @@ def test_read_manifest_extracts_flag_tasks_and_validates_target_id(tmp_path: Pat
     ]
 
 
+def test_read_manifest_can_include_pending_targets_when_requested(tmp_path: Path) -> None:
+    lesson_id = "11111111-1111-1111-1111-111111111111"
+    manifest = tmp_path / "manifest.csv"
+    manifest.write_text(
+        "\n".join(
+            [
+                _manifest_header(),
+                f"HN4-001 script:3,{lesson_id},script,3,lesson_script_line,script_line,{lesson_id}:script:3,丁寧に確認します。,https://old.example/1.mp3,PENDING,,,,",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    tasks = read_manifest(manifest, source_verdicts={"PENDING"})
+
+    assert [task.target_key for task in tasks] == ["HN4-001 script:3"]
+
+
 def test_read_manifest_accepts_cwd_relative_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     lesson_id = "11111111-1111-1111-1111-111111111111"
     manifest_dir = tmp_path / "nested"

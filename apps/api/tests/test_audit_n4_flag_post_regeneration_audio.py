@@ -36,6 +36,16 @@ def test_read_review_targets_enriches_rows_from_regeneration_results(tmp_path: P
     assert targets[0].to_source_target().display_name == "HN4-001 script:3"
 
 
+def test_read_review_targets_can_accept_pending_when_requested(tmp_path: Path) -> None:
+    review_csv = _write_review_csv(tmp_path / "review.csv", current_verdict="PENDING")
+    regeneration_csv = _write_regeneration_csv(tmp_path / "regeneration.csv")
+
+    metadata = read_regeneration_metadata(regeneration_csv)
+    targets = read_review_targets(review_csv, regeneration_metadata=metadata, current_verdicts={"PENDING"})
+
+    assert targets[0].current_verdict == "PENDING"
+
+
 def test_read_review_targets_rejects_regenerated_audio_url_drift(tmp_path: Path) -> None:
     review_csv = _write_review_csv(tmp_path / "review.csv")
     regeneration_csv = _write_regeneration_csv(
@@ -102,7 +112,7 @@ def test_stt_mismatch_keeps_flag_recommendation_in_markdown(tmp_path: Path) -> N
     assert "TRANSCRIPTION_TEXT_MISMATCH" in markdown
 
 
-def _write_review_csv(path: Path) -> Path:
+def _write_review_csv(path: Path, *, current_verdict: str = "FLAG") -> Path:
     rows = [
         {
             "target_key": "HN4-001 script:3",
@@ -112,7 +122,7 @@ def _write_review_csv(path: Path) -> Path:
             "japanese_text": "分かりました。丁寧に確認します。",
             "korean_context": "알겠습니다. 꼼꼼히 확인하겠습니다.",
             "audio_url": "https://storage.googleapis.com/harukoto-storage/tts/lesson/11111111-1111-1111-1111-111111111111/script-line-3-regen-RUN.mp3",
-            "current_verdict": "FLAG",
+            "current_verdict": current_verdict,
             "current_notes": "Delegated AI-assisted FLAG.",
             "new_verdict": "",
             "new_notes": "",

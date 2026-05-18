@@ -60,7 +60,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | この川の深さを確認しました。 | 이 강의 깊이를 확인했습니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T023000Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
-| script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3) | PENDING |  |
+| script 1 | 佐藤 | この川の浅さも分かりますか。 | 이 강의 얕은 정도도 알 수 있나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1-regen-20260518T030500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:この川の浅さも分かります; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 2 | キム | はい。線の太さを確認できます。 | 네. 선의 굵기를 확인할 수 있습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260518T013503Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
@@ -106,7 +106,7 @@ question prompts. Chapter 2 warning items to prioritize while listening:
 
 | script 1 | 佐藤 | 何か理由があったんですか。 | 무슨 이유가 있었나요? | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 2 | キム | 会議が長かったのです。 | 회의가 길었던 거예요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | 会議が長かったのです。 | 회의가 길었던 거예요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-2-regen-20260518T030500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:会議が長かった; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 3 | 佐藤 | そうだったんですね。連絡ありがとうございます。 | 그랬군요. 연락 감사합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 

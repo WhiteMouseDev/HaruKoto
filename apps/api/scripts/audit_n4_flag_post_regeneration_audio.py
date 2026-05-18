@@ -217,9 +217,15 @@ def read_regeneration_metadata(csv_input: Path) -> dict[str, RegenerationMetadat
     return metadata
 
 
-def read_review_targets(csv_input: Path, *, regeneration_metadata: dict[str, RegenerationMetadata] | None = None) -> list[ReviewTarget]:
+def read_review_targets(
+    csv_input: Path,
+    *,
+    regeneration_metadata: dict[str, RegenerationMetadata] | None = None,
+    current_verdicts: set[str] | None = None,
+) -> list[ReviewTarget]:
     resolved_input = _resolve_path(csv_input)
     targets: list[ReviewTarget] = []
+    allowed_verdicts = current_verdicts or {"FLAG"}
     with resolved_input.open("r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
         missing_columns = REVIEW_CSV_REQUIRED_COLUMNS - set(reader.fieldnames or [])
@@ -232,8 +238,9 @@ def read_review_targets(csv_input: Path, *, regeneration_metadata: dict[str, Reg
                 continue
             _parse_target_key(target_key)
             current_verdict = (row.get("current_verdict") or "").strip().upper()
-            if current_verdict != "FLAG":
-                raise ValueError(f"row {row_number}: expected current_verdict FLAG for post-regeneration audit")
+            if current_verdict not in allowed_verdicts:
+                verdict_label = ", ".join(sorted(allowed_verdicts))
+                raise ValueError(f"row {row_number}: expected current_verdict in {verdict_label} for post-regeneration audit")
             japanese_text = (row.get("japanese_text") or "").strip()
             audio_url = (row.get("audio_url") or "").strip()
             if not japanese_text or not audio_url:
@@ -308,7 +315,7 @@ async def audit_targets(
         transcriber = default_transcribe_audio
 
     rows: list[PostRegenerationAuditRow] = []
-    with tempfile.TemporaryDirectory(prefix="harukoto-n4-flag-post-regen-") as tmpdir:
+    with tempfile.TemporaryDirectory(prefix="harukoto-n4-post-regen-") as tmpdir:
         tmpdir_path = Path(tmpdir)
         async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=True) as client:
             for index, item in enumerate(targets, start=1):
@@ -394,7 +401,7 @@ def write_recommendation_csv(csv_output: Path, report: PostRegenerationAuditRepo
 def render_markdown(report: PostRegenerationAuditReport, *, command: str | None, review_csv: Path, regeneration_results_csv: Path) -> str:
     status = "PASS" if report.recommended_pass_count == report.audio_report.target_count and report.audio_report.target_count else "REVIEW"
     lines = [
-        "# N4 FLAG Post-Regeneration Audio Audit",
+        "# N4 Post-Regeneration Audio Audit",
         "",
         f"> Status: {status}",
         "> Scope: regenerated audio URLs from the supplied post-regeneration review CSV",
@@ -465,7 +472,7 @@ def render_markdown(report: PostRegenerationAuditReport, *, command: str | None,
     elif report.unresolved_count:
         lines.append("REVIEW: machine probe passed, but STT/listening evidence is missing; keep rows out of PASS application.")
     else:
-        lines.append("PASS: all regenerated FLAG rows have clean machine probe evidence and exact STT/source matches.")
+        lines.append("PASS: all regenerated rows have clean machine probe evidence and exact STT/source matches.")
     lines.append("")
     return "\n".join(lines)
 
@@ -500,6 +507,9 @@ def _command_string(args: argparse.Namespace) -> str:
         parts.extend(["--timeout-seconds", str(args.timeout_seconds)])
     if args.transcribe:
         parts.append("--transcribe")
+    if args.current_verdict is not None:
+        for verdict in args.current_verdict:
+            parts.extend(["--current-verdict", verdict])
     if args.csv_output is not None:
         parts.extend(["--csv-output", str(args.csv_output)])
     if args.markdown_output is not None:
@@ -508,7 +518,7 @@ def _command_string(args: argparse.Namespace) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Audit regenerated audio for current N4 FLAG review rows.")
+    parser = argparse.ArgumentParser(description="Audit regenerated audio for current N4 review rows.")
     parser.add_argument("--review-csv", type=Path, default=DEFAULT_REVIEW_CSV, help="Post-regeneration review CSV.")
     parser.add_argument(
         "--regeneration-results-csv",
@@ -519,6 +529,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-silence-check", action="store_true", help="Skip ffmpeg silencedetect pass.")
     parser.add_argument("--timeout-seconds", type=float, default=15.0, help="HTTP download timeout.")
     parser.add_argument("--transcribe", action="store_true", help="Run AI STT and compare transcript with source text.")
+    parser.add_argument(
+        "--current-verdict",
+        action="append",
+        default=None,
+        help="Accept this current_verdict in the review CSV. Defaults to FLAG. Repeatable, for example --current-verdict PENDING.",
+    )
     parser.add_argument("--csv-output", type=Path, default=None, help="Write apply-compatible recommendation CSV.")
     parser.add_argument("--markdown-output", type=Path, default=None, help="Write Markdown audit report.")
     parser.add_argument("--fail-on-flag", action="store_true", help="Exit with status 1 if any row is still recommended FLAG.")
@@ -528,7 +544,11 @@ def parse_args() -> argparse.Namespace:
 async def main() -> None:
     args = parse_args()
     metadata = read_regeneration_metadata(args.regeneration_results_csv)
-    targets = read_review_targets(args.review_csv, regeneration_metadata=metadata)
+    targets = read_review_targets(
+        args.review_csv,
+        regeneration_metadata=metadata,
+        current_verdicts={verdict.upper() for verdict in args.current_verdict} if args.current_verdict else None,
+    )
     report = await audit_targets(
         targets,
         check_silence=not args.skip_silence_check,
