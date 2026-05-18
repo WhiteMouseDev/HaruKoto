@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N4 Audio QA Review Sheet</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f8f5f2; color: #24211f; }
+    main { max-width: 1120px; margin: 0 auto; padding: 40px 20px 80px; }
+    header { margin-bottom: 32px; }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    h2 { margin: 36px 0 16px; font-size: 22px; }
+    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }
+    p { color: #625b55; line-height: 1.6; }
+    code { background: #eee7df; border-radius: 4px; padding: 2px 4px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .metric { background: #fff; border: 1px solid #eadfd5; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+    .qa-card { background: #fff; border: 1px solid #e8ded4; border-radius: 8px; padding: 18px; margin: 12px 0; }
+    .qa-card.p0 { border-color: #f1a0a8; box-shadow: inset 4px 0 0 #e95f73; }
+    .qa-card.p1 { border-color: #f4c27a; box-shadow: inset 4px 0 0 #d9891d; }
+    .qa-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .qa-card__meta span { background: #f0e9e2; border-radius: 999px; padding: 5px 10px; font-size: 13px; }
+    audio { width: 100%; margin: 10px 0 12px; }
+    .qa-card__details { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; margin: 0; }
+    dt { color: #7a6f67; font-weight: 700; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .empty { background: #fff; border: 1px dashed #d8cbc0; border-radius: 8px; padding: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>N4 Audio QA Review Sheet</h1>
+    <p>Read-only listening surface. Record final verdicts in the source packet Markdown files.</p>
+  </header>
+  <section class="summary" aria-label="Summary">
+    <div class="metric">Total review items<strong>99</strong></div>
+    <div class="metric">Pending<strong>22</strong></div>
+    <div class="metric">Machine warnings<strong>11</strong></div>
+    <div class="metric">STT mismatches<strong>73</strong></div>
+    <div class="metric">Pass / Flag / Fail<strong>77 / 0 / 0</strong></div>
+  </section>
+  <section>
+    <h2>Sources</h2>
+    <ul><li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-machine-report-2026-05-14.md</code></li>
+<li><code>docs/operations/plans/n4-pilot-tts-stt-assist-run-2026-05-14.md</code></li></ul>
+  </section>
+<section><h2>P0 Review First</h2>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-001 question:3</span>
+    <span>PENDING</span>
+  </div>
+  <h3>名前を書き___. (이름을 쓰세요.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3863, TRANSCRIPTION_TEXT_MISMATCH:名前を書き イムルスセヨ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-002 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>医者に相談___。 (의사와 상담하는 편이 좋습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3876, TRANSCRIPTION_TEXT_MISMATCH:医者に相談 医者と相談する方がいいです</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-003 question:3</span>
+    <span>PENDING</span>
+  </div>
+  <h3>電車が遅れる___。 (전철이 늦을지도 모릅니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3646, TRANSCRIPTION_TEXT_MISMATCH:転写が遅れる ちょんちょり ぬじるちど もるにだ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-003 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>間に合わない___。 (시간에 맞지 못할지도 모릅니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.4078, TRANSCRIPTION_TEXT_MISMATCH:間に合わない。 時間に間に合わないかもしれません。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-004 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>電車に乗る___。 (전철을 탈 수밖에 없습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3813, TRANSCRIPTION_TEXT_MISMATCH:電車に乗るは ちょんちょろをたるすわけありません。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-005 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>文を翻訳___。 (문장을 번역할 수 있습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3968, TRANSCRIPTION_TEXT_MISMATCH:文語翻訳 文章を翻訳することができます</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-006 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>線の太___を見ます。 (선의 굵기를 봅니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3523, TRANSCRIPTION_TEXT_MISMATCH:洗脳体を見ます。そうね、クッキリを見ます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-008 question:3</span>
+    <span>PENDING</span>
+  </div>
+  <h3>会議が長かった___。 (회의가 길었던 거예요.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.4026, TRANSCRIPTION_TEXT_MISMATCH:会議がなかった フェイが消ろとんごよ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-009 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>就職する___、準備します。 (취직하기 위해 준비합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.4041, TRANSCRIPTION_TEXT_MISMATCH:給食する 準備します</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-010 question:4</span>
+    <span>PENDING</span>
+  </div>
+  <h3>信号が青になる___、車が進みます。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.3915, TRANSCRIPTION_TEXT_MISMATCH:信号が青になる 車が進みます</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p0">
+  <div class="qa-card__meta">
+    <span>P0 machine warning</span>
+    <span>HN4-011 question:3</span>
+    <span>PENDING</span>
+  </div>
+  <h3>紙の厚___を比べます。 (종이의 두께를 비교합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>HIGH_SILENCE_RATIO:0.359, TRANSCRIPTION_TEXT_MISMATCH:カビの音 お比べます。 ジョンギエたける比較します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+</section>
+<section><h2>P1 STT Mismatch Review</h2>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-002 script:0</span>
+    <span>PENDING</span>
+  </div>
+  <h3>少し頭が痛いです。</h3>
+  <p>머리가 조금 아픕니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:少し頭が痛い</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-002 script:2</span>
+    <span>PENDING</span>
+  </div>
+  <h3>医者に相談したほうがいいですか。</h3>
+  <p>의사와 상담하는 편이 좋을까요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:医者に相談した方がいいです。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-004 script:0</span>
+    <span>PENDING</span>
+  </div>
+  <h3>時間が足りません。駅まで走るしかありません。</h3>
+  <p>시간이 부족합니다. 역까지 달릴 수밖에 없습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:時間が足りません。江木まで走るしかありません。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-004 script:1</span>
+    <span>PENDING</span>
+  </div>
+  <h3>次の予定がありますからね。</h3>
+  <p>다음 일정이 있으니까요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:次の予定がありますから</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-005 script:1</span>
+    <span>PENDING</span>
+  </div>
+  <h3>文も翻訳できますか。</h3>
+  <p>문장도 번역할 수 있나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:文も翻訳できます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-005 script:2</span>
+    <span>PENDING</span>
+  </div>
+  <h3>はい。授業の予約にも申し込めます。</h3>
+  <p>네. 수업 예약도 신청할 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、授業の予約にも申し込みます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-006 script:1</span>
+    <span>PENDING</span>
+  </div>
+  <h3>この川の浅さも分かりますか。</h3>
+  <p>이 강의 얕은 정도도 알 수 있나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:この歯の舞さも分かりますか</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-008 script:2</span>
+    <span>PENDING</span>
+  </div>
+  <h3>会議が長かったのです。</h3>
+  <p>회의가 길었던 거예요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:会議が長かった</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-011 script:0</span>
+    <span>PENDING</span>
+  </div>
+  <h3>ノートを選ぶ前に、紙の厚さを比べています。</h3>
+  <p>노트를 고르기 전에 종이의 두께를 비교하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ノートを選ぶ前に コムの厚さを比べています</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-011 script:2</span>
+    <span>PENDING</span>
+  </div>
+  <h3>はい。この紙の柔らかさも確認します。</h3>
+  <p>네. 이 종이의 부드러운 정도도 확인합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、このシビの柔らかさも確認します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+<article class="qa-card p1">
+  <div class="qa-card__meta">
+    <span>P1 STT mismatch</span>
+    <span>HN4-011 script:3</span>
+    <span>PENDING</span>
+  </div>
+  <h3>厚さと柔らかさを比べて選びましょう。</h3>
+  <p>두께와 부드러운 정도를 비교해서 고릅시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:硬さ、柔らかさを比べて選びましょう。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd></dd>
+  </dl>
+</article>
+</section>
+<section><h2>P2 Remaining Pending</h2>
+<p class="empty">No items.</p>
+</section>
+<section><h2>P3 Resolved Or Waived</h2>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>宿題を出す前に、名前を書きなさい。</h3>
+  <p>숙제를 내기 전에 이름을 쓰세요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>はい、ここに書けばいいですか。</h3>
+  <p>네, 여기에 쓰면 되나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>はい。それから、規則をもう一度確認しなさい。</h3>
+  <p>네. 그리고 규칙을 한 번 더 확인하세요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>分かりました。注意して確認します。</h3>
+  <p>알겠습니다. 주의해서 확인하겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260518T013503Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:わかりました。定時に確認します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: canonical STT normalized match with kana/kanji orthographic-only mismatch; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>規則의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:機序、イエッスン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>注意의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ジュリー、イェー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 question:4</span>
+    <span>PASS</span>
+  </div>
+  <h3>規則を確認___. (규칙을 확인하세요.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:基礎を確認 キジクルファキナセヨ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-001 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;이름을 쓰세요&#x27;를 올바른 순서로 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:名前を쓰세요を正しい順序で配列してください。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>心配ですね。今日は早く寝たほうがいいです。</h3>
+  <p>걱정이네요. 오늘은 일찍 자는 편이 좋습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:心配ですね。今日は早く寝た方がいいです。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>熱があれば、医者に相談したほうが安心です。</h3>
+  <p>열이 있으면 의사와 상담하는 편이 안심이 됩니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:熱があれば医者に相談した方が安心です。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>心配의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:しんぺいげんつ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>相談의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:シャンダンエー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>早く寝___。 (일찍 자는 편이 좋습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:たやこ へん あら イルチッ ジャヌン ピョニ チョッスムニダ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-002 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;오늘은 일찍 자는 편이 좋습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>台風で電車が遅れるかもしれません。</h3>
+  <p>태풍 때문에 전철이 늦을지도 모릅니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>じゃあ、会議に間に合わないかもしれませんね。</h3>
+  <p>그럼 회의에 맞추지 못할지도 모르겠네요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-1-regen-20260518T004000Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:じゃあ、会計に値に合わないかもしれないですね。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>最近、天気がよく変わります。</h3>
+  <p>최근 날씨가 자주 바뀝니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>少し心配ですが、早めに出発します。</h3>
+  <p>조금 걱정되지만 일찍 출발하겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>台風의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:タイフン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>間に合う의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カニアウエイト</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-003 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;전철이 늦을지도 모릅니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>タクシーは高いので、電車に乗るしかありません。</h3>
+  <p>택시는 비싸서 전철을 탈 수밖에 없습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>まだ間に合います。急いで行きましょう。</h3>
+  <p>아직 맞출 수 있습니다. 서둘러 갑시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260518T013503Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:始めないで競いに行きましょう</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>足りる의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:たりとえぬ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>予定의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ゆでやしん</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>走る___。 (달릴 수밖에 없습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:走るかい タリル スバッケ オプスムニダ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-004 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;역까지 달릴 수밖에 없습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:よっかぢ たっりるしゅばっけ おぷすんにだ を はいれつはぜよ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>このアプリで漢字を調べられます。</h3>
+  <p>이 앱으로 한자를 찾아볼 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>それなら自信を持って勉強できます。</h3>
+  <p>그렇다면 자신감을 갖고 공부할 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>翻訳의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ファンヤクエトス</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>申し込む의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:申し込む</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>漢字を調べ___。 (한자를 찾아볼 수 있습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:漢字を調べ、赤字ら、한자를 찾아볼 수 있습니다。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-005 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;이 앱으로 한자를 찾아볼 수 있습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>この川の深さを確認しました。</h3>
+  <p>이 강의 깊이를 확인했습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T023000Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:骨の傘を実で確認しました。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>はい。線の太さを確認できます。</h3>
+  <p>네. 선의 굵기를 확인할 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260518T013503Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい。不当操作や操作もみられます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>情報の正しさも大切ですね。</h3>
+  <p>정보의 정확성도 중요하네요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>深い의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カメヤギ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>正しい의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:正しい</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>川の深___を確認します。 (강의 깊이를 확인합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-3-regen-20260518T021500Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:国の金を確認します。法成企ビルを確認します。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-006 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;강의 깊이를 확인했습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/question-5-regen-20260518T021500Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ホスエエギピルル確認しましたを配列はせよ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>週末のイベントに参加しようと思っています。</h3>
+  <p>주말 이벤트에 참가하려고 생각하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>私は友達に案内を送ろうと思っています。</h3>
+  <p>저는 친구에게 안내를 보내려고 생각하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>資料も集めようと思います。</h3>
+  <p>자료도 모으려고 합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>新しい先生を紹介しようと思います。</h3>
+  <p>새 선생님을 소개하려고 합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>参加する의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ジャンカするエポ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>集める의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:カツメルシン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>イベントに参加___と思っています。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:イベントに参加 と思っています。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 question:4</span>
+    <span>PASS</span>
+  </div>
+  <h3>案内を送___と思っています。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:案内を奏なちと思っています。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-007 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;행사에 참가하려고 생각하고 있습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/faeff614-2038-49b4-8c6c-4915d50cecf8/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:弊社に参加しようと 考えていますを 手配ください</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>返事が遅れてすみません。</h3>
+  <p>답장이 늦어서 죄송합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-0-regen-20260514T083500Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:半時が遅れてすみません。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>何か理由があったんですか。</h3>
+  <p>무슨 이유가 있었나요?</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>そうだったんですね。連絡ありがとうございます。</h3>
+  <p>그랬군요. 연락 감사합니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>理由의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ディユーイェスン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>返事의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ファンシー</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 question:4</span>
+    <span>PASS</span>
+  </div>
+  <h3>理由があった___か。 (이유가 있었던 건가요?)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:理由があった。なーなか。理由があったんがよ？</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-008 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;회의가 길었던 거예요&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/78e8b581-c81d-4465-b49d-cf0e4b49db4a/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:フェイが長かったんですよを配列세요。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>面接のために、自己紹介を練習しています。</h3>
+  <p>면접을 위해 자기소개를 연습하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>就職するために、準備しているんですね。</h3>
+  <p>취직하기 위해 준비하고 있군요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>はい。新しい技術も勉強しています。</h3>
+  <p>네. 새로운 기술도 공부하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>教育のためにも役に立ちそうです。</h3>
+  <p>교육을 위해서도 도움이 될 것 같습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/script-line-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>面接의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>準備의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:準備役員</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>面接___、練習しています。 (면접을 위해 연습하고 있습니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接、アクタ、練習しています。 面接、ウィヘ、練習、ハコイスミダ。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-009 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;면접을 위해 준비하고 있습니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/3221de04-7925-47d9-880a-2adcabfc58b1/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:面接のために準備していますを配列</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 script:0</span>
+    <span>PASS</span>
+  </div>
+  <h3>このボタンを押すと、画面が変わります。</h3>
+  <p>이 버튼을 누르면 화면이 바뀝니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-0.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>信号が青になると、車が進みますね。</h3>
+  <p>신호가 파란색이 되면 차가 나아가네요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 script:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>はい。自然な結果を言うときに使います。</h3>
+  <p>네. 자연스러운 결과를 말할 때 씁니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:はい、自然な結果を言う時に使います。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: canonical STT normalized match with orthographic-only mismatch; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>商品が届くと、連絡が来ます。</h3>
+  <p>상품이 도착하면 연락이 옵니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3-regen-20260518T013503Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:何か届くとメールが来ます。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>信号의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:新興エコタウン</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>届く의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:得てして</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 question:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>ボタンを押す___、画面が変わります。</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-3.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ボタンを押す 画面が変わります</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-010 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;버튼을 누르면 화면이 바뀝니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ボタンを押すと画面が変わります。る ベヨルハセヨ</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-011 script:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>ノートの厚さが違います。</h3>
+  <p>노트의 두께가 다릅니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1-regen-20260518T025500Z.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:石と薄い石があります。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-011 question:1</span>
+    <span>PASS</span>
+  </div>
+  <h3>厚い의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-1.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:ほ いえすん</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-011 question:2</span>
+    <span>PASS</span>
+  </div>
+  <h3>柔らかい의 뜻은?</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-2.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:やわらかい</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-011 question:4</span>
+    <span>PASS</span>
+  </div>
+  <h3>この紙の柔らか___を確認します。 (이 종이의 부드러운 정도를 확인합니다.)</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-4.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:この詩の柔らかを確認します。イ チョンゲ ブドロウン ジョンドゥルル ホギナムニダ。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review.</dd>
+  </dl>
+</article>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-011 question:5</span>
+    <span>PASS</span>
+  </div>
+  <h3>&#x27;종이의 두께를 비교합니다&#x27;를 배열하세요.</h3>
+  <p></p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/question-5.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>none</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review.</dd>
+  </dl>
+</article>
+</section>
+</main>
+</body>
+</html>
