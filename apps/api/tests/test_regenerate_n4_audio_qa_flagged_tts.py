@@ -10,9 +10,11 @@ import pytest
 
 from scripts.regenerate_n4_audio_qa_flagged_tts import (
     FlaggedTtsTask,
+    RegenerationResult,
     execute_task,
     read_manifest,
     run_regeneration,
+    write_result_csv,
 )
 
 
@@ -24,13 +26,14 @@ class FakeTtsResult:
 
 
 def test_read_manifest_extracts_flag_tasks_and_validates_target_id(tmp_path: Path) -> None:
+    lesson_id = "11111111-1111-1111-1111-111111111111"
     manifest = tmp_path / "manifest.csv"
     manifest.write_text(
         "\n".join(
             [
-                "target_key,lesson_id,target_kind,target_order,target_type,field,target_id,source_text,current_audio_url,current_verdict",
-                "HN4-001 script:3,lesson-1,script,3,lesson_script_line,script_line,lesson-1:script:3,丁寧に確認します。,https://old.example/1.mp3,FLAG",
-                "HN4-002 script:0,lesson-2,script,0,lesson_script_line,script_line,lesson-2:script:0,心配ですね。,https://old.example/2.mp3,PENDING",
+                _manifest_header(),
+                f"HN4-001 script:3,{lesson_id},script,3,lesson_script_line,script_line,{lesson_id}:script:3,丁寧に確認します。,https://old.example/1.mp3,FLAG,,,,",
+                f"HN4-002 script:0,{lesson_id},script,0,lesson_script_line,script_line,{lesson_id}:script:0,心配ですね。,https://old.example/2.mp3,PENDING,,,,",
                 "",
             ]
         ),
@@ -42,12 +45,12 @@ def test_read_manifest_extracts_flag_tasks_and_validates_target_id(tmp_path: Pat
     assert tasks == [
         FlaggedTtsTask(
             target_key="HN4-001 script:3",
-            lesson_id="lesson-1",
+            lesson_id=lesson_id,
             target_kind="script",
             target_order=3,
             target_type="lesson_script_line",
             field="script_line",
-            target_id="lesson-1:script:3",
+            target_id=f"{lesson_id}:script:3",
             source_text="丁寧に確認します。",
             current_audio_url="https://old.example/1.mp3",
         )
@@ -55,14 +58,15 @@ def test_read_manifest_extracts_flag_tasks_and_validates_target_id(tmp_path: Pat
 
 
 def test_read_manifest_accepts_cwd_relative_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    lesson_id = "11111111-1111-1111-1111-111111111111"
     manifest_dir = tmp_path / "nested"
     manifest_dir.mkdir()
     manifest = manifest_dir / "manifest.csv"
     manifest.write_text(
         "\n".join(
             [
-                "target_key,lesson_id,target_kind,target_order,target_type,field,target_id,source_text,current_audio_url,current_verdict",
-                "HN4-001 script:3,lesson-1,script,3,lesson_script_line,script_line,lesson-1:script:3,丁寧に確認します。,https://old.example/1.mp3,FLAG",
+                _manifest_header(),
+                f"HN4-001 script:3,{lesson_id},script,3,lesson_script_line,script_line,{lesson_id}:script:3,丁寧に確認します。,https://old.example/1.mp3,FLAG,,,,",
                 "",
             ]
         ),
@@ -73,6 +77,24 @@ def test_read_manifest_accepts_cwd_relative_paths(tmp_path: Path, monkeypatch: p
     tasks = read_manifest(Path("nested/manifest.csv"))
 
     assert [task.target_key for task in tasks] == ["HN4-001 script:3"]
+
+
+def test_read_manifest_rejects_prefilled_post_regeneration_columns(tmp_path: Path) -> None:
+    lesson_id = "11111111-1111-1111-1111-111111111111"
+    manifest = tmp_path / "manifest.csv"
+    manifest.write_text(
+        "\n".join(
+            [
+                _manifest_header(),
+                f"HN4-001 script:3,{lesson_id},script,3,lesson_script_line,script_line,{lesson_id}:script:3,丁寧に確認します。,https://old.example/1.mp3,FLAG,,https://new.example/1.mp3,,",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="new_audio_url must be blank"):
+        read_manifest(manifest)
 
 
 @pytest.mark.asyncio
@@ -96,7 +118,21 @@ async def test_run_regeneration_dry_run_does_not_call_external_dependencies() ->
         session_factory=_factory(_FakeSession([])),  # type: ignore[arg-type]
     )
 
-    assert results == []
+    assert len(results) == 1
+    assert results[0].status == "planned"
+    assert results[0].gcs_path == f"tts/lesson/{task.lesson_id}/script-line-1-regen-RUN.mp3"
+
+
+def test_write_result_csv_records_planned_dry_run_rows(tmp_path: Path) -> None:
+    task = _make_task()
+    output = tmp_path / "results.csv"
+
+    count = write_result_csv(output, [run_result := _planned_result(task)])
+
+    assert count == 1
+    assert output.read_text(encoding="utf-8").splitlines()[1] == (
+        f"{task.target_key},{task.target_id},{task.source_text},{task.current_audio_url},{run_result.status},{run_result.gcs_path},,,,,"
+    )
 
 
 @pytest.mark.asyncio
@@ -135,6 +171,7 @@ async def test_execute_task_updates_existing_record_after_generation_and_upload(
     )
 
     assert result.status == "regenerated"
+    assert result.gcs_path == f"tts/lesson/{lesson_id}/script-line-1-regen-20260514T000000Z.mp3"
     assert result.old_audio_url == "https://old.example/script-line-1.mp3"
     assert result.new_audio_url == "https://new.example/script-line-1.mp3"
     assert generated_texts == ["丁寧に確認します。"]
@@ -186,6 +223,17 @@ def _make_task(*, lesson_id: str = "11111111-1111-1111-1111-111111111111") -> Fl
         source_text="丁寧に確認します。",
         current_audio_url="https://old.example/script-line-1.mp3",
     )
+
+
+def _manifest_header() -> str:
+    return (
+        "target_key,lesson_id,target_kind,target_order,target_type,field,target_id,source_text,"
+        "current_audio_url,current_verdict,regeneration_status,new_audio_url,post_regen_verdict,post_regen_notes"
+    )
+
+
+def _planned_result(task: FlaggedTtsTask) -> RegenerationResult:
+    return RegenerationResult(task=task, status="planned", gcs_path=task.gcs_path("RUN"))
 
 
 class _FakeSession:

@@ -32,6 +32,7 @@ class VerdictUpdate:
     packet_path: Path
     new_verdict: str | None
     new_notes: str | None
+    audio_url: str | None = None
 
 
 @dataclass(frozen=True)
@@ -125,6 +126,7 @@ def read_updates(csv_input: Path) -> list[VerdictUpdate]:
                     packet_path=_resolve_path(packet),
                     new_verdict=new_verdict or None,
                     new_notes=new_notes or None,
+                    audio_url=(row.get("audio_url") or "").strip() or None,
                 )
             )
     return updates
@@ -139,6 +141,7 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
     header: list[str] | None = None
     verdict_index: int | None = None
     notes_index: int | None = None
+    audio_index: int | None = None
 
     for line in lines:
         heading_match = LESSON_HEADING_RE.match(line.strip())
@@ -158,6 +161,7 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
             header = cells
             verdict_index = cells.index("Reviewer verdict")
             notes_index = cells.index("Notes")
+            audio_index = cells.index("Audio") if "Audio" in cells else None
             output.append(line)
             continue
         if header is None or verdict_index is None or notes_index is None or _is_separator_row(cells):
@@ -179,6 +183,8 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
             cells[verdict_index] = update.new_verdict
         if update.new_notes:
             cells[notes_index] = update.new_notes
+        if update.audio_url and audio_index is not None:
+            cells[audio_index] = f"[audio]({update.audio_url})"
         if cells != original:
             changed += 1
             output.append(_markdown_row(cells))
