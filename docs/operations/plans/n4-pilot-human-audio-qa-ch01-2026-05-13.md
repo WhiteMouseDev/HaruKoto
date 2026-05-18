@@ -72,7 +72,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 2 |  | 注意의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-2.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 3 |  | 名前を書き___. (이름을 쓰세요.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-3.mp3) | PENDING |  |
+| question 3 |  | 名前を書き___. (이름을 쓰세요.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-3-regen-20260518T055500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:なまえを; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 4 |  | 規則を確認___. (규칙을 확인하세요.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-4.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
@@ -96,7 +96,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 3 |  | 早く寝___。 (일찍 자는 편이 좋습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 4 |  | 医者に相談___。 (의사와 상담하는 편이 좋습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-4.mp3) | PENDING |  |
+| question 4 |  | 医者に相談___。 (의사와 상담하는 편이 좋습니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-4-regen-20260518T055500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:ガイさんボイ; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 5 |  | '오늘은 일찍 자는 편이 좋습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/89433566-b321-4f99-ac20-9ffb87e69d6b/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -116,9 +116,9 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 2 |  | 間に合う의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-2.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 3 |  | 電車が遅れる___。 (전철이 늦을지도 모릅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-3.mp3) | PENDING |  |
+| question 3 |  | 電車が遅れる___。 (전철이 늦을지도 모릅니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-3-regen-20260518T055500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:전철이 늦을지도; direct-listen or regenerate before rollout; not native-speaker review. |
 
-| question 4 |  | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4.mp3) | PENDING |  |
+| question 4 |  | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4-regen-20260518T041500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) HIGH_SILENCE_RATIO:0.3725, TRANSCRIPTION_TEXT_MISMATCH:カニ合わない; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 5 |  | '전철이 늦을지도 모릅니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -140,7 +140,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 3 |  | 走る___。 (달릴 수밖에 없습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 4 |  | 電車に乗る___。 (전철을 탈 수밖에 없습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-4.mp3) | PENDING |  |
+| question 4 |  | 電車に乗る___。 (전철을 탈 수밖에 없습니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-4-regen-20260518T055500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:電車を乗るしかない。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 5 |  | '역까지 달릴 수밖에 없습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
@@ -162,7 +162,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 3 |  | 漢字を調べ___。 (한자를 찾아볼 수 있습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 4 |  | 文を翻訳___。 (문장을 번역할 수 있습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-4.mp3) | PENDING |  |
+| question 4 |  | 文を翻訳___。 (문장을 번역할 수 있습니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-4-regen-20260518T041500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:文を翻訳 マチタ ムンジャンを翻訳することができます; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 5 |  | '이 앱으로 한자를 찾아볼 수 있습니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/17851e67-db52-41b8-a651-d416251b0ead/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 

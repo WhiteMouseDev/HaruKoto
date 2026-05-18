@@ -16,6 +16,7 @@ CSV_COLUMNS = [
     "review_signals",
     "japanese_text",
     "korean_context",
+    "provider_model",
     "audio_url",
     "current_verdict",
     "current_notes",
@@ -33,6 +34,7 @@ class VerdictUpdate:
     new_verdict: str | None
     new_notes: str | None
     audio_url: str | None = None
+    provider_model: str | None = None
 
 
 @dataclass(frozen=True)
@@ -88,6 +90,7 @@ def write_template(csv_output: Path, *, packet_paths: list[Path], machine_report
                     "review_signals": ", ".join(item.review_signals),
                     "japanese_text": item.japanese_text,
                     "korean_context": item.korean_context,
+                    "provider_model": item.provider_model,
                     "audio_url": item.audio_url,
                     "current_verdict": item.verdict,
                     "current_notes": item.notes,
@@ -127,6 +130,7 @@ def read_updates(csv_input: Path) -> list[VerdictUpdate]:
                     new_verdict=new_verdict or None,
                     new_notes=new_notes or None,
                     audio_url=(row.get("audio_url") or "").strip() or None,
+                    provider_model=(row.get("provider_model") or "").strip() or None,
                 )
             )
     return updates
@@ -142,6 +146,7 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
     verdict_index: int | None = None
     notes_index: int | None = None
     audio_index: int | None = None
+    provider_index: int | None = None
 
     for line in lines:
         heading_match = LESSON_HEADING_RE.match(line.strip())
@@ -162,6 +167,7 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
             verdict_index = cells.index("Reviewer verdict")
             notes_index = cells.index("Notes")
             audio_index = cells.index("Audio") if "Audio" in cells else None
+            provider_index = cells.index("Provider/model") if "Provider/model" in cells else None
             output.append(line)
             continue
         if header is None or verdict_index is None or notes_index is None or _is_separator_row(cells):
@@ -185,6 +191,8 @@ def _apply_updates_to_packet(path: Path, updates: dict[str, VerdictUpdate]) -> t
             cells[notes_index] = update.new_notes
         if update.audio_url and audio_index is not None:
             cells[audio_index] = f"[audio]({update.audio_url})"
+        if update.provider_model and provider_index is not None:
+            cells[provider_index] = update.provider_model
         if cells != original:
             changed += 1
             output.append(_markdown_row(cells))

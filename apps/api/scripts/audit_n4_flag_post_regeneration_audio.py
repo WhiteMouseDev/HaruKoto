@@ -40,13 +40,14 @@ APPLY_CSV_COLUMNS = [
     "review_signals",
     "japanese_text",
     "korean_context",
+    "provider_model",
     "audio_url",
     "current_verdict",
     "current_notes",
     "new_verdict",
     "new_notes",
 ]
-REVIEW_CSV_REQUIRED_COLUMNS = set(APPLY_CSV_COLUMNS)
+REVIEW_CSV_REQUIRED_COLUMNS = set(APPLY_CSV_COLUMNS) - {"provider_model"}
 REGENERATION_RESULT_REQUIRED_COLUMNS = {
     "target_key",
     "target_id",
@@ -388,6 +389,7 @@ def write_recommendation_csv(csv_output: Path, report: PostRegenerationAuditRepo
                     "review_signals": item.review_signals,
                     "japanese_text": item.japanese_text,
                     "korean_context": item.korean_context,
+                    "provider_model": f"{item.provider} / {item.model}",
                     "audio_url": item.audio_url,
                     "current_verdict": item.current_verdict,
                     "current_notes": item.current_notes,

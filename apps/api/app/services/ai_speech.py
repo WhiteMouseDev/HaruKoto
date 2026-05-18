@@ -66,15 +66,25 @@ def _generate_tts_elevenlabs(text: str) -> bytes:
     return b"".join(audio_iter)
 
 
+def _gemini_tts_prompt(text: str) -> str:
+    return (
+        "Read aloud the transcript below exactly as written. "
+        "Do not answer, translate, explain, fill blanks, or add any extra words. "
+        "Only generate speech audio for the transcript.\n\n"
+        f"Transcript:\n{text}"
+    )
+
+
 async def _generate_tts_gemini(text: str, voice: str = "Kore", _max_retries: int = 2) -> bytes:
     client = ensure_google_client()
+    prompt = _gemini_tts_prompt(text)
 
     last_error: RuntimeError | None = None
 
     for attempt in range(_max_retries):
         response = await client.aio.models.generate_content(
             model="gemini-2.5-flash-preview-tts",
-            contents=text,
+            contents=prompt,
             config=types.GenerateContentConfig(
                 response_modalities=["AUDIO"],
                 speech_config=types.SpeechConfig(

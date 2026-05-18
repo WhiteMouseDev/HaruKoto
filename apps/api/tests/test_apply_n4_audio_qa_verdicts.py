@@ -116,6 +116,30 @@ def test_apply_updates_writes_audio_url_when_present(tmp_path: Path) -> None:
     assert "[audio](https://example.com/question.mp3)" not in packet_text
 
 
+def test_apply_updates_writes_provider_model_when_present(tmp_path: Path) -> None:
+    packet = _write_packet(tmp_path / "packet.md")
+    csv_path = tmp_path / "updates.csv"
+    csv_path.write_text(
+        "\n".join(
+            [
+                "target_key,packet,provider_model,audio_url,new_verdict,new_notes",
+                f"HN4-001 question:3,{packet},gemini / gemini-2.5-flash-preview-tts,"
+                "https://example.com/new-question.mp3,PASS,checked after regeneration",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = apply_updates(read_updates(csv_path), write=True)
+
+    assert result.matched == 1
+    assert result.changed == 1
+    packet_text = packet.read_text(encoding="utf-8")
+    assert "gemini / gemini-2.5-flash-preview-tts" in packet_text
+    assert "elevenlabs / model" in packet_text
+
+
 def test_read_updates_rejects_invalid_verdict(tmp_path: Path) -> None:
     csv_path = tmp_path / "updates.csv"
     csv_path.write_text(
