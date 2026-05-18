@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N4 Residual FLAG Audio QA Adjudication</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f5f6f1; color: #20241f; }
+    main { max-width: 1120px; margin: 0 auto; padding: 40px 20px 80px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    h2 { margin: 34px 0 14px; font-size: 22px; }
+    h3 { margin: 12px 0 8px; font-size: 21px; line-height: 1.35; }
+    h4 { margin: 0 0 8px; font-size: 15px; }
+    p { color: #596054; line-height: 1.55; }
+    code { background: #e7eadf; border-radius: 4px; padding: 2px 4px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .metric { background: #fff; border: 1px solid #d9dfd0; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+    .review-card { background: #fff; border: 1px solid #dfd1c5; border-radius: 8px; padding: 18px; margin: 14px 0; box-shadow: inset 4px 0 0 #b86439; }
+    .review-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .review-card__meta span { background: #f2e4d9; border-radius: 999px; padding: 5px 10px; font-size: 13px; }
+    .audio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 14px 0; }
+    .audio-version { border: 1px solid #e1e4dc; border-radius: 8px; padding: 12px; background: #fbfcf8; }
+    audio { width: 100%; margin-bottom: 8px; }
+    .audio-version p { margin: 0; overflow-wrap: anywhere; }
+    .review-card__details { display: grid; grid-template-columns: 104px 1fr; gap: 7px 10px; margin: 0; }
+    dt { color: #75543d; font-weight: 700; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .empty { background: #fff; border: 1px dashed #c9cbbf; border-radius: 8px; padding: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>N4 Residual FLAG Audio QA Adjudication</h1>
+    <p>Compare original, first-pass, and second-pass audio before deciding on PASS, waiver, or source rewrite.</p>
+  </header>
+  <section class="summary" aria-label="Summary">
+    <div class="metric">Second-pass rows<strong>7</strong></div>
+    <div class="metric">Cleared to PASS<strong>1</strong></div>
+    <div class="metric">Residual FLAG<strong>6</strong></div>
+    <div class="metric">Rewrite candidates<strong>6</strong></div>
+  </section>
+  <section>
+    <h2>Boundary</h2>
+    <p>This sheet does not mutate packet verdicts or database rows. Keep the rows as FLAG until adjudication evidence is explicit.</p>
+  </section>
+  <section>
+    <h2>Items</h2>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-001 script:3</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>分かりました。丁寧に確認します。</h3>
+  <p>알겠습니다. 꼼꼼히 확인하겠습니다.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3.mp3"></audio>
+  <p>わかりました。定時に確認します。</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260514T083500Z.mp3"></audio>
+  <p>分かりました。店主に確認します。</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260518T004000Z.mp3"></audio>
+  <p>わかりました。艇中に確認します。</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-001 script:3 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:わかりました。艇中に確認します。; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>b544d1f5-8089-45f8-b3d9-6428b60a0ece:script:3</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-004 script:3</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch01-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>諦めないで、急いで行きましょう。</h3>
+  <p>포기하지 말고 서둘러 갑시다.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3.mp3"></audio>
+  <p>始めないで競いに行きましょう</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260514T083500Z.mp3"></audio>
+  <p>ひじめないで 清いでいきましょう</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260518T004000Z.mp3"></audio>
+  <p>責めないで築いでいきましょう</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-004 script:3 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:責めないで築いでいきましょう; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>8368ee77-eeb8-48b2-9c81-2cfd597e5f7a:script:3</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-006 script:0</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>湖の深さを地図で確認しました。</h3>
+  <p>호수의 깊이를 지도에서 확인했습니다.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0.mp3"></audio>
+  <p>骨の傘を実で確認しました。</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260514T083500Z.mp3"></audio>
+  <p>このマーサを実で確認しました。</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-0-regen-20260518T004000Z.mp3"></audio>
+  <p>小野真央を実で確認しました。</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-006 script:0 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:小野真央を実で確認しました。; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>94d8d321-17c6-4fa1-8c50-af29c08e9c22:script:0</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-006 script:2</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>はい。線の太さや細さも見られます。</h3>
+  <p>네. 선의 굵기나 가늘기도 볼 수 있습니다.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2.mp3"></audio>
+  <p>はい。不当操作や操作もみられます。</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260514T083500Z.mp3"></audio>
+  <p>はい、線の太さや磯さも見られる。</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/94d8d321-17c6-4fa1-8c50-af29c08e9c22/script-line-2-regen-20260518T004000Z.mp3"></audio>
+  <p>はい、洗脳邸さや石さもみられます。</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-006 script:2 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:はい、洗脳邸さや石さもみられます。; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>94d8d321-17c6-4fa1-8c50-af29c08e9c22:script:2</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-010 script:3</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch02-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>荷物が届くと、メールが来ます。</h3>
+  <p>짐이 도착하면 메일이 옵니다.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3.mp3"></audio>
+  <p>何か届くとメールが来ます。</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3-regen-20260514T083500Z.mp3"></audio>
+  <p>何もつか届くとミールが来ます</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/1445c28c-bd0c-4c0a-b8f7-2708c51acca7/script-line-3-regen-20260518T004000Z.mp3"></audio>
+  <p>何もずが届くとミールが来ます。</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-010 script:3 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:何もずが届くとミールが来ます。; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>1445c28c-bd0c-4c0a-b8f7-2708c51acca7:script:3</dd>
+  </dl>
+</article>
+<article class="review-card">
+  <div class="review-card__meta">
+    <span>HN4-011 script:1</span>
+    <span>docs/operations/plans/n4-pilot-human-audio-qa-ch03-2026-05-13.md</span>
+    <span>rewrite candidate: yes</span>
+  </div>
+  <h3>厚い紙と薄い紙がありますね。</h3>
+  <p>두꺼운 종이와 얇은 종이가 있네요.</p>
+  <div class="audio-grid">
+<div class="audio-version">
+  <h4>Original</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1.mp3"></audio>
+  <p>石と薄い石があります。</p>
+</div>
+<div class="audio-version">
+  <h4>First pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1-regen-20260514T083500Z.mp3"></audio>
+  <p>藍石と薄石があります</p>
+</div>
+<div class="audio-version">
+  <h4>Second pass</h4>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/03cfdb15-c916-450c-8168-9052f3e754aa/script-line-1-regen-20260518T004000Z.mp3"></audio>
+  <p>小財地と薄石があります</p>
+</div>
+  </div>
+  <dl class="review-card__details">
+    <dt>Next step</dt><dd>Adjudicate HN4-011 script:1 across original/first/second audio before a third regeneration; if no version is clearly acceptable, rewrite the source sentence and regenerate from the rewritten source.</dd>
+    <dt>Current notes</dt><dd>Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:小財地と薄石があります; direct-listen or regenerate before rollout; not native-speaker review.</dd>
+    <dt>Target ID</dt><dd>03cfdb15-c916-450c-8168-9052f3e754aa:script:1</dd>
+  </dl>
+</article>
+  </section>
+</main>
+</body>
+</html>
