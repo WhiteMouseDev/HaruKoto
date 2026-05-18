@@ -66,7 +66,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 2 | 先生 | はい。それから、規則をもう一度確認しなさい。 | 네. 그리고 규칙을 한 번 더 확인하세요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | 学生 | 分かりました。丁寧に確認します。 | 알겠습니다. 꼼꼼히 확인하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260514T083500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:分かりました。店主に確認します。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | 学生 | 分かりました。丁寧に確認します。 | 알겠습니다. 꼼꼼히 확인하겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/script-line-3-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:わかりました。艇中に確認します。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 1 |  | 規則의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b544d1f5-8089-45f8-b3d9-6428b60a0ece/question-1.mp3) | PENDING |  |
 
@@ -106,7 +106,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 |---|---|---|---|---|---|---|---|---|
 | script 0 | 佐藤 | 台風で電車が遅れるかもしれません。 | 태풍 때문에 전철이 늦을지도 모릅니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 1 | キム | じゃあ、会議に間に合わないかもしれませんね。 | 그럼 회의에 맞추지 못할지도 모르겠네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-1-regen-20260514T083500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:じゃ、会議に間に合わないかもしれませんね。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 1 | キム | じゃあ、会議に間に合わないかもしれませんね。 | 그럼 회의에 맞추지 못할지도 모르겠네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-1-regen-20260518T004000Z.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | script 2 | 佐藤 | 最近、天気がよく変わります。 | 최근 날씨가 자주 바뀝니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
@@ -132,7 +132,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | script 2 | キム | タクシーは高いので、電車に乗るしかありません。 | 택시는 비싸서 전철을 탈 수밖에 없습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
-| script 3 | 佐藤 | 諦めないで、急いで行きましょう。 | 포기하지 말고 서둘러 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260514T083500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:ひじめないで 清いでいきましょう; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | 佐藤 | 諦めないで、急いで行きましょう。 | 포기하지 말고 서둘러 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/script-line-3-regen-20260518T004000Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:責めないで築いでいきましょう; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | question 1 |  | 足りる의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8368ee77-eeb8-48b2-9c81-2cfd597e5f7a/question-1.mp3) | PENDING |  |
 
