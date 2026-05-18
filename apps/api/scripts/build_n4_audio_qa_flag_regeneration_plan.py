@@ -77,6 +77,7 @@ class FlagRegenerationPlan:
     pending_count: int
     flag_count: int
     fail_count: int
+    source_verdicts: set[str]
     items: list[FlagRegenerationItem]
 
     @property
@@ -121,6 +122,8 @@ def _target_metadata(item: ReviewQueueItem, lesson_id: str) -> tuple[str, int, s
 
 
 def _recommended_action(item: ReviewQueueItem) -> str:
+    if item.verdict == "PENDING":
+        return "regenerate audio, then STT audit before setting PASS or FLAG"
     if "wrong-word audio" in item.notes or "lexical divergence" in item.notes:
         return "regenerate audio, then listen before clearing FLAG"
     return "direct-listen waiver or regenerate audio before broad rollout"
@@ -152,9 +155,15 @@ def _to_regeneration_item(item: ReviewQueueItem) -> FlagRegenerationItem:
     )
 
 
-def build_regeneration_plan(*, packet_paths: list[Path], machine_report_paths: list[Path]) -> FlagRegenerationPlan:
+def build_regeneration_plan(
+    *,
+    packet_paths: list[Path],
+    machine_report_paths: list[Path],
+    source_verdicts: set[str] | None = None,
+) -> FlagRegenerationPlan:
     queue = build_queue(packet_paths=packet_paths, machine_report_paths=machine_report_paths)
-    items = [_to_regeneration_item(item) for item in queue.items if item.verdict == "FLAG"]
+    allowed_verdicts = source_verdicts or {"FLAG"}
+    items = [_to_regeneration_item(item) for item in queue.items if item.verdict in allowed_verdicts]
 
     return FlagRegenerationPlan(
         total_review_items=queue.total_items,
@@ -162,6 +171,7 @@ def build_regeneration_plan(*, packet_paths: list[Path], machine_report_paths: l
         pending_count=queue.pending_count,
         flag_count=queue.flag_count,
         fail_count=queue.fail_count,
+        source_verdicts=allowed_verdicts,
         items=items,
     )
 
@@ -171,7 +181,7 @@ def _render_packet_counts(items: list[FlagRegenerationItem]) -> list[str]:
         return ["- None"]
 
     counts = Counter(item.packet for item in items)
-    lines = ["| Packet | FLAG targets |", "|---|---:|"]
+    lines = ["| Packet | Selected targets |", "|---|---:|"]
     for packet, count in sorted(counts.items()):
         lines.append(f"| `{_markdown_cell(packet)}` | {count} |")
     return lines
@@ -208,15 +218,16 @@ def render_markdown(
     machine_report_paths: list[Path],
 ) -> str:
     lines = [
-        "# N4 Audio QA FLAG Regeneration Plan",
+        "# N4 Audio QA Verdict Regeneration Plan",
         "",
         "> Status: REGENERATION HANDOFF - no audio generated",
         "> Boundary: planning artifact only; no TTS provider call, storage write,",
         "> packet verdict update, or native-speaker review is performed here",
         "",
-        "ASSUMPTION: Existing `FLAG` rows should stay blocking until they are",
-        "regenerated and re-reviewed, or explicitly waived after direct listening.",
-        "This plan only extracts the exact targets that need that next step.",
+        "ASSUMPTION: Existing blocker verdict rows should stay blocking until",
+        "they are regenerated and re-reviewed, or explicitly waived after direct",
+        "listening. This plan only extracts the exact targets that need that next",
+        "step.",
         "",
         "## Sources",
         "",
@@ -235,6 +246,7 @@ def render_markdown(
             f"| Current PENDING verdicts | {plan.pending_count} |",
             f"| Current FLAG verdicts | {plan.flag_count} |",
             f"| Current FAIL verdicts | {plan.fail_count} |",
+            f"| Source verdict filter | {', '.join(sorted(plan.source_verdicts))} |",
             f"| Regeneration manifest rows | {len(plan.items)} |",
             f"| Script-line rows | {plan.script_count} |",
             f"| Question-prompt rows | {plan.question_count} |",
@@ -250,7 +262,7 @@ def render_markdown(
             "## Execution Boundary",
             "",
             "`scripts/generate_n4_pilot_tts_batch.py` currently generates missing TTS",
-            "coverage only. Do not expect it to replace these `FLAG` rows because",
+            "coverage only. Do not expect it to replace selected rows because",
             "their current audio records already exist. A targeted replacement path",
             "must create a new audio object and update the matching `tts_audio`",
             "record, or record an explicit direct-listening waiver.",
@@ -331,6 +343,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Quality signal report markdown path. Defaults to latest machine and STT assist reports.",
     )
+    parser.add_argument(
+        "--source-verdict",
+        action="append",
+        default=None,
+        help="Include rows with this current verdict. Defaults to FLAG. Repeatable, for example --source-verdict PENDING.",
+    )
     parser.add_argument("--markdown-output", required=True, type=Path, help="Markdown regeneration plan output path.")
     parser.add_argument("--csv-output", type=Path, default=None, help="Optional regeneration manifest CSV output path.")
     return parser.parse_args()
@@ -340,7 +358,12 @@ def main() -> None:
     args = parse_args()
     packet_paths = args.packet or default_packet_paths()
     machine_report_paths = args.machine_report or default_machine_report_paths()
-    plan = build_regeneration_plan(packet_paths=packet_paths, machine_report_paths=machine_report_paths)
+    source_verdicts = {verdict.upper() for verdict in args.source_verdict} if args.source_verdict else None
+    plan = build_regeneration_plan(
+        packet_paths=packet_paths,
+        machine_report_paths=machine_report_paths,
+        source_verdicts=source_verdicts,
+    )
 
     args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
     args.markdown_output.write_text(
@@ -351,7 +374,7 @@ def main() -> None:
     if args.csv_output:
         write_csv(args.csv_output, plan)
         print(f"flag_regeneration_csv {args.csv_output}")
-    print(f"flags {len(plan.items)}")
+    print(f"regeneration_rows {len(plan.items)}")
 
 
 if __name__ == "__main__":

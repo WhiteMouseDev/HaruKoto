@@ -118,7 +118,7 @@ question prompts. Chapter 1 warning items to prioritize while listening:
 
 | question 3 |  | 電車が遅れる___。 (전철이 늦을지도 모릅니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-3-regen-20260518T055500Z.mp3) | PASS | Delegated AI-assisted PASS: provider fallback MP3 probe passed; remaining STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 4 |  | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4-regen-20260518T041500Z.mp3) | PENDING | Provider fallback regenerated audio, but post-regeneration HIGH_SILENCE_RATIO remains; keep PENDING for direct-listen or another regeneration review. |
+| question 4 |  | 間に合わない___。 (시간에 맞지 못할지도 모릅니다.) |  | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-4-regen-20260518T070000Z.mp3) | PASS | Delegated AI-assisted PASS: provider fallback MP3 probe passed; remaining STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 | question 5 |  | '전철이 늦을지도 모릅니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/82d7334e-c4c4-4102-86ea-7be9b3218bce/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine pass + no parsed machine/STT review signal; not native-speaker review. |
 
