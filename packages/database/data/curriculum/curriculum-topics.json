@@ -1118,7 +1118,9 @@
           "order": 23
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-012"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1132,7 +1134,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "N4/N3 모두 존재하는 경계 항목이다."
+      "notesKo": "HN4-012 공식 N4 draft lesson으로 이유와 근거를 나열하는 〜し coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다."
     },
     {
       "topicId": "topic-no-functions",
@@ -1274,7 +1276,9 @@
           "order": 4
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-013"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1288,7 +1292,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "기존 N4 grammar order 4와 매핑한다."
+      "notesKo": "HN4-013 공식 N4 draft lesson으로 시도 표현 〜てみる coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다."
     },
     {
       "topicId": "topic-te-oku",
@@ -1310,7 +1314,9 @@
           "order": 3
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-014"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1324,7 +1330,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "기존 N4 grammar order 3과 매핑한다."
+      "notesKo": "HN4-014 공식 N4 draft lesson으로 사전 준비 표현 〜ておく coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다."
     },
     {
       "topicId": "topic-te-shimau",
@@ -1350,7 +1356,9 @@
           "order": 25
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-015"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1364,7 +1372,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "기존 N4 grammar order 1과 매핑한다."
+      "notesKo": "HN4-015 공식 N4 draft lesson으로 완료/유감 표현 〜てしまう coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다."
     },
     {
       "topicId": "topic-temo-ii",
@@ -1569,7 +1577,9 @@
           "order": 35
         }
       ],
-      "mappedLessonIds": [],
+      "mappedLessonIds": [
+        "HN4-016"
+      ],
       "prerequisiteTopicIds": [],
       "contrastTopicIds": [],
       "audioPolicy": {
@@ -1583,7 +1593,7 @@
         "audioTargetType": "grammar"
       },
       "reviewStatus": "needs_review",
-      "notesKo": "N4 복합동사 항목과 매핑한다."
+      "notesKo": "HN4-016 공식 N4 draft lesson으로 복합동사 〜続ける coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다."
     },
     {
       "topicId": "topic-te-iku-te-kuru",
