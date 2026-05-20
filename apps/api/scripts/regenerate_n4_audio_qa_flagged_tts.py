@@ -285,16 +285,22 @@ async def execute_task(
     task: FlaggedTtsTask,
     *,
     run_id: str,
+    allow_unpublished: bool,
     tts_generator: Callable[[str], Awaitable[GeneratedTtsAudio]],
     uploader: Callable[[str, bytes], Awaitable[str]],
     session_factory: SessionFactory,
 ) -> RegenerationResult:
     try:
         async with session_factory() as session:
-            lesson_result = await session.execute(select(Lesson).where(Lesson.id == UUID(task.lesson_id), Lesson.is_published.is_(True)))
+            filters = [Lesson.id == UUID(task.lesson_id)]
+            if not allow_unpublished:
+                filters.append(Lesson.is_published.is_(True))
+
+            lesson_result = await session.execute(select(Lesson).where(*filters))
             lesson = lesson_result.scalar_one_or_none()
             if lesson is None:
-                raise FlaggedTtsRegenerationError(f"published lesson not found: {task.lesson_id}")
+                visibility = "lesson" if allow_unpublished else "published lesson"
+                raise FlaggedTtsRegenerationError(f"{visibility} not found: {task.lesson_id}")
 
             target_type, target_id, field, text = _resolve_target_from_lesson(task, lesson)
 
@@ -372,6 +378,7 @@ async def run_regeneration(
     tasks: list[FlaggedTtsTask],
     *,
     execute: bool,
+    include_unpublished: bool,
     continue_on_error: bool,
     sleep_seconds: float,
     run_id: str,
@@ -399,6 +406,7 @@ async def run_regeneration(
         result = await execute_task(
             task,
             run_id=run_id,
+            allow_unpublished=include_unpublished,
             tts_generator=tts_generator,
             uploader=uploader,
             session_factory=session_factory,
@@ -427,6 +435,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST, help="Regeneration manifest CSV path.")
     parser.add_argument("--target-key", action="append", default=None, help="Limit to one target key; repeatable.")
     parser.add_argument(
+        "--include-unpublished",
+        action="store_true",
+        help="Include DB lessons with is_published=false. Use only for explicit DRAFT audio QA ops.",
+    )
+    parser.add_argument(
         "--source-verdict",
         action="append",
         default=None,
@@ -453,6 +466,7 @@ async def main() -> None:
     results = await run_regeneration(
         tasks,
         execute=args.execute,
+        include_unpublished=args.include_unpublished,
         continue_on_error=args.continue_on_error,
         sleep_seconds=args.sleep_seconds,
         run_id=run_id,

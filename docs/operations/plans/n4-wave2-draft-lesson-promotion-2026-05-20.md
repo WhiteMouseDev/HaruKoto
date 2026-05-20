@@ -84,9 +84,10 @@ that registry after TTS generation and audio QA.
 | Draft seed/TTS ops unit tests | PASS |
 | Draft seed/TTS ops CLI syntax | PASS |
 | Draft TTS machine audio probe | PASS for 45/45 targets; one non-blocking silence-ratio warning remains for human review |
-| Draft TTS STT assist | REVIEW for 45/45 targets; 29 STT mismatches require human listening before rollout |
-| Draft human audio QA packet | REVIEW PACKET generated for 45 targets; all audio URLs passed URL checks |
-| Draft audio QA review queue | REVIEW QUEUE generated with P0/P1/P2 ordering and an HTML listening sheet |
+| Draft TTS STT assist | REVIEW for 45/45 targets; 29 STT mismatches triaged with delegated AI rules |
+| Draft human audio QA packet | 42 PASS, 0 PENDING, 3 FLAG after delegated AI-assisted verdict application |
+| Draft FLAG regeneration | 3/3 regenerated; post-regeneration machine probe PASS, but STT mismatches remain |
+| Draft audio QA review queue | REVIEW QUEUE regenerated with 3 P0 FLAG blockers and an HTML listening sheet |
 | Configured N4 DB seed check | PASS for existing 11 publishable N4 lessons; `N4-CH04` intentionally excluded while DRAFT |
 
 ## Boundary
@@ -97,8 +98,9 @@ native-speaker or audio QA approval.
 
 Next gates:
 
-1. Complete human/listener verdicts for the 45 `HN4-012` through `HN4-016`
-   targets in the Chapter 4 packet/review sheet.
-2. Regenerate or explicitly waive any `FLAG` / `FAIL` items.
+1. Rewrite or explicitly waive the 3 remaining `FLAG` script lines:
+   `HN4-013 script:1`, `HN4-013 script:2`, and `HN4-015 script:1`.
+2. Regenerate and re-audit those rows until the packet has no `FLAG`, `FAIL`,
+   `PENDING`, or invalid verdict values.
 3. Move `N4-CH04` from `DRAFT` to `PILOT` only after the human audio gate is
    clean.

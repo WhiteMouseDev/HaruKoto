@@ -73,9 +73,9 @@ broad rollout until regenerated or explicitly waived.
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | 予約の時間を調べてみます。 | 예약 시간을 한번 찾아보겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
-| script 1 | 佐藤 | 分からなければ、受付で聞いてみましょう。 | 모르면 접수처에서 한번 물어봅시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1.mp3) | FLAG | FLAG: STT heard the 受付 phrase as a divergent token; direct listening or regeneration required before rollout |
+| script 1 | 佐藤 | 分からなければ、受付で聞いてみましょう。 | 모르면 접수처에서 한번 물어봅시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1-regen-20260520T104500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:分からなければ 手ホクで聞いてみましょう。; direct-listen or regenerate before rollout; not native-speaker review. |
 
-| script 2 | キム | 案内の紙も読んでみます。 | 안내 종이도 한번 읽어보겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2.mp3) | FLAG | FLAG: STT heard the 紙 phrase as a divergent token; direct listening or regeneration required before rollout |
+| script 2 | キム | 案内の紙も読んでみます。 | 안내 종이도 한번 읽어보겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2-regen-20260520T104500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:案内の下を読んでみます。; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 3 | 佐藤 | 大丈夫なら、申し込んでみます。 | 괜찮다면 한번 신청해 보겠습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-3.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
@@ -117,7 +117,7 @@ broad rollout until regenerated or explicitly waived.
 |---|---|---|---|---|---|---|---|---|
 | script 0 | キム | うっかり予約を忘れてしまいました。 | 깜빡 예약을 잊어버렸습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
-| script 1 | 佐藤 | それは心配ですね。 | 그건 걱정이네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1.mp3) | FLAG | FLAG: STT maps 心配 to 新米 lexical mismatch; regenerate or direct-listen before rollout |
+| script 1 | 佐藤 | それは心配ですね。 | 그건 걱정이네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1-regen-20260520T104500Z.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:それは心配です; direct-listen or regenerate before rollout; not native-speaker review. |
 
 | script 2 | キム | スマートフォンも落としてしまいました。 | 스마트폰도 떨어뜨려 버렸습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
@@ -158,5 +158,6 @@ broad rollout until regenerated or explicitly waived.
 ## Result
 
 AI-assisted verdict application now leaves 42 `PASS`, 3 `FLAG`, 0 `PENDING`,
-and 0 `FAIL` rows. Broad rollout remains blocked until the 3 `FLAG` rows are
-regenerated, directly adjudicated, or explicitly waived.
+and 0 `FAIL` rows. The 3 `FLAG` rows were regenerated once and still carry
+post-regeneration STT review signals. Broad rollout remains blocked until
+direct listening, another regeneration pass, or an explicit waiver clears them.

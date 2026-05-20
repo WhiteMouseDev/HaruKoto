@@ -3,8 +3,8 @@
 > Status: REVIEW QUEUE - 3 FLAG blockers remain
 > Boundary: prioritization artifact only; does not approve rollout
 
-ASSUMPTION: This queue orders the remaining blocker work but does not replace
-native-speaker review, regeneration, or explicit waiver decisions.
+ASSUMPTION: This queue orders review work but does not replace listening,
+native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 ## Sources
 
@@ -30,9 +30,9 @@ native-speaker review, regeneration, or explicit waiver decisions.
 
 | Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
 |---|---|---|---|---|---|---|---|
-| P0 verdict blocker | HN4-013 script:1 | 分からなければ、受付で聞いてみましょう。 | 모르면 접수처에서 한번 물어봅시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:わからなければ、ふふで聞いてみましょう。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
-| P0 verdict blocker | HN4-013 script:2 | 案内の紙も読んでみます。 | 안내 종이도 한번 읽어보겠습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:案内のおせも読んでみます。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
-| P0 verdict blocker | HN4-015 script:1 | それは心配ですね。 | 그건 걱정이네요. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:それは新米です。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P0 verdict blocker | HN4-013 script:1 | 分からなければ、受付で聞いてみましょう。 | 모르면 접수처에서 한번 물어봅시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:わからなければ、ふふで聞いてみましょう。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P0 verdict blocker | HN4-013 script:2 | 案内の紙も読んでみます。 | 안내 종이도 한번 읽어보겠습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:案内のおせも読んでみます。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P0 verdict blocker | HN4-015 script:1 | それは心配ですね。 | 그건 걱정이네요. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:それは新米です。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 
 ## P1 STT Mismatch Review
 
@@ -91,7 +91,7 @@ native-speaker review, regeneration, or explicit waiver decisions.
 
 ## Decision
 
-Use this queue to clear the 3 P0 verdict blockers first. STT mismatches are
-review-priority signals, not automatic audio-fail verdicts. Broad/full N4
-rollout remains blocked until the packet verdict tracker has no `PENDING`,
-`FLAG`, `FAIL`, or invalid verdict values.
+Use this queue to clear the 3 P0 verdict blocker rows first.
+STT mismatches are review-priority signals, not automatic audio-fail
+verdicts. Broad/full N4 rollout remains blocked until the packet verdict
+tracker has no `PENDING`, `FLAG`, `FAIL`, or invalid verdict values.
