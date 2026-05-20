@@ -16,6 +16,9 @@ os.environ.setdefault(
     "DATABASE_URL",
     "postgresql+asyncpg://dummy:dummy@localhost:5432/dummy",
 )
+# OpenAPI generation is a local build step, not a production runtime surface.
+os.environ["SENTRY_DSN"] = ""
+os.environ.setdefault("ENVIRONMENT", "ops-script")
 
 from app.main import app  # noqa: E402
 
