@@ -3,10 +3,15 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
+import os
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
+
+# Ops smoke scripts should not report synthetic failures as production API errors.
+os.environ["SENTRY_DSN"] = ""
+os.environ.setdefault("ENVIRONMENT", "ops-smoke")
 
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import String, delete, func, select, text

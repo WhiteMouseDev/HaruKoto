@@ -27,9 +27,9 @@ Required passing signals:
 |---|---|
 | Curriculum contracts | `pnpm --filter @harukoto/database curriculum:validate` exits 0 |
 | Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N4` exits 0 |
-| TTS coverage | 99/99 generated records for the published N4 pilot batch |
-| TTS URL validation | 99/99 generated audio URLs pass read-only HTTP validation |
-| Audio QA verdicts | 99 PASS, 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
+| TTS coverage | 144/144 generated records for the published N4 pilot batch |
+| TTS URL validation | 144/144 generated audio URLs pass read-only HTTP validation |
+| Audio QA verdicts | 144 PASS, 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
 
 `GOOGLE_API_KEY` is not required for this preflight. It is only needed for
 separate optional STT-assist flows that explicitly pass `--transcribe`.
