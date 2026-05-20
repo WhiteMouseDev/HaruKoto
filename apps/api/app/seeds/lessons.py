@@ -48,6 +48,7 @@ CONTENT_FILES_BY_LEVEL = {
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
+        "ch04-everyday-action-extensions.json",
     ],
 }
 

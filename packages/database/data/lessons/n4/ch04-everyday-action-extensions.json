@@ -7,10 +7,10 @@
     "chapter_no": 4,
     "lesson_count": 5,
     "topic": "し・てみる・ておく・てしまう・つづける",
-    "status": "DRAFT",
+    "status": "PILOT",
     "created_at": "2026-05-20",
     "author": "Codex",
-    "source_note": "Promoted as official DRAFT lessons from HaruKoto-authored N4 wave 2 seed candidates; paid PDFs were used only for topic coverage reference."
+    "source_note": "Promoted as official PILOT lessons from HaruKoto-authored N4 wave 2 seed candidates after delegated AI review, TTS regeneration, and STT-assisted audio QA; paid PDFs were used only for topic coverage reference."
   },
   "lessons": [
     {

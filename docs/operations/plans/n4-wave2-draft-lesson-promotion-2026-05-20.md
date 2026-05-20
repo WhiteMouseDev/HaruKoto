@@ -2,7 +2,7 @@
 
 > Date: 2026-05-20
 > Scope: promote the next N4 foundation slice into official DRAFT lesson source
-> Status: official DRAFT source promoted and AI/STT audio QA cleared; learner-facing PILOT still requires explicit promotion decision
+> Status: official DRAFT source promoted and AI/STT audio QA cleared; follow-up PILOT decision recorded in `docs/operations/plans/n4-ch04-pilot-promotion-2026-05-20.md`
 
 ## Decision
 
@@ -100,7 +100,8 @@ Next gates:
 
 1. Decide whether delegated AI/STT evidence is sufficient for `N4-CH04`
    learner-facing `PILOT`, or require native-speaker listening first.
-2. If delegated evidence is accepted, move `N4-CH04` from `DRAFT` to `PILOT`
-   and add it to the configured N4 seed registry.
+2. COMPLETED: delegated evidence was accepted on 2026-05-20. `N4-CH04` moved
+   from `DRAFT` to `PILOT`, and the configured N4 seed registry now includes
+   `ch04-everyday-action-extensions.json`.
 3. If native-speaker listening is required, keep `N4-CH04` as `DRAFT` and use
    the cleared packet as the listening handoff.
