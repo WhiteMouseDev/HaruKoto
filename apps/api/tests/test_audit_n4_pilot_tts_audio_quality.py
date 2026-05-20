@@ -231,6 +231,7 @@ def test_command_string_records_include_unpublished_flag() -> None:
         SimpleNamespace(
             level="N4",
             include_unpublished=True,
+            lesson_no=[12, 16],
             limit=None,
             skip_silence_check=False,
             timeout_seconds=15.0,
@@ -243,3 +244,5 @@ def test_command_string_records_include_unpublished_flag() -> None:
     )
 
     assert "--include-unpublished" in command
+    assert "--lesson-no 12" in command
+    assert "--lesson-no 16" in command

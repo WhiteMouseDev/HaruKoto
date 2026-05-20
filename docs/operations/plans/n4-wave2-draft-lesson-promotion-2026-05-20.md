@@ -57,7 +57,8 @@ complete.
   `apps/api/scripts/audit_n4_pilot_tts_audio_quality.py`, and
   `apps/api/scripts/build_n4_audio_qa_packet.py`
   - add explicit `--include-unpublished` support so draft lessons can enter
-    TTS generation and audio QA only when the operator opts in.
+    TTS generation and audio QA only when the operator opts in. The audio
+    audit path can also narrow scope with repeatable `--lesson-no` filters.
 - `apps/api/app/services/lesson_script_tts.py`
   - keeps the normal lesson TTS service on published lessons by default, with
     an explicit ops-only unpublished override for DRAFT TTS generation.
@@ -82,6 +83,7 @@ that registry after TTS generation and audio QA.
 | API seed policy tests | PASS |
 | Draft seed/TTS ops unit tests | PASS |
 | Draft seed/TTS ops CLI syntax | PASS |
+| Draft TTS machine audio probe | PASS for 45/45 targets; one non-blocking silence-ratio warning remains for human review |
 | Configured N4 DB seed check | PASS for existing 11 publishable N4 lessons; `N4-CH04` intentionally excluded while DRAFT |
 
 ## Boundary
