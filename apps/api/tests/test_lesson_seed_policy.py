@@ -1,6 +1,7 @@
 import json
 import uuid
 from collections import Counter
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -12,9 +13,11 @@ from app.seeds.lessons import (
     CONTENT_FILES_BY_LEVEL,
     CONTENT_ROOT,
     DEFAULT_LESSON_LEVEL,
+    _iter_content_filepaths,
     _lesson_is_published,
     _normalize_lesson_level,
     _replace_item_links,
+    _resolve_extra_content_file,
     _selected_lesson_levels,
 )
 
@@ -90,6 +93,31 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         lesson_count += len(data["lessons"])
 
     assert lesson_count == 11
+
+
+def test_lesson_seed_can_explicitly_include_draft_extra_file_without_registry_change() -> None:
+    extra_path = _resolve_extra_content_file(Path("n4/ch04-everyday-action-extensions.json"))
+    data = json.loads(extra_path.read_text(encoding="utf-8"))
+
+    paths = list(_iter_content_filepaths(["N4"], extra_content_files=[Path("n4/ch04-everyday-action-extensions.json")]))
+
+    assert extra_path == CONTENT_ROOT / "n4" / "ch04-everyday-action-extensions.json"
+    assert paths[-1] == extra_path
+    assert CONTENT_FILES_BY_LEVEL["N4"] == [
+        "ch01-core-directions-and-judgment.json",
+        "ch02-reasons-conditions-and-intent.json",
+        "ch03-quality-and-degree.json",
+    ]
+    assert data["meta"]["status"] == "DRAFT"
+    assert _lesson_is_published(data["meta"]) is False
+
+
+def test_lesson_seed_extra_content_file_must_stay_under_lesson_root(tmp_path) -> None:
+    outside = tmp_path / "lesson.json"
+    outside.write_text("{}", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="must be under"):
+        _resolve_extra_content_file(outside)
 
 
 @pytest.mark.asyncio

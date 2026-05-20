@@ -50,6 +50,14 @@ complete.
 - `packages/database/data/curriculum/tts-target-manifest.json`
   and `apps/api/app/data/curriculum/tts-target-manifest.json`
   - regenerated TTS target manifests include new official lesson targets.
+- `apps/api/app/seeds/lessons.py`
+  - adds an explicit `--extra-content-file` path for DRAFT ops without adding
+    `N4-CH04` to the default seed registry.
+- `apps/api/scripts/generate_n4_pilot_tts_batch.py`,
+  `apps/api/scripts/audit_n4_pilot_tts_audio_quality.py`, and
+  `apps/api/scripts/build_n4_audio_qa_packet.py`
+  - add explicit `--include-unpublished` support so draft lessons can enter
+    TTS generation and audio QA only when the operator opts in.
 
 ## Seed Registry Boundary
 
@@ -69,6 +77,8 @@ that registry after TTS generation and audio QA.
 | Curriculum validation | PASS |
 | Database package typecheck | PASS |
 | API seed policy tests | PASS |
+| Draft seed/TTS ops unit tests | PASS |
+| Draft seed/TTS ops CLI syntax | PASS |
 | Configured N4 DB seed check | PASS for existing 11 publishable N4 lessons; `N4-CH04` intentionally excluded while DRAFT |
 
 ## Boundary

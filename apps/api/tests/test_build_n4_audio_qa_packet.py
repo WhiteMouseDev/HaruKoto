@@ -108,3 +108,15 @@ def test_render_packet_markdown_keeps_human_verdict_pending() -> None:
     assert "| Script-line targets | 1 |" in markdown
     assert "[audio](https://cdn.example.com/audio.mp3)" in markdown
     assert "PENDING" in markdown
+
+
+def test_render_packet_markdown_can_label_pilot_draft_scope() -> None:
+    markdown = render_packet_markdown(
+        generated_at="2026-05-20T00:00:00+00:00",
+        level="N4",
+        chapter_no=4,
+        scope_label="Pilot/Draft",
+        targets=[],
+    )
+
+    assert "# N4 Pilot/Draft Human Audio QA Packet - Chapter 4" in markdown

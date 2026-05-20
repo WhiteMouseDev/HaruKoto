@@ -158,6 +158,7 @@ async def execute_task(task: GenerationTask) -> GenerationResult:
 async def run_generation(
     *,
     level: str,
+    include_unpublished: bool,
     lesson_numbers: set[int] | None,
     target_kind: TargetKindFilter,
     limit: int | None,
@@ -167,7 +168,7 @@ async def run_generation(
 ) -> list[GenerationResult]:
     report = await build_report(
         level=level,
-        include_unpublished=False,
+        include_unpublished=include_unpublished,
         check_audio_urls=False,
         timeout_seconds=10.0,
     )
@@ -217,8 +218,13 @@ def _lesson_numbers(values: list[int] | None) -> set[int] | None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate missing N4 pilot lesson TTS through approved service paths.")
+    parser = argparse.ArgumentParser(description="Generate missing N4 lesson TTS through approved service paths.")
     parser.add_argument("--level", default="N4", help="JLPT level, for example N4")
+    parser.add_argument(
+        "--include-unpublished",
+        action="store_true",
+        help="Include DB lessons with is_published=false. Use only for explicit DRAFT audio QA ops.",
+    )
     parser.add_argument("--lesson-no", type=int, action="append", help="Limit generation to one lesson number; repeatable")
     parser.add_argument("--target-kind", choices=["all", "script", "question"], default="all", help="Target kind to generate")
     parser.add_argument("--limit", type=int, default=None, help="Maximum missing targets to generate")
@@ -232,6 +238,7 @@ async def main() -> None:
     args = parse_args()
     results = await run_generation(
         level=args.level.upper(),
+        include_unpublished=args.include_unpublished,
         lesson_numbers=_lesson_numbers(args.lesson_no),
         target_kind=args.target_kind,
         limit=args.limit,

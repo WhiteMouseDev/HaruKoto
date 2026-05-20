@@ -5,6 +5,7 @@ from scripts.audit_n4_pilot_tts_audio_quality import (
     TtsSourceTarget,
     TtsStoredRecord,
     _build_report,
+    _command_string,
     build_transcription_probe,
     evaluate_audio_quality,
     render_markdown_report,
@@ -223,3 +224,22 @@ def test_render_markdown_report_uses_na_for_missing_duration_metrics() -> None:
     assert "| Duration min | n/a |" in markdown
     assert "| Duration max | n/a |" in markdown
     assert "| Duration average | n/a |" in markdown
+
+
+def test_command_string_records_include_unpublished_flag() -> None:
+    command = _command_string(
+        SimpleNamespace(
+            level="N4",
+            include_unpublished=True,
+            limit=None,
+            skip_silence_check=False,
+            timeout_seconds=15.0,
+            transcribe=False,
+            block_on_transcription_mismatch=False,
+            json=False,
+            fail_on_blocker=False,
+            markdown_output=None,
+        )
+    )
+
+    assert "--include-unpublished" in command

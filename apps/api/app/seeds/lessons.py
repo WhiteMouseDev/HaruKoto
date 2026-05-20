@@ -90,11 +90,46 @@ def _content_dir_for_level(level: str) -> Path:
     return CONTENT_ROOT / level.lower()
 
 
-def _iter_content_filepaths(levels: Sequence[str] | None = None) -> Iterator[Path]:
+def _resolve_extra_content_file(path: Path) -> Path:
+    repo_root = Path(__file__).resolve().parents[4]
+    candidates = [path]
+    if not path.is_absolute():
+        candidates = [
+            CONTENT_ROOT / path,
+            repo_root / path,
+            Path.cwd() / path,
+        ]
+
+    for candidate in candidates:
+        resolved = candidate.expanduser().resolve()
+        if not resolved.exists():
+            continue
+        try:
+            resolved.relative_to(CONTENT_ROOT.resolve())
+        except ValueError as exc:
+            raise ValueError(f"Extra lesson content file must be under {CONTENT_ROOT}: {path}") from exc
+        return resolved
+
+    raise ValueError(f"Extra lesson content file not found: {path}")
+
+
+def _iter_content_filepaths(levels: Sequence[str] | None = None, *, extra_content_files: Sequence[Path] | None = None) -> Iterator[Path]:
+    seen: set[Path] = set()
     for level in _selected_lesson_levels(levels):
         content_dir = _content_dir_for_level(level)
         for filename in CONTENT_FILES_BY_LEVEL[level]:
-            yield content_dir / filename
+            filepath = (content_dir / filename).resolve()
+            if filepath in seen:
+                continue
+            seen.add(filepath)
+            yield filepath
+
+    for extra_content_file in extra_content_files or ():
+        filepath = _resolve_extra_content_file(extra_content_file)
+        if filepath in seen:
+            continue
+        seen.add(filepath)
+        yield filepath
 
 
 def _lesson_is_published(meta: dict[str, Any]) -> bool:
@@ -296,11 +331,16 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
     return {"chapters": 1, "lessons": lesson_count, "item_links": link_count, "item_links_deleted": deleted_link_count}
 
 
-async def seed_lessons(db: AsyncSession, *, levels: Sequence[str] | None = None) -> dict[str, int]:
+async def seed_lessons(
+    db: AsyncSession,
+    *,
+    levels: Sequence[str] | None = None,
+    extra_content_files: Sequence[Path] | None = None,
+) -> dict[str, int]:
     """Seed lessons for configured levels. Returns counts summary."""
     totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
 
-    for filepath in _iter_content_filepaths(levels):
+    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
@@ -363,11 +403,16 @@ async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]
     return counts
 
 
-async def audit_lesson_seed_sync(db: AsyncSession, *, levels: Sequence[str] | None = None) -> dict[str, int]:
+async def audit_lesson_seed_sync(
+    db: AsyncSession,
+    *,
+    levels: Sequence[str] | None = None,
+    extra_content_files: Sequence[Path] | None = None,
+) -> dict[str, int]:
     """Compare current DB lessons against the seed source without writing data."""
     totals = {"chapters": 0, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
 
-    for filepath in _iter_content_filepaths(levels):
+    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
@@ -397,6 +442,17 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Process every configured lesson seed level.",
     )
+    parser.add_argument(
+        "--extra-content-file",
+        type=Path,
+        action="append",
+        default=[],
+        help=(
+            "Explicit lesson JSON under packages/database/data/lessons to process in addition to "
+            "the configured registry. Useful for DRAFT ops work without making the file part of "
+            "default seed scope."
+        ),
+    )
     args = parser.parse_args()
     if args.all_levels and args.levels:
         parser.error("--level cannot be combined with --all-levels")
@@ -424,14 +480,14 @@ async def main() -> None:
         if args.check:
             print(f"Checking lesson seed sync for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await audit_lesson_seed_sync(db, levels=levels)
+                counts = await audit_lesson_seed_sync(db, levels=levels, extra_content_files=args.extra_content_file)
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
             has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
         else:
             print(f"Seeding lessons for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await seed_lessons(db, levels=levels)
+                counts = await seed_lessons(db, levels=levels, extra_content_files=args.extra_content_file)
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
     finally:
