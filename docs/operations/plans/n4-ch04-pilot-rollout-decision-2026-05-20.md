@@ -57,6 +57,12 @@ the already-seeded local database. Running `python -m app.seeds.lessons --level
 N4` updated `N4-CH04` to `published=True`; the configured check and smoke tests
 then passed.
 
+## Target Environment Evidence
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Published list/detail API smoke | PASS | `docs/operations/plans/n4-ch04-target-api-smoke-2026-05-20.md` reports 4 N4 chapters, 16 N4 lessons, and PASS detail checks for `HN4-012` through `HN4-016` |
+
 ## Pilot Guardrails
 
 - Keep HN4-012 through HN4-016 described as a controlled pilot wave, not broad
@@ -84,10 +90,6 @@ If CH04 shows a P0/P1 runtime or content issue:
 
 ## Next Gates
 
-1. Apply the configured N4 seed in each target environment so CH04 becomes
-   learner-facing there.
-2. Run published list/detail API smoke against the target environment for N4
-   lesson count and CH04 detail shape.
-3. Run mobile target-runtime UAT for lesson discovery, lesson start, TTS line
+1. Run mobile target-runtime UAT for lesson discovery, lesson start, TTS line
    playback, submit/result, retry, and return-to-learning flow.
-4. Keep native-speaker review as a quality upgrade gate before wider claims.
+2. Keep native-speaker review as a quality upgrade gate before wider claims.
