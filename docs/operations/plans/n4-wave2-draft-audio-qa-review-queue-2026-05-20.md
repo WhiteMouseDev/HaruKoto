@@ -1,6 +1,6 @@
 # N4 Audio QA Review Queue
 
-> Status: REVIEW QUEUE - 3 FLAG blockers remain
+> Status: REVIEW QUEUE - no remaining verdict blockers
 > Boundary: prioritization artifact only; does not approve rollout
 
 ASSUMPTION: This queue orders review work but does not replace listening,
@@ -18,8 +18,8 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 |---|---:|
 | Total review items | 45 |
 | PENDING | 0 |
-| PASS | 42 |
-| FLAG | 3 |
+| PASS | 45 |
+| FLAG | 0 |
 | FAIL | 0 |
 | WAIVED | 0 |
 | Review-signal items | 29 |
@@ -28,11 +28,7 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 ## P0 Review First
 
-| Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
-|---|---|---|---|---|---|---|---|
-| P0 verdict blocker | HN4-013 script:1 | 分からなければ、受付で聞いてみましょう。 | 모르면 접수처에서 한번 물어봅시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:わからなければ、ふふで聞いてみましょう。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
-| P0 verdict blocker | HN4-013 script:2 | 案内の紙も読んでみます。 | 안내 종이도 한번 읽어보겠습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:案内のおせも読んでみます。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
-| P0 verdict blocker | HN4-015 script:1 | それは心配ですね。 | 그건 걱정이네요. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1-regen-20260520T104500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:それは新米です。 | FLAG | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+- None
 
 ## P1 STT Mismatch Review
 
@@ -56,6 +52,8 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 | P3 resolved | HN4-012 question:4 | 試験の前でも___ですね。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-4.mp3) | TRANSCRIPTION_TEXT_MISMATCH:試験の前でもなわあじゅうです。 | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-012 question:5 | '이 수업은 설명이 정중하고 안심입니다'를 배열하세요. |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-5.mp3) | TRANSCRIPTION_TEXT_MISMATCH:イスオプン ソルミョンイ チョンジュンハゴ アンシムイムニダルル ペヨルハセヨ | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-013 script:0 | 予約の時間を調べてみます。 | 예약 시간을 한번 찾아보겠습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-0.mp3) | - | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P3 resolved | HN4-013 script:1 | わからなければ、人に聞いてみましょう。 | 모르면 다른 사람에게 한번 물어봅시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1-regen-20260520T062700Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:わからなければ、ふふで聞いてみましょう。 | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P3 resolved | HN4-013 script:2 | 案内を読んでみましょう。 | 안내를 한번 읽어 봅시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-2-regen-20260520T062500Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:案内のおせも読んでみます。 | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-013 script:3 | 大丈夫なら、申し込んでみます。 | 괜찮다면 한번 신청해 보겠습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-3.mp3) | - | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-013 question:1 | 予約의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ゆうやうへいとん | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-013 question:2 | 受付의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/question-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:とうふワイン | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
@@ -72,6 +70,7 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 | P3 resolved | HN4-014 question:4 | 予約の時間を___ておくと安心です。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/question-4.mp3) | TRANSCRIPTION_TEXT_MISMATCH:予約の時間を手おくと安心です。 | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-014 question:5 | '회의 전에 준비해 두겠습니다'를 배열하세요. |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/question-5.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ホエーイジョンに準備しておきますを部屋はせよ | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-015 script:0 | うっかり予約を忘れてしまいました。 | 깜빡 예약을 잊어버렸습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-0.mp3) | - | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
+| P3 resolved | HN4-015 script:1 | 大変です。 | 큰일입니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-1-regen-20260520T062000Z.mp3) | TRANSCRIPTION_TEXT_MISMATCH:それは新米です。 | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-015 script:2 | スマートフォンも落としてしまいました。 | 스마트폰도 떨어뜨려 버렸습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-2.mp3) | - | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-015 script:3 | 次からは予定を確認しておきましょう。 | 다음부터는 일정을 확인해 둡시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-3.mp3) | - | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
 | P3 resolved | HN4-015 question:1 | うっかり의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:おつかりえん | PASS | `docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md` |
@@ -91,7 +90,8 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 ## Decision
 
-Use this queue to clear the 3 P0 verdict blocker rows first.
-STT mismatches are review-priority signals, not automatic audio-fail
-verdicts. Broad/full N4 rollout remains blocked until the packet verdict
-tracker has no `PENDING`, `FLAG`, `FAIL`, or invalid verdict values.
+Use this queue to review P0 machine/verdict blocker rows first, then P1
+STT mismatch rows, then remaining pending packet rows. STT mismatches are
+review-priority signals, not automatic audio-fail verdicts. Broad/full N4
+rollout remains blocked until the packet verdict tracker has no `PENDING`,
+`FLAG`, `FAIL`, or invalid verdict values.

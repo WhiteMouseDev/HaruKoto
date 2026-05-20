@@ -244,7 +244,7 @@
           "highlights": [
             "調べてみます",
             "聞いてみましょう",
-            "読んでみます",
+            "読んでみましょう",
             "申し込んでみます"
           ],
           "script": [
@@ -257,14 +257,14 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "分からなければ、受付で聞いてみましょう。",
-              "translation": "모르면 접수처에서 한번 물어봅시다."
+              "text": "わからなければ、人に聞いてみましょう。",
+              "translation": "모르면 다른 사람에게 한번 물어봅시다."
             },
             {
               "speaker": "キム",
               "voice_id": "japanese_male_1",
-              "text": "案内の紙も読んでみます。",
-              "translation": "안내 종이도 한번 읽어보겠습니다."
+              "text": "案内を読んでみましょう。",
+              "translation": "안내를 한번 읽어 봅시다."
             },
             {
               "speaker": "佐藤",
@@ -643,8 +643,8 @@
             {
               "speaker": "佐藤",
               "voice_id": "japanese_female_1",
-              "text": "それは心配ですね。",
-              "translation": "그건 걱정이네요."
+              "text": "大変です。",
+              "translation": "큰일입니다."
             },
             {
               "speaker": "キム",

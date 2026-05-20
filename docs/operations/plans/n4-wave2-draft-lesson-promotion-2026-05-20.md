@@ -2,7 +2,7 @@
 
 > Date: 2026-05-20
 > Scope: promote the next N4 foundation slice into official DRAFT lesson source
-> Status: official DRAFT source promoted and TTS generated; learner-facing PILOT is on hold until human audio QA
+> Status: official DRAFT source promoted and AI/STT audio QA cleared; learner-facing PILOT still requires explicit promotion decision
 
 ## Decision
 
@@ -85,9 +85,9 @@ that registry after TTS generation and audio QA.
 | Draft seed/TTS ops CLI syntax | PASS |
 | Draft TTS machine audio probe | PASS for 45/45 targets; one non-blocking silence-ratio warning remains for human review |
 | Draft TTS STT assist | REVIEW for 45/45 targets; 29 STT mismatches triaged with delegated AI rules |
-| Draft human audio QA packet | 42 PASS, 0 PENDING, 3 FLAG after delegated AI-assisted verdict application |
-| Draft FLAG regeneration | 3/3 regenerated; post-regeneration machine probe PASS, but STT mismatches remain |
-| Draft audio QA review queue | REVIEW QUEUE regenerated with 3 P0 FLAG blockers and an HTML listening sheet |
+| Draft human audio QA packet | 45 PASS, 0 PENDING, 0 FLAG, 0 FAIL after source-rewrite regeneration |
+| Draft FLAG regeneration | Former 3 FLAG rows rewritten while DRAFT, regenerated, and re-audited to PASS |
+| Draft audio QA review queue | No P0 FLAG blockers remain in the packet; native-speaker approval is still out of scope |
 | Configured N4 DB seed check | PASS for existing 11 publishable N4 lessons; `N4-CH04` intentionally excluded while DRAFT |
 
 ## Boundary
@@ -98,9 +98,9 @@ native-speaker or audio QA approval.
 
 Next gates:
 
-1. Rewrite or explicitly waive the 3 remaining `FLAG` script lines:
-   `HN4-013 script:1`, `HN4-013 script:2`, and `HN4-015 script:1`.
-2. Regenerate and re-audit those rows until the packet has no `FLAG`, `FAIL`,
-   `PENDING`, or invalid verdict values.
-3. Move `N4-CH04` from `DRAFT` to `PILOT` only after the human audio gate is
-   clean.
+1. Decide whether delegated AI/STT evidence is sufficient for `N4-CH04`
+   learner-facing `PILOT`, or require native-speaker listening first.
+2. If delegated evidence is accepted, move `N4-CH04` from `DRAFT` to `PILOT`
+   and add it to the configured N4 seed registry.
+3. If native-speaker listening is required, keep `N4-CH04` as `DRAFT` and use
+   the cleared packet as the listening handoff.

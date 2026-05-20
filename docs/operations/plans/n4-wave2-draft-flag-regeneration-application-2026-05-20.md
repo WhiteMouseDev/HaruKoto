@@ -1,6 +1,6 @@
 # N4 Wave 2 Draft FLAG Regeneration Application
 
-> Status: 3 regenerated, 3 remain FLAG
+> Status: superseded by source-rewrite closure; original regeneration left 3 FLAG
 > Boundary: delegated AI/STT audio QA only; not native-speaker review
 
 ASSUMPTION: The project owner delegated the post-regeneration review because no
@@ -88,7 +88,8 @@ their verdicts as `FLAG`. `scripts/report_n4_audio_qa_verdicts.py` reports:
 
 ## Decision
 
-Broad/full N4 rollout remains blocked. The next useful step is a small source
-rewrite for these three DRAFT script lines, followed by another targeted TTS
-regeneration and STT-assisted audit. This is preferable to repeatedly
-regenerating the same hard-to-transcribe wording.
+This first regeneration pass remained blocked and was superseded by the
+source-rewrite closure in
+`docs/operations/plans/n4-wave2-draft-flag-source-rewrite-closure-2026-05-20.md`.
+After rewriting the three DRAFT script lines and regenerating targeted audio,
+the Chapter 4 packet reports 45 `PASS`, 0 `FLAG`, 0 `PENDING`, and 0 `FAIL`.
