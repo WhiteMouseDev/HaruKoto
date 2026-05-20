@@ -115,7 +115,7 @@ def collect_missing_tasks(
     return tasks
 
 
-async def execute_task(task: GenerationTask) -> GenerationResult:
+async def execute_task(task: GenerationTask, *, allow_unpublished: bool = False) -> GenerationResult:
     async with async_session_factory() as session:
         try:
             if task.kind == "script":
@@ -125,6 +125,7 @@ async def execute_task(task: GenerationTask) -> GenerationResult:
                     line_index=task.order,
                     tts_generator=generate_tts,
                     upload_to_gcs=upload_tts_to_gcs,
+                    allow_unpublished=allow_unpublished,
                 )
             else:
                 result = await generate_lesson_question_prompt_tts(
@@ -133,6 +134,7 @@ async def execute_task(task: GenerationTask) -> GenerationResult:
                     question_order=task.order,
                     tts_generator=generate_tts,
                     upload_to_gcs=upload_tts_to_gcs,
+                    allow_unpublished=allow_unpublished,
                 )
         except IntegrityError:
             await session.rollback()
@@ -191,7 +193,7 @@ async def run_generation(
     print("dry_run false")
     results: list[GenerationResult] = []
     for task in tasks:
-        result = await execute_task(task)
+        result = await execute_task(task, allow_unpublished=include_unpublished)
         results.append(result)
         if result.status == "generated":
             print(f"generated {task.display_name}")

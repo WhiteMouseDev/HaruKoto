@@ -58,6 +58,9 @@ complete.
   `apps/api/scripts/build_n4_audio_qa_packet.py`
   - add explicit `--include-unpublished` support so draft lessons can enter
     TTS generation and audio QA only when the operator opts in.
+- `apps/api/app/services/lesson_script_tts.py`
+  - keeps the normal lesson TTS service on published lessons by default, with
+    an explicit ops-only unpublished override for DRAFT TTS generation.
 
 ## Seed Registry Boundary
 

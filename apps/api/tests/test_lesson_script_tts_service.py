@@ -10,6 +10,7 @@ import pytest
 from app.models.tts import TtsAudio
 from app.services.lesson_script_tts import (
     LessonScriptTtsServiceError,
+    _lesson_lookup_query,
     generate_lesson_question_prompt_tts,
     generate_lesson_script_line_tts,
 )
@@ -20,6 +21,16 @@ class FakeTtsResult:
     audio: bytes
     provider: str
     model: str
+
+
+def test_lesson_lookup_query_keeps_published_filter_by_default() -> None:
+    lesson_id = uuid.uuid4()
+
+    default_query = str(_lesson_lookup_query(lesson_id, allow_unpublished=False))
+    ops_query = str(_lesson_lookup_query(lesson_id, allow_unpublished=True))
+
+    assert "lessons.is_published IS true" in default_query
+    assert "lessons.is_published IS true" not in ops_query
 
 
 @pytest.mark.asyncio
