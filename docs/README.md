@@ -36,6 +36,7 @@ docs/
 
 ### 운영
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
+- [레슨 Seed/TTS Rollout Runbook](operations/content/lesson-audio-qa-rollout-runbook.md) — N4 seed/TTS 운영 반영 preflight와 N3+ 확장 gate
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)
 - [v1.1 안정화 체크포인트](operations/release/v1.1-stabilization-checkpoint-2026-04-23.md) — 릴리스 경계, 자동 검증, 수동 UAT 게이트
