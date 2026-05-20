@@ -56,6 +56,7 @@ def test_lesson_seed_level_selection_supports_n4_sources() -> None:
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
+        "ch04-everyday-action-extensions.json",
     ]
 
 
@@ -80,6 +81,7 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         "ch01-core-directions-and-judgment.json": "PILOT",
         "ch02-reasons-conditions-and-intent.json": "PILOT",
         "ch03-quality-and-degree.json": "PILOT",
+        "ch04-everyday-action-extensions.json": "PILOT",
     }
 
     for filename in CONTENT_FILES_BY_LEVEL["N4"]:
@@ -92,10 +94,10 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         assert data["meta"]["lesson_count"] == len(data["lessons"])
         lesson_count += len(data["lessons"])
 
-    assert lesson_count == 11
+    assert lesson_count == 16
 
 
-def test_lesson_seed_can_explicitly_include_draft_extra_file_without_registry_change() -> None:
+def test_lesson_seed_deduplicates_registered_extra_file() -> None:
     extra_path = _resolve_extra_content_file(Path("n4/ch04-everyday-action-extensions.json"))
     data = json.loads(extra_path.read_text(encoding="utf-8"))
 
@@ -107,9 +109,11 @@ def test_lesson_seed_can_explicitly_include_draft_extra_file_without_registry_ch
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
+        "ch04-everyday-action-extensions.json",
     ]
-    assert data["meta"]["status"] == "DRAFT"
-    assert _lesson_is_published(data["meta"]) is False
+    assert paths.count(extra_path) == 1
+    assert data["meta"]["status"] == "PILOT"
+    assert _lesson_is_published(data["meta"]) is True
 
 
 def test_lesson_seed_extra_content_file_must_stay_under_lesson_root(tmp_path) -> None:

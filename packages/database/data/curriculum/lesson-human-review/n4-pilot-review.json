@@ -3438,7 +3438,7 @@
     {
       "reviewId": "lesson-human-review-HN4-012",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved as DRAFT source only. The lesson covers 〜し reason/listing with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. Learner-facing PILOT remains blocked until TTS generation and audio QA.",
+      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved for controlled PILOT after the N4-CH04 TTS generation and delegated AI/STT audio QA gate cleared 45/45 targets with 0 pending, FLAG, or FAIL verdicts. The lesson covers 〜し reason/listing with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. This is not native-speaker human approval.",
       "lessonId": "HN4-012",
       "lessonNo": 12,
       "chapterId": "N4-CH04",
@@ -3757,7 +3757,7 @@
     {
       "reviewId": "lesson-human-review-HN4-013",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved as DRAFT source only. The lesson covers Vて + みる trial usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. Learner-facing PILOT remains blocked until TTS generation and audio QA.",
+      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved for controlled PILOT after the N4-CH04 TTS generation and delegated AI/STT audio QA gate cleared 45/45 targets with 0 pending, FLAG, or FAIL verdicts. The lesson covers Vて + みる trial usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. This is not native-speaker human approval.",
       "lessonId": "HN4-013",
       "lessonNo": 13,
       "chapterId": "N4-CH04",
@@ -4067,7 +4067,7 @@
     {
       "reviewId": "lesson-human-review-HN4-014",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved as DRAFT source only. The lesson covers Vて + おく preparation usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. Learner-facing PILOT remains blocked until TTS generation and audio QA.",
+      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved for controlled PILOT after the N4-CH04 TTS generation and delegated AI/STT audio QA gate cleared 45/45 targets with 0 pending, FLAG, or FAIL verdicts. The lesson covers Vて + おく preparation usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. This is not native-speaker human approval.",
       "lessonId": "HN4-014",
       "lessonNo": 14,
       "chapterId": "N4-CH04",
@@ -4384,7 +4384,7 @@
     {
       "reviewId": "lesson-human-review-HN4-015",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved as DRAFT source only. The lesson covers Vて + しまう completion/regret usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. Learner-facing PILOT remains blocked until TTS generation and audio QA.",
+      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved for controlled PILOT after the N4-CH04 TTS generation and delegated AI/STT audio QA gate cleared 45/45 targets with 0 pending, FLAG, or FAIL verdicts. The lesson covers Vて + しまう completion/regret usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. This is not native-speaker human approval.",
       "lessonId": "HN4-015",
       "lessonNo": 15,
       "chapterId": "N4-CH04",
@@ -4699,7 +4699,7 @@
     {
       "reviewId": "lesson-human-review-HN4-016",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved as DRAFT source only. The lesson covers Vます stem + 続ける continuation usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. Learner-facing PILOT remains blocked until TTS generation and audio QA.",
+      "reviewerNotes": "Delegated AI official lesson review 2026-05-20: approved for controlled PILOT after the N4-CH04 TTS generation and delegated AI/STT audio QA gate cleared 45/45 targets with 0 pending, FLAG, or FAIL verdicts. The lesson covers Vます stem + 続ける continuation usage with 4 script lines, 5 runtime-compatible questions, linked N4 vocab/grammar, and complete TTS target references. This is not native-speaker human approval.",
       "lessonId": "HN4-016",
       "lessonNo": 16,
       "chapterId": "N4-CH04",
