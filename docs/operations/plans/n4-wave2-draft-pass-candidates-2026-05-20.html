@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N4 Audio QA PASS Candidate Listening Sheet</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f8f5f2; color: #24211f; }
+    main { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+    header { margin-bottom: 32px; }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    h2 { margin: 36px 0 16px; font-size: 22px; }
+    h3 { margin: 10px 0 8px; font-size: 20px; line-height: 1.35; }
+    p { color: #625b55; line-height: 1.6; }
+    code { background: #eee7df; border-radius: 4px; padding: 2px 4px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .metric { background: #fff; border: 1px solid #eadfd5; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+    .candidate-card { background: #fff; border: 1px solid #d7eadf; border-radius: 8px; padding: 18px; margin: 12px 0; box-shadow: inset 4px 0 0 #1f9d67; }
+    .candidate-card__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .candidate-card__meta span { background: #e8f4ed; border-radius: 999px; padding: 5px 10px; font-size: 13px; }
+    audio { width: 100%; margin: 10px 0 12px; }
+    .candidate-card__details { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; margin: 0; }
+    dt { color: #65746b; font-weight: 700; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    .empty { background: #fff; border: 1px dashed #d8cbc0; border-radius: 8px; padding: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>N4 Audio QA PASS Candidate Listening Sheet</h1>
+    <p>Read-only listening surface. Use this for listen-once checks, then record final verdicts in the candidate CSV or packet workflow.</p>
+  </header>
+  <section class="summary" aria-label="Summary">
+    <div class="metric">Total review items<strong>45</strong></div>
+    <div class="metric">Pending<strong>45</strong></div>
+    <div class="metric">PASS candidates<strong>16</strong></div>
+    <div class="metric">Held for review<strong>29</strong></div>
+  </section>
+  <section>
+    <h2>Boundary</h2>
+    <p>Candidate status is not a final human audio-quality verdict. Set PASS only after the audio is complete, intelligible, and acceptable for learner playback.</p>
+  </section>
+  <section>
+    <h2>Sources</h2>
+    <ul><li><code>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</code></li>
+<li><code>docs/operations/plans/n4-wave2-draft-tts-machine-report-2026-05-20.md</code></li>
+<li><code>docs/operations/plans/n4-wave2-draft-tts-stt-assist-run-2026-05-20.md</code></li></ul>
+  </section>
+  <section>
+    <h2>Listen Once Candidates</h2>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-012 script:0</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>この授業は説明が丁寧だし、練習も多いです。</h3>
+  <p>이 수업은 설명이 정중하고 연습도 많습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/script-line-0.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-012 script:1</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>試験の前でも安心ですね。</h3>
+  <p>시험 전에도 안심이네요.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/script-line-1.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-012 script:2</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>はい。質問しやすいし、自信もつきます。</h3>
+  <p>네. 질문하기도 쉽고 자신감도 생깁니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/script-line-2.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-012 script:3</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>理由を二つ言う時に、しを使えます。</h3>
+  <p>이유를 두 가지 말할 때 し를 쓸 수 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/script-line-3.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-013 script:0</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>予約の時間を調べてみます。</h3>
+  <p>예약 시간을 한번 찾아보겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-0.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-013 script:3</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>大丈夫なら、申し込んでみます。</h3>
+  <p>괜찮다면 한번 신청해 보겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-3.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-014 script:0</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>会議の前に資料を準備しておきます。</h3>
+  <p>회의 전에 자료를 준비해 두겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/script-line-0.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-014 script:1</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>参加する人に連絡しておきます。</h3>
+  <p>참가하는 사람에게 연락해 두겠습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/script-line-1.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-014 script:2</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>部屋も片付けておきましょう。</h3>
+  <p>방도 정리해 둡시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/script-line-2.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-014 script:3</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>予約の時間を決めておくと安心です。</h3>
+  <p>예약 시간을 정해 두면 안심입니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/a31b14ac-7a53-4aa9-81e9-e6e0f56ed6bc/script-line-3.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-015 script:0</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>うっかり予約を忘れてしまいました。</h3>
+  <p>깜빡 예약을 잊어버렸습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-0.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-015 script:2</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>スマートフォンも落としてしまいました。</h3>
+  <p>스마트폰도 떨어뜨려 버렸습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-2.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-015 script:3</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>次からは予定を確認しておきましょう。</h3>
+  <p>다음부터는 일정을 확인해 둡시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/e812f2e7-4e5e-4e02-b566-47893239c20c/script-line-3.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-016 script:0</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>日本語の練習を毎日続けています。</h3>
+  <p>일본어 연습을 매일 계속하고 있습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/ca89a60e-8cbf-41f4-8345-87cc0ac763ef/script-line-0.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-016 script:1</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>運動も少しずつ続けるつもりです。</h3>
+  <p>운동도 조금씩 계속할 생각입니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/ca89a60e-8cbf-41f4-8345-87cc0ac763ef/script-line-1.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+<article class="candidate-card">
+  <div class="candidate-card__meta">
+    <span>HN4-016 script:2</span>
+    <span>P2 pending</span>
+    <span>PENDING</span>
+  </div>
+  <h3>将来のために、研究も続けたいです。</h3>
+  <p>장래를 위해 연구도 계속하고 싶습니다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/ca89a60e-8cbf-41f4-8345-87cc0ac763ef/script-line-2.mp3"></audio>
+  <dl class="candidate-card__details">
+    <dt>Reason</dt><dd>machine pass + no parsed machine/STT review signal</dd>
+    <dt>Action</dt><dd>listen once; if complete and intelligible, set new_verdict=PASS</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md</dd>
+  </dl>
+</article>
+  </section>
+</main>
+</body>
+</html>
