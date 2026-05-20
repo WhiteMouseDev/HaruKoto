@@ -2,7 +2,7 @@
 
 > Date: 2026-05-20
 > Scope: promote the next N4 foundation slice into official DRAFT lesson source
-> Status: official DRAFT source promoted and AI/STT audio QA cleared; follow-up PILOT decision recorded in `docs/operations/plans/n4-ch04-pilot-promotion-2026-05-20.md`
+> Status: official DRAFT source promoted and AI/STT audio QA cleared; follow-up PILOT decision recorded in `docs/operations/plans/n4-ch04-pilot-rollout-decision-2026-05-20.md`
 
 ## Decision
 
@@ -65,9 +65,10 @@ complete.
 
 ## Seed Registry Boundary
 
-`apps/api/app/seeds/lessons.py` is intentionally unchanged. The configured API
-seed registry only carries pilot/publishable N4 sources, so `N4-CH04` enters
-that registry after TTS generation and audio QA.
+At the initial DRAFT promotion point, `apps/api/app/seeds/lessons.py` was
+intentionally unchanged. The configured API seed registry only carried
+pilot/publishable N4 sources, so `N4-CH04` entered that registry later, after
+TTS generation and audio QA cleared.
 
 ## Validation Evidence
 
@@ -92,9 +93,9 @@ that registry after TTS generation and audio QA.
 
 ## Boundary
 
-This promotion increases official N4 lesson source coverage from 11 to 16
-lessons. It does not make the new lessons learner-facing and does not claim
-native-speaker or audio QA approval.
+This DRAFT promotion increased official N4 lesson source coverage from 11 to 16
+lessons. The follow-up PILOT decision makes the new lessons learner-facing for
+controlled pilot exposure, but still does not claim native-speaker approval.
 
 Next gates:
 
@@ -103,5 +104,5 @@ Next gates:
 2. COMPLETED: delegated evidence was accepted on 2026-05-20. `N4-CH04` moved
    from `DRAFT` to `PILOT`, and the configured N4 seed registry now includes
    `ch04-everyday-action-extensions.json`.
-3. If native-speaker listening is required, keep `N4-CH04` as `DRAFT` and use
-   the cleared packet as the listening handoff.
+3. Native-speaker listening remains a quality upgrade gate for broader claims;
+   the cleared packet remains the listening handoff.
