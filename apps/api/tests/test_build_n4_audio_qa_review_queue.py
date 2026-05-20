@@ -104,7 +104,7 @@ def test_render_markdown_groups_priority_sections(tmp_path: Path) -> None:
 
     markdown = render_markdown(report, packet_paths=[packet], machine_report_paths=[machine_report])
 
-    assert "> Status: REVIEW QUEUE - human audio verdicts pending" in markdown
+    assert "> Status: REVIEW QUEUE - 2 pending rows remain" in markdown
     assert "| Review-signal items | 2 |" in markdown
     assert "| P0 machine-warning items | 1 |" in markdown
     assert "| STT-mismatch signal items | 2 |" in markdown

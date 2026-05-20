@@ -1,0 +1,22 @@
+target_key,packet,new_verdict,new_notes
+HN4-012 script:0,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-012 script:1,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-012 script:2,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-012 script:3,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-013 script:0,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-013 script:3,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-014 script:0,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-014 script:1,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-014 script:2,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-014 script:3,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-015 script:0,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-015 script:2,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-015 script:3,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-016 script:0,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-016 script:1,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-016 script:2,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-016 script:3,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: STT differs only by kana/kanji and punctuation normalization; not native-speaker review
+HN4-015 question:4,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,PASS,Delegated AI-assisted PASS: cloze blank explains pause and omitted blank in STT; machine probe passed; not native-speaker review
+HN4-013 script:1,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,FLAG,FLAG: STT heard the 受付 phrase as a divergent token; direct listening or regeneration required before rollout
+HN4-013 script:2,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,FLAG,FLAG: STT heard the 紙 phrase as a divergent token; direct listening or regeneration required before rollout
+HN4-015 script:1,docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md,FLAG,FLAG: STT maps 心配 to 新米 lexical mismatch; regenerate or direct-listen before rollout

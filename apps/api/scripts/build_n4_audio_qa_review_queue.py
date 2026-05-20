@@ -245,6 +245,14 @@ def _render_items(items: list[ReviewQueueItem]) -> list[str]:
     return lines
 
 
+def _status_line(report: ReviewQueueReport) -> str:
+    if report.flag_count:
+        return f"> Status: REVIEW QUEUE - {report.flag_count} FLAG blockers remain"
+    if report.pending_count:
+        return f"> Status: REVIEW QUEUE - {report.pending_count} pending rows remain"
+    return "> Status: REVIEW QUEUE - no remaining verdict blockers"
+
+
 def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], machine_report_paths: list[Path]) -> str:
     p0_items = [item for item in report.items if item.priority.startswith("P0")]
     p1_items = [item for item in report.items if item.priority == "P1 STT mismatch"]
@@ -254,7 +262,7 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
     lines = [
         "# N4 Audio QA Review Queue",
         "",
-        "> Status: REVIEW QUEUE - human audio verdicts pending",
+        _status_line(report),
         "> Boundary: prioritization artifact only; does not approve rollout",
         "",
         "ASSUMPTION: This queue orders review work but does not replace listening,",
@@ -293,19 +301,28 @@ def render_markdown(report: ReviewQueueReport, *, packet_paths: list[Path], mach
     lines.extend(_render_items(p2_items))
     lines.extend(["", "## P3 Resolved Or Waived", ""])
     lines.extend(_render_items(p3_items))
-    lines.extend(
-        [
-            "",
-            "## Decision",
-            "",
-            "Use this queue to review P0 machine/verdict blocker rows first, then P1",
-            "STT mismatch rows, then remaining pending packet rows. STT mismatches are",
-            "review-priority signals, not automatic audio-fail verdicts. Broad/full N4",
-            "rollout remains blocked until the packet verdict tracker has no `PENDING`,",
-            "`FLAG`, `FAIL`, or invalid verdict values.",
-            "",
-        ]
-    )
+    lines.extend(["", "## Decision", ""])
+    if report.flag_count:
+        lines.extend(
+            [
+                f"Use this queue to clear the {report.flag_count} P0 verdict blocker rows first.",
+                "STT mismatches are review-priority signals, not automatic audio-fail",
+                "verdicts. Broad/full N4 rollout remains blocked until the packet verdict",
+                "tracker has no `PENDING`, `FLAG`, `FAIL`, or invalid verdict values.",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "Use this queue to review P0 machine/verdict blocker rows first, then P1",
+                "STT mismatch rows, then remaining pending packet rows. STT mismatches are",
+                "review-priority signals, not automatic audio-fail verdicts. Broad/full N4",
+                "rollout remains blocked until the packet verdict tracker has no `PENDING`,",
+                "`FLAG`, `FAIL`, or invalid verdict values.",
+                "",
+            ]
+        )
     return "\n".join(lines)
 
 

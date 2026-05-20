@@ -129,6 +129,7 @@ async def test_run_regeneration_dry_run_does_not_call_external_dependencies() ->
     results = await run_regeneration(
         [task],
         execute=False,
+        include_unpublished=False,
         continue_on_error=False,
         sleep_seconds=0,
         run_id="RUN",
@@ -184,6 +185,7 @@ async def test_execute_task_updates_existing_record_after_generation_and_upload(
     result = await execute_task(
         task,
         run_id="20260514T000000Z",
+        allow_unpublished=False,
         tts_generator=fake_generate,
         uploader=fake_upload,
         session_factory=_factory(session),  # type: ignore[arg-type]
@@ -220,6 +222,7 @@ async def test_execute_task_fails_before_generation_when_audio_url_drifted() -> 
     result = await execute_task(
         task,
         run_id="RUN",
+        allow_unpublished=False,
         tts_generator=fake_generate,
         uploader=fake_upload,
         session_factory=_factory(session),  # type: ignore[arg-type]
