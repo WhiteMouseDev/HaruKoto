@@ -86,6 +86,7 @@ that registry after TTS generation and audio QA.
 | Draft TTS machine audio probe | PASS for 45/45 targets; one non-blocking silence-ratio warning remains for human review |
 | Draft TTS STT assist | REVIEW for 45/45 targets; 29 STT mismatches require human listening before rollout |
 | Draft human audio QA packet | REVIEW PACKET generated for 45 targets; all audio URLs passed URL checks |
+| Draft audio QA review queue | REVIEW QUEUE generated with P0/P1/P2 ordering and an HTML listening sheet |
 | Configured N4 DB seed check | PASS for existing 11 publishable N4 lessons; `N4-CH04` intentionally excluded while DRAFT |
 
 ## Boundary

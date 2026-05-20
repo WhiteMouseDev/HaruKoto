@@ -39,7 +39,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py --level N4 --include-u
 
 - HN4-012 question:1: TRANSCRIPTION_TEXT_MISMATCH:丁珏孫
 - HN4-012 question:2: TRANSCRIPTION_TEXT_MISMATCH:地震ゲイツン
-- HN4-012 question:3: TRANSCRIPTION_TEXT_MISMATCH:THOUGHT: The user wants a precise Japanese transcription of the audio. I need to listen carefully and type out the word...
+- HN4-012 question:3: TRANSCRIPTION_TEXT_MISMATCH:[malformed STT response] 説明が丁寧だ。あら、練習も多いです。
 - HN4-012 question:4: TRANSCRIPTION_TEXT_MISMATCH:試験の前でもなわあじゅうです。
 - HN4-012 question:5: TRANSCRIPTION_TEXT_MISMATCH:イスオプン ソルミョンイ チョンジュンハゴ アンシムイムニダルル ペヨルハセヨ
 - HN4-013 script:1: TRANSCRIPTION_TEXT_MISMATCH:わからなければ、ふふで聞いてみましょう。
@@ -73,7 +73,7 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py --level N4 --include-u
 |---|---|---|---|---|
 | HN4-012 question:1 | 丁寧의 뜻은? | 丁珏孫 | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-1.mp3 |
 | HN4-012 question:2 | 自信의 뜻은? | 地震ゲイツン | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-2.mp3 |
-| HN4-012 question:3 | 説明が丁寧だ___、練習も多いです。 | THOUGHT: The user wants a precise Japanese transcription of the audio. I need to listen carefully and type out the words as they are spoken. Audio: "説明が丁寧だ。あら、練習も多いです。" My task is straightforward: transcribe the spoken Japanese into text.説明が丁寧だ。あら、練習も多いです。 | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-3.mp3 |
+| HN4-012 question:3 | 説明が丁寧だ___、練習も多いです。 | [malformed STT response] 説明が丁寧だ。あら、練習も多いです。 | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-3.mp3 |
 | HN4-012 question:4 | 試験の前でも___ですね。 | 試験の前でもなわあじゅうです。 | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-4.mp3 |
 | HN4-012 question:5 | '이 수업은 설명이 정중하고 안심입니다'를 배열하세요. | イスオプン ソルミョンイ チョンジュンハゴ アンシムイムニダルル ペヨルハセヨ | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/d4633ddc-7d4a-4c57-ab33-79dc472d9905/question-5.mp3 |
 | HN4-013 script:1 | 分からなければ、受付で聞いてみましょう。 | わからなければ、ふふで聞いてみましょう。 | no | https://storage.googleapis.com/harukoto-storage/tts/lesson/254bf018-bbdc-41f7-9458-67cedba4a4c7/script-line-1.mp3 |
