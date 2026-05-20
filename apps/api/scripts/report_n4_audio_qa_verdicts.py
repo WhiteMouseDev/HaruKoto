@@ -5,7 +5,10 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-DEFAULT_PACKET_GLOB = "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md"
+DEFAULT_PACKET_GLOBS = (
+    "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
+    "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
+)
 REVIEW_TARGET_KINDS = ("script ", "question ")
 KNOWN_VERDICTS = {"PASS", "FLAG", "FAIL", "PENDING", "WAIVED"}
 BLOCKING_VERDICTS = {"FLAG", "FAIL", "PENDING"}
@@ -169,7 +172,12 @@ def build_report(packet_paths: list[Path]) -> VerdictReport:
 
 
 def default_packet_paths() -> list[Path]:
-    return sorted(_repo_root().glob(DEFAULT_PACKET_GLOB))
+    paths: dict[Path, None] = {}
+    root = _repo_root()
+    for pattern in DEFAULT_PACKET_GLOBS:
+        for path in root.glob(pattern):
+            paths[path] = None
+    return sorted(paths)
 
 
 def _packet_paths_from_args(values: list[Path] | None) -> list[Path]:
