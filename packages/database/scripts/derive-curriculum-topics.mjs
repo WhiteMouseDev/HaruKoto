@@ -149,6 +149,36 @@ const PILOT_LESSON_COVERAGE_OVERRIDES = {
     mappedLessonIds: ['HN4-001'],
     notesKo: 'HN4-001 공식 N4 pilot lesson으로 대표 coverage가 확보되었다. 명령형 대비는 별도 topic에서 다룬다.',
   },
+  '034': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-012'],
+    notesKo:
+      'HN4-012 공식 N4 draft lesson으로 이유와 근거를 나열하는 〜し coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다.',
+  },
+  '038': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-013'],
+    notesKo:
+      'HN4-013 공식 N4 draft lesson으로 시도 표현 〜てみる coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다.',
+  },
+  '039': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-014'],
+    notesKo:
+      'HN4-014 공식 N4 draft lesson으로 사전 준비 표현 〜ておく coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다.',
+  },
+  '040': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-015'],
+    notesKo:
+      'HN4-015 공식 N4 draft lesson으로 완료/유감 표현 〜てしまう coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다.',
+  },
+  '046': {
+    coverageStatus: 'covered',
+    mappedLessonIds: ['HN4-016'],
+    notesKo:
+      'HN4-016 공식 N4 draft lesson으로 복합동사 〜続ける coverage를 확보했다. 오디오 QA 전이므로 learner-facing pilot은 보류한다.',
+  },
   '055': {
     coverageStatus: 'covered',
     mappedLessonIds: ['HN4-002'],

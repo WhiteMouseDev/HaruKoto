@@ -6,6 +6,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import Select
 
 from app.models.lesson import Lesson
 from app.models.tts import TtsAudio
@@ -41,6 +42,13 @@ class LessonQuestionPromptTtsResult:
     audio_url: str
 
 
+def _lesson_lookup_query(lesson_id: UUID, *, allow_unpublished: bool) -> Select[tuple[Lesson]]:
+    filters = [Lesson.id == lesson_id]
+    if not allow_unpublished:
+        filters.append(Lesson.is_published.is_(True))
+    return select(Lesson).where(*filters)
+
+
 async def generate_lesson_script_line_tts(
     db: AsyncSession,
     *,
@@ -49,8 +57,9 @@ async def generate_lesson_script_line_tts(
     tts_generator: TtsGenerator,
     upload_to_gcs: TtsUploader,
     generating: set[str] | None = None,
+    allow_unpublished: bool = False,
 ) -> LessonScriptTtsResult:
-    result = await db.execute(select(Lesson).where(Lesson.id == lesson_id, Lesson.is_published.is_(True)))
+    result = await db.execute(_lesson_lookup_query(lesson_id, allow_unpublished=allow_unpublished))
     lesson = result.scalar_one_or_none()
     if lesson is None:
         raise LessonScriptTtsServiceError(status_code=404, detail="레슨을 찾을 수 없습니다")
@@ -111,8 +120,9 @@ async def generate_lesson_question_prompt_tts(
     tts_generator: TtsGenerator,
     upload_to_gcs: TtsUploader,
     generating: set[str] | None = None,
+    allow_unpublished: bool = False,
 ) -> LessonQuestionPromptTtsResult:
-    result = await db.execute(select(Lesson).where(Lesson.id == lesson_id, Lesson.is_published.is_(True)))
+    result = await db.execute(_lesson_lookup_query(lesson_id, allow_unpublished=allow_unpublished))
     lesson = result.scalar_one_or_none()
     if lesson is None:
         raise LessonScriptTtsServiceError(status_code=404, detail="레슨을 찾을 수 없습니다")

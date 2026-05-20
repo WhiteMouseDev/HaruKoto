@@ -208,11 +208,15 @@ def source_targets_from_lesson(*, level: str, lesson: Lesson) -> list[TtsSourceT
     return targets
 
 
-async def _load_targets(level: str) -> list[TtsSourceTarget]:
+async def _load_targets(level: str, *, include_unpublished: bool, lesson_numbers: set[int] | None) -> list[TtsSourceTarget]:
+    filters = [Lesson.jlpt_level.cast(String) == level]
+    if not include_unpublished:
+        filters.append(Lesson.is_published.is_(True))
+    if lesson_numbers is not None:
+        filters.append(Lesson.lesson_no.in_(lesson_numbers))
+
     async with async_session_factory() as session:
-        result = await session.execute(
-            select(Lesson).where(Lesson.jlpt_level.cast(String) == level, Lesson.is_published.is_(True)).order_by(Lesson.lesson_no)
-        )
+        result = await session.execute(select(Lesson).where(*filters).order_by(Lesson.lesson_no))
         lessons = list(result.scalars().all())
 
     targets: list[TtsSourceTarget] = []
@@ -454,6 +458,8 @@ async def _download_audio(record: TtsStoredRecord, *, client: httpx.AsyncClient,
 async def build_report(
     *,
     level: str,
+    include_unpublished: bool = False,
+    lesson_numbers: set[int] | None = None,
     limit: int | None,
     check_silence: bool,
     timeout_seconds: float,
@@ -464,7 +470,7 @@ async def build_report(
     engine.echo = False
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
-    targets = await _load_targets(level)
+    targets = await _load_targets(level, include_unpublished=include_unpublished, lesson_numbers=lesson_numbers)
     targets.sort(key=lambda target: (target.lesson_no, 0 if target.kind == "script" else 1, target.order))
     if limit is not None:
         targets = targets[:limit]
@@ -698,6 +704,10 @@ def _command_string(args: argparse.Namespace) -> str:
     ]
     if args.limit is not None:
         parts.extend(["--limit", str(args.limit)])
+    if args.include_unpublished:
+        parts.append("--include-unpublished")
+    for lesson_no in args.lesson_no or []:
+        parts.extend(["--lesson-no", str(lesson_no)])
     if args.skip_silence_check:
         parts.append("--skip-silence-check")
     if args.timeout_seconds != 15.0:
@@ -718,6 +728,12 @@ def _command_string(args: argparse.Namespace) -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run machine audio-quality checks for N4 pilot lesson TTS MP3s.")
     parser.add_argument("--level", default="N4", help="JLPT level, for example N4")
+    parser.add_argument(
+        "--include-unpublished",
+        action="store_true",
+        help="Include DB lessons with is_published=false. Use only for explicit DRAFT audio QA ops.",
+    )
+    parser.add_argument("--lesson-no", type=int, action="append", help="Limit checks to one lesson number; repeatable")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of targets checked")
     parser.add_argument("--skip-silence-check", action="store_true", help="Skip ffmpeg silencedetect pass")
     parser.add_argument("--timeout-seconds", type=float, default=15.0, help="HTTP download timeout")
@@ -741,10 +757,18 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
+def _lesson_numbers(values: list[int] | None) -> set[int] | None:
+    if not values:
+        return None
+    return set(values)
+
+
 async def main() -> None:
     args = parse_args()
     report = await build_report(
         level=args.level.upper(),
+        include_unpublished=args.include_unpublished,
+        lesson_numbers=_lesson_numbers(args.lesson_no),
         limit=args.limit,
         check_silence=not args.skip_silence_check,
         timeout_seconds=args.timeout_seconds,

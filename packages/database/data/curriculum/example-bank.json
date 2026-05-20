@@ -893,6 +893,127 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
       }
+    },
+    {
+      "exampleId": "ex-n4-shi-reason-listing-001",
+      "topicId": "topic-shi-reason-listing",
+      "jlptLevel": "N4",
+      "japanese": "この授業は説明が丁寧だし、練習も多いです。",
+      "reading": "このじゅぎょうはせつめいがていねいだし、れんしゅうもおおいです。",
+      "korean": "이 수업은 설명이 정중하고 연습도 많습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "reason",
+        "listing",
+        "classroom",
+        "n4"
+      ],
+      "notesKo": "이유와 특징을 し로 나열하는 HaruKoto-authored 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-miru-001",
+      "topicId": "topic-te-miru",
+      "jlptLevel": "N4",
+      "japanese": "予約の時間を調べてみます。",
+      "reading": "よやくのじかんをしらべてみます。",
+      "korean": "예약 시간을 한번 찾아보겠습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "trial",
+        "reservation",
+        "n4"
+      ],
+      "notesKo": "시도 표현 〜てみる를 예약 확인 맥락으로 만든 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-oku-001",
+      "topicId": "topic-te-oku",
+      "jlptLevel": "N4",
+      "japanese": "会議の前に資料を準備しておきます。",
+      "reading": "かいぎのまえにしりょうをじゅんびしておきます。",
+      "korean": "회의 전에 자료를 준비해 두겠습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "preparation",
+        "work",
+        "n4"
+      ],
+      "notesKo": "사전 준비 표현 〜ておく를 회의 준비 맥락으로 만든 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-shimau-001",
+      "topicId": "topic-te-shimau",
+      "jlptLevel": "N4",
+      "japanese": "うっかり予約を忘れてしまいました。",
+      "reading": "うっかりよやくをわすれてしまいました。",
+      "korean": "깜빡 예약을 잊어버렸습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "completion",
+        "regret",
+        "n4"
+      ],
+      "notesKo": "완료와 유감의 〜てしまう를 예약 실수 맥락으로 만든 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-tsuzukeru-compound-verbs-001",
+      "topicId": "topic-tsuzukeru-compound-verbs",
+      "jlptLevel": "N4",
+      "japanese": "日本語の練習を毎日続けています。",
+      "reading": "にほんごのれんしゅうをまいにちつづけています。",
+      "korean": "일본어 연습을 매일 계속하고 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "continuation",
+        "study",
+        "n4"
+      ],
+      "notesKo": "복합동사 続ける를 꾸준한 학습 맥락으로 만든 신규 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
     }
   ]
 }

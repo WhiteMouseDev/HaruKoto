@@ -225,6 +225,7 @@ def render_packet_markdown(
     level: str,
     chapter_no: int,
     targets: list[AudioQaTarget],
+    scope_label: str = "Pilot",
 ) -> str:
     lesson_labels = sorted({target.lesson_label for target in targets})
     script_count = sum(1 for target in targets if target.kind == "script")
@@ -234,7 +235,7 @@ def render_packet_markdown(
     chapter_title = targets[0].chapter_title if targets else ""
 
     lines = [
-        f"# {level} Pilot Human Audio QA Packet - Chapter {chapter_no}",
+        f"# {level} {scope_label} Human Audio QA Packet - Chapter {chapter_no}",
         "",
         f"> Date: {generated_at[:10]}",
         f"> Scope: {level} chapter {chapter_no} `{chapter_title}`, {', '.join(lesson_labels)}",
@@ -326,17 +327,17 @@ def render_packet_markdown(
     return "\n".join(lines) + "\n"
 
 
-async def _load_lessons(level: str, chapter_no: int) -> list[LessonSource]:
+async def _load_lessons(level: str, chapter_no: int, *, include_unpublished: bool) -> list[LessonSource]:
+    filters = [
+        Lesson.jlpt_level.cast(String) == level,
+        Chapter.chapter_no == chapter_no,
+    ]
+    if not include_unpublished:
+        filters.append(Lesson.is_published.is_(True))
+
     async with async_session_factory() as session:
         result = await session.execute(
-            select(Lesson, Chapter)
-            .join(Chapter, Lesson.chapter_id == Chapter.id)
-            .where(
-                Lesson.jlpt_level.cast(String) == level,
-                Lesson.is_published.is_(True),
-                Chapter.chapter_no == chapter_no,
-            )
-            .order_by(Lesson.lesson_no)
+            select(Lesson, Chapter).join(Chapter, Lesson.chapter_id == Chapter.id).where(*filters).order_by(Lesson.lesson_no)
         )
         return [
             LessonSource(
@@ -392,11 +393,18 @@ async def _load_audio_records(targets: list[AudioQaTarget]) -> dict[tuple[str, s
     return records
 
 
-async def build_packet(*, level: str, chapter_no: int, check_audio_urls: bool, timeout_seconds: float) -> str:
+async def build_packet(
+    *,
+    level: str,
+    chapter_no: int,
+    include_unpublished: bool = False,
+    check_audio_urls: bool,
+    timeout_seconds: float,
+) -> str:
     engine.echo = False
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
-    lessons = await _load_lessons(level, chapter_no)
+    lessons = await _load_lessons(level, chapter_no, include_unpublished=include_unpublished)
     targets = [target for lesson in lessons for target in build_targets_for_lesson(lesson)]
     records = await _load_audio_records(targets)
     targets = attach_audio_records(targets, records)
@@ -407,13 +415,19 @@ async def build_packet(*, level: str, chapter_no: int, check_audio_urls: bool, t
         level=level,
         chapter_no=chapter_no,
         targets=targets,
+        scope_label="Pilot/Draft" if include_unpublished else "Pilot",
     )
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build a human audio QA packet for published N4 lesson TTS.")
+    parser = argparse.ArgumentParser(description="Build a human audio QA packet for N4 lesson TTS.")
     parser.add_argument("--level", default="N4", help="JLPT level, for example N4")
-    parser.add_argument("--chapter-no", type=int, default=1, help="Published chapter number to review")
+    parser.add_argument("--chapter-no", type=int, default=1, help="Chapter number to review")
+    parser.add_argument(
+        "--include-unpublished",
+        action="store_true",
+        help="Include DB lessons with is_published=false. Use only for explicit DRAFT audio QA ops.",
+    )
     parser.add_argument("--check-audio-urls", action="store_true", help="Read-only HTTP check for each audio URL")
     parser.add_argument("--timeout-seconds", type=float, default=10.0, help="Timeout for each audio URL HTTP check")
     parser.add_argument("--output", type=Path, default=None, help="Write markdown to this path instead of stdout")
@@ -425,6 +439,7 @@ async def main() -> None:
     markdown = await build_packet(
         level=args.level.upper(),
         chapter_no=args.chapter_no,
+        include_unpublished=args.include_unpublished,
         check_audio_urls=args.check_audio_urls,
         timeout_seconds=args.timeout_seconds,
     )

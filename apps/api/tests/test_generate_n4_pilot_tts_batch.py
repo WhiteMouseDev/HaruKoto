@@ -1,4 +1,6 @@
-from scripts.generate_n4_pilot_tts_batch import GenerationTask, collect_missing_tasks
+import pytest
+
+from scripts.generate_n4_pilot_tts_batch import GenerationResult, GenerationTask, collect_missing_tasks, run_generation
 from scripts.report_n4_pilot_tts_coverage import LessonTtsCoverage, PilotBatchTtsCoverageReport
 
 
@@ -114,3 +116,113 @@ def test_collect_missing_tasks_can_select_question_targets_only() -> None:
     tasks = collect_missing_tasks(report, lesson_numbers=None, target_kind="question", limit=None)
 
     assert [(task.kind, task.order) for task in tasks] == [("question", 2), ("question", 4)]
+
+
+@pytest.mark.asyncio
+async def test_run_generation_can_include_unpublished_lessons(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, bool] = {}
+
+    async def fake_build_report(
+        *,
+        level: str,
+        include_unpublished: bool,
+        check_audio_urls: bool,
+        timeout_seconds: float,
+    ) -> PilotBatchTtsCoverageReport:
+        captured["include_unpublished"] = include_unpublished
+        return PilotBatchTtsCoverageReport(
+            generated_at="2026-05-20T00:00:00+00:00",
+            level=level,
+            lesson_count=0,
+            expected_script_line_records=0,
+            generated_script_line_records=0,
+            expected_question_prompt_records=0,
+            generated_question_prompt_records=0,
+            expected_total_records=0,
+            generated_total_records=0,
+            provider_model_counts={},
+            lessons=[],
+            audio_url_check=None,
+            signals=[],
+            blockers=[],
+        )
+
+    monkeypatch.setattr("scripts.generate_n4_pilot_tts_batch.build_report", fake_build_report)
+
+    results = await run_generation(
+        level="N4",
+        include_unpublished=True,
+        lesson_numbers=None,
+        target_kind="all",
+        limit=None,
+        execute=False,
+        continue_on_error=False,
+        sleep_seconds=0,
+    )
+
+    assert results == []
+    assert captured == {"include_unpublished": True}
+
+
+@pytest.mark.asyncio
+async def test_run_generation_passes_unpublished_access_to_executor(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def fake_build_report(
+        *,
+        level: str,
+        include_unpublished: bool,
+        check_audio_urls: bool,
+        timeout_seconds: float,
+    ) -> PilotBatchTtsCoverageReport:
+        return PilotBatchTtsCoverageReport(
+            generated_at="2026-05-20T00:00:00+00:00",
+            level=level,
+            lesson_count=1,
+            expected_script_line_records=1,
+            generated_script_line_records=0,
+            expected_question_prompt_records=0,
+            generated_question_prompt_records=0,
+            expected_total_records=1,
+            generated_total_records=0,
+            provider_model_counts={},
+            lessons=[
+                LessonTtsCoverage(
+                    lesson_no=12,
+                    label="HN4-012",
+                    lesson_id="lesson-12",
+                    title="title",
+                    is_published=False,
+                    expected_script_line_records=1,
+                    generated_script_line_records=0,
+                    missing_script_line_indices=[0],
+                    expected_question_prompt_records=0,
+                    generated_question_prompt_records=0,
+                    missing_question_prompt_orders=[],
+                )
+            ],
+            audio_url_check=None,
+            signals=[],
+            blockers=[],
+        )
+
+    captured: dict[str, bool] = {}
+
+    async def fake_execute_task(task: GenerationTask, *, allow_unpublished: bool = False) -> GenerationResult:
+        captured["allow_unpublished"] = allow_unpublished
+        return GenerationResult(task=task, status="generated", audio_url="https://cdn.example.com/audio.mp3")
+
+    monkeypatch.setattr("scripts.generate_n4_pilot_tts_batch.build_report", fake_build_report)
+    monkeypatch.setattr("scripts.generate_n4_pilot_tts_batch.execute_task", fake_execute_task)
+
+    results = await run_generation(
+        level="N4",
+        include_unpublished=True,
+        lesson_numbers={12},
+        target_kind="all",
+        limit=None,
+        execute=True,
+        continue_on_error=False,
+        sleep_seconds=0,
+    )
+
+    assert [result.status for result in results] == ["generated"]
+    assert captured == {"allow_unpublished": True}
