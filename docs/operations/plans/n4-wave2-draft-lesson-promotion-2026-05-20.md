@@ -2,7 +2,7 @@
 
 > Date: 2026-05-20
 > Scope: promote the next N4 foundation slice into official DRAFT lesson source
-> Status: official DRAFT source promoted; learner-facing PILOT is on hold until TTS/audio QA
+> Status: official DRAFT source promoted and TTS generated; learner-facing PILOT is on hold until human audio QA
 
 ## Decision
 
@@ -97,6 +97,8 @@ native-speaker or audio QA approval.
 
 Next gates:
 
-1. Generate TTS for `HN4-012` through `HN4-016`.
-2. Run STT-assisted and human/listener audio QA for the new targets.
-3. Move `N4-CH04` from `DRAFT` to `PILOT` only after the audio gate is clean.
+1. Complete human/listener verdicts for the 45 `HN4-012` through `HN4-016`
+   targets in the Chapter 4 packet/review sheet.
+2. Regenerate or explicitly waive any `FLAG` / `FAIL` items.
+3. Move `N4-CH04` from `DRAFT` to `PILOT` only after the human audio gate is
+   clean.
