@@ -65,6 +65,18 @@ Total N5 source scope after promotion:
 | Database package typecheck | `pnpm --filter @harukoto/database typecheck` | PASS |
 | API seed policy tests | `cd apps/api && uv run pytest tests/test_lesson_seed_policy.py -q` | PASS, 13 passed |
 
+## 2026-05-26 Review Packet Addendum
+
+| Gate | Command / Evidence | Result |
+|---|---|---|
+| Delegated AI-assisted lesson human review packet | `docs/operations/plans/n5-lesson-human-review-ai-closeout-2026-05-26.md` | PASS: 50 N5 review rows generated and marked `APPROVED` |
+| N5 lesson review approval gate | `pnpm --filter @harukoto/database lessons:review:gate -- --level N5` | PASS: 50 `APPROVED`, 0 blockers |
+
+This addendum closes the source-controlled N5 `lessons:review:gate` gap. It
+does not replace native-speaker review, TTS readiness review, or mobile
+target-runtime UAT. The review packet records an explicit TTS manifest gap for
+HN5-001 through HN5-030.
+
 ## Post-Merge Runtime Gate Results
 
 | Gate | Command / Path | Result |

@@ -147,9 +147,9 @@ function buildQuestion(question, ttsTarget) {
   };
 }
 
-function reviewerChecklistForLesson(lesson) {
+function reviewerChecklistForLesson(level, lesson) {
   return [
-    '문법 도입 순서가 N4 pilot의 선행 지식과 맞는지 확인한다.',
+    `문법 도입 순서가 ${level} pilot의 선행 지식과 맞는지 확인한다.`,
     '대화문 일본어가 자연스럽고 PDF 원문 복제가 아닌지 확인한다.',
     '한국어 번역과 해설이 한국어 학습자 기준으로 명확한지 확인한다.',
     '문항 정답과 해설이 prompt/options와 일치하는지 확인한다.',
@@ -222,7 +222,7 @@ function buildReviewRow(chapter, lesson, vocabByOrder, grammarByOrder, targetByT
       vocabularyLinks: lesson.vocab_orders?.length ?? 0,
       grammarLinked: grammarRef ? true : false,
     },
-    reviewerChecklist: reviewerChecklistForLesson(lesson),
+    reviewerChecklist: reviewerChecklistForLesson(chapter.meta.jlpt_level, lesson),
   };
 }
 
