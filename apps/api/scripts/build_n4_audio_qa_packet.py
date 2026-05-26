@@ -26,6 +26,7 @@ TargetKind = Literal["script", "question"]
 
 @dataclass(frozen=True)
 class LessonSource:
+    level: str
     lesson_id: str
     lesson_no: int
     chapter_no: int
@@ -36,7 +37,7 @@ class LessonSource:
 
     @property
     def label(self) -> str:
-        return f"HN4-{self.lesson_no:03d}"
+        return f"H{self.level}-{self.lesson_no:03d}"
 
 
 @dataclass(frozen=True)
@@ -247,7 +248,7 @@ def render_packet_markdown(
         "change lesson content, update rollout status, or claim native-speaker approval.",
         "",
         "ASSUMPTION: One full chapter is the minimum representative playback QA gate",
-        "before considering broader N4 rollout. A flagged or failed item should block",
+        f"before considering broader {level} rollout. A flagged or failed item should block",
         "broad rollout until regenerated or explicitly waived.",
         "",
         "## Reviewer Instructions",
@@ -342,6 +343,7 @@ async def _load_lessons(level: str, chapter_no: int, *, include_unpublished: boo
         return [
             LessonSource(
                 lesson_id=str(lesson.id),
+                level=level,
                 lesson_no=lesson.lesson_no,
                 chapter_no=chapter.chapter_no,
                 chapter_title=chapter.title,
@@ -420,7 +422,7 @@ async def build_packet(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build a human audio QA packet for N4 lesson TTS.")
+    parser = argparse.ArgumentParser(description="Build a human audio QA packet for lesson TTS.")
     parser.add_argument("--level", default="N4", help="JLPT level, for example N4")
     parser.add_argument("--chapter-no", type=int, default=1, help="Chapter number to review")
     parser.add_argument(

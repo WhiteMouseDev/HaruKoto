@@ -77,3 +77,9 @@ def test_default_packet_paths_include_ch04_pilot_packet() -> None:
 
     assert any("n4-pilot-human-audio-qa-ch01-2026-05-13.md" in packet for packet in packets)
     assert any("n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md" in packet for packet in packets)
+
+
+def test_default_packet_paths_can_select_n5_packets() -> None:
+    packets = [path.as_posix() for path in default_packet_paths(level="N5")]
+
+    assert any("n5-human-audio-qa-ch01-2026-05-26.md" in packet for packet in packets)
