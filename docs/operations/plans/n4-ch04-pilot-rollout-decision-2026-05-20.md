@@ -63,6 +63,7 @@ then passed.
 |---|---|---|
 | Published list/detail API smoke | PASS | `docs/operations/plans/n4-ch04-target-api-smoke-2026-05-20.md` reports 4 N4 chapters, 16 N4 lessons, and PASS detail checks for `HN4-012` through `HN4-016` |
 | Mobile target-runtime UAT | PASS | `docs/operations/plans/n4-ch04-mobile-uat-2026-05-26.md` reports HN4-012 detail, start, TTS entry, submit/result, retry, and return-to-learning PASS on iPhone 17 Pro Simulator, iOS 26.5 |
+| Pilot feedback baseline | PASS | `docs/operations/plans/n4-ch04-pilot-feedback-baseline-2026-05-26.md` reports no automatic rollback blockers; HN4-012 has one non-smoke completed learner row and HN4-013 through HN4-016 are waiting for pilot traffic with all expected TTS records present |
 
 ## Pilot Guardrails
 
@@ -91,7 +92,8 @@ If CH04 shows a P0/P1 runtime or content issue:
 
 ## Next Gates
 
-1. Monitor pilot logs for lesson list/detail, start, submit/result, SRS, and TTS
-   failures during the controlled CH04 exposure window.
+1. Continue periodic pilot monitoring for lesson list/detail, start,
+   submit/result, SRS, and TTS failures during the controlled CH04 exposure
+   window.
 2. Run physical iPhone smoke before making release-device claims.
 3. Keep native-speaker review as a quality upgrade gate before wider claims.
