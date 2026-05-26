@@ -74,8 +74,9 @@ Total N5 source scope after promotion:
 
 This addendum closes the source-controlled N5 `lessons:review:gate` gap. It
 does not replace native-speaker review, TTS readiness review, or mobile
-target-runtime UAT. The review packet records an explicit TTS manifest gap for
-HN5-001 through HN5-030.
+target-runtime UAT. The follow-up TTS manifest addendum closes the HN5-001
+through HN5-030 manifest coverage gap without claiming generated audio or audio
+QA readiness.
 
 ## Post-Merge Runtime Gate Results
 

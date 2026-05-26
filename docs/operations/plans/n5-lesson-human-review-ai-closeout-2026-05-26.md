@@ -12,9 +12,10 @@ This closes the repository `lessons:review:gate -- --level N5` gap by adding a
 source-controlled N5 lesson review packet and recording delegated AI-assisted
 review decisions for all current N5 pilot lessons.
 
-It does not claim native-speaker approval. It also does not close TTS readiness:
-HN5-001 through HN5-030 still need lesson-seed TTS manifest backfill and audio
-generation/review follow-up before making audio-readiness claims.
+It does not claim native-speaker approval. It also does not close audio
+readiness: lesson-seed TTS manifest coverage is now complete, but actual audio
+generation/review follow-up is still required before making audio-readiness
+claims.
 
 ASSUMPTION: In the absence of a human Japanese curriculum specialist, delegated
 AI-assisted review is acceptable as a controlled-pilot curriculum/source review
@@ -51,24 +52,25 @@ For each HN5-001 through HN5-050 row, the review checked:
 - no known copied PDF examples or explanations in the lesson packet;
 - TTS target coverage status as a separate operational signal.
 
-The packet notes intentionally distinguish curriculum/source approval from TTS
-readiness. HN5-001 through HN5-030 are approved for curriculum/source quality
-with an explicit TTS manifest gap note. HN5-031 through HN5-050 have lesson-seed
-TTS target coverage in the manifest.
+The packet notes intentionally distinguish curriculum/source approval from
+audio readiness. HN5-001 through HN5-030 were updated after the official lesson
+seed TTS manifest backfill, and HN5-001 through HN5-050 now all have
+lesson-seed TTS target coverage in the manifest.
 
 ## TTS Coverage Snapshot
 
 | Area | Result |
 |---|---|
 | N5 review rows | 50 |
-| Rows with complete lesson-seed TTS target coverage | 20 |
-| Rows with incomplete lesson-seed TTS target coverage | 30 |
-| Script TTS targets in packet | 78 / 198 |
-| Question prompt TTS targets in packet | 100 / 250 |
-| Incomplete rows | HN5-001 through HN5-030 |
+| Rows with complete lesson-seed TTS target coverage | 50 |
+| Rows with incomplete lesson-seed TTS target coverage | 0 |
+| Script TTS targets in packet | 198 / 198 |
+| Question prompt TTS targets in packet | 250 / 250 |
+| Incomplete rows | None |
 
-This TTS gap existed before this review packet was generated. It is not a
-curriculum-source blocker, but it remains an audio readiness blocker.
+The previous HN5-001 through HN5-030 manifest gap is closed by
+`docs/operations/plans/n5-tts-manifest-backfill-2026-05-26.md`. Audio
+generation, persisted `tts_audio` rows, and playback QA remain separate gates.
 
 ## Validation
 
@@ -77,6 +79,7 @@ curriculum-source blocker, but it remains an audio readiness blocker.
 | N5 lesson review packet generation | PASS: 50 rows generated |
 | N5 delegated review closeout | PASS: 50 `APPROVED` rows |
 | N5 review approval gate | PASS: 50 approved, 0 blockers |
+| N5 lesson-seed TTS manifest coverage | PASS: 198/198 script targets, 250/250 question targets |
 | N4 review approval gate regression | PASS: 16 approved, 0 blockers |
 | Lesson schema/reference validation | PASS: 13 chapters, 66 lessons, 330 questions |
 | N5 strict quality gate | PASS: 7 PASS / 0 WARN / 0 FAIL |
@@ -87,6 +90,7 @@ curriculum-source blocker, but it remains an audio readiness blocker.
 
 ```bash
 pnpm --filter @harukoto/database lessons:review:prepare -- --level N5
+pnpm --filter @harukoto/database curriculum:derive
 pnpm --filter @harukoto/database lessons:review:gate -- --level N5
 pnpm --filter @harukoto/database lessons:validate
 pnpm --filter @harukoto/database lessons:quality -- --level N5 --strict-warnings
@@ -102,9 +106,8 @@ the `lessons:review:gate -- --level N5` command passes.
 
 Remaining N5 quality gates:
 
-1. Backfill lesson-seed TTS manifest coverage for HN5-001 through HN5-030.
-2. Run TTS generation/audio QA for any missing N5 lesson script and question
+1. Run TTS generation/audio QA for any missing N5 lesson script and question
    prompt targets.
-3. Run mobile target-runtime UAT for the 9-chapter / 50-lesson N5 surface.
-4. Keep native-speaker review as a later quality gate before broad curriculum
+2. Run mobile target-runtime UAT for the 9-chapter / 50-lesson N5 surface.
+3. Keep native-speaker review as a later quality gate before broad curriculum
    claims.

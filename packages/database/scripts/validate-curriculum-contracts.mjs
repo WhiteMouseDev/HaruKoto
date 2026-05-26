@@ -410,6 +410,18 @@ function officialLessonSeedContext(rows, seedCandidateContext) {
   return { lessonById, promotedCandidateByLessonId, promotedLessonByCandidateId };
 }
 
+function topicIdForOfficialLessonSeed(record, candidate, topicGrammarMapContext) {
+  if (candidate?.sourceTopicIds?.[0]) return candidate.sourceTopicIds[0];
+
+  const grammarOrder = record.lesson?.grammar?.grammar_order;
+  if (!Number.isInteger(grammarOrder)) return null;
+  const level = record.lesson?.grammar?.level ?? record.level;
+  const mappings = topicGrammarMapContext.mappingsByGrammarKey.get(`${level}:${grammarOrder}`) ?? [];
+  const exact = mappings.find((mapping) => mapping.matchType === 'exact');
+  const partial = mappings.find((mapping) => mapping.matchType === 'partial');
+  return exact?.topicId ?? partial?.topicId ?? mappings[0]?.topicId ?? null;
+}
+
 function validateContractShell(file, rows) {
   if (!existsSync(file.path)) {
     addIssue(rows, 'FAIL', file.label, `Missing file: ${file.path}`);
@@ -536,7 +548,8 @@ function validateTopics(data, rows, grammarOrders, pdfRefs) {
 }
 
 function validateTopicGrammarMap(data, rows, grammarOrders, topicIds) {
-  if (!data || !Array.isArray(data.mappings)) return;
+  const mappingsByGrammarKey = new Map();
+  if (!data || !Array.isArray(data.mappings)) return { mappingsByGrammarKey };
   const seen = new Set();
   for (const mapping of data.mappings) {
     const scope = `${mapping?.topicId ?? 'topic ?'} -> ${mapping?.grammarLevel ?? '?'}:${mapping?.grammarOrder ?? '?'}`;
@@ -552,7 +565,12 @@ function validateTopicGrammarMap(data, rows, grammarOrders, topicIds) {
       addIssue(rows, 'FAIL', scope, 'Duplicate topic grammar mapping.');
     }
     seen.add(key);
+
+    const grammarKey = `${mapping.grammarLevel}:${mapping.grammarOrder}`;
+    if (!mappingsByGrammarKey.has(grammarKey)) mappingsByGrammarKey.set(grammarKey, []);
+    mappingsByGrammarKey.get(grammarKey).push(mapping);
   }
+  return { mappingsByGrammarKey };
 }
 
 function validateTopicVocabularyMap(data, rows, vocabularyOrders, topicIds) {
@@ -850,6 +868,7 @@ function validateTtsTargetManifest(
   exampleIds,
   seedCandidateContext,
   officialLessonContext,
+  topicGrammarMapContext,
   vocabularyMapContext,
   vocabularyOrders,
 ) {
@@ -1001,10 +1020,11 @@ function validateTtsTargetManifest(
       if (!record) {
         addIssue(rows, 'FAIL', scope, `textSource references unknown official lesson seed ${lessonId}.`);
       } else {
-        if (!candidate) {
-          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS target must map to a promoted seed candidate.');
-        } else if (!(candidate.sourceTopicIds ?? []).includes(target.topicId)) {
-          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS target topicId must match promoted candidate sourceTopicIds.');
+        const expectedTopicId = topicIdForOfficialLessonSeed(record, candidate, topicGrammarMapContext);
+        if (!expectedTopicId) {
+          addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS target must have a promoted candidate or grammar topic mapping.');
+        } else if (target.topicId !== expectedTopicId) {
+          addIssue(rows, 'FAIL', scope, `Official lesson seed TTS target topicId must be ${expectedTopicId}.`);
         }
         if (!Number.isInteger(order) || order < 1) {
           addIssue(rows, 'FAIL', scope, 'Official lesson seed TTS textSource order must be a positive integer.');
@@ -1096,10 +1116,13 @@ function validateTtsTargetManifest(
       }
     }
   }
-  for (const [candidateId, record] of officialLessonContext.promotedLessonByCandidateId) {
-    const candidate = seedCandidateContext.candidateById.get(candidateId);
-    if (!(candidate?.validationGates ?? []).includes('AudioReadinessGate')) continue;
-    const lessonId = record.lesson.lesson_id;
+  for (const [lessonId, record] of officialLessonContext.lessonById) {
+    const candidate = officialLessonContext.promotedCandidateByLessonId.get(lessonId);
+    const expectedTopicId = topicIdForOfficialLessonSeed(record, candidate, topicGrammarMapContext);
+    if (!expectedTopicId) {
+      addIssue(rows, 'FAIL', lessonId, 'No promoted candidate or grammar topic mapping covers this official lesson seed.');
+      continue;
+    }
     const script = record.lesson?.content_jsonb?.reading?.script ?? [];
     script.forEach((_, index) => {
       const order = index + 1;
@@ -2569,7 +2592,12 @@ function main() {
 
   const pdfRefs = validatePdfInventory(data.get('PDF topic inventory'), rows);
   const topicContext = validateTopics(data.get('Curriculum topics'), rows, grammarOrders, pdfRefs);
-  validateTopicGrammarMap(data.get('Topic grammar map'), rows, grammarOrders, topicContext.topicIds);
+  const topicGrammarMapContext = validateTopicGrammarMap(
+    data.get('Topic grammar map'),
+    rows,
+    grammarOrders,
+    topicContext.topicIds,
+  );
   const vocabularyMapContext = validateTopicVocabularyMap(
     data.get('Topic vocabulary map'),
     rows,
@@ -2609,6 +2637,7 @@ function main() {
     exampleIds,
     seedCandidateContext,
     officialLessonContext,
+    topicGrammarMapContext,
     vocabularyMapContext,
     vocabularyOrders,
   );

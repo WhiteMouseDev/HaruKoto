@@ -340,6 +340,13 @@
     },
     {
       "topicId": "topic-verb-connection-forms",
+      "grammarLevel": "N5",
+      "grammarOrder": 51,
+      "matchType": "partial",
+      "notesKo": "PDF 036 동사의 연결형 coverage anchor"
+    },
+    {
+      "topicId": "topic-verb-connection-forms",
       "grammarLevel": "N4",
       "grammarOrder": 25,
       "matchType": "related",
@@ -405,6 +412,20 @@
       "topicId": "topic-te-iru-progress-state",
       "grammarLevel": "N5",
       "grammarOrder": 20,
+      "matchType": "partial",
+      "notesKo": "PDF 043 진행과 상태 coverage anchor"
+    },
+    {
+      "topicId": "topic-te-iru-progress-state",
+      "grammarLevel": "N5",
+      "grammarOrder": 52,
+      "matchType": "partial",
+      "notesKo": "PDF 043 진행과 상태 coverage anchor"
+    },
+    {
+      "topicId": "topic-te-iru-progress-state",
+      "grammarLevel": "N5",
+      "grammarOrder": 53,
       "matchType": "partial",
       "notesKo": "PDF 043 진행과 상태 coverage anchor"
     },
@@ -482,6 +503,13 @@
       "topicId": "topic-verb-past-forms",
       "grammarLevel": "N5",
       "grammarOrder": 49,
+      "matchType": "partial",
+      "notesKo": "PDF 051 동사의 과거형 coverage anchor"
+    },
+    {
+      "topicId": "topic-verb-past-forms",
+      "grammarLevel": "N5",
+      "grammarOrder": 54,
       "matchType": "partial",
       "notesKo": "PDF 051 동사의 과거형 coverage anchor"
     },
