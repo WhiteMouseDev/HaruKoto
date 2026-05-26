@@ -320,6 +320,7 @@ const GRAMMAR_MAPPINGS = {
   '036': [
     ['N5', 49, 'partial'],
     ['N5', 50, 'partial'],
+    ['N5', 51, 'partial'],
     ['N4', 25, 'related'],
   ],
   '037': [['N5', 6, 'exact']],
@@ -336,6 +337,8 @@ const GRAMMAR_MAPPINGS = {
   '042': [['N5', 9, 'exact']],
   '043': [
     ['N5', 20, 'partial'],
+    ['N5', 52, 'partial'],
+    ['N5', 53, 'partial'],
     ['N4', 5, 'partial'],
   ],
   '045': [['N4', 39, 'partial']],
@@ -351,6 +354,7 @@ const GRAMMAR_MAPPINGS = {
     ['N5', 4, 'partial'],
     ['N5', 5, 'partial'],
     ['N5', 49, 'partial'],
+    ['N5', 54, 'partial'],
   ],
   '052': [
     ['N4', 21, 'exact'],
@@ -748,6 +752,28 @@ function targetIdPart(value) {
   return value.toLowerCase().replace(/^topic-/, '').replace(/^ex-/, '').replace(/_/g, '-');
 }
 
+function topicIdByGrammarKey(grammarMappings) {
+  const byKey = new Map();
+  for (const mapping of grammarMappings) {
+    const key = `${mapping.grammarLevel}:${mapping.grammarOrder}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(mapping);
+  }
+  return byKey;
+}
+
+function topicIdForOfficialLessonSeed(record, candidate, grammarTopicByKey) {
+  if (candidate?.sourceTopicIds?.[0]) return candidate.sourceTopicIds[0];
+
+  const grammarOrder = record.lesson?.grammar?.grammar_order;
+  if (!Number.isInteger(grammarOrder)) return null;
+  const level = record.lesson?.grammar?.level ?? record.level;
+  const mappings = grammarTopicByKey.get(`${level}:${grammarOrder}`) ?? [];
+  const exact = mappings.find((mapping) => mapping.matchType === 'exact');
+  const partial = mappings.find((mapping) => mapping.matchType === 'partial');
+  return exact?.topicId ?? partial?.topicId ?? mappings[0]?.topicId ?? null;
+}
+
 function promotionKeyForCandidate(candidate) {
   const target = candidate.promotionTarget;
   if (!target?.level || !Number.isInteger(target.lessonNo) || !candidate.seedShape?.title) return null;
@@ -925,14 +951,20 @@ function buildSeedCandidateTtsTargets(seedCandidates, promotedCandidateIds = new
   return targets;
 }
 
-function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates) {
+function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates, grammarMappings) {
   const { officialByLessonId } = promotedOfficialLessonIndex(seedCandidates, officialLessonSeeds);
+  const grammarTopicByKey = topicIdByGrammarKey(grammarMappings);
   const targets = [];
 
-  for (const { lesson, candidate } of officialByLessonId.values()) {
-    if (!(candidate.validationGates ?? []).includes('AudioReadinessGate')) continue;
+  for (const record of officialLessonSeeds) {
+    const { lesson } = record;
+    const candidate = officialByLessonId.get(lesson.lesson_id)?.candidate ?? null;
+    const topicId = topicIdForOfficialLessonSeed(record, candidate, grammarTopicByKey);
+    if (!topicId) continue;
     const targetIdPrefix = targetIdPart(lesson.lesson_id);
-    const topicId = candidate.sourceTopicIds?.[0];
+    const sourceNote = candidate
+      ? `promoted from ${candidate.candidateId}`
+      : 'derived from official lesson grammar topic mapping';
     const script = lesson.content_jsonb?.reading?.script ?? [];
     script.forEach((line, index) => {
       const order = index + 1;
@@ -953,7 +985,7 @@ function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates) 
         preferredVoiceId: line.voice_id,
         generationStatus: 'missing',
         cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
-        notesKo: `Official lesson seed script target promoted from ${candidate.candidateId}; not yet persisted to tts_audio.`,
+        notesKo: `Official lesson seed script target ${sourceNote}; not yet persisted to tts_audio.`,
       });
     });
 
@@ -973,7 +1005,7 @@ function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates) 
         requiredBeforePublish: true,
         generationStatus: 'missing',
         cacheKeyStrategy: 'provider-model-speed-field-text-hash-v1',
-        notesKo: `Official lesson seed question prompt target promoted from ${candidate.candidateId}; not yet persisted to tts_audio.`,
+        notesKo: `Official lesson seed question prompt target ${sourceNote}; not yet persisted to tts_audio.`,
       });
     }
   }
@@ -981,13 +1013,20 @@ function buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates) 
   return targets;
 }
 
-function buildTtsTargetManifest(topics, examples, seedCandidates, officialLessonSeeds, vocabularyMappings) {
+function buildTtsTargetManifest(
+  topics,
+  examples,
+  seedCandidates,
+  officialLessonSeeds,
+  vocabularyMappings,
+  grammarMappings,
+) {
   const { officialByCandidateId } = promotedOfficialLessonIndex(seedCandidates, officialLessonSeeds);
   return [
     ...buildTopicTtsTargets(topics, vocabularyMappings),
     ...buildExampleTtsTargets(examples),
     ...buildSeedCandidateTtsTargets(seedCandidates, new Set(officialByCandidateId.keys())),
-    ...buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates),
+    ...buildOfficialLessonSeedTtsTargets(officialLessonSeeds, seedCandidates, grammarMappings),
   ];
 }
 
@@ -1389,6 +1428,7 @@ function main() {
     seedCandidates,
     officialLessonSeeds,
     vocabularyMappings,
+    mappings,
   );
   const ttsReviewBatches = buildTtsReviewBatches(ttsTargets);
   const ttsReviewManualMappingOverrides = readOptionalJson(

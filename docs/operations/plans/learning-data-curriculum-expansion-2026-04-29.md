@@ -490,16 +490,16 @@ ASSUMPTION: 이 문서의 "configured API DB target"은 seed와 smoke 실행 시
 - Learner rollout decision은 controlled pilot exposure로만 승인했다.
 - N4 전체 커버리지와 N4 lesson 11+ 배치는 별도 wave로 다룬다.
 
-TTS readiness도 lesson seed 단위로 확장했다. `tts-target-manifest.json`은 이제 598개 target을 추적한다.
+TTS readiness도 lesson seed 단위로 확장했다. `tts-target-manifest.json`은 이제 928개 target을 추적한다.
 
-- topic/example 기반 target: 330개
-- 공식 lesson seed 기반 target: 268개
-- seed script line target: 118개
-- seed question prompt target: 150개
+- topic/example 기반 target: 336개
+- 공식 lesson seed 기반 target: 592개
+- seed script line target: 262개
+- seed question prompt target: 330개
 
-validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 공식 `data/lessons/**`로 승격된 경우 `lesson-seeds:<lessonId>:script:<order>` 또는 `lesson-seeds:<lessonId>:question:<order>` target이 있는지 확인한다. 아직 공식 lesson seed로 승격되지 않은 후보는 기존 `lesson-seed-candidates:<candidateId>:...` source를 계속 허용한다.
+validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 공식 `data/lessons/**`로 승격된 경우 `lesson-seeds:<lessonId>:script:<order>` 또는 `lesson-seeds:<lessonId>:question:<order>` target이 있는지 확인한다. seed candidate 계보가 없는 기존 공식 lesson seed도 grammar topic mapping을 기준으로 동일한 `lesson-seeds:*` target coverage를 요구한다. 아직 공식 lesson seed로 승격되지 않은 후보는 기존 `lesson-seed-candidates:<candidateId>:...` source를 계속 허용한다.
 
-`tts-review-batches.json`은 598개 target을 7개 review/export batch로 묶는다. 현재 admin/backend TTS 경로가 직접 지원하는 batch와, admin/API 확장이 필요한 batch를 분리해 TTS 생성 순서를 고정한다.
+`tts-review-batches.json`은 928개 target을 7개 review/export batch로 묶는다. 현재 admin/backend TTS 경로가 직접 지원하는 batch와, admin/API 확장이 필요한 batch를 분리해 TTS 생성 순서를 고정한다.
 
 | Batch | 대상 수 | Review surface | Export 상태 |
 |---|---:|---|---|
@@ -507,17 +507,17 @@ validator는 `AudioReadinessGate`가 있는 모든 seed candidate에 대해 공�
 | `tts-review-admin-grammar-fields` | 156 | `admin_existing_tts` | grammar `pattern`, `example_sentences` |
 | `tts-review-gap-grammar-question-prompts` | 78 | `admin_extension_required` | `admin_tts_field_gap` |
 | `tts-review-gap-kana-fields` | 3 | `admin_extension_required` | `admin_content_type_gap` |
-| `tts-review-gap-example-sentence-fields` | 75 | `admin_extension_required` | `admin_content_type_gap` |
-| `tts-review-gap-seed-script-lines` | 118 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
-| `tts-review-gap-seed-question-prompts` | 150 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-example-sentence-fields` | 81 | `admin_extension_required` | `admin_content_type_gap` |
+| `tts-review-gap-seed-script-lines` | 262 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
+| `tts-review-gap-seed-question-prompts` | 330 | `admin_extension_required` | `lesson_seed` / `lesson_seed_admin_surface_gap` |
 
 ASSUMPTION: 이번 단계의 TTS review/export 계약은 아직 생성 action이 아니다. Read-only Admin UI/API는 검토용으로 연결했지만, 기존 `apps/admin` TTS field와 `apps/api` admin TTS service를 통한 batch 생성/쓰기 확장은 후속 단계에서 다룬다.
 
 Read-only admin backend 연결도 추가했다. `GET /api/v1/admin/content/tts/review-batches`는 생성된 `tts-review-batches.json`을 읽어 reviewer 전용 응답으로 반환한다.
 
-- `summary.totalTargets`: 598
+- `summary.totalTargets`: 928
 - `summary.adminReadyTargets`: 174
-- `summary.extensionRequiredTargets`: 424
+- `summary.extensionRequiredTargets`: 754
 - `review_surface=admin_existing_tts` query로 현재 admin TTS 필드에 연결 가능한 batch만 조회할 수 있다.
 
 ASSUMPTION: 이 endpoint는 검토/대시보드용 조회 계약이다. 실제 batch 기반 TTS 생성, `tts_audio` 쓰기, GCS 업로드, admin bulk action은 후속 구현에서 별도로 다룬다.

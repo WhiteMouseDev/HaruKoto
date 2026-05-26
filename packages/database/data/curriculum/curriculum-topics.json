@@ -1200,6 +1200,10 @@
           "order": 50
         },
         {
+          "level": "N5",
+          "order": 51
+        },
+        {
           "level": "N4",
           "order": 25
         }
@@ -1468,6 +1472,14 @@
         {
           "level": "N5",
           "order": 20
+        },
+        {
+          "level": "N5",
+          "order": 52
+        },
+        {
+          "level": "N5",
+          "order": 53
         },
         {
           "level": "N4",
@@ -1769,6 +1781,10 @@
         {
           "level": "N5",
           "order": 49
+        },
+        {
+          "level": "N5",
+          "order": 54
         }
       ],
       "mappedLessonIds": [],
