@@ -61,6 +61,15 @@ Evidence: `docs/operations/plans/n5-seed-tts-generation-run-2026-05-26.md`.
 This closes generated audio coverage only. N5 still needs audio QA packet
 verdicts and target-app playback UAT before broad rollout.
 
+N5 audio QA packet preparation is tracked separately:
+
+- Packet index:
+  `docs/operations/plans/n5-human-audio-qa-packets-2026-05-26.md`
+- Machine audio preflight:
+  `docs/operations/plans/n5-tts-audio-quality-preflight-2026-05-26.md`
+- Packet status: 448/448 targets prepared, 448 `PENDING` verdicts, 0 machine
+  blockers, 36 machine review-priority warnings.
+
 ## Operational Sequence
 
 Use this sequence after a content or TTS QA PR merges to `main`.

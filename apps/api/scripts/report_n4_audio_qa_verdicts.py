@@ -5,10 +5,13 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-DEFAULT_PACKET_GLOBS = (
-    "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
-    "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
-)
+DEFAULT_PACKET_GLOBS_BY_LEVEL = {
+    "N4": (
+        "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
+        "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
+    ),
+    "N5": ("docs/operations/plans/n5-human-audio-qa-ch*-*.md",),
+}
 REVIEW_TARGET_KINDS = ("script ", "question ")
 KNOWN_VERDICTS = {"PASS", "FLAG", "FAIL", "PENDING", "WAIVED"}
 BLOCKING_VERDICTS = {"FLAG", "FAIL", "PENDING"}
@@ -171,19 +174,19 @@ def build_report(packet_paths: list[Path]) -> VerdictReport:
     )
 
 
-def default_packet_paths() -> list[Path]:
+def default_packet_paths(level: str = "N4") -> list[Path]:
     paths: dict[Path, None] = {}
     root = _repo_root()
-    for pattern in DEFAULT_PACKET_GLOBS:
+    for pattern in DEFAULT_PACKET_GLOBS_BY_LEVEL.get(level.upper(), ()):
         for path in root.glob(pattern):
             paths[path] = None
     return sorted(paths)
 
 
-def _packet_paths_from_args(values: list[Path] | None) -> list[Path]:
+def _packet_paths_from_args(values: list[Path] | None, *, level: str) -> list[Path]:
     if values:
         return values
-    return default_packet_paths()
+    return default_packet_paths(level=level)
 
 
 def _print_human(report: VerdictReport) -> None:
@@ -211,7 +214,8 @@ def _print_human(report: VerdictReport) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Report human verdict progress for N4 audio QA packets.")
+    parser = argparse.ArgumentParser(description="Report human verdict progress for lesson audio QA packets.")
+    parser.add_argument("--level", default="N4", help="JLPT level for default packet discovery, for example N4 or N5")
     parser.add_argument(
         "--packet",
         action="append",
@@ -226,7 +230,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    packet_paths = _packet_paths_from_args(args.packet)
+    packet_paths = _packet_paths_from_args(args.packet, level=args.level)
     report = build_report(packet_paths)
     if args.json:
         print(json.dumps(asdict(report), ensure_ascii=False, indent=2))
