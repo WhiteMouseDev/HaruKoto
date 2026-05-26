@@ -1,0 +1,3882 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T07:52:14.015Z",
+  "sourcePolicy": {
+    "referenceUseOnly": true,
+    "copiedSourceExamplesAllowed": false,
+    "note": "PDF files are used as coverage anchors only. Lesson examples, prompts, and explanations must be newly authored."
+  },
+  "pdfSource": {
+    "directory": "/Users/kimkunwoo/Downloads/japanese",
+    "missingDirectory": false,
+    "inventoryRefs": 98,
+    "filesFound": 98,
+    "missingPdfRefs": [],
+    "extraPdfRefs": [],
+    "totalPages": 124,
+    "pageCountSummary": {
+      "1": 92,
+      "2": 4,
+      "3": 1,
+      "21": 1
+    },
+    "levelCounts": {
+      "ABSOLUTE_ZERO": 2,
+      "BUSINESS": 2,
+      "CONVERSATION": 17,
+      "N2": 1,
+      "N3": 25,
+      "N4": 54,
+      "N5": 49
+    },
+    "fileAudit": [
+      {
+        "ref": "001",
+        "fileName": "001.pdf",
+        "pageCount": 21,
+        "sizeBytes": 951138,
+        "modifiedAt": "2026-04-29T03:51:03.235Z",
+        "sourceFingerprint": "98ea3c774ca690e3"
+      },
+      {
+        "ref": "006",
+        "fileName": "006.pdf",
+        "pageCount": 1,
+        "sizeBytes": 733938,
+        "modifiedAt": "2026-04-29T03:50:56.645Z",
+        "sourceFingerprint": "36c281039f090e40"
+      },
+      {
+        "ref": "007",
+        "fileName": "007.pdf",
+        "pageCount": 1,
+        "sizeBytes": 637688,
+        "modifiedAt": "2026-04-29T05:23:58.962Z",
+        "sourceFingerprint": "0941ac60c163cdb2"
+      },
+      {
+        "ref": "008",
+        "fileName": "008.pdf",
+        "pageCount": 1,
+        "sizeBytes": 679061,
+        "modifiedAt": "2026-04-29T05:24:06.346Z",
+        "sourceFingerprint": "abb03b6e3e4c04c8"
+      },
+      {
+        "ref": "009",
+        "fileName": "009.pdf",
+        "pageCount": 1,
+        "sizeBytes": 676695,
+        "modifiedAt": "2026-04-29T05:24:20.767Z",
+        "sourceFingerprint": "2dee77219e52159b"
+      },
+      {
+        "ref": "010",
+        "fileName": "010.pdf",
+        "pageCount": 1,
+        "sizeBytes": 726894,
+        "modifiedAt": "2026-04-29T05:24:33.087Z",
+        "sourceFingerprint": "8e956da5490fa5fa"
+      },
+      {
+        "ref": "011",
+        "fileName": "011.pdf",
+        "pageCount": 1,
+        "sizeBytes": 628329,
+        "modifiedAt": "2026-04-29T05:24:39.413Z",
+        "sourceFingerprint": "f9b1b6e727194177"
+      },
+      {
+        "ref": "012",
+        "fileName": "012.pdf",
+        "pageCount": 2,
+        "sizeBytes": 621868,
+        "modifiedAt": "2026-04-29T05:24:45.249Z",
+        "sourceFingerprint": "2a2214f557543f19"
+      },
+      {
+        "ref": "013",
+        "fileName": "013.pdf",
+        "pageCount": 3,
+        "sizeBytes": 644552,
+        "modifiedAt": "2026-04-29T05:24:52.418Z",
+        "sourceFingerprint": "e18ff9a612219978"
+      },
+      {
+        "ref": "014",
+        "fileName": "014.pdf",
+        "pageCount": 1,
+        "sizeBytes": 699610,
+        "modifiedAt": "2026-04-29T05:24:58.140Z",
+        "sourceFingerprint": "6d34e3d632b49cb7"
+      },
+      {
+        "ref": "015",
+        "fileName": "015.pdf",
+        "pageCount": 1,
+        "sizeBytes": 668070,
+        "modifiedAt": "2026-04-29T05:25:08.893Z",
+        "sourceFingerprint": "22acb7c8f907a54b"
+      },
+      {
+        "ref": "016",
+        "fileName": "016.pdf",
+        "pageCount": 1,
+        "sizeBytes": 666662,
+        "modifiedAt": "2026-04-29T05:25:13.909Z",
+        "sourceFingerprint": "a03a20f2b1c2c9f8"
+      },
+      {
+        "ref": "017",
+        "fileName": "017.pdf",
+        "pageCount": 1,
+        "sizeBytes": 678045,
+        "modifiedAt": "2026-04-29T05:25:20.931Z",
+        "sourceFingerprint": "9f63f6d73a092e75"
+      },
+      {
+        "ref": "018",
+        "fileName": "018.pdf",
+        "pageCount": 2,
+        "sizeBytes": 697580,
+        "modifiedAt": "2026-04-29T05:25:29.013Z",
+        "sourceFingerprint": "c59678df1da4a5d2"
+      },
+      {
+        "ref": "019",
+        "fileName": "019.pdf",
+        "pageCount": 1,
+        "sizeBytes": 702265,
+        "modifiedAt": "2026-04-29T05:25:35.265Z",
+        "sourceFingerprint": "19bded0c0d78e053"
+      },
+      {
+        "ref": "020",
+        "fileName": "020.pdf",
+        "pageCount": 1,
+        "sizeBytes": 664050,
+        "modifiedAt": "2026-04-29T05:25:41.097Z",
+        "sourceFingerprint": "9cb24b523888d7c4"
+      },
+      {
+        "ref": "021",
+        "fileName": "021.pdf",
+        "pageCount": 2,
+        "sizeBytes": 720176,
+        "modifiedAt": "2026-04-29T05:25:48.610Z",
+        "sourceFingerprint": "3bf1db732ac8c5d1"
+      },
+      {
+        "ref": "022",
+        "fileName": "022.pdf",
+        "pageCount": 1,
+        "sizeBytes": 761752,
+        "modifiedAt": "2026-04-29T05:25:55.463Z",
+        "sourceFingerprint": "8daafc181062fc55"
+      },
+      {
+        "ref": "023",
+        "fileName": "023.pdf",
+        "pageCount": 2,
+        "sizeBytes": 767948,
+        "modifiedAt": "2026-04-29T05:26:12.493Z",
+        "sourceFingerprint": "da46a266cf12b42f"
+      },
+      {
+        "ref": "024",
+        "fileName": "024.pdf",
+        "pageCount": 1,
+        "sizeBytes": 670126,
+        "modifiedAt": "2026-04-29T05:26:17.696Z",
+        "sourceFingerprint": "a5f6d33d4fcbe4d9"
+      },
+      {
+        "ref": "025",
+        "fileName": "025.pdf",
+        "pageCount": 1,
+        "sizeBytes": 652638,
+        "modifiedAt": "2026-04-29T05:26:23.802Z",
+        "sourceFingerprint": "04eb84bd77f8de43"
+      },
+      {
+        "ref": "026",
+        "fileName": "026.pdf",
+        "pageCount": 1,
+        "sizeBytes": 637266,
+        "modifiedAt": "2026-04-29T05:26:28.896Z",
+        "sourceFingerprint": "bf551588f020b040"
+      },
+      {
+        "ref": "027",
+        "fileName": "027.pdf",
+        "pageCount": 1,
+        "sizeBytes": 680700,
+        "modifiedAt": "2026-04-29T05:26:35.509Z",
+        "sourceFingerprint": "1ace2f12b8ea1e68"
+      },
+      {
+        "ref": "028",
+        "fileName": "028.pdf",
+        "pageCount": 1,
+        "sizeBytes": 733529,
+        "modifiedAt": "2026-04-29T05:26:46.423Z",
+        "sourceFingerprint": "23093475aae63bb7"
+      },
+      {
+        "ref": "029",
+        "fileName": "029.pdf",
+        "pageCount": 1,
+        "sizeBytes": 720184,
+        "modifiedAt": "2026-04-29T05:26:52.247Z",
+        "sourceFingerprint": "1d841af4b0102b1b"
+      },
+      {
+        "ref": "030",
+        "fileName": "030.pdf",
+        "pageCount": 1,
+        "sizeBytes": 684899,
+        "modifiedAt": "2026-04-29T05:26:58.521Z",
+        "sourceFingerprint": "8a73a623e2f1c95e"
+      },
+      {
+        "ref": "031",
+        "fileName": "031.pdf",
+        "pageCount": 1,
+        "sizeBytes": 661678,
+        "modifiedAt": "2026-04-29T05:27:04.955Z",
+        "sourceFingerprint": "6b9be879cc205248"
+      },
+      {
+        "ref": "032",
+        "fileName": "032.pdf",
+        "pageCount": 1,
+        "sizeBytes": 712298,
+        "modifiedAt": "2026-04-29T05:27:09.947Z",
+        "sourceFingerprint": "0dbc2508d2752c25"
+      },
+      {
+        "ref": "033",
+        "fileName": "033.pdf",
+        "pageCount": 1,
+        "sizeBytes": 714436,
+        "modifiedAt": "2026-04-29T05:27:14.758Z",
+        "sourceFingerprint": "5e4c6784ce5997b0"
+      },
+      {
+        "ref": "034",
+        "fileName": "034.pdf",
+        "pageCount": 1,
+        "sizeBytes": 691836,
+        "modifiedAt": "2026-04-29T05:27:19.805Z",
+        "sourceFingerprint": "22d54ce995a3de49"
+      },
+      {
+        "ref": "035",
+        "fileName": "035.pdf",
+        "pageCount": 1,
+        "sizeBytes": 683604,
+        "modifiedAt": "2026-04-29T05:28:33.249Z",
+        "sourceFingerprint": "884fb1399996eeac"
+      },
+      {
+        "ref": "036",
+        "fileName": "036.pdf",
+        "pageCount": 1,
+        "sizeBytes": 736858,
+        "modifiedAt": "2026-04-29T05:28:38.846Z",
+        "sourceFingerprint": "ed7bd8d139da42d2"
+      },
+      {
+        "ref": "037",
+        "fileName": "037.pdf",
+        "pageCount": 1,
+        "sizeBytes": 694289,
+        "modifiedAt": "2026-04-29T05:28:44.157Z",
+        "sourceFingerprint": "033aa1a8383559fe"
+      },
+      {
+        "ref": "038",
+        "fileName": "038.pdf",
+        "pageCount": 1,
+        "sizeBytes": 679693,
+        "modifiedAt": "2026-04-29T05:28:50.420Z",
+        "sourceFingerprint": "cc09953a25f76db4"
+      },
+      {
+        "ref": "039",
+        "fileName": "039.pdf",
+        "pageCount": 1,
+        "sizeBytes": 676174,
+        "modifiedAt": "2026-04-29T05:28:55.756Z",
+        "sourceFingerprint": "6f47a2e61e1d929e"
+      },
+      {
+        "ref": "040",
+        "fileName": "040.pdf",
+        "pageCount": 1,
+        "sizeBytes": 674896,
+        "modifiedAt": "2026-04-29T05:29:02.340Z",
+        "sourceFingerprint": "0053e978678576ec"
+      },
+      {
+        "ref": "041",
+        "fileName": "041.pdf",
+        "pageCount": 1,
+        "sizeBytes": 686200,
+        "modifiedAt": "2026-04-29T05:29:07.279Z",
+        "sourceFingerprint": "f423d3ac8e1c5202"
+      },
+      {
+        "ref": "042",
+        "fileName": "042.pdf",
+        "pageCount": 1,
+        "sizeBytes": 681147,
+        "modifiedAt": "2026-04-29T05:29:12.896Z",
+        "sourceFingerprint": "b5cb62bdf4a715d8"
+      },
+      {
+        "ref": "043",
+        "fileName": "043.pdf",
+        "pageCount": 1,
+        "sizeBytes": 724932,
+        "modifiedAt": "2026-04-29T05:29:18.149Z",
+        "sourceFingerprint": "e04fe3531d3d7934"
+      },
+      {
+        "ref": "044",
+        "fileName": "044.pdf",
+        "pageCount": 1,
+        "sizeBytes": 663134,
+        "modifiedAt": "2026-04-29T05:29:22.727Z",
+        "sourceFingerprint": "7c7aaec84bff1930"
+      },
+      {
+        "ref": "045",
+        "fileName": "045.pdf",
+        "pageCount": 1,
+        "sizeBytes": 709842,
+        "modifiedAt": "2026-04-29T05:29:27.773Z",
+        "sourceFingerprint": "d0429598d1bc9f0d"
+      },
+      {
+        "ref": "046",
+        "fileName": "046.pdf",
+        "pageCount": 1,
+        "sizeBytes": 714017,
+        "modifiedAt": "2026-04-29T05:29:33.165Z",
+        "sourceFingerprint": "a2000546eacb5d95"
+      },
+      {
+        "ref": "047",
+        "fileName": "047.pdf",
+        "pageCount": 1,
+        "sizeBytes": 693398,
+        "modifiedAt": "2026-04-29T05:29:37.968Z",
+        "sourceFingerprint": "ecb898293a61e17b"
+      },
+      {
+        "ref": "048",
+        "fileName": "048.pdf",
+        "pageCount": 1,
+        "sizeBytes": 681172,
+        "modifiedAt": "2026-04-29T05:29:43.584Z",
+        "sourceFingerprint": "6c820bd2d7432bf9"
+      },
+      {
+        "ref": "049",
+        "fileName": "049.pdf",
+        "pageCount": 1,
+        "sizeBytes": 685929,
+        "modifiedAt": "2026-04-29T05:29:49.301Z",
+        "sourceFingerprint": "2de223904c6148f9"
+      },
+      {
+        "ref": "050",
+        "fileName": "050.pdf",
+        "pageCount": 1,
+        "sizeBytes": 693073,
+        "modifiedAt": "2026-04-29T05:29:55.136Z",
+        "sourceFingerprint": "441dc0d3653a8f13"
+      },
+      {
+        "ref": "051",
+        "fileName": "051.pdf",
+        "pageCount": 1,
+        "sizeBytes": 744772,
+        "modifiedAt": "2026-04-29T05:30:01.751Z",
+        "sourceFingerprint": "f2d44f9dda352601"
+      },
+      {
+        "ref": "052",
+        "fileName": "052.pdf",
+        "pageCount": 1,
+        "sizeBytes": 745428,
+        "modifiedAt": "2026-04-29T05:30:06.770Z",
+        "sourceFingerprint": "20bc693e1974647c"
+      },
+      {
+        "ref": "053",
+        "fileName": "053.pdf",
+        "pageCount": 1,
+        "sizeBytes": 677749,
+        "modifiedAt": "2026-04-29T05:30:11.851Z",
+        "sourceFingerprint": "4d3c9f90213d48e7"
+      },
+      {
+        "ref": "054",
+        "fileName": "054.pdf",
+        "pageCount": 1,
+        "sizeBytes": 673792,
+        "modifiedAt": "2026-04-29T05:30:16.380Z",
+        "sourceFingerprint": "2c366ed569cc361c"
+      },
+      {
+        "ref": "055",
+        "fileName": "055.pdf",
+        "pageCount": 1,
+        "sizeBytes": 676012,
+        "modifiedAt": "2026-04-29T05:30:21.141Z",
+        "sourceFingerprint": "1d0b877953ec804f"
+      },
+      {
+        "ref": "056",
+        "fileName": "056.pdf",
+        "pageCount": 1,
+        "sizeBytes": 668938,
+        "modifiedAt": "2026-04-29T05:31:22.920Z",
+        "sourceFingerprint": "cd4e596c3e2841c3"
+      },
+      {
+        "ref": "057",
+        "fileName": "057.pdf",
+        "pageCount": 1,
+        "sizeBytes": 698303,
+        "modifiedAt": "2026-04-29T05:31:29.430Z",
+        "sourceFingerprint": "45129bc6d3a1073e"
+      },
+      {
+        "ref": "058",
+        "fileName": "058.pdf",
+        "pageCount": 1,
+        "sizeBytes": 689499,
+        "modifiedAt": "2026-04-29T05:31:33.742Z",
+        "sourceFingerprint": "ba4dc75735caf34e"
+      },
+      {
+        "ref": "059",
+        "fileName": "059.pdf",
+        "pageCount": 1,
+        "sizeBytes": 643049,
+        "modifiedAt": "2026-04-29T05:31:39.386Z",
+        "sourceFingerprint": "7f843b7002b3c55f"
+      },
+      {
+        "ref": "060",
+        "fileName": "060.pdf",
+        "pageCount": 1,
+        "sizeBytes": 730057,
+        "modifiedAt": "2026-04-29T05:31:44.860Z",
+        "sourceFingerprint": "3de5f1ffc3b992ef"
+      },
+      {
+        "ref": "061",
+        "fileName": "061.pdf",
+        "pageCount": 1,
+        "sizeBytes": 680827,
+        "modifiedAt": "2026-04-29T05:31:51.362Z",
+        "sourceFingerprint": "b0aec2a666b4523a"
+      },
+      {
+        "ref": "062",
+        "fileName": "062.pdf",
+        "pageCount": 1,
+        "sizeBytes": 669287,
+        "modifiedAt": "2026-04-29T05:31:55.833Z",
+        "sourceFingerprint": "dd25724cf529ca9e"
+      },
+      {
+        "ref": "063",
+        "fileName": "063.pdf",
+        "pageCount": 1,
+        "sizeBytes": 816886,
+        "modifiedAt": "2026-04-29T05:33:01.549Z",
+        "sourceFingerprint": "07714b61c9cff29a"
+      },
+      {
+        "ref": "064",
+        "fileName": "064.pdf",
+        "pageCount": 1,
+        "sizeBytes": 686380,
+        "modifiedAt": "2026-04-29T05:33:07.048Z",
+        "sourceFingerprint": "18a176c0864bbc3b"
+      },
+      {
+        "ref": "065",
+        "fileName": "065.pdf",
+        "pageCount": 1,
+        "sizeBytes": 669448,
+        "modifiedAt": "2026-04-29T05:33:11.788Z",
+        "sourceFingerprint": "d56316abe5b3941f"
+      },
+      {
+        "ref": "066",
+        "fileName": "066.pdf",
+        "pageCount": 1,
+        "sizeBytes": 713413,
+        "modifiedAt": "2026-04-29T05:33:17.086Z",
+        "sourceFingerprint": "0fa4cf2b0ed14229"
+      },
+      {
+        "ref": "067",
+        "fileName": "067.pdf",
+        "pageCount": 1,
+        "sizeBytes": 713339,
+        "modifiedAt": "2026-04-29T05:33:22.781Z",
+        "sourceFingerprint": "d5be291269b738d5"
+      },
+      {
+        "ref": "068",
+        "fileName": "068.pdf",
+        "pageCount": 1,
+        "sizeBytes": 693174,
+        "modifiedAt": "2026-04-29T05:33:27.886Z",
+        "sourceFingerprint": "f312c176ea916ebb"
+      },
+      {
+        "ref": "069",
+        "fileName": "069.pdf",
+        "pageCount": 1,
+        "sizeBytes": 740352,
+        "modifiedAt": "2026-04-29T05:33:33.491Z",
+        "sourceFingerprint": "d260ddc723fa42da"
+      },
+      {
+        "ref": "070",
+        "fileName": "070.pdf",
+        "pageCount": 1,
+        "sizeBytes": 626818,
+        "modifiedAt": "2026-04-29T05:33:41.705Z",
+        "sourceFingerprint": "d6f2a36e1d790dab"
+      },
+      {
+        "ref": "071",
+        "fileName": "071.pdf",
+        "pageCount": 1,
+        "sizeBytes": 629907,
+        "modifiedAt": "2026-04-29T05:33:48.092Z",
+        "sourceFingerprint": "80461d4b5908e82c"
+      },
+      {
+        "ref": "072",
+        "fileName": "072.pdf",
+        "pageCount": 1,
+        "sizeBytes": 694724,
+        "modifiedAt": "2026-04-29T05:34:03.721Z",
+        "sourceFingerprint": "e48fa9aa16d5c9dd"
+      },
+      {
+        "ref": "073",
+        "fileName": "073.pdf",
+        "pageCount": 1,
+        "sizeBytes": 695352,
+        "modifiedAt": "2026-04-29T05:34:36.137Z",
+        "sourceFingerprint": "cd91fd0dc71bbbe9"
+      },
+      {
+        "ref": "074",
+        "fileName": "074.pdf",
+        "pageCount": 1,
+        "sizeBytes": 628071,
+        "modifiedAt": "2026-04-29T05:34:46.058Z",
+        "sourceFingerprint": "4748c718db08ab1b"
+      },
+      {
+        "ref": "075",
+        "fileName": "075.pdf",
+        "pageCount": 1,
+        "sizeBytes": 725554,
+        "modifiedAt": "2026-04-29T05:34:50.438Z",
+        "sourceFingerprint": "8d2e0e2193155183"
+      },
+      {
+        "ref": "076",
+        "fileName": "076.pdf",
+        "pageCount": 1,
+        "sizeBytes": 715391,
+        "modifiedAt": "2026-04-29T05:34:55.513Z",
+        "sourceFingerprint": "bfab7af806e1b3ed"
+      },
+      {
+        "ref": "077",
+        "fileName": "077.pdf",
+        "pageCount": 1,
+        "sizeBytes": 715044,
+        "modifiedAt": "2026-04-29T05:35:01.064Z",
+        "sourceFingerprint": "4981a40d35449715"
+      },
+      {
+        "ref": "078",
+        "fileName": "078.pdf",
+        "pageCount": 1,
+        "sizeBytes": 704411,
+        "modifiedAt": "2026-04-29T05:35:08.807Z",
+        "sourceFingerprint": "d8a32d7cd0773b32"
+      },
+      {
+        "ref": "079",
+        "fileName": "079.pdf",
+        "pageCount": 1,
+        "sizeBytes": 712510,
+        "modifiedAt": "2026-04-29T05:35:13.773Z",
+        "sourceFingerprint": "2b1639fc93c16c05"
+      },
+      {
+        "ref": "080",
+        "fileName": "080.pdf",
+        "pageCount": 1,
+        "sizeBytes": 814495,
+        "modifiedAt": "2026-04-29T05:35:19.262Z",
+        "sourceFingerprint": "9962e679f387e630"
+      },
+      {
+        "ref": "081",
+        "fileName": "081.pdf",
+        "pageCount": 1,
+        "sizeBytes": 814008,
+        "modifiedAt": "2026-04-29T05:35:39.367Z",
+        "sourceFingerprint": "df9ec1b004c22f72"
+      },
+      {
+        "ref": "082",
+        "fileName": "082.pdf",
+        "pageCount": 1,
+        "sizeBytes": 807358,
+        "modifiedAt": "2026-04-29T05:35:46.436Z",
+        "sourceFingerprint": "2584b4b36226f548"
+      },
+      {
+        "ref": "083",
+        "fileName": "083.pdf",
+        "pageCount": 1,
+        "sizeBytes": 695968,
+        "modifiedAt": "2026-04-29T05:35:51.453Z",
+        "sourceFingerprint": "e116d3d01a004a6e"
+      },
+      {
+        "ref": "084",
+        "fileName": "084.pdf",
+        "pageCount": 1,
+        "sizeBytes": 717639,
+        "modifiedAt": "2026-04-29T05:35:55.707Z",
+        "sourceFingerprint": "fa98156cb6accffd"
+      },
+      {
+        "ref": "085",
+        "fileName": "085.pdf",
+        "pageCount": 1,
+        "sizeBytes": 643670,
+        "modifiedAt": "2026-04-29T05:36:01.760Z",
+        "sourceFingerprint": "3da68744fc49ca47"
+      },
+      {
+        "ref": "086",
+        "fileName": "086.pdf",
+        "pageCount": 1,
+        "sizeBytes": 677679,
+        "modifiedAt": "2026-04-29T05:36:06.603Z",
+        "sourceFingerprint": "4334a294ee5d63a4"
+      },
+      {
+        "ref": "087",
+        "fileName": "087.pdf",
+        "pageCount": 1,
+        "sizeBytes": 726131,
+        "modifiedAt": "2026-04-29T05:36:11.736Z",
+        "sourceFingerprint": "9402d1d2f36a9d06"
+      },
+      {
+        "ref": "088",
+        "fileName": "088.pdf",
+        "pageCount": 1,
+        "sizeBytes": 810786,
+        "modifiedAt": "2026-04-29T05:35:36.986Z",
+        "sourceFingerprint": "3d911ba73444a9c8"
+      },
+      {
+        "ref": "089",
+        "fileName": "089.pdf",
+        "pageCount": 1,
+        "sizeBytes": 697136,
+        "modifiedAt": "2026-04-29T05:34:00.912Z",
+        "sourceFingerprint": "53ec20105a64a48f"
+      },
+      {
+        "ref": "090",
+        "fileName": "090.pdf",
+        "pageCount": 1,
+        "sizeBytes": 717761,
+        "modifiedAt": "2026-04-29T05:32:53.792Z",
+        "sourceFingerprint": "1d25893ccda713a1"
+      },
+      {
+        "ref": "091",
+        "fileName": "091.pdf",
+        "pageCount": 1,
+        "sizeBytes": 804112,
+        "modifiedAt": "2026-04-29T05:32:48.601Z",
+        "sourceFingerprint": "663962a1ad08b527"
+      },
+      {
+        "ref": "092",
+        "fileName": "092.pdf",
+        "pageCount": 1,
+        "sizeBytes": 808756,
+        "modifiedAt": "2026-04-29T05:32:44.064Z",
+        "sourceFingerprint": "1b138c147ce07d0d"
+      },
+      {
+        "ref": "093",
+        "fileName": "093.pdf",
+        "pageCount": 1,
+        "sizeBytes": 800898,
+        "modifiedAt": "2026-04-29T05:32:39.556Z",
+        "sourceFingerprint": "4a65d3ad45221662"
+      },
+      {
+        "ref": "094",
+        "fileName": "094.pdf",
+        "pageCount": 1,
+        "sizeBytes": 725875,
+        "modifiedAt": "2026-04-29T05:32:34.704Z",
+        "sourceFingerprint": "0e34d5520922fa63"
+      },
+      {
+        "ref": "095",
+        "fileName": "095.pdf",
+        "pageCount": 1,
+        "sizeBytes": 651077,
+        "modifiedAt": "2026-04-29T05:32:28.625Z",
+        "sourceFingerprint": "d9cd554a550380fa"
+      },
+      {
+        "ref": "096",
+        "fileName": "096.pdf",
+        "pageCount": 1,
+        "sizeBytes": 729018,
+        "modifiedAt": "2026-04-29T05:32:24.105Z",
+        "sourceFingerprint": "b7c849e8b4f861ef"
+      },
+      {
+        "ref": "097",
+        "fileName": "097.pdf",
+        "pageCount": 1,
+        "sizeBytes": 671848,
+        "modifiedAt": "2026-04-29T05:32:18.879Z",
+        "sourceFingerprint": "5e90931664553291"
+      },
+      {
+        "ref": "098",
+        "fileName": "098.pdf",
+        "pageCount": 1,
+        "sizeBytes": 644801,
+        "modifiedAt": "2026-04-29T05:32:12.817Z",
+        "sourceFingerprint": "8e7ea5386c9a4550"
+      },
+      {
+        "ref": "099",
+        "fileName": "099.pdf",
+        "pageCount": 1,
+        "sizeBytes": 665225,
+        "modifiedAt": "2026-04-29T05:32:06.061Z",
+        "sourceFingerprint": "8d696333c69d31a6"
+      },
+      {
+        "ref": "100",
+        "fileName": "100.pdf",
+        "pageCount": 1,
+        "sizeBytes": 699952,
+        "modifiedAt": "2026-04-29T05:31:12.517Z",
+        "sourceFingerprint": "887e4a9123d873c7"
+      },
+      {
+        "ref": "101",
+        "fileName": "101.pdf",
+        "pageCount": 1,
+        "sizeBytes": 657166,
+        "modifiedAt": "2026-04-29T05:31:06.659Z",
+        "sourceFingerprint": "3c694f547b913bac"
+      },
+      {
+        "ref": "102",
+        "fileName": "102.pdf",
+        "pageCount": 1,
+        "sizeBytes": 672044,
+        "modifiedAt": "2026-04-29T05:31:01.149Z",
+        "sourceFingerprint": "1fbdc843cc7313e9"
+      }
+    ]
+  },
+  "currentLessons": {
+    "N5": {
+      "level": "N5",
+      "chapters": 9,
+      "lessons": 50,
+      "targetChapters": "12-15",
+      "targetLessons": 80,
+      "additionalLessonsRecommended": 30,
+      "primaryGrammarUnique": 39,
+      "allGrammarRefs": 40,
+      "grammarTotal": 60,
+      "vocabUnique": 184,
+      "vocabTotal": 609,
+      "questions": 250,
+      "scriptLines": 198,
+      "averageQuestionsPerLesson": 5,
+      "averageVocabLinksPerLesson": 5.82,
+      "primaryGrammarCoveragePct": 65,
+      "vocabCoveragePct": 30.2,
+      "primaryGrammarOrders": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        10,
+        11,
+        20,
+        28,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "allGrammarOrders": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        10,
+        11,
+        12,
+        20,
+        28,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "lessonIds": [
+        "HN5-001",
+        "HN5-002",
+        "HN5-003",
+        "HN5-004",
+        "HN5-005",
+        "HN5-006",
+        "HN5-007",
+        "HN5-008",
+        "HN5-009",
+        "HN5-010",
+        "HN5-011",
+        "HN5-012",
+        "HN5-013",
+        "HN5-014",
+        "HN5-015",
+        "HN5-016",
+        "HN5-017",
+        "HN5-018",
+        "HN5-019",
+        "HN5-020",
+        "HN5-021",
+        "HN5-022",
+        "HN5-023",
+        "HN5-024",
+        "HN5-025",
+        "HN5-026",
+        "HN5-027",
+        "HN5-028",
+        "HN5-029",
+        "HN5-030",
+        "HN5-031",
+        "HN5-032",
+        "HN5-033",
+        "HN5-034",
+        "HN5-035",
+        "HN5-036",
+        "HN5-037",
+        "HN5-038",
+        "HN5-039",
+        "HN5-040",
+        "HN5-041",
+        "HN5-042",
+        "HN5-043",
+        "HN5-044",
+        "HN5-045",
+        "HN5-046",
+        "HN5-047",
+        "HN5-048",
+        "HN5-049",
+        "HN5-050"
+      ],
+      "chaptersByNo": [
+        {
+          "chapterNo": 1,
+          "chapterTitle": "인사와 첫 만남",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 2,
+          "chapterTitle": "사물과 사람 소개",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 3,
+          "chapterTitle": "위치와 이동",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 4,
+          "chapterTitle": "동사 기초",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 5,
+          "chapterTitle": "과거와 순서",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 6,
+          "chapterTitle": "진행과 습관",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 7,
+          "chapterTitle": "기초 표현 보강",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 8,
+          "chapterTitle": "생활 표현과 동사 기초",
+          "lessonCount": 9,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 9,
+          "chapterTitle": "표현 대조와 선택",
+          "lessonCount": 6,
+          "status": "PILOT"
+        }
+      ]
+    },
+    "N4": {
+      "level": "N4",
+      "chapters": 4,
+      "lessons": 16,
+      "targetChapters": "14-18",
+      "targetLessons": 90,
+      "additionalLessonsRecommended": 74,
+      "primaryGrammarUnique": 15,
+      "allGrammarRefs": 25,
+      "grammarTotal": 49,
+      "vocabUnique": 65,
+      "vocabTotal": 944,
+      "questions": 80,
+      "scriptLines": 64,
+      "averageQuestionsPerLesson": 5,
+      "averageVocabLinksPerLesson": 5.25,
+      "primaryGrammarCoveragePct": 30.6,
+      "vocabCoveragePct": 6.9,
+      "primaryGrammarOrders": [
+        1,
+        3,
+        4,
+        17,
+        24,
+        35,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ],
+      "allGrammarOrders": [
+        1,
+        3,
+        4,
+        12,
+        14,
+        15,
+        17,
+        18,
+        21,
+        22,
+        23,
+        24,
+        32,
+        35,
+        36,
+        37,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ],
+      "lessonIds": [
+        "HN4-001",
+        "HN4-002",
+        "HN4-003",
+        "HN4-004",
+        "HN4-005",
+        "HN4-006",
+        "HN4-007",
+        "HN4-008",
+        "HN4-009",
+        "HN4-010",
+        "HN4-011",
+        "HN4-012",
+        "HN4-013",
+        "HN4-014",
+        "HN4-015",
+        "HN4-016"
+      ],
+      "chaptersByNo": [
+        {
+          "chapterNo": 1,
+          "chapterTitle": "지시와 판단 표현",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 2,
+          "chapterTitle": "이유・조건・의도 표현",
+          "lessonCount": 5,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 3,
+          "chapterTitle": "성질과 정도 표현",
+          "lessonCount": 1,
+          "status": "PILOT"
+        },
+        {
+          "chapterNo": 4,
+          "chapterTitle": "일상 동작 확장 표현",
+          "lessonCount": 5,
+          "status": "PILOT"
+        }
+      ]
+    }
+  },
+  "derivedContracts": {
+    "topics": 98,
+    "coveragePriorities": 40,
+    "lessonDraftBlueprints": 54,
+    "lessonSeedCandidates": 36,
+    "prioritySummary": {
+      "P0 / WAVE_1_N5_PATCH / missing": 11,
+      "P0 / WAVE_1_N5_PATCH / partial": 11,
+      "P1 / WAVE_2_N4_FOUNDATION / partial": 7,
+      "P2 / WAVE_2_N4_FOUNDATION / missing": 1,
+      "P2 / WAVE_4_REGISTER_BUSINESS / missing": 7,
+      "P3 / WAVE_3_N3_PLUS / missing": 1,
+      "P3 / WAVE_4_REGISTER_BUSINESS / missing": 2
+    }
+  },
+  "pdfLessonCoverage": {
+    "summaryByLevel": {
+      "N5": {
+        "pdfRefs": 49,
+        "byLessonCoverageState": {
+          "backlog_only": 13,
+          "blueprint_only": 10,
+          "official_seed": 26
+        },
+        "byInventoryAction": {
+          "create_topic": 10,
+          "map_existing": 26,
+          "split_topic": 13
+        },
+        "highPriorityGaps": [
+          {
+            "pdfRef": "006",
+            "titleKo": "인칭대명사",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "011",
+            "titleKo": "인사말",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "012",
+            "titleKo": "숫자・조수사",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "013",
+            "titleKo": "시간・요일",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "014",
+            "titleKo": "おねがいします",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "017",
+            "titleKo": "한자 읽는 법",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "044",
+            "titleKo": "알다",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "045",
+            "titleKo": "ほしい",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "084",
+            "titleKo": "と",
+            "state": "blueprint_only",
+            "priorities": [
+              "P1"
+            ],
+            "waves": [
+              "WAVE_2_N4_FOUNDATION"
+            ]
+          },
+          {
+            "pdfRef": "087",
+            "titleKo": "と",
+            "state": "blueprint_only",
+            "priorities": [
+              "P1"
+            ],
+            "waves": [
+              "WAVE_2_N4_FOUNDATION"
+            ]
+          }
+        ]
+      },
+      "N4": {
+        "pdfRefs": 54,
+        "byLessonCoverageState": {
+          "backlog_only": 12,
+          "blueprint_only": 14,
+          "official_seed": 28
+        },
+        "byInventoryAction": {
+          "create_topic": 15,
+          "map_existing": 26,
+          "split_topic": 13
+        },
+        "highPriorityGaps": [
+          {
+            "pdfRef": "035",
+            "titleKo": "の",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "043",
+            "titleKo": "진행과 상태",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "044",
+            "titleKo": "알다",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "045",
+            "titleKo": "ほしい",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "058",
+            "titleKo": "くなる・になる",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "062",
+            "titleKo": "な",
+            "state": "blueprint_only",
+            "priorities": [
+              "P1"
+            ],
+            "waves": [
+              "WAVE_2_N4_FOUNDATION"
+            ]
+          },
+          {
+            "pdfRef": "077",
+            "titleKo": "にする",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "085",
+            "titleKo": "という",
+            "state": "blueprint_only",
+            "priorities": [
+              "P0"
+            ],
+            "waves": [
+              "WAVE_1_N5_PATCH"
+            ]
+          },
+          {
+            "pdfRef": "099",
+            "titleKo": "もの",
+            "state": "blueprint_only",
+            "priorities": [
+              "P1"
+            ],
+            "waves": [
+              "WAVE_2_N4_FOUNDATION"
+            ]
+          }
+        ]
+      }
+    },
+    "rows": [
+      {
+        "pdfRef": "019",
+        "titleKo": "い형용사의 명사화",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-i-adjective-nominalization",
+            "titleKo": "い형용사의 명사화",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "028",
+        "titleKo": "ながら",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-nagara",
+            "titleKo": "ながら",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "029",
+        "titleKo": "すぎる",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-sugiru",
+            "titleKo": "すぎる",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "030",
+        "titleKo": "やすい",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-yasui-nikui",
+            "titleKo": "やすい",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "031",
+        "titleKo": "なさい",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-nasai",
+            "titleKo": "なさい",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "034",
+        "titleKo": "し",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-shi-reason-listing",
+            "titleKo": "し",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "035",
+        "titleKo": "の",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-no-functions",
+            "titleKo": "の",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "038",
+        "titleKo": "てみる",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-te-miru",
+            "titleKo": "てみる",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "039",
+        "titleKo": "ておく",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-te-oku",
+            "titleKo": "ておく",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "040",
+        "titleKo": "てしまう",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-te-shimau",
+            "titleKo": "てしまう",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "041",
+        "titleKo": "てもいい",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-temo-ii",
+            "titleKo": "てもいい",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "043",
+        "titleKo": "진행과 상태",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-te-iru-progress-state",
+            "titleKo": "진행과 상태",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "044",
+        "titleKo": "알다",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-shiru-wakaru",
+            "titleKo": "알다",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "045",
+        "titleKo": "ほしい",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-hoshii",
+            "titleKo": "ほしい",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "046",
+        "titleKo": "つづける",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-tsuzukeru-compound-verbs",
+            "titleKo": "つづける",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "048",
+        "titleKo": "てあげる",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-te-ageru",
+            "titleKo": "てあげる",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "049",
+        "titleKo": "てくれる",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-te-kureru",
+            "titleKo": "てくれる",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "050",
+        "titleKo": "てもらう",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-te-morau",
+            "titleKo": "てもらう",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "052",
+        "titleKo": "たら",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-tara-conditional",
+            "titleKo": "たら",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "054",
+        "titleKo": "たばかりだ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-ta-bakari",
+            "titleKo": "たばかりだ",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "055",
+        "titleKo": "たほうがいい",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-ta-hou-ga-ii",
+            "titleKo": "たほうがいい",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "056",
+        "titleKo": "たり〜たりする",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-tari-tari-suru",
+            "titleKo": "たり〜たりする",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "058",
+        "titleKo": "くなる・になる",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-ku-naru-ni-naru",
+            "titleKo": "くなる・になる",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "059",
+        "titleKo": "わ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-sentence-final-wa",
+            "titleKo": "わ",
+            "inferredLevel": "N4",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P2",
+            "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "062",
+        "titleKo": "な",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-prohibitive-na",
+            "titleKo": "な",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "064",
+        "titleKo": "かもしれない",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-kamoshirenai",
+            "titleKo": "かもしれない",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "065",
+        "titleKo": "しかない",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-shika-nai",
+            "titleKo": "しかない",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "069",
+        "titleKo": "가능형",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-potential-form",
+            "titleKo": "가능형",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "070",
+        "titleKo": "さ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-adjective-sa",
+            "titleKo": "さ",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "072",
+        "titleKo": "동사의 명령형",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-imperative-form",
+            "titleKo": "동사의 명령형",
+            "inferredLevel": "N4",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P2",
+            "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "073",
+        "titleKo": "동사의 의지형",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-volitional-form",
+            "titleKo": "동사의 의지형",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "075",
+        "titleKo": "とおもう",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-to-omou",
+            "titleKo": "とおもう",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "076",
+        "titleKo": "かな",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-kana-particle",
+            "titleKo": "かな",
+            "inferredLevel": "N4",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P2",
+            "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "077",
+        "titleKo": "にする",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-ni-suru",
+            "titleKo": "にする",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "078",
+        "titleKo": "のに",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-noni",
+            "titleKo": "のに",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "079",
+        "titleKo": "のだ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-noda-ndesu",
+            "titleKo": "のだ",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "080",
+        "titleKo": "동사의 수동형",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-passive-form",
+            "titleKo": "동사의 수동형",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "081",
+        "titleKo": "동사의 사역형",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-causative-form",
+            "titleKo": "동사의 사역형",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "082",
+        "titleKo": "동사의 사역수동형",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-causative-passive-form",
+            "titleKo": "동사의 사역수동형",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "083",
+        "titleKo": "ために",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-tameni",
+            "titleKo": "ために",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "084",
+        "titleKo": "と",
+        "level": "N4",
+        "levelConfidence": "low",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-to-conditional",
+            "titleKo": "と",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "085",
+        "titleKo": "という",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-toiu",
+            "titleKo": "という",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "087",
+        "titleKo": "と",
+        "level": "N4",
+        "levelConfidence": "low",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-to-quotation-or-condition",
+            "titleKo": "と",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "088",
+        "titleKo": "ば",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-ba-conditional",
+            "titleKo": "ば",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "089",
+        "titleKo": "なら",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-nara-conditional",
+            "titleKo": "なら",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "090",
+        "titleKo": "つもり",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-tsumori",
+            "titleKo": "つもり",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "091",
+        "titleKo": "そうだ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-souda-hearsay-appearance-a",
+            "titleKo": "そうだ",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "092",
+        "titleKo": "そうだ",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-souda-hearsay-appearance-b",
+            "titleKo": "そうだ",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "094",
+        "titleKo": "らしい",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-rashii",
+            "titleKo": "らしい",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "095",
+        "titleKo": "きっと",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-kitto",
+            "titleKo": "きっと",
+            "inferredLevel": "N4",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P2",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "096",
+        "titleKo": "ばかり",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-bakari",
+            "titleKo": "ばかり",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "099",
+        "titleKo": "もの",
+        "level": "N4",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-mono-functions",
+            "titleKo": "もの",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "100",
+        "titleKo": "はずだ",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-hazu-da",
+            "titleKo": "はずだ",
+            "inferredLevel": "N4",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "102",
+        "titleKo": "존경어・겸양어",
+        "level": "N4",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-keigo-sonkeigo-kenjougo",
+            "titleKo": "존경어・겸양어",
+            "inferredLevel": "N4",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P3",
+            "recommendedWave": "WAVE_4_REGISTER_BUSINESS",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "006",
+        "titleKo": "인칭대명사",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-personal-pronouns",
+            "titleKo": "인칭대명사",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "007",
+        "titleKo": "지시대명사",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-demonstratives",
+            "titleKo": "지시대명사",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "008",
+        "titleKo": "です",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-desu-copula",
+            "titleKo": "です",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "009",
+        "titleKo": "ではない",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-nominal-negative",
+            "titleKo": "ではない",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "010",
+        "titleKo": "조사 총정리",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-basic-particles",
+            "titleKo": "조사 총정리",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "011",
+        "titleKo": "인사말",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-greetings",
+            "titleKo": "인사말",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "012",
+        "titleKo": "숫자・조수사",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-numbers-and-counters",
+            "titleKo": "숫자・조수사",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "013",
+        "titleKo": "시간・요일",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-time-and-weekdays",
+            "titleKo": "시간・요일",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "014",
+        "titleKo": "おねがいします",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-onegai-shimasu",
+            "titleKo": "おねがいします",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "015",
+        "titleKo": "よ",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-sentence-final-yo",
+            "titleKo": "よ",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "016",
+        "titleKo": "ね",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-sentence-final-ne",
+            "titleKo": "ね",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "017",
+        "titleKo": "한자 읽는 법",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-kanji-reading-basics",
+            "titleKo": "한자 읽는 법",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "018",
+        "titleKo": "い형용사",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-i-adjectives",
+            "titleKo": "い형용사",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "020",
+        "titleKo": "な",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-na-attributive-linker",
+            "titleKo": "な",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "021",
+        "titleKo": "な형용사",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-na-adjectives",
+            "titleKo": "な형용사",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "022",
+        "titleKo": "けど",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-kedo-contrast",
+            "titleKo": "けど",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "023",
+        "titleKo": "동사의 종류와 특징",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-verb-groups",
+            "titleKo": "동사의 종류와 특징",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "024",
+        "titleKo": "동사의 정중형",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-polite-verb-forms",
+            "titleKo": "동사의 정중형",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "025",
+        "titleKo": "ある・いる",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-aru-iru-existence",
+            "titleKo": "ある・いる",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "026",
+        "titleKo": "정중형의 응용표현",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-polite-form-applications",
+            "titleKo": "정중형의 응용표현",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "027",
+        "titleKo": "で",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-particle-de",
+            "titleKo": "で",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "028",
+        "titleKo": "ながら",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-nagara",
+            "titleKo": "ながら",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "029",
+        "titleKo": "すぎる",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-sugiru",
+            "titleKo": "すぎる",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "030",
+        "titleKo": "やすい",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-yasui-nikui",
+            "titleKo": "やすい",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "032",
+        "titleKo": "たい",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-tai-desire",
+            "titleKo": "たい",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "033",
+        "titleKo": "にいく",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-purpose-ni-iku",
+            "titleKo": "にいく",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "035",
+        "titleKo": "の",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-no-functions",
+            "titleKo": "の",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "036",
+        "titleKo": "동사의 연결형",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-verb-connection-forms",
+            "titleKo": "동사의 연결형",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "037",
+        "titleKo": "てください",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-te-kudasai",
+            "titleKo": "てください",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "041",
+        "titleKo": "てもいい",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-temo-ii",
+            "titleKo": "てもいい",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "042",
+        "titleKo": "てはいけない",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-tewa-ikenai",
+            "titleKo": "てはいけない",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "043",
+        "titleKo": "진행과 상태",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-te-iru-progress-state",
+            "titleKo": "진행과 상태",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "044",
+        "titleKo": "알다",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-shiru-wakaru",
+            "titleKo": "알다",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_tts_decision",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "045",
+        "titleKo": "ほしい",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-hoshii",
+            "titleKo": "ほしい",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "051",
+        "titleKo": "동사의 과거형",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-verb-past-forms",
+            "titleKo": "동사의 과거형",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "053",
+        "titleKo": "たことがある",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-ta-koto-ga-aru",
+            "titleKo": "たことがある",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "057",
+        "titleKo": "でしょう",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-deshou",
+            "titleKo": "でしょう",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "058",
+        "titleKo": "くなる・になる",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-ku-naru-ni-naru",
+            "titleKo": "くなる・になる",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "060",
+        "titleKo": "동사의 부정형",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-nai-form",
+            "titleKo": "동사의 부정형",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "061",
+        "titleKo": "ないでください",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-naide-kudasai",
+            "titleKo": "ないでください",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "063",
+        "titleKo": "なければならない",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-nakereba-naranai",
+            "titleKo": "なければならない",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "066",
+        "titleKo": "だけ",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "create_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-dake",
+            "titleKo": "だけ",
+            "inferredLevel": "N5",
+            "coverageStatus": "missing",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "067",
+        "titleKo": "から",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-kara",
+            "titleKo": "から",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "075",
+        "titleKo": "とおもう",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-to-omou",
+            "titleKo": "とおもう",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      },
+      {
+        "pdfRef": "077",
+        "titleKo": "にする",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-ni-suru",
+            "titleKo": "にする",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "084",
+        "titleKo": "と",
+        "level": "N5",
+        "levelConfidence": "low",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-to-conditional",
+            "titleKo": "と",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "085",
+        "titleKo": "という",
+        "level": "N5",
+        "levelConfidence": "medium",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "official_seed",
+        "topics": [
+          {
+            "topicId": "topic-toiu",
+            "titleKo": "という",
+            "inferredLevel": "N5",
+            "coverageStatus": "partial",
+            "officialCoverage": true,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P0",
+            "recommendedWave": "WAVE_1_N5_PATCH",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "087",
+        "titleKo": "と",
+        "level": "N5",
+        "levelConfidence": "low",
+        "inventoryCoverageAction": "split_topic",
+        "lessonCoverageState": "blueprint_only",
+        "topics": [
+          {
+            "topicId": "topic-to-quotation-or-condition",
+            "titleKo": "と",
+            "inferredLevel": "N4",
+            "coverageStatus": "partial",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": true,
+            "priority": "P1",
+            "recommendedWave": "WAVE_2_N4_FOUNDATION",
+            "blockers": [
+              "needs_original_examples",
+              "needs_lesson_slot",
+              "needs_human_review",
+              "needs_runtime_support"
+            ]
+          }
+        ]
+      },
+      {
+        "pdfRef": "090",
+        "titleKo": "つもり",
+        "level": "N5",
+        "levelConfidence": "high",
+        "inventoryCoverageAction": "map_existing",
+        "lessonCoverageState": "backlog_only",
+        "topics": [
+          {
+            "topicId": "topic-tsumori",
+            "titleKo": "つもり",
+            "inferredLevel": "N5",
+            "coverageStatus": "covered",
+            "officialCoverage": false,
+            "seedCandidateCoverage": false,
+            "blueprintCoverage": false,
+            "priority": null,
+            "recommendedWave": null,
+            "blockers": []
+          }
+        ]
+      }
+    ]
+  }
+}
