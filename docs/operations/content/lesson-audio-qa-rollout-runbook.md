@@ -34,6 +34,33 @@ Required passing signals:
 `GOOGLE_API_KEY` is not required for this preflight. It is only needed for
 separate optional STT-assist flows that explicitly pass `--transcribe`.
 
+## N5 Current TTS State
+
+N5 learner-facing lesson TTS coverage was generated on 2026-05-26:
+
+```bash
+cd apps/api
+uv run python scripts/report_n4_pilot_tts_coverage.py \
+  --level N5 \
+  --json \
+  --check-audio-urls \
+  --timeout-seconds 10
+```
+
+Required generated-audio signals:
+
+| Gate | Current result |
+|---|---|
+| Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N5` exits 0 |
+| TTS coverage | 448/448 generated records for published N5 lessons |
+| TTS URL validation | 448/448 generated audio URLs pass read-only HTTP validation |
+| Remaining missing tasks | `scripts/generate_n4_pilot_tts_batch.py --level N5 --limit 5` reports 0 |
+
+Evidence: `docs/operations/plans/n5-seed-tts-generation-run-2026-05-26.md`.
+
+This closes generated audio coverage only. N5 still needs audio QA packet
+verdicts and target-app playback UAT before broad rollout.
+
 ## Operational Sequence
 
 Use this sequence after a content or TTS QA PR merges to `main`.
