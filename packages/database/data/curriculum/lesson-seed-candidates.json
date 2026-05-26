@@ -7573,6 +7573,1046 @@
         "AudioReadinessGate"
       ],
       "notesKo": "PDF 046의 つづける 주제 커버리지 후보이며, 습관적 지속을 학습/운동 맥락으로 연습한다."
+    },
+    {
+      "candidateId": "lsc-n4-tari-tari-suru-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-n4-tari-tari-suru-practice",
+      "sourceTopicIds": [
+        "topic-tari-tari-suru"
+      ],
+      "exampleIds": [
+        "ex-n4-tari-tari-suru-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 5,
+        "lessonNo": 17,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "주말에 이것저것 해요",
+        "subtitle": "〜たり〜たりする로 여러 활동을 예로 들기",
+        "topic": "たり〜たりする",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜たり〜たりする",
+          "meaning_ko": "~하거나 ~하거나 하다",
+          "grammar_order": 6,
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          14,
+          15,
+          16,
+          19,
+          70,
+          86
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "주말 계획을 친구에게 설명함",
+            "highlights": [
+              "掃除をしたり",
+              "洗濯をしたり",
+              "準備をしたり",
+              "習慣"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "週末は掃除をしたり、洗濯をしたりします。",
+                "translation": "주말에는 청소를 하거나 빨래를 하거나 합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "忙しそうですね。",
+                "translation": "바쁠 것 같네요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。来週の準備をしたり、部屋を片付けたりします。",
+                "translation": "네. 다음 주 준비를 하거나 방을 정리하거나 합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "生活の習慣を話す時に便利ですね。",
+                "translation": "생활 습관을 말할 때 편리하네요."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "掃除의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "청소"
+                },
+                {
+                  "id": "b",
+                  "text": "예약"
+                },
+                {
+                  "id": "c",
+                  "text": "교통"
+                },
+                {
+                  "id": "d",
+                  "text": "상담"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "掃除(そうじ)는 청소입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "洗濯의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "세탁, 빨래"
+                },
+                {
+                  "id": "b",
+                  "text": "경험"
+                },
+                {
+                  "id": "c",
+                  "text": "시험"
+                },
+                {
+                  "id": "d",
+                  "text": "이유"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "洗濯(せんたく)는 세탁 또는 빨래입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "掃除をし___、洗濯をし___します。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "たり / たり"
+                },
+                {
+                  "id": "b",
+                  "text": "ても / ても"
+                },
+                {
+                  "id": "c",
+                  "text": "しか / しか"
+                },
+                {
+                  "id": "d",
+                  "text": "ため / ため"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "여러 행동을 예로 들 때는 동사의 た형에 り를 붙여 〜たり〜たりする를 만듭니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "来週の___をしたりします。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "準備"
+                },
+                {
+                  "id": "b",
+                  "text": "事故"
+                },
+                {
+                  "id": "c",
+                  "text": "空気"
+                },
+                {
+                  "id": "d",
+                  "text": "島"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "準備(じゅんび)는 준비라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'청소를 하거나 빨래를 하거나 합니다'를 배열하세요.",
+              "tokens": [
+                "洗濯をしたり",
+                "します",
+                "掃除をしたり"
+              ],
+              "correct_order": [
+                "掃除をしたり",
+                "洗濯をしたり",
+                "します"
+              ],
+              "explanation": "예시 행동들을 〜たり로 나열하고 마지막에 します를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 056의 たり〜たりする 주제 coverage를 참고하되, 생활 루틴 맥락과 문항은 HaruKoto에서 새로 작성한 N4 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-souda-appearance-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-souda-hearsay-appearance-a",
+      "sourceTopicIds": [
+        "topic-souda-hearsay-appearance-a"
+      ],
+      "exampleIds": [
+        "ex-n4-souda-appearance-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 5,
+        "lessonNo": 18,
+        "chapterLessonNo": 2,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "곧 고장 날 것 같아요",
+        "subtitle": "〜そうだ로 눈앞의 상태를 보고 추측하기",
+        "topic": "そうだ 양태",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜そうだ",
+          "meaning_ko": "~할 것 같다 / ~해 보인다",
+          "grammar_order": 14,
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          53,
+          100,
+          152,
+          166,
+          370,
+          643
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "회의실 기계 상태를 보고 담당자에게 말함",
+            "highlights": [
+              "壊れそうです",
+              "無理そうです",
+              "簡単そうです",
+              "疲れていそうです"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "この機械は壊れそうです。",
+                "translation": "이 기계는 고장 날 것 같습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "会議で使うのは無理そうですね。",
+                "translation": "회의에서 쓰기는 무리일 것 같네요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "別の機械なら簡単そうです。",
+                "translation": "다른 기계라면 간단해 보입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "田中さんも疲れていそうです。早めに相談しましょう。",
+                "translation": "다나카 씨도 피곤해 보입니다. 일찍 상담합시다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "機械의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "기계"
+                },
+                {
+                  "id": "b",
+                  "text": "회의"
+                },
+                {
+                  "id": "c",
+                  "text": "습관"
+                },
+                {
+                  "id": "d",
+                  "text": "예약"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "機械(きかい)는 기계입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "無理의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "무리, 불가능"
+                },
+                {
+                  "id": "b",
+                  "text": "안전"
+                },
+                {
+                  "id": "c",
+                  "text": "자신감"
+                },
+                {
+                  "id": "d",
+                  "text": "원인"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "無理(むり)는 무리 또는 불가능이라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この機械は壊れ___です。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "そう"
+                },
+                {
+                  "id": "b",
+                  "text": "し"
+                },
+                {
+                  "id": "c",
+                  "text": "ため"
+                },
+                {
+                  "id": "d",
+                  "text": "しか"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "눈앞의 상태를 보고 추측할 때 동사 ます형 어간이나 형용사 어간에 そうです를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "会議で使うのは___そうですね。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "無理"
+                },
+                {
+                  "id": "b",
+                  "text": "交通"
+                },
+                {
+                  "id": "c",
+                  "text": "文化"
+                },
+                {
+                  "id": "d",
+                  "text": "島"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "無理そうです는 무리일 것 같다는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'이 기계는 고장 날 것 같습니다'를 배열하세요.",
+              "tokens": [
+                "壊れそうです",
+                "この機械は"
+              ],
+              "correct_order": [
+                "この機械は",
+                "壊れそうです"
+              ],
+              "explanation": "대상 뒤에 상태 추측 표현 〜そうです를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 091의 そうだ 계열을 참고하되, 양태/외관 추측만 다루도록 분리한 HaruKoto 신규 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-souda-hearsay-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-souda-hearsay-appearance-b",
+      "sourceTopicIds": [
+        "topic-souda-hearsay-appearance-b"
+      ],
+      "exampleIds": [
+        "ex-n4-souda-hearsay-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 5,
+        "lessonNo": 19,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "회의가 세 시라던데요",
+        "subtitle": "〜そうだ로 들은 정보를 전달하기",
+        "topic": "そうだ 전문",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜そうだ",
+          "meaning_ko": "~라고 한다 / ~라던데",
+          "grammar_order": 14,
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          17,
+          36,
+          53,
+          63,
+          152,
+          363,
+          451
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "공지에서 들은 회의 시간과 시험 정보를 친구에게 전달함",
+            "highlights": [
+              "始まるそうです",
+              "変わるそうです",
+              "簡単だそうです",
+              "混むそうです"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "明日の会議は三時から始まるそうです。",
+                "translation": "내일 회의는 세 시부터 시작한다고 합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "予定が変わるそうですね。",
+                "translation": "예정이 바뀐다고 하네요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "試験は思ったより簡単だそうです。",
+                "translation": "시험은 생각보다 쉽다고 합니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "受付は混むそうですから、早く行きましょう。",
+                "translation": "접수는 붐빈다고 하니, 일찍 갑시다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "予定의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "예정"
+                },
+                {
+                  "id": "b",
+                  "text": "접수"
+                },
+                {
+                  "id": "c",
+                  "text": "원인"
+                },
+                {
+                  "id": "d",
+                  "text": "안심"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "予定(よてい)는 예정입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "受付의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "접수, 안내 데스크"
+                },
+                {
+                  "id": "b",
+                  "text": "경험"
+                },
+                {
+                  "id": "c",
+                  "text": "생활"
+                },
+                {
+                  "id": "d",
+                  "text": "장래"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "受付(うけつけ)는 접수 또는 안내 데스크입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "会議は三時から始まる___です。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "そう"
+                },
+                {
+                  "id": "b",
+                  "text": "そうに"
+                },
+                {
+                  "id": "c",
+                  "text": "そうな"
+                },
+                {
+                  "id": "d",
+                  "text": "そうで"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "들은 정보를 전달할 때는 보통형 뒤에 そうです를 붙입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "予定が___そうですね。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "変わる"
+                },
+                {
+                  "id": "b",
+                  "text": "簡単"
+                },
+                {
+                  "id": "c",
+                  "text": "安全"
+                },
+                {
+                  "id": "d",
+                  "text": "必要"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "変わるそうです는 바뀐다고 합니다라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'시험은 쉽다고 합니다'를 배열하세요.",
+              "tokens": [
+                "簡単だそうです",
+                "試験は"
+              ],
+              "correct_order": [
+                "試験は",
+                "簡単だそうです"
+              ],
+              "explanation": "전문 표현은 전달할 내용 뒤에 そうです를 붙입니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 092의 そうだ 계열을 참고하되, 들은 정보 전달만 다루도록 분리한 HaruKoto 신규 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-mono-functions-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-mono-functions",
+      "sourceTopicIds": [
+        "topic-mono-functions"
+      ],
+      "exampleIds": [
+        "ex-n4-mono-functions-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 5,
+        "lessonNo": 20,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "약속은 지키는 법이에요",
+        "subtitle": "〜ものだ로 일반적인 규범 말하기",
+        "topic": "ものだ",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜ものだ",
+          "meaning_ko": "~하는 법이다 / ~해야 하는 법이다",
+          "grammar_order": 49,
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          79,
+          80,
+          122,
+          515,
+          598,
+          815,
+          889
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "동아리 규칙과 약속에 대해 선배가 조언함",
+            "highlights": [
+              "守るものです",
+              "大切なものです",
+              "するものです",
+              "社会"
+            ],
+            "script": [
+              {
+                "speaker": "先輩",
+                "voice_id": "japanese_female_1",
+                "text": "約束は守るものです。",
+                "translation": "약속은 지키는 법입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。規則も大切なものですね。",
+                "translation": "네. 규칙도 중요한 것이네요."
+              },
+              {
+                "speaker": "先輩",
+                "voice_id": "japanese_female_1",
+                "text": "挨拶は普通、先にするものです。",
+                "translation": "인사는 보통 먼저 하는 법입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "社会で必要な考え方ですね。",
+                "translation": "사회에서 필요한 사고방식이네요."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "約束의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "약속"
+                },
+                {
+                  "id": "b",
+                  "text": "공기"
+                },
+                {
+                  "id": "c",
+                  "text": "기계"
+                },
+                {
+                  "id": "d",
+                  "text": "경험"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "約束(やくそく)은 약속입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "守る의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "지키다"
+                },
+                {
+                  "id": "b",
+                  "text": "서두르다"
+                },
+                {
+                  "id": "c",
+                  "text": "늘다"
+                },
+                {
+                  "id": "d",
+                  "text": "고장나다"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "守る(まもる)는 지키다라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "約束は守る___です。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "もの"
+                },
+                {
+                  "id": "b",
+                  "text": "こと"
+                },
+                {
+                  "id": "c",
+                  "text": "ため"
+                },
+                {
+                  "id": "d",
+                  "text": "しか"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "일반적인 규범이나 당연한 일을 말할 때 〜ものです를 쓸 수 있습니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "規則も___なものですね。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "大切"
+                },
+                {
+                  "id": "b",
+                  "text": "急行"
+                },
+                {
+                  "id": "c",
+                  "text": "交通"
+                },
+                {
+                  "id": "d",
+                  "text": "地震"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "大切なもの는 중요한 것이라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
+              "tokens": [
+                "守るものです",
+                "約束は"
+              ],
+              "correct_order": [
+                "約束は",
+                "守るものです"
+              ],
+              "explanation": "주제 뒤에 일반 규범을 나타내는 〜ものです를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 099의 もの 주제 coverage를 참고하되, 일반 규범의 ものだ만 다루도록 분리한 HaruKoto 신규 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-hazu-da-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-n4-hazu-da-practice",
+      "sourceTopicIds": [
+        "topic-hazu-da"
+      ],
+      "exampleIds": [
+        "ex-n4-hazu-da-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 5,
+        "lessonNo": 21,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "예약했으니 자리 있을 거예요",
+        "subtitle": "〜はずだ로 근거 있는 예상을 말하기",
+        "topic": "はずだ",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜はずだ",
+          "meaning_ko": "~일 것이다 / ~할 것이다",
+          "grammar_order": 13,
+          "supporting_grammar_orders": []
+        },
+        "vocab_orders": [
+          16,
+          17,
+          53,
+          72,
+          82,
+          88,
+          889
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "예약과 자료 도착 여부를 확인하며 예상함",
+            "highlights": [
+              "あるはずです",
+              "届くはずです",
+              "決まるはずです",
+              "予定"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "予約したので、席はあるはずです。",
+                "translation": "예약했으니 자리는 있을 것입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "資料も今日届くはずです。",
+                "translation": "자료도 오늘 도착할 것입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "会議の予定は午後に決まるはずです。",
+                "translation": "회의 예정은 오후에 정해질 것입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "準備はできそうですね。",
+                "translation": "준비는 될 것 같네요."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "予約의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "예약"
+                },
+                {
+                  "id": "b",
+                  "text": "회의"
+                },
+                {
+                  "id": "c",
+                  "text": "약속"
+                },
+                {
+                  "id": "d",
+                  "text": "준비"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "予約(よやく)는 예약입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "届く의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "도착하다, 닿다"
+                },
+                {
+                  "id": "b",
+                  "text": "정하다"
+                },
+                {
+                  "id": "c",
+                  "text": "잊다"
+                },
+                {
+                  "id": "d",
+                  "text": "줄다"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "届く(とどく)는 도착하다, 닿다라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "席はある___です。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "はず"
+                },
+                {
+                  "id": "b",
+                  "text": "もの"
+                },
+                {
+                  "id": "c",
+                  "text": "し"
+                },
+                {
+                  "id": "d",
+                  "text": "ばかり"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "근거를 바탕으로 당연히 그럴 것이라고 예상할 때 〜はずです를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "資料も今日___はずです。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "届く"
+                },
+                {
+                  "id": "b",
+                  "text": "必要"
+                },
+                {
+                  "id": "c",
+                  "text": "安全"
+                },
+                {
+                  "id": "d",
+                  "text": "普通"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "届くはずです는 도착할 것입니다라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'자료는 오늘 도착할 것입니다'를 배열하세요.",
+              "tokens": [
+                "今日",
+                "資料は",
+                "届くはずです"
+              ],
+              "correct_order": [
+                "資料は",
+                "今日",
+                "届くはずです"
+              ],
+              "explanation": "예상하는 사건 뒤에 〜はずです를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate"
+      ],
+      "notesKo": "PDF 100의 はずだ 주제 coverage를 참고하되, 예약과 자료 도착 맥락으로 새로 작성한 N4 후보이다."
     }
   ]
 }
