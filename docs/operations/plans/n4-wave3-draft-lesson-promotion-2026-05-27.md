@@ -92,12 +92,18 @@ Detailed evidence:
   `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
 - STT-assisted review signal:
   `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
+- timeout-target STT retry:
+  `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- audio QA triage queue:
+  `docs/operations/plans/n4-wave3-draft-audio-qa-triage-2026-05-27.md`
 
 ## Next Gates
 
-1. Triage the STT-assisted timeout/mismatch signals and decide whether direct
-   listening, source rewrite, or regeneration is needed for any row.
-2. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
+1. Review the three lexical-risk script rows first, then decide whether
+   unchanged-source regeneration is needed.
+2. Optionally clean up `HN4-018 script:3` if the unanchored `田中さん` line is
+   judged too noisy for learner context or TTS/STT stability.
+3. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
    registry decision are complete.
-3. Keep native-speaker review as a later, explicit quality upgrade when a human
+4. Keep native-speaker review as a later, explicit quality upgrade when a human
    reviewer becomes available.
