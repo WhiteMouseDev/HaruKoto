@@ -120,15 +120,16 @@ Targeted lexical-risk remediation cleared the highest-risk script rows:
 | `HN4-018 script:0` | `PASS` | source rewrite plus Gemini regeneration produced STT exact match for `この古い機械は壊れそうですから、会議では使わないでください。` |
 | `HN4-019 script:3` | `PASS` | Gemini provider-switch regeneration produced STT exact match for `受付は混むそうですから、早く行きましょう。` |
 
-The current review queue therefore has 45 total rows, 41 `PENDING`, 4 `PASS`,
-and 0 `FLAG`. `N4-CH05` must remain `DRAFT` until the remaining pending audio
-QA rows are resolved or explicitly waived.
+Final CH05 audio QA closure now reports 45 total rows, 45 `PASS`, 0
+`PENDING`, 0 `FLAG`, and 0 `FAIL`. This clears the delegated AI/STT-assisted
+audio gate for controlled pilot exposure; it remains lower authority than
+native-speaker review.
 
 ## Next Gates
 
-1. Resolve the remaining 41 `PENDING` audio QA rows before any seed registry
-   promotion.
-2. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
-   registry decision are complete.
+1. Promote `N4-CH05` from `DRAFT` to `PILOT` only with an explicit seed
+   registry and rollout decision.
+2. Re-apply the configured N4 seed and run published start/submit smoke for
+   `HN4-017` through `HN4-021`.
 3. Keep native-speaker review as a later, explicit quality upgrade when a human
    reviewer becomes available.
