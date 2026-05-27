@@ -36,7 +36,7 @@
       "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to remove premature そうだ exposure, vary answer positions, and strengthen distractors. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
       "candidateId": "lsc-n4-tari-tari-suru-001",
       "candidateStatus": "draft",
-      "promotedLessonId": null,
+      "promotedLessonId": "HN4-017",
       "lessonBlueprintId": "ldb-n4-tari-tari-suru-practice",
       "sourceTopics": [
         {
@@ -146,8 +146,8 @@
             "text": "週末は掃除をしたり、洗濯をしたりします。",
             "translationKo": "주말에는 청소를 하거나 빨래를 하거나 합니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-tari-tari-suru-001-script-1",
-              "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:script:1",
+              "targetId": "tts-hn4-017-script-1",
+              "textSource": "lesson-seeds:HN4-017:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -161,8 +161,8 @@
             "text": "忙しいですね。",
             "translationKo": "바쁘네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-tari-tari-suru-001-script-2",
-              "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:script:2",
+              "targetId": "tts-hn4-017-script-2",
+              "textSource": "lesson-seeds:HN4-017:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -176,8 +176,8 @@
             "text": "はい。来週の準備をしたり、部屋を片付けたりします。",
             "translationKo": "네. 다음 주 준비를 하거나 방을 정리하거나 합니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-tari-tari-suru-001-script-3",
-              "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:script:3",
+              "targetId": "tts-hn4-017-script-3",
+              "textSource": "lesson-seeds:HN4-017:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -191,8 +191,8 @@
             "text": "生活の習慣を話す時に便利ですね。",
             "translationKo": "생활 습관을 말할 때 편리하네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-tari-tari-suru-001-script-4",
-              "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:script:4",
+              "targetId": "tts-hn4-017-script-4",
+              "textSource": "lesson-seeds:HN4-017:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -209,8 +209,8 @@
           "prompt": "掃除의 뜻은?",
           "explanation": "掃除(そうじ)는 청소입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-tari-tari-suru-001-question-1",
-            "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:question:1",
+            "targetId": "tts-hn4-017-question-1",
+            "textSource": "lesson-seeds:HN4-017:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -244,8 +244,8 @@
           "prompt": "洗濯의 뜻은?",
           "explanation": "洗濯(せんたく)는 세탁 또는 빨래입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-tari-tari-suru-001-question-2",
-            "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:question:2",
+            "targetId": "tts-hn4-017-question-2",
+            "textSource": "lesson-seeds:HN4-017:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -279,8 +279,8 @@
           "prompt": "掃除をし___、洗濯をし___します。",
           "explanation": "여러 행동을 예로 들 때는 동사의 た형에 り를 붙여 〜たり〜たりする를 만듭니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-tari-tari-suru-001-question-3",
-            "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:question:3",
+            "targetId": "tts-hn4-017-question-3",
+            "textSource": "lesson-seeds:HN4-017:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -311,11 +311,11 @@
           "order": 4,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "来週の___をしたりします。",
+          "prompt": "문맥상 '준비'에 해당하는 말은? 来週の___をしたりします。",
           "explanation": "準備(じゅんび)는 준비라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-tari-tari-suru-001-question-4",
-            "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:question:4",
+            "targetId": "tts-hn4-017-question-4",
+            "textSource": "lesson-seeds:HN4-017:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -349,8 +349,8 @@
           "prompt": "'청소를 하거나 빨래를 하거나 합니다'를 배열하세요.",
           "explanation": "예시 행동들을 〜たり로 나열하고 마지막에 します를 둡니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-tari-tari-suru-001-question-5",
-            "textSource": "lesson-seed-candidates:lsc-n4-tari-tari-suru-001:question:5",
+            "targetId": "tts-hn4-017-question-5",
+            "textSource": "lesson-seeds:HN4-017:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -399,7 +399,7 @@
       "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to clarify 操作が簡単そうです, add appearance-vs-hearsay contrast, vary answer positions, and strengthen reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
       "candidateId": "lsc-n4-souda-appearance-001",
       "candidateStatus": "draft",
-      "promotedLessonId": null,
+      "promotedLessonId": "HN4-018",
       "lessonBlueprintId": "ldb-souda-hearsay-appearance-a",
       "sourceTopics": [
         {
@@ -459,18 +459,18 @@
           "partOfSpeech": "NA_ADJECTIVE"
         },
         {
+          "order": 168,
+          "word": "大変",
+          "reading": "たいへん",
+          "meaningKo": "힘들다, 큰일이다",
+          "partOfSpeech": "NA_ADJECTIVE"
+        },
+        {
           "order": 370,
           "word": "機械",
           "reading": "きかい",
           "meaningKo": "기계",
           "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 643,
-          "word": "疲れる",
-          "reading": "つかれる",
-          "meaningKo": "지치다. 피로해지다",
-          "partOfSpeech": "VERB"
         }
       ],
       "examples": [
@@ -499,7 +499,7 @@
           "壊れそうです",
           "無理そうです",
           "簡単そうです",
-          "疲れていそうです"
+          "大変そうです"
         ],
         "script": [
           {
@@ -509,8 +509,8 @@
             "text": "この機械は壊れそうです。",
             "translationKo": "이 기계는 고장 날 것 같습니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-appearance-001-script-1",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:script:1",
+              "targetId": "tts-hn4-018-script-1",
+              "textSource": "lesson-seeds:HN4-018:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -524,8 +524,8 @@
             "text": "会議で使うのは無理そうですね。",
             "translationKo": "회의에서 쓰기는 무리일 것 같네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-appearance-001-script-2",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:script:2",
+              "targetId": "tts-hn4-018-script-2",
+              "textSource": "lesson-seeds:HN4-018:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -539,8 +539,8 @@
             "text": "別の機械なら操作が簡単そうです。",
             "translationKo": "다른 기계라면 조작이 간단해 보입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-appearance-001-script-3",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:script:3",
+              "targetId": "tts-hn4-018-script-3",
+              "textSource": "lesson-seeds:HN4-018:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -551,11 +551,11 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "田中さんも疲れていそうです。早めに相談しましょう。",
-            "translationKo": "다나카 씨도 피곤해 보입니다. 일찍 상담합시다.",
+            "text": "田中さんも大変そうです。早めに相談しましょう。",
+            "translationKo": "다나카 씨도 힘들어 보입니다. 일찍 상담합시다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-appearance-001-script-4",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:script:4",
+              "targetId": "tts-hn4-018-script-4",
+              "textSource": "lesson-seeds:HN4-018:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -572,8 +572,8 @@
           "prompt": "機械의 뜻은?",
           "explanation": "機械(きかい)는 기계입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-appearance-001-question-1",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:question:1",
+            "targetId": "tts-hn4-018-question-1",
+            "textSource": "lesson-seeds:HN4-018:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -607,8 +607,8 @@
           "prompt": "無理의 뜻은?",
           "explanation": "無理(むり)는 무리 또는 불가능이라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-appearance-001-question-2",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:question:2",
+            "targetId": "tts-hn4-018-question-2",
+            "textSource": "lesson-seeds:HN4-018:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -642,8 +642,8 @@
           "prompt": "この機械は壊れ___です。",
           "explanation": "눈앞의 상태를 보고 추측할 때 동사 ます형 어간이나 형용사 어간에 そうです를 붙입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-appearance-001-question-3",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:question:3",
+            "targetId": "tts-hn4-018-question-3",
+            "textSource": "lesson-seeds:HN4-018:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -677,8 +677,8 @@
           "prompt": "눈앞의 상태를 보고 추측할 때 알맞은 표현은?",
           "explanation": "눈으로 본 상태를 추측할 때는 동사 ます형 어간에 そうです를 붙입니다. 보통형 + そうです는 들은 정보 전달입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-appearance-001-question-4",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:question:4",
+            "targetId": "tts-hn4-018-question-4",
+            "textSource": "lesson-seeds:HN4-018:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -712,8 +712,8 @@
           "prompt": "'이 기계는 고장 날 것 같습니다'를 배열하세요.",
           "explanation": "동사 ます형 어간 壊れ 뒤에 そうです를 붙여 상태를 추측합니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-appearance-001-question-5",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-appearance-001:question:5",
+            "targetId": "tts-hn4-018-question-5",
+            "textSource": "lesson-seeds:HN4-018:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -763,7 +763,7 @@
       "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to add hearsay-vs-appearance contrast, vary answer positions, and strengthen だそうです reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
       "candidateId": "lsc-n4-souda-hearsay-001",
       "candidateStatus": "draft",
-      "promotedLessonId": null,
+      "promotedLessonId": "HN4-019",
       "lessonBlueprintId": "ldb-souda-hearsay-appearance-b",
       "sourceTopics": [
         {
@@ -880,8 +880,8 @@
             "text": "明日の会議は三時から始まるそうです。",
             "translationKo": "내일 회의는 세 시부터 시작한다고 합니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-hearsay-001-script-1",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:script:1",
+              "targetId": "tts-hn4-019-script-1",
+              "textSource": "lesson-seeds:HN4-019:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -895,8 +895,8 @@
             "text": "予定が変わるそうですね。",
             "translationKo": "예정이 바뀐다고 하네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-hearsay-001-script-2",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:script:2",
+              "targetId": "tts-hn4-019-script-2",
+              "textSource": "lesson-seeds:HN4-019:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -910,8 +910,8 @@
             "text": "試験は思ったより簡単だそうです。",
             "translationKo": "시험은 생각보다 쉽다고 합니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-hearsay-001-script-3",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:script:3",
+              "targetId": "tts-hn4-019-script-3",
+              "textSource": "lesson-seeds:HN4-019:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -925,8 +925,8 @@
             "text": "受付は混むそうですから、早く行きましょう。",
             "translationKo": "접수는 붐빈다고 하니, 일찍 갑시다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-souda-hearsay-001-script-4",
-              "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:script:4",
+              "targetId": "tts-hn4-019-script-4",
+              "textSource": "lesson-seeds:HN4-019:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -943,8 +943,8 @@
           "prompt": "予定의 뜻은?",
           "explanation": "予定(よてい)는 예정입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-hearsay-001-question-1",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:question:1",
+            "targetId": "tts-hn4-019-question-1",
+            "textSource": "lesson-seeds:HN4-019:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -978,8 +978,8 @@
           "prompt": "受付의 뜻은?",
           "explanation": "受付(うけつけ)는 접수 또는 안내 데스크입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-hearsay-001-question-2",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:question:2",
+            "targetId": "tts-hn4-019-question-2",
+            "textSource": "lesson-seeds:HN4-019:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1013,8 +1013,8 @@
           "prompt": "会議は三時から始まる___です。",
           "explanation": "들은 정보를 전달할 때는 보통형 뒤에 そうです를 붙입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-hearsay-001-question-3",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:question:3",
+            "targetId": "tts-hn4-019-question-3",
+            "textSource": "lesson-seeds:HN4-019:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1048,8 +1048,8 @@
           "prompt": "들은 정보를 전달할 때 알맞은 표현은?",
           "explanation": "들은 정보를 전달할 때는 보통형 始まる 뒤에 そうです를 붙입니다. 始まりそうです는 눈앞의 상황을 보고 추측하는 말입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-hearsay-001-question-4",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:question:4",
+            "targetId": "tts-hn4-019-question-4",
+            "textSource": "lesson-seeds:HN4-019:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1083,8 +1083,8 @@
           "prompt": "'시험은 쉽다고 합니다'를 배열하세요.",
           "explanation": "な형용사/명사의 전문 표현은 だそうです로 연결합니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-souda-hearsay-001-question-5",
-            "textSource": "lesson-seed-candidates:lsc-n4-souda-hearsay-001:question:5",
+            "targetId": "tts-hn4-019-question-5",
+            "textSource": "lesson-seeds:HN4-019:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1134,7 +1134,7 @@
       "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to remove literal 大切なもの drift, keep practice on normative ものだ, vary answer positions, and strengthen reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
       "candidateId": "lsc-n4-mono-functions-001",
       "candidateStatus": "draft",
-      "promotedLessonId": null,
+      "promotedLessonId": "HN4-020",
       "lessonBlueprintId": "ldb-mono-functions",
       "sourceTopics": [
         {
@@ -1251,8 +1251,8 @@
             "text": "約束は守るものです。",
             "translationKo": "약속은 지키는 법입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-mono-functions-001-script-1",
-              "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:script:1",
+              "targetId": "tts-hn4-020-script-1",
+              "textSource": "lesson-seeds:HN4-020:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1266,8 +1266,8 @@
             "text": "はい。規則はみんなで守るものですね。",
             "translationKo": "네. 규칙은 모두 함께 지키는 법이네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-mono-functions-001-script-2",
-              "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:script:2",
+              "targetId": "tts-hn4-020-script-2",
+              "textSource": "lesson-seeds:HN4-020:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1281,8 +1281,8 @@
             "text": "挨拶は普通、先にするものです。",
             "translationKo": "인사는 보통 먼저 하는 법입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-mono-functions-001-script-3",
-              "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:script:3",
+              "targetId": "tts-hn4-020-script-3",
+              "textSource": "lesson-seeds:HN4-020:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1296,8 +1296,8 @@
             "text": "社会で必要な考え方ですね。",
             "translationKo": "사회에서 필요한 사고방식이네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-mono-functions-001-script-4",
-              "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:script:4",
+              "targetId": "tts-hn4-020-script-4",
+              "textSource": "lesson-seeds:HN4-020:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1314,8 +1314,8 @@
           "prompt": "約束의 뜻은?",
           "explanation": "約束(やくそく)은 약속입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-mono-functions-001-question-1",
-            "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:question:1",
+            "targetId": "tts-hn4-020-question-1",
+            "textSource": "lesson-seeds:HN4-020:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1349,8 +1349,8 @@
           "prompt": "守る의 뜻은?",
           "explanation": "守る(まもる)는 지키다라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-mono-functions-001-question-2",
-            "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:question:2",
+            "targetId": "tts-hn4-020-question-2",
+            "textSource": "lesson-seeds:HN4-020:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1384,8 +1384,8 @@
           "prompt": "約束は守る___です。",
           "explanation": "일반적인 규범이나 당연한 일을 말할 때 〜ものです를 쓸 수 있습니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-mono-functions-001-question-3",
-            "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:question:3",
+            "targetId": "tts-hn4-020-question-3",
+            "textSource": "lesson-seeds:HN4-020:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1419,8 +1419,8 @@
           "prompt": "規則はみんなで___ものですね。",
           "explanation": "規則は守るものです는 규칙은 지키는 법이라는 일반 규범을 나타냅니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-mono-functions-001-question-4",
-            "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:question:4",
+            "targetId": "tts-hn4-020-question-4",
+            "textSource": "lesson-seeds:HN4-020:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1454,8 +1454,8 @@
           "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
           "explanation": "동사 기본형 守る 뒤에 ものです를 붙여 일반 규범을 나타냅니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-mono-functions-001-question-5",
-            "textSource": "lesson-seed-candidates:lsc-n4-mono-functions-001:question:5",
+            "targetId": "tts-hn4-020-question-5",
+            "textSource": "lesson-seeds:HN4-020:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1505,7 +1505,7 @@
       "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Stable content retained; answer positions and distractors adjusted before approval. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
       "candidateId": "lsc-n4-hazu-da-001",
       "candidateStatus": "draft",
-      "promotedLessonId": null,
+      "promotedLessonId": "HN4-021",
       "lessonBlueprintId": "ldb-n4-hazu-da-practice",
       "sourceTopics": [
         {
@@ -1531,7 +1531,7 @@
       "grammar": {
         "order": 13,
         "pattern": "〜はずだ",
-        "meaningKo": "~일 것이다 / ~할 것이다",
+        "meaningKo": "~일/할 것이다, ~일/할 터이다 (근거상)",
         "referencePattern": "〜はず",
         "referenceMeaningKo": "~할 것이다 / ~일 것이다 (당연/예상)"
       },
@@ -1622,8 +1622,8 @@
             "text": "予約したので、席はあるはずです。",
             "translationKo": "예약했으니 자리는 있을 것입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-hazu-da-001-script-1",
-              "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:script:1",
+              "targetId": "tts-hn4-021-script-1",
+              "textSource": "lesson-seeds:HN4-021:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1637,8 +1637,8 @@
             "text": "資料も今日届くはずです。",
             "translationKo": "자료도 오늘 도착할 것입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-hazu-da-001-script-2",
-              "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:script:2",
+              "targetId": "tts-hn4-021-script-2",
+              "textSource": "lesson-seeds:HN4-021:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1652,8 +1652,8 @@
             "text": "会議の予定は午後に決まるはずです。",
             "translationKo": "회의 예정은 오후에 정해질 것입니다.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-hazu-da-001-script-3",
-              "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:script:3",
+              "targetId": "tts-hn4-021-script-3",
+              "textSource": "lesson-seeds:HN4-021:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1667,8 +1667,8 @@
             "text": "準備はできそうですね。",
             "translationKo": "준비는 될 것 같네요.",
             "ttsTarget": {
-              "targetId": "tts-lsc-n4-hazu-da-001-script-4",
-              "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:script:4",
+              "targetId": "tts-hn4-021-script-4",
+              "textSource": "lesson-seeds:HN4-021:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1685,8 +1685,8 @@
           "prompt": "予約의 뜻은?",
           "explanation": "予約(よやく)는 예약입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-hazu-da-001-question-1",
-            "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:question:1",
+            "targetId": "tts-hn4-021-question-1",
+            "textSource": "lesson-seeds:HN4-021:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1720,8 +1720,8 @@
           "prompt": "届く의 뜻은?",
           "explanation": "届く(とどく)는 도착하다, 닿다라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-hazu-da-001-question-2",
-            "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:question:2",
+            "targetId": "tts-hn4-021-question-2",
+            "textSource": "lesson-seeds:HN4-021:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1755,8 +1755,8 @@
           "prompt": "席はある___です。",
           "explanation": "근거를 바탕으로 당연히 그럴 것이라고 예상할 때 〜はずです를 씁니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-hazu-da-001-question-3",
-            "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:question:3",
+            "targetId": "tts-hn4-021-question-3",
+            "textSource": "lesson-seeds:HN4-021:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1790,8 +1790,8 @@
           "prompt": "資料も今日___はずです。",
           "explanation": "届くはずです는 도착할 것입니다라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-hazu-da-001-question-4",
-            "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:question:4",
+            "targetId": "tts-hn4-021-question-4",
+            "textSource": "lesson-seeds:HN4-021:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1825,8 +1825,8 @@
           "prompt": "'자료는 오늘 도착할 것입니다'를 배열하세요.",
           "explanation": "예상하는 사건 뒤에 〜はずです를 둡니다.",
           "ttsTarget": {
-            "targetId": "tts-lsc-n4-hazu-da-001-question-5",
-            "textSource": "lesson-seed-candidates:lsc-n4-hazu-da-001:question:5",
+            "targetId": "tts-hn4-021-question-5",
+            "textSource": "lesson-seeds:HN4-021:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
