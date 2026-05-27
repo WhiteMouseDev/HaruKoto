@@ -59,6 +59,7 @@ approval.
 | API lesson flow smoke | PASS for `HN4-017` through `HN4-021`; each correct flow scored 5/5, each wrong flow scored 0/5, and each cleanup left 0 smoke residue rows |
 | Mobile target-runtime UAT | PASS for representative `HN4-017` detail, start, vocabulary TTS, dialogue TTS, submit/result, retry, and return-to-learning on iPhone 17 Pro Simulator iOS 26.5; see `docs/operations/plans/n4-ch05-mobile-uat-2026-05-27.md` |
 | Pilot feedback baseline | PASS: `docs/operations/plans/n4-ch05-pilot-feedback-baseline-2026-05-27.md` reports no automatic rollback blockers; HN4-017 has one non-smoke completed learner row from the same-day simulator UAT window and HN4-018 through HN4-021 are waiting for pilot traffic with all expected TTS records present |
+| Physical-device smoke | BLOCKED: `docs/operations/plans/n4-ch05-physical-device-smoke-2026-05-27.md` confirms the physical iPhone is visible, but install/launch preflight is blocked by device lock before release-device proof can be collected |
 
 ## Pilot Guardrails
 
@@ -89,4 +90,5 @@ If CH05 shows a P0/P1 runtime or content issue:
 
 1. Continue pilot-feedback monitoring refreshes for HN4-017 through HN4-021
    after learner traffic exists.
-2. Keep native-speaker review as a quality upgrade gate before wider claims.
+2. Re-run physical iPhone smoke after the device is unlocked and kept awake.
+3. Keep native-speaker review as a quality upgrade gate before wider claims.
