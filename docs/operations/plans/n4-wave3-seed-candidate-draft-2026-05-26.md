@@ -11,18 +11,61 @@ ASSUMPTION: `/Users/kimkunwoo/Downloads/japanese` PDF는 coverage anchor로만
 사용한다. PDF의 예문, 설명문, 문항 문장을 HaruKoto lesson content로 복제하지
 않는다.
 
-ASSUMPTION: 현재 사람 전문가가 없는 상태이므로 AI가 초안을 작성하되,
-`reviewerDecision: PENDING`을 유지해 공식 승격 전 검토 gate를 남긴다.
+ASSUMPTION: 현재 사람 전문가가 없는 상태이므로 AI가 초안 작성과
+다중 검수를 맡는다. `reviewerDecision: APPROVED`는 AI-only candidate
+approval이며, 사람 전문가 승인이나 TTS/audio runtime 승인은 아니다.
 
 ## Candidate Slice
 
 | Candidate | Target lesson | Topic | Grammar | Review |
 | --- | --- | --- | --- | --- |
-| `lsc-n4-tari-tari-suru-001` | `HN4-017` | `topic-tari-tari-suru` | `〜たり〜たりする` | `PENDING` |
-| `lsc-n4-souda-appearance-001` | `HN4-018` | `topic-souda-hearsay-appearance-a` | `〜そうだ` | `PENDING` |
-| `lsc-n4-souda-hearsay-001` | `HN4-019` | `topic-souda-hearsay-appearance-b` | `〜そうだ` | `PENDING` |
-| `lsc-n4-mono-functions-001` | `HN4-020` | `topic-mono-functions` | `〜ものだ` | `PENDING` |
-| `lsc-n4-hazu-da-001` | `HN4-021` | `topic-hazu-da` | `〜はずだ` | `PENDING` |
+| `lsc-n4-tari-tari-suru-001` | `HN4-017` | `topic-tari-tari-suru` | `〜たり〜たりする` | `APPROVED` |
+| `lsc-n4-souda-appearance-001` | `HN4-018` | `topic-souda-hearsay-appearance-a` | `〜そうだ` | `APPROVED` |
+| `lsc-n4-souda-hearsay-001` | `HN4-019` | `topic-souda-hearsay-appearance-b` | `〜そうだ` | `APPROVED` |
+| `lsc-n4-mono-functions-001` | `HN4-020` | `topic-mono-functions` | `〜ものだ` | `APPROVED` |
+| `lsc-n4-hazu-da-001` | `HN4-021` | `topic-hazu-da` | `〜はずだ` | `APPROVED` |
+
+## AI Multi-Pass Review - 2026-05-27
+
+Boundary: delegated AI curriculum review only. This is not native-speaker
+human approval, not professional Japanese-teacher approval, and not TTS/audio
+runtime approval.
+
+Three parallel AI review passes were used before candidate approval:
+
+- Japanese grammar/naturalness review: no blocking grammar, reading, kana, or
+  Korean translation issue; flagged `そうだ` specificity and `ものだ` focus.
+- Korean learner pedagogy review: flagged answer-position bias, weak
+  distractors, premature `そうだ` exposure in the `たり` lesson, missing
+  `そうだ` contrast practice, literal `もの` drift, and short reorder items.
+- Runtime/TTS contract review: confirmed target coverage, API bundle sync,
+  validator coverage, and that the pre-approval gate was blocked only by
+  review decisions. TTS generation remains a separate gate.
+
+Applied edits before approval:
+
+- `HN4-017`: changed `忙しそうですね` to `忙しいですね` to avoid exposing
+  the next lesson's target grammar early.
+- `HN4-018`: changed `別の機械なら簡単そうです` to
+  `別の機械なら操作が簡単そうです` and added appearance-vs-hearsay
+  contrast.
+- `HN4-019`: added hearsay-vs-appearance contrast and strengthened
+  `だそうです` reorder practice.
+- `HN4-020`: replaced literal `大切なもの` practice with normative
+  `規則はみんなで守るものですね`.
+- `HN4-021`: retained content and adjusted answer positions/distractors.
+- All five candidates: varied multiple-choice answer positions and strengthened
+  distractors where they were too easy or too distant.
+
+Post-review candidate state:
+
+| Candidate | Target lesson | AI review decision | Boundary |
+| --- | --- | --- | --- |
+| `lsc-n4-tari-tari-suru-001` | `HN4-017` | `APPROVED` | AI-only candidate approval |
+| `lsc-n4-souda-appearance-001` | `HN4-018` | `APPROVED` | AI-only candidate approval |
+| `lsc-n4-souda-hearsay-001` | `HN4-019` | `APPROVED` | AI-only candidate approval |
+| `lsc-n4-mono-functions-001` | `HN4-020` | `APPROVED` | AI-only candidate approval |
+| `lsc-n4-hazu-da-001` | `HN4-021` | `APPROVED` | AI-only candidate approval |
 
 ## Data Contract Updates
 
@@ -37,17 +80,18 @@ ASSUMPTION: 현재 사람 전문가가 없는 상태이므로 AI가 초안을 �
 - `tts-review-batches.json`: 새 target 50개를 review batch에 연결하고
   count/status summary를 재계산.
 - `lesson-seed-candidate-review/n4-candidate-review.json`: 미승격 N4 후보
-  5개를 PENDING review row로 재생성.
+  5개를 AI-only `APPROVED` review row로 갱신.
 
 ## Remaining Gates
 
-1. Candidate curriculum review: `PENDING` 5개를 `APPROVED` 또는
-   `NEEDS_EDIT`으로 판정한다.
-2. TTS readiness: 새 target 50개를 생성하고 admin review 또는 확장된
+1. TTS readiness: 새 target 50개를 생성하고 admin review 또는 확장된
    audio QA flow로 승인한다.
-3. Official seed promotion: approval 후 `HN4-017`부터 `HN4-021`까지
+2. Official seed promotion: approval 후 `HN4-017`부터 `HN4-021`까지
    official lesson seed로 승격한다.
-4. Lesson human review: 공식 seed 승격 후 `lesson-human-review` packet을
-   별도로 생성해 내용, 문항, 오디오를 검토한다.
-5. Runtime UAT: web/mobile lesson playback, TTS 재생, question flow를
+3. Lesson human review substitute: 공식 seed 승격 후
+   `lesson-human-review` packet을 별도로 생성하되, 사람 전문가가 없으면
+   같은 AI-only boundary를 명시한 다중 AI 검수로 대체한다.
+4. Runtime UAT: web/mobile lesson playback, TTS 재생, question flow를
    target runtime에서 확인한다.
+5. Future human expert audit: 사람 일본어 전문가를 확보하면 AI 승인 row를
+   샘플링 또는 전수 재검토한다.

@@ -7632,8 +7632,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "忙しそうですね。",
-                "translation": "바쁠 것 같네요."
+                "text": "忙しいですね。",
+                "translation": "바쁘네요."
               },
               {
                 "speaker": "キム",
@@ -7658,22 +7658,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "청소"
+                  "text": "세탁, 빨래"
                 },
                 {
                   "id": "b",
-                  "text": "예약"
+                  "text": "청소"
                 },
                 {
                   "id": "c",
-                  "text": "교통"
+                  "text": "정리"
                 },
                 {
                   "id": "d",
-                  "text": "상담"
+                  "text": "준비"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "b",
               "explanation": "掃除(そうじ)는 청소입니다."
             },
             {
@@ -7684,22 +7684,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "세탁, 빨래"
+                  "text": "청소"
                 },
                 {
                   "id": "b",
-                  "text": "경험"
+                  "text": "정리"
                 },
                 {
                   "id": "c",
-                  "text": "시험"
+                  "text": "세탁, 빨래"
                 },
                 {
                   "id": "d",
-                  "text": "이유"
+                  "text": "준비"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "c",
               "explanation": "洗濯(せんたく)는 세탁 또는 빨래입니다."
             },
             {
@@ -7710,22 +7710,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "たり / たり"
+                  "text": "し / し"
                 },
                 {
                   "id": "b",
-                  "text": "ても / ても"
+                  "text": "ながら / ながら"
                 },
                 {
                   "id": "c",
-                  "text": "しか / しか"
+                  "text": "ても / ても"
                 },
                 {
                   "id": "d",
-                  "text": "ため / ため"
+                  "text": "たり / たり"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "d",
               "explanation": "여러 행동을 예로 들 때는 동사의 た형에 り를 붙여 〜たり〜たりする를 만듭니다."
             },
             {
@@ -7736,22 +7736,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "準備"
+                  "text": "掃除"
                 },
                 {
                   "id": "b",
-                  "text": "事故"
+                  "text": "準備"
                 },
                 {
                   "id": "c",
-                  "text": "空気"
+                  "text": "片付け"
                 },
                 {
                   "id": "d",
-                  "text": "島"
+                  "text": "洗濯"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "b",
               "explanation": "準備(じゅんび)는 준비라는 뜻입니다."
             },
             {
@@ -7846,8 +7846,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "別の機械なら簡単そうです。",
-                "translation": "다른 기계라면 간단해 보입니다."
+                "text": "別の機械なら操作が簡単そうです。",
+                "translation": "다른 기계라면 조작이 간단해 보입니다."
               },
               {
                 "speaker": "佐藤",
@@ -7870,15 +7870,15 @@
                 },
                 {
                   "id": "b",
-                  "text": "회의"
+                  "text": "자료"
                 },
                 {
                   "id": "c",
-                  "text": "습관"
+                  "text": "회의"
                 },
                 {
                   "id": "d",
-                  "text": "예약"
+                  "text": "조작"
                 }
               ],
               "correct_answer": "a",
@@ -7892,22 +7892,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "무리, 불가능"
+                  "text": "가능"
                 },
                 {
                   "id": "b",
-                  "text": "안전"
+                  "text": "간단"
                 },
                 {
                   "id": "c",
-                  "text": "자신감"
+                  "text": "무리, 불가능"
                 },
                 {
                   "id": "d",
-                  "text": "원인"
+                  "text": "상담"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "c",
               "explanation": "無理(むり)는 무리 또는 불가능이라는 뜻입니다."
             },
             {
@@ -7918,49 +7918,49 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "そう"
-                },
-                {
-                  "id": "b",
                   "text": "し"
                 },
                 {
-                  "id": "c",
+                  "id": "b",
                   "text": "ため"
                 },
                 {
-                  "id": "d",
+                  "id": "c",
                   "text": "しか"
+                },
+                {
+                  "id": "d",
+                  "text": "そう"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "d",
               "explanation": "눈앞의 상태를 보고 추측할 때 동사 ます형 어간이나 형용사 어간에 そうです를 붙입니다."
             },
             {
               "order": 4,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "会議で使うのは___そうですね。",
+              "prompt": "눈앞의 상태를 보고 추측할 때 알맞은 표현은?",
               "options": [
                 {
                   "id": "a",
-                  "text": "無理"
+                  "text": "壊れるそうです"
                 },
                 {
                   "id": "b",
-                  "text": "交通"
+                  "text": "壊れたそうです"
                 },
                 {
                   "id": "c",
-                  "text": "文化"
+                  "text": "壊れそうです"
                 },
                 {
                   "id": "d",
-                  "text": "島"
+                  "text": "壊れそうにします"
                 }
               ],
-              "correct_answer": "a",
-              "explanation": "無理そうです는 무리일 것 같다는 뜻입니다."
+              "correct_answer": "c",
+              "explanation": "눈으로 본 상태를 추측할 때는 동사 ます형 어간에 そうです를 붙입니다. 보통형 + そうです는 들은 정보 전달입니다."
             },
             {
               "order": 5,
@@ -7968,14 +7968,16 @@
               "cognitive_level": "산출유사",
               "prompt": "'이 기계는 고장 날 것 같습니다'를 배열하세요.",
               "tokens": [
-                "壊れそうです",
-                "この機械は"
+                "この機械は",
+                "壊れ",
+                "そうです"
               ],
               "correct_order": [
                 "この機械は",
-                "壊れそうです"
+                "壊れ",
+                "そうです"
               ],
-              "explanation": "대상 뒤에 상태 추측 표현 〜そうです를 둡니다."
+              "explanation": "동사 ます형 어간 壊れ 뒤에 そうです를 붙여 상태를 추측합니다."
             }
           ]
         }
@@ -8074,22 +8076,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "예정"
-                },
-                {
-                  "id": "b",
                   "text": "접수"
                 },
                 {
+                  "id": "b",
+                  "text": "예정"
+                },
+                {
                   "id": "c",
-                  "text": "원인"
+                  "text": "회의"
                 },
                 {
                   "id": "d",
-                  "text": "안심"
+                  "text": "시험"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "b",
               "explanation": "予定(よてい)는 예정입니다."
             },
             {
@@ -8100,22 +8102,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "접수, 안내 데스크"
+                  "text": "예약"
                 },
                 {
                   "id": "b",
-                  "text": "경험"
+                  "text": "회의"
                 },
                 {
                   "id": "c",
-                  "text": "생활"
+                  "text": "접수, 안내 데스크"
                 },
                 {
                   "id": "d",
-                  "text": "장래"
+                  "text": "자료"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "c",
               "explanation": "受付(うけつけ)는 접수 또는 안내 데스크입니다."
             },
             {
@@ -8126,49 +8128,49 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "そう"
-                },
-                {
-                  "id": "b",
                   "text": "そうに"
                 },
                 {
-                  "id": "c",
+                  "id": "b",
                   "text": "そうな"
                 },
                 {
-                  "id": "d",
+                  "id": "c",
                   "text": "そうで"
+                },
+                {
+                  "id": "d",
+                  "text": "そう"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "d",
               "explanation": "들은 정보를 전달할 때는 보통형 뒤에 そうです를 붙입니다."
             },
             {
               "order": 4,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "予定が___そうですね。",
+              "prompt": "들은 정보를 전달할 때 알맞은 표현은?",
               "options": [
                 {
                   "id": "a",
-                  "text": "変わる"
+                  "text": "会議が始まりそうです"
                 },
                 {
                   "id": "b",
-                  "text": "簡単"
+                  "text": "会議が始まるそうです"
                 },
                 {
                   "id": "c",
-                  "text": "安全"
+                  "text": "会議が始まるそうにします"
                 },
                 {
                   "id": "d",
-                  "text": "必要"
+                  "text": "会議が始まったそうに見ます"
                 }
               ],
-              "correct_answer": "a",
-              "explanation": "変わるそうです는 바뀐다고 합니다라는 뜻입니다."
+              "correct_answer": "b",
+              "explanation": "들은 정보를 전달할 때는 보통형 始まる 뒤에 そうです를 붙입니다. 始まりそうです는 눈앞의 상황을 보고 추측하는 말입니다."
             },
             {
               "order": 5,
@@ -8176,14 +8178,16 @@
               "cognitive_level": "산출유사",
               "prompt": "'시험은 쉽다고 합니다'를 배열하세요.",
               "tokens": [
-                "簡単だそうです",
-                "試験は"
+                "試験は",
+                "簡単だ",
+                "そうです"
               ],
               "correct_order": [
                 "試験は",
-                "簡単だそうです"
+                "簡単だ",
+                "そうです"
               ],
-              "explanation": "전문 표현은 전달할 내용 뒤에 そうです를 붙입니다."
+              "explanation": "な형용사/명사의 전문 표현은 だそうです로 연결합니다."
             }
           ]
         }
@@ -8242,7 +8246,7 @@
             "scene": "동아리 규칙과 약속에 대해 선배가 조언함",
             "highlights": [
               "守るものです",
-              "大切なものです",
+              "守るものですね",
               "するものです",
               "社会"
             ],
@@ -8256,8 +8260,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "はい。規則も大切なものですね。",
-                "translation": "네. 규칙도 중요한 것이네요."
+                "text": "はい。規則はみんなで守るものですね。",
+                "translation": "네. 규칙은 모두 함께 지키는 법이네요."
               },
               {
                 "speaker": "先輩",
@@ -8286,15 +8290,15 @@
                 },
                 {
                   "id": "b",
-                  "text": "공기"
+                  "text": "규칙"
                 },
                 {
                   "id": "c",
-                  "text": "기계"
+                  "text": "사회"
                 },
                 {
                   "id": "d",
-                  "text": "경험"
+                  "text": "인사"
                 }
               ],
               "correct_answer": "a",
@@ -8308,7 +8312,7 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "지키다"
+                  "text": "정하다"
                 },
                 {
                   "id": "b",
@@ -8316,14 +8320,14 @@
                 },
                 {
                   "id": "c",
-                  "text": "늘다"
+                  "text": "지키다"
                 },
                 {
                   "id": "d",
-                  "text": "고장나다"
+                  "text": "잊다"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "c",
               "explanation": "守る(まもる)는 지키다라는 뜻입니다."
             },
             {
@@ -8334,49 +8338,49 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "もの"
-                },
-                {
-                  "id": "b",
                   "text": "こと"
                 },
                 {
-                  "id": "c",
+                  "id": "b",
                   "text": "ため"
                 },
                 {
-                  "id": "d",
+                  "id": "c",
                   "text": "しか"
+                },
+                {
+                  "id": "d",
+                  "text": "もの"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "d",
               "explanation": "일반적인 규범이나 당연한 일을 말할 때 〜ものです를 쓸 수 있습니다."
             },
             {
               "order": 4,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "規則も___なものですね。",
+              "prompt": "規則はみんなで___ものですね。",
               "options": [
                 {
                   "id": "a",
-                  "text": "大切"
+                  "text": "忘れる"
                 },
                 {
                   "id": "b",
-                  "text": "急行"
+                  "text": "壊れる"
                 },
                 {
                   "id": "c",
-                  "text": "交通"
+                  "text": "守る"
                 },
                 {
                   "id": "d",
-                  "text": "地震"
+                  "text": "混む"
                 }
               ],
-              "correct_answer": "a",
-              "explanation": "大切なもの는 중요한 것이라는 뜻입니다."
+              "correct_answer": "c",
+              "explanation": "規則は守るものです는 규칙은 지키는 법이라는 일반 규범을 나타냅니다."
             },
             {
               "order": 5,
@@ -8384,14 +8388,16 @@
               "cognitive_level": "산출유사",
               "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
               "tokens": [
-                "守るものです",
-                "約束は"
+                "約束は",
+                "守る",
+                "ものです"
               ],
               "correct_order": [
                 "約束は",
-                "守るものです"
+                "守る",
+                "ものです"
               ],
-              "explanation": "주제 뒤에 일반 규범을 나타내는 〜ものです를 둡니다."
+              "explanation": "동사 기본형 守る 뒤에 ものです를 붙여 일반 규범을 나타냅니다."
             }
           ]
         }
@@ -8490,11 +8496,11 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "예약"
+                  "text": "자료"
                 },
                 {
                   "id": "b",
-                  "text": "회의"
+                  "text": "예약"
                 },
                 {
                   "id": "c",
@@ -8502,10 +8508,10 @@
                 },
                 {
                   "id": "d",
-                  "text": "준비"
+                  "text": "회의"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "b",
               "explanation": "予約(よやく)는 예약입니다."
             },
             {
@@ -8516,22 +8522,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "도착하다, 닿다"
-                },
-                {
-                  "id": "b",
                   "text": "정하다"
                 },
                 {
+                  "id": "b",
+                  "text": "예약하다"
+                },
+                {
                   "id": "c",
-                  "text": "잊다"
+                  "text": "도착하다, 닿다"
                 },
                 {
                   "id": "d",
-                  "text": "줄다"
+                  "text": "준비하다"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "c",
               "explanation": "届く(とどく)는 도착하다, 닿다라는 뜻입니다."
             },
             {
@@ -8542,22 +8548,22 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "はず"
-                },
-                {
-                  "id": "b",
                   "text": "もの"
                 },
                 {
-                  "id": "c",
+                  "id": "b",
                   "text": "し"
                 },
                 {
-                  "id": "d",
+                  "id": "c",
                   "text": "ばかり"
+                },
+                {
+                  "id": "d",
+                  "text": "はず"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "d",
               "explanation": "근거를 바탕으로 당연히 그럴 것이라고 예상할 때 〜はずです를 씁니다."
             },
             {
@@ -8568,11 +8574,11 @@
               "options": [
                 {
                   "id": "a",
-                  "text": "届く"
+                  "text": "必要"
                 },
                 {
                   "id": "b",
-                  "text": "必要"
+                  "text": "届く"
                 },
                 {
                   "id": "c",
@@ -8580,10 +8586,10 @@
                 },
                 {
                   "id": "d",
-                  "text": "普通"
+                  "text": "決まる"
                 }
               ],
-              "correct_answer": "a",
+              "correct_answer": "b",
               "explanation": "届くはずです는 도착할 것입니다라는 뜻입니다."
             },
             {
