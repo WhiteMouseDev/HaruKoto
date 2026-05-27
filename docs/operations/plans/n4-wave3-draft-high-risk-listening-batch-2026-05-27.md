@@ -14,13 +14,14 @@ row, and it does not replace native-speaker review.
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
+- Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-no-transcript-retry-2026-05-27.md`
 
 ## Summary
 
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 35 |
+| Pending review-signal items | 8 |
 | High-risk listening batch | 0 |
 | P0 machine-warning rows | 0 |
 | Lexical-risk rows | 0 |
