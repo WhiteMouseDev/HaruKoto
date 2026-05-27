@@ -75,7 +75,7 @@ broad rollout until regenerated or explicitly waived.
 
 | script 1 | 佐藤 | 会議で使うのは無理そうですね。 | 회의에서 쓰기는 무리일 것 같네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
-| script 2 | キム | 別の機械なら操作が簡単そうです。 | 다른 기계라면 조작이 간단해 보입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | 別の機械なら操作が簡単そうです。 | 다른 기계라면 조작이 간단해 보입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT differs only by homophone kanji choice 機械/機会; not native-speaker review. |
 
 | script 3 | 佐藤 | この操作は大変そうです。早めに相談しましょう。 | 이 조작은 힘들어 보입니다. 일찍 상담합시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3-regen-n4ch05-cleanup-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
@@ -93,7 +93,7 @@ broad rollout until regenerated or explicitly waived.
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 明日の会議は三時から始まるそうです。 | 내일 회의는 세 시부터 시작한다고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-0.mp3) | PENDING |  |
+| script 0 | キム | 明日の会議は三時から始まるそうです。 | 내일 회의는 세 시부터 시작한다고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-0.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT differs only by numeral notation 三時/3時; not native-speaker review. |
 
 | script 1 | 佐藤 | 予定が変わるそうですね。 | 예정이 바뀐다고 하네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-1.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review |
 
@@ -107,7 +107,7 @@ broad rollout until regenerated or explicitly waived.
 
 | question 3 |  | 会議は三時から始まる___です。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 4 |  | 들은 정보를 전달할 때 알맞은 표현은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-4.mp3) | PENDING |  |
+| question 4 |  | 들은 정보를 전달할 때 알맞은 표현은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-4.mp3) | PASS | Delegated AI-assisted PASS: machine probe passed and Japanese-oriented STT translated a Korean prompt shape; not native-speaker review. |
 
 | question 5 |  | '시험은 쉽다고 합니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
@@ -115,11 +115,11 @@ broad rollout until regenerated or explicitly waived.
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | 先輩 | 約束は守るものです。 | 약속은 지키는 법입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-0.mp3) | PENDING |  |
+| script 0 | 先輩 | 学校の約束は最後まで守るものです。 | 학교의 약속은 끝까지 지키는 법입니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-0-regen-n4ch05-final-rewrite2-20260527.mp3) | PASS | Delegated AI-assisted PASS: regenerated MP3 probe passed and residual STT mismatch omits only final です from ものです after source rewrite; not native-speaker review. |
 
 | script 1 | キム | はい。規則はみんなで守るものですね。 | 네. 규칙은 모두 함께 지키는 법이네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-1.mp3) | PASS | Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review |
 
-| script 2 | 先輩 | 挨拶は普通、先にするものです。 | 인사는 보통 먼저 하는 법입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-2.mp3) | PENDING |  |
+| script 2 | 先輩 | 挨拶は普通、先にするものです。 | 인사는 보통 먼저 하는 법입니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-2-regen-n4ch05-final-gemini-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | script 3 | キム | 社会で必要な考え方ですね。 | 사회에서 필요한 사고방식이네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-3.mp3) | PASS | Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review |
 
@@ -127,29 +127,29 @@ broad rollout until regenerated or explicitly waived.
 
 | question 2 |  | 守る의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-2.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 3 |  | 約束は守る___です。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
+| question 3 |  | 学校の約束は最後まで守る___です。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 | question 4 |  | 規則はみんなで___ものですね。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-4.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 5 |  | '약속은 지키는 법입니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
+| question 5 |  | '학교의 약속은 끝까지 지키는 법입니다'를 배열하세요. |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/question-5.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 ### HN4-021 - 예약했으니 자리 있을 거예요
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | 予約したので、席はあるはずです。 | 예약했으니 자리는 있을 것입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-0.mp3) | PENDING |  |
+| script 0 | キム | 予約したので、席はまだあるはずです。 | 예약했으니 자리는 아직 있을 것입니다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-0-regen-n4ch05-final-rewrite2-20260527.mp3) | PASS | Delegated AI-assisted PASS: regenerated MP3 probe passed and residual STT mismatch omits only final です from はずです after source rewrite; not native-speaker review. |
 
 | script 1 | 佐藤 | 資料も今日届くはずです。 | 자료도 오늘 도착할 것입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-1.mp3) | PASS | Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review |
 
-| script 2 | キム | 会議の予定は午後に決まるはずです。 | 회의 예정은 오후에 정해질 것입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-2.mp3) | PENDING |  |
+| script 2 | キム | 会議の予定は午後に決まるはずです。 | 회의 예정은 오후에 정해질 것입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-2-regen-n4ch05-final-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
-| script 3 | 佐藤 | 準備はできそうですね。 | 준비는 될 것 같네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | 準備はもうすぐできそうですね。 | 준비는 곧 될 것 같네요. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-3-regen-n4ch05-final-rewrite-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | question 1 |  | 予約의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/question-1.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 | question 2 |  | 届く의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/question-2.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
-| question 3 |  | 席はある___です。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
+| question 3 |  | 席はまだある___です。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/question-3.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
 | question 4 |  | 資料も今日___はずです。 |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/question-4.mp3) | PASS | Delegated AI-assisted PASS: machine preflight passed and STT mismatch is attributable to mixed Japanese/Korean/cloze prompt; not native-speaker review. |
 
@@ -157,5 +157,6 @@ broad rollout until regenerated or explicitly waived.
 
 ## Result
 
-Human verdict is pending. This packet closes only the preparation step for
-representative full-chapter playback review.
+Delegated AI-assisted audio verdicts are complete: 45 PASS, 0 PENDING,
+0 FLAG, and 0 FAIL rows. Native-speaker review has not been performed;
+this packet records the machine/STT-assisted gate used for DRAFT CH05.

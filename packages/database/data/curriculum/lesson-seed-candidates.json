@@ -8254,8 +8254,8 @@
               {
                 "speaker": "先輩",
                 "voice_id": "japanese_female_1",
-                "text": "約束は守るものです。",
-                "translation": "약속은 지키는 법입니다."
+                "text": "学校の約束は最後まで守るものです。",
+                "translation": "학교의 약속은 끝까지 지키는 법입니다."
               },
               {
                 "speaker": "キム",
@@ -8334,7 +8334,7 @@
               "order": 3,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "約束は守る___です。",
+              "prompt": "学校の約束は最後まで守る___です。",
               "options": [
                 {
                   "id": "a",
@@ -8386,14 +8386,18 @@
               "order": 5,
               "type": "SENTENCE_REORDER",
               "cognitive_level": "산출유사",
-              "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
+              "prompt": "'학교의 약속은 끝까지 지키는 법입니다'를 배열하세요.",
               "tokens": [
+                "学校の",
                 "約束は",
+                "最後まで",
                 "守る",
                 "ものです"
               ],
               "correct_order": [
+                "学校の",
                 "約束は",
+                "最後まで",
                 "守る",
                 "ものです"
               ],
@@ -8464,8 +8468,8 @@
               {
                 "speaker": "キム",
                 "voice_id": "japanese_male_1",
-                "text": "予約したので、席はあるはずです。",
-                "translation": "예약했으니 자리는 있을 것입니다."
+                "text": "予約したので、席はまだあるはずです。",
+                "translation": "예약했으니 자리는 아직 있을 것입니다."
               },
               {
                 "speaker": "佐藤",
@@ -8482,8 +8486,8 @@
               {
                 "speaker": "佐藤",
                 "voice_id": "japanese_female_1",
-                "text": "準備はできそうですね。",
-                "translation": "준비는 될 것 같네요."
+                "text": "準備はもうすぐできそうですね。",
+                "translation": "준비는 곧 될 것 같네요."
               }
             ]
           },
@@ -8544,7 +8548,7 @@
               "order": 3,
               "type": "CONTEXT_CLOZE",
               "cognitive_level": "적용",
-              "prompt": "席はある___です。",
+              "prompt": "席はまだある___です。",
               "options": [
                 {
                   "id": "a",

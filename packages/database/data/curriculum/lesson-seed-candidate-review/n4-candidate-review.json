@@ -32,8 +32,8 @@
   "reviewRows": [
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-tari-tari-suru-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to remove premature そうだ exposure, vary answer positions, and strengthen distractors. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
+      "reviewerDecision": "PENDING",
+      "reviewerNotes": "",
       "candidateId": "lsc-n4-tari-tari-suru-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-017",
@@ -395,8 +395,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-souda-appearance-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to clarify 操作が簡単そうです, add appearance-vs-hearsay contrast, vary answer positions, and strengthen reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
+      "reviewerDecision": "PENDING",
+      "reviewerNotes": "",
       "candidateId": "lsc-n4-souda-appearance-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-018",
@@ -759,8 +759,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-souda-hearsay-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to add hearsay-vs-appearance contrast, vary answer positions, and strengthen だそうです reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
+      "reviewerDecision": "PENDING",
+      "reviewerNotes": "",
       "candidateId": "lsc-n4-souda-hearsay-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-019",
@@ -1130,8 +1130,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-mono-functions-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Edited before approval to remove literal 大切なもの drift, keep practice on normative ものだ, vary answer positions, and strengthen reorder. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
+      "reviewerDecision": "PENDING",
+      "reviewerNotes": "",
       "candidateId": "lsc-n4-mono-functions-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-020",
@@ -1219,9 +1219,9 @@
         {
           "exampleId": "ex-n4-mono-functions-001",
           "topicId": "topic-mono-functions",
-          "japanese": "約束は守るものです。",
-          "reading": "やくそくはまもるものです。",
-          "korean": "약속은 지키는 법입니다.",
+          "japanese": "学校の約束は最後まで守るものです。",
+          "reading": "がっこうのやくそくはさいごまでまもるものです。",
+          "korean": "학교의 약속은 끝까지 지키는 법입니다.",
           "sourceKind": "harukoto_authored",
           "originalityStatus": "authored_not_source_copied",
           "reviewStatus": "needs_review",
@@ -1248,8 +1248,8 @@
             "order": 1,
             "speaker": "先輩",
             "voiceId": "japanese_female_1",
-            "text": "約束は守るものです。",
-            "translationKo": "약속은 지키는 법입니다.",
+            "text": "学校の約束は最後まで守るものです。",
+            "translationKo": "학교의 약속은 끝까지 지키는 법입니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-020-script-1",
               "textSource": "lesson-seeds:HN4-020:script:1",
@@ -1381,7 +1381,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "約束は守る___です。",
+          "prompt": "学校の約束は最後まで守る___です。",
           "explanation": "일반적인 규범이나 당연한 일을 말할 때 〜ものです를 쓸 수 있습니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-020-question-3",
@@ -1451,7 +1451,7 @@
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
+          "prompt": "'학교의 약속은 끝까지 지키는 법입니다'를 배열하세요.",
           "explanation": "동사 기본형 守る 뒤에 ものです를 붙여 일반 규범을 나타냅니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-020-question-5",
@@ -1462,12 +1462,16 @@
             "preferredVoiceId": null
           },
           "tokens": [
+            "学校の",
             "約束は",
+            "最後まで",
             "守る",
             "ものです"
           ],
           "correctOrder": [
+            "学校の",
             "約束は",
+            "最後まで",
             "守る",
             "ものです"
           ]
@@ -1501,8 +1505,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-hazu-da-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI multi-pass curriculum review 2026-05-27: Japanese grammar/naturalness, Korean learner pedagogy, schema/TTS readiness checks completed. Stable content retained; answer positions and distractors adjusted before approval. Approved for candidate-to-official-seed planning only; not native-speaker human approval and not TTS/audio runtime approval.",
+      "reviewerDecision": "PENDING",
+      "reviewerNotes": "",
       "candidateId": "lsc-n4-hazu-da-001",
       "candidateStatus": "draft",
       "promotedLessonId": "HN4-021",
@@ -1590,9 +1594,9 @@
         {
           "exampleId": "ex-n4-hazu-da-001",
           "topicId": "topic-hazu-da",
-          "japanese": "予約したので、席はあるはずです。",
-          "reading": "よやくしたので、せきはあるはずです。",
-          "korean": "예약했으니 자리는 있을 것입니다.",
+          "japanese": "予約したので、席はまだあるはずです。",
+          "reading": "よやくしたので、せきはまだあるはずです。",
+          "korean": "예약했으니 자리는 아직 있을 것입니다.",
           "sourceKind": "harukoto_authored",
           "originalityStatus": "authored_not_source_copied",
           "reviewStatus": "needs_review",
@@ -1619,8 +1623,8 @@
             "order": 1,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "予約したので、席はあるはずです。",
-            "translationKo": "예약했으니 자리는 있을 것입니다.",
+            "text": "予約したので、席はまだあるはずです。",
+            "translationKo": "예약했으니 자리는 아직 있을 것입니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-021-script-1",
               "textSource": "lesson-seeds:HN4-021:script:1",
@@ -1664,8 +1668,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "準備はできそうですね。",
-            "translationKo": "준비는 될 것 같네요.",
+            "text": "準備はもうすぐできそうですね。",
+            "translationKo": "준비는 곧 될 것 같네요.",
             "ttsTarget": {
               "targetId": "tts-hn4-021-script-4",
               "textSource": "lesson-seeds:HN4-021:script:4",
@@ -1752,7 +1756,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "席はある___です。",
+          "prompt": "席はまだある___です。",
           "explanation": "근거를 바탕으로 당연히 그럴 것이라고 예상할 때 〜はずです를 씁니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-021-question-3",

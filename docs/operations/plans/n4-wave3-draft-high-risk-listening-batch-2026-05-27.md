@@ -21,7 +21,7 @@ row, and it does not replace native-speaker review.
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 8 |
+| Pending review-signal items | 0 |
 | High-risk listening batch | 0 |
 | P0 machine-warning rows | 0 |
 | Lexical-risk rows | 0 |
@@ -51,5 +51,7 @@ listening surface with audio controls. Neither file applies verdicts.
 
 ## Decision
 
-Broad/full N4 rollout remains blocked. This batch makes the first listening
-slice explicit but does not lower the audio-quality verdict gate.
+No high-risk listening rows remain in the CH05 packet. This batch does not
+replace native-speaker review; it records that the delegated
+machine/STT-assisted verdict gate has no remaining `PENDING`, `FLAG`, or
+`FAIL` rows.

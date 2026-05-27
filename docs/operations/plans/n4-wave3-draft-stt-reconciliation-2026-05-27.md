@@ -21,12 +21,12 @@ the current verdict gate. It does not set `PASS`, `FLAG`, `FAIL`, or
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 8 |
+| Pending review-signal items | 0 |
 | P0 machine-warning retained first | 0 |
-| P1 STT-only items | 8 |
+| P1 STT-only items | 0 |
 | Canonical text matches | 0 |
-| Near Japanese matches | 7 |
-| Mixed/Korean prompt STT-unreliable | 1 |
+| Near Japanese matches | 0 |
+| Mixed/Korean prompt STT-unreliable | 0 |
 | Lexical-risk Japanese mismatches | 0 |
 | Missing STT transcript | 0 |
 
@@ -57,15 +57,7 @@ columns only after direct listening or an explicitly delegated review step.
 
 ## NEAR_JAPANESE_MATCH
 
-| Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
-|---|---|---|---|---:|---|---|---|
-| NEAR_JAPANESE_MATCH | HN4-018 script:2 | 別の機械なら操作が簡単そうです。 | 別の機会なら操作が簡単そうです。 | 0.933 | TRANSCRIPTION_TEXT_MISMATCH:別の機会なら操作が簡単そうです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-019 script:0 | 明日の会議は三時から始まるそうです。 | 明日の会議は3時から始まるそうです。 | 0.944 | TRANSCRIPTION_TEXT_MISMATCH:明日の会議は3時から始まるそうです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-0.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-020 script:0 | 約束は守るものです。 | 約束は守るもの。 | 0.875 | TRANSCRIPTION_TEXT_MISMATCH:約束は守るもの。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-0.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-020 script:2 | 挨拶は普通、先にするものです。 | 挨拶は普通1000にするものです。 | 0.828 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:挨拶は普通1000にするものです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-2.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-021 script:0 | 予約したので、席はあるはずです。 | 予約したので昔はあるはずです。 | 0.929 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:予約したので昔はあるはずです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-0.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-021 script:2 | 会議の予定は午後に決まるはずです。 | 会議の予定は午後二時に決まるはずです。 | 0.914 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:会議の予定は午後二時に決まるはずです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-2.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-021 script:3 | 準備はできそうですね。 | 準備はできそうね | 0.889 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:準備はできそうね | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-3.mp3) |
+- None
 
 ## CANONICAL_MATCH
 
@@ -73,9 +65,7 @@ columns only after direct listening or an explicitly delegated review step.
 
 ## MIXED_PROMPT_STT_UNRELIABLE
 
-| Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
-|---|---|---|---|---:|---|---|---|
-| MIXED_PROMPT_STT_UNRELIABLE | HN4-019 question:4 | 들은 정보를 전달할 때 알맞은 표현은? | 聞いた情報を伝えるとき、適切な表現は | 0.000 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:聞いた情報を伝えるとき、適切な表現は | listen for learner-facing completeness; do not treat STT mismatch alone as a fail | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-4.mp3) |
+- None
 
 ## NO_STT_TRANSCRIPT
 
@@ -83,6 +73,7 @@ columns only after direct listening or an explicitly delegated review step.
 
 ## Decision
 
-Broad/full N4 rollout remains blocked. This triage only narrows the
-remaining 8 pending review-signal audio QA rows
-into review lanes and does not lower the verdict gate by itself.
+No pending STT reconciliation rows remain in the CH05 packet. This report
+does not replace native-speaker review; it records that the delegated
+machine/STT-assisted verdict gate has no remaining `PENDING`, `FLAG`, or
+`FAIL` rows.

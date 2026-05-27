@@ -6055,8 +6055,8 @@
             "order": 1,
             "speaker": "先輩",
             "voiceId": "japanese_female_1",
-            "text": "約束は守るものです。",
-            "translationKo": "약속은 지키는 법입니다.",
+            "text": "学校の約束は最後まで守るものです。",
+            "translationKo": "학교의 약속은 끝까지 지키는 법입니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-020-script-1",
               "textSource": "lesson-seeds:HN4-020:script:1",
@@ -6188,7 +6188,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "約束は守る___です。",
+          "prompt": "学校の約束は最後まで守る___です。",
           "explanation": "일반적인 규범이나 당연한 일을 말할 때 〜ものです를 쓸 수 있습니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-020-question-3",
@@ -6258,7 +6258,7 @@
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'약속은 지키는 법입니다'를 배열하세요.",
+          "prompt": "'학교의 약속은 끝까지 지키는 법입니다'를 배열하세요.",
           "explanation": "동사 기본형 守る 뒤에 ものです를 붙여 일반 규범을 나타냅니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-020-question-5",
@@ -6269,12 +6269,16 @@
             "preferredVoiceId": null
           },
           "tokens": [
+            "学校の",
             "約束は",
+            "最後まで",
             "守る",
             "ものです"
           ],
           "correctOrder": [
+            "学校の",
             "約束は",
+            "最後まで",
             "守る",
             "ものです"
           ]
@@ -6379,8 +6383,8 @@
             "order": 1,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "予約したので、席はあるはずです。",
-            "translationKo": "예약했으니 자리는 있을 것입니다.",
+            "text": "予約したので、席はまだあるはずです。",
+            "translationKo": "예약했으니 자리는 아직 있을 것입니다.",
             "ttsTarget": {
               "targetId": "tts-hn4-021-script-1",
               "textSource": "lesson-seeds:HN4-021:script:1",
@@ -6424,8 +6428,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "準備はできそうですね。",
-            "translationKo": "준비는 될 것 같네요.",
+            "text": "準備はもうすぐできそうですね。",
+            "translationKo": "준비는 곧 될 것 같네요.",
             "ttsTarget": {
               "targetId": "tts-hn4-021-script-4",
               "textSource": "lesson-seeds:HN4-021:script:4",
@@ -6512,7 +6516,7 @@
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "席はある___です。",
+          "prompt": "席はまだある___です。",
           "explanation": "근거를 바탕으로 당연히 그럴 것이라고 예상할 때 〜はずです를 씁니다.",
           "ttsTarget": {
             "targetId": "tts-hn4-021-question-3",
