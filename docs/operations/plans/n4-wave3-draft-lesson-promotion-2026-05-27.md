@@ -98,11 +98,32 @@ Detailed evidence:
   `docs/operations/plans/n4-wave3-draft-audio-qa-triage-2026-05-27.md`
 - source-cleanup post-regeneration audit:
   `docs/operations/plans/n4-wave3-draft-audio-qa-post-regeneration-audit-2026-05-27.md`
+- lexical-risk STT retry:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
+- lexical-risk first/second post-regeneration audits:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-post-regeneration-audit-2026-05-27.md`
+  and
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-second-post-regeneration-audit-2026-05-27.md`
+
+## Audio QA Gate Update
+
+Targeted lexical-risk remediation reduced the highest-risk script rows from
+three unresolved rows to one `PASS` and two explicit `FLAG` blockers:
+
+| Target | Current verdict | Evidence |
+| --- | --- | --- |
+| `HN4-017 script:1` | `PASS` | first lexical-risk regeneration produced STT exact match for `忙しいですね。` |
+| `HN4-018 script:0` | `FLAG` | second regeneration still produced `この機械は、壊れそう。`, missing the final `です` |
+| `HN4-019 script:3` | `FLAG` | second regeneration still produced a lexically divergent transcript |
+
+The current review queue therefore has 45 total rows, 41 `PENDING`, 2 `PASS`,
+and 2 `FLAG`. `N4-CH05` must remain `DRAFT` until the two `FLAG` rows and the
+remaining pending audio QA rows are resolved or explicitly waived.
 
 ## Next Gates
 
-1. Review the three lexical-risk script rows first, then decide whether
-   unchanged-source regeneration is needed.
+1. Resolve the two residual lexical-risk `FLAG` rows before any seed registry
+   promotion.
 2. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
    registry decision are complete.
 3. Keep native-speaker review as a later, explicit quality upgrade when a human

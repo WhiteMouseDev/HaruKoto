@@ -1,6 +1,6 @@
 # N4 Audio QA Review Queue
 
-> Status: REVIEW QUEUE - 44 pending rows remain
+> Status: REVIEW QUEUE - 2 FLAG blockers remain
 > Boundary: prioritization artifact only; does not approve rollout
 
 ASSUMPTION: This queue orders review work but does not replace listening,
@@ -12,15 +12,16 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- Quality signal report: `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
 
 ## Summary
 
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| PENDING | 44 |
-| PASS | 1 |
-| FLAG | 0 |
+| PENDING | 41 |
+| PASS | 2 |
+| FLAG | 2 |
 | FAIL | 0 |
 | WAIVED | 0 |
 | Review-signal items | 39 |
@@ -29,19 +30,20 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 ## P0 Review First
 
-- None
+| Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
+|---|---|---|---|---|---|---|---|
+| P0 verdict blocker | HN4-018 script:0 | この機械は壊れそうです。 | 이 기계는 고장 날 것 같습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0-regen-n4ch05-lexical2-20260527.mp3) | TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう。, TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう | FLAG | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
+| P0 verdict blocker | HN4-019 script:3 | 受付は混むそうですから、早く行きましょう。 | 접수는 붐빈다고 하니, 일찍 갑시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3-regen-n4ch05-lexical2-20260527.mp3) | TRANSCRIPTION_TEXT_MISMATCH:てくてはさおむそうですから早く行きましょう。, TRANSCRIPTION_TEXT_MISMATCH:てくてはさおむそうですから早く行きましょう | FLAG | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 
 ## P1 STT Mismatch Review
 
 | Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
 |---|---|---|---|---|---|---|---|
-| P1 STT mismatch | HN4-017 script:1 | 忙しいですね。 | 바쁘네요. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/script-line-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:忙しい | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-017 question:1 | 掃除의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:サウジ | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-017 question:2 | 洗濯의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:シータクエソン | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-017 question:3 | 掃除をし___、洗濯をし___します。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-3.mp3) | TRANSCRIPTION_TEXT_MISMATCH:掃除をし、なつじを、洗濯をし、にぞうをします。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-017 question:4 | 문맥상 '준비'에 해당하는 말은? 来週の___をしたりします。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-4.mp3) | TRANSCRIPTION_TEXT_MISMATCH:文脈さん準備に該当するマルは来週のあやをしたりします。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-017 question:5 | '청소를 하거나 빨래를 하거나 합니다'를 배열하세요. |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-5.mp3) | TRANSCRIPTION_TEXT_MISMATCH:チョンソをハゴナ、パレロハゴナ、ハムニダを配列ハセヨ。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
-| P1 STT mismatch | HN4-018 script:0 | この機械は壊れそうです。 | 이 기계는 고장 날 것 같습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0.mp3) | TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 script:2 | 別の機械なら操作が簡単そうです。 | 다른 기계라면 조작이 간단해 보입니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:別の機会なら操作が簡単そうです。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:1 | 機械의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:チゲを釣る | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:2 | 無理의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ウリエトシン | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
@@ -49,7 +51,6 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 | P1 STT mismatch | HN4-018 question:4 | 눈앞의 상태를 보고 추측할 때 알맞은 표현은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-4.mp3) | TRANSCRIPTION_TEXT_MISMATCH:目の前の状態を見て推測するとき、알맞은 표현은 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:5 | '이 기계는 고장 날 것 같습니다'를 배열하세요. |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-5.mp3) | TRANSCRIPTION_TEXT_MISMATCH:この機械は故障しそうですを配列してください | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-019 script:0 | 明日の会議は三時から始まるそうです。 | 내일 회의는 세 시부터 시작한다고 합니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-0.mp3) | TRANSCRIPTION_TEXT_MISMATCH:明日の会議は3時から始まるそうです。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
-| P1 STT mismatch | HN4-019 script:3 | 受付は混むそうですから、早く行きましょう。 | 접수는 붐빈다고 하니, 일찍 갑시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3.mp3) | TRANSCRIPTION_TEXT_MISMATCH:てくてはさおむそうですから早く行きましょう。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-019 question:1 | 予定의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ゆていえいえん | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-019 question:2 | 受付의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ドプロエトン | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-019 question:3 | 会議は三時から始まる___です。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-3.mp3) | TRANSCRIPTION_TEXT_MISMATCH:会議は3時から始まるです。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
@@ -89,12 +90,12 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 | Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
 |---|---|---|---|---|---|---|---|
+| P3 resolved | HN4-017 script:1 | 忙しいですね。 | 바쁘네요. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/script-line-1-regen-n4ch05-lexical-20260527.mp3) | TRANSCRIPTION_TEXT_MISMATCH:忙しい | PASS | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P3 resolved | HN4-018 script:3 | この操作は大変そうです。早めに相談しましょう。 | 이 조작은 힘들어 보입니다. 일찍 상담합시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3-regen-n4ch05-cleanup-20260527.mp3) | TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。 | PASS | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 
 ## Decision
 
-Use this queue to review P0 machine/verdict blocker rows first, then P1
-STT mismatch rows, then remaining pending packet rows. STT mismatches are
-review-priority signals, not automatic audio-fail verdicts. Broad/full N4
-rollout remains blocked until the packet verdict tracker has no `PENDING`,
-`FLAG`, `FAIL`, or invalid verdict values.
+Use this queue to clear the 2 P0 verdict blocker rows first.
+STT mismatches are review-priority signals, not automatic audio-fail
+verdicts. Broad/full N4 rollout remains blocked until the packet verdict
+tracker has no `PENDING`, `FLAG`, `FAIL`, or invalid verdict values.

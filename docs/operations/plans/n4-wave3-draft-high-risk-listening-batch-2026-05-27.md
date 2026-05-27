@@ -13,16 +13,17 @@ row, and it does not replace native-speaker review.
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- Quality signal report: `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
 
 ## Summary
 
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 38 |
-| High-risk listening batch | 3 |
+| Pending review-signal items | 35 |
+| High-risk listening batch | 0 |
 | P0 machine-warning rows | 0 |
-| Lexical-risk rows | 3 |
+| Lexical-risk rows | 0 |
 
 ## Review Sequence
 
@@ -40,11 +41,7 @@ row, and it does not replace native-speaker review.
 
 ## LEXICAL_RISK
 
-| Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
-|---|---|---|---|---:|---|---|---|
-| LEXICAL_RISK | HN4-017 script:1 | 忙しいですね。 | 忙しい | 0.667 | TRANSCRIPTION_TEXT_MISMATCH:忙しい | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/script-line-1.mp3) |
-| LEXICAL_RISK | HN4-018 script:0 | この機械は壊れそうです。 | この議会は壊れそう。 | 0.700 | TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう。 | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0.mp3) |
-| LEXICAL_RISK | HN4-019 script:3 | 受付は混むそうですから、早く行きましょう。 | てくてはさおむそうですから早く行きましょう。 | 0.800 | TRANSCRIPTION_TEXT_MISMATCH:てくてはさおむそうですから早く行きましょう。 | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3.mp3) |
+- None
 
 ## CSV And HTML Use
 

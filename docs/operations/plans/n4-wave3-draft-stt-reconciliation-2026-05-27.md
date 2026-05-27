@@ -13,19 +13,20 @@ the current verdict gate. It does not set `PASS`, `FLAG`, `FAIL`, or
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
 - Quality signal report: `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- Quality signal report: `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
 
 ## Summary
 
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 38 |
+| Pending review-signal items | 35 |
 | P0 machine-warning retained first | 0 |
-| P1 STT-only items | 33 |
+| P1 STT-only items | 30 |
 | Canonical text matches | 0 |
 | Near Japanese matches | 6 |
 | Mixed/Korean prompt STT-unreliable | 24 |
-| Lexical-risk Japanese mismatches | 3 |
+| Lexical-risk Japanese mismatches | 0 |
 | Missing STT transcript | 5 |
 
 ## Review Order
@@ -51,11 +52,7 @@ columns only after direct listening or an explicitly delegated review step.
 
 ## LEXICAL_RISK
 
-| Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
-|---|---|---|---|---:|---|---|---|
-| LEXICAL_RISK | HN4-017 script:1 | 忙しいですね。 | 忙しい | 0.667 | TRANSCRIPTION_TEXT_MISMATCH:忙しい | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/script-line-1.mp3) |
-| LEXICAL_RISK | HN4-018 script:0 | この機械は壊れそうです。 | この議会は壊れそう。 | 0.700 | TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう。 | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0.mp3) |
-| LEXICAL_RISK | HN4-019 script:3 | 受付は混むそうですから、早く行きましょう。 | てくてはさおむそうですから早く行きましょう。 | 0.800 | TRANSCRIPTION_TEXT_MISMATCH:てくてはさおむそうですから早く行きましょう。 | listen carefully before PASS; prefer FLAG when the source text is not clearly spoken | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3.mp3) |
+- None
 
 ## NEAR_JAPANESE_MATCH
 
@@ -114,5 +111,5 @@ columns only after direct listening or an explicitly delegated review step.
 ## Decision
 
 Broad/full N4 rollout remains blocked. This triage only narrows the
-remaining 38 pending review-signal audio QA rows
+remaining 35 pending review-signal audio QA rows
 into review lanes and does not lower the verdict gate by itself.

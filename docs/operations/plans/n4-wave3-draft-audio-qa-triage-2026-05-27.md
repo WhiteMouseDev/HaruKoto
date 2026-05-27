@@ -15,6 +15,8 @@
   `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
 - timeout-target STT retry:
   `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- lexical-risk STT retry:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
 - review queue:
   `docs/operations/plans/n4-wave3-draft-audio-qa-review-queue-2026-05-27.md`
 - STT reconciliation:
@@ -23,6 +25,10 @@
   `docs/operations/plans/n4-wave3-draft-high-risk-listening-batch-2026-05-27.md`
 - source-cleanup post-regeneration audit:
   `docs/operations/plans/n4-wave3-draft-audio-qa-post-regeneration-audit-2026-05-27.md`
+- lexical-risk post-regeneration audit:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-post-regeneration-audit-2026-05-27.md`
+- lexical-risk second post-regeneration audit:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-second-post-regeneration-audit-2026-05-27.md`
 
 ## Result
 
@@ -44,26 +50,50 @@ The first STT assist run had 18 timeout rows. A targeted retry using
 | STT mismatches | 21 | 13 |
 | STT errors | 18 | 1 |
 
-After combining the first run and retry, then applying the `HN4-018 script:3`
-source cleanup and post-regeneration PASS:
+After combining the first run and retry, applying the `HN4-018 script:3`
+source cleanup, and running targeted regeneration for the three lexical-risk
+script rows:
 
 | Bucket | Count | Decision |
 |---|---:|---|
 | `P0_MACHINE_WARNING` | 0 | no machine-warning blocker |
-| `LEXICAL_RISK` | 3 | review first; regenerate unchanged source only if playback is unclear/wrong |
+| `LEXICAL_RISK` | 0 | all lexical-risk pending rows were either cleared or converted to explicit FLAG |
 | `NEAR_JAPANESE_MATCH` | 6 | lower-risk spot-listen lane |
 | `MIXED_PROMPT_STT_UNRELIABLE` | 24 | do not treat mismatch alone as audio fail |
-| `NO_STT_TRANSCRIPT` | 1 | one remaining timeout prompt |
+| `NO_STT_TRANSCRIPT` | 5 | timeout-only rows remain review signals |
 
-## High-Risk Rows
+Current packet verdict summary:
 
-These are the first rows to inspect before clearing the CH05 audio gate:
+| Verdict | Count |
+|---|---:|
+| `PENDING` | 41 |
+| `PASS` | 2 |
+| `FLAG` | 2 |
+| `FAIL` | 0 |
+| `WAIVED` | 0 |
 
-| Target | Source text | STT signal | Recommended next action |
+## Lexical-Risk Remediation
+
+The three original lexical-risk rows were retried with STT before regeneration.
+All three still produced mismatch signals, so they were regenerated with the
+same source text instead of changing the lesson content.
+
+| Step | Scope | Machine pass | STT exact | PASS | FLAG |
+|---|---:|---:|---:|---:|---:|
+| first lexical-risk regeneration | 3 rows | 3 | 1 | 1 | 2 |
+| second lexical-risk regeneration | 2 residual rows | 2 | 0 | 0 | 2 |
+
+Resolved:
+
+- `HN4-017 script:1` is now `PASS` after regenerated STT matched
+  `忙しいですね。`
+
+Residual blockers:
+
+| Target | Source text | Latest STT signal | Decision |
 |---|---|---|---|
-| `HN4-017 script:1` | `忙しいですね。` | `忙しい` | listen for the final `ですね`; regenerate unchanged source only if clipped |
-| `HN4-018 script:0` | `この機械は壊れそうです。` | `この議会は壊れそう。` | listen for `機械`; likely STT homophone noise unless playback confirms wrong word |
-| `HN4-019 script:3` | `受付は混むそうですから、早く行きましょう。` | `てくてはさおむそうですから早く行きましょう。` | listen carefully; regenerate unchanged source if intelligibility is poor |
+| `HN4-018 script:0` | `この機械は壊れそうです。` | `この機械は、壊れそう。` | keep `FLAG`; the final `です` is still absent in STT after the second regeneration |
+| `HN4-019 script:3` | `受付は混むそうですから、早く行きましょう。` | `てこれまではタコむそうでしたから、早く行きましょう。` | keep `FLAG`; the lexical transcript remains too divergent after the second regeneration |
 
 ## Source Cleanup Decision
 
@@ -91,8 +121,11 @@ Post-regeneration evidence for `HN4-018 script:3`:
 
 Do not promote `N4-CH05` to `PILOT` yet.
 
-The next implementation slice should keep source unchanged and regenerate only
-confirmed high-risk script rows after a delegated listening/QA decision.
+The next implementation slice should resolve the two residual `FLAG` rows
+before seed registry promotion. Options are another targeted TTS generation
+strategy, source-level audio prompt adjustment that preserves the learning
+sentence, or an explicit owner waiver if playback is judged acceptable despite
+STT mismatch.
 
 Mixed Korean/Japanese question prompt mismatches should remain review signals,
 not automatic regeneration triggers.
