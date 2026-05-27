@@ -21,6 +21,8 @@
   `docs/operations/plans/n4-wave3-draft-stt-reconciliation-2026-05-27.md`
 - high-risk listening batch:
   `docs/operations/plans/n4-wave3-draft-high-risk-listening-batch-2026-05-27.md`
+- source-cleanup post-regeneration audit:
+  `docs/operations/plans/n4-wave3-draft-audio-qa-post-regeneration-audit-2026-05-27.md`
 
 ## Result
 
@@ -42,13 +44,14 @@ The first STT assist run had 18 timeout rows. A targeted retry using
 | STT mismatches | 21 | 13 |
 | STT errors | 18 | 1 |
 
-After combining the first run and retry:
+After combining the first run and retry, then applying the `HN4-018 script:3`
+source cleanup and post-regeneration PASS:
 
 | Bucket | Count | Decision |
 |---|---:|---|
 | `P0_MACHINE_WARNING` | 0 | no machine-warning blocker |
 | `LEXICAL_RISK` | 3 | review first; regenerate unchanged source only if playback is unclear/wrong |
-| `NEAR_JAPANESE_MATCH` | 7 | lower-risk spot-listen lane |
+| `NEAR_JAPANESE_MATCH` | 6 | lower-risk spot-listen lane |
 | `MIXED_PROMPT_STT_UNRELIABLE` | 24 | do not treat mismatch alone as audio fail |
 | `NO_STT_TRANSCRIPT` | 1 | one remaining timeout prompt |
 
@@ -62,35 +65,34 @@ These are the first rows to inspect before clearing the CH05 audio gate:
 | `HN4-018 script:0` | `この機械は壊れそうです。` | `この議会は壊れそう。` | listen for `機械`; likely STT homophone noise unless playback confirms wrong word |
 | `HN4-019 script:3` | `受付は混むそうですから、早く行きましょう。` | `てくてはさおむそうですから早く行きましょう。` | listen carefully; regenerate unchanged source if intelligibility is poor |
 
-## Source Rewrite Decision
+## Source Cleanup Decision
 
 Parallel AI review found no must-fix source rewrite before regeneration.
 
-One optional cleanup remains for `HN4-018 script:3`:
+The optional cleanup for `HN4-018 script:3` was applied:
 
-- current:
+- old:
   `田中さんも大変そうです。早めに相談しましょう。`
-- possible replacement:
+- new:
   `この操作は大変そうです。早めに相談しましょう。`
 - reason:
-  `田中さん` is not introduced in the short dialogue and also produced an STT
-  near-match signal. The current line is still grammatically valid and keeps
-  `大変そうです`, so this is a clarity/stability improvement, not a blocker.
+  `田中さん` was not introduced in the short dialogue and also produced an STT
+  near-match signal. The replacement keeps the lesson target `大変そうです`
+  while staying anchored to the machine-operation context.
 
-This triage does not rewrite source text. If the optional cleanup is accepted,
-update the lesson source, review snapshots, TTS manifest copies, seed the DB,
-regenerate `HN4-018 script:3`, then rebuild the CH05 packet and STT reports.
+Post-regeneration evidence for `HN4-018 script:3`:
+
+- machine pass: 1/1
+- STT exact match: 1/1
+- recommended verdict: `PASS`
+- boundary: delegated AI/STT QA only; not native-speaker review
 
 ## Decision
 
 Do not promote `N4-CH05` to `PILOT` yet.
 
-The next implementation slice should either:
-
-1. apply the optional `HN4-018 script:3` source cleanup and regenerate that row,
-   or
-2. keep source unchanged and regenerate only confirmed high-risk script rows
-   after a delegated listening/QA decision.
+The next implementation slice should keep source unchanged and regenerate only
+confirmed high-risk script rows after a delegated listening/QA decision.
 
 Mixed Korean/Japanese question prompt mismatches should remain review signals,
 not automatic regeneration triggers.

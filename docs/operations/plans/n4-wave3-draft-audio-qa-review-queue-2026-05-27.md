@@ -1,6 +1,6 @@
 # N4 Audio QA Review Queue
 
-> Status: REVIEW QUEUE - 45 pending rows remain
+> Status: REVIEW QUEUE - 44 pending rows remain
 > Boundary: prioritization artifact only; does not approve rollout
 
 ASSUMPTION: This queue orders review work but does not replace listening,
@@ -18,8 +18,8 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| PENDING | 45 |
-| PASS | 0 |
+| PENDING | 44 |
+| PASS | 1 |
 | FLAG | 0 |
 | FAIL | 0 |
 | WAIVED | 0 |
@@ -43,7 +43,6 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 | P1 STT mismatch | HN4-017 question:5 | '청소를 하거나 빨래를 하거나 합니다'를 배열하세요. |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/c66e28bc-0e77-4989-83d4-148611906230/question-5.mp3) | TRANSCRIPTION_TEXT_MISMATCH:チョンソをハゴナ、パレロハゴナ、ハムニダを配列ハセヨ。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 script:0 | この機械は壊れそうです。 | 이 기계는 고장 날 것 같습니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0.mp3) | TRANSCRIPTION_TEXT_MISMATCH:この議会は壊れそう。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 script:2 | 別の機械なら操作が簡単そうです。 | 다른 기계라면 조작이 간단해 보입니다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:別の機会なら操作が簡単そうです。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
-| P1 STT mismatch | HN4-018 script:3 | 田中さんも大変そうです。早めに相談しましょう。 | 다나카 씨도 힘들어 보입니다. 일찍 상담합시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3.mp3) | TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。 | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:1 | 機械의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-1.mp3) | TRANSCRIPTION_TEXT_MISMATCH:チゲを釣る | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:2 | 無理의 뜻은? |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-2.mp3) | TRANSCRIPTION_TEXT_MISMATCH:ウリエトシン | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 | P1 STT mismatch | HN4-018 question:3 | この機械は壊れ___です。 |  | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-3.mp3) | TRANSCRIPTION_TEXT_MISMATCH:この機械は壊れいつかです | PENDING | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
@@ -88,7 +87,9 @@ native-speaker review, or explicit `PASS` / `FLAG` / `FAIL` verdicts.
 
 ## P3 Resolved Or Waived
 
-- None
+| Priority | Target | Japanese text | Korean/context | Audio | Review signals | Verdict | Packet |
+|---|---|---|---|---|---|---|---|
+| P3 resolved | HN4-018 script:3 | この操作は大変そうです。早めに相談しましょう。 | 이 조작은 힘들어 보입니다. 일찍 상담합시다. | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3-regen-n4ch05-cleanup-20260527.mp3) | TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。 | PASS | `docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md` |
 
 ## Decision
 

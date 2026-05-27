@@ -37,10 +37,10 @@
   </header>
   <section class="summary" aria-label="Summary">
     <div class="metric">Total review items<strong>45</strong></div>
-    <div class="metric">Pending<strong>45</strong></div>
+    <div class="metric">Pending<strong>44</strong></div>
     <div class="metric">Machine warnings<strong>0</strong></div>
     <div class="metric">STT mismatches<strong>34</strong></div>
-    <div class="metric">Pass / Flag / Fail<strong>0 / 0 / 0</strong></div>
+    <div class="metric">Pass / Flag / Fail<strong>1 / 0 / 0</strong></div>
   </section>
   <section>
     <h2>Sources</h2>
@@ -169,21 +169,6 @@
   <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3"></audio>
   <dl class="qa-card__details">
     <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:別の機会なら操作が簡単そうです。</dd>
-    <dt>Packet</dt><dd>docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md</dd>
-    <dt>Notes</dt><dd></dd>
-  </dl>
-</article>
-<article class="qa-card p1">
-  <div class="qa-card__meta">
-    <span>P1 STT mismatch</span>
-    <span>HN4-018 script:3</span>
-    <span>PENDING</span>
-  </div>
-  <h3>田中さんも大変そうです。早めに相談しましょう。</h3>
-  <p>다나카 씨도 힘들어 보입니다. 일찍 상담합시다.</p>
-  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3.mp3"></audio>
-  <dl class="qa-card__details">
-    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。</dd>
     <dt>Packet</dt><dd>docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md</dd>
     <dt>Notes</dt><dd></dd>
   </dl>
@@ -732,7 +717,21 @@
 </article>
 </section>
 <section><h2>P3 Resolved Or Waived</h2>
-<p class="empty">No items.</p>
+<article class="qa-card p3">
+  <div class="qa-card__meta">
+    <span>P3 resolved</span>
+    <span>HN4-018 script:3</span>
+    <span>PASS</span>
+  </div>
+  <h3>この操作は大変そうです。早めに相談しましょう。</h3>
+  <p>이 조작은 힘들어 보입니다. 일찍 상담합시다.</p>
+  <audio controls preload="none" src="https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3-regen-n4ch05-cleanup-20260527.mp3"></audio>
+  <dl class="qa-card__details">
+    <dt>Signals</dt><dd>TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。</dd>
+    <dt>Packet</dt><dd>docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md</dd>
+    <dt>Notes</dt><dd>Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review.</dd>
+  </dl>
+</article>
 </section>
 </main>
 </body>

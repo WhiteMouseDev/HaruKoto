@@ -19,7 +19,7 @@ row, and it does not replace native-speaker review.
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 39 |
+| Pending review-signal items | 38 |
 | High-risk listening batch | 3 |
 | P0 machine-warning rows | 0 |
 | Lexical-risk rows | 3 |

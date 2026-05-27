@@ -99,6 +99,21 @@ def test_build_regeneration_plan_can_extract_pending_rows(tmp_path: Path) -> Non
     assert item.recommended_action == "regenerate audio, then STT audit before setting PASS or FLAG"
 
 
+def test_build_regeneration_plan_filters_target_keys(tmp_path: Path) -> None:
+    packet = _write_packet(tmp_path / "packet.md")
+    signal_report = _write_signal_report(tmp_path / "signals.md")
+
+    plan = build_regeneration_plan(
+        packet_paths=[packet],
+        machine_report_paths=[signal_report],
+        source_verdicts={"PENDING"},
+        target_keys={"HN4-001 script:1"},
+    )
+
+    assert len(plan.items) == 1
+    assert plan.items[0].target_key == "HN4-001 script:1"
+
+
 def test_render_markdown_keeps_regeneration_boundary_explicit(tmp_path: Path) -> None:
     packet = _write_packet(tmp_path / "packet.md")
     signal_report = _write_signal_report(tmp_path / "signals.md")

@@ -19,11 +19,11 @@ the current verdict gate. It does not set `PASS`, `FLAG`, `FAIL`, or
 | Metric | Count |
 |---|---:|
 | Total review items | 45 |
-| Pending review-signal items | 39 |
+| Pending review-signal items | 38 |
 | P0 machine-warning retained first | 0 |
-| P1 STT-only items | 34 |
+| P1 STT-only items | 33 |
 | Canonical text matches | 0 |
-| Near Japanese matches | 7 |
+| Near Japanese matches | 6 |
 | Mixed/Korean prompt STT-unreliable | 24 |
 | Lexical-risk Japanese mismatches | 3 |
 | Missing STT transcript | 5 |
@@ -62,7 +62,6 @@ columns only after direct listening or an explicitly delegated review step.
 | Bucket | Target | Source text | STT transcript | Similarity | Signals | Recommended action | Audio |
 |---|---|---|---|---:|---|---|---|
 | NEAR_JAPANESE_MATCH | HN4-018 script:2 | 別の機械なら操作が簡単そうです。 | 別の機会なら操作が簡単そうです。 | 0.933 | TRANSCRIPTION_TEXT_MISMATCH:別の機会なら操作が簡単そうです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) |
-| NEAR_JAPANESE_MATCH | HN4-018 script:3 | 田中さんも大変そうです。早めに相談しましょう。 | てんたかさんも大変そうですね。早めに相談しましょう。 | 0.844 | TRANSCRIPTION_TEXT_MISMATCH:てんたかさんも大変そうですね。早めに相談しましょう。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3.mp3) |
 | NEAR_JAPANESE_MATCH | HN4-019 script:0 | 明日の会議は三時から始まるそうです。 | 明日の会議は3時から始まるそうです。 | 0.944 | TRANSCRIPTION_TEXT_MISMATCH:明日の会議は3時から始まるそうです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-0.mp3) |
 | NEAR_JAPANESE_MATCH | HN4-020 script:0 | 約束は守るものです。 | 約束は守るもの。 | 0.875 | TRANSCRIPTION_TEXT_MISMATCH:約束は守るもの。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/8d0b1638-2521-4556-964f-29023d1dbcef/script-line-0.mp3) |
 | NEAR_JAPANESE_MATCH | HN4-021 script:0 | 予約したので、席はあるはずです。 | 予約したので昔はあるはずです。 | 0.929 | TRANSCRIPTION_FAILED:TimeoutError:, TRANSCRIPTION_TEXT_MISMATCH:予約したので昔はあるはずです。 | listen once before PASS; set FLAG if the spoken sentence follows the transcript rather than the source | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/92a62f1e-1a2f-4b54-897f-50ce13c2696a/script-line-0.mp3) |
@@ -115,5 +114,5 @@ columns only after direct listening or an explicitly delegated review step.
 ## Decision
 
 Broad/full N4 rollout remains blocked. This triage only narrows the
-remaining 39 pending review-signal audio QA rows
+remaining 38 pending review-signal audio QA rows
 into review lanes and does not lower the verdict gate by itself.

@@ -33,7 +33,7 @@ broad rollout until regenerated or explicitly waived.
 
 | Metric | Result |
 |---|---:|
-| Generated at | `2026-05-27T02:11:09.152474+00:00` |
+| Generated at | `2026-05-27T02:36:15.535057+00:00` |
 | Lessons | 5 |
 | Script-line targets | 20 |
 | Question-prompt targets | 25 |
@@ -75,7 +75,7 @@ broad rollout until regenerated or explicitly waived.
 
 | script 2 | キム | 別の機械なら操作が簡単そうです。 | 다른 기계라면 조작이 간단해 보입니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-2.mp3) | PENDING |  |
 
-| script 3 | 佐藤 | 田中さんも大変そうです。早めに相談しましょう。 | 다나카 씨도 힘들어 보입니다. 일찍 상담합시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3.mp3) | PENDING |  |
+| script 3 | 佐藤 | この操作は大変そうです。早めに相談しましょう。 | 이 조작은 힘들어 보입니다. 일찍 상담합시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-3-regen-n4ch05-cleanup-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | question 1 |  | 機械의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/question-1.mp3) | PENDING |  |
 

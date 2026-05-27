@@ -5452,8 +5452,8 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "田中さんも大変そうです。早めに相談しましょう。",
-            "translationKo": "다나카 씨도 힘들어 보입니다. 일찍 상담합시다.",
+            "text": "この操作は大変そうです。早めに相談しましょう。",
+            "translationKo": "이 조작은 힘들어 보입니다. 일찍 상담합시다.",
             "ttsTarget": {
               "targetId": "tts-hn4-018-script-4",
               "textSource": "lesson-seeds:HN4-018:script:4",
