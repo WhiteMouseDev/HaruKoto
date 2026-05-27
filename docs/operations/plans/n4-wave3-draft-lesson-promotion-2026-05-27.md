@@ -77,11 +77,27 @@ Run the package gates after the promotion:
 | `pnpm --filter @harukoto/database typecheck` | PASS |
 | API TTS focused tests | PASS |
 
+## TTS Execution Update
+
+2026-05-27 follow-up execution generated and persisted TTS audio for
+`HN4-017` through `HN4-021` after seeding the DRAFT chapter into the API DB.
+Coverage and audio URL checks now cover all 21 N4 lessons when unpublished
+DRAFT lessons are explicitly included.
+
+Detailed evidence:
+
+- generation/coverage summary:
+  `docs/operations/plans/n4-wave3-draft-tts-run-2026-05-27.md`
+- machine audio QA:
+  `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
+- STT-assisted review signal:
+  `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
+
 ## Next Gates
 
-1. Generate and persist TTS audio for `HN4-017` through `HN4-021`.
-2. Run delegated AI/STT audio QA, then record PASS/FLAG/FAIL evidence.
-3. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
+1. Triage the STT-assisted timeout/mismatch signals and decide whether direct
+   listening, source rewrite, or regeneration is needed for any row.
+2. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
    registry decision are complete.
-4. Keep native-speaker review as a later, explicit quality upgrade when a human
+3. Keep native-speaker review as a later, explicit quality upgrade when a human
    reviewer becomes available.

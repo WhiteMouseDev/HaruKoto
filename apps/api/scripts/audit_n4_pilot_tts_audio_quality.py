@@ -466,6 +466,7 @@ async def build_report(
     run_transcription: bool = False,
     block_on_transcription_mismatch: bool = False,
     transcriber: AudioTranscriber | None = None,
+    transcription_timeout_seconds: float | None = None,
 ) -> AudioQaReport:
     engine.echo = False
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
@@ -501,7 +502,14 @@ async def build_report(
                         error = f"{exc.__class__.__name__}: {exc}"
                     if error is None and run_transcription and transcriber is not None and audio_bytes is not None:
                         try:
-                            transcript = await transcriber(audio_bytes, content_type or "audio/mpeg")
+                            transcription_task = transcriber(audio_bytes, content_type or "audio/mpeg")
+                            if transcription_timeout_seconds is None:
+                                transcript = await transcription_task
+                            else:
+                                transcript = await asyncio.wait_for(
+                                    transcription_task,
+                                    timeout=transcription_timeout_seconds,
+                                )
                             transcription = build_transcription_probe(target=target, transcript=transcript)
                         except Exception as exc:
                             transcription_error = f"{exc.__class__.__name__}: {exc}"
@@ -679,7 +687,7 @@ def render_markdown_report(*, report: AudioQaReport, command: str | None = None,
 
     lines.extend(["", "## Decision", ""])
     if report.blocked_count:
-        lines.append("BLOCK: resolve blockers before considering broader rollout.")
+        lines.append("BLOCK: resolve machine/STT blockers before considering broader rollout.")
     elif report.transcription_mismatch_count:
         lines.append("REVIEW: inspect STT mismatches before recording final audio verdicts.")
     elif report.warning_count:
@@ -714,6 +722,9 @@ def _command_string(args: argparse.Namespace) -> str:
         parts.extend(["--timeout-seconds", str(args.timeout_seconds)])
     if args.transcribe:
         parts.append("--transcribe")
+        transcription_timeout_seconds = getattr(args, "transcription_timeout_seconds", None)
+        if transcription_timeout_seconds is not None:
+            parts.extend(["--transcription-timeout-seconds", str(transcription_timeout_seconds)])
     if args.block_on_transcription_mismatch:
         parts.append("--block-on-transcription-mismatch")
     if args.json:
@@ -738,6 +749,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-silence-check", action="store_true", help="Skip ffmpeg silencedetect pass")
     parser.add_argument("--timeout-seconds", type=float, default=15.0, help="HTTP download timeout")
     parser.add_argument("--transcribe", action="store_true", help="Run AI STT and compare transcripts with source text")
+    parser.add_argument(
+        "--transcription-timeout-seconds",
+        type=float,
+        default=30.0,
+        help="Per-target timeout for AI STT calls. Only used with --transcribe.",
+    )
     parser.add_argument(
         "--block-on-transcription-mismatch",
         action="store_true",
@@ -774,6 +791,7 @@ async def main() -> None:
         timeout_seconds=args.timeout_seconds,
         run_transcription=args.transcribe,
         block_on_transcription_mismatch=args.block_on_transcription_mismatch,
+        transcription_timeout_seconds=args.transcription_timeout_seconds if args.transcribe else None,
     )
     if args.json:
         print(json.dumps(asdict(report), ensure_ascii=False, indent=2))
