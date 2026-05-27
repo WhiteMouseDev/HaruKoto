@@ -5407,8 +5407,8 @@
             "order": 1,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "この機械は壊れそうです。",
-            "translationKo": "이 기계는 고장 날 것 같습니다.",
+            "text": "この古い機械は壊れそうですから、会議では使わないでください。",
+            "translationKo": "이 오래된 기계는 고장 날 것 같으니, 회의에서는 쓰지 말아 주세요.",
             "ttsTarget": {
               "targetId": "tts-hn4-018-script-1",
               "textSource": "lesson-seeds:HN4-018:script:1",

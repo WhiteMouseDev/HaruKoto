@@ -29,6 +29,12 @@
   `docs/operations/plans/n4-wave3-draft-lexical-risk-post-regeneration-audit-2026-05-27.md`
 - lexical-risk second post-regeneration audit:
   `docs/operations/plans/n4-wave3-draft-lexical-risk-second-post-regeneration-audit-2026-05-27.md`
+- lexical-risk provider-switch post-regeneration audit:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-provider-switch-post-regeneration-audit-2026-05-27.md`
+- lexical-risk source-rewrite post-regeneration audits:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-post-regeneration-audit-2026-05-27.md`
+  and
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-second-post-regeneration-audit-2026-05-27.md`
 
 ## Result
 
@@ -67,8 +73,8 @@ Current packet verdict summary:
 | Verdict | Count |
 |---|---:|
 | `PENDING` | 41 |
-| `PASS` | 2 |
-| `FLAG` | 2 |
+| `PASS` | 4 |
+| `FLAG` | 0 |
 | `FAIL` | 0 |
 | `WAIVED` | 0 |
 
@@ -82,18 +88,38 @@ same source text instead of changing the lesson content.
 |---|---:|---:|---:|---:|---:|
 | first lexical-risk regeneration | 3 rows | 3 | 1 | 1 | 2 |
 | second lexical-risk regeneration | 2 residual rows | 2 | 0 | 0 | 2 |
+| provider-switch regeneration | 2 residual rows | 2 | 1 | 1 | 1 |
+| source-rewrite first regeneration | 1 residual row | 1 | 0 | 0 | 1 |
+| source-rewrite second regeneration | 1 residual row | 1 | 1 | 1 | 0 |
 
 Resolved:
 
 - `HN4-017 script:1` is now `PASS` after regenerated STT matched
   `忙しいですね。`
+- `HN4-019 script:3` is now `PASS` after Gemini provider-switch audio matched
+  `受付は混むそうですから、早く行きましょう。`
+- `HN4-018 script:0` is now `PASS` after source rewrite and regenerated STT
+  matched `この古い機械は壊れそうですから、会議では使わないでください。`
 
 Residual blockers:
 
-| Target | Source text | Latest STT signal | Decision |
-|---|---|---|---|
-| `HN4-018 script:0` | `この機械は壊れそうです。` | `この機械は、壊れそう。` | keep `FLAG`; the final `です` is still absent in STT after the second regeneration |
-| `HN4-019 script:3` | `受付は混むそうですから、早く行きましょう。` | `てこれまではタコむそうでしたから、早く行きましょう。` | keep `FLAG`; the lexical transcript remains too divergent after the second regeneration |
+- None. Lexical-risk `FLAG` blockers are cleared in the packet.
+
+## Source Rewrite Decision
+
+`HN4-018 script:0` repeatedly lost the sentence-final `です` in STT on shorter
+variants, including after a Gemini provider-switch regeneration. A longer
+sentence was selected because it preserves the target `壊れそうです` and keeps
+the meeting-room machine context:
+
+- old:
+  `この機械は壊れそうです。`
+- rejected intermediate:
+  `この古い機械は壊れそうですね。`
+- final:
+  `この古い機械は壊れそうですから、会議では使わないでください。`
+
+This is still delegated AI/STT evidence, not native-speaker approval.
 
 ## Source Cleanup Decision
 
@@ -121,11 +147,9 @@ Post-regeneration evidence for `HN4-018 script:3`:
 
 Do not promote `N4-CH05` to `PILOT` yet.
 
-The next implementation slice should resolve the two residual `FLAG` rows
-before seed registry promotion. Options are another targeted TTS generation
-strategy, source-level audio prompt adjustment that preserves the learning
-sentence, or an explicit owner waiver if playback is judged acceptable despite
-STT mismatch.
+The lexical-risk `FLAG` rows are cleared, but the packet still has 41
+`PENDING` rows. The next implementation slice should clear the remaining
+pending audio QA rows before seed registry promotion.
 
 Mixed Korean/Japanese question prompt mismatches should remain review signals,
 not automatic regeneration triggers.

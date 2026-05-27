@@ -69,7 +69,7 @@ broad rollout until regenerated or explicitly waived.
 
 | Target | Speaker | Japanese text | Korean/context | Provider/model | URL check | Audio | Reviewer verdict | Notes |
 |---|---|---|---|---|---|---|---|---|
-| script 0 | キム | この機械は壊れそうです。 | 이 기계는 고장 날 것 같습니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0-regen-n4ch05-lexical2-20260527.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:この機械は、壊れそう。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 0 | キム | この古い機械は壊れそうですから、会議では使わないでください。 | 이 오래된 기계는 고장 날 것 같으니, 회의에서는 쓰지 말아 주세요. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-0-regen-n4ch05-rewrite2-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | script 1 | 佐藤 | 会議で使うのは無理そうですね。 | 회의에서 쓰기는 무리일 것 같네요. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/b68d0a77-31f9-4061-8e22-baedb02367f7/script-line-1.mp3) | PENDING |  |
 
@@ -97,7 +97,7 @@ broad rollout until regenerated or explicitly waived.
 
 | script 2 | キム | 試験は思ったより簡単だそうです。 | 시험은 생각보다 쉽다고 합니다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-2.mp3) | PENDING |  |
 
-| script 3 | 佐藤 | 受付は混むそうですから、早く行きましょう。 | 접수는 붐빈다고 하니, 일찍 갑시다. | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3-regen-n4ch05-lexical2-20260527.mp3) | FLAG | Delegated AI-assisted FLAG: regenerated audio still has review signal(s) TRANSCRIPTION_TEXT_MISMATCH:てこれまではタコむそうでしたから、早く行きましょう。; direct-listen or regenerate before rollout; not native-speaker review. |
+| script 3 | 佐藤 | 受付は混むそうですから、早く行きましょう。 | 접수는 붐빈다고 하니, 일찍 갑시다. | gemini / gemini-2.5-flash-preview-tts | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/script-line-3-regen-n4ch05-gemini-20260527.mp3) | PASS | Delegated AI-assisted post-regeneration PASS: MP3 probe passed and STT matched source exactly; not native-speaker review. |
 
 | question 1 |  | 予定의 뜻은? |  | elevenlabs / eleven_multilingual_v2 | ok | [audio](https://storage.googleapis.com/harukoto-storage/tts/lesson/50d21797-c2c3-40ed-8641-db05efa0578d/question-1.mp3) | PENDING |  |
 

@@ -104,25 +104,29 @@ Detailed evidence:
   `docs/operations/plans/n4-wave3-draft-lexical-risk-post-regeneration-audit-2026-05-27.md`
   and
   `docs/operations/plans/n4-wave3-draft-lexical-risk-second-post-regeneration-audit-2026-05-27.md`
+- lexical-risk provider-switch/source-rewrite audits:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-provider-switch-post-regeneration-audit-2026-05-27.md`,
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-post-regeneration-audit-2026-05-27.md`,
+  and
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-second-post-regeneration-audit-2026-05-27.md`
 
 ## Audio QA Gate Update
 
-Targeted lexical-risk remediation reduced the highest-risk script rows from
-three unresolved rows to one `PASS` and two explicit `FLAG` blockers:
+Targeted lexical-risk remediation cleared the highest-risk script rows:
 
 | Target | Current verdict | Evidence |
 | --- | --- | --- |
 | `HN4-017 script:1` | `PASS` | first lexical-risk regeneration produced STT exact match for `忙しいですね。` |
-| `HN4-018 script:0` | `FLAG` | second regeneration still produced `この機械は、壊れそう。`, missing the final `です` |
-| `HN4-019 script:3` | `FLAG` | second regeneration still produced a lexically divergent transcript |
+| `HN4-018 script:0` | `PASS` | source rewrite plus Gemini regeneration produced STT exact match for `この古い機械は壊れそうですから、会議では使わないでください。` |
+| `HN4-019 script:3` | `PASS` | Gemini provider-switch regeneration produced STT exact match for `受付は混むそうですから、早く行きましょう。` |
 
-The current review queue therefore has 45 total rows, 41 `PENDING`, 2 `PASS`,
-and 2 `FLAG`. `N4-CH05` must remain `DRAFT` until the two `FLAG` rows and the
-remaining pending audio QA rows are resolved or explicitly waived.
+The current review queue therefore has 45 total rows, 41 `PENDING`, 4 `PASS`,
+and 0 `FLAG`. `N4-CH05` must remain `DRAFT` until the remaining pending audio
+QA rows are resolved or explicitly waived.
 
 ## Next Gates
 
-1. Resolve the two residual lexical-risk `FLAG` rows before any seed registry
+1. Resolve the remaining 41 `PENDING` audio QA rows before any seed registry
    promotion.
 2. Promote `N4-CH05` from `DRAFT` to `PILOT` only after audio QA and seed
    registry decision are complete.
