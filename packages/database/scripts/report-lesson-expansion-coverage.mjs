@@ -231,6 +231,7 @@ function buildCoverageRows({ inventoryItems, topics, priorities, blueprints, can
   const candidateTopicIds = new Set();
   for (const candidate of candidates) {
     if (candidate.primaryTopicId) candidateTopicIds.add(candidate.primaryTopicId);
+    for (const topicId of candidate.sourceTopicIds ?? []) candidateTopicIds.add(topicId);
     for (const topicId of candidate.topicIds ?? []) candidateTopicIds.add(topicId);
   }
 
