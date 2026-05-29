@@ -58,6 +58,7 @@ def test_lesson_seed_level_selection_supports_n4_sources() -> None:
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
         "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ]
 
 
@@ -84,6 +85,7 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         "ch03-quality-and-degree.json": "PILOT",
         "ch04-everyday-action-extensions.json": "PILOT",
         "ch05-observation-reporting-and-expectation.json": "PILOT",
+        "ch06-benefactive-contrast-and-passive.json": "PILOT",
     }
 
     for filename in CONTENT_FILES_BY_LEVEL["N4"]:
@@ -96,7 +98,7 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         assert data["meta"]["lesson_count"] == len(data["lessons"])
         lesson_count += len(data["lessons"])
 
-    assert lesson_count == 21
+    assert lesson_count == 26
 
 
 def test_lesson_seed_deduplicates_registered_extra_file() -> None:
@@ -113,6 +115,7 @@ def test_lesson_seed_deduplicates_registered_extra_file() -> None:
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
         "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ]
     assert paths.count(extra_path) == 1
     assert data["meta"]["status"] == "PILOT"

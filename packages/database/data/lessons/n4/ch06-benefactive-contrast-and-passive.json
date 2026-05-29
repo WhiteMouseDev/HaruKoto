@@ -1,0 +1,967 @@
+{
+  "meta": {
+    "chapter_id": "N4-CH06",
+    "chapter_title": "수혜와 대조, 수동 표현",
+    "jlpt_level": "N4",
+    "part_no": 1,
+    "chapter_no": 6,
+    "lesson_count": 5,
+    "topic": "てあげる・てくれる・てもらう・のに・受身",
+    "status": "PILOT",
+    "created_at": "2026-05-29",
+    "author": "Codex",
+    "source_note": "Promoted as controlled PILOT lessons from HaruKoto-authored N4 CH06 seed candidates after delegated AI curriculum review. Paid PDFs were used only for topic coverage reference. This is not native-speaker human approval."
+  },
+  "lessons": [
+    {
+      "lesson_id": "HN4-022",
+      "lesson_no": 22,
+      "chapter_lesson_no": 1,
+      "title": "후배에게 지도를 그려 줘요",
+      "subtitle": "〜てあげる로 내가 상대에게 해 주는 도움 말하기",
+      "topic": "てあげる",
+      "estimated_minutes": 12,
+      "grammar": {
+        "level": "N4",
+        "pattern": "〜てあげる",
+        "meaning_ko": "~해 주다 (내가 상대방에게)",
+        "grammar_order": 31,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        10,
+        597,
+        631,
+        668,
+        764
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "새 동아리 후배에게 캠퍼스 길을 알려 주는 상황",
+          "highlights": [
+            "描いてあげました",
+            "教えてあげました",
+            "話を聞いてあげます"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "後輩に地図を描いてあげました。",
+              "translation": "후배에게 지도를 그려 주었습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "親切ですね。受付の場所も教えてあげましたか。",
+              "translation": "친절하네요. 접수처 위치도 알려 주었나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。困ったら話を聞いてあげます。",
+              "translation": "네. 곤란하면 이야기를 들어 줄 거예요."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "手伝ってあげる時は、相手の気持ちも大事ですね。",
+              "translation": "도와줄 때는 상대의 마음도 중요하네요."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "後輩의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "선배"
+              },
+              {
+                "id": "b",
+                "text": "후배"
+              },
+              {
+                "id": "c",
+                "text": "손님"
+              },
+              {
+                "id": "d",
+                "text": "접수처"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "後輩(こうはい)는 후배입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "手伝う의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "돕다"
+              },
+              {
+                "id": "b",
+                "text": "소개하다"
+              },
+              {
+                "id": "c",
+                "text": "상담하다"
+              },
+              {
+                "id": "d",
+                "text": "그리다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "手伝う(てつだう)는 돕다라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "後輩に地図を描いて___ました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "もらい"
+              },
+              {
+                "id": "b",
+                "text": "くれ"
+              },
+              {
+                "id": "c",
+                "text": "あげ"
+              },
+              {
+                "id": "d",
+                "text": "しまい"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "내가 상대방에게 해 주는 행동은 〜てあげる로 말합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "문맥상 \"위치를 알려 주다\"에 맞는 표현은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "場所を教えてあげる"
+              },
+              {
+                "id": "b",
+                "text": "場所を教えてもらう"
+              },
+              {
+                "id": "c",
+                "text": "場所を教えられる"
+              },
+              {
+                "id": "d",
+                "text": "場所を教えそうだ"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "내가 다른 사람에게 위치를 알려 주는 관점이면 場所を教えてあげる가 자연스럽습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'후배에게 지도를 그려 주었습니다'를 배열하세요.",
+            "tokens": [
+              "地図を",
+              "後輩に",
+              "描いてあげました"
+            ],
+            "correct_order": [
+              "後輩に",
+              "地図を",
+              "描いてあげました"
+            ],
+            "explanation": "도움을 받는 사람은 に로 표시하고, 동사 て형 뒤에 あげました를 둡니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "10": "後輩 (후배)",
+        "597": "大事な (중요한)",
+        "631": "地図 (지도)",
+        "668": "手伝う (도와주다)",
+        "764": "場所 (장소. 곳)"
+      }
+    },
+    {
+      "lesson_id": "HN4-023",
+      "lesson_no": 23,
+      "chapter_lesson_no": 2,
+      "title": "선배가 안내해 줬어요",
+      "subtitle": "〜てくれる로 다른 사람이 나에게 해 준 도움 말하기",
+      "topic": "てくれる",
+      "estimated_minutes": 12,
+      "grammar": {
+        "level": "N4",
+        "pattern": "〜てくれる",
+        "meaning_ko": "~해 주다 (상대방이 나에게)",
+        "grammar_order": 30,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        9,
+        63,
+        226,
+        324,
+        400,
+        570
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "행사장 위치를 몰라 선배에게 도움을 받은 뒤 설명함",
+          "highlights": [
+            "案内してくれました",
+            "説明してくれました",
+            "待ってくれました"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "先輩が会場まで案内してくれました。",
+              "translation": "선배가 행사장까지 안내해 주었습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "受付の場所も説明してくれましたか。",
+              "translation": "접수처 위치도 설명해 주었나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。少し待ってくれたので、安心しました。",
+              "translation": "네. 조금 기다려 주어서 안심했습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "助けてもらった時の気持ちが伝わりますね。",
+              "translation": "도움을 받았을 때의 마음이 전해지네요."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "先輩의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "후배"
+              },
+              {
+                "id": "b",
+                "text": "선배"
+              },
+              {
+                "id": "c",
+                "text": "손님"
+              },
+              {
+                "id": "d",
+                "text": "점원"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "先輩(せんぱい)는 선배입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "会場의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "행사장, 회장"
+              },
+              {
+                "id": "b",
+                "text": "주소"
+              },
+              {
+                "id": "c",
+                "text": "접수처"
+              },
+              {
+                "id": "d",
+                "text": "설명"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "会場(かいじょう)은 행사장이나 회장을 뜻합니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "先輩が会場まで案内して___ました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "あげ"
+              },
+              {
+                "id": "b",
+                "text": "くれ"
+              },
+              {
+                "id": "c",
+                "text": "もらい"
+              },
+              {
+                "id": "d",
+                "text": "おき"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "상대가 나에게 해 준 도움은 〜てくれる로 표현합니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "受付の場所も___くれましたか。",
+            "options": [
+              {
+                "id": "a",
+                "text": "説明して"
+              },
+              {
+                "id": "b",
+                "text": "邪魔して"
+              },
+              {
+                "id": "c",
+                "text": "倒して"
+              },
+              {
+                "id": "d",
+                "text": "盗んで"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "장소를 알려 주는 맥락에는 説明してくれました가 자연스럽습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'선배가 행사장까지 안내해 주었습니다'를 배열하세요.",
+            "tokens": [
+              "会場まで",
+              "案内してくれました",
+              "先輩が"
+            ],
+            "correct_order": [
+              "先輩が",
+              "会場まで",
+              "案内してくれました"
+            ],
+            "explanation": "도움을 준 사람을 が로 두고, 받은 도움을 〜てくれました로 말합니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "9": "先輩 (선배)",
+        "63": "受付 (접수, 안내 데스크)",
+        "226": "案内 (안내)",
+        "324": "会場 (회장. 모임 장소)",
+        "400": "くれる ((나에게) 주다)",
+        "570": "説明 (설명)"
+      }
+    },
+    {
+      "lesson_id": "HN4-024",
+      "lesson_no": 24,
+      "chapter_lesson_no": 3,
+      "title": "주소를 확인해 달라고 했어요",
+      "subtitle": "〜てもらう로 부탁해서 받은 도움 말하기",
+      "topic": "てもらう",
+      "estimated_minutes": 12,
+      "grammar": {
+        "level": "N4",
+        "pattern": "〜てもらう",
+        "meaning_ko": "~해 받다 / ~해 달라고 하다 (부탁·수혜)",
+        "grammar_order": 29,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        63,
+        72,
+        197,
+        226,
+        521,
+        619
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "접수처에서 필요한 정보를 부탁해서 받는 상황",
+          "highlights": [
+            "確認してもらいました",
+            "教えてもらいました",
+            "確認してもらいます"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "受付の人に住所を確認してもらいました。",
+              "translation": "접수처 직원에게 주소를 확인해 달라고 했습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "予約の時間も教えてもらいましたか。",
+              "translation": "예약 시간도 알려 달라고 했나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。遠慮なく聞いてくださいと言われました。",
+              "translation": "네. 사양하지 말고 물어보라고 들었습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "必要なことは受付の人にもう一度確認してもらいましょう。",
+              "translation": "필요한 것은 접수처 직원에게 한 번 더 확인해 달라고 합시다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "受付의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "접수처"
+              },
+              {
+                "id": "b",
+                "text": "예약"
+              },
+              {
+                "id": "c",
+                "text": "주소"
+              },
+              {
+                "id": "d",
+                "text": "안내"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "受付(うけつけ)는 접수처입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "住所의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "시간"
+              },
+              {
+                "id": "b",
+                "text": "주소"
+              },
+              {
+                "id": "c",
+                "text": "예약"
+              },
+              {
+                "id": "d",
+                "text": "도구"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "住所(じゅうしょ)는 주소입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "受付の人に住所を確認して___ました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "あげ"
+              },
+              {
+                "id": "b",
+                "text": "くれ"
+              },
+              {
+                "id": "c",
+                "text": "もらい"
+              },
+              {
+                "id": "d",
+                "text": "しまい"
+              }
+            ],
+            "correct_answer": "c",
+            "explanation": "부탁해서 도움을 받는 관점이면 〜てもらう를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "予約の時間も___もらいましたか。",
+            "options": [
+              {
+                "id": "a",
+                "text": "教えて"
+              },
+              {
+                "id": "b",
+                "text": "盗んで"
+              },
+              {
+                "id": "c",
+                "text": "倒して"
+              },
+              {
+                "id": "d",
+                "text": "壊して"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "필요한 정보를 부탁해서 받는 맥락에는 教えてもらう가 자연스럽습니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'접수처 직원에게 주소를 확인해 달라고 했습니다'를 배열하세요.",
+            "tokens": [
+              "受付の人に",
+              "住所を",
+              "確認してもらいました"
+            ],
+            "correct_order": [
+              "受付の人に",
+              "住所を",
+              "確認してもらいました"
+            ],
+            "explanation": "도움을 요청한 사람은 に로 표시하고, 부탁해서 받은 행동은 確認してもらいました로 말합니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "63": "受付 (접수, 안내 데스크)",
+        "72": "予約 (예약)",
+        "197": "遠慮なく (사양 말고)",
+        "226": "案内 (안내)",
+        "521": "住所 (주소)",
+        "619": "頼む (부탁하다)"
+      }
+    },
+    {
+      "lesson_id": "HN4-025",
+      "lesson_no": 25,
+      "chapter_lesson_no": 4,
+      "title": "예약했는데 자리가 없어요",
+      "subtitle": "〜のに로 기대와 다른 결과 말하기",
+      "topic": "のに",
+      "estimated_minutes": 12,
+      "grammar": {
+        "level": "N4",
+        "pattern": "〜のに",
+        "meaning_ko": "~인데도 / ~했는데도",
+        "grammar_order": 19,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        54,
+        72,
+        97,
+        486,
+        568
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "예약했지만 자리가 없어 문의하는 상황",
+          "highlights": [
+            "予約したのに",
+            "間に合ったのに",
+            "連絡したのに"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "予約したのに、席がありませんでした。",
+              "translation": "예약했는데도 자리가 없었습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "それは残念ですね。受付に連絡しましたか。",
+              "translation": "그건 아쉽네요. 접수처에 연락했나요?"
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "時間に間に合ったのに、確認に時間がかかりました。",
+              "translation": "시간에 맞췄는데도 확인에 시간이 걸렸습니다."
+            },
+            {
+              "speaker": "佐藤",
+              "voice_id": "japanese_female_1",
+              "text": "期待と違う結果を話す時に、のにを使います。",
+              "translation": "기대와 다른 결과를 말할 때 のに를 씁니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "席의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "자리, 좌석"
+              },
+              {
+                "id": "b",
+                "text": "예약"
+              },
+              {
+                "id": "c",
+                "text": "연락"
+              },
+              {
+                "id": "d",
+                "text": "시간"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "席(せき)는 자리 또는 좌석입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "残念な의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "충분한"
+              },
+              {
+                "id": "b",
+                "text": "아쉬운, 유감스러운"
+              },
+              {
+                "id": "c",
+                "text": "안전한"
+              },
+              {
+                "id": "d",
+                "text": "자유로운"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "残念な(ざんねんな)는 아쉬운, 유감스러운이라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "予約した___、席がありませんでした。",
+            "options": [
+              {
+                "id": "a",
+                "text": "のに"
+              },
+              {
+                "id": "b",
+                "text": "ために"
+              },
+              {
+                "id": "c",
+                "text": "はず"
+              },
+              {
+                "id": "d",
+                "text": "もの"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "예상과 다른 결과를 연결할 때 〜のに를 씁니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "時間に___のに、確認に時間がかかりました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "間に合った"
+              },
+              {
+                "id": "b",
+                "text": "盗まれた"
+              },
+              {
+                "id": "c",
+                "text": "倒した"
+              },
+              {
+                "id": "d",
+                "text": "邪魔した"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "間に合ったのに는 시간에 맞췄는데도라는 뜻입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'예약했는데도 자리가 없었습니다'를 배열하세요.",
+            "tokens": [
+              "席が",
+              "予約したのに",
+              "ありませんでした"
+            ],
+            "correct_order": [
+              "予約したのに",
+              "席が",
+              "ありませんでした"
+            ],
+            "explanation": "앞 절에 のに를 붙여 기대와 다른 뒤 절을 연결합니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "54": "連絡 (연락)",
+        "72": "予約 (예약)",
+        "97": "間に合う (시간에 맞다, 늦지 않다)",
+        "486": "残念な (유감스러운. 아쉬운)",
+        "568": "席 (자리. 좌석)"
+      }
+    },
+    {
+      "lesson_id": "HN4-026",
+      "lesson_no": 26,
+      "chapter_lesson_no": 5,
+      "title": "자전거를 도난당했어요",
+      "subtitle": "수동형 〜られる로 피해나 경험 말하기",
+      "topic": "수동형",
+      "estimated_minutes": 12,
+      "grammar": {
+        "level": "N4",
+        "pattern": "수동형 〜(ら)れる",
+        "meaning_ko": "~되다 / ~당하다 (수동)",
+        "grammar_order": 26,
+        "supporting_grammar_orders": []
+      },
+      "vocab_orders": [
+        121,
+        299,
+        406,
+        504
+      ],
+      "content_jsonb": {
+        "reading": {
+          "type": "dialogue",
+          "scene": "역 앞에서 자전거를 도난당해 경찰에 알리는 상황",
+          "highlights": [
+            "盗まれました",
+            "声をかけられて",
+            "確認されます"
+          ],
+          "script": [
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "駅の前で自転車を盗まれました。",
+              "translation": "역 앞에서 자전거를 도난당했습니다."
+            },
+            {
+              "speaker": "警察官",
+              "voice_id": "japanese_female_1",
+              "text": "落とし物ではなく、盗まれたんですね。",
+              "translation": "분실물이 아니라 도난당한 거군요."
+            },
+            {
+              "speaker": "キム",
+              "voice_id": "japanese_male_1",
+              "text": "はい。近くの人に声をかけられて、すぐ警察に来ました。",
+              "translation": "네. 근처 사람이 말을 걸어 와서 바로 경찰에 왔습니다."
+            },
+            {
+              "speaker": "警察官",
+              "voice_id": "japanese_female_1",
+              "text": "近くのカメラの映像がこれから確認されます。",
+              "translation": "근처 카메라 영상이 이제 확인될 것입니다."
+            }
+          ]
+        },
+        "questions": [
+          {
+            "order": 1,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "自転車의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "자동차"
+              },
+              {
+                "id": "b",
+                "text": "자전거"
+              },
+              {
+                "id": "c",
+                "text": "기차"
+              },
+              {
+                "id": "d",
+                "text": "오토바이"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "自転車(じてんしゃ)는 자전거입니다."
+          },
+          {
+            "order": 2,
+            "type": "VOCAB_MCQ",
+            "cognitive_level": "인식",
+            "prompt": "盗む의 뜻은?",
+            "options": [
+              {
+                "id": "a",
+                "text": "훔치다"
+              },
+              {
+                "id": "b",
+                "text": "알리다"
+              },
+              {
+                "id": "c",
+                "text": "조사하다"
+              },
+              {
+                "id": "d",
+                "text": "넘어지다"
+              }
+            ],
+            "correct_answer": "a",
+            "explanation": "盗む(ぬすむ)는 훔치다라는 뜻입니다."
+          },
+          {
+            "order": 3,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "自転車を盗___ました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "み"
+              },
+              {
+                "id": "b",
+                "text": "まれ"
+              },
+              {
+                "id": "c",
+                "text": "ませ"
+              },
+              {
+                "id": "d",
+                "text": "もらい"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "盗む의 수동형은 盗まれる이며, 정중 과거는 盗まれました입니다."
+          },
+          {
+            "order": 4,
+            "type": "CONTEXT_CLOZE",
+            "cognitive_level": "적용",
+            "prompt": "近くの人に声をかけ___て、すぐ警察に来ました。",
+            "options": [
+              {
+                "id": "a",
+                "text": "せ"
+              },
+              {
+                "id": "b",
+                "text": "られ"
+              },
+              {
+                "id": "c",
+                "text": "し"
+              },
+              {
+                "id": "d",
+                "text": "り"
+              }
+            ],
+            "correct_answer": "b",
+            "explanation": "声をかける의 수동형은 声をかけられる이며, て형은 声をかけられて입니다."
+          },
+          {
+            "order": 5,
+            "type": "SENTENCE_REORDER",
+            "cognitive_level": "산출유사",
+            "prompt": "'자전거를 도난당했습니다'를 배열하세요.",
+            "tokens": [
+              "盗まれました",
+              "自転車を"
+            ],
+            "correct_order": [
+              "自転車を",
+              "盗まれました"
+            ],
+            "explanation": "피해 수동에서는 피해를 받은 대상을 を로 두고 수동형 盗まれました를 씁니다."
+          }
+        ]
+      },
+      "vocab_detail": {
+        "121": "盗む (훔치다)",
+        "299": "落とし物 (빠뜨린 물건. 분실물. 유실물)",
+        "406": "警察 (경찰)",
+        "504": "自転車 (자전거)"
+      }
+    }
+  ]
+}

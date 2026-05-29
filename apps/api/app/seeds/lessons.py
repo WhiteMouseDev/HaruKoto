@@ -50,6 +50,7 @@ CONTENT_FILES_BY_LEVEL = {
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
         "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ],
 }
 

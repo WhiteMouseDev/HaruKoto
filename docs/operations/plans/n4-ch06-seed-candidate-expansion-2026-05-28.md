@@ -87,6 +87,21 @@ The generated TTS targets are still `generationStatus: "missing"`. They should
 not be treated as audio-ready until the normal generation and audio QA loop is
 run.
 
+## Controlled Pilot Update - 2026-05-29
+
+The five CH06 candidates were promoted into the official N4 seed registry as
+`N4-CH06` / HN4-022 through HN4-026 with `meta.status: "PILOT"`. The promoted
+lesson file keeps the same copyright boundary: paid PDFs were coverage anchors
+only, while examples, dialogues, prompts, and explanations are HaruKoto-authored
+content.
+
+The promotion is cleared for controlled pilot exposure by AI-only review,
+seed-sync checks, full TTS generation, machine audio QA, STT-assisted triage,
+and local lesson-flow smoke tests. It is still not native-speaker or formal
+human approval. See
+`docs/operations/plans/n4-ch06-pilot-rollout-decision-2026-05-29.md` for the
+current rollout decision and evidence.
+
 ## Validation
 
 ```bash
@@ -105,14 +120,15 @@ cd apps/api && uv run python scripts/report_n4_pilot_tts_coverage.py \
 git diff --check
 ```
 
-All checks above passed. The expansion report shows the new refs as
-`seed_candidate_only`; the official N4 DB seed and pilot TTS coverage remain
-unchanged at 21 lessons and 189/189 generated TTS records.
+All checks above passed for the candidate-stage packet. This historical result
+has been superseded by the 2026-05-29 controlled pilot promotion: refs 048, 049,
+050, 078, and 080 now report `official_seed`, and the official N4 DB seed is 6
+chapters / 26 lessons with 234/234 generated pilot TTS records.
 
 ## Next Gate
 
-1. Generate candidate TTS and run AI/STT-assisted audio QA before adding CH06 to
-   the official N4 seed registry.
-2. Promote the five candidates into the official N4 seed registry only after the
-   candidate audio QA packet is clean and the promotion diff is validated.
-3. Keep native-speaker/human approval as a separate launch-readiness gate.
+1. Deploy/seed the target environment that should expose N4 CH06 and run a
+   remote API smoke against HN4-022 through HN4-026.
+2. Run mobile target-runtime UAT for the N4 lesson list, lesson detail, quiz
+   completion, SRS registration, and TTS playback.
+3. Keep native-speaker/human approval as a separate post-pilot quality gate.
