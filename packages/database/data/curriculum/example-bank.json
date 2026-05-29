@@ -1014,6 +1014,246 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_female_1"
       }
+    },
+    {
+      "exampleId": "ex-n4-tari-tari-suru-001",
+      "topicId": "topic-tari-tari-suru",
+      "jlptLevel": "N4",
+      "japanese": "週末は掃除をしたり、洗濯をしたりします。",
+      "reading": "しゅうまつはそうじをしたり、せんたくをしたりします。",
+      "korean": "주말에는 청소를 하거나 빨래를 하거나 합니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "listing",
+        "daily-life"
+      ],
+      "notesKo": "N4 열거 표현을 생활 루틴 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-souda-appearance-001",
+      "topicId": "topic-souda-hearsay-appearance-a",
+      "jlptLevel": "N4",
+      "japanese": "この機械はもうすぐ壊れそうです。",
+      "reading": "このきかいはもうすぐこわれそうです。",
+      "korean": "이 기계는 곧 고장 날 것 같습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "appearance",
+        "souda"
+      ],
+      "notesKo": "양태의 そうだ를 기계 상태 관찰 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-souda-hearsay-001",
+      "topicId": "topic-souda-hearsay-appearance-b",
+      "jlptLevel": "N4",
+      "japanese": "明日の会議は三時から始まるそうです。",
+      "reading": "あしたのかいぎはさんじからはじまるそうです。",
+      "korean": "내일 회의는 세 시부터 시작한다고 합니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "hearsay",
+        "souda"
+      ],
+      "notesKo": "전문의 そうだ를 일정 전달 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-mono-functions-001",
+      "topicId": "topic-mono-functions",
+      "jlptLevel": "N4",
+      "japanese": "学校の約束は最後まで守るものです。",
+      "reading": "がっこうのやくそくはさいごまでまもるものです。",
+      "korean": "학교의 약속은 끝까지 지키는 법입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "norm",
+        "mono"
+      ],
+      "notesKo": "일반 규범의 ものだ를 약속 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-hazu-da-001",
+      "topicId": "topic-hazu-da",
+      "jlptLevel": "N4",
+      "japanese": "予約したので、席はまだあるはずです。",
+      "reading": "よやくしたので、せきはまだあるはずです。",
+      "korean": "예약했으니 자리는 아직 있을 것입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "expectation",
+        "hazu"
+      ],
+      "notesKo": "근거 있는 예상의 はずだ를 예약 확인 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-ageru-001",
+      "topicId": "topic-te-ageru",
+      "jlptLevel": "N4",
+      "japanese": "後輩に地図を描いてあげました。",
+      "reading": "こうはいにちずをかいてあげました。",
+      "korean": "후배에게 지도를 그려 주었습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "benefactive",
+        "helping"
+      ],
+      "notesKo": "수혜 표현 てあげる를 후배에게 도움을 주는 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-kureru-001",
+      "topicId": "topic-te-kureru",
+      "jlptLevel": "N4",
+      "japanese": "先輩が会場まで案内してくれました。",
+      "reading": "せんぱいがかいじょうまであんないしてくれました。",
+      "korean": "선배가 행사장까지 안내해 주었습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "benefactive",
+        "received-help"
+      ],
+      "notesKo": "수혜 표현 てくれる를 내가 받은 도움의 관점으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-te-morau-001",
+      "topicId": "topic-te-morau",
+      "jlptLevel": "N4",
+    "japanese": "受付の人に住所を確認してもらいました。",
+    "reading": "うけつけのひとにじゅうしょをかくにんしてもらいました。",
+    "korean": "접수처 직원에게 주소를 확인해 달라고 했습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "benefactive",
+        "request"
+      ],
+      "notesKo": "수혜 표현 てもらう를 부탁해서 도움을 받는 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-noni-001",
+      "topicId": "topic-noni",
+      "jlptLevel": "N4",
+      "japanese": "予約したのに、席がありませんでした。",
+      "reading": "よやくしたのに、せきがありませんでした。",
+      "korean": "예약했는데도 자리가 없었습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "contrast",
+        "unexpected-result"
+      ],
+      "notesKo": "역접 표현 のに를 기대와 결과가 어긋나는 예약 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-passive-form-001",
+      "topicId": "topic-passive-form",
+      "jlptLevel": "N4",
+      "japanese": "駅の前で自転車を盗まれました。",
+      "reading": "えきのまえでじてんしゃをぬすまれました。",
+      "korean": "역 앞에서 자전거를 도난당했습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "passive",
+        "incident"
+      ],
+      "notesKo": "피해 수동형을 분실/도난 신고 맥락으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
     }
   ]
 }

@@ -136,9 +136,9 @@ async def test_get_tts_review_batches_returns_summary(client):
     data = resp.json()
     assert data["schemaVersion"] == 1
     assert data["summary"]["totalBatches"] == 7
-    assert data["summary"]["totalTargets"] == 928
+    assert data["summary"]["totalTargets"] == 1028
     assert data["summary"]["adminReadyTargets"] == 174
-    assert data["summary"]["extensionRequiredTargets"] == 754
+    assert data["summary"]["extensionRequiredTargets"] == 854
     assert len(data["batches"]) == 7
     mock_db.execute.assert_not_called()
 

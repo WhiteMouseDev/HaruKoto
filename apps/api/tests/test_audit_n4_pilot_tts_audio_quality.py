@@ -1,11 +1,16 @@
+import asyncio
 from types import SimpleNamespace
 
+import pytest
+
+import scripts.audit_n4_pilot_tts_audio_quality as audit_tts_audio_quality
 from scripts.audit_n4_pilot_tts_audio_quality import (
     AudioProbe,
     TtsSourceTarget,
     TtsStoredRecord,
     _build_report,
     _command_string,
+    build_report,
     build_transcription_probe,
     evaluate_audio_quality,
     render_markdown_report,
@@ -226,16 +231,155 @@ def test_render_markdown_report_uses_na_for_missing_duration_metrics() -> None:
     assert "| Duration average | n/a |" in markdown
 
 
+@pytest.mark.asyncio
+async def test_build_report_records_transcription_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    target = _target()
+    record = _record()
+
+    async def fake_load_targets(
+        level: str,
+        *,
+        include_unpublished: bool,
+        lesson_numbers: set[int] | None,
+    ) -> list[TtsSourceTarget]:
+        return [target]
+
+    async def fake_load_records(targets: list[TtsSourceTarget]) -> dict[str, TtsStoredRecord]:
+        return {target.target_id: record}
+
+    async def fake_download_audio(
+        record: TtsStoredRecord,
+        *,
+        client: object,
+        output_path: object,
+    ) -> tuple[str, int, bytes]:
+        return "audio/mpeg", 4096, b"fake-audio-bytes"
+
+    def fake_probe_file(
+        path: object,
+        *,
+        content_type: str,
+        byte_size: int,
+        check_silence: bool,
+    ) -> AudioProbe:
+        return _probe(content_type=content_type, byte_size=byte_size)
+
+    async def slow_transcriber(audio_bytes: bytes, content_type: str) -> str:
+        await asyncio.sleep(0.05)
+        return target.source_text
+
+    monkeypatch.setattr(audit_tts_audio_quality, "_load_targets", fake_load_targets)
+    monkeypatch.setattr(audit_tts_audio_quality, "_load_records", fake_load_records)
+    monkeypatch.setattr(audit_tts_audio_quality, "_download_audio", fake_download_audio)
+    monkeypatch.setattr(audit_tts_audio_quality, "_probe_file", fake_probe_file)
+
+    report = await build_report(
+        level="N4",
+        include_unpublished=True,
+        lesson_numbers={1},
+        limit=None,
+        check_silence=True,
+        timeout_seconds=1.0,
+        run_transcription=True,
+        transcriber=slow_transcriber,
+        transcription_timeout_seconds=0.001,
+    )
+
+    assert report.target_count == 1
+    assert report.blocked_count == 1
+    assert report.transcription_error_count == 1
+    assert report.results[0].status == "BLOCK"
+    assert report.results[0].blockers == ["TRANSCRIPTION_FAILED:TimeoutError:"]
+    assert report.blockers == ["HN4-001 script:0: TRANSCRIPTION_FAILED:TimeoutError:"]
+
+
+@pytest.mark.asyncio
+async def test_build_report_filters_target_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    first_target = _target()
+    second_target = TtsSourceTarget(
+        lesson_no=1,
+        label="HN4-001",
+        lesson_id="lesson-1",
+        title="이름을 쓰세요",
+        kind="script",
+        order=1,
+        target_type="lesson_script_line",
+        target_id="lesson-1:script:1",
+        field="script_line",
+        source_text="二行目です。",
+    )
+    first_record = _record()
+    second_record = TtsStoredRecord(
+        target_id=second_target.target_id,
+        text=second_target.source_text,
+        provider="elevenlabs",
+        model="eleven_multilingual_v2",
+        audio_url="https://cdn.example.com/audio-2.mp3",
+    )
+
+    async def fake_load_targets(
+        level: str,
+        *,
+        include_unpublished: bool,
+        lesson_numbers: set[int] | None,
+    ) -> list[TtsSourceTarget]:
+        return [first_target, second_target]
+
+    async def fake_load_records(targets: list[TtsSourceTarget]) -> dict[str, TtsStoredRecord]:
+        return {
+            first_target.target_id: first_record,
+            second_target.target_id: second_record,
+        }
+
+    async def fake_download_audio(
+        record: TtsStoredRecord,
+        *,
+        client: object,
+        output_path: object,
+    ) -> tuple[str, int, bytes]:
+        return "audio/mpeg", 4096, b"fake-audio-bytes"
+
+    def fake_probe_file(
+        path: object,
+        *,
+        content_type: str,
+        byte_size: int,
+        check_silence: bool,
+    ) -> AudioProbe:
+        return _probe(content_type=content_type, byte_size=byte_size)
+
+    monkeypatch.setattr(audit_tts_audio_quality, "_load_targets", fake_load_targets)
+    monkeypatch.setattr(audit_tts_audio_quality, "_load_records", fake_load_records)
+    monkeypatch.setattr(audit_tts_audio_quality, "_download_audio", fake_download_audio)
+    monkeypatch.setattr(audit_tts_audio_quality, "_probe_file", fake_probe_file)
+
+    report = await build_report(
+        level="N4",
+        include_unpublished=True,
+        lesson_numbers={1},
+        target_keys={"HN4-001 script:1"},
+        limit=None,
+        check_silence=True,
+        timeout_seconds=1.0,
+    )
+
+    assert report.target_count == 1
+    assert report.results[0].target.display_name == "HN4-001 script:1"
+    assert report.results[0].audio_url == "https://cdn.example.com/audio-2.mp3"
+
+
 def test_command_string_records_include_unpublished_flag() -> None:
     command = _command_string(
         SimpleNamespace(
             level="N4",
             include_unpublished=True,
             lesson_no=[12, 16],
+            target_key=None,
             limit=None,
             skip_silence_check=False,
             timeout_seconds=15.0,
             transcribe=False,
+            transcription_timeout_seconds=None,
             block_on_transcription_mismatch=False,
             json=False,
             fail_on_blocker=False,
@@ -246,3 +390,49 @@ def test_command_string_records_include_unpublished_flag() -> None:
     assert "--include-unpublished" in command
     assert "--lesson-no 12" in command
     assert "--lesson-no 16" in command
+
+
+def test_command_string_records_transcription_timeout() -> None:
+    command = _command_string(
+        SimpleNamespace(
+            level="N4",
+            include_unpublished=False,
+            lesson_no=[17],
+            target_key=None,
+            limit=None,
+            skip_silence_check=False,
+            timeout_seconds=15.0,
+            transcribe=True,
+            transcription_timeout_seconds=12.5,
+            block_on_transcription_mismatch=False,
+            json=False,
+            fail_on_blocker=False,
+            markdown_output=None,
+        )
+    )
+
+    assert "--transcribe" in command
+    assert "--transcription-timeout-seconds 12.5" in command
+
+
+def test_command_string_records_target_keys() -> None:
+    command = _command_string(
+        SimpleNamespace(
+            level="N4",
+            include_unpublished=True,
+            lesson_no=None,
+            target_key=["HN4-020 script:1", "HN4-021 question:5"],
+            limit=None,
+            skip_silence_check=False,
+            timeout_seconds=15.0,
+            transcribe=False,
+            transcription_timeout_seconds=None,
+            block_on_transcription_mismatch=False,
+            json=False,
+            fail_on_blocker=False,
+            markdown_output=None,
+        )
+    )
+
+    assert "--target-key 'HN4-020 script:1'" in command
+    assert "--target-key 'HN4-021 question:5'" in command

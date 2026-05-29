@@ -57,6 +57,8 @@ def test_lesson_seed_level_selection_supports_n4_sources() -> None:
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
+        "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ]
 
 
@@ -82,6 +84,8 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         "ch02-reasons-conditions-and-intent.json": "PILOT",
         "ch03-quality-and-degree.json": "PILOT",
         "ch04-everyday-action-extensions.json": "PILOT",
+        "ch05-observation-reporting-and-expectation.json": "PILOT",
+        "ch06-benefactive-contrast-and-passive.json": "PILOT",
     }
 
     for filename in CONTENT_FILES_BY_LEVEL["N4"]:
@@ -94,7 +98,7 @@ def test_lesson_seed_n4_sources_are_pilot_publishable() -> None:
         assert data["meta"]["lesson_count"] == len(data["lessons"])
         lesson_count += len(data["lessons"])
 
-    assert lesson_count == 16
+    assert lesson_count == 26
 
 
 def test_lesson_seed_deduplicates_registered_extra_file() -> None:
@@ -104,12 +108,14 @@ def test_lesson_seed_deduplicates_registered_extra_file() -> None:
     paths = list(_iter_content_filepaths(["N4"], extra_content_files=[Path("n4/ch04-everyday-action-extensions.json")]))
 
     assert extra_path == CONTENT_ROOT / "n4" / "ch04-everyday-action-extensions.json"
-    assert paths[-1] == extra_path
+    assert extra_path in paths
     assert CONTENT_FILES_BY_LEVEL["N4"] == [
         "ch01-core-directions-and-judgment.json",
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
+        "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ]
     assert paths.count(extra_path) == 1
     assert data["meta"]["status"] == "PILOT"

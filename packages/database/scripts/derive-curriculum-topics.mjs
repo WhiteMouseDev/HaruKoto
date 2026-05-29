@@ -1300,14 +1300,31 @@ function validationGatesFor(topic, track) {
   return gates;
 }
 
-function buildLessonDraftBlueprints(topics, questionBlueprints, examples) {
+function seedCandidateBlueprintIdsByTopic(seedCandidates) {
+  const byTopicId = new Map();
+  for (const candidate of seedCandidates?.candidates ?? []) {
+    if (typeof candidate.lessonBlueprintId !== 'string') continue;
+    for (const topicId of candidate.sourceTopicIds ?? []) {
+      if (!byTopicId.has(topicId)) byTopicId.set(topicId, candidate.lessonBlueprintId);
+    }
+  }
+  return byTopicId;
+}
+
+function buildLessonDraftBlueprints(topics, questionBlueprints, examples, seedCandidates) {
   const questionBlueprintByTopicId = new Map(
     questionBlueprints.map((blueprint) => [blueprint.topicId, blueprint]),
   );
   const examplesByTopicId = topicExamplesByTopicId(examples);
+  const seedCandidateBlueprintIds = seedCandidateBlueprintIdsByTopic(seedCandidates);
 
   return topics
-    .filter((topic) => topic.coverageStatus !== 'covered' || PROMOTED_SEED_LINEAGE_TOPIC_IDS.has(topic.topicId))
+    .filter(
+      (topic) =>
+        topic.coverageStatus !== 'covered' ||
+        PROMOTED_SEED_LINEAGE_TOPIC_IDS.has(topic.topicId) ||
+        seedCandidateBlueprintIds.has(topic.topicId),
+    )
     .map((topic) => {
       const track = trackForTopic(topic);
       const questionBlueprint = questionBlueprintByTopicId.get(topic.topicId);
@@ -1315,7 +1332,7 @@ function buildLessonDraftBlueprints(topics, questionBlueprints, examples) {
       const lessonKind = lessonKindForTopic(topic, track);
       const exampleIds = examplesByTopicId.get(topic.topicId) ?? [];
       return {
-        lessonBlueprintId: lessonBlueprintIdFor(topic),
+        lessonBlueprintId: seedCandidateBlueprintIds.get(topic.topicId) ?? lessonBlueprintIdFor(topic),
         status: 'draft',
         track,
         jlptLevel: topic.inferredJlptLevel,
@@ -1439,7 +1456,7 @@ function main() {
       decisions: [],
     },
   );
-  const lessonDrafts = buildLessonDraftBlueprints(topics, blueprints, exampleBank.examples);
+  const lessonDrafts = buildLessonDraftBlueprints(topics, blueprints, exampleBank.examples, seedCandidates);
   const priorities = buildCoveragePriorities(lessonDrafts, topics, blueprints);
 
   mkdirSync(CURRICULUM_DIR, { recursive: true });
