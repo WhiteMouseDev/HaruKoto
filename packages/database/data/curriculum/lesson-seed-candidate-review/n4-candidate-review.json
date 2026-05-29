@@ -32,8 +32,8 @@
   "reviewRows": [
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-te-ageru-001",
-      "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for unnatural helper phrasing were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
       "candidateId": "lsc-n4-te-ageru-001",
       "candidateStatus": "draft",
       "promotedLessonId": null,
@@ -387,8 +387,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-te-kureru-001",
-      "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "AI approval 2026-05-29: delegated review found no blocker, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
       "candidateId": "lsc-n4-te-kureru-001",
       "candidateStatus": "draft",
       "promotedLessonId": null,
@@ -749,8 +749,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-te-morau-001",
-      "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for too-literal Korean glosses were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
       "candidateId": "lsc-n4-te-morau-001",
       "candidateStatus": "draft",
       "promotedLessonId": null,
@@ -1111,8 +1111,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-noni-001",
-      "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "AI approval 2026-05-29: delegated review found no blocker, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, contrast grammar focus, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
       "candidateId": "lsc-n4-noni-001",
       "candidateStatus": "draft",
       "promotedLessonId": null,
@@ -1474,8 +1474,8 @@
     },
     {
       "reviewId": "lesson-seed-candidate-review-lsc-n4-passive-form-001",
-      "reviewerDecision": "PENDING",
-      "reviewerNotes": "",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for passive-form Q4 and theft-dialogue wording were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
       "candidateId": "lsc-n4-passive-form-001",
       "candidateStatus": "draft",
       "promotedLessonId": null,

@@ -42,6 +42,37 @@ three issues before promotion:
 These fixes were regenerated into the candidate review packet and TTS target
 manifest before validation.
 
+## AI Approval Update - 2026-05-29
+
+The five N4 CH06 candidate review rows were moved from `PENDING` to
+`APPROVED` after delegated AI review, targeted rewrites, and a final self-review
+against candidate-stage N4 fit, Korean learner clarity, prompt compatibility,
+and TTS target coverage.
+
+This clears the candidate curriculum review gate only. It does not promote the
+rows into the official N4 DB seed, does not make the generated TTS targets
+audio-ready, and must not be represented as native-speaker or formal human
+approval.
+
+Approval validation after this update:
+
+```bash
+pnpm --filter @harukoto/database candidates:review:validate
+pnpm --filter @harukoto/database candidates:review:gate -- --level N4
+pnpm --filter @harukoto/database curriculum:validate
+pnpm --filter @harukoto/database typecheck
+pnpm --filter @harukoto/database curriculum:lesson-expansion:report -- \
+  --pdf-dir ~/Downloads/japanese \
+  --json-output /tmp/harukoto-expansion-report-after-ai-approval.json
+cd apps/api && uv run python -m app.seeds.lessons --check --level N4
+git diff --check
+```
+
+All checks above passed. The candidate review gate now reports
+`APPROVED: 5`, `PENDING: 0`, and `blockers: 0`. The official N4 DB seed remains
+5 chapters and 21 lessons; PDF refs 048, 049, 050, 078, and 080 remain
+`seed_candidate_only`.
+
 ## TTS Impact
 
 The candidate review packet now has full target coverage:
@@ -80,8 +111,8 @@ unchanged at 21 lessons and 189/189 generated TTS records.
 
 ## Next Gate
 
-1. Promote the five candidates only after candidate review decisions are no
-   longer `PENDING`.
-2. Generate candidate TTS and run AI/STT-assisted audio QA before adding CH06 to
+1. Generate candidate TTS and run AI/STT-assisted audio QA before adding CH06 to
    the official N4 seed registry.
+2. Promote the five candidates into the official N4 seed registry only after the
+   candidate audio QA packet is clean and the promotion diff is validated.
 3. Keep native-speaker/human approval as a separate launch-readiness gate.
