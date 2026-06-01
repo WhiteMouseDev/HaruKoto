@@ -127,9 +127,9 @@ chapters / 26 lessons with 234/234 generated pilot TTS records.
 
 ## Next Gate
 
-1. DONE on 2026-06-01 for deploy, configured DB seed sync, and read-only
-   service-path list/detail smoke. Authenticated remote HTTP smoke remains
-   blocked by missing `HARUKOTO_SMOKE_EMAIL` and `HARUKOTO_SMOKE_PASSWORD`.
+1. DONE on 2026-06-01 for deploy, configured DB seed sync, read-only
+   service-path list/detail smoke, and authenticated remote HTTP list/detail
+   smoke.
 2. Run mobile target-runtime UAT for the N4 lesson list, lesson detail, quiz
    completion, SRS registration, and TTS playback.
 3. Keep native-speaker/human approval as a separate post-pilot quality gate.
