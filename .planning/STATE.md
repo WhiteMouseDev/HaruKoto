@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: (planning — use /gsd:new-milestone)
 status: idle
 stopped_at: v1.1 archived 2026-04-23; stabilization checkpoint closed with accepted P2 follow-ups
-last_updated: "2026-06-01T15:51:11+09:00"
+last_updated: "2026-06-01T16:22:00+09:00"
 last_activity: 2026-06-01
 progress:
   total_phases: 0
@@ -28,11 +28,13 @@ See: .planning/PROJECT.md
 
 **Latest update (2026-06-01, N4 broad exposure):** N4 broad exposure is approved as BETA-WIDE GO for the current 26-lesson PILOT slice, not a complete N4 course claim. `docs/operations/plans/n4-broad-exposure-decision-2026-06-01.md` records the decision; `docs/operations/plans/n4-broad-exposure-preflight-2026-06-01.md` records 234/234 TTS and audio verdict PASS; `docs/operations/plans/n4-broad-exposure-feedback-baseline-2026-06-01.md` records 26 published lessons, 26/26 TTS-ready, 3 lessons with progress, 23 waiting for traffic, and 0 blockers. `apps/api/scripts/report_level_pilot_feedback.py` now provides the level-wide feedback monitor for periodic refreshes.
 
+**Latest update (2026-06-01, N4 CH07 candidates):** N4 CH07 candidate-only expansion added five new seed candidates for HN4-027 through HN4-031: `たら`, `ば`, `なら`, `らしい`, and `たばかり`. `docs/operations/plans/n4-ch07-seed-candidate-expansion-2026-06-01.md` records the scope; candidate review packet reports 5/5 delegated AI `APPROVED`; TTS target manifest includes 5/5 example, 20/20 script, and 25/25 question prompt targets as missing generation targets. No official lesson JSON, DB seed promotion, TTS generation, audio QA, or learner-facing CH07 exposure has been done yet.
+
 ## Current Position
 
 Milestone: — (none in progress)
 Status: Idle after v1.1 ship (2026-04-23)
-Latest activity: 2026-06-01 - N4 broad exposure moved to BETA-WIDE GO for the current 26-lesson PILOT slice. `docs/operations/plans/n4-broad-exposure-decision-2026-06-01.md` records the decision, `docs/operations/plans/n4-broad-exposure-preflight-2026-06-01.md` records full N4 234/234 preflight PASS with URL checks, and `docs/operations/plans/n4-broad-exposure-feedback-baseline-2026-06-01.md` records the level-wide 0-blocker baseline. Later native-speaker/formal human review remains a quality follow-up.
+Latest activity: 2026-06-01 - N4 CH07 candidate-only expansion added five new seed candidates for HN4-027 through HN4-031 after the current N4 26-lesson PILOT slice moved to BETA-WIDE GO. The new candidates passed delegated AI candidate review and curriculum validation, but remain blocked from learner-facing exposure until official lesson promotion, TTS generation, audio QA, DB seed sync, and UAT are completed.
 Historical activity: 2026-05-14 - Early N4 audio QA established the delegated AI/STT review pattern for CH01 through CH03, including machine reports, STT reconciliation, regeneration handoff, and explicit `not native-speaker review` notes. This history is superseded for current rollout state by the 2026-06-01 CH06 closeout and 234/234 preflight PASS evidence above.
 
 Progress: v1.1 [██████████] 100% shipped
@@ -49,6 +51,7 @@ Historical decisions logged in PROJECT.md Key Decisions table and archived miles
 - N4 CH05 physical-device smoke — `Kun Woo's iPhone` is visible over wireless/CoreDevice, but `docs/operations/plans/n4-ch05-physical-device-smoke-2026-05-27.md` records a device-lock blocker before install/launch proof; rerun after the phone is unlocked and kept awake.
 - N4 CH06 controlled pilot follow-up — post-merge deploy, configured DB seed sync, read-only service-path list/detail smoke, authenticated remote HTTP list/detail smoke, representative HN4-022 mobile target-runtime UAT, and first aggregate pilot-feedback baseline passed in `docs/operations/plans/n4-ch06-post-merge-operational-check-2026-06-01.md`, `docs/operations/plans/n4-ch06-mobile-uat-2026-06-01.md`, and `docs/operations/plans/n4-ch06-pilot-feedback-baseline-2026-06-01.md`; continue feedback refreshes over time and keep native-speaker review as a later quality upgrade.
 - N4 broad exposure monitoring - BETA-WIDE GO is approved for the current 26-lesson PILOT slice. Continue level-wide feedback refreshes with `apps/api/scripts/report_level_pilot_feedback.py`; keep product wording as pilot/beta coverage until fuller N4 curriculum coverage and native-speaker review are available.
+- N4 CH07 promotion follow-up - HN4-027 through HN4-031 exist only as approved seed candidates. Next promotion wave should create official N4 CH07 lesson JSON, derive/validate curriculum, generate TTS, run CH07 audio QA, apply configured DB seed, and run API/mobile smoke before any learner-facing exposure.
 - Mobile MY tab launch smoke — code hardening, automated verification, physical-device install/launch precheck, and simulator on-screen smoke are complete; higher-fidelity physical-device screen smoke remains blocked by device lock using `docs/operations/plans/mobile-my-page-release-smoke-2026-05-12.md`.
 - N4 pilot seed operationalization - controlled learner-pilot exposure is approved for HN4-001 through HN4-026. Configured DB seed checks, published API smoke, simulator/mobile UAT slices, TTS generation/coverage, machine audio preflight, delegated AI/STT audio verdict packets, CH06 targeted TTS regeneration, and full N4 234/234 audio preflight now pass as evidence-gathering gates. Continued pilot feedback review over time and native-speaker review when available remain quality follow-ups rather than automated audio QA blockers.
 
@@ -72,6 +75,6 @@ v1.1 stabilization checkpoint is closed with accepted P2 follow-ups. Keep the ac
 ## Session Continuity
 
 Last session: 2026-06-01T10:33:41+09:00
-Latest stopped at: N4 broad exposure is BETA-WIDE GO for HN4-001 through HN4-026; full N4 rollout preflight reports curriculum validation PASS, configured seed check PASS, TTS 234/234, audio URL checks 234/234, and audio verdicts 234/234 PASS; level-wide feedback baseline reports 26 published lessons, 26/26 TTS-ready, 3 lessons with progress, 23 waiting for traffic, and 0 blockers.
-Stopped at: N4 CH01 through CH06 configured seed, TTS coverage, delegated audio QA, URL-inclusive rollout preflight, and broad exposure decision are green; native-speaker/formal human review remains a later quality upgrade, and level-wide feedback monitoring remains the active runtime follow-up.
+Latest stopped at: N4 CH07 candidate-only expansion is added for HN4-027 through HN4-031; delegated AI candidate review is 5/5 APPROVED; TTS manifest has 5 example, 20 script, and 25 question prompt targets for CH07. CH07 is not promoted to official lessons or learner-facing exposure.
+Stopped at: N4 CH01 through CH06 configured seed, TTS coverage, delegated audio QA, URL-inclusive rollout preflight, and broad exposure decision are green; CH07 candidate source data is ready for promotion planning, while official lesson promotion, TTS generation, audio QA, DB seed sync, and UAT remain open.
 Resume file: `docs/operations/release/v1.1-stabilization-checkpoint-2026-04-23.md`

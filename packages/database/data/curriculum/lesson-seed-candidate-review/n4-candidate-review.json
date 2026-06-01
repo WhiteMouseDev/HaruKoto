@@ -9,7 +9,7 @@
     "examples": 5,
     "questions": 25,
     "scriptLines": 20,
-    "vocabularyLinks": 29,
+    "vocabularyLinks": 31,
     "grammarLinks": 5,
     "exampleTtsTargets": 5,
     "scriptTtsTargets": 20,
@@ -31,17 +31,17 @@
   ],
   "reviewRows": [
     {
-      "reviewId": "lesson-seed-candidate-review-lsc-n4-te-ageru-001",
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-tara-conditional-001",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for unnatural helper phrasing were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
-      "candidateId": "lsc-n4-te-ageru-001",
+      "reviewerNotes": "Delegated AI candidate curriculum review 2026-06-01: approved for candidate-only CH07 after structural validation, source-topic alignment, runtime-compatible questions, answer-key review, and TTS target coverage. This is not native-speaker approval or learner-facing promotion.",
+      "candidateId": "lsc-n4-tara-conditional-001",
       "candidateStatus": "draft",
-      "promotedLessonId": "HN4-022",
-      "lessonBlueprintId": "ldb-te-ageru",
+      "promotedLessonId": null,
+      "lessonBlueprintId": "ldb-tara-conditional",
       "sourceTopics": [
         {
-          "topicId": "topic-te-ageru",
-          "titleKo": "てあげる",
+          "topicId": "topic-tara-conditional",
+          "titleKo": "たら",
           "coverageStatus": "covered",
           "inferredJlptLevel": "N4",
           "reviewStatus": "needs_review"
@@ -50,1114 +50,42 @@
       "promotionTarget": {
         "level": "N4",
         "partNo": 1,
-        "chapterNo": 6,
-        "lessonNo": 22,
+        "chapterNo": 7,
+        "lessonNo": 27,
         "chapterLessonNo": 1,
         "publishStatus": "DRAFT"
       },
-      "title": "후배에게 지도를 그려 줘요",
-      "subtitle": "〜てあげる로 내가 상대에게 해 주는 도움 말하기",
-      "topic": "てあげる",
+      "title": "비가 그치면 출발해요",
+      "subtitle": "Vた + ら로 조건과 순서를 말하기",
+      "topic": "たら 조건",
       "estimatedMinutes": 12,
       "grammar": {
-        "order": 31,
-        "pattern": "〜てあげる",
-        "meaningKo": "~해 주다 (내가 상대방에게)",
-        "referencePattern": "〜てあげる",
-        "referenceMeaningKo": "~해 주다 (내가 상대방에게)"
+        "order": 21,
+        "pattern": "Vた + ら",
+        "meaningKo": "~하면 / ~했을 때",
+        "referencePattern": "〜たら",
+        "referenceMeaningKo": "~하면 / ~했더니 (조건)"
       },
       "vocabulary": [
         {
-          "order": 10,
-          "word": "後輩",
-          "reading": "こうはい",
-          "meaningKo": "후배",
+          "order": 28,
+          "word": "出発",
+          "reading": "しゅっぱつ",
+          "meaningKo": "출발",
           "partOfSpeech": "NOUN"
         },
         {
-          "order": 597,
-          "word": "大事な",
-          "reading": "だいじな",
-          "meaningKo": "중요한",
-          "partOfSpeech": "NA_ADJECTIVE"
-        },
-        {
-          "order": 631,
-          "word": "地図",
-          "reading": "ちず",
-          "meaningKo": "지도",
+          "order": 29,
+          "word": "到着",
+          "reading": "とうちゃく",
+          "meaningKo": "도착",
           "partOfSpeech": "NOUN"
         },
-        {
-          "order": 668,
-          "word": "手伝う",
-          "reading": "てつだう",
-          "meaningKo": "도와주다",
-          "partOfSpeech": "VERB"
-        },
-        {
-          "order": 764,
-          "word": "場所",
-          "reading": "ばしょ",
-          "meaningKo": "장소. 곳",
-          "partOfSpeech": "NOUN"
-        }
-      ],
-      "examples": [
-        {
-          "exampleId": "ex-n4-te-ageru-001",
-          "topicId": "topic-te-ageru",
-          "japanese": "後輩に地図を描いてあげました。",
-          "reading": "こうはいにちずをかいてあげました。",
-          "korean": "후배에게 지도를 그려 주었습니다.",
-          "sourceKind": "harukoto_authored",
-          "originalityStatus": "authored_not_source_copied",
-          "reviewStatus": "needs_review",
-          "ttsTarget": {
-            "targetId": "tts-n4-te-ageru-001-example-sentence",
-            "textSource": "example-bank:ex-n4-te-ageru-001:japanese",
-            "audioTargetType": "example_sentence",
-            "audioField": "example_sentence",
-            "generationStatus": "missing",
-            "preferredVoiceId": "japanese_female_1"
-          }
-        }
-      ],
-      "reading": {
-        "scene": "새 동아리 후배에게 캠퍼스 길을 알려 주는 상황",
-        "highlights": [
-          "描いてあげました",
-          "教えてあげました",
-          "話を聞いてあげます"
-        ],
-        "script": [
-          {
-            "order": 1,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "後輩に地図を描いてあげました。",
-            "translationKo": "후배에게 지도를 그려 주었습니다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-022-script-1",
-              "textSource": "lesson-seeds:HN4-022:script:1",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 2,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "親切ですね。受付の場所も教えてあげましたか。",
-            "translationKo": "친절하네요. 접수처 위치도 알려 주었나요?",
-            "ttsTarget": {
-              "targetId": "tts-hn4-022-script-2",
-              "textSource": "lesson-seeds:HN4-022:script:2",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          },
-          {
-            "order": 3,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "はい。困ったら話を聞いてあげます。",
-            "translationKo": "네. 곤란하면 이야기를 들어 줄 거예요.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-022-script-3",
-              "textSource": "lesson-seeds:HN4-022:script:3",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 4,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "手伝ってあげる時は、相手の気持ちも大事ですね。",
-            "translationKo": "도와줄 때는 상대의 마음도 중요하네요.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-022-script-4",
-              "textSource": "lesson-seeds:HN4-022:script:4",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          }
-        ]
-      },
-      "questions": [
-        {
-          "order": 1,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "後輩의 뜻은?",
-          "explanation": "後輩(こうはい)는 후배입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-022-question-1",
-            "textSource": "lesson-seeds:HN4-022:question:1",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "선배"
-            },
-            {
-              "id": "b",
-              "text": "후배"
-            },
-            {
-              "id": "c",
-              "text": "손님"
-            },
-            {
-              "id": "d",
-              "text": "접수처"
-            }
-          ],
-          "correctAnswer": "b",
-          "correctOptionText": "후배"
-        },
-        {
-          "order": 2,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "手伝う의 뜻은?",
-          "explanation": "手伝う(てつだう)는 돕다라는 뜻입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-022-question-2",
-            "textSource": "lesson-seeds:HN4-022:question:2",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "돕다"
-            },
-            {
-              "id": "b",
-              "text": "소개하다"
-            },
-            {
-              "id": "c",
-              "text": "상담하다"
-            },
-            {
-              "id": "d",
-              "text": "그리다"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "돕다"
-        },
-        {
-          "order": 3,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "後輩に地図を描いて___ました。",
-          "explanation": "내가 상대방에게 해 주는 행동은 〜てあげる로 말합니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-022-question-3",
-            "textSource": "lesson-seeds:HN4-022:question:3",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "もらい"
-            },
-            {
-              "id": "b",
-              "text": "くれ"
-            },
-            {
-              "id": "c",
-              "text": "あげ"
-            },
-            {
-              "id": "d",
-              "text": "しまい"
-            }
-          ],
-          "correctAnswer": "c",
-          "correctOptionText": "あげ"
-        },
-        {
-          "order": 4,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "문맥상 \"위치를 알려 주다\"에 맞는 표현은?",
-          "explanation": "내가 다른 사람에게 위치를 알려 주는 관점이면 場所を教えてあげる가 자연스럽습니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-022-question-4",
-            "textSource": "lesson-seeds:HN4-022:question:4",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "場所を教えてあげる"
-            },
-            {
-              "id": "b",
-              "text": "場所を教えてもらう"
-            },
-            {
-              "id": "c",
-              "text": "場所を教えられる"
-            },
-            {
-              "id": "d",
-              "text": "場所を教えそうだ"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "場所を教えてあげる"
-        },
-        {
-          "order": 5,
-          "type": "SENTENCE_REORDER",
-          "cognitiveLevel": "산출유사",
-          "prompt": "'후배에게 지도를 그려 주었습니다'를 배열하세요.",
-          "explanation": "도움을 받는 사람은 に로 표시하고, 동사 て형 뒤에 あげました를 둡니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-022-question-5",
-            "textSource": "lesson-seeds:HN4-022:question:5",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "tokens": [
-            "地図を",
-            "後輩に",
-            "描いてあげました"
-          ],
-          "correctOrder": [
-            "後輩に",
-            "地図を",
-            "描いてあげました"
-          ]
-        }
-      ],
-      "automatedSummary": {
-        "examples": 1,
-        "scriptLines": 4,
-        "questions": 5,
-        "exampleTtsTargets": 1,
-        "scriptTtsTargets": 4,
-        "questionTtsTargets": 5,
-        "vocabularyLinks": 5,
-        "grammarLinked": true
-      },
-      "validationGates": [
-        "ExampleOriginalityGate",
-        "RuntimeQuestionCompatibilityGate",
-        "KoreanLearnerGate",
-        "AudioReadinessGate"
-      ],
-      "notesKo": "PDF 048의 てあげる coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다.",
-      "reviewerChecklist": [
-        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
-        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
-        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
-        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
-        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
-      ]
-    },
-    {
-      "reviewId": "lesson-seed-candidate-review-lsc-n4-te-kureru-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI approval 2026-05-29: delegated review found no blocker, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
-      "candidateId": "lsc-n4-te-kureru-001",
-      "candidateStatus": "draft",
-      "promotedLessonId": "HN4-023",
-      "lessonBlueprintId": "ldb-te-kureru",
-      "sourceTopics": [
-        {
-          "topicId": "topic-te-kureru",
-          "titleKo": "てくれる",
-          "coverageStatus": "covered",
-          "inferredJlptLevel": "N4",
-          "reviewStatus": "needs_review"
-        }
-      ],
-      "promotionTarget": {
-        "level": "N4",
-        "partNo": 1,
-        "chapterNo": 6,
-        "lessonNo": 23,
-        "chapterLessonNo": 2,
-        "publishStatus": "DRAFT"
-      },
-      "title": "선배가 안내해 줬어요",
-      "subtitle": "〜てくれる로 다른 사람이 나에게 해 준 도움 말하기",
-      "topic": "てくれる",
-      "estimatedMinutes": 12,
-      "grammar": {
-        "order": 30,
-        "pattern": "〜てくれる",
-        "meaningKo": "~해 주다 (상대방이 나에게)",
-        "referencePattern": "〜てくれる",
-        "referenceMeaningKo": "~해 주다 (상대방이 나에게)"
-      },
-      "vocabulary": [
-        {
-          "order": 9,
-          "word": "先輩",
-          "reading": "せんぱい",
-          "meaningKo": "선배",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 63,
-          "word": "受付",
-          "reading": "うけつけ",
-          "meaningKo": "접수, 안내 데스크",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 226,
-          "word": "案内",
-          "reading": "あんない",
-          "meaningKo": "안내",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 324,
-          "word": "会場",
-          "reading": "かいじょう",
-          "meaningKo": "회장. 모임 장소",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 400,
-          "word": "くれる",
-          "reading": "くれる",
-          "meaningKo": "(나에게) 주다",
-          "partOfSpeech": "VERB"
-        },
-        {
-          "order": 570,
-          "word": "説明",
-          "reading": "せつめい",
-          "meaningKo": "설명",
-          "partOfSpeech": "NOUN"
-        }
-      ],
-      "examples": [
-        {
-          "exampleId": "ex-n4-te-kureru-001",
-          "topicId": "topic-te-kureru",
-          "japanese": "先輩が会場まで案内してくれました。",
-          "reading": "せんぱいがかいじょうまであんないしてくれました。",
-          "korean": "선배가 행사장까지 안내해 주었습니다.",
-          "sourceKind": "harukoto_authored",
-          "originalityStatus": "authored_not_source_copied",
-          "reviewStatus": "needs_review",
-          "ttsTarget": {
-            "targetId": "tts-n4-te-kureru-001-example-sentence",
-            "textSource": "example-bank:ex-n4-te-kureru-001:japanese",
-            "audioTargetType": "example_sentence",
-            "audioField": "example_sentence",
-            "generationStatus": "missing",
-            "preferredVoiceId": "japanese_female_1"
-          }
-        }
-      ],
-      "reading": {
-        "scene": "행사장 위치를 몰라 선배에게 도움을 받은 뒤 설명함",
-        "highlights": [
-          "案内してくれました",
-          "説明してくれました",
-          "待ってくれました"
-        ],
-        "script": [
-          {
-            "order": 1,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "先輩が会場まで案内してくれました。",
-            "translationKo": "선배가 행사장까지 안내해 주었습니다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-023-script-1",
-              "textSource": "lesson-seeds:HN4-023:script:1",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 2,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "受付の場所も説明してくれましたか。",
-            "translationKo": "접수처 위치도 설명해 주었나요?",
-            "ttsTarget": {
-              "targetId": "tts-hn4-023-script-2",
-              "textSource": "lesson-seeds:HN4-023:script:2",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          },
-          {
-            "order": 3,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "はい。少し待ってくれたので、安心しました。",
-            "translationKo": "네. 조금 기다려 주어서 안심했습니다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-023-script-3",
-              "textSource": "lesson-seeds:HN4-023:script:3",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 4,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "助けてもらった時の気持ちが伝わりますね。",
-            "translationKo": "도움을 받았을 때의 마음이 전해지네요.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-023-script-4",
-              "textSource": "lesson-seeds:HN4-023:script:4",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          }
-        ]
-      },
-      "questions": [
-        {
-          "order": 1,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "先輩의 뜻은?",
-          "explanation": "先輩(せんぱい)는 선배입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-023-question-1",
-            "textSource": "lesson-seeds:HN4-023:question:1",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "후배"
-            },
-            {
-              "id": "b",
-              "text": "선배"
-            },
-            {
-              "id": "c",
-              "text": "손님"
-            },
-            {
-              "id": "d",
-              "text": "점원"
-            }
-          ],
-          "correctAnswer": "b",
-          "correctOptionText": "선배"
-        },
-        {
-          "order": 2,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "会場의 뜻은?",
-          "explanation": "会場(かいじょう)은 행사장이나 회장을 뜻합니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-023-question-2",
-            "textSource": "lesson-seeds:HN4-023:question:2",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "행사장, 회장"
-            },
-            {
-              "id": "b",
-              "text": "주소"
-            },
-            {
-              "id": "c",
-              "text": "접수처"
-            },
-            {
-              "id": "d",
-              "text": "설명"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "행사장, 회장"
-        },
-        {
-          "order": 3,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "先輩が会場まで案内して___ました。",
-          "explanation": "상대가 나에게 해 준 도움은 〜てくれる로 표현합니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-023-question-3",
-            "textSource": "lesson-seeds:HN4-023:question:3",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "あげ"
-            },
-            {
-              "id": "b",
-              "text": "くれ"
-            },
-            {
-              "id": "c",
-              "text": "もらい"
-            },
-            {
-              "id": "d",
-              "text": "おき"
-            }
-          ],
-          "correctAnswer": "b",
-          "correctOptionText": "くれ"
-        },
-        {
-          "order": 4,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "受付の場所も___くれましたか。",
-          "explanation": "장소를 알려 주는 맥락에는 説明してくれました가 자연스럽습니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-023-question-4",
-            "textSource": "lesson-seeds:HN4-023:question:4",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "説明して"
-            },
-            {
-              "id": "b",
-              "text": "邪魔して"
-            },
-            {
-              "id": "c",
-              "text": "倒して"
-            },
-            {
-              "id": "d",
-              "text": "盗んで"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "説明して"
-        },
-        {
-          "order": 5,
-          "type": "SENTENCE_REORDER",
-          "cognitiveLevel": "산출유사",
-          "prompt": "'선배가 행사장까지 안내해 주었습니다'를 배열하세요.",
-          "explanation": "도움을 준 사람을 が로 두고, 받은 도움을 〜てくれました로 말합니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-023-question-5",
-            "textSource": "lesson-seeds:HN4-023:question:5",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "tokens": [
-            "会場まで",
-            "案内してくれました",
-            "先輩が"
-          ],
-          "correctOrder": [
-            "先輩が",
-            "会場まで",
-            "案内してくれました"
-          ]
-        }
-      ],
-      "automatedSummary": {
-        "examples": 1,
-        "scriptLines": 4,
-        "questions": 5,
-        "exampleTtsTargets": 1,
-        "scriptTtsTargets": 4,
-        "questionTtsTargets": 5,
-        "vocabularyLinks": 6,
-        "grammarLinked": true
-      },
-      "validationGates": [
-        "ExampleOriginalityGate",
-        "RuntimeQuestionCompatibilityGate",
-        "KoreanLearnerGate",
-        "AudioReadinessGate"
-      ],
-      "notesKo": "PDF 049의 てくれる coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다.",
-      "reviewerChecklist": [
-        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
-        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
-        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
-        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
-        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
-      ]
-    },
-    {
-      "reviewId": "lesson-seed-candidate-review-lsc-n4-te-morau-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for too-literal Korean glosses were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
-      "candidateId": "lsc-n4-te-morau-001",
-      "candidateStatus": "draft",
-      "promotedLessonId": "HN4-024",
-      "lessonBlueprintId": "ldb-te-morau",
-      "sourceTopics": [
-        {
-          "topicId": "topic-te-morau",
-          "titleKo": "てもらう",
-          "coverageStatus": "covered",
-          "inferredJlptLevel": "N4",
-          "reviewStatus": "needs_review"
-        }
-      ],
-      "promotionTarget": {
-        "level": "N4",
-        "partNo": 1,
-        "chapterNo": 6,
-        "lessonNo": 24,
-        "chapterLessonNo": 3,
-        "publishStatus": "DRAFT"
-      },
-      "title": "주소를 확인해 달라고 했어요",
-      "subtitle": "〜てもらう로 부탁해서 받은 도움 말하기",
-      "topic": "てもらう",
-      "estimatedMinutes": 12,
-      "grammar": {
-        "order": 29,
-        "pattern": "〜てもらう",
-        "meaningKo": "~해 받다 / ~해 달라고 하다 (부탁·수혜)",
-        "referencePattern": "〜てもらう",
-        "referenceMeaningKo": "~해 받다 / ~해 달라고 하다 (부탁·수혜)"
-      },
-      "vocabulary": [
-        {
-          "order": 63,
-          "word": "受付",
-          "reading": "うけつけ",
-          "meaningKo": "접수, 안내 데스크",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 72,
-          "word": "予約",
-          "reading": "よやく",
-          "meaningKo": "예약",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 197,
-          "word": "遠慮なく",
-          "reading": "えんりょなく",
-          "meaningKo": "사양 말고",
-          "partOfSpeech": "EXPRESSION"
-        },
-        {
-          "order": 226,
-          "word": "案内",
-          "reading": "あんない",
-          "meaningKo": "안내",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 521,
-          "word": "住所",
-          "reading": "じゅうしょ",
-          "meaningKo": "주소",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 619,
-          "word": "頼む",
-          "reading": "たのむ",
-          "meaningKo": "부탁하다",
-          "partOfSpeech": "VERB"
-        }
-      ],
-      "examples": [
-        {
-          "exampleId": "ex-n4-te-morau-001",
-          "topicId": "topic-te-morau",
-          "japanese": "受付の人に住所を確認してもらいました。",
-          "reading": "うけつけのひとにじゅうしょをかくにんしてもらいました。",
-          "korean": "접수처 직원에게 주소를 확인해 달라고 했습니다.",
-          "sourceKind": "harukoto_authored",
-          "originalityStatus": "authored_not_source_copied",
-          "reviewStatus": "needs_review",
-          "ttsTarget": {
-            "targetId": "tts-n4-te-morau-001-example-sentence",
-            "textSource": "example-bank:ex-n4-te-morau-001:japanese",
-            "audioTargetType": "example_sentence",
-            "audioField": "example_sentence",
-            "generationStatus": "missing",
-            "preferredVoiceId": "japanese_male_1"
-          }
-        }
-      ],
-      "reading": {
-        "scene": "접수처에서 필요한 정보를 부탁해서 받는 상황",
-        "highlights": [
-          "確認してもらいました",
-          "教えてもらいました",
-          "確認してもらいます"
-        ],
-        "script": [
-          {
-            "order": 1,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "受付の人に住所を確認してもらいました。",
-            "translationKo": "접수처 직원에게 주소를 확인해 달라고 했습니다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-024-script-1",
-              "textSource": "lesson-seeds:HN4-024:script:1",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 2,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "予約の時間も教えてもらいましたか。",
-            "translationKo": "예약 시간도 알려 달라고 했나요?",
-            "ttsTarget": {
-              "targetId": "tts-hn4-024-script-2",
-              "textSource": "lesson-seeds:HN4-024:script:2",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          },
-          {
-            "order": 3,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "はい。遠慮なく聞いてくださいと言われました。",
-            "translationKo": "네. 사양하지 말고 물어보라고 들었습니다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-024-script-3",
-              "textSource": "lesson-seeds:HN4-024:script:3",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
-            }
-          },
-          {
-            "order": 4,
-            "speaker": "佐藤",
-            "voiceId": "japanese_female_1",
-            "text": "必要なことは受付の人にもう一度確認してもらいましょう。",
-            "translationKo": "필요한 것은 접수처 직원에게 한 번 더 확인해 달라고 합시다.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-024-script-4",
-              "textSource": "lesson-seeds:HN4-024:script:4",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          }
-        ]
-      },
-      "questions": [
-        {
-          "order": 1,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "受付의 뜻은?",
-          "explanation": "受付(うけつけ)는 접수처입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-024-question-1",
-            "textSource": "lesson-seeds:HN4-024:question:1",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "접수처"
-            },
-            {
-              "id": "b",
-              "text": "예약"
-            },
-            {
-              "id": "c",
-              "text": "주소"
-            },
-            {
-              "id": "d",
-              "text": "안내"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "접수처"
-        },
-        {
-          "order": 2,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "住所의 뜻은?",
-          "explanation": "住所(じゅうしょ)는 주소입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-024-question-2",
-            "textSource": "lesson-seeds:HN4-024:question:2",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "시간"
-            },
-            {
-              "id": "b",
-              "text": "주소"
-            },
-            {
-              "id": "c",
-              "text": "예약"
-            },
-            {
-              "id": "d",
-              "text": "도구"
-            }
-          ],
-          "correctAnswer": "b",
-          "correctOptionText": "주소"
-        },
-        {
-          "order": 3,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "受付の人に住所を確認して___ました。",
-          "explanation": "부탁해서 도움을 받는 관점이면 〜てもらう를 씁니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-024-question-3",
-            "textSource": "lesson-seeds:HN4-024:question:3",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "あげ"
-            },
-            {
-              "id": "b",
-              "text": "くれ"
-            },
-            {
-              "id": "c",
-              "text": "もらい"
-            },
-            {
-              "id": "d",
-              "text": "しまい"
-            }
-          ],
-          "correctAnswer": "c",
-          "correctOptionText": "もらい"
-        },
-        {
-          "order": 4,
-          "type": "CONTEXT_CLOZE",
-          "cognitiveLevel": "적용",
-          "prompt": "予約の時間も___もらいましたか。",
-          "explanation": "필요한 정보를 부탁해서 받는 맥락에는 教えてもらう가 자연스럽습니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-024-question-4",
-            "textSource": "lesson-seeds:HN4-024:question:4",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "教えて"
-            },
-            {
-              "id": "b",
-              "text": "盗んで"
-            },
-            {
-              "id": "c",
-              "text": "倒して"
-            },
-            {
-              "id": "d",
-              "text": "壊して"
-            }
-          ],
-          "correctAnswer": "a",
-          "correctOptionText": "教えて"
-        },
-        {
-          "order": 5,
-          "type": "SENTENCE_REORDER",
-          "cognitiveLevel": "산출유사",
-          "prompt": "'접수처 직원에게 주소를 확인해 달라고 했습니다'를 배열하세요.",
-          "explanation": "도움을 요청한 사람은 に로 표시하고, 부탁해서 받은 행동은 確認してもらいました로 말합니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-024-question-5",
-            "textSource": "lesson-seeds:HN4-024:question:5",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "tokens": [
-            "受付の人に",
-            "住所を",
-            "確認してもらいました"
-          ],
-          "correctOrder": [
-            "受付の人に",
-            "住所を",
-            "確認してもらいました"
-          ]
-        }
-      ],
-      "automatedSummary": {
-        "examples": 1,
-        "scriptLines": 4,
-        "questions": 5,
-        "exampleTtsTargets": 1,
-        "scriptTtsTargets": 4,
-        "questionTtsTargets": 5,
-        "vocabularyLinks": 6,
-        "grammarLinked": true
-      },
-      "validationGates": [
-        "ExampleOriginalityGate",
-        "RuntimeQuestionCompatibilityGate",
-        "KoreanLearnerGate",
-        "AudioReadinessGate"
-      ],
-      "notesKo": "PDF 050의 てもらう coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다.",
-      "reviewerChecklist": [
-        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
-        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
-        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
-        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
-        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
-      ]
-    },
-    {
-      "reviewId": "lesson-seed-candidate-review-lsc-n4-noni-001",
-      "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI approval 2026-05-29: delegated review found no blocker, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, contrast grammar focus, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
-      "candidateId": "lsc-n4-noni-001",
-      "candidateStatus": "draft",
-      "promotedLessonId": "HN4-025",
-      "lessonBlueprintId": "ldb-noni",
-      "sourceTopics": [
-        {
-          "topicId": "topic-noni",
-          "titleKo": "のに",
-          "coverageStatus": "covered",
-          "inferredJlptLevel": "N4",
-          "reviewStatus": "needs_review"
-        }
-      ],
-      "promotionTarget": {
-        "level": "N4",
-        "partNo": 1,
-        "chapterNo": 6,
-        "lessonNo": 25,
-        "chapterLessonNo": 4,
-        "publishStatus": "DRAFT"
-      },
-      "title": "예약했는데 자리가 없어요",
-      "subtitle": "〜のに로 기대와 다른 결과 말하기",
-      "topic": "のに",
-      "estimatedMinutes": 12,
-      "grammar": {
-        "order": 19,
-        "pattern": "〜のに",
-        "meaningKo": "~인데도 / ~했는데도",
-        "referencePattern": "〜のに",
-        "referenceMeaningKo": "~인데도 / ~하는데도 (역접)"
-      },
-      "vocabulary": [
         {
           "order": 54,
           "word": "連絡",
           "reading": "れんらく",
           "meaningKo": "연락",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 72,
-          "word": "予約",
-          "reading": "よやく",
-          "meaningKo": "예약",
           "partOfSpeech": "NOUN"
         },
         {
@@ -1168,64 +96,57 @@
           "partOfSpeech": "VERB"
         },
         {
-          "order": 486,
-          "word": "残念な",
-          "reading": "ざんねんな",
-          "meaningKo": "유감스러운. 아쉬운",
-          "partOfSpeech": "NA_ADJECTIVE"
+          "order": 182,
+          "word": "急に",
+          "reading": "きゅうに",
+          "meaningKo": "갑자기",
+          "partOfSpeech": "ADVERB"
         },
         {
-          "order": 568,
-          "word": "席",
-          "reading": "せき",
-          "meaningKo": "자리. 좌석",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 619,
-          "word": "頼む",
-          "reading": "たのむ",
-          "meaningKo": "부탁하다",
+          "order": 289,
+          "word": "遅れる",
+          "reading": "おくれる",
+          "meaningKo": "늦다. 늦어지다",
           "partOfSpeech": "VERB"
         }
       ],
       "examples": [
         {
-          "exampleId": "ex-n4-noni-001",
-          "topicId": "topic-noni",
-          "japanese": "予約したのに、席がありませんでした。",
-          "reading": "よやくしたのに、せきがありませんでした。",
-          "korean": "예약했는데도 자리가 없었습니다.",
+          "exampleId": "ex-n4-tara-conditional-001",
+          "topicId": "topic-tara-conditional",
+          "japanese": "雨が止んだら、駅まで歩きます。",
+          "reading": "あめがやんだら、えきまであるきます。",
+          "korean": "비가 그치면 역까지 걸어갑니다.",
           "sourceKind": "harukoto_authored",
           "originalityStatus": "authored_not_source_copied",
           "reviewStatus": "needs_review",
           "ttsTarget": {
-            "targetId": "tts-n4-noni-001-example-sentence",
-            "textSource": "example-bank:ex-n4-noni-001:japanese",
+            "targetId": "tts-n4-tara-conditional-001-example-sentence",
+            "textSource": "example-bank:ex-n4-tara-conditional-001:japanese",
             "audioTargetType": "example_sentence",
             "audioField": "example_sentence",
             "generationStatus": "missing",
-            "preferredVoiceId": "japanese_male_1"
+            "preferredVoiceId": "japanese_female_1"
           }
         }
       ],
       "reading": {
-        "scene": "예약했지만 자리가 없어 문의하는 상황",
+        "scene": "비가 그친 뒤 역으로 출발하고 도착 연락을 하기로 정하는 상황",
         "highlights": [
-          "予約したのに",
-          "間に合ったのに",
-          "連絡したのに"
+          "止んだら",
+          "遅れたら",
+          "着いたら"
         ],
         "script": [
           {
             "order": 1,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "予約したのに、席がありませんでした。",
-            "translationKo": "예약했는데도 자리가 없었습니다.",
+            "text": "雨が止んだら、駅へ出発します。",
+            "translationKo": "비가 그치면 역으로 출발하겠습니다.",
             "ttsTarget": {
-              "targetId": "tts-hn4-025-script-1",
-              "textSource": "lesson-seeds:HN4-025:script:1",
+              "targetId": "tts-lsc-n4-tara-conditional-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1236,11 +157,11 @@
             "order": 2,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "それは残念ですね。受付に連絡しましたか。",
-            "translationKo": "그건 아쉽네요. 접수처에 연락했나요?",
+            "text": "電車が遅れたら、すぐ連絡してください。",
+            "translationKo": "전철이 늦어지면 바로 연락해 주세요.",
             "ttsTarget": {
-              "targetId": "tts-hn4-025-script-2",
-              "textSource": "lesson-seeds:HN4-025:script:2",
+              "targetId": "tts-lsc-n4-tara-conditional-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1251,11 +172,11 @@
             "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "時間に間に合ったのに、確認に時間がかかりました。",
-            "translationKo": "시간에 맞췄는데도 확인에 시간이 걸렸습니다.",
+            "text": "はい。駅に着いたら、電話します。",
+            "translationKo": "네. 역에 도착하면 전화하겠습니다.",
             "ttsTarget": {
-              "targetId": "tts-hn4-025-script-3",
-              "textSource": "lesson-seeds:HN4-025:script:3",
+              "targetId": "tts-lsc-n4-tara-conditional-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1266,11 +187,11 @@
             "order": 4,
             "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "期待と違う結果を話す時に、のにを使います。",
-            "translationKo": "기대와 다른 결과를 말할 때 のに를 씁니다.",
+            "text": "間に合ったら、受付で会いましょう。",
+            "translationKo": "시간에 맞으면 접수처에서 만납시다.",
             "ttsTarget": {
-              "targetId": "tts-hn4-025-script-4",
-              "textSource": "lesson-seeds:HN4-025:script:4",
+              "targetId": "tts-lsc-n4-tara-conditional-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:script:4",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1284,11 +205,11 @@
           "order": 1,
           "type": "VOCAB_MCQ",
           "cognitiveLevel": "인식",
-          "prompt": "席의 뜻은?",
-          "explanation": "席(せき)는 자리 또는 좌석입니다.",
+          "prompt": "出発의 뜻은?",
+          "explanation": "出発(しゅっぱつ)은 출발이라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-025-question-1",
-            "textSource": "lesson-seeds:HN4-025:question:1",
+            "targetId": "tts-lsc-n4-tara-conditional-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1297,7 +218,42 @@
           "options": [
             {
               "id": "a",
-              "text": "자리, 좌석"
+              "text": "도착"
+            },
+            {
+              "id": "b",
+              "text": "출발"
+            },
+            {
+              "id": "c",
+              "text": "연락"
+            },
+            {
+              "id": "d",
+              "text": "상담"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "출발"
+        },
+        {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "連絡의 뜻은?",
+          "explanation": "連絡(れんらく)은 연락이라는 뜻입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-tara-conditional-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:question:2",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "지도"
             },
             {
               "id": "b",
@@ -1309,56 +265,21 @@
             },
             {
               "id": "d",
-              "text": "시간"
+              "text": "날씨"
             }
           ],
-          "correctAnswer": "a",
-          "correctOptionText": "자리, 좌석"
-        },
-        {
-          "order": 2,
-          "type": "VOCAB_MCQ",
-          "cognitiveLevel": "인식",
-          "prompt": "残念な의 뜻은?",
-          "explanation": "残念な(ざんねんな)는 아쉬운, 유감스러운이라는 뜻입니다.",
-          "ttsTarget": {
-            "targetId": "tts-hn4-025-question-2",
-            "textSource": "lesson-seeds:HN4-025:question:2",
-            "audioTargetType": "question_prompt",
-            "audioField": "question_prompt",
-            "generationStatus": "missing",
-            "preferredVoiceId": null
-          },
-          "options": [
-            {
-              "id": "a",
-              "text": "충분한"
-            },
-            {
-              "id": "b",
-              "text": "아쉬운, 유감스러운"
-            },
-            {
-              "id": "c",
-              "text": "안전한"
-            },
-            {
-              "id": "d",
-              "text": "자유로운"
-            }
-          ],
-          "correctAnswer": "b",
-          "correctOptionText": "아쉬운, 유감스러운"
+          "correctAnswer": "c",
+          "correctOptionText": "연락"
         },
         {
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "予約した___、席がありませんでした。",
-          "explanation": "예상과 다른 결과를 연결할 때 〜のに를 씁니다.",
+          "prompt": "雨が止ん___、駅へ出発します。",
+          "explanation": "止む의 た형 止んだ에 ら를 붙이면 止んだら가 됩니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-025-question-3",
-            "textSource": "lesson-seeds:HN4-025:question:3",
+            "targetId": "tts-lsc-n4-tara-conditional-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1367,33 +288,33 @@
           "options": [
             {
               "id": "a",
-              "text": "のに"
+              "text": "だら"
             },
             {
               "id": "b",
-              "text": "ために"
+              "text": "なら"
             },
             {
               "id": "c",
-              "text": "はず"
+              "text": "ば"
             },
             {
               "id": "d",
-              "text": "もの"
+              "text": "し"
             }
           ],
           "correctAnswer": "a",
-          "correctOptionText": "のに"
+          "correctOptionText": "だら"
         },
         {
           "order": 4,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "時間に___のに、確認に時間がかかりました。",
-          "explanation": "間に合ったのに는 시간에 맞췄는데도라는 뜻입니다.",
+          "prompt": "駅に着い___、電話します。",
+          "explanation": "着いたら는 '도착하면'이라는 조건/순서 표현입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-025-question-4",
-            "textSource": "lesson-seeds:HN4-025:question:4",
+            "targetId": "tts-lsc-n4-tara-conditional-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1402,47 +323,47 @@
           "options": [
             {
               "id": "a",
-              "text": "間に合った"
+              "text": "ても"
             },
             {
               "id": "b",
-              "text": "盗まれた"
+              "text": "たら"
             },
             {
               "id": "c",
-              "text": "倒した"
+              "text": "し"
             },
             {
               "id": "d",
-              "text": "邪魔した"
+              "text": "よう"
             }
           ],
-          "correctAnswer": "a",
-          "correctOptionText": "間に合った"
+          "correctAnswer": "b",
+          "correctOptionText": "たら"
         },
         {
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'예약했는데도 자리가 없었습니다'를 배열하세요.",
-          "explanation": "앞 절에 のに를 붙여 기대와 다른 뒤 절을 연결합니다.",
+          "prompt": "'비가 그치면 역으로 출발합니다'를 배열하세요.",
+          "explanation": "조건절 雨が止んだら 뒤에 이동 목적지와 동사를 둡니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-025-question-5",
-            "textSource": "lesson-seeds:HN4-025:question:5",
+            "targetId": "tts-lsc-n4-tara-conditional-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-tara-conditional-001:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
             "preferredVoiceId": null
           },
           "tokens": [
-            "席が",
-            "予約したのに",
-            "ありませんでした"
+            "駅へ",
+            "出発します",
+            "雨が止んだら"
           ],
           "correctOrder": [
-            "予約したのに",
-            "席が",
-            "ありませんでした"
+            "雨が止んだら",
+            "駅へ",
+            "出発します"
           ]
         }
       ],
@@ -1463,7 +384,7 @@
         "AudioReadinessGate",
         "ContrastGate"
       ],
-      "notesKo": "PDF 078의 のに coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다.",
+      "notesKo": "PDF 052의 たら coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다.",
       "reviewerChecklist": [
         "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
         "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
@@ -1473,17 +394,17 @@
       ]
     },
     {
-      "reviewId": "lesson-seed-candidate-review-lsc-n4-passive-form-001",
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-ba-conditional-001",
       "reviewerDecision": "APPROVED",
-      "reviewerNotes": "AI approval 2026-05-29: delegated review findings for passive-form Q4 and theft-dialogue wording were resolved, and self-review confirmed candidate-stage N4 fit, Korean learner clarity, prompt compatibility, and TTS target coverage. This is not native-speaker or formal human approval.",
-      "candidateId": "lsc-n4-passive-form-001",
+      "reviewerNotes": "Delegated AI candidate curriculum review 2026-06-01: approved for candidate-only CH07 after structural validation, source-topic alignment, runtime-compatible questions, answer-key review, and TTS target coverage. This is not native-speaker approval or learner-facing promotion.",
+      "candidateId": "lsc-n4-ba-conditional-001",
       "candidateStatus": "draft",
-      "promotedLessonId": "HN4-026",
-      "lessonBlueprintId": "ldb-passive-form",
+      "promotedLessonId": null,
+      "lessonBlueprintId": "ldb-ba-conditional",
       "sourceTopics": [
         {
-          "topicId": "topic-passive-form",
-          "titleKo": "동사의 수동형",
+          "topicId": "topic-ba-conditional",
+          "titleKo": "ば",
           "coverageStatus": "covered",
           "inferredJlptLevel": "N4",
           "reviewStatus": "needs_review"
@@ -1492,133 +413,118 @@
       "promotionTarget": {
         "level": "N4",
         "partNo": 1,
-        "chapterNo": 6,
-        "lessonNo": 26,
-        "chapterLessonNo": 5,
+        "chapterNo": 7,
+        "lessonNo": 28,
+        "chapterLessonNo": 2,
         "publishStatus": "DRAFT"
       },
-      "title": "자전거를 도난당했어요",
-      "subtitle": "수동형 〜られる로 피해나 경험 말하기",
-      "topic": "수동형",
+      "title": "시간이 있으면 상담할 수 있어요",
+      "subtitle": "〜ば로 조건을 부드럽게 말하기",
+      "topic": "ば 조건",
       "estimatedMinutes": 12,
       "grammar": {
-        "order": 26,
-        "pattern": "수동형 〜(ら)れる",
-        "meaningKo": "~되다 / ~당하다 (수동)",
-        "referencePattern": "수동형 〜(ら)れる",
-        "referenceMeaningKo": "~되다 / ~당하다 (수동)"
+        "order": 22,
+        "pattern": "〜ば",
+        "meaningKo": "~하면",
+        "referencePattern": "〜ば",
+        "referenceMeaningKo": "~하면 (조건)"
       },
       "vocabulary": [
         {
-          "order": 121,
-          "word": "盗む",
-          "reading": "ぬすむ",
-          "meaningKo": "훔치다",
+          "order": 16,
+          "word": "準備",
+          "reading": "じゅんび",
+          "meaningKo": "준비",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 17,
+          "word": "予定",
+          "reading": "よてい",
+          "meaningKo": "예정",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 53,
+          "word": "会議",
+          "reading": "かいぎ",
+          "meaningKo": "회의",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 61,
+          "word": "相談",
+          "reading": "そうだん",
+          "meaningKo": "상담",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 97,
+          "word": "間に合う",
+          "reading": "まにあう",
+          "meaningKo": "시간에 맞다, 늦지 않다",
           "partOfSpeech": "VERB"
         },
         {
-          "order": 299,
-          "word": "落とし物",
-          "reading": "おとしもの",
-          "meaningKo": "빠뜨린 물건. 분실물. 유실물",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 406,
-          "word": "警察",
-          "reading": "けいさつ",
-          "meaningKo": "경찰",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 504,
-          "word": "自転車",
-          "reading": "じてんしゃ",
-          "meaningKo": "자전거",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 727,
-          "word": "荷物",
-          "reading": "にもつ",
-          "meaningKo": "짐",
-          "partOfSpeech": "NOUN"
-        },
-        {
-          "order": 764,
-          "word": "場所",
-          "reading": "ばしょ",
-          "meaningKo": "장소. 곳",
-          "partOfSpeech": "NOUN"
+          "order": 165,
+          "word": "必要",
+          "reading": "ひつよう",
+          "meaningKo": "필요하다",
+          "partOfSpeech": "NA_ADJECTIVE"
         }
       ],
       "examples": [
         {
-          "exampleId": "ex-n4-passive-form-001",
-          "topicId": "topic-passive-form",
-          "japanese": "駅の前で自転車を盗まれました。",
-          "reading": "えきのまえでじてんしゃをぬすまれました。",
-          "korean": "역 앞에서 자전거를 도난당했습니다.",
+          "exampleId": "ex-n4-ba-conditional-001",
+          "topicId": "topic-ba-conditional",
+          "japanese": "時間があれば、受付で相談できます。",
+          "reading": "じかんがあれば、うけつけでそうだんできます。",
+          "korean": "시간이 있으면 접수처에서 상담할 수 있습니다.",
           "sourceKind": "harukoto_authored",
           "originalityStatus": "authored_not_source_copied",
           "reviewStatus": "needs_review",
           "ttsTarget": {
-            "targetId": "tts-n4-passive-form-001-example-sentence",
-            "textSource": "example-bank:ex-n4-passive-form-001:japanese",
+            "targetId": "tts-n4-ba-conditional-001-example-sentence",
+            "textSource": "example-bank:ex-n4-ba-conditional-001:japanese",
             "audioTargetType": "example_sentence",
             "audioField": "example_sentence",
             "generationStatus": "missing",
-            "preferredVoiceId": "japanese_male_1"
+            "preferredVoiceId": "japanese_female_1"
           }
         }
       ],
       "reading": {
-        "scene": "역 앞에서 자전거를 도난당해 경찰에 알리는 상황",
+        "scene": "회의 뒤 시간이 나면 접수처에서 상담하기로 조율하는 상황",
         "highlights": [
-          "盗まれました",
-          "声をかけられて",
-          "確認されます"
+          "あれば",
+          "終われば",
+          "間に合えば"
         ],
         "script": [
           {
             "order": 1,
-            "speaker": "キム",
-            "voiceId": "japanese_male_1",
-            "text": "駅の前で自転車を盗まれました。",
-            "translationKo": "역 앞에서 자전거를 도난당했습니다.",
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "午後に時間があれば、少し相談できますか。",
+            "translationKo": "오후에 시간이 있으면 잠깐 상담할 수 있을까요?",
             "ttsTarget": {
-              "targetId": "tts-hn4-026-script-1",
-              "textSource": "lesson-seeds:HN4-026:script:1",
+              "targetId": "tts-lsc-n4-ba-conditional-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:script:1",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
-              "preferredVoiceId": "japanese_male_1"
+              "preferredVoiceId": "japanese_female_1"
             }
           },
           {
             "order": 2,
-            "speaker": "警察官",
-            "voiceId": "japanese_female_1",
-            "text": "落とし物ではなく、盗まれたんですね。",
-            "translationKo": "분실물이 아니라 도난당한 거군요.",
-            "ttsTarget": {
-              "targetId": "tts-hn4-026-script-2",
-              "textSource": "lesson-seeds:HN4-026:script:2",
-              "audioTargetType": "lesson_script",
-              "audioField": "script_line",
-              "generationStatus": "missing",
-              "preferredVoiceId": "japanese_female_1"
-            }
-          },
-          {
-            "order": 3,
             "speaker": "キム",
             "voiceId": "japanese_male_1",
-            "text": "はい。近くの人に声をかけられて、すぐ警察に来ました。",
-            "translationKo": "네. 근처 사람이 말을 걸어 와서 바로 경찰에 왔습니다.",
+            "text": "はい。会議が早く終われば、相談できます。",
+            "translationKo": "네. 회의가 일찍 끝나면 상담할 수 있습니다.",
             "ttsTarget": {
-              "targetId": "tts-hn4-026-script-3",
-              "textSource": "lesson-seeds:HN4-026:script:3",
+              "targetId": "tts-lsc-n4-ba-conditional-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:script:2",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
@@ -1626,18 +532,33 @@
             }
           },
           {
-            "order": 4,
-            "speaker": "警察官",
+            "order": 3,
+            "speaker": "佐藤",
             "voiceId": "japanese_female_1",
-            "text": "近くのカメラの映像がこれから確認されます。",
-            "translationKo": "근처 카메라 영상이 이제 확인될 것입니다.",
+            "text": "資料が必要なら、先に送ります。",
+            "translationKo": "자료가 필요하다면 먼저 보내겠습니다.",
             "ttsTarget": {
-              "targetId": "tts-hn4-026-script-4",
-              "textSource": "lesson-seeds:HN4-026:script:4",
+              "targetId": "tts-lsc-n4-ba-conditional-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:script:3",
               "audioTargetType": "lesson_script",
               "audioField": "script_line",
               "generationStatus": "missing",
               "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 4,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "準備が間に合えば、とても助かります。",
+            "translationKo": "준비가 시간에 맞으면 정말 도움이 됩니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-ba-conditional-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:script:4",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
             }
           }
         ]
@@ -1647,11 +568,11 @@
           "order": 1,
           "type": "VOCAB_MCQ",
           "cognitiveLevel": "인식",
-          "prompt": "自転車의 뜻은?",
-          "explanation": "自転車(じてんしゃ)는 자전거입니다.",
+          "prompt": "相談의 뜻은?",
+          "explanation": "相談(そうだん)은 상담이라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-026-question-1",
-            "textSource": "lesson-seeds:HN4-026:question:1",
+            "targetId": "tts-lsc-n4-ba-conditional-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:question:1",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1660,33 +581,33 @@
           "options": [
             {
               "id": "a",
-              "text": "자동차"
+              "text": "상담"
             },
             {
               "id": "b",
-              "text": "자전거"
+              "text": "도착"
             },
             {
               "id": "c",
-              "text": "기차"
+              "text": "지도"
             },
             {
               "id": "d",
-              "text": "오토바이"
+              "text": "예정"
             }
           ],
-          "correctAnswer": "b",
-          "correctOptionText": "자전거"
+          "correctAnswer": "a",
+          "correctOptionText": "상담"
         },
         {
           "order": 2,
           "type": "VOCAB_MCQ",
           "cognitiveLevel": "인식",
-          "prompt": "盗む의 뜻은?",
-          "explanation": "盗む(ぬすむ)는 훔치다라는 뜻입니다.",
+          "prompt": "必要의 뜻은?",
+          "explanation": "必要(ひつよう)은 필요라는 뜻입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-026-question-2",
-            "textSource": "lesson-seeds:HN4-026:question:2",
+            "targetId": "tts-lsc-n4-ba-conditional-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:question:2",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1695,33 +616,33 @@
           "options": [
             {
               "id": "a",
-              "text": "훔치다"
+              "text": "최근"
             },
             {
               "id": "b",
-              "text": "알리다"
+              "text": "필요"
             },
             {
               "id": "c",
-              "text": "조사하다"
+              "text": "연락"
             },
             {
               "id": "d",
-              "text": "넘어지다"
+              "text": "출발"
             }
           ],
-          "correctAnswer": "a",
-          "correctOptionText": "훔치다"
+          "correctAnswer": "b",
+          "correctOptionText": "필요"
         },
         {
           "order": 3,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "自転車を盗___ました。",
-          "explanation": "盗む의 수동형은 盗まれる이며, 정중 과거는 盗まれました입니다.",
+          "prompt": "時間があれ___、相談できます。",
+          "explanation": "ある의 ば형은 あれば입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-026-question-3",
-            "textSource": "lesson-seeds:HN4-026:question:3",
+            "targetId": "tts-lsc-n4-ba-conditional-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:question:3",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1730,33 +651,33 @@
           "options": [
             {
               "id": "a",
-              "text": "み"
+              "text": "ば"
             },
             {
               "id": "b",
-              "text": "まれ"
+              "text": "たら"
             },
             {
               "id": "c",
-              "text": "ませ"
+              "text": "なら"
             },
             {
               "id": "d",
-              "text": "もらい"
+              "text": "のに"
             }
           ],
-          "correctAnswer": "b",
-          "correctOptionText": "まれ"
+          "correctAnswer": "a",
+          "correctOptionText": "ば"
         },
         {
           "order": 4,
           "type": "CONTEXT_CLOZE",
           "cognitiveLevel": "적용",
-          "prompt": "近くの人に声をかけ___て、すぐ警察に来ました。",
-          "explanation": "声をかける의 수동형은 声をかけられる이며, て형은 声をかけられて입니다.",
+          "prompt": "会議が早く終われ___、相談できます。",
+          "explanation": "終わる의 ば형은 終われば입니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-026-question-4",
-            "textSource": "lesson-seeds:HN4-026:question:4",
+            "targetId": "tts-lsc-n4-ba-conditional-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:question:4",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
@@ -1765,45 +686,47 @@
           "options": [
             {
               "id": "a",
-              "text": "せ"
-            },
-            {
-              "id": "b",
-              "text": "られ"
-            },
-            {
-              "id": "c",
               "text": "し"
             },
             {
+              "id": "b",
+              "text": "て"
+            },
+            {
+              "id": "c",
+              "text": "ば"
+            },
+            {
               "id": "d",
-              "text": "り"
+              "text": "もの"
             }
           ],
-          "correctAnswer": "b",
-          "correctOptionText": "られ"
+          "correctAnswer": "c",
+          "correctOptionText": "ば"
         },
         {
           "order": 5,
           "type": "SENTENCE_REORDER",
           "cognitiveLevel": "산출유사",
-          "prompt": "'자전거를 도난당했습니다'를 배열하세요.",
-          "explanation": "피해 수동에서는 피해를 받은 대상을 を로 두고 수동형 盗まれました를 씁니다.",
+          "prompt": "'시간이 있으면 접수처에서 상담할 수 있어요'를 배열하세요.",
+          "explanation": "条件절 時間があれば 뒤에 장소 受付で와 가능 표현 相談できます를 둡니다.",
           "ttsTarget": {
-            "targetId": "tts-hn4-026-question-5",
-            "textSource": "lesson-seeds:HN4-026:question:5",
+            "targetId": "tts-lsc-n4-ba-conditional-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-ba-conditional-001:question:5",
             "audioTargetType": "question_prompt",
             "audioField": "question_prompt",
             "generationStatus": "missing",
             "preferredVoiceId": null
           },
           "tokens": [
-            "盗まれました",
-            "自転車を"
+            "受付で",
+            "相談できます",
+            "時間があれば"
           ],
           "correctOrder": [
-            "自転車を",
-            "盗まれました"
+            "時間があれば",
+            "受付で",
+            "相談できます"
           ]
         }
       ],
@@ -1821,9 +744,1106 @@
         "ExampleOriginalityGate",
         "RuntimeQuestionCompatibilityGate",
         "KoreanLearnerGate",
-        "AudioReadinessGate"
+        "AudioReadinessGate",
+        "ContrastGate"
       ],
-      "notesKo": "PDF 080의 수동형 coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다.",
+      "notesKo": "PDF 088의 ば coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다.",
+      "reviewerChecklist": [
+        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
+        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
+        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
+        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
+        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
+      ]
+    },
+    {
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-nara-conditional-001",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "Delegated AI candidate curriculum review 2026-06-01: approved for candidate-only CH07 after structural validation, source-topic alignment, runtime-compatible questions, answer-key review, and TTS target coverage. This is not native-speaker approval or learner-facing promotion.",
+      "candidateId": "lsc-n4-nara-conditional-001",
+      "candidateStatus": "draft",
+      "promotedLessonId": null,
+      "lessonBlueprintId": "ldb-nara-conditional",
+      "sourceTopics": [
+        {
+          "topicId": "topic-nara-conditional",
+          "titleKo": "なら",
+          "coverageStatus": "covered",
+          "inferredJlptLevel": "N4",
+          "reviewStatus": "needs_review"
+        }
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 29,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "title": "역에 간다면 지도를 보세요",
+      "subtitle": "N / 普通形 + なら로 화제 조건 말하기",
+      "topic": "なら 조건",
+      "estimatedMinutes": 12,
+      "grammar": {
+        "order": 23,
+        "pattern": "N / 普通形 + なら",
+        "meaningKo": "~라면 / ~한다면",
+        "referencePattern": "〜なら",
+        "referenceMeaningKo": "~라면 / ~이라면 (조건)"
+      },
+      "vocabulary": [
+        {
+          "order": 20,
+          "word": "交差点",
+          "reading": "こうさてん",
+          "meaningKo": "교차로",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 21,
+          "word": "信号",
+          "reading": "しんごう",
+          "meaningKo": "신호등",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 72,
+          "word": "予約",
+          "reading": "よやく",
+          "meaningKo": "예약",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 570,
+          "word": "説明",
+          "reading": "せつめい",
+          "meaningKo": "설명",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 631,
+          "word": "地図",
+          "reading": "ちず",
+          "meaningKo": "지도",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 675,
+          "word": "店員",
+          "reading": "てんいん",
+          "meaningKo": "점원",
+          "partOfSpeech": "NOUN"
+        }
+      ],
+      "examples": [
+        {
+          "exampleId": "ex-n4-nara-conditional-001",
+          "topicId": "topic-nara-conditional",
+          "japanese": "駅へ行くなら、この地図を見てください。",
+          "reading": "えきへいくなら、このちずをみてください。",
+          "korean": "역에 간다면 이 지도를 보세요.",
+          "sourceKind": "harukoto_authored",
+          "originalityStatus": "authored_not_source_copied",
+          "reviewStatus": "needs_review",
+          "ttsTarget": {
+            "targetId": "tts-n4-nara-conditional-001-example-sentence",
+            "textSource": "example-bank:ex-n4-nara-conditional-001:japanese",
+            "audioTargetType": "example_sentence",
+            "audioField": "example_sentence",
+            "generationStatus": "missing",
+            "preferredVoiceId": "japanese_male_1"
+          }
+        }
+      ],
+      "reading": {
+        "scene": "처음 가는 역 주변 길을 물어보고 안내받는 상황",
+        "highlights": [
+          "行くなら",
+          "渡るなら",
+          "分からないなら"
+        ],
+        "script": [
+          {
+            "order": 1,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "初めてこの駅に行くなら、地図を見てください。",
+            "translationKo": "처음 이 역에 간다면 지도를 보세요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-nara-conditional-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:script:1",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 2,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "交差点を渡るなら、信号をよく見てください。",
+            "translationKo": "교차로를 건넌다면 신호를 잘 보세요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-nara-conditional-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:script:2",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 3,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "道が分からないなら、店員に聞いてもいいです。",
+            "translationKo": "길을 모르겠다면 점원에게 물어봐도 됩니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-nara-conditional-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:script:3",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 4,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "予約の場所なら、駅の近くですよ。",
+            "translationKo": "예약한 장소라면 역 근처예요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-nara-conditional-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:script:4",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "地図의 뜻은?",
+          "explanation": "地図(ちず)는 지도입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-nara-conditional-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:question:1",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "지도"
+            },
+            {
+              "id": "b",
+              "text": "날씨"
+            },
+            {
+              "id": "c",
+              "text": "회의"
+            },
+            {
+              "id": "d",
+              "text": "출발"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "지도"
+        },
+        {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "信号의 뜻은?",
+          "explanation": "信号(しんごう)은 신호입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-nara-conditional-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:question:2",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "상담"
+            },
+            {
+              "id": "b",
+              "text": "예정"
+            },
+            {
+              "id": "c",
+              "text": "신호"
+            },
+            {
+              "id": "d",
+              "text": "자료"
+            }
+          ],
+          "correctAnswer": "c",
+          "correctOptionText": "신호"
+        },
+        {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "この駅に行く___、地図を見てください。",
+          "explanation": "상대가 말한 계획이나 화제를 받아 조건으로 말할 때 なら를 씁니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-nara-conditional-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:question:3",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "たら"
+            },
+            {
+              "id": "b",
+              "text": "ば"
+            },
+            {
+              "id": "c",
+              "text": "なら"
+            },
+            {
+              "id": "d",
+              "text": "し"
+            }
+          ],
+          "correctAnswer": "c",
+          "correctOptionText": "なら"
+        },
+        {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "道が分からない___、店員に聞いてもいいです。",
+          "explanation": "分からないなら는 '모르겠다면'이라는 화제 조건입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-nara-conditional-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:question:4",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "なら"
+            },
+            {
+              "id": "b",
+              "text": "のに"
+            },
+            {
+              "id": "c",
+              "text": "そう"
+            },
+            {
+              "id": "d",
+              "text": "ばかり"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "なら"
+        },
+        {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "cognitiveLevel": "산출유사",
+          "prompt": "'역에 간다면 지도를 보세요'를 배열하세요.",
+          "explanation": "조건절 駅に行くなら 뒤에 지시 표현 地図を見てください를 둡니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-nara-conditional-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-nara-conditional-001:question:5",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "tokens": [
+            "地図を",
+            "駅に行くなら",
+            "見てください"
+          ],
+          "correctOrder": [
+            "駅に行くなら",
+            "地図を",
+            "見てください"
+          ]
+        }
+      ],
+      "automatedSummary": {
+        "examples": 1,
+        "scriptLines": 4,
+        "questions": 5,
+        "exampleTtsTargets": 1,
+        "scriptTtsTargets": 4,
+        "questionTtsTargets": 5,
+        "vocabularyLinks": 6,
+        "grammarLinked": true
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 089의 なら coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다.",
+      "reviewerChecklist": [
+        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
+        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
+        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
+        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
+        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
+      ]
+    },
+    {
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-rashii-001",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "Delegated AI candidate curriculum review 2026-06-01: approved for candidate-only CH07 after structural validation, source-topic alignment, runtime-compatible questions, answer-key review, and TTS target coverage. This is not native-speaker approval or learner-facing promotion.",
+      "candidateId": "lsc-n4-rashii-001",
+      "candidateStatus": "draft",
+      "promotedLessonId": null,
+      "lessonBlueprintId": "ldb-rashii",
+      "sourceTopics": [
+        {
+          "topicId": "topic-rashii",
+          "titleKo": "らしい",
+          "coverageStatus": "covered",
+          "inferredJlptLevel": "N4",
+          "reviewStatus": "needs_review"
+        }
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 30,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "title": "내일은 비가 온다나 봐요",
+      "subtitle": "〜らしい로 들은 정보와 그럴듯한 추측 말하기",
+      "topic": "らしい",
+      "estimatedMinutes": 12,
+      "grammar": {
+        "order": 15,
+        "pattern": "〜らしい",
+        "meaningKo": "~인 것 같다 / ~답다",
+        "referencePattern": "〜らしい",
+        "referenceMeaningKo": "~인 것 같다 / ~답다 (추측/전형)"
+      },
+      "vocabulary": [
+        {
+          "order": 77,
+          "word": "最近",
+          "reading": "さいきん",
+          "meaningKo": "최근",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 181,
+          "word": "かなり",
+          "reading": "かなり",
+          "meaningKo": "상당히, 꽤",
+          "partOfSpeech": "ADVERB"
+        },
+        {
+          "order": 182,
+          "word": "急に",
+          "reading": "きゅうに",
+          "meaningKo": "갑자기",
+          "partOfSpeech": "ADVERB"
+        },
+        {
+          "order": 212,
+          "word": "明日",
+          "reading": "あす",
+          "meaningKo": "내일(방송용어) ＝あした",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 658,
+          "word": "梅雨",
+          "reading": "つゆ",
+          "meaningKo": "장마",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 676,
+          "word": "天気予報",
+          "reading": "てんきよほう",
+          "meaningKo": "일기 예보",
+          "partOfSpeech": "NOUN"
+        }
+      ],
+      "examples": [
+        {
+          "exampleId": "ex-n4-rashii-001",
+          "topicId": "topic-rashii",
+          "japanese": "天気予報では、明日は雨らしいです。",
+          "reading": "てんきよほうでは、あしたはあめらしいです。",
+          "korean": "일기예보로는 내일은 비가 온다나 봅니다.",
+          "sourceKind": "harukoto_authored",
+          "originalityStatus": "authored_not_source_copied",
+          "reviewStatus": "needs_review",
+          "ttsTarget": {
+            "targetId": "tts-n4-rashii-001-example-sentence",
+            "textSource": "example-bank:ex-n4-rashii-001:japanese",
+            "audioTargetType": "example_sentence",
+            "audioField": "example_sentence",
+            "generationStatus": "missing",
+            "preferredVoiceId": "japanese_female_1"
+          }
+        }
+      ],
+      "reading": {
+        "scene": "일기예보와 최근 날씨 이야기를 하며 들은 정보를 전달하는 상황",
+        "highlights": [
+          "雨らしい",
+          "入ったらしい",
+          "寒くなるらしい"
+        ],
+        "script": [
+          {
+            "order": 1,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "天気予報では、明日は雨らしいです。",
+            "translationKo": "일기예보로는 내일은 비가 온다나 봅니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-rashii-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:script:1",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 2,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "最近、梅雨に入ったらしいですね。",
+            "translationKo": "최근 장마에 들어갔다나 보네요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-rashii-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:script:2",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 3,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "午後は急に寒くなるらしいです。",
+            "translationKo": "오후에는 갑자기 추워진다나 봅니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-rashii-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:script:3",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 4,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "じゃあ、傘を持って行ったほうがよさそうです。",
+            "translationKo": "그럼 우산을 가지고 가는 편이 좋을 것 같습니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-rashii-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:script:4",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "天気予報의 뜻은?",
+          "explanation": "天気予報(てんきよほう)는 일기예보입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-rashii-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:question:1",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "일기예보"
+            },
+            {
+              "id": "b",
+              "text": "상담 예약"
+            },
+            {
+              "id": "c",
+              "text": "교차로"
+            },
+            {
+              "id": "d",
+              "text": "도착 시간"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "일기예보"
+        },
+        {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "最近의 뜻은?",
+          "explanation": "最近(さいきん)은 최근이라는 뜻입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-rashii-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:question:2",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "방금"
+            },
+            {
+              "id": "b",
+              "text": "최근"
+            },
+            {
+              "id": "c",
+              "text": "반드시"
+            },
+            {
+              "id": "d",
+              "text": "거의"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "최근"
+        },
+        {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "明日は雨___です。",
+          "explanation": "雨らしいです는 들은 정보나 그럴듯한 추측으로 '비가 온다나 봅니다'라고 말합니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-rashii-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:question:3",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "ばかり"
+            },
+            {
+              "id": "b",
+              "text": "らしい"
+            },
+            {
+              "id": "c",
+              "text": "なら"
+            },
+            {
+              "id": "d",
+              "text": "のに"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "らしい"
+        },
+        {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "梅雨に入った___ですね。",
+          "explanation": "普通形 入った 뒤에 らしい를 붙여 들은 정보를 전달합니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-rashii-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:question:4",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "らしい"
+            },
+            {
+              "id": "b",
+              "text": "たら"
+            },
+            {
+              "id": "c",
+              "text": "ば"
+            },
+            {
+              "id": "d",
+              "text": "し"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "らしい"
+        },
+        {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "cognitiveLevel": "산출유사",
+          "prompt": "'내일은 비가 온다나 봅니다'를 배열하세요.",
+          "explanation": "화제 明日は 뒤에 추측/전문 표현 雨らしいです를 둡니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-rashii-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-rashii-001:question:5",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "tokens": [
+            "雨",
+            "らしいです",
+            "明日は"
+          ],
+          "correctOrder": [
+            "明日は",
+            "雨",
+            "らしいです"
+          ]
+        }
+      ],
+      "automatedSummary": {
+        "examples": 1,
+        "scriptLines": 4,
+        "questions": 5,
+        "exampleTtsTargets": 1,
+        "scriptTtsTargets": 4,
+        "questionTtsTargets": 5,
+        "vocabularyLinks": 6,
+        "grammarLinked": true
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 094의 らしい coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다.",
+      "reviewerChecklist": [
+        "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
+        "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",
+        "한국어 번역, 해설, distractor가 한국어 학습자 기준으로 명확한지 확인한다.",
+        "문항 정답과 해설이 prompt/options/token order와 일치하는지 확인한다.",
+        "TTS review target이 example 1개, script 4개, question 5개를 모두 덮는지 확인한다."
+      ]
+    },
+    {
+      "reviewId": "lesson-seed-candidate-review-lsc-n4-ta-bakari-001",
+      "reviewerDecision": "APPROVED",
+      "reviewerNotes": "Delegated AI candidate curriculum review 2026-06-01: approved for candidate-only CH07 after structural validation, source-topic alignment, runtime-compatible questions, answer-key review, and TTS target coverage. This is not native-speaker approval or learner-facing promotion.",
+      "candidateId": "lsc-n4-ta-bakari-001",
+      "candidateStatus": "draft",
+      "promotedLessonId": null,
+      "lessonBlueprintId": "ldb-ta-bakari",
+      "sourceTopics": [
+        {
+          "topicId": "topic-ta-bakari",
+          "titleKo": "たばかりだ",
+          "coverageStatus": "covered",
+          "inferredJlptLevel": "N4",
+          "reviewStatus": "needs_review"
+        }
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 31,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "title": "방금 회의가 끝났어요",
+      "subtitle": "Vた + ばかり로 막 끝난 일 말하기",
+      "topic": "たばかり",
+      "estimatedMinutes": 12,
+      "grammar": {
+        "order": 32,
+        "pattern": "Vた + ばかり",
+        "meaningKo": "막 ~했다",
+        "referencePattern": "〜ばかり",
+        "referenceMeaningKo": "방금 ~했다 / ~만 (방금/한정)"
+      },
+      "vocabulary": [
+        {
+          "order": 17,
+          "word": "予定",
+          "reading": "よてい",
+          "meaningKo": "예정",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 28,
+          "word": "出発",
+          "reading": "しゅっぱつ",
+          "meaningKo": "출발",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 53,
+          "word": "会議",
+          "reading": "かいぎ",
+          "meaningKo": "회의",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 54,
+          "word": "連絡",
+          "reading": "れんらく",
+          "meaningKo": "연락",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 63,
+          "word": "受付",
+          "reading": "うけつけ",
+          "meaningKo": "접수, 안내 데스크",
+          "partOfSpeech": "NOUN"
+        },
+        {
+          "order": 84,
+          "word": "受ける",
+          "reading": "うける",
+          "meaningKo": "받다, 시험을 치다",
+          "partOfSpeech": "VERB"
+        },
+        {
+          "order": 474,
+          "word": "さっき",
+          "reading": "さっき",
+          "meaningKo": "아까. 조금 전에",
+          "partOfSpeech": "ADVERB"
+        }
+      ],
+      "examples": [
+        {
+          "exampleId": "ex-n4-ta-bakari-001",
+          "topicId": "topic-ta-bakari",
+          "japanese": "会議は今終わったばかりです。",
+          "reading": "かいぎはいまおわったばかりです。",
+          "korean": "회의는 방금 끝난 참입니다.",
+          "sourceKind": "harukoto_authored",
+          "originalityStatus": "authored_not_source_copied",
+          "reviewStatus": "needs_review",
+          "ttsTarget": {
+            "targetId": "tts-n4-ta-bakari-001-example-sentence",
+            "textSource": "example-bank:ex-n4-ta-bakari-001:japanese",
+            "audioTargetType": "example_sentence",
+            "audioField": "example_sentence",
+            "generationStatus": "missing",
+            "preferredVoiceId": "japanese_male_1"
+          }
+        }
+      ],
+      "reading": {
+        "scene": "회의가 막 끝난 뒤 자료 확인과 출발 시간을 조율하는 상황",
+        "highlights": [
+          "終わったばかり",
+          "受け取ったばかり",
+          "出発したばかり"
+        ],
+        "script": [
+          {
+            "order": 1,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "会議はさっき終わったばかりです。",
+            "translationKo": "회의는 방금 끝난 참입니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-ta-bakari-001-script-1",
+              "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:script:1",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 2,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "じゃあ、次の予定はまだ確認していませんか。",
+            "translationKo": "그럼 다음 예정은 아직 확인하지 않았나요?",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-ta-bakari-001-script-2",
+              "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:script:2",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          },
+          {
+            "order": 3,
+            "speaker": "キム",
+            "voiceId": "japanese_male_1",
+            "text": "はい。連絡を受けたばかりなので、これから確認します。",
+            "translationKo": "네. 방금 연락을 받은 참이라 이제 확인하겠습니다.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-ta-bakari-001-script-3",
+              "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:script:3",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_male_1"
+            }
+          },
+          {
+            "order": 4,
+            "speaker": "佐藤",
+            "voiceId": "japanese_female_1",
+            "text": "私も出発したばかりです。受付で少し待ってください。",
+            "translationKo": "저도 방금 출발한 참입니다. 접수처에서 조금만 기다려 주세요.",
+            "ttsTarget": {
+              "targetId": "tts-lsc-n4-ta-bakari-001-script-4",
+              "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:script:4",
+              "audioTargetType": "lesson_script",
+              "audioField": "script_line",
+              "generationStatus": "missing",
+              "preferredVoiceId": "japanese_female_1"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "会議의 뜻은?",
+          "explanation": "会議(かいぎ)는 회의입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-ta-bakari-001-question-1",
+            "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:question:1",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "회의"
+            },
+            {
+              "id": "b",
+              "text": "신호"
+            },
+            {
+              "id": "c",
+              "text": "지도"
+            },
+            {
+              "id": "d",
+              "text": "장마"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "회의"
+        },
+        {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "cognitiveLevel": "인식",
+          "prompt": "出発의 뜻은?",
+          "explanation": "出発(しゅっぱつ)은 출발이라는 뜻입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-ta-bakari-001-question-2",
+            "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:question:2",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "도착"
+            },
+            {
+              "id": "b",
+              "text": "출발"
+            },
+            {
+              "id": "c",
+              "text": "상담"
+            },
+            {
+              "id": "d",
+              "text": "예약"
+            }
+          ],
+          "correctAnswer": "b",
+          "correctOptionText": "출발"
+        },
+        {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "会議はさっき終わっ___ばかりです。",
+          "explanation": "Vた + ばかり로 '막 ~했다'를 말하므로 終わったばかり가 됩니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-ta-bakari-001-question-3",
+            "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:question:3",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "た"
+            },
+            {
+              "id": "b",
+              "text": "て"
+            },
+            {
+              "id": "c",
+              "text": "ば"
+            },
+            {
+              "id": "d",
+              "text": "なら"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "た"
+        },
+        {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "cognitiveLevel": "적용",
+          "prompt": "受け取っ___ばかりなので、これから確認します。",
+          "explanation": "受け取ったばかり는 '막 받은 참'이라는 뜻입니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-ta-bakari-001-question-4",
+            "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:question:4",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "た"
+            },
+            {
+              "id": "b",
+              "text": "て"
+            },
+            {
+              "id": "c",
+              "text": "たり"
+            },
+            {
+              "id": "d",
+              "text": "ても"
+            }
+          ],
+          "correctAnswer": "a",
+          "correctOptionText": "た"
+        },
+        {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "cognitiveLevel": "산출유사",
+          "prompt": "'방금 출발한 참입니다'를 배열하세요.",
+          "explanation": "시간 부사 さっき 뒤에 Vた + ばかりです를 붙여 막 끝난 일을 말합니다.",
+          "ttsTarget": {
+            "targetId": "tts-lsc-n4-ta-bakari-001-question-5",
+            "textSource": "lesson-seed-candidates:lsc-n4-ta-bakari-001:question:5",
+            "audioTargetType": "question_prompt",
+            "audioField": "question_prompt",
+            "generationStatus": "missing",
+            "preferredVoiceId": null
+          },
+          "tokens": [
+            "さっき",
+            "出発した",
+            "ばかりです"
+          ],
+          "correctOrder": [
+            "さっき",
+            "出発した",
+            "ばかりです"
+          ]
+        }
+      ],
+      "automatedSummary": {
+        "examples": 1,
+        "scriptLines": 4,
+        "questions": 5,
+        "exampleTtsTargets": 1,
+        "scriptTtsTargets": 4,
+        "questionTtsTargets": 5,
+        "vocabularyLinks": 7,
+        "grammarLinked": true
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 054의 たばかり coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다.",
       "reviewerChecklist": [
         "후보가 공식 lesson으로 승격되기 전에 topic coverage와 promotionTarget이 맞는지 확인한다.",
         "일본어 예문과 대화문이 자연스럽고 PDF 원문 복제가 아닌지 확인한다.",

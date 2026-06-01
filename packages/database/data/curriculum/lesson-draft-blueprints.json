@@ -915,6 +915,68 @@
       "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
     },
     {
+      "lessonBlueprintId": "ldb-tara-conditional",
+      "status": "draft",
+      "track": "N4_FOUNDATION",
+      "jlptLevel": "N4",
+      "lessonKind": "new_lesson",
+      "titleKo": "たら 도입",
+      "primaryTopicId": "topic-tara-conditional",
+      "topicIds": [
+        "topic-tara-conditional"
+      ],
+      "estimatedMinutes": 12,
+      "targetQuestionCount": 5,
+      "runtimeQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "draftFutureQuestionTypes": [],
+      "exampleIds": [
+        "ex-n4-tara-conditional-001"
+      ],
+      "ttsRequired": true,
+      "coverageGoal": "strengthen_existing_topic",
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate"
+      ],
+      "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
+    },
+    {
+      "lessonBlueprintId": "ldb-ta-bakari",
+      "status": "draft",
+      "track": "N4_FOUNDATION",
+      "jlptLevel": "N4",
+      "lessonKind": "new_lesson",
+      "titleKo": "たばかりだ 도입",
+      "primaryTopicId": "topic-ta-bakari",
+      "topicIds": [
+        "topic-ta-bakari"
+      ],
+      "estimatedMinutes": 12,
+      "targetQuestionCount": 5,
+      "runtimeQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "draftFutureQuestionTypes": [],
+      "exampleIds": [
+        "ex-n4-ta-bakari-001"
+      ],
+      "ttsRequired": true,
+      "coverageGoal": "strengthen_existing_topic",
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate"
+      ],
+      "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
+    },
+    {
       "lessonBlueprintId": "ldb-ta-hou-ga-ii",
       "status": "draft",
       "track": "N4_FOUNDATION",
@@ -1681,6 +1743,68 @@
       "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
     },
     {
+      "lessonBlueprintId": "ldb-ba-conditional",
+      "status": "draft",
+      "track": "N4_FOUNDATION",
+      "jlptLevel": "N4",
+      "lessonKind": "new_lesson",
+      "titleKo": "ば 도입",
+      "primaryTopicId": "topic-ba-conditional",
+      "topicIds": [
+        "topic-ba-conditional"
+      ],
+      "estimatedMinutes": 12,
+      "targetQuestionCount": 5,
+      "runtimeQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "draftFutureQuestionTypes": [],
+      "exampleIds": [
+        "ex-n4-ba-conditional-001"
+      ],
+      "ttsRequired": true,
+      "coverageGoal": "strengthen_existing_topic",
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate"
+      ],
+      "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
+    },
+    {
+      "lessonBlueprintId": "ldb-nara-conditional",
+      "status": "draft",
+      "track": "N4_FOUNDATION",
+      "jlptLevel": "N4",
+      "lessonKind": "new_lesson",
+      "titleKo": "なら 도입",
+      "primaryTopicId": "topic-nara-conditional",
+      "topicIds": [
+        "topic-nara-conditional"
+      ],
+      "estimatedMinutes": 12,
+      "targetQuestionCount": 5,
+      "runtimeQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "draftFutureQuestionTypes": [],
+      "exampleIds": [
+        "ex-n4-nara-conditional-001"
+      ],
+      "ttsRequired": true,
+      "coverageGoal": "strengthen_existing_topic",
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate"
+      ],
+      "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
+    },
+    {
       "lessonBlueprintId": "ldb-souda-hearsay-appearance-a",
       "status": "draft",
       "track": "N4_FOUNDATION",
@@ -1745,6 +1869,37 @@
         "RuntimeQuestionCompatibilityGate",
         "KoreanLearnerGate",
         "ContrastGate"
+      ],
+      "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
+    },
+    {
+      "lessonBlueprintId": "ldb-rashii",
+      "status": "draft",
+      "track": "N4_FOUNDATION",
+      "jlptLevel": "N4",
+      "lessonKind": "new_lesson",
+      "titleKo": "らしい 도입",
+      "primaryTopicId": "topic-rashii",
+      "topicIds": [
+        "topic-rashii"
+      ],
+      "estimatedMinutes": 12,
+      "targetQuestionCount": 5,
+      "runtimeQuestionTypes": [
+        "VOCAB_MCQ",
+        "CONTEXT_CLOZE",
+        "SENTENCE_REORDER"
+      ],
+      "draftFutureQuestionTypes": [],
+      "exampleIds": [
+        "ex-n4-rashii-001"
+      ],
+      "ttsRequired": true,
+      "coverageGoal": "strengthen_existing_topic",
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate"
       ],
       "notesKo": "실제 lesson JSON 생성 전 단계의 초안이다. PDF 원문/예문을 복제하지 않고 신규 예문과 문항으로 작성한다."
     },

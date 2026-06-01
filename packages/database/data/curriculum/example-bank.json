@@ -1254,6 +1254,126 @@
         "generationStatus": "missing",
         "preferredVoiceId": "japanese_male_1"
       }
+    },
+    {
+      "exampleId": "ex-n4-tara-conditional-001",
+      "topicId": "topic-tara-conditional",
+      "jlptLevel": "N4",
+      "japanese": "雨が止んだら、駅まで歩きます。",
+      "reading": "あめがやんだら、えきまであるきます。",
+      "korean": "비가 그치면 역까지 걸어갑니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "conditional",
+        "tara"
+      ],
+      "notesKo": "たら 조건을 날씨 후 이동 결정 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-ba-conditional-001",
+      "topicId": "topic-ba-conditional",
+      "jlptLevel": "N4",
+      "japanese": "時間があれば、受付で相談できます。",
+      "reading": "じかんがあれば、うけつけでそうだんできます。",
+      "korean": "시간이 있으면 접수처에서 상담할 수 있습니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "conditional",
+        "ba"
+      ],
+      "notesKo": "ば 조건을 일정 여유와 상담 가능성 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-nara-conditional-001",
+      "topicId": "topic-nara-conditional",
+      "jlptLevel": "N4",
+      "japanese": "駅へ行くなら、この地図を見てください。",
+      "reading": "えきへいくなら、このちずをみてください。",
+      "korean": "역에 간다면 이 지도를 보세요.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "conditional",
+        "nara"
+      ],
+      "notesKo": "なら 조건을 상대의 계획을 받아 안내하는 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-rashii-001",
+      "topicId": "topic-rashii",
+      "jlptLevel": "N4",
+      "japanese": "天気予報では、明日は雨らしいです。",
+      "reading": "てんきよほうでは、あしたはあめらしいです。",
+      "korean": "일기예보로는 내일은 비가 온다나 봅니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "hearsay",
+        "rashii"
+      ],
+      "notesKo": "らしい를 일기예보에서 들은 정보 전달 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_female_1"
+      }
+    },
+    {
+      "exampleId": "ex-n4-ta-bakari-001",
+      "topicId": "topic-ta-bakari",
+      "jlptLevel": "N4",
+      "japanese": "会議は今終わったばかりです。",
+      "reading": "かいぎはいまおわったばかりです。",
+      "korean": "회의는 방금 끝난 참입니다.",
+      "register": "polite",
+      "sourceKind": "harukoto_authored",
+      "originalityStatus": "authored_not_source_copied",
+      "reviewStatus": "needs_review",
+      "tags": [
+        "n4",
+        "recent-completion",
+        "bakari"
+      ],
+      "notesKo": "Vたばかり를 방금 끝난 업무 상황으로 새로 작성한 예문.",
+      "audio": {
+        "audioTargetType": "example_sentence",
+        "audioField": "example_sentence",
+        "generationStatus": "missing",
+        "preferredVoiceId": "japanese_male_1"
+      }
     }
   ]
 }
