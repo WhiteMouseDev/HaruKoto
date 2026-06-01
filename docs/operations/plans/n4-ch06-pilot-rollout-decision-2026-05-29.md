@@ -36,6 +36,7 @@ approval.
 | Target DB/service-path smoke | PASS | 2026-06-01 configured N4 DB check reports 6 chapters / 26 lessons / 0 mismatches, and read-only service-path detail smoke reports HN4-022 through HN4-026 with 0 blockers. See `n4-ch06-post-merge-operational-check-2026-06-01.md`. |
 | Authenticated remote HTTP smoke | PASS | 2026-06-01 read-only list/detail smoke against Cloud Run returned N4 26 lessons and HN4-022 through HN4-026 detail checks with 0 blockers. |
 | Mobile target-runtime UAT | PASS | 2026-06-01 iPhone 17 Pro Simulator iOS 26.5 completed representative HN4-022 detail/start/vocab TTS/dialogue TTS/recognition/matching/reorder/submit/result/retry/return-to-learning. See `n4-ch06-mobile-uat-2026-06-01.md`. |
+| First pilot feedback baseline | PASS | 2026-06-01 aggregate configured-DB monitor found no rollback trigger: HN4-022 has 1 completion, 5/5 review events, and 100.0% score; HN4-023 through HN4-026 are waiting for learner traffic; all five lessons have 4/4 script and 5/5 prompt TTS records. See `n4-ch06-pilot-feedback-baseline-2026-06-01.md`. |
 
 ## Audio Boundary
 
@@ -66,6 +67,9 @@ Post-merge operational checks passed for the code-bearing release path:
 - Representative mobile target-runtime UAT for HN4-022 passed on iPhone 17 Pro
   Simulator iOS 26.5, including TTS, submit/result, retry, and
   return-to-learning.
+- First aggregate pilot-feedback baseline found no automatic rollback trigger:
+  HN4-022 has one same-day runtime completion, HN4-023 through HN4-026 are
+  waiting for learner traffic, and all CH06 TTS records are present.
 
 The smoke credentials are configured only in local ignored `.env` files and are
 not committed to the repository.
@@ -86,5 +90,6 @@ If pilot feedback shows a content or audio blocker:
 ## Remaining Gates
 
 - Native-speaker or formal human approval remains a later quality gate.
-- Pilot feedback should be monitored for confusing Korean prompts, unnatural
-  Japanese, and TTS playback complaints before broad release positioning.
+- Continue pilot-feedback refreshes over time for confusing Korean prompts,
+  unnatural Japanese, and TTS playback complaints before broad release
+  positioning.

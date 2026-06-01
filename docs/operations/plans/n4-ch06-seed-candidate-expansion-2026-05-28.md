@@ -133,5 +133,8 @@ chapters / 26 lessons with 234/234 generated pilot TTS records.
 2. DONE on 2026-06-01 for representative HN4-022 mobile target-runtime UAT:
    lesson detail, start, vocab TTS, dialogue TTS, quiz completion, SRS
    registration, retry, and return-to-learning.
-3. Create the first CH06 pilot feedback baseline after learner traffic appears.
-4. Keep native-speaker/human approval as a separate post-pilot quality gate.
+3. DONE on 2026-06-01 for the first CH06 pilot-feedback baseline: no automatic
+   rollback trigger, HN4-022 same-day runtime completion observed, HN4-023
+   through HN4-026 waiting for learner traffic, and TTS records complete.
+4. Continue pilot-feedback refreshes over time.
+5. Keep native-speaker/human approval as a separate post-pilot quality gate.
