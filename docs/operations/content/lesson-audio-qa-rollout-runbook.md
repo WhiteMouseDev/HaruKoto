@@ -71,6 +71,21 @@ Passing N4 preflight means:
 - no known audio QA blocker remains for the N4 pilot packet set;
 - the N4 pilot can move to the next controlled rollout decision.
 
+After the 2026-06-01 CH06 audio QA closeout, the current N4 broad exposure
+decision is BETA-WIDE GO for the existing 26-lesson N4 pilot slice. See
+`docs/operations/plans/n4-broad-exposure-decision-2026-06-01.md`.
+
+Use the level-wide feedback monitor after broad exposure is opened:
+
+```bash
+cd apps/api
+uv run python scripts/report_level_pilot_feedback.py \
+  --level N4 \
+  --since-days 14 \
+  --fail-on-blocker \
+  --markdown-output ../../docs/operations/plans/n4-broad-exposure-feedback-refresh-YYYY-MM-DD.md
+```
+
 Passing N4 preflight does not mean:
 
 - the N4 course is complete;
