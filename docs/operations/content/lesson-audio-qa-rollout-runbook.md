@@ -27,9 +27,9 @@ Required passing signals:
 |---|---|
 | Curriculum contracts | `pnpm --filter @harukoto/database curriculum:validate` exits 0 |
 | Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N4` exits 0 |
-| TTS coverage | 144/144 generated records for the published N4 pilot batch |
-| TTS URL validation | 144/144 generated audio URLs pass read-only HTTP validation |
-| Audio QA verdicts | 144 PASS, 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
+| TTS coverage | generated record count equals the current published N4 learner-facing TTS target count |
+| TTS URL validation | every generated audio URL passes read-only HTTP validation |
+| Audio QA verdicts | verdict target count equals the current TTS target count, and all verdicts are PASS with 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
 
 `GOOGLE_API_KEY` is not required for this preflight. It is only needed for
 separate optional STT-assist flows that explicitly pass `--transcribe`.
@@ -56,6 +56,9 @@ uv run python -m app.seeds.lessons --level N4
 7. If audio QA verdicts are not clear, build a regeneration/review packet,
    regenerate the affected rows, then apply verdicts through
    `scripts/apply_n4_audio_qa_verdicts.py`.
+   If the preflight reports `AUDIO_QA_TARGET_MISMATCH`, first add or include the
+   missing audio QA packet for the newly published lesson slice; do not treat
+   passing older chapter packets as broad-level audio coverage.
 8. Record a short evidence note under `docs/operations/plans/` with the command
    output, target DB scope, and any remaining limitation.
 
