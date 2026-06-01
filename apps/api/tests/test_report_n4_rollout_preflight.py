@@ -7,6 +7,7 @@ from scripts.report_n4_rollout_preflight import (
     _audio_verdict_coverage_blockers,
     _subprocess_env,
     _summarize_audio_verdicts,
+    parse_args,
 )
 
 
@@ -95,3 +96,11 @@ def test_subprocess_env_prepends_pnpm_bin_for_package_manager_commands(monkeypat
 
 def test_subprocess_env_leaves_non_pnpm_commands_unchanged() -> None:
     assert _subprocess_env(["python", "-m", "app.seeds.lessons"]) is None
+
+
+def test_parse_args_accepts_explicit_audio_url_check_alias(monkeypatch) -> None:
+    monkeypatch.setattr("sys.argv", ["report_n4_rollout_preflight.py", "--check-audio-urls"])
+
+    args = parse_args()
+
+    assert args.skip_audio_urls is False
