@@ -337,6 +337,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the read-only N4 seed/TTS rollout preflight.")
     parser.add_argument("--level", default="N4", help="JLPT level. Currently only N4 is supported.")
     parser.add_argument("--skip-audio-urls", action="store_true", help="Skip read-only HTTP validation of TTS URLs.")
+    parser.add_argument(
+        "--check-audio-urls",
+        action="store_false",
+        dest="skip_audio_urls",
+        help="Explicitly run read-only HTTP validation of TTS URLs. This is the default.",
+    )
     parser.add_argument("--timeout-seconds", type=float, default=10.0, help="Timeout for each audio URL HTTP check.")
     parser.add_argument("--json", action="store_true", help="Print JSON instead of the default line-oriented report.")
     parser.add_argument("--markdown-output", type=Path, default=None, help="Write a markdown evidence report.")
