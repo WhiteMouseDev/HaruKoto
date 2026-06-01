@@ -130,6 +130,8 @@ chapters / 26 lessons with 234/234 generated pilot TTS records.
 1. DONE on 2026-06-01 for deploy, configured DB seed sync, read-only
    service-path list/detail smoke, and authenticated remote HTTP list/detail
    smoke.
-2. Run mobile target-runtime UAT for the N4 lesson list, lesson detail, quiz
-   completion, SRS registration, and TTS playback.
-3. Keep native-speaker/human approval as a separate post-pilot quality gate.
+2. DONE on 2026-06-01 for representative HN4-022 mobile target-runtime UAT:
+   lesson detail, start, vocab TTS, dialogue TTS, quiz completion, SRS
+   registration, retry, and return-to-learning.
+3. Create the first CH06 pilot feedback baseline after learner traffic appears.
+4. Keep native-speaker/human approval as a separate post-pilot quality gate.

@@ -3,8 +3,8 @@
 ## Result
 
 Status: PASS for merged code, Cloud Run deployment, configured DB seed sync,
-read-only service-path lesson exposure, and authenticated remote HTTP
-list/detail smoke.
+read-only service-path lesson exposure, authenticated remote HTTP list/detail
+smoke, and representative mobile target-runtime UAT.
 
 Scope: `N4-CH06` / HN4-022 through HN4-026.
 
@@ -23,6 +23,7 @@ the same target DB used by the deployed `harukoto-api` Cloud Run service.
 | Configured N4 DB seed sync | PASS | `DATABASE_URL="$(gcloud secrets versions access latest --secret=DATABASE_URL)" uv run python -m app.seeds.lessons --check --level N4`: chapters 6, lessons 26, missing 0, content mismatches 0, item link mismatches 0. |
 | Read-only service-path exposure | PASS | `get_chapters_data` + `get_lesson_detail_data` against the configured DB returned HN4-022 through HN4-026 in chapter 6 with 4 script lines, 5 questions, non-empty vocab/grammar, stripped answer keys, and 0 blockers. |
 | Authenticated remote HTTP smoke | PASS | After adding local ignored smoke env vars, `uv run python scripts/smoke_remote_lesson_api.py ... --fail-on-blocker` returned `N4 target API smoke PASS: 26 lessons, 0 blockers`. |
+| Mobile target-runtime UAT | PASS | iPhone 17 Pro Simulator iOS 26.5 completed HN4-022 detail/start/vocab TTS/dialogue TTS/recognition/matching/reorder/submit/result/retry/return-to-learning with remote API 200 responses and result 5/5. See `n4-ch06-mobile-uat-2026-06-01.md`. |
 | Sentry API | WATCH | `HARUKOTO-API-1S` remains unresolved, last seen 2026-05-28T12:09:16Z. This predates the CH06 deploy and is not attributed to CH06. |
 | Sentry web | PASS | `sentry-cli issues list -o whitemousedev -p harukoto-web --query 'is:unresolved'` returned `No issues found`. |
 
@@ -66,12 +67,13 @@ Blockers: None
 - This check proves the merged code, deployed API image, configured DB seed
   sync, service-layer list/detail behavior, and authenticated remote HTTP
   list/detail behavior for CH06.
-- It does not replace mobile target-runtime UAT or native-speaker/formal human
-  curriculum approval.
+- The linked mobile UAT proves one representative HN4-022 simulator
+  target-runtime happy path across detail, TTS, quiz, submit/result, retry, and
+  return-to-learning.
+- It does not replace physical-device proof, every-lesson mobile UAT, or
+  native-speaker/formal human curriculum approval.
 
 ## Next Gates
 
-1. Run mobile target-runtime UAT for the N4 lesson list, CH06 lesson detail,
-   TTS playback, quiz submit/result, wrong-answer retry, and return-to-learning
-   flow.
-2. Create the first CH06 pilot feedback baseline after learner traffic appears.
+1. Create the first CH06 pilot feedback baseline after learner traffic appears.
+2. Keep native-speaker/human approval as a separate post-pilot quality gate.

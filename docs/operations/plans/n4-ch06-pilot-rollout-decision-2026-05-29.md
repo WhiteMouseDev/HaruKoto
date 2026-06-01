@@ -35,6 +35,7 @@ approval.
 | Post-merge deploy | PASS | PR #163 merged to `main` at `aedcccfcb5f633e825fb4d7a6981623cf1c014c3`; main `CI` run `26621397274` and `Deploy API` run `26621397227` succeeded. |
 | Target DB/service-path smoke | PASS | 2026-06-01 configured N4 DB check reports 6 chapters / 26 lessons / 0 mismatches, and read-only service-path detail smoke reports HN4-022 through HN4-026 with 0 blockers. See `n4-ch06-post-merge-operational-check-2026-06-01.md`. |
 | Authenticated remote HTTP smoke | PASS | 2026-06-01 read-only list/detail smoke against Cloud Run returned N4 26 lessons and HN4-022 through HN4-026 detail checks with 0 blockers. |
+| Mobile target-runtime UAT | PASS | 2026-06-01 iPhone 17 Pro Simulator iOS 26.5 completed representative HN4-022 detail/start/vocab TTS/dialogue TTS/recognition/matching/reorder/submit/result/retry/return-to-learning. See `n4-ch06-mobile-uat-2026-06-01.md`. |
 
 ## Audio Boundary
 
@@ -62,6 +63,9 @@ Post-merge operational checks passed for the code-bearing release path:
   with expected detail shape and answer keys stripped.
 - Authenticated remote HTTP list/detail smoke reports N4 26 lessons, HN4-022
   through HN4-026 detail checks passing, and 0 blockers.
+- Representative mobile target-runtime UAT for HN4-022 passed on iPhone 17 Pro
+  Simulator iOS 26.5, including TTS, submit/result, retry, and
+  return-to-learning.
 
 The smoke credentials are configured only in local ignored `.env` files and are
 not committed to the repository.
@@ -81,7 +85,6 @@ If pilot feedback shows a content or audio blocker:
 
 ## Remaining Gates
 
-- Mobile target-runtime UAT is not proven in this packet.
 - Native-speaker or formal human approval remains a later quality gate.
 - Pilot feedback should be monitored for confusing Korean prompts, unnatural
   Japanese, and TTS playback complaints before broad release positioning.
