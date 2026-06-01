@@ -9656,6 +9656,1062 @@
         "AudioReadinessGate"
       ],
       "notesKo": "PDF 080의 수동형 coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-tara-conditional-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-tara-conditional",
+      "sourceTopicIds": [
+        "topic-tara-conditional"
+      ],
+      "exampleIds": [
+        "ex-n4-tara-conditional-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 27,
+        "chapterLessonNo": 1,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "비가 그치면 출발해요",
+        "subtitle": "Vた + ら로 조건과 순서를 말하기",
+        "topic": "たら 조건",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "Vた + ら",
+          "meaning_ko": "~하면 / ~했을 때",
+          "grammar_order": 21,
+          "supporting_grammar_orders": [
+            22,
+            23
+          ]
+        },
+        "vocab_orders": [
+          28,
+          29,
+          54,
+          97,
+          182,
+          289
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "비가 그친 뒤 역으로 출발하고 도착 연락을 하기로 정하는 상황",
+            "highlights": [
+              "止んだら",
+              "遅れたら",
+              "着いたら"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "雨が止んだら、駅へ出発します。",
+                "translation": "비가 그치면 역으로 출발하겠습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "電車が遅れたら、すぐ連絡してください。",
+                "translation": "전철이 늦어지면 바로 연락해 주세요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。駅に着いたら、電話します。",
+                "translation": "네. 역에 도착하면 전화하겠습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "間に合ったら、受付で会いましょう。",
+                "translation": "시간에 맞으면 접수처에서 만납시다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "出発의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "도착"
+                },
+                {
+                  "id": "b",
+                  "text": "출발"
+                },
+                {
+                  "id": "c",
+                  "text": "연락"
+                },
+                {
+                  "id": "d",
+                  "text": "상담"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "出発(しゅっぱつ)은 출발이라는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "連絡의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "지도"
+                },
+                {
+                  "id": "b",
+                  "text": "예약"
+                },
+                {
+                  "id": "c",
+                  "text": "연락"
+                },
+                {
+                  "id": "d",
+                  "text": "날씨"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "連絡(れんらく)은 연락이라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "雨が止ん___、駅へ出発します。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "だら"
+                },
+                {
+                  "id": "b",
+                  "text": "なら"
+                },
+                {
+                  "id": "c",
+                  "text": "ば"
+                },
+                {
+                  "id": "d",
+                  "text": "し"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "止む의 た형 止んだ에 ら를 붙이면 止んだら가 됩니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "駅に着い___、電話します。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "ても"
+                },
+                {
+                  "id": "b",
+                  "text": "たら"
+                },
+                {
+                  "id": "c",
+                  "text": "し"
+                },
+                {
+                  "id": "d",
+                  "text": "よう"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "着いたら는 '도착하면'이라는 조건/순서 표현입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'비가 그치면 역으로 출발합니다'를 배열하세요.",
+              "tokens": [
+                "駅へ",
+                "出発します",
+                "雨が止んだら"
+              ],
+              "correct_order": [
+                "雨が止んだら",
+                "駅へ",
+                "出発します"
+              ],
+              "explanation": "조건절 雨が止んだら 뒤에 이동 목적지와 동사를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 052의 たら coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-ba-conditional-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-ba-conditional",
+      "sourceTopicIds": [
+        "topic-ba-conditional"
+      ],
+      "exampleIds": [
+        "ex-n4-ba-conditional-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 28,
+        "chapterLessonNo": 2,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "시간이 있으면 상담할 수 있어요",
+        "subtitle": "〜ば로 조건을 부드럽게 말하기",
+        "topic": "ば 조건",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜ば",
+          "meaning_ko": "~하면",
+          "grammar_order": 22,
+          "supporting_grammar_orders": [
+            21,
+            23
+          ]
+        },
+        "vocab_orders": [
+          16,
+          17,
+          53,
+          61,
+          97,
+          165
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "회의 뒤 시간이 나면 접수처에서 상담하기로 조율하는 상황",
+            "highlights": [
+              "あれば",
+              "終われば",
+              "間に合えば"
+            ],
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "午後に時間があれば、少し相談できますか。",
+                "translation": "오후에 시간이 있으면 잠깐 상담할 수 있을까요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。会議が早く終われば、相談できます。",
+                "translation": "네. 회의가 일찍 끝나면 상담할 수 있습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "資料が必要なら、先に送ります。",
+                "translation": "자료가 필요하다면 먼저 보내겠습니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "準備が間に合えば、とても助かります。",
+                "translation": "준비가 시간에 맞으면 정말 도움이 됩니다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "相談의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "상담"
+                },
+                {
+                  "id": "b",
+                  "text": "도착"
+                },
+                {
+                  "id": "c",
+                  "text": "지도"
+                },
+                {
+                  "id": "d",
+                  "text": "예정"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "相談(そうだん)은 상담이라는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "必要의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "최근"
+                },
+                {
+                  "id": "b",
+                  "text": "필요"
+                },
+                {
+                  "id": "c",
+                  "text": "연락"
+                },
+                {
+                  "id": "d",
+                  "text": "출발"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "必要(ひつよう)은 필요라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "時間があれ___、相談できます。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "ば"
+                },
+                {
+                  "id": "b",
+                  "text": "たら"
+                },
+                {
+                  "id": "c",
+                  "text": "なら"
+                },
+                {
+                  "id": "d",
+                  "text": "のに"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "ある의 ば형은 あれば입니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "会議が早く終われ___、相談できます。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "し"
+                },
+                {
+                  "id": "b",
+                  "text": "て"
+                },
+                {
+                  "id": "c",
+                  "text": "ば"
+                },
+                {
+                  "id": "d",
+                  "text": "もの"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "終わる의 ば형은 終われば입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'시간이 있으면 접수처에서 상담할 수 있어요'를 배열하세요.",
+              "tokens": [
+                "受付で",
+                "相談できます",
+                "時間があれば"
+              ],
+              "correct_order": [
+                "時間があれば",
+                "受付で",
+                "相談できます"
+              ],
+              "explanation": "条件절 時間があれば 뒤에 장소 受付で와 가능 표현 相談できます를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 088의 ば coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-nara-conditional-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-nara-conditional",
+      "sourceTopicIds": [
+        "topic-nara-conditional"
+      ],
+      "exampleIds": [
+        "ex-n4-nara-conditional-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 29,
+        "chapterLessonNo": 3,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "역에 간다면 지도를 보세요",
+        "subtitle": "N / 普通形 + なら로 화제 조건 말하기",
+        "topic": "なら 조건",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "N / 普通形 + なら",
+          "meaning_ko": "~라면 / ~한다면",
+          "grammar_order": 23,
+          "supporting_grammar_orders": [
+            21,
+            22,
+            40
+          ]
+        },
+        "vocab_orders": [
+          20,
+          21,
+          72,
+          570,
+          631,
+          675
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "처음 가는 역 주변 길을 물어보고 안내받는 상황",
+            "highlights": [
+              "行くなら",
+              "渡るなら",
+              "分からないなら"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "初めてこの駅に行くなら、地図を見てください。",
+                "translation": "처음 이 역에 간다면 지도를 보세요."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "交差点を渡るなら、信号をよく見てください。",
+                "translation": "교차로를 건넌다면 신호를 잘 보세요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "道が分からないなら、店員に聞いてもいいです。",
+                "translation": "길을 모르겠다면 점원에게 물어봐도 됩니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "予約の場所なら、駅の近くですよ。",
+                "translation": "예약한 장소라면 역 근처예요."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "地図의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "지도"
+                },
+                {
+                  "id": "b",
+                  "text": "날씨"
+                },
+                {
+                  "id": "c",
+                  "text": "회의"
+                },
+                {
+                  "id": "d",
+                  "text": "출발"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "地図(ちず)는 지도입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "信号의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "상담"
+                },
+                {
+                  "id": "b",
+                  "text": "예정"
+                },
+                {
+                  "id": "c",
+                  "text": "신호"
+                },
+                {
+                  "id": "d",
+                  "text": "자료"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "信号(しんごう)은 신호입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "この駅に行く___、地図を見てください。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "たら"
+                },
+                {
+                  "id": "b",
+                  "text": "ば"
+                },
+                {
+                  "id": "c",
+                  "text": "なら"
+                },
+                {
+                  "id": "d",
+                  "text": "し"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "상대가 말한 계획이나 화제를 받아 조건으로 말할 때 なら를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "道が分からない___、店員に聞いてもいいです。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "なら"
+                },
+                {
+                  "id": "b",
+                  "text": "のに"
+                },
+                {
+                  "id": "c",
+                  "text": "そう"
+                },
+                {
+                  "id": "d",
+                  "text": "ばかり"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "分からないなら는 '모르겠다면'이라는 화제 조건입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'역에 간다면 지도를 보세요'를 배열하세요.",
+              "tokens": [
+                "地図を",
+                "駅に行くなら",
+                "見てください"
+              ],
+              "correct_order": [
+                "駅に行くなら",
+                "地図を",
+                "見てください"
+              ],
+              "explanation": "조건절 駅に行くなら 뒤에 지시 표현 地図を見てください를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 089의 なら coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-rashii-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-rashii",
+      "sourceTopicIds": [
+        "topic-rashii"
+      ],
+      "exampleIds": [
+        "ex-n4-rashii-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 30,
+        "chapterLessonNo": 4,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "내일은 비가 온다나 봐요",
+        "subtitle": "〜らしい로 들은 정보와 그럴듯한 추측 말하기",
+        "topic": "らしい",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "〜らしい",
+          "meaning_ko": "~인 것 같다 / ~답다",
+          "grammar_order": 15,
+          "supporting_grammar_orders": [
+            13,
+            14
+          ]
+        },
+        "vocab_orders": [
+          77,
+          181,
+          182,
+          212,
+          658,
+          676
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "일기예보와 최근 날씨 이야기를 하며 들은 정보를 전달하는 상황",
+            "highlights": [
+              "雨らしい",
+              "入ったらしい",
+              "寒くなるらしい"
+            ],
+            "script": [
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "天気予報では、明日は雨らしいです。",
+                "translation": "일기예보로는 내일은 비가 온다나 봅니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "最近、梅雨に入ったらしいですね。",
+                "translation": "최근 장마에 들어갔다나 보네요."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "午後は急に寒くなるらしいです。",
+                "translation": "오후에는 갑자기 추워진다나 봅니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "じゃあ、傘を持って行ったほうがよさそうです。",
+                "translation": "그럼 우산을 가지고 가는 편이 좋을 것 같습니다."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "天気予報의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "일기예보"
+                },
+                {
+                  "id": "b",
+                  "text": "상담 예약"
+                },
+                {
+                  "id": "c",
+                  "text": "교차로"
+                },
+                {
+                  "id": "d",
+                  "text": "도착 시간"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "天気予報(てんきよほう)는 일기예보입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "最近의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "방금"
+                },
+                {
+                  "id": "b",
+                  "text": "최근"
+                },
+                {
+                  "id": "c",
+                  "text": "반드시"
+                },
+                {
+                  "id": "d",
+                  "text": "거의"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "最近(さいきん)은 최근이라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "明日は雨___です。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "ばかり"
+                },
+                {
+                  "id": "b",
+                  "text": "らしい"
+                },
+                {
+                  "id": "c",
+                  "text": "なら"
+                },
+                {
+                  "id": "d",
+                  "text": "のに"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "雨らしいです는 들은 정보나 그럴듯한 추측으로 '비가 온다나 봅니다'라고 말합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "梅雨に入った___ですね。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "らしい"
+                },
+                {
+                  "id": "b",
+                  "text": "たら"
+                },
+                {
+                  "id": "c",
+                  "text": "ば"
+                },
+                {
+                  "id": "d",
+                  "text": "し"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "普通形 入った 뒤에 らしい를 붙여 들은 정보를 전달합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'내일은 비가 온다나 봅니다'를 배열하세요.",
+              "tokens": [
+                "雨",
+                "らしいです",
+                "明日は"
+              ],
+              "correct_order": [
+                "明日は",
+                "雨",
+                "らしいです"
+              ],
+              "explanation": "화제 明日は 뒤에 추측/전문 표현 雨らしいです를 둡니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 094의 らしい coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다."
+    },
+    {
+      "candidateId": "lsc-n4-ta-bakari-001",
+      "status": "draft",
+      "lessonBlueprintId": "ldb-ta-bakari",
+      "sourceTopicIds": [
+        "topic-ta-bakari"
+      ],
+      "exampleIds": [
+        "ex-n4-ta-bakari-001"
+      ],
+      "promotionTarget": {
+        "level": "N4",
+        "partNo": 1,
+        "chapterNo": 7,
+        "lessonNo": 31,
+        "chapterLessonNo": 5,
+        "publishStatus": "DRAFT"
+      },
+      "seedShape": {
+        "title": "방금 회의가 끝났어요",
+        "subtitle": "Vた + ばかり로 막 끝난 일 말하기",
+        "topic": "たばかり",
+        "estimated_minutes": 12,
+        "grammar": {
+          "level": "N4",
+          "pattern": "Vた + ばかり",
+          "meaning_ko": "막 ~했다",
+          "grammar_order": 32,
+          "supporting_grammar_orders": [
+            33
+          ]
+        },
+        "vocab_orders": [
+          17,
+          28,
+          53,
+          54,
+          63,
+          84,
+          474
+        ],
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "회의가 막 끝난 뒤 자료 확인과 출발 시간을 조율하는 상황",
+            "highlights": [
+              "終わったばかり",
+              "受け取ったばかり",
+              "出発したばかり"
+            ],
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "会議はさっき終わったばかりです。",
+                "translation": "회의는 방금 끝난 참입니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "じゃあ、次の予定はまだ確認していませんか。",
+                "translation": "그럼 다음 예정은 아직 확인하지 않았나요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい。連絡を受けたばかりなので、これから確認します。",
+                "translation": "네. 방금 연락을 받은 참이라 이제 확인하겠습니다."
+              },
+              {
+                "speaker": "佐藤",
+                "voice_id": "japanese_female_1",
+                "text": "私も出発したばかりです。受付で少し待ってください。",
+                "translation": "저도 방금 출발한 참입니다. 접수처에서 조금만 기다려 주세요."
+              }
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "会議의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "회의"
+                },
+                {
+                  "id": "b",
+                  "text": "신호"
+                },
+                {
+                  "id": "c",
+                  "text": "지도"
+                },
+                {
+                  "id": "d",
+                  "text": "장마"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "会議(かいぎ)는 회의입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "cognitive_level": "인식",
+              "prompt": "出発의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "도착"
+                },
+                {
+                  "id": "b",
+                  "text": "출발"
+                },
+                {
+                  "id": "c",
+                  "text": "상담"
+                },
+                {
+                  "id": "d",
+                  "text": "예약"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "出発(しゅっぱつ)은 출발이라는 뜻입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "会議はさっき終わっ___ばかりです。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "た"
+                },
+                {
+                  "id": "b",
+                  "text": "て"
+                },
+                {
+                  "id": "c",
+                  "text": "ば"
+                },
+                {
+                  "id": "d",
+                  "text": "なら"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "Vた + ばかり로 '막 ~했다'를 말하므로 終わったばかり가 됩니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "cognitive_level": "적용",
+              "prompt": "受け取っ___ばかりなので、これから確認します。",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "た"
+                },
+                {
+                  "id": "b",
+                  "text": "て"
+                },
+                {
+                  "id": "c",
+                  "text": "たり"
+                },
+                {
+                  "id": "d",
+                  "text": "ても"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "受け取ったばかり는 '막 받은 참'이라는 뜻입니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "cognitive_level": "산출유사",
+              "prompt": "'방금 출발한 참입니다'를 배열하세요.",
+              "tokens": [
+                "さっき",
+                "出発した",
+                "ばかりです"
+              ],
+              "correct_order": [
+                "さっき",
+                "出発した",
+                "ばかりです"
+              ],
+              "explanation": "시간 부사 さっき 뒤에 Vた + ばかりです를 붙여 막 끝난 일을 말합니다."
+            }
+          ]
+        }
+      },
+      "validationGates": [
+        "ExampleOriginalityGate",
+        "RuntimeQuestionCompatibilityGate",
+        "KoreanLearnerGate",
+        "AudioReadinessGate",
+        "ContrastGate"
+      ],
+      "notesKo": "PDF 054의 たばかり coverage를 참고하되, 예문과 문항은 HaruKoto가 새로 작성한 N4 CH07 후보이다."
     }
   ]
 }
