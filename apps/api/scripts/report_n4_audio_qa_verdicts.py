@@ -8,6 +8,7 @@ from pathlib import Path
 DEFAULT_PACKET_GLOBS = (
     "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
     "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
+    "docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md",
 )
 REVIEW_TARGET_KINDS = ("script ", "question ")
 KNOWN_VERDICTS = {"PASS", "FLAG", "FAIL", "PENDING", "WAIVED"}

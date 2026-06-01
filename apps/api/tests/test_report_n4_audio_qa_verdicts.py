@@ -72,8 +72,9 @@ def test_build_report_marks_empty_packets_as_blocked(tmp_path: Path) -> None:
     assert report.blockers == ["NO_REVIEW_TARGETS: no review item rows were found"]
 
 
-def test_default_packet_paths_include_ch04_pilot_packet() -> None:
+def test_default_packet_paths_include_ch05_pilot_packet() -> None:
     packets = [path.as_posix() for path in default_packet_paths()]
 
     assert any("n4-pilot-human-audio-qa-ch01-2026-05-13.md" in packet for packet in packets)
     assert any("n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md" in packet for packet in packets)
+    assert any("n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md" in packet for packet in packets)

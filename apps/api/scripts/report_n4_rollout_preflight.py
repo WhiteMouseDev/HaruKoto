@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
@@ -76,7 +78,14 @@ def _utc_now() -> str:
 
 
 def _run_command(name: str, command: list[str], *, cwd: Path) -> CommandCheck:
-    completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+    completed = subprocess.run(
+        command,
+        cwd=cwd,
+        text=True,
+        capture_output=True,
+        check=False,
+        env=_subprocess_env(command),
+    )
     return CommandCheck(
         name=name,
         command=command,
@@ -85,6 +94,21 @@ def _run_command(name: str, command: list[str], *, cwd: Path) -> CommandCheck:
         stdout=completed.stdout.strip(),
         stderr=completed.stderr.strip(),
     )
+
+
+def _subprocess_env(command: list[str]) -> dict[str, str] | None:
+    if not command or command[0] != "pnpm":
+        return None
+
+    pnpm_path = shutil.which("pnpm")
+    if pnpm_path is None:
+        return None
+
+    pnpm_bin = Path(pnpm_path).parent
+    env = os.environ.copy()
+    path_entries = [entry for entry in env.get("PATH", "").split(os.pathsep) if entry]
+    env["PATH"] = os.pathsep.join([str(pnpm_bin), *[entry for entry in path_entries if entry != str(pnpm_bin)]])
+    return env
 
 
 def _run_json_command(name: str, command: list[str], *, cwd: Path) -> tuple[CommandCheck, dict[str, Any]]:
@@ -119,9 +143,23 @@ def _summarize_audio_verdicts(payload: dict[str, Any]) -> AudioVerdictSummary:
         flag_count=int(payload.get("flag_count") or 0),
         fail_count=int(payload.get("fail_count") or 0),
         waived_count=int(payload.get("waived_count") or 0),
-        invalid_count=len(payload.get("invalid_verdicts") or []),
+        invalid_count=int(payload.get("invalid_count") or len(payload.get("invalid_verdicts") or [])),
         blockers=list(payload.get("blockers") or []),
     )
+
+
+def _audio_verdict_coverage_blockers(
+    *,
+    tts_coverage: TtsCoverageSummary,
+    audio_verdicts: AudioVerdictSummary,
+) -> list[str]:
+    if tts_coverage.expected_total_records == 0 or audio_verdicts.targets == tts_coverage.expected_total_records:
+        return []
+    return [
+        "AUDIO_QA_TARGET_MISMATCH: "
+        f"{audio_verdicts.targets} verdict target(s) for "
+        f"{tts_coverage.expected_total_records} expected learner-facing TTS record(s)"
+    ]
 
 
 def _build_report(args: argparse.Namespace) -> RolloutPreflightReport:
@@ -172,6 +210,9 @@ def _build_report(args: argparse.Namespace) -> RolloutPreflightReport:
     blockers = [f"{check.name.upper()}_FAILED: exit {check.exit_code}" for check in command_checks if not check.passed]
     blockers.extend(f"TTS_COVERAGE: {blocker}" for blocker in tts_coverage.blockers)
     blockers.extend(f"AUDIO_QA: {blocker}" for blocker in audio_verdicts.blockers)
+    blockers.extend(
+        f"AUDIO_QA: {blocker}" for blocker in _audio_verdict_coverage_blockers(tts_coverage=tts_coverage, audio_verdicts=audio_verdicts)
+    )
 
     return RolloutPreflightReport(
         generated_at=_utc_now(),
@@ -222,6 +263,11 @@ def _render_markdown(report: RolloutPreflightReport) -> str:
         f"| `audio_qa_verdicts` | {'PASS' if verdicts.passed else 'FAIL'} | "
         f"{verdicts.pass_count}/{verdicts.targets} PASS; pending={verdicts.pending_count}; "
         f"flag={verdicts.flag_count}; fail={verdicts.fail_count}; invalid={verdicts.invalid_count} |"
+    )
+    lines.append(
+        f"| `audio_qa_target_coverage` | "
+        f"{'PASS' if not _audio_verdict_coverage_blockers(tts_coverage=tts, audio_verdicts=verdicts) else 'FAIL'} | "
+        f"{verdicts.targets}/{tts.expected_total_records} verdict targets vs learner-facing TTS records |"
     )
 
     lines.extend(["", "## Commands", ""])
@@ -278,6 +324,7 @@ def _print_human(report: RolloutPreflightReport) -> None:
         f"pending={report.audio_verdicts.pending_count} flag={report.audio_verdicts.flag_count} "
         f"fail={report.audio_verdicts.fail_count} invalid={report.audio_verdicts.invalid_count}"
     )
+    print(f"audio_qa_target_coverage {report.audio_verdicts.targets}/{report.tts_coverage.expected_total_records}")
     print("blockers")
     if report.blockers:
         for blocker in report.blockers:
