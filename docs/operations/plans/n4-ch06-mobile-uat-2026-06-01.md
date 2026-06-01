@@ -75,5 +75,6 @@ LessonPilotEvent(lesson_list_viewed, chapterCount: 6, lessonCount: 26)
 
 ## Next Gates
 
-1. Create the first CH06 pilot feedback baseline after learner traffic appears.
-2. Keep native-speaker/human approval as a separate post-pilot quality gate.
+1. DONE on 2026-06-01 for the first CH06 aggregate pilot-feedback baseline.
+2. Continue CH06 pilot-feedback refreshes over time.
+3. Keep native-speaker/human approval as a separate post-pilot quality gate.
