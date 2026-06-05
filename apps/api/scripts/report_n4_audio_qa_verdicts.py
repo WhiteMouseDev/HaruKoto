@@ -10,6 +10,7 @@ DEFAULT_PACKET_GLOBS = (
     "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
     "docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md",
     "docs/operations/plans/n4-ch06-pilot-human-audio-qa-ch06-2026-06-01.md",
+    "docs/operations/plans/n4-ch07-pilot-human-audio-qa-ch07-2026-06-05.md",
 )
 REVIEW_TARGET_KINDS = ("script ", "question ")
 KNOWN_VERDICTS = {"PASS", "FLAG", "FAIL", "PENDING", "WAIVED"}
