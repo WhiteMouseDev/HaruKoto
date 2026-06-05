@@ -57,12 +57,27 @@ review packet carries the rollout-blocking `PENDING` state.
 
 Before learner-facing exposure, the next wave must:
 
-1. Generate official lesson TTS for HN4-027 through HN4-031.
-2. Run delegated AI/STT audio QA and apply PASS/FLAG verdicts.
-3. Add CH07 to the configured N4 seed registry or seed it explicitly through an
-   approved `--extra-content-file` operation.
-4. Run configured DB seed check, API list/detail smoke, and mobile runtime UAT.
-5. Refresh pilot feedback monitoring after exposure.
+1. Seed CH07 through the explicit extra-file ops path without exposing it:
+
+   ```bash
+   cd apps/api
+   uv run python -m app.seeds.lessons \
+     --level N4 \
+     --only-extra-content-files \
+     --extra-content-file n4/ch07-condition-report-and-recency.json \
+     --force-extra-unpublished
+   ```
+
+   Use `--check` with the same flags after seeding. Expected pre-rollout audit:
+   `lessons=5`, `missing_lessons=0`, `content_mismatches=0`,
+   `item_link_mismatches=0`, and `publish_state_mismatches=0`.
+2. Generate official lesson TTS for HN4-027 through HN4-031 with
+   `--include-unpublished`.
+3. Run delegated AI/STT audio QA and apply PASS/FLAG verdicts.
+4. Add CH07 to the configured N4 seed registry only after the TTS/audio gate is
+   green and learner-facing rollout is intentionally approved.
+5. Run configured DB seed check, API list/detail smoke, and mobile runtime UAT.
+6. Refresh pilot feedback monitoring after exposure.
 
 ## Verification
 
@@ -82,6 +97,61 @@ Commands were run with `mise exec node@22 -- pnpm ...` because the default shell
 | `cd apps/api && uv run pytest tests/test_admin_tts.py` | PASS, 18 tests |
 | package/API TTS manifest and batch `cmp` | PASS |
 | custom CH07 staging boundary check | PASS |
+
+## Follow-up Seed Safety Path
+
+The next operational wave adds an unpublished extra-file seed path for CH07 TTS
+prep:
+
+- `--only-extra-content-files` processes only explicit `--extra-content-file`
+  lesson JSON, leaving the default N4 registry untouched.
+- `--force-extra-unpublished` forces unregistered extra files to seed with
+  `is_published=false` even when the source file remains `PILOT`.
+- `--check` reports `publish_state_mismatches`, so the unpublished state can be
+  audited after seeding.
+
+This keeps the learner-facing rollout blocked: CH07 can exist in DB for TTS
+generation with `--include-unpublished`, but chapter/lesson listing endpoints
+should not expose it until the review rows are approved and the default registry
+rollout is intentionally opened.
+
+## Follow-up Execution - 2026-06-05
+
+The unpublished extra-file seed path was exercised against the configured local
+API database:
+
+```bash
+cd apps/api
+uv run python -m app.seeds.lessons \
+  --level N4 \
+  --only-extra-content-files \
+  --extra-content-file n4/ch07-condition-report-and-recency.json \
+  --force-extra-unpublished
+```
+
+Post-seed check with the same flags passed with `lessons=5`,
+`missing_lessons=0`, `content_mismatches=0`, `item_link_mismatches=0`, and
+`publish_state_mismatches=0`. Direct DB inspection confirmed chapter 7 and
+HN4-027 through HN4-031 all remain `is_published=false`.
+
+TTS generation then ran through the approved lesson service path with
+`--include-unpublished`. One target was generated first as a storage/provider
+probe, then the remaining 44 targets were generated. Follow-up coverage:
+
+- `scripts/report_n4_pilot_tts_coverage.py --level N4 --include-unpublished --check-audio-urls --fail-on-missing`
+  reported `279/279` total records and `279/279` audio URLs ready.
+- `scripts/audit_n4_pilot_tts_audio_quality.py --level N4 --include-unpublished --lesson-no 27 ... 31 --fail-on-blocker`
+  reported CH07 `45/45` machine pass, 0 blockers, and 3 non-blocking
+  `HIGH_SILENCE_RATIO` warnings.
+- `docs/operations/plans/n4-ch07-pilot-human-audio-qa-ch07-2026-06-05.md`
+  was generated with 45 review items and all URL checks `ok`.
+
+STT-based AI audio verification remains blocked. The STT run wrote
+`docs/operations/plans/n4-ch07-machine-stt-audio-qa-2026-06-05.md`, but all 45
+targets failed transcription with Google GenAI `RESOURCE_EXHAUSTED` because
+prepayment credits were depleted. Therefore CH07 review rows must remain
+`PENDING`, and `lessons:review:gate -- --level N4` must continue to block
+learner-facing rollout.
 
 ## Review Notes
 

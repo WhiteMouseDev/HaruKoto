@@ -116,36 +116,72 @@ def _resolve_extra_content_file(path: Path) -> Path:
     raise ValueError(f"Extra lesson content file not found: {path}")
 
 
-def _iter_content_filepaths(levels: Sequence[str] | None = None, *, extra_content_files: Sequence[Path] | None = None) -> Iterator[Path]:
-    seen: set[Path] = set()
+def _iter_registered_content_filepaths(levels: Sequence[str] | None = None) -> Iterator[Path]:
     for level in _selected_lesson_levels(levels):
         content_dir = _content_dir_for_level(level)
         for filename in CONTENT_FILES_BY_LEVEL[level]:
-            filepath = (content_dir / filename).resolve()
+            yield (content_dir / filename).resolve()
+
+
+def _iter_extra_content_filepaths(extra_content_files: Sequence[Path] | None = None) -> Iterator[Path]:
+    for extra_content_file in extra_content_files or ():
+        yield _resolve_extra_content_file(extra_content_file)
+
+
+def _iter_content_filepaths(
+    levels: Sequence[str] | None = None,
+    *,
+    extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+) -> Iterator[Path]:
+    seen: set[Path] = set()
+
+    if not only_extra_content_files:
+        for filepath in _iter_registered_content_filepaths(levels):
             if filepath in seen:
                 continue
             seen.add(filepath)
             yield filepath
 
-    for extra_content_file in extra_content_files or ():
-        filepath = _resolve_extra_content_file(extra_content_file)
+    for filepath in _iter_extra_content_filepaths(extra_content_files):
         if filepath in seen:
             continue
         seen.add(filepath)
         yield filepath
 
 
-def _lesson_is_published(meta: dict[str, Any]) -> bool:
+def _lesson_is_published(meta: dict[str, Any], *, force_unpublished: bool = False) -> bool:
     """Map content review status to DB publish state."""
     status = str(meta.get("status", "")).upper()
     if status not in ALLOWED_META_STATUSES:
         raise ValueError(f"Unsupported lesson meta.status: {status}")
+    if force_unpublished:
+        return False
     return status in PUBLISHABLE_META_STATUSES
 
 
-async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
+def _forced_unpublished_filepaths(
+    levels: Sequence[str] | None = None,
+    *,
+    extra_content_files: Sequence[Path] | None = None,
+    force_extra_unpublished: bool = False,
+) -> set[Path]:
+    if not force_extra_unpublished:
+        return set()
+
+    registered_paths = set(_iter_registered_content_filepaths(levels))
+    extra_paths = set(_iter_extra_content_filepaths(extra_content_files))
+    registered_extras = sorted(extra_paths & registered_paths)
+    if registered_extras:
+        labels = ", ".join(filepath.relative_to(CONTENT_ROOT).as_posix() for filepath in registered_extras)
+        raise ValueError(f"Cannot force registered extra lesson files unpublished: {labels}")
+    return extra_paths
+
+
+async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any], *, is_published: bool | None = None) -> Chapter:
     """Create or update chapter record."""
-    is_published = _lesson_is_published(meta)
+    if is_published is None:
+        is_published = _lesson_is_published(meta)
     stmt = pg_insert(Chapter).values(
         jlpt_level=meta["jlpt_level"],
         part_no=meta["part_no"],
@@ -301,14 +337,14 @@ async def _replace_item_links(
     return {"created": len(expected_links), "deleted": deleted_count}
 
 
-async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+async def _seed_one_chapter(db: AsyncSession, filepath: Path, *, force_unpublished: bool = False) -> dict[str, int]:
     """Seed one chapter from a content JSON file."""
     data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
-    is_published = _lesson_is_published(meta)
+    is_published = _lesson_is_published(meta, force_unpublished=force_unpublished)
 
-    chapter = await _upsert_chapter(db, meta)
+    chapter = await _upsert_chapter(db, meta, is_published=is_published)
     print(f"✅ Chapter {meta['chapter_no']}: {chapter.title} (id={chapter.id}, status={meta['status']}, published={is_published})")
 
     lesson_count = 0
@@ -339,16 +375,27 @@ async def seed_lessons(
     *,
     levels: Sequence[str] | None = None,
     extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+    force_extra_unpublished: bool = False,
 ) -> dict[str, int]:
     """Seed lessons for configured levels. Returns counts summary."""
     totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
+    force_unpublished_paths = _forced_unpublished_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        force_extra_unpublished=force_extra_unpublished,
+    )
 
-    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
+    for filepath in _iter_content_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        only_extra_content_files=only_extra_content_files,
+    ):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
-        counts = await _seed_one_chapter(db, filepath)
+        counts = await _seed_one_chapter(db, filepath, force_unpublished=filepath in force_unpublished_paths)
         for key in totals:
             totals[key] += counts[key]
 
@@ -365,11 +412,31 @@ def _item_link_identity(item: SeedItemLink | LessonItemLink) -> tuple[str, str |
     )
 
 
-async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+async def _audit_one_chapter(db: AsyncSession, filepath: Path, *, force_unpublished: bool = False) -> dict[str, int]:
     data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
-    counts = {"chapters": 1, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+    expected_is_published = _lesson_is_published(meta, force_unpublished=force_unpublished)
+    counts = {
+        "chapters": 1,
+        "lessons": 0,
+        "missing_lessons": 0,
+        "content_mismatches": 0,
+        "item_link_mismatches": 0,
+        "publish_state_mismatches": 0,
+    }
+
+    chapter_result = await db.execute(
+        select(Chapter).where(
+            cast(Chapter.jlpt_level, sa.Text()) == meta["jlpt_level"],
+            Chapter.part_no == meta["part_no"],
+            Chapter.chapter_no == meta["chapter_no"],
+        )
+    )
+    chapter = chapter_result.scalar_one_or_none()
+    if chapter is not None and chapter.is_published is not expected_is_published:
+        print(f"  Publish state mismatch: {meta['chapter_id']} (expected={expected_is_published}, actual={chapter.is_published})")
+        counts["publish_state_mismatches"] += 1
 
     for ld in lessons_data:
         result = await db.execute(
@@ -386,6 +453,10 @@ async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]
             print(f"  Missing lesson: {ld['lesson_id']} ({meta['jlpt_level']} #{ld['lesson_no']})")
             counts["missing_lessons"] += 1
             continue
+
+        if lesson.is_published is not expected_is_published:
+            print(f"  Publish state mismatch: {ld['lesson_id']} (expected={expected_is_published}, actual={lesson.is_published})")
+            counts["publish_state_mismatches"] += 1
 
         if lesson.content_jsonb != ld["content_jsonb"]:
             print(f"  Content mismatch: {ld['lesson_id']} ({meta['jlpt_level']} #{ld['lesson_no']})")
@@ -411,16 +482,34 @@ async def audit_lesson_seed_sync(
     *,
     levels: Sequence[str] | None = None,
     extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+    force_extra_unpublished: bool = False,
 ) -> dict[str, int]:
     """Compare current DB lessons against the seed source without writing data."""
-    totals = {"chapters": 0, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+    totals = {
+        "chapters": 0,
+        "lessons": 0,
+        "missing_lessons": 0,
+        "content_mismatches": 0,
+        "item_link_mismatches": 0,
+        "publish_state_mismatches": 0,
+    }
+    force_unpublished_paths = _forced_unpublished_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        force_extra_unpublished=force_extra_unpublished,
+    )
 
-    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
+    for filepath in _iter_content_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        only_extra_content_files=only_extra_content_files,
+    ):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
-        counts = await _audit_one_chapter(db, filepath)
+        counts = await _audit_one_chapter(db, filepath, force_unpublished=filepath in force_unpublished_paths)
         for key in totals:
             totals[key] += counts[key]
 
@@ -456,9 +545,26 @@ def _parse_args() -> argparse.Namespace:
             "default seed scope."
         ),
     )
+    parser.add_argument(
+        "--only-extra-content-files",
+        action="store_true",
+        help="Process only --extra-content-file paths, leaving the configured level registry untouched.",
+    )
+    parser.add_argument(
+        "--force-extra-unpublished",
+        action="store_true",
+        help=(
+            "Seed explicit extra content files with is_published=false even when meta.status is PILOT/PUBLISHED. "
+            "Registered default seed files keep their normal publish behavior."
+        ),
+    )
     args = parser.parse_args()
     if args.all_levels and args.levels:
         parser.error("--level cannot be combined with --all-levels")
+    if args.only_extra_content_files and not args.extra_content_file:
+        parser.error("--only-extra-content-files requires at least one --extra-content-file")
+    if args.force_extra_unpublished and not args.extra_content_file:
+        parser.error("--force-extra-unpublished requires at least one --extra-content-file")
     return args
 
 
@@ -483,14 +589,28 @@ async def main() -> None:
         if args.check:
             print(f"Checking lesson seed sync for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await audit_lesson_seed_sync(db, levels=levels, extra_content_files=args.extra_content_file)
+                counts = await audit_lesson_seed_sync(
+                    db,
+                    levels=levels,
+                    extra_content_files=args.extra_content_file,
+                    only_extra_content_files=args.only_extra_content_files,
+                    force_extra_unpublished=args.force_extra_unpublished,
+                )
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
-            has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
+            has_mismatch = any(
+                counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches", "publish_state_mismatches")
+            )
         else:
             print(f"Seeding lessons for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await seed_lessons(db, levels=levels, extra_content_files=args.extra_content_file)
+                counts = await seed_lessons(
+                    db,
+                    levels=levels,
+                    extra_content_files=args.extra_content_file,
+                    only_extra_content_files=args.only_extra_content_files,
+                    force_extra_unpublished=args.force_extra_unpublished,
+                )
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
     finally:
