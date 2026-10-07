@@ -148,7 +148,10 @@ async def test_answer_question_correct(client, mock_user, mock_quiz_session, tes
     mock_progress_result = MagicMock()
     mock_progress_result.scalar_one_or_none.return_value = mock_progress
 
-    mock_session.execute = AsyncMock(return_value=mock_progress_result)
+    no_previous_answer = MagicMock()
+    no_previous_answer.scalar_one_or_none.return_value = None
+    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()
     mock_session.commit = AsyncMock()
@@ -200,7 +203,10 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
     mock_progress_result = MagicMock()
     mock_progress_result.scalar_one_or_none.return_value = mock_progress
 
-    mock_session.execute = AsyncMock(return_value=mock_progress_result)
+    no_previous_answer = MagicMock()
+    no_previous_answer.scalar_one_or_none.return_value = None
+    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()
     mock_session.commit = AsyncMock()
@@ -239,9 +245,10 @@ async def test_complete_quiz_success(mock_achievements, client, mock_user, mock_
     mock_session = AsyncMock()
     mock_session.get = AsyncMock(return_value=mock_quiz_session)
 
-    # execute calls: upsert daily progress, count quizzes, count words
+    # execute calls: saved answers, upsert daily progress, count quizzes, count words
     mock_exec_result = MagicMock()
     mock_exec_result.scalar.return_value = 5
+    mock_exec_result.all.return_value = [(uuid.UUID(question["id"]), True) for question in mock_quiz_session.questions_data]
 
     mock_session.execute = AsyncMock(return_value=mock_exec_result)
     mock_session.commit = AsyncMock()

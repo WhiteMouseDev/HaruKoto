@@ -54,8 +54,12 @@ async def get_incomplete_quiz_session(
     for session in sessions:
         answered_count = await _count_session_answers(db, session=session)
 
-        if answered_count == 0 or (session.started_at and session.started_at < cutoff):
+        if session.started_at and session.started_at < cutoff:
             session.completed_at = datetime.now(UTC)
+            continue
+        # A delayed home-screen request can arrive just after /quiz/start. Hide
+        # an unanswered session from the banner without closing the active quiz.
+        if answered_count == 0:
             continue
 
         if valid_session is None:

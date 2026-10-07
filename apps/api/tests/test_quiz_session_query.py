@@ -43,7 +43,7 @@ def _user() -> SimpleNamespace:
 
 
 @pytest.mark.asyncio
-async def test_get_incomplete_quiz_session_completes_empty_session_and_returns_valid_session() -> None:
+async def test_get_incomplete_quiz_session_hides_active_empty_session_and_returns_valid_session() -> None:
     empty_session = SimpleNamespace(
         id=uuid.UUID("11111111-1111-1111-1111-111111111111"),
         user_id=USER_ID,
@@ -84,7 +84,7 @@ async def test_get_incomplete_quiz_session_completes_empty_session_and_returns_v
     assert result.total_questions == 8
     assert result.answered_count == 3
     assert result.correct_count == 2
-    assert empty_session.completed_at is not None
+    assert empty_session.completed_at is None
     assert valid_session.completed_at is None
     db.commit.assert_awaited_once()
 

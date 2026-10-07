@@ -10,12 +10,13 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import DailyProgress, QuizSession, UserStudyStageProgress, UserVocabProgress
+from app.models import DailyProgress, QuizAnswer, QuizSession, UserStudyStageProgress, UserVocabProgress
 from app.models.user import User
 from app.schemas.quiz import QuizCompleteRequest
 from app.services.daily_progress_upsert import build_daily_progress_insert_values
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
 from app.services.quiz_complete_metrics import calculate_accuracy, calculate_daily_progress_increments, calculate_study_minutes
+from app.services.quiz_session import extract_questions_data
 from app.utils.constants import REWARDS
 from app.utils.date import get_today_kst
 
@@ -197,22 +198,36 @@ async def complete_quiz_session(
     user: User,
     body: QuizCompleteRequest,
 ) -> QuizCompleteResult:
-    session = await db.get(QuizSession, body.session_id)
+    session = await db.get(QuizSession, body.session_id, with_for_update=True, populate_existing=True)
     if not session or session.user_id != user.id:
         raise QuizCompleteServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
-
-    accuracy = calculate_accuracy(session)
 
     if session.completed_at:
         level_info = calculate_level(user.experience_points)
         return _build_complete_result(
             session=session,
-            accuracy=accuracy,
+            accuracy=calculate_accuracy(session),
             xp_earned=0,
             level_info=level_info,
             events=[],
         )
 
+    expected_ids = {str(question["id"]) for question in extract_questions_data(session.questions_data)}
+    answers = await db.execute(
+        select(QuizAnswer.question_id, QuizAnswer.is_correct)
+        .where(QuizAnswer.session_id == session.id)
+        .order_by(QuizAnswer.answered_at, QuizAnswer.id)
+    )
+    first_answers: dict[str, bool] = {}
+    for question_id, is_correct in answers.all():
+        first_answers.setdefault(str(question_id), is_correct)
+    if session.total_questions <= 0 or len(expected_ids) != session.total_questions or not expected_ids.issubset(first_answers):
+        raise QuizCompleteServiceError(status_code=409, detail="아직 저장되지 않은 답안이 있습니다. 답안 저장 후 다시 시도해주세요")
+
+    # Older unfinished sessions can contain duplicate attempts or stale counters.
+    # Grade the first persisted answer per canonical question at completion only.
+    session.correct_count = sum(first_answers[question_id] for question_id in expected_ids)
+    accuracy = calculate_accuracy(session)
     now = datetime.now(UTC)
     session.completed_at = now
     xp_earned = session.correct_count * REWARDS.QUIZ_XP_PER_CORRECT

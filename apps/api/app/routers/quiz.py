@@ -114,7 +114,7 @@ async def get_incomplete_quiz(
 ) -> IncompleteQuizResponse:
     """미완료 퀴즈 세션 조회 (배너용).
 
-    - 1문제도 안 푼 세션(좀비)은 자동 완료 처리
+    - 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지
     - 24시간 지난 세션은 자동 완료 처리
     """
     session = await get_incomplete_quiz_session(db, user)
