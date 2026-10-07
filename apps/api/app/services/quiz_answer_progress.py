@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import contextlib
+import logging
 import uuid
 from datetime import datetime
 from typing import Literal
@@ -12,6 +12,8 @@ from app.models import UserGrammarProgress, UserVocabProgress
 from app.services.progress_defaults import new_progress_defaults
 from app.services.quiz_policy import apply_srs_update
 from app.services.srs import log_review_event
+
+logger = logging.getLogger(__name__)
 
 type ProgressRecord = UserVocabProgress | UserGrammarProgress
 type ReviewItemType = Literal["WORD", "GRAMMAR"]
@@ -113,25 +115,30 @@ async def _apply_and_log_progress(
     apply_srs_update(progress, is_correct, time_spent_seconds, now)
     progress.updated_at = now
 
-    with contextlib.suppress(Exception):
-        await log_review_event(
-            db,
-            user_id,
-            item_type,
-            question_id,
-            session_id,
-            None,
-            "JP_KR",
-            is_correct,
-            time_spent_seconds * 1000,
-            3 if is_correct else 1,
-            state_before,
-            _progress_state(progress, default=state_before),
-            None,
-            _progress_state(progress, default="") == "PROVISIONAL",
-            state_before == "UNSEEN",
-            now.date(),
-        )
+    try:
+        # A PostgreSQL statement error aborts its transaction even if Python
+        # catches it. Isolate the optional event log so answers remain durable.
+        async with db.begin_nested():
+            await log_review_event(
+                db,
+                user_id,
+                item_type,
+                question_id,
+                session_id,
+                None,
+                "JP_KR",
+                is_correct,
+                time_spent_seconds * 1000,
+                3 if is_correct else 1,
+                state_before,
+                _progress_state(progress, default=state_before),
+                None,
+                _progress_state(progress, default="") == "PROVISIONAL",
+                state_before == "UNSEEN",
+                now.date(),
+            )
+    except Exception:
+        logger.warning("Quiz review event could not be recorded", exc_info=True)
 
 
 def _progress_state(progress: ProgressRecord, *, default: str = "UNSEEN") -> str:
