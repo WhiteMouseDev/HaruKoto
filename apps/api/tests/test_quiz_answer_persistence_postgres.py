@@ -36,7 +36,9 @@ def isolated_postgres_url() -> Iterator[str]:
         data = root / "data"
         sockets = root / "socket"
         sockets.mkdir()
-        subprocess.run([initdb, "-D", str(data), "-U", "postgres", "--auth=trust", "--no-locale"], check=True, capture_output=True)
+        subprocess.run(
+            [initdb, "-D", str(data), "-U", "postgres", "--auth=trust", "--no-locale", "--encoding=UTF8"], check=True, capture_output=True
+        )
         subprocess.run(
             [pg_ctl, "-D", str(data), "-l", str(root / "postgres.log"), "-o", f"-F -h '' -k '{sockets}' -p 55439", "-w", "start"],
             check=True,
