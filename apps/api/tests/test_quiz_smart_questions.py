@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.models import Vocabulary
 from app.services import quiz_smart_questions
 from app.services.quiz_smart_questions import load_smart_questions
 
@@ -39,6 +40,8 @@ async def test_load_smart_questions_vocabulary_builds_distractor_options(monkeyp
             _scalars_result([review_vocab.id]),
             _scalars_result([new_vocab, duplicate_new_vocab]),
             _scalars_result(["먹다", "보다", "마시다", "자다", "읽다"]),
+            _scalars_result([review_vocab, new_vocab]),
+            MagicMock(all=MagicMock(return_value=[(review_vocab.id,)])),
         ]
     )
 
@@ -51,7 +54,7 @@ async def test_load_smart_questions_vocabulary_builds_distractor_options(monkeyp
         now=datetime(2026, 4, 20, tzinfo=UTC),
     )
 
-    assert db.execute.await_count == 4
+    assert db.execute.await_count == 6
     assert distractor_calls == [review_vocab.id, new_vocab.id]
     assert [question["question"] for question in questions] == ["食べる", "見る"]
     assert questions[0]["type"] == "VOCABULARY"
@@ -94,3 +97,50 @@ async def test_load_smart_questions_grammar_builds_question_payload(monkeypatch)
         }
     ]
     assert [option["text"] for option in questions[0]["options"]] == ["~해도 된다", "~하면 안 된다", "~해야 한다", "~하지 않아도 된다"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("question_count", [2, 10])
+async def test_smart_vocabulary_loads_candidate_and_seen_pools_once_for_all_questions(monkeypatch, question_count):
+    monkeypatch.setattr(quiz_smart_questions.random, "shuffle", lambda items: None)
+    vocabularies = [
+        Vocabulary(
+            id=uuid.uuid4(),
+            word=f"単語{index}",
+            reading=f"たんご{index}",
+            meaning_ko=f"의미{index}",
+            meaning_glosses_ko=[f"의미{index}"],
+            category_tag="daily",
+        )
+        for index in range(question_count + 3)
+    ]
+    seen_result = MagicMock()
+    seen_result.all.return_value = [(vocabularies[-1].id,)]
+    db = AsyncMock()
+    db.execute.side_effect = [
+        _scalars_result([]),
+        _scalars_result(vocabularies[:question_count]),
+        _scalars_result([item.meaning_ko for item in vocabularies]),
+        _scalars_result(vocabularies),
+        seen_result,
+    ]
+
+    questions = await load_smart_questions(
+        db,
+        user_id=uuid.uuid4(),
+        category="VOCABULARY",
+        jlpt_level="N5",
+        distribution={"review": 0, "retry": 0, "new": question_count},
+        now=datetime(2026, 10, 15, tzinfo=UTC),
+    )
+
+    assert len(questions) == question_count
+    assert db.execute.await_count == 5
+    db.get.assert_not_awaited()
+    for question, vocabulary in zip(questions, vocabularies, strict=False):
+        options = question["options"]
+        assert len(options) == 4
+        assert len({option["text"] for option in options}) == 4
+        assert options[0]["text"] == vocabulary.meaning_ko
+        assert options[0]["id"] == question["correctOptionId"]
+        assert options[1]["text"] == vocabularies[-1].meaning_ko

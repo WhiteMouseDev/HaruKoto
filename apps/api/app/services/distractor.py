@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import logging
 import random
-from typing import Any, TypedDict
+from dataclasses import dataclass
+from typing import Any, TypedDict, cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -37,6 +38,18 @@ class DistractorOption(TypedDict):
 
 type ContentItem = Vocabulary | Grammar
 type SafeCandidate = tuple[ContentItem, bool, bool, set[str]]
+
+
+@dataclass(frozen=True)
+class DistractorPool:
+    """Candidate snapshot scoped to one quiz, content level and user."""
+
+    item_type: str
+    jlpt_level: str
+    user_id: UUID | None
+    candidates: tuple[ContentItem, ...]
+    seen_ids: frozenset[UUID]
+
 
 # ---------------------------------------------------------------------------
 # Token extraction
@@ -78,6 +91,35 @@ def _has_meaning_overlap(tokens_a: set[str], tokens_b: set[str]) -> bool:
 # ---------------------------------------------------------------------------
 
 
+def _content_model(item_type: str) -> type[Vocabulary] | type[Grammar]:
+    if item_type == "WORD":
+        return Vocabulary
+    if item_type == "GRAMMAR":
+        return Grammar
+    raise ValueError(f"Unknown item_type: {item_type!r}. Expected 'WORD' or 'GRAMMAR'.")
+
+
+async def load_distractor_pool(
+    db: AsyncSession,
+    *,
+    item_type: str,
+    jlpt_level: str,
+    user_id: UUID | None = None,
+) -> DistractorPool:
+    model = _content_model(item_type)
+    result = await db.execute(select(model).where(model.jlpt_level == jlpt_level))
+    candidates = cast(tuple[ContentItem, ...], tuple(result.scalars().all()))
+
+    seen_ids: frozenset[UUID] = frozenset()
+    if user_id is not None:
+        progress_model: Any = UserVocabProgress if item_type == "WORD" else UserGrammarProgress
+        fk_col: Any = UserVocabProgress.vocabulary_id if item_type == "WORD" else UserGrammarProgress.grammar_id
+        seen_result = await db.execute(select(fk_col).where(progress_model.user_id == user_id, progress_model.state != "UNSEEN"))
+        seen_ids = frozenset(row[0] for row in seen_result.all())
+
+    return DistractorPool(item_type, jlpt_level, user_id, candidates, seen_ids)
+
+
 async def generate_distractors(
     db: AsyncSession,
     correct_item_id: UUID,
@@ -85,6 +127,8 @@ async def generate_distractors(
     jlpt_level: str,
     count: int = 3,
     user_id: UUID | None = None,
+    *,
+    pool: DistractorPool | None = None,
 ) -> list[DistractorOption]:
     """Generate safe distractor options for a quiz question.
 
@@ -98,19 +142,15 @@ async def generate_distractors(
     4. Prefer items from same category_tag (if available)
     5. Never include the correct answer itself
     """
-    if item_type == "WORD":
-        model: Any = Vocabulary
-        progress_model: Any = UserVocabProgress
-        fk_col: Any = UserVocabProgress.vocabulary_id
-    elif item_type == "GRAMMAR":
-        model = Grammar
-        progress_model = UserGrammarProgress
-        fk_col = UserGrammarProgress.grammar_id
+    model = _content_model(item_type)
+    if pool is not None:
+        if (pool.item_type, pool.jlpt_level, pool.user_id) != (item_type, jlpt_level, user_id):
+            raise ValueError("Distractor pool does not match the quiz content or user.")
+        correct_item = next((item for item in pool.candidates if item.id == correct_item_id), None)
     else:
-        raise ValueError(f"Unknown item_type: {item_type!r}. Expected 'WORD' or 'GRAMMAR'.")
+        correct_item = await db.get(model, correct_item_id)
 
     # ── 1. Fetch correct item ──
-    correct_item = await db.get(model, correct_item_id)
     if correct_item is None:
         logger.warning("Correct item %s not found (type=%s)", correct_item_id, item_type)
         return []
@@ -127,29 +167,17 @@ async def generate_distractors(
 
     correct_category_tag = getattr(correct_item, "category_tag", None)
 
-    # ── 2. Fetch candidates from same JLPT level (exclude correct item) ──
-    stmt = select(model).where(
-        model.jlpt_level == jlpt_level,
-        model.id != correct_item_id,
-    )
-    result = await db.execute(stmt)
-    candidates = list(result.scalars().all())
-
-    # ── 3. Fetch user-seen item IDs (if user_id provided) ──
-    seen_ids: set[UUID] = set()
-    if user_id is not None:
-        seen_stmt = select(fk_col).where(
-            progress_model.user_id == user_id,
-            progress_model.state != "UNSEEN",
-        )
-        seen_result = await db.execute(seen_stmt)
-        seen_ids = {row[0] for row in seen_result.all()}
+    # ── 2–3. Load once per quiz when the caller supplies a pool ──
+    if pool is None:
+        pool = await load_distractor_pool(db, item_type=item_type, jlpt_level=jlpt_level, user_id=user_id)
 
     # ── 4. Filter out candidates with meaning overlap ──
     safe_candidates: list[SafeCandidate] = []  # (item, is_same_category, is_seen, tokens)
     accepted_token_sets: list[set[str]] = [correct_tokens]  # track to avoid inter-distractor overlap
 
-    for candidate in candidates:
+    for candidate in pool.candidates:
+        if candidate.id == correct_item_id:
+            continue
         candidate_glosses = candidate.meaning_glosses_ko or []
         candidate_tokens = _extract_tokens(candidate_glosses)
 
@@ -169,7 +197,7 @@ async def generate_distractors(
             continue
 
         is_same_category = correct_category_tag is not None and getattr(candidate, "category_tag", None) == correct_category_tag
-        is_seen = candidate.id in seen_ids
+        is_seen = candidate.id in pool.seen_ids
 
         safe_candidates.append((candidate, is_same_category, is_seen, candidate_tokens))
 

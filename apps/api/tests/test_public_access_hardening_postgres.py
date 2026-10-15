@@ -103,7 +103,7 @@ async def test_public_boundary_migration_preserves_server_auth_and_learning_and_
             "AND defaclnamespace = 'storage'::regnamespace AND defaclobjtype = 'r'",
         )
         assert await _scalar(engine, "SELECT has_table_privilege('anon', 'public.users', 'SELECT')") is True
-        applied = _alembic(isolated_postgres_url, "upgrade", "head")
+        applied = _alembic(isolated_postgres_url, "upgrade", "k1l2m3n4o5p6")
         assert applied.returncode == 0, applied.stderr
         await _apply_again(engine)
 
