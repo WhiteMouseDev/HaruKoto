@@ -3,11 +3,12 @@ from __future__ import annotations
 import random
 import uuid
 from datetime import datetime
+from functools import partial
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Grammar, Vocabulary
-from app.services.distractor import generate_distractors
+from app.services.distractor import generate_distractors, load_distractor_pool
 from app.services.quiz_question_builder import QuestionPayload
 from app.services.quiz_smart_item_queries import (
     load_grammar_meanings,
@@ -86,7 +87,11 @@ async def _load_smart_vocab_questions(
         loaders=VOCAB_ITEM_LOADERS,
     )
 
+    if not all_items:
+        return []
     fallback_meanings = await load_vocab_meanings(db, jlpt_level)
+    pool = await load_distractor_pool(db, item_type="WORD", jlpt_level=jlpt_level, user_id=user_id)
+    distractor_generator = partial(generate_distractors, pool=pool)
     questions: list[QuestionPayload] = []
     for vocab in all_items:
         questions.append(
@@ -96,7 +101,7 @@ async def _load_smart_vocab_questions(
                 jlpt_level=jlpt_level,
                 user_id=user_id,
                 fallback_meanings=fallback_meanings,
-                distractor_generator=generate_distractors,
+                distractor_generator=distractor_generator,
                 shuffle=random.shuffle,
             )
         )
