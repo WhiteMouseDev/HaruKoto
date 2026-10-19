@@ -5,18 +5,24 @@ import shutil
 import subprocess
 import tempfile
 import uuid
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Annotated
 
 import pytest
+from fastapi import Depends, FastAPI
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.base import Base
+from app.db.session import get_db
+from app.dependencies import get_current_user
 from app.models import QuizAnswer, QuizSession, Vocabulary
 from app.models.enums import JlptLevel, PartOfSpeech, QuizType
 from app.models.user import User
+from app.routers.quiz import router as quiz_router
 from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest, QuizStartRequest, SmartStartRequest
 from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
@@ -314,3 +320,157 @@ async def test_parallel_answers_and_retries_are_counted_once_and_completion_wait
             assert user.experience_points == 100
     finally:
         await engine.dispose()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("questions_shape", ["list", "smart"])
+async def test_legacy_naive_timestamp_session_can_be_found_resumed_and_completed(isolated_postgres_url: str, questions_shape: str) -> None:
+    admin_engine = create_async_engine(isolated_postgres_url)
+    schema = f"legacy_quiz_{uuid.uuid4().hex}"
+    engine = create_async_engine(isolated_postgres_url, connect_args={"server_settings": {"search_path": schema, "timezone": "UTC"}})
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    user_id, other_user_id, session_id = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    authenticated_user_id = user_id
+    question_ids = [uuid.uuid4(), uuid.uuid4()]
+    questions = [
+        {
+            "id": str(question_id),
+            "question": f"質問{index}",
+            "options": [{"id": "correct", "text": "정답"}, {"id": "wrong", "text": "오답"}],
+            "correctOptionId": "correct",
+        }
+        for index, question_id in enumerate(question_ids)
+    ]
+    app = FastAPI()
+    app.include_router(quiz_router)
+
+    async def get_test_db() -> AsyncIterator[AsyncSession]:
+        async with sessions() as db:
+            yield db
+
+    async def get_test_user(db: Annotated[AsyncSession, Depends(get_db)]) -> User:
+        user = await db.get(User, authenticated_user_id)
+        assert user is not None
+        return user
+
+    app.dependency_overrides[get_db] = get_test_db
+    app.dependency_overrides[get_current_user] = get_test_user
+    try:
+        async with admin_engine.begin() as connection:
+            await connection.execute(text(f'CREATE SCHEMA "{schema}"'))
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+            # The original migration used TIMESTAMP(3), unlike ORM metadata's
+            # timezone-aware declaration. Exercise asyncpg's real naive result.
+            await connection.execute(
+                text(
+                    "ALTER TABLE quiz_sessions "
+                    "ALTER COLUMN started_at TYPE TIMESTAMP(3) WITHOUT TIME ZONE USING started_at AT TIME ZONE 'UTC', "
+                    "ALTER COLUMN completed_at TYPE TIMESTAMP(3) WITHOUT TIME ZONE USING completed_at AT TIME ZONE 'UTC'"
+                )
+            )
+        async with sessions() as db:
+            db.add_all(
+                [
+                    User(id=user_id, email=f"{user_id}@example.test", nickname="이어 풀기 테스트"),
+                    User(id=other_user_id, email=f"{other_user_id}@example.test", nickname="다른 사용자"),
+                ]
+            )
+            await db.flush()
+            db.add(
+                QuizSession(
+                    id=session_id,
+                    user_id=user_id,
+                    quiz_type=QuizType.CLOZE,
+                    jlpt_level=JlptLevel.N5,
+                    total_questions=2,
+                    correct_count=0,
+                    questions_data={"mode": "smart", "questions": questions} if questions_shape == "smart" else questions,
+                )
+            )
+            await db.commit()
+        async with sessions() as db:
+            stored = await db.get(QuizSession, session_id)
+            assert stored is not None and stored.started_at.tzinfo is None
+            original_started_at = stored.started_at.isoformat()
+
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            # A just-started quiz stays active while the home banner hides it.
+            empty = await client.get("/api/v1/quiz/incomplete")
+            assert empty.status_code == 200
+            assert empty.json() == {"session": None}
+            first = await client.post(
+                "/api/v1/quiz/answer",
+                json={
+                    "sessionId": str(session_id),
+                    "questionId": str(question_ids[0]),
+                    "questionType": "CLOZE",
+                    "selectedOptionId": "correct",
+                },
+            )
+            assert first.status_code == 200
+            assert first.json() == {"success": True}
+            banner = await client.get("/api/v1/quiz/incomplete")
+            assert banner.status_code == 200
+            assert banner.json() == {
+                "session": {
+                    "id": str(session_id),
+                    "quizType": "CLOZE",
+                    "jlptLevel": "N5",
+                    "totalQuestions": 2,
+                    "answeredCount": 1,
+                    "correctCount": 1,
+                    "startedAt": original_started_at,
+                }
+            }
+            authenticated_user_id = other_user_id
+            other_banner = await client.get("/api/v1/quiz/incomplete")
+            assert other_banner.status_code == 200
+            assert other_banner.json() == {"session": None}
+            forbidden = await client.post("/api/v1/quiz/resume", json={"sessionId": str(session_id)})
+            assert forbidden.status_code == 404
+            authenticated_user_id = user_id
+            resumed = await client.post("/api/v1/quiz/resume", json={"sessionId": str(session_id)})
+            assert resumed.status_code == 200
+            payload = resumed.json()
+            assert payload["sessionId"] == str(session_id)
+            assert payload["answeredQuestionIds"] == [str(question_ids[0])]
+            assert payload["correctCount"] == 1
+            assert payload["totalQuestions"] == 2
+            assert payload["quizType"] == "CLOZE"
+            assert [question["questionId"] for question in payload["questions"]] == [str(question_id) for question_id in question_ids]
+            assert [question["options"] for question in payload["questions"]] == [question["options"] for question in questions]
+            assert [question["correctOptionId"] for question in payload["questions"]] == ["correct", "correct"]
+            second = await client.post(
+                "/api/v1/quiz/answer",
+                json={
+                    "sessionId": str(session_id),
+                    "questionId": str(question_ids[1]),
+                    "questionType": "CLOZE",
+                    "selectedOptionId": "correct",
+                },
+            )
+            assert second.status_code == 200
+            completed = await client.post("/api/v1/quiz/complete", json={"sessionId": str(session_id)})
+            assert completed.status_code == 200
+            assert completed.json()["correctCount"] == 2
+            assert completed.json()["totalQuestions"] == 2
+            assert completed.json()["accuracy"] == 100.0
+            assert completed.json()["xpEarned"] == 20
+            finished_banner = await client.get("/api/v1/quiz/incomplete")
+            assert finished_banner.status_code == 200
+            assert finished_banner.json() == {"session": None}
+            finished_resume = await client.post("/api/v1/quiz/resume", json={"sessionId": str(session_id)})
+            assert finished_resume.status_code == 400
+        async with sessions() as db:
+            saved = await db.get(QuizSession, session_id)
+            assert saved is not None and saved.completed_at is not None
+            assert saved.started_at.tzinfo is None
+            assert saved.started_at.isoformat() == original_started_at
+            assert saved.correct_count == 2
+            assert await db.scalar(select(func.count()).select_from(QuizAnswer).where(QuizAnswer.session_id == session_id)) == 2
+    finally:
+        await engine.dispose()
+        async with admin_engine.begin() as connection:
+            await connection.execute(text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
+        await admin_engine.dispose()
