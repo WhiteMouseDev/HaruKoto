@@ -27,6 +27,45 @@ REQUIRED_CASES = frozenset(
             "tests.test_empty_postgrest_schema_postgres",
             "test_empty_postgrest_schema_is_fail_closed_and_preserves_auth_and_learning",
         ),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_preserves_records_security_boundaries_and_repeat_application"),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_lock_timeout_rolls_back_and_allows_bounded_retry"),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_preserves_auth_quiz_resume_and_atomic_lesson_srs_events"),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_accepts_only_an_exact_existing_target_partition"),
+        ("tests.test_review_event_partition_repair_postgres", "test_reviewed_offline_sql_replays_as_one_transaction"),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[table-name]",
+        ),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_fails_atomically_on_conflicting_catalog_or_security[view-name]"),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[wrong-bounds]",
+        ),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[unexpected-child]",
+        ),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[default-partition]",
+        ),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[wrong-owner]",
+        ),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[parent-rls]",
+        ),
+        ("tests.test_review_event_partition_repair_postgres", "test_repair_fails_atomically_on_conflicting_catalog_or_security[ddl-guard]"),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[missing-index]",
+        ),
+        (
+            "tests.test_review_event_partition_repair_postgres",
+            "test_repair_fails_atomically_on_conflicting_catalog_or_security[column-privilege]",
+        ),
     }
 )
 

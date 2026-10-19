@@ -30,7 +30,7 @@ class CheckPostgresJunitTest(unittest.TestCase):
 
     def test_all_required_cases_pass(self) -> None:
         self.write_report()
-        self.assertEqual(len(GUARD.REQUIRED_CASES), 10)
+        self.assertEqual(len(GUARD.REQUIRED_CASES), 25)
         self.assertEqual(GUARD.check_report(self.report), [])
 
     def test_optional_ai_skips_are_allowed(self) -> None:
@@ -83,7 +83,7 @@ class CheckPostgresJunitTest(unittest.TestCase):
     def test_empty_report_is_rejected(self) -> None:
         self.suite.clear()
         self.write_report()
-        self.assertEqual(len(GUARD.check_report(self.report)), 10)
+        self.assertEqual(len(GUARD.check_report(self.report)), 25)
 
     def test_cli_returns_nonzero_when_a_regression_is_skipped(self) -> None:
         ET.SubElement(self.suite[0], "skipped")
@@ -96,7 +96,7 @@ class CheckPostgresJunitTest(unittest.TestCase):
         self.write_report()
         result = subprocess.run([sys.executable, str(SCRIPT), str(self.report)], capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0)
-        self.assertIn("All 10 required PostgreSQL regression cases passed", result.stdout)
+        self.assertIn("All 25 required PostgreSQL regression cases passed", result.stdout)
 
 
 if __name__ == "__main__":
