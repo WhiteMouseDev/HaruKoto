@@ -200,7 +200,7 @@ async def test_empty_postgrest_schema_is_fail_closed_and_preserves_auth_and_lear
         assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pg_pgrst_no_exposed_schemas"
         assert await _scalar(engine, "SELECT to_regnamespace('pgrst_no_exposed_schemas')") is None
         assert await _scalar(engine, "SELECT version_num FROM public.alembic_version") == "k1l2m3n4o5p6"
-        reapplied = _alembic(isolated_postgres_url, "upgrade", "head")
+        reapplied = _alembic(isolated_postgres_url, "upgrade", REVISION)
         assert reapplied.returncode == 0, reapplied.stderr
         assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pgrst_no_exposed_schemas"
         assert await _protected_metadata(engine) == metadata_before
