@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
@@ -8,6 +11,87 @@ import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
 void main() {
   group('QuizSessionController', () {
+    test('matching corrections keep the first scored POST and allow exit',
+        () async {
+      final repository = _FakeStudyRepository();
+      final container = ProviderContainer(overrides: [
+        studyRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(quizSessionProvider.notifier);
+      await controller.initialize(const QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 2,
+      ));
+      controller.submitSpecialAnswer(
+        questionId: 'q1',
+        isCorrect: false,
+        questionType: 'VOCABULARY',
+      );
+      controller.submitSpecialAnswer(
+        questionId: 'q1',
+        isCorrect: true,
+        questionType: 'VOCABULARY',
+      );
+      await controller.flushPendingAnswers();
+      expect(repository.answerCalls, 1);
+      expect(repository.lastSelectedOptionId, 'wrong');
+    });
+
+    test('exit drain waits for delayed answer POST to finish', () async {
+      final repository = _FakeStudyRepository()..answerGate = Completer<void>();
+      final container = ProviderContainer(overrides: [
+        studyRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(quizSessionProvider.notifier);
+      await controller.initialize(const QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 2,
+      ));
+      controller.answerCurrentQuestion(
+          optionId: 'a', questionType: 'VOCABULARY');
+      var drained = false;
+      final drain =
+          controller.flushPendingAnswers().then((_) => drained = true);
+      await Future<void>.delayed(Duration.zero);
+      expect(repository.answerCalls, 1);
+      expect(drained, isFalse);
+      repository.answerGate!.complete();
+      await drain;
+      expect(drained, isTrue);
+    });
+
+    test('failed exit drain retries the same answer before allowing exit',
+        () async {
+      final repository = _FakeStudyRepository()
+        ..answerGate = Completer<void>()
+        ..failedAnswerSaves = 1;
+      final container = ProviderContainer(overrides: [
+        studyRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(quizSessionProvider.notifier);
+      await controller.initialize(const QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 2,
+      ));
+      controller.answerCurrentQuestion(
+          optionId: 'a', questionType: 'VOCABULARY');
+      final drain = controller.flushPendingAnswers();
+      final failure = expectLater(drain, throwsA(isA<ApiException>()));
+      repository.answerGate!.complete();
+      await failure;
+      expect(repository.answerCalls, 1);
+      await controller.flushPendingAnswers();
+      expect(repository.answerCalls, 2);
+      expect(repository.lastAnsweredQuestionId, 'q1');
+      expect(repository.lastSelectedOptionId, 'a');
+    });
+
     test('initializes a standard quiz session', () async {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
@@ -189,6 +273,8 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
   int startQuizCalls = 0;
   int resumeQuizCalls = 0;
   int answerCalls = 0;
+  Completer<void>? answerGate;
+  int failedAnswerSaves = 0;
   int completeQuizCalls = 0;
   String? lastAnsweredQuestionId;
   String? lastSelectedOptionId;
@@ -242,6 +328,11 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     lastAnsweredQuestionId = questionId;
     lastSelectedOptionId = selectedOptionId;
     lastTimeSpent = timeSpentSeconds;
+    await answerGate?.future;
+    if (failedAnswerSaves > 0) {
+      failedAnswerSaves--;
+      throw TimeoutException('Synthetic answer write failure');
+    }
   }
 
   @override

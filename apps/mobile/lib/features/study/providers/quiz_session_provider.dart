@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
 import 'quiz_session_service.dart';
@@ -132,12 +131,15 @@ class QuizSessionState {
 }
 
 class QuizSessionController extends Notifier<QuizSessionState> {
+  final _answerSaves = <String, _PendingQuizAnswer>{};
+
   @override
   QuizSessionState build() {
     return const QuizSessionState();
   }
 
   Future<void> initialize(QuizSessionRequest request) async {
+    _answerSaves.clear();
     state = QuizSessionState(
       loading: true,
       resolvedMode: request.mode,
@@ -199,8 +201,9 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       streak: nextStreak,
     );
 
-    unawaited(
-      ref.read(quizSessionServiceProvider).answerQuestion(
+    _saveAnswer(
+      question.questionId,
+      () => ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: question.questionId,
             selectedOptionId: optionId,
@@ -235,8 +238,9 @@ class QuizSessionController extends Notifier<QuizSessionState> {
 
     final question =
         state.questions.firstWhere((q) => q.questionId == questionId);
-    unawaited(
-      ref.read(quizSessionServiceProvider).answerQuestion(
+    _saveAnswer(
+      questionId,
+      () => ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: questionId,
             selectedOptionId:
@@ -256,6 +260,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
 
     state = state.copyWith(completing: true);
     try {
+      await flushPendingAnswers();
       final result = await ref.read(quizSessionServiceProvider).completeQuiz(
             sessionId,
             stageId: stageId,
@@ -266,6 +271,48 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       state = state.copyWith(completing: false);
       rethrow;
     }
+  }
+
+  /// Keep this session alive until every submitted answer is durable. Reuse
+  /// the same payload when an exit or completion retries a failed request.
+  Future<void> flushPendingAnswers() async {
+    for (final answer in _answerSaves.values.where((answer) => answer.failed)) {
+      answer.submit();
+    }
+    await Future.wait(_answerSaves.values.map((answer) => answer.pending));
+    if (_answerSaves.values.any((answer) => !answer.saved)) {
+      throw const ApiException(
+        message: '답안을 저장하지 못했어요. 다시 시도해주세요.',
+        errorCode: 'QUIZ_ANSWER_SAVE_FAILED',
+      );
+    }
+  }
+
+  void _saveAnswer(String questionId, Future<void> Function() save) {
+    // Matching can report a corrected pair after its first scored attempt.
+    // The server keeps that first answer immutable, including on retries.
+    if (_answerSaves.containsKey(questionId)) return;
+    final answer = _PendingQuizAnswer(save);
+    _answerSaves[questionId] = answer;
+    answer.submit();
+  }
+}
+
+class _PendingQuizAnswer {
+  _PendingQuizAnswer(this.save);
+
+  final Future<void> Function() save;
+  late Future<void> pending;
+  bool saved = false;
+  bool failed = false;
+
+  void submit() {
+    failed = false;
+    pending = save().then((_) {
+      saved = true;
+    }, onError: (Object error, StackTrace stack) {
+      failed = true;
+    });
   }
 }
 

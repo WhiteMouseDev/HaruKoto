@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/network/api_exception.dart';
+import '../providers/quiz_progress_refresh_provider.dart';
 import '../providers/quiz_runtime_coordinators.dart';
 import '../providers/quiz_session_provider.dart';
 import 'quiz_result_page.dart';
@@ -37,6 +39,8 @@ class QuizPage extends ConsumerStatefulWidget {
 }
 
 class _QuizPageState extends ConsumerState<QuizPage> {
+  bool _savingOnExit = false;
+  ProviderContainer? _container;
   late final QuizTimerCoordinator _timerCoordinator;
   late final QuizFeedbackPlayer _feedbackPlayer;
   late final QuizInteractionCoordinator _interactionCoordinator;
@@ -65,10 +69,20 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container = ProviderScope.containerOf(context, listen: false);
+  }
+
+  @override
   void dispose() {
-    final container = ProviderScope.containerOf(context, listen: false);
+    final container = _container;
     _lifecycleCoordinator.dispose(
-      invalidateSession: () => container.invalidate(quizSessionProvider),
+      invalidateSession: () {
+        if (container == null) return;
+        container.invalidate(quizSessionProvider);
+        container.read(quizProgressRefreshProvider).refresh();
+      },
     );
     super.dispose();
   }
@@ -158,8 +172,25 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Future<void> _requestPop() async {
+    if (_savingOnExit || ref.read(quizSessionProvider).completing) return;
     await _exitCoordinator.requestExit(
-      confirmExit: _confirmExit,
+      confirmExit: () async {
+        if (!await _confirmExit() || !mounted) return false;
+        setState(() => _savingOnExit = true);
+        try {
+          await ref.read(quizSessionProvider.notifier).flushPendingAnswers();
+          return true;
+        } on ApiException catch (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(error.userMessage)),
+            );
+          }
+          return false;
+        } finally {
+          if (mounted) setState(() => _savingOnExit = false);
+        }
+      },
       isActive: () => mounted,
       exit: () => Navigator.of(context).pop(),
     );
@@ -209,7 +240,31 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       return content;
     }
 
-    return _buildPopScope(child: content);
+    return _buildPopScope(
+      child: Stack(
+        children: [
+          content,
+          if (_savingOnExit) ...[
+            const ModalBarrier(dismissible: false, color: Colors.black26),
+            const Center(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('답안을 저장하고 있어요'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   void _submitSpecialAnswer(
