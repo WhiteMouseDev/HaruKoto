@@ -54,7 +54,11 @@ async def get_incomplete_quiz_session(
     for session in sessions:
         answered_count = await _count_session_answers(db, session=session)
 
-        if session.started_at and session.started_at < cutoff:
+        started_at = session.started_at
+        # Legacy TIMESTAMP columns return naive values stored in UTC.
+        if started_at is not None and started_at.tzinfo is None:
+            started_at = started_at.replace(tzinfo=UTC)
+        if started_at and started_at < cutoff:
             session.completed_at = datetime.now(UTC)
             continue
         # A delayed home-screen request can arrive just after /quiz/start. Hide
