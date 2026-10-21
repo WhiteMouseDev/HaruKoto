@@ -54,13 +54,14 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                   Icon(LucideIcons.trophy,
                       size: 16, color: AppColors.error(theme.brightness)),
                   const SizedBox(width: 8),
-                  Text(
-                    '틀린 ${widget.quizType == 'GRAMMAR' ? '문법' : '단어'} ${widget.wrongAnswers.length}개',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      '틀린 ${widget.quizType == 'GRAMMAR' ? '문법' : '단어'} ${widget.wrongAnswers.length}개',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  const Spacer(),
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
