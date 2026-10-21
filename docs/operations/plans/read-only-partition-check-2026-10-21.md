@@ -67,3 +67,10 @@ Implementation and regression validation completed. The CLI and internal library
 - Inspector guard validation covers identity/owner/SECURITY DEFINER/search path/required CREATE TABLE event tags and enabled state, not a full function-body integrity audit. The empty schema check establishes postgres ownership and client denial, not exclusivity against every trusted role.
 
 Independent read-only review found no unresolved blocking issue. Operational role and cloud setup remain the separate proposal above; no scheduler or email notification is active as a consequence of this code change.
+
+
+## CI concurrency harness correction
+
+The first PR CI run (39526449579) passed API contracts and schema drift but exposed a pre-existing race in the partition-repair test helper: 668 tests passed, one parallel reapplication assertion failed, and the 13 optional AI tests remained skipped. Alembic `Operations.context` installs a process-global `alembic.op` proxy. Two async `run_sync` workers could therefore send one worker's SET LOCAL statements through the other's connection, leaving its timezone unchanged.
+
+Each fresh migration module now receives its own connection-bound `Operations` instance. Actual parallel DB workers, UTC/search-path assertions and preservation checks remain; their gather has a 10-second failure bound. No deployed migration, SQL, application runtime or inspector behavior changed. Independent deterministic red/green evidence confirms the global-context race. The 15 existing PostgreSQL repair cases pass, and 20 additional parallel rounds (40 reapplications on two distinct DB connections) preserve the eleven partitions, existing metadata and head. This correction is included in the draft PR and its final remote CI must be checked separately from the earlier local full-suite result.

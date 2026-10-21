@@ -88,8 +88,11 @@ async def _apply_again(engine: AsyncEngine) -> None:
     spec.loader.exec_module(migration)
 
     def apply(connection):
-        with Operations.context(MigrationContext.configure(connection)):
-            migration.upgrade()
+        # alembic.op's process-global proxy is unsafe across async greenlet
+        # yields. Each freshly loaded module instead owns its connection-bound
+        # Operations instance, while the database workers still run in parallel.
+        migration.op = Operations(MigrationContext.configure(connection))
+        migration.upgrade()
 
     async with engine.begin() as connection:
         await connection.execute(text("SET LOCAL TIME ZONE 'Asia/Seoul'"))
@@ -194,7 +197,7 @@ async def test_repair_preserves_records_security_boundaries_and_repeat_applicati
     async with engine.begin() as connection:
         await connection.execute(text("SET LOCAL ROLE service_role"))
         assert await connection.scalar(text("SELECT count(*) FROM public.review_events")) == 11
-    await asyncio.gather(_apply_again(engine), _apply_again(engine))
+    await asyncio.wait_for(asyncio.gather(_apply_again(engine), _apply_again(engine)), timeout=10)
     assert await _partition_count(engine) == 11
     assert await _old_metadata(engine) == metadata_before
     assert await _scalar(engine, "SELECT version_num FROM alembic_version") == REVISION

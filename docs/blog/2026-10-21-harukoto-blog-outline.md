@@ -41,7 +41,7 @@ summary: "2026년 9월과 10월 작업의 발행 순서, 문제별 증거와 구
 | 반복 오류와 조회 | 없는 스키마 반복 오류, 요청 내 동일 후보 재조회 | 비공개 빈 스키마, 요청 범위 후보 재사용 | 운영 적용·배포·관찰 완료 | [IO 개선 기록](../operations/plans/data-api-log-and-quiz-io-2026-10-15.md) |
 | 날짜 비교 | naive와 aware 시각 비교 예외 | 기존 UTC 의미로 비교 값만 정규화 | 운영 배포·이어 풀기 검증 완료 | `docs/operations/plans/incomplete-quiz-timezone-fix-2026-10-19.md` (로컬 기록) |
 | 진행률 의미 | 숙련도를 이번 퀴즈 진행률처럼 표시 | 일치하는 퀴즈의 저장 답안 비율, 명시적 지표명 | 병합·아이폰 업데이트·재시작 검증 완료 | `docs/operations/plans/mobile-resume-progress-2026-10-19.md` (로컬 기록) |
-| CI DB 회귀 | 필요한 실제 PostgreSQL 테스트가 스킵 | 정확한 JUnit 사례를 필수 실행으로 검사 | 10개에서 파티션 복구 포함 25개, 읽기 전용 검사 포함 52개로 확대 | [PR #178](https://github.com/WhiteMouseDev/HaruKoto/pull/178), [PR #180](https://github.com/WhiteMouseDev/HaruKoto/pull/180) |
+| CI DB 회귀 | 필요한 실제 PostgreSQL 테스트가 스킵 | 정확한 JUnit 사례를 필수 실행으로 검사 | 10개→25개는 반영, 52개 보강과 동시 실행 helper 수정은 PR #181 초안 | [PR #178](https://github.com/WhiteMouseDev/HaruKoto/pull/178), [PR #180](https://github.com/WhiteMouseDev/HaruKoto/pull/180), [PR #181 초안](https://github.com/WhiteMouseDev/HaruKoto/pull/181) |
 | 파티션 공백 | 3월~6월만 존재해 현재 월 이벤트 저장 불가 | Alembic 범위 보완, 보안·기존 메타데이터 보존 | 7개 추가·총 11개, 운영 검증·서버 배포 완료 | `docs/operations/plans/review-event-partition-repair-proposal-2026-10-19.md` (로컬 기록) |
 | Supabase 새 권한 정책 | 새 메일을 보안 장애로 오해할 수 있음 | 직접 DB 연결과 Data API 권한 분리해 해석 | 10월 20일 안내 해석, 권한 변경 없음 | [공식 정책 공지](https://github.com/orgs/supabase/discussions/45329), 사용자 제공 메일 |
 | 파티션 사전 검사 | 복구 후에도 미래 파티션이 부족해질 수 있음 | 읽기 전용 구조·연속 범위·보안 검사 | 구현·로컬 검증 완료, 운영 실행·정기 알림 미설정 | [검사 구현과 검증](../operations/plans/read-only-partition-check-2026-10-21.md) |
