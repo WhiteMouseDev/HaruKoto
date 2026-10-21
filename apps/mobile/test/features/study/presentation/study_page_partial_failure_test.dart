@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harukoto_mobile/core/network/network_base.dart';
 import 'package:harukoto_mobile/core/providers/dio_provider.dart';
@@ -435,6 +436,8 @@ Future<_Fixture> _pump(
   final container = ProviderContainer(
     retry: (_, __) => null,
     overrides: [
+      currentAccountIdProvider.overrideWithValue('test-account'),
+      currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
       sharedPreferencesProvider.overrideWithValue(prefs),
       dioProvider.overrideWithValue(dio),
       // Keep unrelated calendar refresh timers outside this view-state fixture;

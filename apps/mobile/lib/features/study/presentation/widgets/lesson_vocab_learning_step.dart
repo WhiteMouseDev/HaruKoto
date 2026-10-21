@@ -10,12 +10,16 @@ class LessonVocabLearningStep extends StatefulWidget {
   final List<VocabItemModel> vocabItems;
   final VoidCallback onNext;
   final VoidCallback? onBackToPrev;
+  final int initialIndex;
+  final ValueChanged<int>? onIndexChanged;
 
   const LessonVocabLearningStep({
     super.key,
     required this.vocabItems,
     required this.onNext,
     this.onBackToPrev,
+    this.initialIndex = 0,
+    this.onIndexChanged,
   });
 
   @override
@@ -24,7 +28,13 @@ class LessonVocabLearningStep extends StatefulWidget {
 }
 
 class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   List<VocabItemModel> get _uniqueVocab {
     final seen = <String>{};
@@ -67,6 +77,7 @@ class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
     final vocab = _uniqueVocab;
     if (_currentIndex < vocab.length - 1) {
       setState(() => _currentIndex++);
+      widget.onIndexChanged?.call(_currentIndex);
     } else {
       widget.onNext();
     }
@@ -75,6 +86,7 @@ class _LessonVocabLearningStepState extends State<LessonVocabLearningStep> {
   void _prev() {
     if (_currentIndex > 0) {
       setState(() => _currentIndex--);
+      widget.onIndexChanged?.call(_currentIndex);
     } else {
       widget.onBackToPrev?.call();
     }

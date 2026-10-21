@@ -9,7 +9,7 @@ import 'lesson_dialogue_bubble.dart';
 
 class LessonGuidedReadingStep extends StatefulWidget {
   final LessonDetailModel detail;
-  final VoidCallback onNext;
+  final VoidCallback? onNext;
 
   const LessonGuidedReadingStep({
     super.key,

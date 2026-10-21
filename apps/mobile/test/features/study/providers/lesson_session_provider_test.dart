@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
+import '../fixtures/lesson_resume_fixture.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
@@ -13,6 +16,10 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -52,6 +59,10 @@ void main() {
       final events = <LessonPilotEvent>[];
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
           lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
         ],
@@ -97,6 +108,10 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -151,6 +166,10 @@ void main() {
         ..startError = Exception('locked');
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -176,7 +195,7 @@ void main() {
       final state = container.read(lessonSessionProvider('lesson-1'));
       expect(repository.startLessonCalls, 1);
       expect(state.step, LessonStep.contextPreview);
-      expect(state.startErrorMessage, contains('locked'));
+      expect(state.startErrorMessage, contains('일시적인 오류'));
       expect(state.answers, isEmpty);
     });
 
@@ -185,6 +204,10 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -217,6 +240,10 @@ void main() {
       final events = <LessonPilotEvent>[];
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
           lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
         ],
@@ -256,6 +283,10 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -328,6 +359,10 @@ void main() {
       final events = <LessonPilotEvent>[];
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
           lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
         ],
@@ -351,7 +386,7 @@ void main() {
       final state = container.read(lessonSessionProvider('lesson-1'));
       expect(state.step, LessonStep.matching);
       expect(state.submitting, isFalse);
-      expect(state.submissionErrorMessage, contains('network down'));
+      expect(state.submissionErrorMessage, contains('제출 결과'));
       final submittedEvent = events.singleWhere(
         (event) => event.name == LessonPilotEventNames.lessonSubmitted,
       );
@@ -364,6 +399,10 @@ void main() {
       final events = <LessonPilotEvent>[];
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           studyRepositoryProvider.overrideWith((ref) => repository),
           lessonPilotTelemetrySinkProvider.overrideWith((ref) => events.add),
         ],
@@ -373,7 +412,10 @@ void main() {
       addTearDown(sub.close);
       addTearDown(container.dispose);
 
-      container.read(lessonSessionProvider('lesson-1').notifier).reset();
+      final notifier =
+          container.read(lessonSessionProvider('lesson-1').notifier);
+      await notifier.initialize(_buildDetail(questions: const []));
+      await notifier.reset();
 
       expect(events.single.name, LessonPilotEventNames.lessonRetryClicked);
       expect(events.single.properties['lessonId'], 'lesson-1');
