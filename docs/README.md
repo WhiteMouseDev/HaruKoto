@@ -42,6 +42,9 @@ docs/
 - [v1.1 안정화 체크포인트](operations/release/v1.1-stabilization-checkpoint-2026-04-23.md) — 릴리스 경계, 자동 검증, 수동 UAT 게이트
 - [**AI Coding Harness**](operations/harness.md) — Claude Code + Codex 운영체계 (도메인 에이전트, 스킬, 훅, 계약 관리, 에스컬레이션)
 - [AI 하네스 엔지니어링 실전 구축기 (블로그)](blog/2026-04-23-ai-harness-engineering-실전-구축기.md) — 4-pillar 하네스 설계와 실제 드리프트 버그를 잡아낸 사례
+- [학습 앱 개선 사례 기록](blog/2026-10-21-harukoto-improvement-casebook.md) — 학습 UI, 퀴즈 저장, 이어 풀기, DB 보안과 파티션 문제의 원인·설계·수정·검증
+- [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
+- [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
 - [모바일 아키텍처 감사 (2026-03-24)](operations/audits/mobile-architecture-audit-2026-03-24.md) — 모바일 구조 문제점과 개선 우선순위
