@@ -23,6 +23,7 @@ class QuizPage extends ConsumerStatefulWidget {
   final String? mode;
   final String? resumeSessionId;
   final String? stageId;
+  final String? sourceSessionId;
 
   const QuizPage({
     super.key,
@@ -32,6 +33,7 @@ class QuizPage extends ConsumerStatefulWidget {
     this.mode,
     this.resumeSessionId,
     this.stageId,
+    this.sourceSessionId,
   });
 
   @override
@@ -96,6 +98,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         mode: widget.mode,
         resumeSessionId: widget.resumeSessionId,
         stageId: widget.stageId,
+        sourceSessionId: widget.sourceSessionId,
       ),
       initializeSession: ref.read(quizSessionProvider.notifier).initialize,
       isActive: () => mounted,
@@ -158,6 +161,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         quizType: destination.quizType,
         jlptLevel: destination.jlptLevel,
         sessionId: destination.sessionId,
+        returnToPreviousResult: widget.sourceSessionId != null,
       )),
     ));
   }
@@ -228,6 +232,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         unawaited(_requestPop());
       },
       onExit: () => Navigator.of(context).pop(),
+      exitLabel: widget.sourceSessionId != null ? '결과로 돌아가기' : '학습으로 돌아가기',
+      // Starting a new quiz is not idempotent: a lost start response must not
+      // automatically complete that session and create another on retry.
+      onRetryLoad:
+          widget.resumeSessionId == null && widget.sourceSessionId == null
+              ? null
+              : () => unawaited(_initializeQuiz()),
       onAnswer: _handleAnswer,
       onNext: _handleNext,
       onComplete: () {

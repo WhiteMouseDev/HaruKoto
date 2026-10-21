@@ -47,7 +47,7 @@ async def test_get_wrong_answers_data_enriches_vocab_questions() -> None:
             }
         ],
     )
-    wrong_answer = SimpleNamespace(question_id=question_id)
+    wrong_answer = SimpleNamespace(question_id=question_id, is_correct=False)
     vocab = SimpleNamespace(
         id=question_id,
         reading="たべる",
@@ -91,7 +91,7 @@ async def test_get_wrong_answers_data_skips_vocab_lookup_for_non_vocab_questions
             }
         ],
     )
-    wrong_answer = SimpleNamespace(question_id=question_id)
+    wrong_answer = SimpleNamespace(question_id=question_id, is_correct=False)
     db = SimpleNamespace(
         get=AsyncMock(return_value=session),
         execute=AsyncMock(return_value=_DbResult(scalar_rows=[wrong_answer])),
@@ -104,6 +104,61 @@ async def test_get_wrong_answers_data_skips_vocab_lookup_for_non_vocab_questions
     assert results[0].word == "てもいい"
     assert results[0].reading == "てもいい"
     assert results[0].meaning_ko == "~해도 된다"
+    assert db.execute.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_wrong_answer_display_uses_first_answer_and_snapshot_order_without_foreign_rows() -> None:
+    first_id, second_id, outside_id = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    session = SimpleNamespace(
+        id=uuid.uuid4(),
+        user_id=USER_ID,
+        questions_data={
+            "mode": "smart",
+            "questions": [
+                {"id": str(second_id), "type": "GRAMMAR", "pattern": "てもいい", "meaningKo": "~해도 된다"},
+                {"id": str(first_id), "type": "GRAMMAR", "question": "ている", "meaningKo": "~하고 있다"},
+            ],
+        },
+    )
+    db = SimpleNamespace(
+        get=AsyncMock(return_value=session),
+        execute=AsyncMock(
+            return_value=_DbResult(
+                scalar_rows=[
+                    SimpleNamespace(question_id=first_id, is_correct=True),
+                    SimpleNamespace(question_id=second_id, is_correct=False),
+                    SimpleNamespace(question_id=first_id, is_correct=False),
+                    SimpleNamespace(question_id=second_id, is_correct=True),
+                    SimpleNamespace(question_id=outside_id, is_correct=False),
+                ]
+            )
+        ),
+    )
+
+    results = await get_wrong_answers_data(db, _user(), session_id=str(session.id))
+
+    assert [(item.question_id, item.word, item.meaning_ko) for item in results] == [(str(second_id), "てもいい", "~해도 된다")]
+    query = db.execute.await_args.args[0]
+    assert "quiz_answers.answered_at" in str(query) and "ORDER BY" in str(query)
+    assert db.execute.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_legacy_wrong_answer_can_display_question_text_without_guessing_other_content() -> None:
+    question_id = uuid.uuid4()
+    session = SimpleNamespace(
+        id=uuid.uuid4(), user_id=USER_ID, questions_data=[{"id": str(question_id), "type": "GRAMMAR", "question": "です"}]
+    )
+    db = SimpleNamespace(
+        get=AsyncMock(return_value=session),
+        execute=AsyncMock(return_value=_DbResult(scalar_rows=[SimpleNamespace(question_id=question_id, is_correct=False)])),
+    )
+
+    results = await get_wrong_answers_data(db, _user(), session_id=str(session.id))
+
+    assert results[0].word == "です"
+    assert results[0].meaning_ko is None
     assert db.execute.await_count == 1
 
 

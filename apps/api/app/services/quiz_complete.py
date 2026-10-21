@@ -63,11 +63,15 @@ def _build_complete_result(
 
 
 def _resolve_stage_id(body: QuizCompleteRequest, session: QuizSession) -> uuid.UUID | None:
+    questions_data = session.questions_data
+    # A subset review must never complete the original stage, even if a client
+    # accidentally carries its stage id into the completion request.
+    if isinstance(questions_data, dict) and questions_data.get("mode") == "wrong_answer_review":
+        return None
     stage_id = body.stage_id
     if stage_id:
         return stage_id
 
-    questions_data = session.questions_data
     if isinstance(questions_data, dict) and "stage_id" in questions_data:
         with contextlib.suppress(ValueError):
             return uuid.UUID(questions_data["stage_id"])

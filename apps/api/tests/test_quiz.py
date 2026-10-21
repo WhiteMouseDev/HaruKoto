@@ -470,6 +470,7 @@ async def test_get_wrong_answers(client, mock_user, mock_quiz_session, test_user
     question_id = uuid.UUID(mock_quiz_session.questions_data[0]["id"])
     mock_wrong_answer = MagicMock()
     mock_wrong_answer.question_id = question_id
+    mock_wrong_answer.is_correct = False
 
     mock_vocab = MagicMock()
     mock_vocab.id = question_id

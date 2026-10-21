@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../domain/study_repository.dart';
 import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
@@ -167,6 +168,45 @@ class ApiStudyRepository implements StudyRepository {
       correctCount: data['correctCount'] as int,
       quizType: data['quizType'] as String?,
     );
+  }
+
+  @override
+  Future<
+      ({
+        String sessionId,
+        List<QuizQuestionModel> questions,
+        List<String> answeredQuestionIds,
+        int correctCount,
+        String? quizType,
+      })> startWrongAnswerReview(String sourceSessionId) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/quiz/wrong-answer-review/start',
+        data: {'sourceSessionId': sourceSessionId},
+      );
+      final data = response.data!;
+      return (
+        sessionId: data['sessionId'] as String,
+        questions: (data['questions'] as List<dynamic>)
+            .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        answeredQuestionIds: (data['answeredQuestionIds'] as List<dynamic>)
+            .map((e) => e as String)
+            .toList(),
+        correctCount: data['correctCount'] as int,
+        quizType: data['quizType'] as String,
+      );
+    } on DioException catch (error) {
+      final mapped = error.error;
+      final exception = mapped is ApiException
+          ? mapped
+          : ApiException.fromResponse(
+              error.response?.statusCode,
+              error.response?.data,
+              requestPath: error.requestOptions.path,
+            );
+      throw _WrongAnswerReviewException(exception);
+    }
   }
 
   @override
@@ -404,5 +444,32 @@ class ApiStudyRepository implements StudyRepository {
       data: {'answers': answers},
     );
     return LessonSubmitResultModel.fromJson(response.data!);
+  }
+}
+
+class _WrongAnswerReviewException extends ApiException {
+  _WrongAnswerReviewException(ApiException error)
+      : super(
+          message: error.message,
+          statusCode: error.statusCode,
+          errorCode: error.errorCode,
+          requestPath: error.requestPath,
+        );
+
+  @override
+  String get userMessage {
+    const contextualMessages = {
+      '이번 퀴즈에서 복습할 오답이 없습니다',
+      '완료한 퀴즈에서만 오답 복습을 시작할 수 있습니다',
+      '이 퀴즈 유형은 이번 오답 복습을 지원하지 않습니다',
+      '기존 퀴즈 기록을 안전하게 복원할 수 없습니다',
+      '복습할 학습 항목을 찾을 수 없습니다',
+    };
+    if (statusCode == 400 || statusCode == 409) {
+      return contextualMessages.contains(message)
+          ? message
+          : '이번 퀴즈의 오답 복습을 시작하지 못했어요. 학습으로 돌아가 다시 확인해 주세요.';
+    }
+    return super.userMessage;
   }
 }
