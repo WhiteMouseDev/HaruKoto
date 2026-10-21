@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 class ApiException implements Exception {
   final String message;
   final int? statusCode;
@@ -12,6 +14,35 @@ class ApiException implements Exception {
     this.requestPath,
     this.details,
   });
+
+  factory ApiException.fromDioException(DioException exception) {
+    final mapped = exception.error;
+    if (mapped is ApiException) return mapped;
+
+    final response = exception.response;
+    if (response != null) {
+      return ApiException.fromResponse(
+        response.statusCode,
+        response.data,
+        requestPath: exception.requestOptions.path,
+      );
+    }
+
+    return ApiException(
+      // 진단용 원문은 보존하고 사용자 안내는 오류 코드로 변환한다.
+      message: exception.message ?? '네트워크 오류가 발생했습니다.',
+      errorCode: switch (exception.type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout ||
+        DioExceptionType.receiveTimeout =>
+          'NETWORK_TIMEOUT',
+        DioExceptionType.badCertificate => 'NETWORK_SECURITY_ERROR',
+        DioExceptionType.cancel => 'REQUEST_CANCELLED',
+        _ => 'NETWORK_ERROR',
+      },
+      requestPath: exception.requestOptions.path,
+    );
+  }
 
   factory ApiException.fromResponse(
     int? statusCode,
@@ -77,6 +108,18 @@ class ApiException implements Exception {
   bool get isNotFound => errorCode != null && errorCode!.endsWith('_NOT_FOUND');
 
   String get userMessage {
+    if (statusCode == null) {
+      switch (errorCode) {
+        case 'NETWORK_TIMEOUT':
+          return '서버 응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.';
+        case 'NETWORK_ERROR':
+          return '네트워크 연결을 확인한 뒤 다시 시도해 주세요.';
+        case 'NETWORK_SECURITY_ERROR':
+          return '서버에 안전하게 연결하지 못했어요. 잠시 후 다시 시도해 주세요.';
+        case 'REQUEST_CANCELLED':
+          return '요청이 취소되었어요. 다시 시도해 주세요.';
+      }
+    }
     switch (statusCode) {
       case 400:
         return '잘못된 요청입니다.';
