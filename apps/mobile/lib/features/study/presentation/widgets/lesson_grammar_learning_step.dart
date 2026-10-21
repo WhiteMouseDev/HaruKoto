@@ -9,12 +9,16 @@ class LessonGrammarLearningStep extends StatefulWidget {
   final List<GrammarItemModel> grammarItems;
   final VoidCallback onNext;
   final VoidCallback? onBackToPrev;
+  final int initialIndex;
+  final ValueChanged<int>? onIndexChanged;
 
   const LessonGrammarLearningStep({
     super.key,
     required this.grammarItems,
     required this.onNext,
     this.onBackToPrev,
+    this.initialIndex = 0,
+    this.onIndexChanged,
   });
 
   @override
@@ -23,7 +27,13 @@ class LessonGrammarLearningStep extends StatefulWidget {
 }
 
 class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   List<GrammarItemModel> get _uniqueGrammar {
     final seen = <String>{};
@@ -36,6 +46,7 @@ class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
     final items = _uniqueGrammar;
     if (_currentIndex < items.length - 1) {
       setState(() => _currentIndex++);
+      widget.onIndexChanged?.call(_currentIndex);
     } else {
       widget.onNext();
     }
@@ -44,6 +55,7 @@ class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
   void _prev() {
     if (_currentIndex > 0) {
       setState(() => _currentIndex--);
+      widget.onIndexChanged?.call(_currentIndex);
     } else {
       widget.onBackToPrev?.call();
     }

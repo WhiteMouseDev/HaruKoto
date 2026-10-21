@@ -12,6 +12,9 @@ class LessonRecognitionCheckStep extends StatefulWidget {
   final int currentIndex;
   final int totalSteps;
   final ValueChanged<Map<String, dynamic>> onAnswer;
+  final String? initialSelection;
+  final List<String>? optionOrder;
+  final ValueChanged<String>? onSelectionChanged;
 
   const LessonRecognitionCheckStep({
     super.key,
@@ -19,6 +22,9 @@ class LessonRecognitionCheckStep extends StatefulWidget {
     required this.currentIndex,
     required this.totalSteps,
     required this.onAnswer,
+    this.initialSelection,
+    this.optionOrder,
+    this.onSelectionChanged,
   });
 
   @override
@@ -35,6 +41,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
   @override
   void initState() {
     super.initState();
+    _selected = widget.initialSelection;
     _shuffleOptions();
     _entryController = AnimationController(
       vsync: this,
@@ -63,7 +70,13 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
 
   void _shuffleOptions() {
     final question = widget.questions[widget.currentIndex];
-    _shuffledOptions = List.of(question.options ?? [])..shuffle(Random());
+    final order = widget.optionOrder;
+    _shuffledOptions = order == null
+        ? (List.of(question.options ?? [])..shuffle(Random()))
+        : [
+            for (final id in order)
+              (question.options ?? []).firstWhere((option) => option.id == id)
+          ];
   }
 
   Widget _staggered(int index, Widget child) {
@@ -156,6 +169,7 @@ class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
 
   void _select(String id) {
     setState(() => _selected = id);
+    widget.onSelectionChanged?.call(id);
   }
 
   void _continue() {
