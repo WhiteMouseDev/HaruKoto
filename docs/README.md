@@ -45,6 +45,7 @@ docs/
 - [학습 앱 개선 사례 기록](blog/2026-10-21-harukoto-improvement-casebook.md) — 학습 UI, 퀴즈 저장, 이어 풀기, DB 보안과 파티션 문제의 원인·설계·수정·검증
 - [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
 - [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안
+- [파티션 정기 점검 운영 적용](operations/plans/partition-monitor-deployment-2026-10-21.md) — 최소 권한 계정, 오전 9시 예약, 실제 실행·누락·오류·복구 알림 검증과 중단 절차
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
 - [모바일 아키텍처 감사 (2026-03-24)](operations/audits/mobile-architecture-audit-2026-03-24.md) — 모바일 구조 문제점과 개선 우선순위
