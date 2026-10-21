@@ -55,7 +55,7 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                       size: 16, color: AppColors.error(theme.brightness)),
                   const SizedBox(width: 8),
                   Text(
-                    '틀린 ${widget.quizType == 'VOCABULARY' ? '단어' : '문법'} ${widget.wrongAnswers.length}개',
+                    '틀린 ${widget.quizType == 'GRAMMAR' ? '문법' : '단어'} ${widget.wrongAnswers.length}개',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),

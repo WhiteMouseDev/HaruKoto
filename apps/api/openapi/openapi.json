@@ -2368,6 +2368,52 @@
         ]
       }
     },
+    "/api/v1/quiz/wrong-answer-review/start": {
+      "post": {
+        "tags": [
+          "quiz"
+        ],
+        "summary": "Start Session Wrong Answer Review",
+        "operationId": "start_session_wrong_answer_review_api_v1_quiz_wrong_answer_review_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizWrongReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/quiz/start": {
       "post": {
         "tags": [
@@ -11253,6 +11299,20 @@
           "SENTENCE_ARRANGE"
         ],
         "title": "QuizType"
+      },
+      "QuizWrongReviewRequest": {
+        "properties": {
+          "sourceSessionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Sourcesessionid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sourceSessionId"
+        ],
+        "title": "QuizWrongReviewRequest"
       },
       "Reading": {
         "properties": {

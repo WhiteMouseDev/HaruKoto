@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import QuizAnswer, QuizSession, Vocabulary
 from app.models.user import User
 from app.services.quiz_errors import QuizQueryServiceError
+from app.services.quiz_first_answers import load_first_quiz_answers, select_canonical_wrong_answers
 from app.services.quiz_session import extract_questions_data
 
 VOCABULARY_QUESTION_TYPES = {"VOCABULARY", "KANJI", "LISTENING"}
@@ -35,9 +36,11 @@ async def get_wrong_answers_data(
     if not session or session.user_id != user.id:
         raise QuizQueryServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
 
-    wrong_answers = await _load_wrong_answers(db, session=session)
+    first_answers = await load_first_quiz_answers(db, session_id=session.id)
     questions_data = extract_questions_data(session.questions_data)
-    question_map = {question["id"]: question for question in questions_data}
+    selected = select_canonical_wrong_answers(questions_data, first_answers)
+    wrong_answers = [answer for _, answer in selected]
+    question_map = {question["id"]: question for question, _ in selected}
     vocab_map = await _load_wrong_answer_vocab_map(
         db,
         wrong_answers=wrong_answers,
@@ -52,20 +55,6 @@ async def get_wrong_answers_data(
         )
         for wrong_answer in wrong_answers
     ]
-
-
-async def _load_wrong_answers(
-    db: AsyncSession,
-    *,
-    session: QuizSession,
-) -> list[QuizAnswer]:
-    wrong_result = await db.execute(
-        select(QuizAnswer).where(
-            QuizAnswer.session_id == session.id,
-            QuizAnswer.is_correct.is_(False),
-        )
-    )
-    return list(wrong_result.scalars().all())
 
 
 async def _load_wrong_answer_vocab_map(
@@ -108,7 +97,7 @@ def _build_wrong_answer_result(
     question_id = str(wrong_answer.question_id)
     return WrongAnswerResult(
         question_id=question_id,
-        word=_string_or_none(question.get("word")),
+        word=_string_or_none(question.get("word")) or _string_or_none(question.get("pattern")) or _string_or_none(question.get("question")),
         reading=_string_or_none(question.get("reading")) or (vocab_entry.reading if vocab_entry else None),
         meaning_ko=_string_or_none(question.get("meaningKo")),
         example_sentence=vocab_entry.example_sentence if vocab_entry else None,

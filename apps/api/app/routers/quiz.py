@@ -23,6 +23,7 @@ from app.schemas.quiz import (
     QuizStartRequest,
     QuizStartResponse,
     QuizStatsResponse,
+    QuizWrongReviewRequest,
     RecommendationsResponse,
     SessionDistribution,
     SmartPreviewResponse,
@@ -44,8 +45,30 @@ from app.services.quiz_start import (
 )
 from app.services.quiz_stats_query import ContentQuizStatsResult, QuizStatsResult, get_quiz_stats_data
 from app.services.quiz_wrong_answers_query import get_wrong_answers_data
+from app.services.quiz_wrong_review import start_wrong_answer_review
 
 router = APIRouter(prefix="/api/v1/quiz", tags=["quiz"])
+
+
+@router.post("/wrong-answer-review/start", response_model=QuizResumeResponse, status_code=200)
+async def start_session_wrong_answer_review(
+    body: QuizWrongReviewRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> QuizResumeResponse:
+    try:
+        result = await start_wrong_answer_review(db, user, body)
+    except QuizQueryServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+    return QuizResumeResponse(
+        session_id=result.session_id,
+        questions=result.questions,
+        answered_question_ids=result.answered_question_ids,
+        total_questions=result.total_questions,
+        correct_count=result.correct_count,
+        quiz_type=result.quiz_type,
+    )
 
 
 @router.post("/start", response_model=QuizStartResponse, status_code=200)

@@ -13,6 +13,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('QuizPageContent', () {
+    testWidgets(
+        'all saved answers allow completion without reading a missing question',
+        (tester) async {
+      var completed = 0;
+      await _pumpQuizPageContent(
+        tester,
+        session: QuizSessionState(
+            loading: false,
+            questions: [_multipleChoiceQuestion()],
+            currentIndex: 1),
+        onComplete: () => completed++,
+      );
+      expect(find.text('모든 답안이 저장됐어요'), findsOneWidget);
+      expect(find.byType(FourChoiceQuiz), findsNothing);
+      await tester.tap(find.text('결과 확인하기'));
+      expect(completed, 1);
+    });
+
     testWidgets('shows loading state', (tester) async {
       await _pumpQuizPageContent(
         tester,
@@ -21,6 +39,40 @@ void main() {
 
       expect(find.text('퀴즈를 준비하고 있어요...'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('shows a recoverable load error instead of review empty state',
+        (tester) async {
+      var retried = false;
+      await _pumpQuizPageContent(tester,
+          session: const QuizSessionState(
+            loading: false,
+            resolvedMode: 'review',
+            loadError: '로그인이 필요합니다.',
+          ),
+          onRetryLoad: () => retried = true);
+      expect(find.text('퀴즈를 불러오지 못했어요'), findsOneWidget);
+      expect(find.text('로그인이 필요합니다.'), findsOneWidget);
+      expect(find.text('복습할 문제가 없어요!'), findsNothing);
+      await tester.tap(find.text('다시 불러오기'));
+      await tester.pump();
+      expect(retried, isTrue);
+    });
+
+    testWidgets('uncertain new-start failure offers exit without a POST retry',
+        (tester) async {
+      var exited = false;
+      await _pumpQuizPageContent(tester,
+          session: const QuizSessionState(
+            loading: false,
+            loadError: '잠시 후 다시 시도해 주세요.',
+          ),
+          onExit: () => exited = true);
+      expect(find.text('다시 불러오기'), findsNothing);
+      expect(find.textContaining('이어서 학습하기를 확인해 주세요.'), findsOneWidget);
+      expect(find.text('이 레벨의 콘텐츠를 준비하고 있어요'), findsNothing);
+      await tester.tap(find.text('학습으로 돌아가기'));
+      expect(exited, isTrue);
     });
 
     testWidgets('shows review empty state and exits', (tester) async {
@@ -122,6 +174,7 @@ Future<void> _pumpQuizPageContent(
   VoidCallback? onNext,
   VoidCallback? onComplete,
   QuizSpecialAnswerHandler? onSubmitSpecialAnswer,
+  VoidCallback? onRetryLoad,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -138,6 +191,7 @@ Future<void> _pumpQuizPageContent(
           jlptLevel: jlptLevel,
           onBackRequested: onBackRequested ?? () {},
           onExit: onExit ?? () {},
+          onRetryLoad: onRetryLoad,
           onAnswer: onAnswer ?? (_) {},
           onNext: onNext ?? () {},
           onComplete: onComplete ?? () {},
