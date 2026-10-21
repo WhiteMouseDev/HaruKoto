@@ -1,7 +1,50 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/network/network_base.dart';
 
 void main() {
+  group('AppErrorInterceptor', () {
+    test('quiz connection timeout exposes Korean retry guidance', () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid/api/v1'));
+      addTearDown(dio.close);
+      dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+        handler.reject(
+          DioException(
+            requestOptions: options,
+            type: DioExceptionType.connectionTimeout,
+            message: 'The request connection took longer than 0:00:10.000000 '
+                'and it was aborted. To get rid of this exception, try raising '
+                'the RequestOptions.connectTimeout above the duration.',
+          ),
+          true,
+        );
+      }));
+      dio.interceptors.add(AppErrorInterceptor());
+
+      await expectLater(
+        dio.post<dynamic>('/quiz/wrong-answer-review/start'),
+        throwsA(isA<DioException>()
+            .having((e) => e.type, 'type', DioExceptionType.connectionTimeout)
+            .having(
+              (e) => e.error,
+              'safe error',
+              isA<ApiException>()
+                  .having(
+                    (e) => e.userMessage,
+                    'user message',
+                    '서버 응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.',
+                  )
+                  .having(
+                    (e) => e.requestPath,
+                    'request path',
+                    '/quiz/wrong-answer-review/start',
+                  ),
+            )),
+      );
+    });
+  });
+
   group('redactDioLogMessage', () {
     test('redacts authorization and sensitive header values', () {
       final message = redactDioLogMessage('''
