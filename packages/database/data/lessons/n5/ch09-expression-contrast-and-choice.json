@@ -82,6 +82,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 122,
             "cognitive_level": "인식",
             "prompt": "分かる의 뜻에 가까운 것은?",
             "options": [
@@ -108,6 +109,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 393,
             "cognitive_level": "인식",
             "prompt": "知る의 뜻에 가까운 것은?",
             "options": [
@@ -134,6 +136,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 122,
             "cognitive_level": "적용",
             "prompt": "この言葉の意味が___。(이 단어의 뜻을 압니다.)",
             "options": [
@@ -160,6 +163,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 393,
             "cognitive_level": "적용",
             "prompt": "田中さんを___か。(다나카 씨를 알고 있습니까?)",
             "options": [
@@ -186,6 +190,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "vocabulary_order": 122,
             "cognitive_level": "산출유사",
             "prompt": "'이 단어의 뜻을 압니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -275,6 +280,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 543,
             "cognitive_level": "인식",
             "prompt": "欲しい의 뜻은?",
             "options": [
@@ -301,6 +307,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 496,
             "cognitive_level": "인식",
             "prompt": "ノート의 뜻은?",
             "options": [
@@ -327,6 +334,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "srs_skip_reason": "N が欲しい의 が를 묻지만 레슨 grammar_order 10의 실제 항목은 동사 〜たいです이다. 정확한 が/が欲しい 문법 항목이 없어 다른 문법으로 기록하지 않는다.",
             "cognitive_level": "적용",
             "prompt": "新しいノート___欲しいです。(새 노트를 갖고 싶습니다.)",
             "options": [
@@ -353,6 +361,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 543,
             "cognitive_level": "적용",
             "prompt": "私は新しいペンが___。(저는 새 펜을 갖고 싶습니다.)",
             "options": [
@@ -379,6 +388,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "srs_skip_reason": "N が欲しい 문장 배열을 레슨 grammar_order 10의 동사 〜たいです 정오로 기록할 수 없다. 해당 구문을 독립적으로 나타내는 문법 항목이 없어 검토 전까지 SRS 갱신을 생략한다.",
             "cognitive_level": "산출유사",
             "prompt": "'새 노트를 갖고 싶습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -460,6 +470,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 145,
             "cognitive_level": "인식",
             "prompt": "寒い의 뜻은?",
             "options": [
@@ -486,6 +497,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 166,
             "cognitive_level": "인식",
             "prompt": "静か의 뜻은?",
             "options": [
@@ -512,6 +524,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 60,
             "cognitive_level": "적용",
             "prompt": "寒___なりました。(추워졌습니다.)",
             "options": [
@@ -538,6 +551,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 60,
             "cognitive_level": "적용",
             "prompt": "静か___なりました。(조용해졌습니다.)",
             "options": [
@@ -564,6 +578,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 60,
             "cognitive_level": "산출유사",
             "prompt": "'방은 조용해졌습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -644,6 +659,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 37,
             "cognitive_level": "인식",
             "prompt": "水의 뜻은?",
             "options": [
@@ -670,6 +686,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 92,
             "cognitive_level": "인식",
             "prompt": "飲む의 뜻은?",
             "options": [
@@ -696,6 +713,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 56,
             "cognitive_level": "적용",
             "prompt": "水___飲みます。(물만 마십니다.)",
             "options": [
@@ -722,6 +740,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 33,
             "cognitive_level": "적용",
             "prompt": "お茶___飲みますか。(차도 마십니까?)",
             "options": [
@@ -748,6 +767,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 56,
             "cognitive_level": "산출유사",
             "prompt": "'오늘은 물만 마십니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -836,6 +856,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 38,
             "cognitive_level": "인식",
             "prompt": "お茶의 뜻은?",
             "options": [
@@ -862,6 +883,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 343,
             "cognitive_level": "인식",
             "prompt": "コーヒー의 뜻은?",
             "options": [
@@ -888,6 +910,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 59,
             "cognitive_level": "적용",
             "prompt": "私はお茶___します。(저는 차로 하겠습니다.)",
             "options": [
@@ -914,6 +937,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 59,
             "cognitive_level": "적용",
             "prompt": "飲み物は何___しますか。(마실 것은 무엇으로 하겠습니까?)",
             "options": [
@@ -940,6 +964,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 59,
             "cognitive_level": "산출유사",
             "prompt": "'저는 커피로 하겠습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -1027,6 +1052,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 75,
             "cognitive_level": "인식",
             "prompt": "言葉의 뜻은?",
             "options": [
@@ -1053,6 +1079,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 512,
             "cognitive_level": "인식",
             "prompt": "春의 뜻은?",
             "options": [
@@ -1079,6 +1106,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 57,
             "cognitive_level": "적용",
             "prompt": "春___言葉です。(봄이라는 단어입니다.)",
             "options": [
@@ -1105,6 +1133,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 57,
             "cognitive_level": "적용",
             "prompt": "佐藤___名前です。(사토라는 이름입니다.)",
             "options": [
@@ -1131,6 +1160,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 57,
             "cognitive_level": "산출유사",
             "prompt": "'봄이라는 단어입니다'를 올바른 순서로 배열하세요.",
             "tokens": [

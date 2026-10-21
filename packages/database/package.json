@@ -22,7 +22,7 @@
     "curriculum:tts-review:compile": "node scripts/compile-tts-manual-mapping-overrides.mjs",
     "curriculum:tts-review:validate": "node scripts/validate-tts-manual-mapping-review.mjs",
     "curriculum:lesson-expansion:report": "node scripts/report-lesson-expansion-coverage.mjs",
-    "lessons:validate": "node scripts/validate-lessons.mjs",
+    "lessons:validate": "node --test scripts/lesson-question-targets.test.mjs && node scripts/validate-lessons.mjs",
     "lessons:quality": "node scripts/lesson-quality-gate.mjs",
     "lessons:review:prepare": "node scripts/prepare-lesson-human-review.mjs",
     "lessons:review:validate": "node scripts/validate-lesson-human-review.mjs",

@@ -282,11 +282,15 @@ async def test_seed_one_chapter_force_unpublished_writes_chapter_and_lessons_unp
         lesson.jlpt_level = chapter.jlpt_level
         return lesson
 
-    async def fake_replace_item_links(db, lesson, vocab_orders, grammar_order):
+    async def fake_resolve_lesson_content(db, *, jlpt_level, content_jsonb):
+        return content_jsonb, []
+
+    async def fake_replace_item_links(db, lesson, vocab_orders, grammar_order, *, review_targets=()):
         return {"created": len(vocab_orders) + (1 if grammar_order is not None else 0), "deleted": 0}
 
     monkeypatch.setattr(lesson_seed, "_upsert_chapter", fake_upsert_chapter)
     monkeypatch.setattr(lesson_seed, "_upsert_lesson", fake_upsert_lesson)
+    monkeypatch.setattr(lesson_seed, "_resolve_lesson_content", fake_resolve_lesson_content)
     monkeypatch.setattr(lesson_seed, "_replace_item_links", fake_replace_item_links)
 
     result = await _seed_one_chapter(
@@ -323,9 +327,13 @@ async def test_lesson_seed_audit_counts_chapter_publish_state_mismatch(monkeypat
     db = AsyncMock()
     db.execute = AsyncMock(side_effect=[chapter_result, *lesson_results])
 
-    async def fake_build_expected_item_links(db, *, jlpt_level, vocab_orders, grammar_order):
+    async def fake_resolve_lesson_content(db, *, jlpt_level, content_jsonb):
+        return content_jsonb, []
+
+    async def fake_build_expected_item_links(db, *, jlpt_level, vocab_orders, grammar_order, review_targets=()):
         return []
 
+    monkeypatch.setattr(lesson_seed, "_resolve_lesson_content", fake_resolve_lesson_content)
     monkeypatch.setattr(lesson_seed, "_build_expected_item_links", fake_build_expected_item_links)
 
     counts = await audit_lesson_seed_sync(

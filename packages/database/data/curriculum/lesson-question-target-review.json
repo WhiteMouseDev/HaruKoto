@@ -1,0 +1,3196 @@
+{
+  "reviewed_at": "2026-10-21",
+  "scope": "All 81 local N5/N4 lessons and 405 source questions. Source-reference semantic review by coding agent; not a native-speaker human sign-off or a production data repair.",
+  "contract": "Each question declares exactly one level-scoped vocabulary_order or grammar_order, or srs_skip_reason. Question order and type never imply an SRS target. A sentence can contain several concepts; only the declared primary target is evidence.",
+  "limitations": [
+    "No production lessons, item links, historical review events, SRS state, grants or RLS were changed.",
+    "Some source lesson-level grammar aliases point to different concepts; these are recorded for a separate curriculum correction, not silently rewritten.",
+    "Extra question targets need additive seed resolution before applying source metadata to an existing database. Do not run the broad seed as a production repair.",
+    "N4 chapter 07 (HN4-027..031) is present locally but not in CONTENT_FILES_BY_LEVEL; inclusion here does not publish or seed that chapter."
+  ],
+  "summary": {
+    "lessons": 81,
+    "questions": 405,
+    "vocabulary_order": 189,
+    "grammar_order": 211,
+    "intentionally_skipped": 5
+  },
+  "intentional_skips": [
+    {
+      "lesson_id": "HN4-024",
+      "question_order": 4,
+      "reason": "教えて와 다른 동사의 て형 중 문맥에 맞는 동사를 고르는 문항이다. 教える의 해당 레벨 어휘 항목이 없고, 모든 보기가 て형이므로 てもらう 문법의 정오로 대신 기록하지 않는다."
+    },
+    {
+      "lesson_id": "HN5-035",
+      "question_order": 5,
+      "reason": "아침 인사와 よろしくお願いします를 함께 배열하는 복합 정형 표현이다. 단일 어휘나 です 문법의 정오로 환산하지 않는다."
+    },
+    {
+      "lesson_id": "HN5-040",
+      "question_order": 5,
+      "reason": "주제·목적어·동사의 일반 어순을 배열하는 문항이며, 레슨 문법인 동사 그룹 분류를 평가하지 않는다. 기존 항목 중 단일 평가 대상을 확정할 수 없다."
+    },
+    {
+      "lesson_id": "HN5-046",
+      "question_order": 3,
+      "reason": "N が欲しい의 が를 묻지만 레슨 grammar_order 10의 실제 항목은 동사 〜たいです이다. 정확한 が/が欲しい 문법 항목이 없어 다른 문법으로 기록하지 않는다."
+    },
+    {
+      "lesson_id": "HN5-046",
+      "question_order": 5,
+      "reason": "N が欲しい 문장 배열을 레슨 grammar_order 10의 동사 〜たいです 정오로 기록할 수 없다. 해당 구문을 독립적으로 나타내는 문법 항목이 없어 검토 전까지 SRS 갱신을 생략한다."
+    }
+  ],
+  "extra_targets_relative_to_core_links": [
+    {
+      "lesson_id": "HN4-016",
+      "question_order": 4,
+      "grammar_order": 12,
+      "label": "〜つもり"
+    },
+    {
+      "lesson_id": "HN5-009",
+      "question_order": 5,
+      "grammar_order": 39,
+      "label": "い-Adj+N / な-Adj+N"
+    },
+    {
+      "lesson_id": "HN5-013",
+      "question_order": 4,
+      "grammar_order": 55,
+      "label": "ある・いる"
+    },
+    {
+      "lesson_id": "HN5-020",
+      "question_order": 3,
+      "grammar_order": 3,
+      "label": "〜ません"
+    },
+    {
+      "lesson_id": "HN5-020",
+      "question_order": 4,
+      "grammar_order": 3,
+      "label": "〜ません"
+    },
+    {
+      "lesson_id": "HN5-020",
+      "question_order": 5,
+      "grammar_order": 3,
+      "label": "〜ません"
+    },
+    {
+      "lesson_id": "HN5-023",
+      "question_order": 5,
+      "grammar_order": 50,
+      "label": "Verb+て"
+    },
+    {
+      "lesson_id": "HN5-024",
+      "question_order": 3,
+      "grammar_order": 49,
+      "label": "て/た形"
+    },
+    {
+      "lesson_id": "HN5-024",
+      "question_order": 4,
+      "grammar_order": 49,
+      "label": "て/た形"
+    },
+    {
+      "lesson_id": "HN5-029",
+      "question_order": 3,
+      "grammar_order": 4,
+      "label": "〜ました"
+    },
+    {
+      "lesson_id": "HN5-031",
+      "question_order": 3,
+      "grammar_order": 32,
+      "label": "〜は"
+    },
+    {
+      "lesson_id": "HN5-032",
+      "question_order": 4,
+      "grammar_order": 37,
+      "label": "〜の"
+    },
+    {
+      "lesson_id": "HN5-033",
+      "question_order": 4,
+      "grammar_order": 37,
+      "label": "〜の"
+    },
+    {
+      "lesson_id": "HN5-034",
+      "question_order": 3,
+      "grammar_order": 43,
+      "label": "〜で"
+    },
+    {
+      "lesson_id": "HN5-038",
+      "question_order": 4,
+      "grammar_order": 56,
+      "label": "〜だけ"
+    },
+    {
+      "lesson_id": "HN5-041",
+      "question_order": 4,
+      "grammar_order": 12,
+      "label": "〜に行きます"
+    },
+    {
+      "lesson_id": "HN5-042",
+      "question_order": 4,
+      "grammar_order": 37,
+      "label": "〜の"
+    },
+    {
+      "lesson_id": "HN5-043",
+      "question_order": 4,
+      "grammar_order": 49,
+      "label": "て/た形"
+    },
+    {
+      "lesson_id": "HN5-044",
+      "question_order": 4,
+      "grammar_order": 49,
+      "label": "て/た形"
+    },
+    {
+      "lesson_id": "HN5-048",
+      "question_order": 4,
+      "grammar_order": 33,
+      "label": "〜も"
+    }
+  ],
+  "curriculum_followups": [
+    {
+      "lesson_id": "HN5-036",
+      "source_grammar_order": 46,
+      "source_teaching_pattern": "数量 + 助数詞",
+      "actual_reference_pattern": "〜を",
+      "decision": "Keep original lesson-level metadata unchanged; question targets use reviewed counter vocabulary."
+    },
+    {
+      "lesson_id": "HN5-038",
+      "source_grammar_order": 6,
+      "source_teaching_pattern": "お願いします",
+      "actual_reference_pattern": "〜てください",
+      "decision": "Keep original lesson-level metadata unchanged; question targets use お願いします vocabulary and だけ grammar."
+    },
+    {
+      "lesson_id": "HN5-046",
+      "source_grammar_order": 10,
+      "source_teaching_pattern": "N + が欲しいです",
+      "actual_reference_pattern": "〜たいです",
+      "decision": "Keep original lesson-level metadata unchanged; skip q3/q5 and map q4 to 欲しい vocabulary."
+    },
+    {
+      "lesson_id": "HN4-016",
+      "source_grammar_order": 35,
+      "source_teaching_pattern": "〜始める/〜終わる/〜続ける",
+      "actual_reference_pattern": "Verb stem + 続ける, not the independent verb 続ける",
+      "decision": "Map independent 続ける questions to vocabulary; map つもり question to its actual grammar."
+    }
+  ],
+  "lessons": [
+    {
+      "lesson_id": "HN4-001",
+      "level": "N4",
+      "source": "lessons/n4/ch01-core-directions-and-judgment.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 79,
+          "reference_label": "規則",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 75,
+          "reference_label": "注意",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 42,
+          "reference_label": "〜なさい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 42,
+          "reference_label": "〜なさい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 42,
+          "reference_label": "〜なさい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-002",
+      "level": "N4",
+      "source": "lessons/n4/ch01-core-directions-and-judgment.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 40,
+          "reference_label": "心配",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 61,
+          "reference_label": "相談",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 43,
+          "reference_label": "〜たほうがいい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 43,
+          "reference_label": "〜たほうがいい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 43,
+          "reference_label": "〜たほうがいい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-003",
+      "level": "N4",
+      "source": "lessons/n4/ch01-core-directions-and-judgment.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 44,
+          "reference_label": "台風",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 97,
+          "reference_label": "間に合う",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 41,
+          "reference_label": "〜かもしれない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 41,
+          "reference_label": "〜かもしれない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 41,
+          "reference_label": "〜かもしれない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-004",
+      "level": "N4",
+      "source": "lessons/n4/ch01-core-directions-and-judgment.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 94,
+          "reference_label": "足りる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 17,
+          "reference_label": "予定",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 48,
+          "reference_label": "〜しかない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 48,
+          "reference_label": "〜しかない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 48,
+          "reference_label": "〜しかない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-005",
+      "level": "N4",
+      "source": "lessons/n4/ch01-core-directions-and-judgment.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 52,
+          "reference_label": "翻訳",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 98,
+          "reference_label": "申し込む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 44,
+          "reference_label": "可能形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 44,
+          "reference_label": "可能形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 44,
+          "reference_label": "可能形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-006",
+      "level": "N4",
+      "source": "lessons/n4/ch02-reasons-conditions-and-intent.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 143,
+          "reference_label": "深い",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 142,
+          "reference_label": "正しい",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-007",
+      "level": "N4",
+      "source": "lessons/n4/ch02-reasons-conditions-and-intent.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 127,
+          "reference_label": "参加する",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 85,
+          "reference_label": "集める",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 46,
+          "reference_label": "意向形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 46,
+          "reference_label": "意向形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 46,
+          "reference_label": "意向形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-008",
+      "level": "N4",
+      "source": "lessons/n4/ch02-reasons-conditions-and-intent.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 55,
+          "reference_label": "理由",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 76,
+          "reference_label": "返事",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 47,
+          "reference_label": "〜のだ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 47,
+          "reference_label": "〜のだ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 47,
+          "reference_label": "〜のだ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-009",
+      "level": "N4",
+      "source": "lessons/n4/ch02-reasons-conditions-and-intent.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 39,
+          "reference_label": "面接",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 16,
+          "reference_label": "準備",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 17,
+          "reference_label": "〜ために",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 17,
+          "reference_label": "〜ために",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 17,
+          "reference_label": "〜ために",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-010",
+      "level": "N4",
+      "source": "lessons/n4/ch02-reasons-conditions-and-intent.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 21,
+          "reference_label": "信号",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 82,
+          "reference_label": "届く",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 40,
+          "reference_label": "〜と (条件)",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 40,
+          "reference_label": "〜と (条件)",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 40,
+          "reference_label": "〜と (条件)",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-011",
+      "level": "N4",
+      "source": "lessons/n4/ch03-quality-and-degree.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 215,
+          "reference_label": "厚い",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 136,
+          "reference_label": "柔らかい",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 45,
+          "reference_label": "〜さ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-012",
+      "level": "N4",
+      "source": "lessons/n4/ch04-everyday-action-extensions.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 153,
+          "reference_label": "丁寧",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 42,
+          "reference_label": "自信",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 24,
+          "reference_label": "〜し",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 41,
+          "reference_label": "安心",
+          "rationale": "모든 보기 중 문맥에 맞는 어휘 安心의 의미를 평가한다. 이유 나열 し가 빈칸이 아니다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 24,
+          "reference_label": "〜し",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-013",
+      "level": "N4",
+      "source": "lessons/n4/ch04-everyday-action-extensions.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 72,
+          "reference_label": "予約",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 63,
+          "reference_label": "受付",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 4,
+          "reference_label": "〜てみる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 98,
+          "reference_label": "申し込む",
+          "rationale": "신청한다는 문맥의 申し込む를 선택하는 어휘 활용 문항으로 본다. てみる는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 4,
+          "reference_label": "〜てみる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-014",
+      "level": "N4",
+      "source": "lessons/n4/ch04-everyday-action-extensions.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 16,
+          "reference_label": "準備",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 86,
+          "reference_label": "片付ける",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 3,
+          "reference_label": "〜ておく",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 88,
+          "reference_label": "決める",
+          "rationale": "정한다는 문맥의 決める를 선택한다. ておく는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 3,
+          "reference_label": "〜ておく",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-015",
+      "level": "N4",
+      "source": "lessons/n4/ch04-everyday-action-extensions.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 178,
+          "reference_label": "うっかり",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 938,
+          "reference_label": "忘れる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 1,
+          "reference_label": "〜てしまう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 104,
+          "reference_label": "落とす",
+          "rationale": "떨어뜨린다는 문맥의 落とす를 다른 て형 동사와 구별한다. てしまう는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 1,
+          "reference_label": "〜てしまう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-016",
+      "level": "N4",
+      "source": "lessons/n4/ch04-everyday-action-extensions.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 650,
+          "reference_label": "続ける",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 929,
+          "reference_label": "練習",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 650,
+          "reference_label": "続ける",
+          "rationale": "練習を続ける는 독립 동사 続ける이다. 동사 어간 + 続ける라는 복합 동사 문법(35)과 다르다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 12,
+          "reference_label": "〜つもり",
+          "rationale": "의도를 나타내는 つもり(12)를 평가한다. main 복합 동사 문법이 아니다."
+        },
+        {
+          "question_order": 5,
+          "vocabulary_order": 650,
+          "reference_label": "続ける",
+          "rationale": "練習を続けています는 독립 동사 続ける의 활용이다. 복합 동사 문법(35)에 기록하지 않는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-017",
+      "level": "N4",
+      "source": "lessons/n4/ch05-observation-reporting-and-expectation.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 14,
+          "reference_label": "掃除",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 15,
+          "reference_label": "洗濯",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 6,
+          "reference_label": "〜たり〜たりする",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 16,
+          "reference_label": "準備",
+          "rationale": "한국어 준비에 해당하는 어휘 準備를 고른다. たり는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 6,
+          "reference_label": "〜たり〜たりする",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-018",
+      "level": "N4",
+      "source": "lessons/n4/ch05-observation-reporting-and-expectation.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 370,
+          "reference_label": "機械",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 166,
+          "reference_label": "無理",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-019",
+      "level": "N4",
+      "source": "lessons/n4/ch05-observation-reporting-and-expectation.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 17,
+          "reference_label": "予定",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 63,
+          "reference_label": "受付",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 14,
+          "reference_label": "〜そう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-020",
+      "level": "N4",
+      "source": "lessons/n4/ch05-observation-reporting-and-expectation.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 889,
+          "reference_label": "約束",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 122,
+          "reference_label": "守る",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 49,
+          "reference_label": "〜ものだ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 122,
+          "reference_label": "守る",
+          "rationale": "같은 사전형 동사 보기에서 규칙을 지킨다는 守る의 의미를 고른다. ものだ는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 49,
+          "reference_label": "〜ものだ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-021",
+      "level": "N4",
+      "source": "lessons/n4/ch05-observation-reporting-and-expectation.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 72,
+          "reference_label": "予約",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 82,
+          "reference_label": "届く",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 13,
+          "reference_label": "〜はず",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 82,
+          "reference_label": "届く",
+          "rationale": "문맥에 맞는 届く의 의미를 고른다. はず는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 13,
+          "reference_label": "〜はず",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-022",
+      "level": "N4",
+      "source": "lessons/n4/ch06-benefactive-contrast-and-passive.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 10,
+          "reference_label": "後輩",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 668,
+          "reference_label": "手伝う",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 31,
+          "reference_label": "〜てあげる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 31,
+          "reference_label": "〜てあげる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 31,
+          "reference_label": "〜てあげる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-023",
+      "level": "N4",
+      "source": "lessons/n4/ch06-benefactive-contrast-and-passive.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 9,
+          "reference_label": "先輩",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 324,
+          "reference_label": "会場",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 30,
+          "reference_label": "〜てくれる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 570,
+          "reference_label": "説明",
+          "rationale": "모든 보기의 문법 형태가 して로 같고 문맥상 説明する를 고르므로 어휘 説明(570)을 평가한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 30,
+          "reference_label": "〜てくれる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-024",
+      "level": "N4",
+      "source": "lessons/n4/ch06-benefactive-contrast-and-passive.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 63,
+          "reference_label": "受付",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 521,
+          "reference_label": "住所",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 29,
+          "reference_label": "〜てもらう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "srs_skip_reason": "教えて와 다른 동사의 て형 중 문맥에 맞는 동사를 고르는 문항이다. 教える의 해당 레벨 어휘 항목이 없고, 모든 보기가 て형이므로 てもらう 문법의 정오로 대신 기록하지 않는다.",
+          "reference_label": null,
+          "rationale": "教えて와 다른 동사의 て형 중 문맥에 맞는 동사를 고르는 문항이다. 教える의 해당 레벨 어휘 항목이 없고, 모든 보기가 て형이므로 てもらう 문법의 정오로 대신 기록하지 않는다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 29,
+          "reference_label": "〜てもらう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-025",
+      "level": "N4",
+      "source": "lessons/n4/ch06-benefactive-contrast-and-passive.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 568,
+          "reference_label": "席",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 486,
+          "reference_label": "残念な",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 19,
+          "reference_label": "〜のに",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 97,
+          "reference_label": "間に合う",
+          "rationale": "같은 과거형 동사 보기에서 시간에 맞는다는 間に合う의 의미를 고른다. のには 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 19,
+          "reference_label": "〜のに",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-026",
+      "level": "N4",
+      "source": "lessons/n4/ch06-benefactive-contrast-and-passive.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 504,
+          "reference_label": "自転車",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 121,
+          "reference_label": "盗む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 26,
+          "reference_label": "수동형 〜(ら)れる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 26,
+          "reference_label": "수동형 〜(ら)れる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 26,
+          "reference_label": "수동형 〜(ら)れる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-027",
+      "level": "N4",
+      "source": "lessons/n4/ch07-condition-report-and-recency.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 28,
+          "reference_label": "出発",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 54,
+          "reference_label": "連絡",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 21,
+          "reference_label": "〜たら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 21,
+          "reference_label": "〜たら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 21,
+          "reference_label": "〜たら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-028",
+      "level": "N4",
+      "source": "lessons/n4/ch07-condition-report-and-recency.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 61,
+          "reference_label": "相談",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 165,
+          "reference_label": "必要",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 22,
+          "reference_label": "〜ば",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 22,
+          "reference_label": "〜ば",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 22,
+          "reference_label": "〜ば",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-029",
+      "level": "N4",
+      "source": "lessons/n4/ch07-condition-report-and-recency.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 631,
+          "reference_label": "地図",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 21,
+          "reference_label": "信号",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 23,
+          "reference_label": "〜なら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 23,
+          "reference_label": "〜なら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 23,
+          "reference_label": "〜なら",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-030",
+      "level": "N4",
+      "source": "lessons/n4/ch07-condition-report-and-recency.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 676,
+          "reference_label": "天気予報",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 77,
+          "reference_label": "最近",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 15,
+          "reference_label": "〜らしい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 15,
+          "reference_label": "〜らしい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 15,
+          "reference_label": "〜らしい",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN4-031",
+      "level": "N4",
+      "source": "lessons/n4/ch07-condition-report-and-recency.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 53,
+          "reference_label": "会議",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 28,
+          "reference_label": "出発",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 32,
+          "reference_label": "〜ばかり",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 32,
+          "reference_label": "〜ばかり",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 32,
+          "reference_label": "〜ばかり",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-001",
+      "level": "N5",
+      "source": "lessons/n5/ch01-greetings-and-first-meetings.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 503,
+          "reference_label": "はじめまして",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 7,
+          "reference_label": "学生",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 1,
+          "reference_label": "〜です",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 1,
+          "reference_label": "〜です",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 1,
+          "reference_label": "〜です",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-002",
+      "level": "N5",
+      "source": "lessons/n5/ch01-greetings-and-first-meetings.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 601,
+          "reference_label": "留学生",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 462,
+          "reference_label": "どこ",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 31,
+          "reference_label": "〜か",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 31,
+          "reference_label": "〜か",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 31,
+          "reference_label": "〜か",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-003",
+      "level": "N5",
+      "source": "lessons/n5/ch01-greetings-and-first-meetings.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 80,
+          "reference_label": "仕事",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 226,
+          "reference_label": "医者",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-004",
+      "level": "N5",
+      "source": "lessons/n5/ch01-greetings-and-first-meetings.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 76,
+          "reference_label": "映画",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 79,
+          "reference_label": "料理",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 33,
+          "reference_label": "〜も",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 33,
+          "reference_label": "〜も",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 33,
+          "reference_label": "〜も",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-005",
+      "level": "N5",
+      "source": "lessons/n5/ch01-greetings-and-first-meetings.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 161,
+          "reference_label": "元気",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 197,
+          "reference_label": "ありがとうございます",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 34,
+          "reference_label": "〜よ / 〜ね",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 34,
+          "reference_label": "〜よ / 〜ね",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 34,
+          "reference_label": "〜よ / 〜ね",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-006",
+      "level": "N5",
+      "source": "lessons/n5/ch02-introducing-things-and-people.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 257,
+          "reference_label": "鉛筆",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 52,
+          "reference_label": "鞄",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 35,
+          "reference_label": "これ・それ・あれ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 35,
+          "reference_label": "これ・それ・あれ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 35,
+          "reference_label": "これ・それ・あれ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-007",
+      "level": "N5",
+      "source": "lessons/n5/ch02-introducing-things-and-people.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 380,
+          "reference_label": "辞書",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 49,
+          "reference_label": "時計",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 36,
+          "reference_label": "この・その・あの",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 36,
+          "reference_label": "この・その・あの",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 36,
+          "reference_label": "この・その・あの",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-008",
+      "level": "N5",
+      "source": "lessons/n5/ch02-introducing-things-and-people.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 14,
+          "reference_label": "家族",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 26,
+          "reference_label": "学校",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-009",
+      "level": "N5",
+      "source": "lessons/n5/ch02-introducing-things-and-people.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 148,
+          "reference_label": "美味しい",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 166,
+          "reference_label": "静か",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 136,
+          "reference_label": "大きい",
+          "rationale": "같은 형용사 형태의 보기에서 크다는 뜻의 大きい를 선택한다. 형용사 기본 문법보다 어휘 의미를 평가한다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 148,
+          "reference_label": "美味しい",
+          "rationale": "같은 문법 위치의 보기에서 맛있다는 뜻의 美味しい를 선택한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 39,
+          "reference_label": "い-Adj+N / な-Adj+N",
+          "rationale": "해설이 설명하는 小さい + 店의 명사 수식을 primary target으로 삼는다. 문장에 함께 나오는 서술형을 모두 정답 증거로 기록하지 않는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-010",
+      "level": "N5",
+      "source": "lessons/n5/ch02-introducing-things-and-people.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 557,
+          "reference_label": "町",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 35,
+          "reference_label": "部屋",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 39,
+          "reference_label": "い-Adj+N / な-Adj+N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 39,
+          "reference_label": "い-Adj+N / な-Adj+N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 39,
+          "reference_label": "い-Adj+N / な-Adj+N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-011",
+      "level": "N5",
+      "source": "lessons/n5/ch03-location-and-movement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 32,
+          "reference_label": "図書館",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 29,
+          "reference_label": "駅",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 40,
+          "reference_label": "ここ・そこ・あそこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 40,
+          "reference_label": "ここ・そこ・あそこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 40,
+          "reference_label": "ここ・そこ・あそこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-012",
+      "level": "N5",
+      "source": "lessons/n5/ch03-location-and-movement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 585,
+          "reference_label": "郵便局",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 447,
+          "reference_label": "デパート",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 41,
+          "reference_label": "どこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 41,
+          "reference_label": "どこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 41,
+          "reference_label": "どこ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-013",
+      "level": "N5",
+      "source": "lessons/n5/ch03-location-and-movement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 244,
+          "reference_label": "上",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 104,
+          "reference_label": "いる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 42,
+          "reference_label": "〜に",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 55,
+          "reference_label": "ある・いる",
+          "rationale": "생물의 존재 いる와 무생물 ある를 구별한다. 빈칸이 위치 조사 に가 아니므로 main grammar 42로 대체하지 않는다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 42,
+          "reference_label": "〜に",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-014",
+      "level": "N5",
+      "source": "lessons/n5/ch03-location-and-movement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 70,
+          "reference_label": "電車",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 392,
+          "reference_label": "食堂",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 43,
+          "reference_label": "〜で",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 43,
+          "reference_label": "〜で",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 43,
+          "reference_label": "〜で",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-015",
+      "level": "N5",
+      "source": "lessons/n5/ch03-location-and-movement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 59,
+          "reference_label": "海",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 284,
+          "reference_label": "外国",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 44,
+          "reference_label": "〜へ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 44,
+          "reference_label": "〜へ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 44,
+          "reference_label": "〜へ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-016",
+      "level": "N5",
+      "source": "lessons/n5/ch04-verb-basics.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 91,
+          "reference_label": "食べる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 98,
+          "reference_label": "読む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 45,
+          "reference_label": "る動詞 / う動詞",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 45,
+          "reference_label": "る動詞 / う動詞",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 45,
+          "reference_label": "る動詞 / う動詞",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-017",
+      "level": "N5",
+      "source": "lessons/n5/ch04-verb-basics.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 93,
+          "reference_label": "行く",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 97,
+          "reference_label": "聞く",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 2,
+          "reference_label": "〜ます",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 2,
+          "reference_label": "〜ます",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 2,
+          "reference_label": "〜ます",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-018",
+      "level": "N5",
+      "source": "lessons/n5/ch04-verb-basics.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 46,
+          "reference_label": "新聞",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 37,
+          "reference_label": "水",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 46,
+          "reference_label": "〜を",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 46,
+          "reference_label": "〜を",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 46,
+          "reference_label": "〜を",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-019",
+      "level": "N5",
+      "source": "lessons/n5/ch04-verb-basics.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 375,
+          "reference_label": "散歩",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 286,
+          "reference_label": "買い物",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 47,
+          "reference_label": "する・くる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 47,
+          "reference_label": "する・くる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 47,
+          "reference_label": "する・くる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-020",
+      "level": "N5",
+      "source": "lessons/n5/ch04-verb-basics.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 42,
+          "reference_label": "野菜",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 319,
+          "reference_label": "牛乳",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 3,
+          "reference_label": "〜ません",
+          "rationale": "빈칸은 정중한 부정 ません이다. 보통체 ない(48)가 아닌 실제 평가 표현 ません(3)에 연결한다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 3,
+          "reference_label": "〜ません",
+          "rationale": "정중한 부정 ません을 보통체 ない와 구분해 기록한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 3,
+          "reference_label": "〜ません",
+          "rationale": "문장에 나타난 정중한 부정 飲みません의 primary grammar는 ません(3)이다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-021",
+      "level": "N5",
+      "source": "lessons/n5/ch05-past-and-sequence.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 18,
+          "reference_label": "昨日",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 412,
+          "reference_label": "先週",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 4,
+          "reference_label": "〜ました",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 4,
+          "reference_label": "〜ました",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 4,
+          "reference_label": "〜ました",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-022",
+      "level": "N5",
+      "source": "lessons/n5/ch05-past-and-sequence.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 83,
+          "reference_label": "宿題",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 577,
+          "reference_label": "問題",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 5,
+          "reference_label": "〜ませんでした",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 5,
+          "reference_label": "〜ませんでした",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 5,
+          "reference_label": "〜ませんでした",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-023",
+      "level": "N5",
+      "source": "lessons/n5/ch05-past-and-sequence.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 95,
+          "reference_label": "帰る",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 101,
+          "reference_label": "買う",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 50,
+          "reference_label": "Verb+て",
+          "rationale": "帰って로 다음 동작을 이어 말하는 문장 배열이다. 변형 규칙 자체보다 동사 연결(50)을 primary target으로 삼는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-024",
+      "level": "N5",
+      "source": "lessons/n5/ch05-past-and-sequence.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 129,
+          "reference_label": "洗う",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 128,
+          "reference_label": "着る",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "보기는 洗う의 て형 활용을 구별하므로 연결 문법(50)이 아닌 변형 규칙(49)을 평가한다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "보기는 浴びる의 て형 활용을 구별하므로 변형 규칙(49)을 평가한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 50,
+          "reference_label": "Verb+て",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-025",
+      "level": "N5",
+      "source": "lessons/n5/ch05-past-and-sequence.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 206,
+          "reference_label": "朝御飯",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 282,
+          "reference_label": "終わる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 51,
+          "reference_label": "〜てから",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 51,
+          "reference_label": "〜てから",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 51,
+          "reference_label": "〜てから",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-026",
+      "level": "N5",
+      "source": "lessons/n5/ch06-progress-and-habits.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 98,
+          "reference_label": "読む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 247,
+          "reference_label": "歌う",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-027",
+      "level": "N5",
+      "source": "lessons/n5/ch06-progress-and-habits.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 277,
+          "reference_label": "覚える",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 123,
+          "reference_label": "忘れる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 52,
+          "reference_label": "〜ていない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 52,
+          "reference_label": "〜ていない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 52,
+          "reference_label": "〜ていない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-028",
+      "level": "N5",
+      "source": "lessons/n5/ch06-progress-and-habits.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 83,
+          "reference_label": "宿題",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 444,
+          "reference_label": "手紙",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 53,
+          "reference_label": "まだ〜ていません",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 53,
+          "reference_label": "まだ〜ていません",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 53,
+          "reference_label": "まだ〜ていません",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-029",
+      "level": "N5",
+      "source": "lessons/n5/ch06-progress-and-habits.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 185,
+          "reference_label": "もう",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 282,
+          "reference_label": "終わる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 4,
+          "reference_label": "〜ました",
+          "rationale": "もう가 이미 제시되어 있고 같은 동사의 시제·상 보기에서 食べました를 선택하므로 과거 정중형(4)을 평가한다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 54,
+          "reference_label": "もう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 54,
+          "reference_label": "もう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-030",
+      "level": "N5",
+      "source": "lessons/n5/ch06-progress-and-habits.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 548,
+          "reference_label": "毎朝",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 180,
+          "reference_label": "時々",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 179,
+          "reference_label": "いつも",
+          "rationale": "빈도 부사 いつも를 다른 빈도/완료 부사와 구별한다. ている가 빈칸이 아니다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-031",
+      "level": "N5",
+      "source": "lessons/n5/ch07-foundation-expression-reinforcement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 605,
+          "reference_label": "私",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 7,
+          "reference_label": "学生",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸은 주제 조사 は이다. main grammar です가 아닌 は(32)를 평가한다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 1,
+          "reference_label": "〜です",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 1,
+          "reference_label": "〜です",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-032",
+      "level": "N5",
+      "source": "lessons/n5/ch07-foundation-expression-reinforcement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 357,
+          "reference_label": "これ",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 419,
+          "reference_label": "それ",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 35,
+          "reference_label": "これ・それ・あれ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "빈칸은 선생님의 책이라는 소유 조사 の이다. main 지시대명사와 별개이다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 35,
+          "reference_label": "これ・それ・あれ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-033",
+      "level": "N5",
+      "source": "lessons/n5/ch07-foundation-expression-reinforcement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "grammar_order": 58,
+          "reference_label": "〜ではない",
+          "rationale": "VOCAB_MCQ라는 표시와 달리 문법 표현 ではありません의 뜻을 직접 묻는다. 명사 부정 문법(58)에 연결한다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 52,
+          "reference_label": "鞄",
+          "rationale": "표기 かばん은 사전 어휘 鞄(52)의 읽기와 일치한다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 58,
+          "reference_label": "〜ではない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "소유 조사 の를 평가하며 명사 부정 문법이 아니다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 58,
+          "reference_label": "〜ではない",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-034",
+      "level": "N5",
+      "source": "lessons/n5/ch07-foundation-expression-reinforcement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 29,
+          "reference_label": "駅",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 5,
+          "reference_label": "友達",
+          "rationale": "友だち는 사전 어휘 友達(5)의 검수된 표기 변형이다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 43,
+          "reference_label": "〜で",
+          "rationale": "행동 장소 조사 で를 평가한다. main 주제 조사 は가 아니다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 32,
+          "reference_label": "〜は",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-035",
+      "level": "N5",
+      "source": "lessons/n5/ch07-foundation-expression-reinforcement.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 196,
+          "reference_label": "おはようございます",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 197,
+          "reference_label": "ありがとうございます",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 199,
+          "reference_label": "お願いします",
+          "rationale": "정형 표현 お願いします의 선택을 평가한다. です 문법으로 환산하지 않는다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 594,
+          "reference_label": "よろしく",
+          "rationale": "정형 표현 よろしく의 선택을 평가한다."
+        },
+        {
+          "question_order": 5,
+          "srs_skip_reason": "아침 인사와 よろしくお願いします를 함께 배열하는 복합 정형 표현이다. 단일 어휘나 です 문법의 정오로 환산하지 않는다.",
+          "reference_label": null,
+          "rationale": "아침 인사와 よろしくお願いします를 함께 배열하는 복합 정형 표현이다. 단일 어휘나 です 문법의 정오로 환산하지 않는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-036",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 192,
+          "reference_label": "二つ",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 547,
+          "reference_label": "-枚",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 547,
+          "reference_label": "-枚",
+          "rationale": "얇은 물건의 조수사 枚를 구별한다. 실제 grammar_order 46은 を이므로 조수사 어휘 -枚(547)를 사용한다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 191,
+          "reference_label": "一つ",
+          "rationale": "일반 수량 一つ의 つ를 선택하는 문항으로, 어휘 一つ(191)에 연결한다."
+        },
+        {
+          "question_order": 5,
+          "vocabulary_order": 547,
+          "reference_label": "-枚",
+          "rationale": "수량 三枚를 배치하는 조수사 활용 문항의 primary target은 -枚(547)이다. 목적어 조사 を(46)로 환산하지 않는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-037",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 395,
+          "reference_label": "水曜日",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 377,
+          "reference_label": "-時",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 42,
+          "reference_label": "〜に",
+          "rationale": "구체적 시각 뒤의 に를 평가한다. canonical に(42) 설명에 시간 용법도 명시되어 있다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 514,
+          "reference_label": "-半",
+          "rationale": "시각의 半을 다른 조수사와 구별하므로 -半(514)을 평가한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 42,
+          "reference_label": "〜に",
+          "rationale": "三時に의 시간 조사를 primary target으로 삼는다. canonical に(42) 설명에 시간 용법도 명시되어 있다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-038",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 199,
+          "reference_label": "お願いします",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 354,
+          "reference_label": "この",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 199,
+          "reference_label": "お願いします",
+          "rationale": "명사 목적어 뒤의 정형 표현 お願いします를 선택한다. 동사 てください(6)와 구별한다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 56,
+          "reference_label": "〜だけ",
+          "rationale": "한정 조사 だけ(56)를 다른 조사와 구별한다."
+        },
+        {
+          "question_order": 5,
+          "vocabulary_order": 199,
+          "reference_label": "お願いします",
+          "rationale": "명사 목적어와 お願いします로 부탁하는 표현을 평가하므로 어휘 お願いします(199)를 primary target으로 삼는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-039",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 103,
+          "reference_label": "ある",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 104,
+          "reference_label": "いる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 55,
+          "reference_label": "ある・いる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 55,
+          "reference_label": "ある・いる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 55,
+          "reference_label": "ある・いる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-040",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 91,
+          "reference_label": "食べる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 92,
+          "reference_label": "飲む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 91,
+          "reference_label": "食べる",
+          "rationale": "같은 ます형 동사 중 빵에 맞는 食べる의 의미를 고른다. 동사 분류 문항이 아니다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 102,
+          "reference_label": "する",
+          "rationale": "같은 ます형 동사 중 勉強する에 맞는 する의 의미와 결합을 고른다."
+        },
+        {
+          "question_order": 5,
+          "srs_skip_reason": "주제·목적어·동사의 일반 어순을 배열하는 문항이며, 레슨 문법인 동사 그룹 분류를 평가하지 않는다. 기존 항목 중 단일 평가 대상을 확정할 수 없다.",
+          "reference_label": null,
+          "rationale": "주제·목적어·동사의 일반 어순을 배열하는 문항이며, 레슨 문법인 동사 그룹 분류를 평가하지 않는다. 기존 항목 중 단일 평가 대상을 확정할 수 없다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-041",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 32,
+          "reference_label": "図書館",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 188,
+          "reference_label": "一緒に",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 11,
+          "reference_label": "〜ましょう",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 12,
+          "reference_label": "〜に行きます",
+          "rationale": "동사 어간 + に行きます의 목적 표현(12)을 평가한다. 제안 ましょう가 빈칸이 아니다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 11,
+          "reference_label": "〜ましょう",
+          "rationale": "목적 표현이 함께 있지만 문장의 제안 종결 行きましょう(11)를 primary target으로 삼는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-042",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 76,
+          "reference_label": "映画",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 162,
+          "reference_label": "好き",
+          "rationale": "정중형 好きです는 어휘 好き(162)의 검수된 활용 표현이다. 별개 어휘 好きな(398)로 바꾸지 않는다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 28,
+          "reference_label": "〜のが好きです",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 37,
+          "reference_label": "〜の",
+          "rationale": "소유 조사 の를 평가한다. 명사화 のが好き 문법과 구분한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 28,
+          "reference_label": "〜のが好きです",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-043",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 99,
+          "reference_label": "書く",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 112,
+          "reference_label": "待つ",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 50,
+          "reference_label": "Verb+て",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "보기는 読む의 활용형을 구별하므로 て형 변형 규칙(49)을 평가한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 50,
+          "reference_label": "Verb+て",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-044",
+      "level": "N5",
+      "source": "lessons/n5/ch08-daily-expressions-and-verb-foundations.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 22,
+          "reference_label": "今",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 98,
+          "reference_label": "読む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 49,
+          "reference_label": "て/た形",
+          "rationale": "보기는 見る의 활용형을 구별하므로 て형 변형 규칙(49)을 평가한다. います는 이미 제시되어 있다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 20,
+          "reference_label": "〜ています",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-045",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 122,
+          "reference_label": "分かる",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 393,
+          "reference_label": "知る",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "vocabulary_order": 122,
+          "reference_label": "分かる",
+          "rationale": "의미를 이해한다는 문맥에서 分かる를 선택한다. 문장에 ている가 없으므로 진행 문법으로 기록하지 않는다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 393,
+          "reference_label": "知る",
+          "rationale": "사람을 안다는 문맥에서 知る와 分かる의 어휘 의미·쓰임을 구별한다."
+        },
+        {
+          "question_order": 5,
+          "vocabulary_order": 122,
+          "reference_label": "分かる",
+          "rationale": "分かります의 의미와 쓰임을 primary target으로 삼는다. ている 문법과 같다고 간주하지 않는다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-046",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 543,
+          "reference_label": "欲しい",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 496,
+          "reference_label": "ノート",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "srs_skip_reason": "N が欲しい의 が를 묻지만 레슨 grammar_order 10의 실제 항목은 동사 〜たいです이다. 정확한 が/が欲しい 문법 항목이 없어 다른 문법으로 기록하지 않는다.",
+          "reference_label": null,
+          "rationale": "N が欲しい의 が를 묻지만 레슨 grammar_order 10의 실제 항목은 동사 〜たいです이다. 정확한 が/が欲しい 문법 항목이 없어 다른 문법으로 기록하지 않는다."
+        },
+        {
+          "question_order": 4,
+          "vocabulary_order": 543,
+          "reference_label": "欲しい",
+          "rationale": "원하는 물건을 말하는 欲しい의 의미와 쓰임을 선택한다. 다른 항목인 동사 たい(10)에 기록하지 않는다."
+        },
+        {
+          "question_order": 5,
+          "srs_skip_reason": "N が欲しい 문장 배열을 레슨 grammar_order 10의 동사 〜たいです 정오로 기록할 수 없다. 해당 구문을 독립적으로 나타내는 문법 항목이 없어 검토 전까지 SRS 갱신을 생략한다.",
+          "reference_label": null,
+          "rationale": "N が欲しい 문장 배열을 레슨 grammar_order 10의 동사 〜たいです 정오로 기록할 수 없다. 해당 구문을 독립적으로 나타내는 문법 항목이 없어 검토 전까지 SRS 갱신을 생략한다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-047",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 145,
+          "reference_label": "寒い",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 166,
+          "reference_label": "静か",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 60,
+          "reference_label": "〜くなる / 〜になる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 60,
+          "reference_label": "〜くなる / 〜になる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 60,
+          "reference_label": "〜くなる / 〜になる",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-048",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 37,
+          "reference_label": "水",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 92,
+          "reference_label": "飲む",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 56,
+          "reference_label": "〜だけ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 33,
+          "reference_label": "〜も",
+          "rationale": "추가·동류 조사 も(33)를 평가한다. 한정 だけ와 구별한다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 56,
+          "reference_label": "〜だけ",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-049",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 38,
+          "reference_label": "お茶",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 343,
+          "reference_label": "コーヒー",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 59,
+          "reference_label": "N + にする",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 59,
+          "reference_label": "N + にする",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 59,
+          "reference_label": "N + にする",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    },
+    {
+      "lesson_id": "HN5-050",
+      "level": "N5",
+      "source": "lessons/n5/ch09-expression-contrast-and-choice.json",
+      "targets": [
+        {
+          "question_order": 1,
+          "vocabulary_order": 75,
+          "reference_label": "言葉",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 2,
+          "vocabulary_order": 512,
+          "reference_label": "春",
+          "rationale": "사전 어휘의 표기·읽기와 문항의 대상 표현을 대조하고 정답의 뜻을 확인했다."
+        },
+        {
+          "question_order": 3,
+          "grammar_order": 57,
+          "reference_label": "N + という + N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 4,
+          "grammar_order": 57,
+          "reference_label": "N + という + N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        },
+        {
+          "question_order": 5,
+          "grammar_order": 57,
+          "reference_label": "N + という + N",
+          "rationale": "빈칸·선택지·정답·해설과 실제 문법 레퍼런스를 대조해 이 문항의 primary target을 확인했다."
+        }
+      ]
+    }
+  ]
+}

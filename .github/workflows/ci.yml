@@ -330,6 +330,9 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate lesson review target contracts
+        run: pnpm --filter @harukoto/database lessons:validate
+
       - name: Apply Alembic migrations (single DDL authority)
         working-directory: apps/api
         env:

@@ -83,6 +83,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 98,
             "cognitive_level": "인식",
             "prompt": "読む의 뜻은?",
             "options": [
@@ -109,6 +110,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 247,
             "cognitive_level": "인식",
             "prompt": "'노래하다'를 뜻하는 일본어는?",
             "options": [
@@ -135,6 +137,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 20,
             "cognitive_level": "적용",
             "prompt": "今、本を読んで____。(지금 책을 읽고 있어요.)",
             "options": [
@@ -161,6 +164,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 20,
             "cognitive_level": "적용",
             "prompt": "友達と話して____。(친구와 이야기하고 있어요.)",
             "options": [
@@ -187,6 +191,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 20,
             "cognitive_level": "산출유사",
             "prompt": "'지금 밥을 먹고 있어요'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -273,6 +278,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 277,
             "cognitive_level": "인식",
             "prompt": "覚える의 뜻은?",
             "options": [
@@ -299,6 +305,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 123,
             "cognitive_level": "인식",
             "prompt": "'잊다'를 뜻하는 일본어는?",
             "options": [
@@ -325,6 +332,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 52,
             "cognitive_level": "적용",
             "prompt": "まだ覚えて____。(아직 외우고 있지 않아요.)",
             "options": [
@@ -351,6 +359,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 52,
             "cognitive_level": "적용",
             "prompt": "答えを知って____。(답을 알고 있지 않아요.)",
             "options": [
@@ -377,6 +386,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 52,
             "cognitive_level": "산출유사",
             "prompt": "'전혀 이해하지 못하고 있어요'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -464,6 +474,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 83,
             "cognitive_level": "인식",
             "prompt": "宿題의 뜻은?",
             "options": [
@@ -490,6 +501,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 444,
             "cognitive_level": "인식",
             "prompt": "'편지'를 뜻하는 일본어는?",
             "options": [
@@ -516,6 +528,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 53,
             "cognitive_level": "적용",
             "prompt": "まだ宿題を____。(아직 숙제를 하지 않았어요.)",
             "options": [
@@ -542,6 +555,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 53,
             "cognitive_level": "적용",
             "prompt": "まだ手紙を書いて____。(아직 편지를 쓰지 않았어요.)",
             "options": [
@@ -568,6 +582,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 53,
             "cognitive_level": "산출유사",
             "prompt": "'아직 공부를 하지 않았어요'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -657,6 +672,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 185,
             "cognitive_level": "인식",
             "prompt": "もう의 뜻은?",
             "options": [
@@ -683,6 +699,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 282,
             "cognitive_level": "인식",
             "prompt": "'끝나다'를 뜻하는 일본어는?",
             "options": [
@@ -709,6 +726,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 4,
             "cognitive_level": "적용",
             "prompt": "もう晩ご飯を____。(벌써 저녁밥을 먹었어요.)",
             "options": [
@@ -735,6 +753,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 54,
             "cognitive_level": "적용",
             "prompt": "レポートは____書きましたか。(레포트는 벌써 썼어요?)",
             "options": [
@@ -761,6 +780,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 54,
             "cognitive_level": "산출유사",
             "prompt": "'장보기도 벌써 끝났어요'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -852,6 +872,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 548,
             "cognitive_level": "인식",
             "prompt": "毎朝의 뜻은?",
             "options": [
@@ -878,6 +899,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 180,
             "cognitive_level": "인식",
             "prompt": "'가끔'을 뜻하는 일본어는?",
             "options": [
@@ -904,6 +926,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 20,
             "cognitive_level": "적용",
             "prompt": "毎日運動____。(매일 운동하고 있어요.) — 반복 습관을 말할 때",
             "options": [
@@ -930,6 +953,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 179,
             "cognitive_level": "적용",
             "prompt": "____六時に起きています。(항상 여섯 시에 일어나고 있어요.)",
             "options": [
@@ -956,6 +980,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 20,
             "cognitive_level": "산출유사",
             "prompt": "'매주 테니스도 하고 있어요'를 올바른 순서로 배열하세요.",
             "tokens": [

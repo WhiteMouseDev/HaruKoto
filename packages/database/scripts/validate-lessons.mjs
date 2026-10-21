@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateQuestionSrsTarget } from './lib/lesson-question-targets.mjs';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = join(SCRIPT_DIR, '..');
@@ -10,7 +11,11 @@ const VOCAB_DIR = join(DATA_DIR, 'vocabulary');
 const GRAMMAR_DIR = join(DATA_DIR, 'grammar');
 
 const ALLOWED_META_STATUSES = new Set(['DRAFT', 'PILOT', 'PUBLISHED']);
-const QUESTION_TYPES = new Set(['VOCAB_MCQ', 'CONTEXT_CLOZE', 'SENTENCE_REORDER']);
+const QUESTION_TYPES = new Set([
+  'VOCAB_MCQ',
+  'CONTEXT_CLOZE',
+  'SENTENCE_REORDER',
+]);
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, 'utf8'));
@@ -44,7 +49,11 @@ function loadContentByOrder(dirPath, label) {
 }
 
 function sameMultiset(left, right) {
-  if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
+  if (
+    !Array.isArray(left) ||
+    !Array.isArray(right) ||
+    left.length !== right.length
+  ) {
     return false;
   }
 
@@ -104,16 +113,28 @@ function validateQuestion(question, context, errors) {
     if (!Array.isArray(question.tokens) || question.tokens.length < 2) {
       errors.push(`${prefix}: tokens must contain at least 2 items`);
     }
-    if (!Array.isArray(question.correct_order) || question.correct_order.length < 2) {
+    if (
+      !Array.isArray(question.correct_order) ||
+      question.correct_order.length < 2
+    ) {
       errors.push(`${prefix}: correct_order must contain at least 2 items`);
     }
     if (!sameMultiset(question.tokens, question.correct_order)) {
-      errors.push(`${prefix}: tokens and correct_order must contain the same values`);
+      errors.push(
+        `${prefix}: tokens and correct_order must contain the same values`
+      );
     }
   }
 }
 
-function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, errors, warnings) {
+function validateLessonFile(
+  filePath,
+  vocabByLevel,
+  grammarByLevel,
+  totals,
+  errors,
+  warnings
+) {
   const relativePath = filePath.replace(`${PACKAGE_DIR}/`, '');
   const data = readJson(filePath);
   const meta = data?.meta;
@@ -142,16 +163,22 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
     errors.push(`${relativePath}: meta.chapter_no must be a positive integer`);
   }
   if (meta.lesson_count !== lessons.length) {
-    errors.push(`${relativePath}: meta.lesson_count ${meta.lesson_count} != lessons.length ${lessons.length}`);
+    errors.push(
+      `${relativePath}: meta.lesson_count ${meta.lesson_count} != lessons.length ${lessons.length}`
+    );
   }
   if (!ALLOWED_META_STATUSES.has(meta.status)) {
     errors.push(`${relativePath}: unsupported meta.status ${meta.status}`);
   } else if (meta.status === 'DRAFT') {
-    warnings.push(`${relativePath}: meta.status is DRAFT; seed publish behavior must be explicit for pilot use`);
+    warnings.push(
+      `${relativePath}: meta.status is DRAFT; seed publish behavior must be explicit for pilot use`
+    );
   }
 
   const expectedChapterLessonNos = lessons.map((_, index) => index + 1);
-  const actualChapterLessonNos = lessons.map((lesson) => lesson.chapter_lesson_no);
+  const actualChapterLessonNos = lessons.map(
+    (lesson) => lesson.chapter_lesson_no
+  );
   if (actualChapterLessonNos.join(',') !== expectedChapterLessonNos.join(',')) {
     errors.push(`${relativePath}: chapter_lesson_no must be contiguous from 1`);
   }
@@ -160,7 +187,10 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
   for (const lesson of lessons) {
     const context = `${relativePath} ${lesson?.lesson_id ?? `lesson-${lesson?.lesson_no ?? '?'}`}`;
 
-    if (typeof lesson?.lesson_id !== 'string' || lesson.lesson_id.trim() === '') {
+    if (
+      typeof lesson?.lesson_id !== 'string' ||
+      lesson.lesson_id.trim() === ''
+    ) {
       errors.push(`${context}: lesson_id is required`);
     }
     if (!Number.isInteger(lesson?.lesson_no) || lesson.lesson_no < 1) {
@@ -176,7 +206,10 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
     if (typeof lesson?.topic !== 'string' || lesson.topic.trim() === '') {
       errors.push(`${context}: topic is required`);
     }
-    if (!Number.isInteger(lesson?.estimated_minutes) || lesson.estimated_minutes < 1) {
+    if (
+      !Number.isInteger(lesson?.estimated_minutes) ||
+      lesson.estimated_minutes < 1
+    ) {
       errors.push(`${context}: estimated_minutes must be a positive integer`);
     }
 
@@ -196,7 +229,9 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
         }
         seenVocabOrders.add(order);
         if (!vocabByLevel.get(level)?.has(order)) {
-          errors.push(`${context}: vocabulary order ${order} not found for ${level}`);
+          errors.push(
+            `${context}: vocabulary order ${order} not found for ${level}`
+          );
         }
       }
     }
@@ -209,18 +244,28 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
       if (!Number.isInteger(grammarOrder)) {
         errors.push(`${context}: grammar.grammar_order must be an integer`);
       } else if (!grammarByLevel.get(level)?.has(grammarOrder)) {
-        errors.push(`${context}: grammar order ${grammarOrder} not found for ${level}`);
+        errors.push(
+          `${context}: grammar order ${grammarOrder} not found for ${level}`
+        );
       }
     }
 
     const reading = lesson?.content_jsonb?.reading;
-    if (!reading || !Array.isArray(reading.script) || reading.script.length < 1) {
-      errors.push(`${context}: content_jsonb.reading.script must contain at least one line`);
+    if (
+      !reading ||
+      !Array.isArray(reading.script) ||
+      reading.script.length < 1
+    ) {
+      errors.push(
+        `${context}: content_jsonb.reading.script must contain at least one line`
+      );
     }
 
     const questions = lesson?.content_jsonb?.questions;
     if (!Array.isArray(questions) || questions.length < 5) {
-      errors.push(`${context}: content_jsonb.questions must contain at least 5 questions`);
+      errors.push(
+        `${context}: content_jsonb.questions must contain at least 5 questions`
+      );
     } else {
       totals.questions += questions.length;
       const questionOrders = questions.map((question) => question.order);
@@ -228,7 +273,16 @@ function validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, erro
       if (questionOrders.join(',') !== expectedQuestionOrders.join(',')) {
         errors.push(`${context}: question order must be contiguous from 1`);
       }
-      for (const question of questions) validateQuestion(question, context, errors);
+      for (const question of questions) {
+        validateQuestion(question, context, errors);
+        for (const error of validateQuestionSrsTarget(question, {
+          level,
+          vocabularyByLevel: vocabByLevel,
+          grammarByLevel,
+        })) {
+          errors.push(`${context} q${question?.order ?? '?'}: ${error}`);
+        }
+      }
     }
   }
 }
@@ -252,7 +306,14 @@ function main() {
     for (const levelDir of readdirSync(LESSONS_DIR).sort()) {
       const levelPath = join(LESSONS_DIR, levelDir);
       for (const filePath of listJsonFiles(levelPath)) {
-        validateLessonFile(filePath, vocabByLevel, grammarByLevel, totals, errors, warnings);
+        validateLessonFile(
+          filePath,
+          vocabByLevel,
+          grammarByLevel,
+          totals,
+          errors,
+          warnings
+        );
       }
     }
   }
