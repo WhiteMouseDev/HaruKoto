@@ -70,6 +70,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 503,
             "cognitive_level": "인식",
             "prompt": "はじめまして의 뜻은?",
             "options": [
@@ -84,6 +85,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 7,
             "cognitive_level": "인식",
             "prompt": "'학생'의 일본어는?",
             "options": [
@@ -98,6 +100,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 1,
             "cognitive_level": "적용",
             "prompt": "私はキム____。(저는 김입니다.)",
             "options": [
@@ -112,6 +115,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 1,
             "cognitive_level": "적용",
             "prompt": "はじめまして。田中____。(처음 뵙겠습니다. 다나카입니다.)",
             "options": [
@@ -126,6 +130,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 1,
             "cognitive_level": "산출유사",
             "prompt": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
             "tokens": ["学生", "私は", "です"],
@@ -194,6 +199,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 601,
             "cognitive_level": "인식",
             "prompt": "留学生의 뜻은?",
             "options": [
@@ -208,6 +214,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 462,
             "cognitive_level": "인식",
             "prompt": "'어디'를 뜻하는 일본어는?",
             "options": [
@@ -222,6 +229,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 31,
             "cognitive_level": "적용",
             "prompt": "学生です____。(학생인가요?)",
             "options": [
@@ -236,6 +244,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 31,
             "cognitive_level": "적용",
             "prompt": "国は どこ ____。(나라는 어디인가요?)",
             "options": [
@@ -250,6 +259,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 31,
             "cognitive_level": "산출유사",
             "prompt": "'김 씨는 유학생인가요?'를 올바른 순서로 배열하세요.",
             "tokens": ["キムさんは", "ですか", "留学生"],
@@ -318,6 +328,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 80,
             "cognitive_level": "인식",
             "prompt": "仕事의 뜻은?",
             "options": [
@@ -332,6 +343,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 226,
             "cognitive_level": "인식",
             "prompt": "'의사'를 뜻하는 일본어는?",
             "options": [
@@ -346,6 +358,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "私____学生です。(저는 학생입니다.)",
             "options": [
@@ -360,6 +373,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "友達____会社の人です。(친구는 회사 사람입니다.)",
             "options": [
@@ -374,6 +388,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 32,
             "cognitive_level": "산출유사",
             "prompt": "'스즈키 씨는 의사입니다'를 올바른 순서로 배열하세요.",
             "tokens": ["です", "鈴木さんは", "医者"],
@@ -441,6 +456,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 76,
             "cognitive_level": "인식",
             "prompt": "映画의 뜻은?",
             "options": [
@@ -455,6 +471,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 79,
             "cognitive_level": "인식",
             "prompt": "'요리'를 뜻하는 일본어는?",
             "options": [
@@ -469,6 +486,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 33,
             "cognitive_level": "적용",
             "prompt": "「私は映画が好きです。」「私____映画が好きです。」(저도 영화를 좋아합니다.)",
             "options": [
@@ -483,6 +501,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 33,
             "cognitive_level": "적용",
             "prompt": "旅行____料理____好きです。(여행도 요리도 좋아합니다.)",
             "options": [
@@ -497,6 +516,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 33,
             "cognitive_level": "산출유사",
             "prompt": "'저도 음악을 좋아합니다'를 올바른 순서로 배열하세요.",
             "tokens": ["好きです", "私も", "音楽が"],
@@ -565,6 +585,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 161,
             "cognitive_level": "인식",
             "prompt": "元気의 뜻은?",
             "options": [
@@ -579,6 +600,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 197,
             "cognitive_level": "인식",
             "prompt": "'감사합니다'를 뜻하는 일본어는?",
             "options": [
@@ -593,6 +615,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 34,
             "cognitive_level": "적용",
             "prompt": "いい天気です____。(좋은 날씨네요.) — 상대에게 동의를 구할 때",
             "options": [
@@ -607,6 +630,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 34,
             "cognitive_level": "적용",
             "prompt": "あの人は友達です____。(저 사람은 친구예요.) — 상대가 모르는 정보를 알려줄 때",
             "options": [
@@ -621,6 +645,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 34,
             "cognitive_level": "산출유사",
             "prompt": "'오늘은 좋은 날씨네요'를 올바른 순서로 배열하세요.",
             "tokens": ["ですね", "いい天気", "今日は"],

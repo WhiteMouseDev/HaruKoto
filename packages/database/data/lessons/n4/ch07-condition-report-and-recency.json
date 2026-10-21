@@ -89,6 +89,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 28,
             "cognitive_level": "인식",
             "prompt": "出発의 뜻은?",
             "options": [
@@ -115,6 +116,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 54,
             "cognitive_level": "인식",
             "prompt": "連絡의 뜻은?",
             "options": [
@@ -141,6 +143,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 21,
             "cognitive_level": "적용",
             "prompt": "雨が止ん___、駅へ出発します。",
             "options": [
@@ -167,6 +170,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 21,
             "cognitive_level": "적용",
             "prompt": "駅に着い___、電話します。",
             "options": [
@@ -193,6 +197,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 21,
             "cognitive_level": "산출유사",
             "prompt": "'비가 그치면 역으로 출발합니다'를 배열하세요.",
             "tokens": [
@@ -286,6 +291,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 61,
             "cognitive_level": "인식",
             "prompt": "相談의 뜻은?",
             "options": [
@@ -312,6 +318,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 165,
             "cognitive_level": "인식",
             "prompt": "必要의 뜻은?",
             "options": [
@@ -338,6 +345,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 22,
             "cognitive_level": "적용",
             "prompt": "時間があれ___、相談できます。",
             "options": [
@@ -364,6 +372,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 22,
             "cognitive_level": "적용",
             "prompt": "会議が早く終われ___、相談できます。",
             "options": [
@@ -390,6 +399,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 22,
             "cognitive_level": "산출유사",
             "prompt": "'시간이 있으면 접수처에서 상담할 수 있어요'를 배열하세요.",
             "tokens": [
@@ -482,6 +492,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 631,
             "cognitive_level": "인식",
             "prompt": "地図의 뜻은?",
             "options": [
@@ -508,6 +519,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 21,
             "cognitive_level": "인식",
             "prompt": "信号의 뜻은?",
             "options": [
@@ -534,6 +546,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 23,
             "cognitive_level": "적용",
             "prompt": "この駅に行く___、地図を見てください。",
             "options": [
@@ -560,6 +573,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 23,
             "cognitive_level": "적용",
             "prompt": "道が分からない___、店員に聞いてもいいです。",
             "options": [
@@ -586,6 +600,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 23,
             "cognitive_level": "산출유사",
             "prompt": "'역에 간다면 지도를 보세요'를 배열하세요.",
             "tokens": [
@@ -677,6 +692,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 676,
             "cognitive_level": "인식",
             "prompt": "天気予報의 뜻은?",
             "options": [
@@ -703,6 +719,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 77,
             "cognitive_level": "인식",
             "prompt": "最近의 뜻은?",
             "options": [
@@ -729,6 +746,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 15,
             "cognitive_level": "적용",
             "prompt": "明日は雨___です。",
             "options": [
@@ -755,6 +773,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 15,
             "cognitive_level": "적용",
             "prompt": "梅雨に入った___ですね。",
             "options": [
@@ -781,6 +800,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 15,
             "cognitive_level": "산출유사",
             "prompt": "'내일은 비가 온다나 봅니다'를 배열하세요.",
             "tokens": [
@@ -873,6 +893,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 53,
             "cognitive_level": "인식",
             "prompt": "会議의 뜻은?",
             "options": [
@@ -899,6 +920,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 28,
             "cognitive_level": "인식",
             "prompt": "出発의 뜻은?",
             "options": [
@@ -925,6 +947,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "会議はさっき終わっ___ばかりです。",
             "options": [
@@ -951,6 +974,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "連絡を受け___ばかりなので、これから確認します。",
             "options": [
@@ -977,6 +1001,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 32,
             "cognitive_level": "산출유사",
             "prompt": "'방금 출발한 참입니다'를 배열하세요.",
             "tokens": [

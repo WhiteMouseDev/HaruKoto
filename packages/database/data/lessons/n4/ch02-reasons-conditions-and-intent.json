@@ -84,6 +84,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 143,
             "cognitive_level": "인식",
             "prompt": "深い의 뜻은?",
             "options": [
@@ -110,6 +111,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 142,
             "cognitive_level": "인식",
             "prompt": "正しい의 뜻은?",
             "options": [
@@ -136,6 +138,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 45,
             "cognitive_level": "적용",
             "prompt": "川の深___を確認します。 (강의 깊이를 확인합니다.)",
             "options": [
@@ -162,6 +165,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 45,
             "cognitive_level": "적용",
             "prompt": "線の太___を見ます。 (선의 굵기를 봅니다.)",
             "options": [
@@ -188,6 +192,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 45,
             "cognitive_level": "산출유사",
             "prompt": "'강의 깊이를 확인했습니다'를 배열하세요.",
             "tokens": [
@@ -276,6 +281,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 127,
             "cognitive_level": "인식",
             "prompt": "参加する의 뜻은?",
             "options": [
@@ -302,6 +308,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 85,
             "cognitive_level": "인식",
             "prompt": "集める의 뜻은?",
             "options": [
@@ -328,6 +335,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 46,
             "cognitive_level": "적용",
             "prompt": "イベントに参加___と思っています。",
             "options": [
@@ -354,6 +362,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 46,
             "cognitive_level": "적용",
             "prompt": "案内を送___と思っています。",
             "options": [
@@ -380,6 +389,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 46,
             "cognitive_level": "산출유사",
             "prompt": "'행사에 참가하려고 생각하고 있습니다'를 배열하세요.",
             "tokens": [
@@ -468,6 +478,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 55,
             "cognitive_level": "인식",
             "prompt": "理由의 뜻은?",
             "options": [
@@ -494,6 +505,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 76,
             "cognitive_level": "인식",
             "prompt": "返事의 뜻은?",
             "options": [
@@ -520,6 +532,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 47,
             "cognitive_level": "적용",
             "prompt": "会議が長かった___。 (회의가 길었던 거예요.)",
             "options": [
@@ -546,6 +559,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 47,
             "cognitive_level": "적용",
             "prompt": "理由があった___か。 (이유가 있었던 건가요?)",
             "options": [
@@ -572,6 +586,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 47,
             "cognitive_level": "산출유사",
             "prompt": "'회의가 길었던 거예요'를 배열하세요.",
             "tokens": [
@@ -660,6 +675,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 39,
             "cognitive_level": "인식",
             "prompt": "面接의 뜻은?",
             "options": [
@@ -686,6 +702,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 16,
             "cognitive_level": "인식",
             "prompt": "準備의 뜻은?",
             "options": [
@@ -712,6 +729,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 17,
             "cognitive_level": "적용",
             "prompt": "面接___、練習しています。 (면접을 위해 연습하고 있습니다.)",
             "options": [
@@ -738,6 +756,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 17,
             "cognitive_level": "적용",
             "prompt": "就職する___、準備します。 (취직하기 위해 준비합니다.)",
             "options": [
@@ -764,6 +783,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 17,
             "cognitive_level": "산출유사",
             "prompt": "'면접을 위해 준비하고 있습니다'를 배열하세요.",
             "tokens": [
@@ -854,6 +874,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 21,
             "cognitive_level": "인식",
             "prompt": "信号의 뜻은?",
             "options": [
@@ -880,6 +901,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 82,
             "cognitive_level": "인식",
             "prompt": "届く의 뜻은?",
             "options": [
@@ -906,6 +928,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 40,
             "cognitive_level": "적용",
             "prompt": "ボタンを押す___、画面が変わります。",
             "options": [
@@ -932,6 +955,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 40,
             "cognitive_level": "적용",
             "prompt": "信号が青になる___、車が進みます。",
             "options": [
@@ -958,6 +982,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 40,
             "cognitive_level": "산출유사",
             "prompt": "'버튼을 누르면 화면이 바뀝니다'를 배열하세요.",
             "tokens": [

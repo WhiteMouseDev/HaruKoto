@@ -85,6 +85,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 14,
             "cognitive_level": "인식",
             "prompt": "掃除의 뜻은?",
             "options": [
@@ -111,6 +112,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 15,
             "cognitive_level": "인식",
             "prompt": "洗濯의 뜻은?",
             "options": [
@@ -137,6 +139,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 6,
             "cognitive_level": "적용",
             "prompt": "掃除をし___、洗濯をし___します。",
             "options": [
@@ -163,6 +166,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 16,
             "cognitive_level": "적용",
             "prompt": "문맥상 '준비'에 해당하는 말은? 来週の___をしたりします。",
             "options": [
@@ -189,6 +193,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 6,
             "cognitive_level": "산출유사",
             "prompt": "'청소를 하거나 빨래를 하거나 합니다'를 배열하세요.",
             "tokens": [
@@ -278,6 +283,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 370,
             "cognitive_level": "인식",
             "prompt": "機械의 뜻은?",
             "options": [
@@ -304,6 +310,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 166,
             "cognitive_level": "인식",
             "prompt": "無理의 뜻은?",
             "options": [
@@ -330,6 +337,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 14,
             "cognitive_level": "적용",
             "prompt": "この機械は壊れ___です。",
             "options": [
@@ -356,6 +364,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 14,
             "cognitive_level": "적용",
             "prompt": "눈앞의 상태를 보고 추측할 때 알맞은 표현은?",
             "options": [
@@ -382,6 +391,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 14,
             "cognitive_level": "산출유사",
             "prompt": "'이 기계는 고장 날 것 같습니다'를 배열하세요.",
             "tokens": [
@@ -473,6 +483,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 17,
             "cognitive_level": "인식",
             "prompt": "予定의 뜻은?",
             "options": [
@@ -499,6 +510,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 63,
             "cognitive_level": "인식",
             "prompt": "受付의 뜻은?",
             "options": [
@@ -525,6 +537,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 14,
             "cognitive_level": "적용",
             "prompt": "会議は三時から始まる___です。",
             "options": [
@@ -551,6 +564,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 14,
             "cognitive_level": "적용",
             "prompt": "들은 정보를 전달할 때 알맞은 표현은?",
             "options": [
@@ -577,6 +591,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 14,
             "cognitive_level": "산출유사",
             "prompt": "'시험은 쉽다고 합니다'를 배열하세요.",
             "tokens": [
@@ -668,6 +683,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 889,
             "cognitive_level": "인식",
             "prompt": "約束의 뜻은?",
             "options": [
@@ -694,6 +710,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 122,
             "cognitive_level": "인식",
             "prompt": "守る의 뜻은?",
             "options": [
@@ -720,6 +737,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 49,
             "cognitive_level": "적용",
             "prompt": "学校の約束は最後まで守る___です。",
             "options": [
@@ -746,6 +764,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 122,
             "cognitive_level": "적용",
             "prompt": "規則はみんなで___ものですね。",
             "options": [
@@ -772,6 +791,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 49,
             "cognitive_level": "산출유사",
             "prompt": "'학교의 약속은 끝까지 지키는 법입니다'를 배열하세요.",
             "tokens": [
@@ -867,6 +887,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 72,
             "cognitive_level": "인식",
             "prompt": "予約의 뜻은?",
             "options": [
@@ -893,6 +914,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 82,
             "cognitive_level": "인식",
             "prompt": "届く의 뜻은?",
             "options": [
@@ -919,6 +941,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 13,
             "cognitive_level": "적용",
             "prompt": "席はまだある___です。",
             "options": [
@@ -945,6 +968,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 82,
             "cognitive_level": "적용",
             "prompt": "資料も今日___はずです。",
             "options": [
@@ -971,6 +995,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 13,
             "cognitive_level": "산출유사",
             "prompt": "'자료는 오늘 도착할 것입니다'를 배열하세요.",
             "tokens": [

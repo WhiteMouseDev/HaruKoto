@@ -76,6 +76,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 605,
             "cognitive_level": "인식",
             "prompt": "私의 뜻은?",
             "options": [
@@ -102,6 +103,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 7,
             "cognitive_level": "인식",
             "prompt": "'학생'의 일본어는?",
             "options": [
@@ -128,6 +130,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "私___キムです。(저는 김입니다.)",
             "options": [
@@ -154,6 +157,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 1,
             "cognitive_level": "적용",
             "prompt": "学生___。(학생입니다.)",
             "options": [
@@ -180,6 +184,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 1,
             "cognitive_level": "산출유사",
             "prompt": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -270,6 +275,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 357,
             "cognitive_level": "인식",
             "prompt": "これ의 뜻은?",
             "options": [
@@ -296,6 +302,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 419,
             "cognitive_level": "인식",
             "prompt": "それ의 뜻은?",
             "options": [
@@ -322,6 +329,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 35,
             "cognitive_level": "적용",
             "prompt": "___は私の本です。(이것은 제 책입니다.)",
             "options": [
@@ -348,6 +356,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 37,
             "cognitive_level": "적용",
             "prompt": "先生___本です。(선생님의 책입니다.)",
             "options": [
@@ -374,6 +383,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 35,
             "cognitive_level": "산출유사",
             "prompt": "'이것은 선생님의 책입니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -467,6 +477,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "grammar_order": 58,
             "cognitive_level": "인식",
             "prompt": "ではありません의 뜻은?",
             "options": [
@@ -493,6 +504,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 52,
             "cognitive_level": "인식",
             "prompt": "かばん의 뜻은?",
             "options": [
@@ -519,6 +531,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 58,
             "cognitive_level": "적용",
             "prompt": "私のかばん___ありません。(제 가방이 아닙니다.)",
             "options": [
@@ -545,6 +558,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 37,
             "cognitive_level": "적용",
             "prompt": "先生___かばんです。(선생님의 가방입니다.)",
             "options": [
@@ -571,6 +585,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 58,
             "cognitive_level": "산출유사",
             "prompt": "'이것은 제 가방이 아닙니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -669,6 +684,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 29,
             "cognitive_level": "인식",
             "prompt": "駅의 뜻은?",
             "options": [
@@ -695,6 +711,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 5,
             "cognitive_level": "인식",
             "prompt": "友だち의 뜻은?",
             "options": [
@@ -721,6 +738,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 43,
             "cognitive_level": "적용",
             "prompt": "駅___友だちを待ちます。(역에서 친구를 기다립니다.)",
             "options": [
@@ -747,6 +765,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 32,
             "cognitive_level": "적용",
             "prompt": "私___学生です。(저는 학생입니다.)",
             "options": [
@@ -773,6 +792,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 32,
             "cognitive_level": "산출유사",
             "prompt": "'저는 역에서 친구를 기다립니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -865,6 +885,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 196,
             "cognitive_level": "인식",
             "prompt": "おはようございます의 뜻은?",
             "options": [
@@ -891,6 +912,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 197,
             "cognitive_level": "인식",
             "prompt": "ありがとうございます의 뜻은?",
             "options": [
@@ -917,6 +939,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 199,
             "cognitive_level": "적용",
             "prompt": "よろしく___。(잘 부탁합니다.)",
             "options": [
@@ -943,6 +966,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 594,
             "cognitive_level": "적용",
             "prompt": "今日も___お願いします。(오늘도 잘 부탁합니다.)",
             "options": [
@@ -969,6 +993,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "srs_skip_reason": "아침 인사와 よろしくお願いします를 함께 배열하는 복합 정형 표현이다. 단일 어휘나 です 문법의 정오로 환산하지 않는다.",
             "cognitive_level": "산출유사",
             "prompt": "'좋은 아침입니다. 오늘도 잘 부탁합니다'를 올바른 순서로 배열하세요.",
             "tokens": [

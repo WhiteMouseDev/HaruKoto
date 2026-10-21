@@ -82,6 +82,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 18,
             "cognitive_level": "인식",
             "prompt": "昨日의 뜻은?",
             "options": [
@@ -108,6 +109,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 412,
             "cognitive_level": "인식",
             "prompt": "'지난주'를 뜻하는 일본어는?",
             "options": [
@@ -134,6 +136,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 4,
             "cognitive_level": "적용",
             "prompt": "昨日、映画を見____。(어제 영화를 봤습니다.)",
             "options": [
@@ -160,6 +163,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 4,
             "cognitive_level": "적용",
             "prompt": "今朝、早く起き____。(오늘 아침 일찍 일어났습니다.)",
             "options": [
@@ -186,6 +190,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 4,
             "cognitive_level": "산출유사",
             "prompt": "'어제 친구와 영화를 봤습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -276,6 +281,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 83,
             "cognitive_level": "인식",
             "prompt": "宿題의 뜻은?",
             "options": [
@@ -302,6 +308,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 577,
             "cognitive_level": "인식",
             "prompt": "'문제'를 뜻하는 일본어는?",
             "options": [
@@ -328,6 +335,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 5,
             "cognitive_level": "적용",
             "prompt": "質問し____。(질문하지 않았습니다.)",
             "options": [
@@ -354,6 +362,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 5,
             "cognitive_level": "적용",
             "prompt": "作文の問題ができ____。(작문 문제를 못 했습니다.)",
             "options": [
@@ -380,6 +389,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 5,
             "cognitive_level": "산출유사",
             "prompt": "'어제 숙제를 하지 않았습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -471,6 +481,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 95,
             "cognitive_level": "인식",
             "prompt": "帰るの뜻은?",
             "options": [
@@ -497,6 +508,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 101,
             "cognitive_level": "인식",
             "prompt": "'사다'를 뜻하는 일본어는?",
             "options": [
@@ -523,6 +535,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 49,
             "cognitive_level": "적용",
             "prompt": "行くのて形は「行____」です。",
             "options": [
@@ -549,6 +562,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 49,
             "cognitive_level": "적용",
             "prompt": "来るのて形は「____」です。",
             "options": [
@@ -575,6 +589,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 50,
             "cognitive_level": "산출유사",
             "prompt": "'집에 돌아가서 밥을 먹었습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -666,6 +681,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 129,
             "cognitive_level": "인식",
             "prompt": "洗うの뜻은?",
             "options": [
@@ -692,6 +708,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 128,
             "cognitive_level": "인식",
             "prompt": "'입다'를 뜻하는 일본어는?",
             "options": [
@@ -718,6 +735,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 49,
             "cognitive_level": "적용",
             "prompt": "顔を洗____、歯を磨きます。(얼굴을 씻고 이를 닦습니다.)",
             "options": [
@@ -744,6 +762,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 49,
             "cognitive_level": "적용",
             "prompt": "シャワーを浴び____、服を着ます。(샤워를 하고 옷을 입습니다.)",
             "options": [
@@ -770,6 +789,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 50,
             "cognitive_level": "산출유사",
             "prompt": "'창문을 열고 얼굴을 씻고 이를 닦습니다'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -858,6 +878,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 206,
             "cognitive_level": "인식",
             "prompt": "朝御飯의 뜻은?",
             "options": [
@@ -884,6 +905,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 282,
             "cognitive_level": "인식",
             "prompt": "'끝나다'를 뜻하는 일본어는?",
             "options": [
@@ -910,6 +932,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 51,
             "cognitive_level": "적용",
             "prompt": "朝御飯を食べ____、学校に行きます。(아침밥을 먹고 나서 학교에 갑니다.)",
             "options": [
@@ -936,6 +959,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 51,
             "cognitive_level": "적용",
             "prompt": "授業が終わっ____、何をしますか。(수업이 끝나고 나서 뭘 하나요?)",
             "options": [
@@ -962,6 +986,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 51,
             "cognitive_level": "산출유사",
             "prompt": "'저녁밥을 먹고 나서 숙제를 합니다'를 올바른 순서로 배열하세요.",
             "tokens": [

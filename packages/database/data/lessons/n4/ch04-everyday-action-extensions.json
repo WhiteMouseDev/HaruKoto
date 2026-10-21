@@ -86,6 +86,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 153,
             "cognitive_level": "인식",
             "prompt": "丁寧의 뜻은?",
             "options": [
@@ -112,6 +113,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 42,
             "cognitive_level": "인식",
             "prompt": "自信의 뜻은?",
             "options": [
@@ -138,6 +140,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 24,
             "cognitive_level": "적용",
             "prompt": "説明が丁寧だ___、練習も多いです。",
             "options": [
@@ -164,6 +167,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 41,
             "cognitive_level": "적용",
             "prompt": "試験の前でも___ですね。",
             "options": [
@@ -190,6 +194,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 24,
             "cognitive_level": "산출유사",
             "prompt": "'이 수업은 설명이 정중하고 안심입니다'를 배열하세요.",
             "tokens": [
@@ -278,6 +283,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 72,
             "cognitive_level": "인식",
             "prompt": "予約의 뜻은?",
             "options": [
@@ -304,6 +310,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 63,
             "cognitive_level": "인식",
             "prompt": "受付의 뜻은?",
             "options": [
@@ -330,6 +337,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 4,
             "cognitive_level": "적용",
             "prompt": "予約の時間を調べて___ます。",
             "options": [
@@ -356,6 +364,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 98,
             "cognitive_level": "적용",
             "prompt": "大丈夫なら、___みます。",
             "options": [
@@ -382,6 +391,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 4,
             "cognitive_level": "산출유사",
             "prompt": "'예약 시간을 한번 찾아보겠습니다'를 배열하세요.",
             "tokens": [
@@ -470,6 +480,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 16,
             "cognitive_level": "인식",
             "prompt": "準備의 뜻은?",
             "options": [
@@ -496,6 +507,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 86,
             "cognitive_level": "인식",
             "prompt": "片付ける의 뜻은?",
             "options": [
@@ -522,6 +534,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 3,
             "cognitive_level": "적용",
             "prompt": "資料を準備して___ます。",
             "options": [
@@ -548,6 +561,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 88,
             "cognitive_level": "적용",
             "prompt": "予約の時間を___ておくと安心です。",
             "options": [
@@ -574,6 +588,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 3,
             "cognitive_level": "산출유사",
             "prompt": "'회의 전에 준비해 두겠습니다'를 배열하세요.",
             "tokens": [
@@ -664,6 +679,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 178,
             "cognitive_level": "인식",
             "prompt": "うっかり의 뜻은?",
             "options": [
@@ -690,6 +706,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 938,
             "cognitive_level": "인식",
             "prompt": "忘れる의 뜻은?",
             "options": [
@@ -716,6 +733,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 1,
             "cognitive_level": "적용",
             "prompt": "予約を忘れて___ました。",
             "options": [
@@ -742,6 +760,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 104,
             "cognitive_level": "적용",
             "prompt": "スマートフォンを___てしまいました。",
             "options": [
@@ -768,6 +787,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 1,
             "cognitive_level": "산출유사",
             "prompt": "'예약을 잊어버렸습니다'를 배열하세요.",
             "tokens": [
@@ -856,6 +876,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 650,
             "cognitive_level": "인식",
             "prompt": "続ける의 뜻은?",
             "options": [
@@ -882,6 +903,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 929,
             "cognitive_level": "인식",
             "prompt": "練習의 뜻은?",
             "options": [
@@ -908,6 +930,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "vocabulary_order": 650,
             "cognitive_level": "적용",
             "prompt": "日本語の練習を毎日___ています。",
             "options": [
@@ -934,6 +957,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 12,
             "cognitive_level": "적용",
             "prompt": "運動も少しずつ続ける___です。",
             "options": [
@@ -960,6 +984,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "vocabulary_order": 650,
             "cognitive_level": "산출유사",
             "prompt": "'일본어 연습을 계속하고 있습니다'를 배열하세요.",
             "tokens": [

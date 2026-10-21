@@ -8,6 +8,42 @@ from pathlib import Path
 # closed. Unrelated optional AI integration skips remain permitted.
 REQUIRED_CASES = frozenset(
     {
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_seeded_first_lesson_updates_student_and_grammar_instead_of_display_order_words",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_seed_adds_reviewed_non_core_target_and_preserves_intro_and_client_contract",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_reviewed_exclusion_grades_without_fabricating_an_srs_answer",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[missing]",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[outside-lesson]",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[wrong-type]",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[conflicting]",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[malformed]",
+        ),
+        (
+            "tests.test_lesson_review_targets_postgres",
+            "test_invalid_lesson_mapping_keeps_existing_learning_records_unchanged[duplicate-link]",
+        ),
         ("tests.test_quiz_answer_persistence_postgres", "test_missing_october_review_partition_does_not_erase_ten_correct_answers[normal]"),
         ("tests.test_quiz_answer_persistence_postgres", "test_missing_october_review_partition_does_not_erase_ten_correct_answers[smart]"),
         (

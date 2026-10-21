@@ -71,6 +71,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 91,
             "cognitive_level": "인식",
             "prompt": "食べるの意味は? (食べる의 뜻은?)",
             "options": [
@@ -85,6 +86,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 98,
             "cognitive_level": "인식",
             "prompt": "'읽다'를 뜻하는 일본어는?",
             "options": [
@@ -99,6 +101,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 45,
             "cognitive_level": "적용",
             "prompt": "食べるは「____動詞」です。(다베루는 __동사입니다.)",
             "options": [
@@ -113,6 +116,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 45,
             "cognitive_level": "적용",
             "prompt": "飲むは「____動詞」です。(노무는 __동사입니다.)",
             "options": [
@@ -127,6 +131,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 45,
             "cognitive_level": "산출유사",
             "prompt": "'미루는 る동사입니다'를 올바른 순서로 배열하세요.",
             "tokens": ["「る動詞」", "見るは", "です"],
@@ -195,6 +200,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 93,
             "cognitive_level": "인식",
             "prompt": "行くの意味は? (行く의 뜻은?)",
             "options": [
@@ -209,6 +215,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 97,
             "cognitive_level": "인식",
             "prompt": "'듣다'를 뜻하는 일본어는?",
             "options": [
@@ -223,6 +230,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 2,
             "cognitive_level": "적용",
             "prompt": "学校に行き____。(학교에 갑니다.)",
             "options": [
@@ -237,6 +245,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 2,
             "cognitive_level": "적용",
             "prompt": "日本語を話し____。(일본어를 말합니다.)",
             "options": [
@@ -251,6 +260,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 2,
             "cognitive_level": "산출유사",
             "prompt": "'아침에 역까지 걸어갑니다'를 올바른 순서로 배열하세요.",
             "tokens": ["歩きます", "朝", "駅まで"],
@@ -320,6 +330,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 46,
             "cognitive_level": "인식",
             "prompt": "新聞의 뜻은?",
             "options": [
@@ -334,6 +345,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 37,
             "cognitive_level": "인식",
             "prompt": "'물'을 뜻하는 일본어는?",
             "options": [
@@ -348,6 +360,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 46,
             "cognitive_level": "적용",
             "prompt": "本____読みます。(책을 읽습니다.)",
             "options": [
@@ -362,6 +375,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 46,
             "cognitive_level": "적용",
             "prompt": "音楽____聞きます。(음악을 듣습니다.)",
             "options": [
@@ -376,6 +390,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 46,
             "cognitive_level": "산출유사",
             "prompt": "'책을 읽습니다'를 올바른 순서로 배열하세요.",
             "tokens": ["読みます", "本", "を"],
@@ -444,6 +459,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 375,
             "cognitive_level": "인식",
             "prompt": "散歩의 뜻은?",
             "options": [
@@ -458,6 +474,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 286,
             "cognitive_level": "인식",
             "prompt": "'쇼핑'을 뜻하는 일본어는?",
             "options": [
@@ -472,6 +489,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 47,
             "cognitive_level": "적용",
             "prompt": "勉強を____。(공부를 합니다.)",
             "options": [
@@ -486,6 +504,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 47,
             "cognitive_level": "적용",
             "prompt": "友達が韓国から____。(친구가 한국에서 옵니다.)",
             "options": [
@@ -500,6 +519,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 47,
             "cognitive_level": "산출유사",
             "prompt": "'일요일은 산책을 합니다'를 올바른 순서로 배열하세요.",
             "tokens": ["します", "日曜日は", "散歩を"],
@@ -568,6 +588,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 42,
             "cognitive_level": "인식",
             "prompt": "野菜의 뜻은?",
             "options": [
@@ -582,6 +603,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 319,
             "cognitive_level": "인식",
             "prompt": "'우유'를 뜻하는 일본어는?",
             "options": [
@@ -596,6 +618,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 3,
             "cognitive_level": "적용",
             "prompt": "魚は食べ____。(생선은 먹지 않습니다.)",
             "options": [
@@ -610,6 +633,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 3,
             "cognitive_level": "적용",
             "prompt": "お酒は飲み____。(술은 마시지 않습니다.)",
             "options": [
@@ -624,6 +648,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 3,
             "cognitive_level": "산출유사",
             "prompt": "'술은 마시지 않습니다'를 올바른 순서로 배열하세요.",
             "tokens": ["飲みません", "お酒", "は"],
