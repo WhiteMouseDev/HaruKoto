@@ -3,8 +3,13 @@ raised_by: codex-root
 raised_at: 2026-10-21T09:59:18+09:00
 phase: read-only-partition-monitor
 severity: info
-status: open
+status: resolved
+resolved_at: 2026-10-21T11:20:00+09:00
 ---
+
+## Resolution
+
+The user explicitly approved merging PR #181 and applying the proposed minimum-privilege daily 09:00 Asia/Seoul monitor, preserving learning records and Data API blocking, and verifying actual execution and notification. The later project-wide email digest maximum change from 30 to 5 minutes was also explicitly approved. This resolves the deployment decision; actual evidence and any remaining technical checks are tracked in `docs/operations/plans/partition-monitor-deployment-2026-10-21.md`. The final compatible DB role is named `partition_monitor_catalog`; no application-data grants were needed.
 
 ## What happened
 
