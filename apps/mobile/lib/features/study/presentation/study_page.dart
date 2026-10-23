@@ -19,6 +19,7 @@ import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_continue_banner.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/study_kana_section.dart';
+import 'widgets/saved_lesson_section.dart';
 
 /// Represents a study category tab.
 enum StudyCategory {
@@ -194,6 +195,11 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                       compact: true,
                     ),
                   ),
+                ),
+
+              if (chapterList != null)
+                SliverToBoxAdapter(
+                  child: SavedLessonSection(jlptLevel: jlptLevel),
                 ),
 
               // Inline chapter cards

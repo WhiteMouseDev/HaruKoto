@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
@@ -211,6 +212,8 @@ Future<void> _pumpStudyPage(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
         sharedPreferencesProvider.overrideWith((ref) => prefs),
         dashboardProvider.overrideWith(
           (ref) => Future.value(_dashboard()),
