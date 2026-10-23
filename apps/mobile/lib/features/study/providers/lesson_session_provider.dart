@@ -16,6 +16,7 @@ import '../domain/lesson_session_state.dart';
 import 'lesson_pilot_telemetry_provider.dart';
 import 'lesson_session_service.dart';
 import 'study_provider.dart';
+import 'saved_lesson_entry_provider.dart';
 
 export '../domain/lesson_session_state.dart';
 
@@ -210,6 +211,10 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final write = (() async {
       try {
         await store.write(owner, lessonId, payload);
+        if (_current(generation)) {
+          ref.invalidate(savedLessonLookupProvider(
+              (accountId: owner, lessonId: lessonId)));
+        }
         if (_current(generation) && version == _writeVersion) {
           state = state.copyWith(storageError: false);
         }
@@ -233,6 +238,10 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final removal = (() async {
       try {
         await store.remove(owner, lessonId);
+        if (_current(generation)) {
+          ref.invalidate(savedLessonLookupProvider(
+              (accountId: owner, lessonId: lessonId)));
+        }
         if (_current(generation) && version == _writeVersion) {
           state = state.copyWith(storageError: false);
         }

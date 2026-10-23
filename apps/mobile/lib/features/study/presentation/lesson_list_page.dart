@@ -10,6 +10,7 @@ import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_continue_banner.dart';
 import 'widgets/lesson_level_empty_state.dart';
+import 'widgets/saved_lesson_section.dart';
 
 class LessonListPage extends ConsumerStatefulWidget {
   const LessonListPage({super.key});
@@ -58,6 +59,7 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
                   child: LessonContinueBanner(target: recommendedLesson),
                 ),
+              SavedLessonSection(jlptLevel: jlptLevel),
               if (data.chapters.isEmpty)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
