@@ -29,6 +29,7 @@ class ResolvedTtsTarget:
     target_id: str
     field: str
     text: str
+    voice_alias: str | None = None
 
 
 def resolve_vocabulary_reading_tts_target(vocab: Any) -> ResolvedTtsTarget:
@@ -79,6 +80,7 @@ def resolve_lesson_script_line_tts_target(
         target_id=f"{lesson_id}:script:{line_index}",
         field=LESSON_SCRIPT_LINE_TTS_FIELD,
         text=text,
+        voice_alias=_optional_text(_field_value(line, "voice_id")) or None,
     )
 
 

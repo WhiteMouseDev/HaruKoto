@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_VOICE_ID: str = ""
     ELEVENLABS_MODEL_ID: str = "eleven_flash_v2_5"
+    ELEVENLABS_LESSON_FEMALE_VOICE_ID: str = ""
+    ELEVENLABS_LESSON_MALE_VOICE_ID: str = ""
 
     # Google Cloud Storage
     GCS_BUCKET_NAME: str = "harukoto-tts"
