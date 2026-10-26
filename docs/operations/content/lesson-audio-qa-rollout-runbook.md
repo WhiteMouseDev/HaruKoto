@@ -73,6 +73,13 @@ exists, and the 250 question-prompt targets are not wired to a mobile lesson
 question playback button. Review question audio via packet links and keep that
 coverage separate from current mobile UAT.
 
+A subsequent user report confirmed the four basic playback checks, while flagging
+that both dialogue speakers sound like the same female voice. The tested lesson
+and individual lines were not specified, so the 448 formal item verdicts remain
+PENDING. See the [speaker-voice proposal](../plans/n5-dialogue-speaker-voices-2026-10-26.md).
+No provider configuration, audio regeneration or production cache replacement
+has been applied for this feedback.
+
 Historical generation/preflight evidence is preserved in
 [n5-seed-tts-generation-run-2026-05-26.md](../plans/n5-seed-tts-generation-run-2026-05-26.md)
 and [the May packet index](../plans/n5-human-audio-qa-packets-2026-05-26.md).
