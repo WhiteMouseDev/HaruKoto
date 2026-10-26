@@ -484,6 +484,7 @@ async def test_submit_lesson(mock_process_answer, mock_register_items, client, m
                 "order": 1,
                 "type": "VOCAB_MCQ",
                 "correct_answer": "a",
+                "vocabulary_id": str(vocab_id),
                 "explanation": "정답 설명",
             }
         ]
@@ -586,6 +587,7 @@ async def test_submit_lesson_returns_500_when_srs_answer_processing_fails(
                 "order": 1,
                 "type": "VOCAB_MCQ",
                 "correct_answer": "a",
+                "vocabulary_id": str(vocab_id),
                 "explanation": "정답 설명",
             }
         ]
@@ -662,6 +664,7 @@ async def test_submit_lesson_marks_srs_registered_when_items_already_exist(
                 "order": 1,
                 "type": "VOCAB_MCQ",
                 "correct_answer": "a",
+                "vocabulary_id": str(vocab_id),
                 "explanation": "정답 설명",
             }
         ]
@@ -748,6 +751,7 @@ async def test_submit_lesson_returns_500_when_srs_registration_fails(
                 "order": 1,
                 "type": "VOCAB_MCQ",
                 "correct_answer": "a",
+                "vocabulary_id": str(vocab_id),
                 "explanation": "정답 설명",
             }
         ]

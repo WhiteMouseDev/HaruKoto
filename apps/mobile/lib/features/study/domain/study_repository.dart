@@ -47,6 +47,15 @@ abstract class StudyRepository {
         String? quizType,
       })> resumeQuiz(String sessionId);
 
+  Future<
+      ({
+        String sessionId,
+        List<QuizQuestionModel> questions,
+        List<String> answeredQuestionIds,
+        int correctCount,
+        String? quizType,
+      })> startWrongAnswerReview(String sourceSessionId);
+
   Future<void> answerQuestion({
     required String sessionId,
     required String questionId,

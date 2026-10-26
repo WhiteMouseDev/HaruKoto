@@ -72,6 +72,10 @@ Wave 0 keeps these files as validated staging contracts:
   lesson promotion.
 - `coverage-priorities.json`: priority and wave assignment for non-covered
   topics.
+- `scripts/report-lesson-expansion-coverage.mjs`: checks the local paid PDF
+  reference directory against `pdf-topic-inventory.json`, compares N5/N4 topic
+  anchors with official lesson seed coverage, and writes expansion planning
+  reports without storing copied PDF examples or explanations.
 - `scripts/derive-curriculum-topics.mjs`: derives topic and grammar-map draft
   data from the inventory plus curated internal mappings.
 - `scripts/prepare-lesson-human-review.mjs`: generates lesson human curriculum

@@ -62,17 +62,12 @@ String redactDioLogMessage(Object? message) {
 class AppErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    final path = err.requestOptions.path;
     if (err.response != null) {
       final statusCode = err.response?.statusCode;
       if (statusCode != null && statusCode >= 500) {
         Sentry.captureException(err, stackTrace: err.stackTrace);
       }
-      final exception = ApiException.fromResponse(
-        statusCode,
-        err.response?.data,
-        requestPath: path,
-      );
+      final exception = ApiException.fromDioException(err);
       handler.reject(
         DioException(
           requestOptions: err.requestOptions,
@@ -89,10 +84,7 @@ class AppErrorInterceptor extends Interceptor {
       DioException(
         requestOptions: err.requestOptions,
         type: err.type,
-        error: ApiException(
-          message: err.message ?? '네트워크 오류가 발생했습니다.',
-          requestPath: path,
-        ),
+        error: ApiException.fromDioException(err),
       ),
     );
   }

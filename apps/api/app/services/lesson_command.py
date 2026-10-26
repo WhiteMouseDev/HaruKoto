@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 SRS_ANSWER_FAILURE_DETAIL = "레슨 복습 상태 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요"
 SRS_REGISTRATION_FAILURE_DETAIL = "레슨 복습 카드 등록에 실패했습니다. 잠시 후 다시 시도해주세요"
+SRS_MAPPING_FAILURE_DETAIL = "레슨의 복습 항목 연결을 확인할 수 없습니다. 잠시 후 다시 시도해주세요"
 
 
 class LessonServiceError(Exception):
@@ -171,26 +172,38 @@ def _validate_answers_payload(
 
 
 def _map_questions_to_links(lesson: Lesson, questions_raw: list[dict[str, Any]]) -> dict[int, LessonItemLink]:
-    item_links_by_order = {link.item_order: link for link in lesson.item_links}
+    """Validate every assessment target before any SRS or progress writes.
+
+    Question display order and lesson item display order are unrelated. Only an
+    explicit, unambiguous linked UUID (or a reviewed exclusion) is accepted.
+    """
     question_to_link: dict[int, LessonItemLink] = {}
 
     for question in questions_raw:
         order = question["order"]
-        vocabulary_id = question.get("vocabulary_id")
-        grammar_id = question.get("grammar_id")
+        reference_fields = [field for field in ("vocabulary_id", "grammar_id") if field in question]
+        if "srs_skip_reason" in question:
+            reason = question["srs_skip_reason"]
+            if not reference_fields and isinstance(reason, str) and reason.strip():
+                continue
+            raise LessonServiceError(status_code=409, detail=SRS_MAPPING_FAILURE_DETAIL)
 
-        if vocabulary_id:
-            for link in lesson.item_links:
-                if link.item_type == "WORD" and str(link.vocabulary_id) == str(vocabulary_id):
-                    question_to_link[order] = link
-                    break
-        elif grammar_id:
-            for link in lesson.item_links:
-                if link.item_type == "GRAMMAR" and str(link.grammar_id) == str(grammar_id):
-                    question_to_link[order] = link
-                    break
-        elif order in item_links_by_order:
-            question_to_link[order] = item_links_by_order[order]
+        if len(reference_fields) != 1:
+            raise LessonServiceError(status_code=409, detail=SRS_MAPPING_FAILURE_DETAIL)
+        field = reference_fields[0]
+        raw_id = question[field]
+        if not isinstance(raw_id, (str, UUID)):
+            raise LessonServiceError(status_code=409, detail=SRS_MAPPING_FAILURE_DETAIL)
+        try:
+            item_id = UUID(str(raw_id))
+        except ValueError as exc:
+            raise LessonServiceError(status_code=409, detail=SRS_MAPPING_FAILURE_DETAIL) from exc
+
+        item_type = "WORD" if field == "vocabulary_id" else "GRAMMAR"
+        matching_links = [link for link in lesson.item_links if link.item_type == item_type and getattr(link, field) == item_id]
+        if len(matching_links) != 1:
+            raise LessonServiceError(status_code=409, detail=SRS_MAPPING_FAILURE_DETAIL)
+        question_to_link[order] = matching_links[0]
 
     return question_to_link
 

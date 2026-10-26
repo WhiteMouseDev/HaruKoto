@@ -1,0 +1,135 @@
+# N4 Wave 3 Draft Lesson Promotion - 2026-05-27
+
+> Scope: promote AI-reviewed N4 wave 3 seed candidates into official DRAFT
+> lesson source rows `HN4-017` through `HN4-021`.
+
+## Decision
+
+Promote the five approved N4 wave 3 seed candidates into a new official
+DRAFT chapter, `N4-CH05`:
+
+| Lesson | Topic | Grammar order | Status |
+| --- | --- | --- | --- |
+| `HN4-017` | `たり〜たりする` | 6 | official DRAFT source |
+| `HN4-018` | `そうだ` appearance | 14 | official DRAFT source |
+| `HN4-019` | `そうだ` hearsay | 14 | official DRAFT source |
+| `HN4-020` | `ものだ` norms | 49 | official DRAFT source |
+| `HN4-021` | `はずだ` expectation | 13 | official DRAFT source |
+
+The source PDF materials are used only as coverage anchors. Dialogue lines,
+questions, answer choices, and explanations remain HaruKoto-authored content.
+
+## Boundary
+
+This is not a publish/pilot decision. `N4-CH05` stays `meta.status=DRAFT`, so
+it is visible to package-level curriculum validators and review packets, but
+it is not added to the default API lesson seed registry for learner exposure.
+
+The approval evidence is delegated AI curriculum review only:
+
+- candidate review packet: approved for candidate-to-official-seed planning.
+- lesson-human-review packet: approved for source-level DRAFT promotion.
+- TTS manifest: complete official `lesson-seeds:HN4-017..021` target coverage.
+- not native-speaker human approval.
+- not generated audio approval.
+- not target-runtime mobile or API playback approval.
+
+## Contract Changes
+
+- `packages/database/data/lessons/n4/ch05-observation-reporting-and-expectation.json`
+  stores the official DRAFT chapter.
+- `packages/database/data/curriculum/tts-target-manifest.json` and
+  `apps/api/app/data/curriculum/tts-target-manifest.json` replace the former
+  `lesson-seed-candidates:lsc-n4-*` script/question target sources with
+  official `lesson-seeds:HN4-*` sources.
+- `packages/database/data/curriculum/tts-review-batches.json` and
+  `apps/api/app/data/curriculum/tts-review-batches.json` keep the same review
+  batch counts while pointing the gap batches at the official target IDs.
+- `packages/database/data/curriculum/lesson-seed-candidate-review/n4-candidate-review.json`
+  preserves the candidate approval evidence and records each promoted
+  `HN4-*` lesson ID.
+- `packages/database/data/curriculum/lesson-human-review/n4-pilot-review.json`
+  now covers 21 N4 official lesson source rows, including AI-only approval
+  notes for `HN4-017` through `HN4-021`.
+
+## AI Review Refinements
+
+Parallel AI review found no blocker, but three source-level refinements were
+applied before final validation:
+
+- `HN4-017` question 4 now includes a Korean hint so the answer is not based
+  only on dialogue recall.
+- `HN4-018` uses `大変そうです` instead of `疲れていそうです` to keep the
+  appearance lesson on simpler adjective-stem `そう` formation.
+- `HN4-021` meaning text now marks `はずだ` as evidence-based expectation, not
+  a plain future marker.
+
+## Validation Plan
+
+Run the package gates after the promotion:
+
+| Gate | Expected result |
+| --- | --- |
+| `pnpm --filter @harukoto/database candidates:review:gate -- --level N4` | PASS |
+| `pnpm --filter @harukoto/database lessons:review:gate -- --level N4` | PASS with AI-only notes |
+| `pnpm --filter @harukoto/database lessons:validate` | PASS with expected DRAFT warning for `N4-CH05` |
+| `pnpm --filter @harukoto/database curriculum:validate` | PASS |
+| `pnpm --filter @harukoto/database typecheck` | PASS |
+| API TTS focused tests | PASS |
+
+## TTS Execution Update
+
+2026-05-27 follow-up execution generated and persisted TTS audio for
+`HN4-017` through `HN4-021` after seeding the DRAFT chapter into the API DB.
+Coverage and audio URL checks now cover all 21 N4 lessons when unpublished
+DRAFT lessons are explicitly included.
+
+Detailed evidence:
+
+- generation/coverage summary:
+  `docs/operations/plans/n4-wave3-draft-tts-run-2026-05-27.md`
+- machine audio QA:
+  `docs/operations/plans/n4-wave3-draft-tts-machine-report-2026-05-27.md`
+- STT-assisted review signal:
+  `docs/operations/plans/n4-wave3-draft-tts-stt-assist-run-2026-05-27.md`
+- timeout-target STT retry:
+  `docs/operations/plans/n4-wave3-draft-tts-stt-timeout-retry-2026-05-27.md`
+- audio QA triage queue:
+  `docs/operations/plans/n4-wave3-draft-audio-qa-triage-2026-05-27.md`
+- source-cleanup post-regeneration audit:
+  `docs/operations/plans/n4-wave3-draft-audio-qa-post-regeneration-audit-2026-05-27.md`
+- lexical-risk STT retry:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-stt-retry-2026-05-27.md`
+- lexical-risk first/second post-regeneration audits:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-post-regeneration-audit-2026-05-27.md`
+  and
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-second-post-regeneration-audit-2026-05-27.md`
+- lexical-risk provider-switch/source-rewrite audits:
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-provider-switch-post-regeneration-audit-2026-05-27.md`,
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-post-regeneration-audit-2026-05-27.md`,
+  and
+  `docs/operations/plans/n4-wave3-draft-lexical-risk-source-rewrite-second-post-regeneration-audit-2026-05-27.md`
+
+## Audio QA Gate Update
+
+Targeted lexical-risk remediation cleared the highest-risk script rows:
+
+| Target | Current verdict | Evidence |
+| --- | --- | --- |
+| `HN4-017 script:1` | `PASS` | first lexical-risk regeneration produced STT exact match for `忙しいですね。` |
+| `HN4-018 script:0` | `PASS` | source rewrite plus Gemini regeneration produced STT exact match for `この古い機械は壊れそうですから、会議では使わないでください。` |
+| `HN4-019 script:3` | `PASS` | Gemini provider-switch regeneration produced STT exact match for `受付は混むそうですから、早く行きましょう。` |
+
+Final CH05 audio QA closure now reports 45 total rows, 45 `PASS`, 0
+`PENDING`, 0 `FLAG`, and 0 `FAIL`. This clears the delegated AI/STT-assisted
+audio gate for controlled pilot exposure; it remains lower authority than
+native-speaker review.
+
+## Next Gates
+
+1. Promote `N4-CH05` from `DRAFT` to `PILOT` only with an explicit seed
+   registry and rollout decision.
+2. Re-apply the configured N4 seed and run published start/submit smoke for
+   `HN4-017` through `HN4-021`.
+3. Keep native-speaker review as a later, explicit quality upgrade when a human
+   reviewer becomes available.

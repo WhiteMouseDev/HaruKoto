@@ -23,52 +23,61 @@ uv run python scripts/report_n4_rollout_preflight.py \
 
 Required passing signals:
 
-| Gate | Required result |
-|---|---|
-| Curriculum contracts | `pnpm --filter @harukoto/database curriculum:validate` exits 0 |
-| Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N4` exits 0 |
-| TTS coverage | 144/144 generated records for the published N4 pilot batch |
-| TTS URL validation | 144/144 generated audio URLs pass read-only HTTP validation |
-| Audio QA verdicts | 144 PASS, 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
+| Gate                    | Required result                                                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Curriculum contracts    | `pnpm --filter @harukoto/database curriculum:validate` exits 0                                                                |
+| Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N4` exits 0                                                               |
+| TTS coverage            | generated record count equals the current published N4 learner-facing TTS target count                                        |
+| TTS URL validation      | every generated audio URL passes read-only HTTP validation                                                                    |
+| Audio QA verdicts       | verdict target count equals the current TTS target count, and all verdicts are PASS with 0 PENDING, 0 FLAG, 0 FAIL, 0 invalid |
 
 `GOOGLE_API_KEY` is not required for this preflight. It is only needed for
 separate optional STT-assist flows that explicitly pass `--transcribe`.
 
 ## N5 Current TTS State
 
-N5 learner-facing lesson TTS coverage was generated on 2026-05-26:
+Current review snapshot: **2026-10-26**, not the historical May generation run.
+
+- [Current N5 packet index](../plans/n5-human-audio-qa-packets-2026-10-26.md)
+- [Current machine audio report](../plans/n5-tts-audio-quality-preflight-2026-10-26.md)
+- [Representative learner listening check](../plans/n5-representative-listening-check-2026-10-26.md)
+- [Scope, preservation and validation](../plans/n5-audio-qa-refresh-2026-10-26.md)
+
+The same read-only published-content/cache snapshot contains 50 N5 lessons in
+9 chapters: 198 script-line and 250 question-prompt targets. All 448 runtime
+inputs match cached text. A new bounded public-file check downloaded and probed
+448 files successfully, with 0 machine blockers and 36 silence-ratio review
+warnings. No STT, generation, seed, verdict application or DB writes ran.
+
+All **448 reviewer verdicts remain PENDING**. Machine metadata PASS does not
+mean pronunciation, native-speaker approval or actual target-app playback UAT
+has passed. The first representative learner check uses HN5-004 dialogue lines;
+HN5-001 is a simpler alternative. A whole chapter remains the minimum formal
+representative gate before a broader N5 decision.
 
 ```bash
 cd apps/api
-uv run python scripts/report_n4_pilot_tts_coverage.py \
-  --level N5 \
-  --json \
-  --check-audio-urls \
-  --timeout-seconds 10
+uv run python scripts/report_n4_audio_qa_verdicts.py --level N5 --json --fail-on-blocker
 ```
 
-Required generated-audio signals:
+The current expected outcome is a blocker exit for 448 PENDING verdicts.
+Default N5 discovery selects the latest dated packet per chapter; old snapshots
+remain inspectable with explicit `--packet`. N4 discovery and verdict behavior
+are unchanged. The existing `apply_n4_audio_qa_verdicts.py` accepts HN4 headings
+only; do not use it unchanged to apply N5 decisions. N5 verdict application is
+outside this refresh task.
 
-| Gate | Current result |
-|---|---|
-| Configured DB seed sync | `uv run python -m app.seeds.lessons --check --level N5` exits 0 |
-| TTS coverage | 448/448 generated records for published N5 lessons |
-| TTS URL validation | 448/448 generated audio URLs pass read-only HTTP validation |
-| Remaining missing tasks | `scripts/generate_n4_pilot_tts_batch.py --level N5 --limit 5` reports 0 |
+Current mobile dialogue bubbles have per-line playback. Vocabulary uses a
+separate TTS path, full dialogue playback appears only when `reading.audioUrl`
+exists, and the 250 question-prompt targets are not wired to a mobile lesson
+question playback button. Review question audio via packet links and keep that
+coverage separate from current mobile UAT.
 
-Evidence: `docs/operations/plans/n5-seed-tts-generation-run-2026-05-26.md`.
-
-This closes generated audio coverage only. N5 still needs audio QA packet
-verdicts and target-app playback UAT before broad rollout.
-
-N5 audio QA packet preparation is tracked separately:
-
-- Packet index:
-  `docs/operations/plans/n5-human-audio-qa-packets-2026-05-26.md`
-- Machine audio preflight:
-  `docs/operations/plans/n5-tts-audio-quality-preflight-2026-05-26.md`
-- Packet status: 448/448 targets prepared, 448 `PENDING` verdicts, 0 machine
-  blockers, 36 machine review-priority warnings.
+Historical generation/preflight evidence is preserved in
+[n5-seed-tts-generation-run-2026-05-26.md](../plans/n5-seed-tts-generation-run-2026-05-26.md)
+and [the May packet index](../plans/n5-human-audio-qa-packets-2026-05-26.md).
+Do not copy its counts or verdicts into a current release decision without
+rechecking the current snapshot.
 
 ## Operational Sequence
 
@@ -92,6 +101,9 @@ uv run python -m app.seeds.lessons --level N4
 7. If audio QA verdicts are not clear, build a regeneration/review packet,
    regenerate the affected rows, then apply verdicts through
    `scripts/apply_n4_audio_qa_verdicts.py`.
+   If the preflight reports `AUDIO_QA_TARGET_MISMATCH`, first add or include the
+   missing audio QA packet for the newly published lesson slice; do not treat
+   passing older chapter packets as broad-level audio coverage.
 8. Record a short evidence note under `docs/operations/plans/` with the command
    output, target DB scope, and any remaining limitation.
 
@@ -103,6 +115,21 @@ Passing N4 preflight means:
   TTS URLs, and packet verdicts agree;
 - no known audio QA blocker remains for the N4 pilot packet set;
 - the N4 pilot can move to the next controlled rollout decision.
+
+After the 2026-06-01 CH06 audio QA closeout, the current N4 broad exposure
+decision is BETA-WIDE GO for the existing 26-lesson N4 pilot slice. See
+`docs/operations/plans/n4-broad-exposure-decision-2026-06-01.md`.
+
+Use the level-wide feedback monitor after broad exposure is opened:
+
+```bash
+cd apps/api
+uv run python scripts/report_level_pilot_feedback.py \
+  --level N4 \
+  --since-days 14 \
+  --fail-on-blocker \
+  --markdown-output ../../docs/operations/plans/n4-broad-exposure-feedback-refresh-YYYY-MM-DD.md
+```
 
 Passing N4 preflight does not mean:
 
@@ -117,19 +144,19 @@ Passing N4 preflight does not mean:
 Before promoting any N3, N2, or N1 lesson into learner-facing pilot status,
 require the same contract shape as N4:
 
-| Gate | Requirement |
-|---|---|
-| Source originality | Paid/reference PDFs are topic/order references only; examples, dialogue, and questions are HaruKoto-authored |
-| JLPT scope | Every lesson has an explicit grammar/topic target and does not smuggle higher-level grammar into lower-level practice |
-| Candidate packet | Candidate review packet exists and has reviewer decisions recorded |
-| Runtime-safe questions | Question types are supported by API, web, and mobile consumers |
-| TTS target manifest | Example/script/question targets are derived and validated |
-| Configured DB seed sync | `app.seeds.lessons --check --level <LEVEL>` passes after seed apply |
-| TTS generation | Every learner-facing script line and question prompt has a `tts_audio` record |
-| TTS URL validation | Every generated URL passes read-only HTTP validation |
-| Audio QA packet | Human/delegated packet has explicit `PASS`, `FLAG`, or `FAIL` for every target |
-| Blocker policy | `PENDING`, `FLAG`, `FAIL`, and invalid verdicts block broad rollout |
-| UAT | At least one lesson detail, answer submission, retry, and TTS playback path is exercised on the target app surface |
+| Gate                    | Requirement                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Source originality      | Paid/reference PDFs are topic/order references only; examples, dialogue, and questions are HaruKoto-authored          |
+| JLPT scope              | Every lesson has an explicit grammar/topic target and does not smuggle higher-level grammar into lower-level practice |
+| Candidate packet        | Candidate review packet exists and has reviewer decisions recorded                                                    |
+| Runtime-safe questions  | Question types are supported by API, web, and mobile consumers                                                        |
+| TTS target manifest     | Example/script/question targets are derived and validated                                                             |
+| Configured DB seed sync | `app.seeds.lessons --check --level <LEVEL>` passes after seed apply                                                   |
+| TTS generation          | Every learner-facing script line and question prompt has a `tts_audio` record                                         |
+| TTS URL validation      | Every generated URL passes read-only HTTP validation                                                                  |
+| Audio QA packet         | Human/delegated packet has explicit `PASS`, `FLAG`, or `FAIL` for every target                                        |
+| Blocker policy          | `PENDING`, `FLAG`, `FAIL`, and invalid verdicts block broad rollout                                                   |
+| UAT                     | At least one lesson detail, answer submission, retry, and TTS playback path is exercised on the target app surface    |
 
 For N3/N2/N1, add stricter content review before TTS generation:
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../study/providers/quiz_progress_refresh_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import 'widgets/home_skeleton.dart';
 import '../providers/home_provider.dart';
@@ -65,6 +66,7 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   void _refresh() {
+    ref.read(quizProgressRefreshProvider).refresh();
     ref.invalidate(dashboardProvider);
     ref.invalidate(profileProvider);
     ref.invalidate(missionsProvider);

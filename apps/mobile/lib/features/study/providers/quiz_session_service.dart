@@ -27,16 +27,32 @@ class QuizSessionService {
     String? mode,
     String? resumeSessionId,
     String? stageId,
+    String? sourceSessionId,
   }) async {
     final repository = _ref.read(studyRepositoryProvider);
 
-    if (resumeSessionId != null) {
-      final data = await repository.resumeQuiz(resumeSessionId);
+    if (sourceSessionId != null) {
+      final data = await repository.startWrongAnswerReview(sourceSessionId);
+      final restored =
+          _restoreQuestions(data.questions, data.answeredQuestionIds);
       return (
         sessionId: data.sessionId,
         sessionQuizType: data.quizType ?? quizType,
-        questions: data.questions,
-        currentIndex: data.answeredQuestionIds.length,
+        questions: restored.questions,
+        currentIndex: restored.currentIndex,
+        resolvedMode: 'wrong_answer_review',
+      );
+    }
+
+    if (resumeSessionId != null) {
+      final data = await repository.resumeQuiz(resumeSessionId);
+      final restored =
+          _restoreQuestions(data.questions, data.answeredQuestionIds);
+      return (
+        sessionId: data.sessionId,
+        sessionQuizType: data.quizType ?? quizType,
+        questions: restored.questions,
+        currentIndex: restored.currentIndex,
         resolvedMode: _resolveMode(
           resumeQuizType: data.quizType,
           fallbackMode: mode,
@@ -114,5 +130,21 @@ class QuizSessionService {
       'MATCHING': 'matching',
     };
     return modeMap[resumeQuizType] ?? fallbackMode;
+  }
+
+  ({List<QuizQuestionModel> questions, int currentIndex}) _restoreQuestions(
+    List<QuizQuestionModel> questions,
+    List<String> answeredQuestionIds,
+  ) {
+    final answeredIds = answeredQuestionIds.toSet();
+    final answered = questions
+        .where((question) => answeredIds.contains(question.questionId))
+        .toList();
+    final remaining = questions
+        .where((question) => !answeredIds.contains(question.questionId));
+    return (
+      questions: [...answered, ...remaining],
+      currentIndex: answered.length,
+    );
   }
 }

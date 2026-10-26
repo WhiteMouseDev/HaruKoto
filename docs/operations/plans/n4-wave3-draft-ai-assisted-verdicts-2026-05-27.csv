@@ -1,0 +1,10 @@
+target_key,packet,new_verdict,new_notes
+HN4-017 script:0,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-017 script:2,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-017 script:3,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-018 script:1,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-019 script:1,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-019 script:2,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT assist produced no review signal; not native-speaker review
+HN4-020 script:1,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review
+HN4-020 script:3,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review
+HN4-021 script:1,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted retry PASS: machine probe passed and 60s STT retry matched source exactly; not native-speaker review

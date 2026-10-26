@@ -11,6 +11,7 @@ import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
 import '../../data/models/dashboard_model.dart';
+import '../../domain/quick_start_progress.dart';
 
 // ═══════════════════════════════════════════════════════════════
 //  Constants
@@ -161,6 +162,8 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard>
                 children: [
                   for (int i = 0; i < _categories.length; i++)
                     GestureDetector(
+                      key: ValueKey(
+                          'quick-start-tab-${_categories[i].quizType}'),
                       onTap: () => _selectTab(i),
                       behavior: HitTestBehavior.opaque,
                       child: SizedBox(
@@ -349,8 +352,6 @@ class _MainContent extends ConsumerWidget {
     final apiType = _apiTypeForCategory(cat.quizType);
     final progress = _getProgress(cat.quizType);
     final hasProgress = progress != null && progress.total > 0;
-    final progressPct =
-        hasProgress ? (progress.mastered / progress.total) : 0.0;
     final incompleteAsync = ref.watch(incompleteQuizProvider);
     final previewAsync = switch (apiType) {
       'VOCABULARY' => ref.watch(
@@ -361,7 +362,15 @@ class _MainContent extends ConsumerWidget {
         ),
       _ => null,
     };
-    final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
+    final cardProgress = resolveQuickStartProgress(
+      category: apiType,
+      jlptLevel: jlptLevel,
+      sessionLoading: incompleteAsync.isLoading,
+      sessionError: incompleteAsync.hasError,
+      incomplete: incompleteAsync.hasValue ? incompleteAsync.value : null,
+      mastery: progress,
+    );
+    final incomplete = cardProgress.session;
     final preview = previewAsync?.hasValue == true ? previewAsync!.value : null;
     final decision = resolveStudyEntryDecision(
       category: apiType,
@@ -454,61 +463,95 @@ class _MainContent extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            '하루 목표  ',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
-                            ),
+                      if (cardProgress.savedAnswerLabel != null)
+                        Text(
+                          cardProgress.savedAnswerLabel!,
+                          key: const ValueKey('quick-start-saved-progress'),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
                           ),
-                          Text(
-                            '$dailyGoal개',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () => _showDailyGoalSheet(context, ref),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6),
-                              child: Icon(
-                                LucideIcons.pencil,
-                                size: 14,
+                        )
+                      else
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              '하루 목표  ',
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.4),
+                                    .withValues(alpha: 0.6),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                            Text(
+                              '$dailyGoal개',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => _showDailyGoalSheet(context, ref),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
+                                child: Icon(
+                                  LucideIcons.pencil,
+                                  size: 14,
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.4),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 64,
-                  height: 64,
-                  child: CustomPaint(
-                    painter: _CircularProgressPainter(
-                      progress: progressPct.clamp(0.0, 1.0),
-                      trackColor: AppColors.surfaceMuted,
-                      progressColor: cat.color,
-                      strokeWidth: 5,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${(progressPct * 100).toStringAsFixed(0)}%',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: cat.color,
+                if (cardProgress.label != null) ...[
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 72,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (cardProgress.fraction != null)
+                          SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: CustomPaint(
+                              painter: _CircularProgressPainter(
+                                progress: cardProgress.fraction!,
+                                trackColor: AppColors.surfaceMuted,
+                                progressColor: cat.color,
+                                strokeWidth: 5,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  cardProgress.percentage!,
+                                  key: const ValueKey('quick-start-percentage'),
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: cat.color,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (cardProgress.fraction != null)
+                          const SizedBox(height: 6),
+                        Text(
+                          cardProgress.label!,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

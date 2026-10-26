@@ -664,6 +664,23 @@ export interface paths {
         patch: operations["update_account_api_v1_user_account_patch"];
         trace?: never;
     };
+    "/api/v1/quiz/wrong-answer-review/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Session Wrong Answer Review */
+        post: operations["start_session_wrong_answer_review_api_v1_quiz_wrong_answer_review_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quiz/start": {
         parameters: {
             query?: never;
@@ -726,7 +743,7 @@ export interface paths {
          * Get Incomplete Quiz
          * @description 미완료 퀴즈 세션 조회 (배너용).
          *
-         *     - 1문제도 안 푼 세션(좀비)은 자동 완료 처리
+         *     - 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지
          *     - 24시간 지난 세션은 자동 완료 처리
          */
         get: operations["get_incomplete_quiz_api_v1_quiz_incomplete_get"];
@@ -3728,6 +3745,14 @@ export interface components {
          * @enum {string}
          */
         QuizType: "VOCABULARY" | "GRAMMAR" | "KANJI" | "LISTENING" | "KANA" | "CLOZE" | "SENTENCE_ARRANGE";
+        /** QuizWrongReviewRequest */
+        QuizWrongReviewRequest: {
+            /**
+             * Sourcesessionid
+             * Format: uuid
+             */
+            sourceSessionId: string;
+        };
         /** Reading */
         Reading: {
             /**
@@ -5755,6 +5780,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_session_wrong_answer_review_api_v1_quiz_wrong_answer_review_start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuizWrongReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizResumeResponse"];
                 };
             };
             /** @description Validation Error */

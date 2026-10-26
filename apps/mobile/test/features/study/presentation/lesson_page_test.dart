@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
+import '../fixtures/lesson_resume_fixture.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
@@ -23,6 +26,10 @@ void main() {
       );
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
@@ -46,7 +53,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.textContaining('locked'), findsOneWidget);
+      expect(find.textContaining('일시적인 오류'), findsOneWidget);
       expect(
         container.read(lessonSessionProvider('lesson-1')).startErrorMessage,
         isNull,
@@ -65,6 +72,10 @@ void main() {
       );
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          lessonCheckpointStoreProvider
+              .overrideWithValue(MemoryCheckpointStore()),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
@@ -88,7 +99,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.textContaining('network down'), findsOneWidget);
+      expect(find.textContaining('제출 결과를 먼저'), findsOneWidget);
       expect(
         container
             .read(lessonSessionProvider('lesson-1'))

@@ -37,6 +37,7 @@ async def test_update_vocab_answer_progress_applies_srs_and_logs_review_event(mo
         learning_step=0,
     )
     db = AsyncMock()
+    db.begin_nested = MagicMock(return_value=AsyncMock())
     db.execute = AsyncMock(return_value=_scalar_one_or_none_result(progress))
     db.add = MagicMock()
     db.flush = AsyncMock()
@@ -76,6 +77,7 @@ async def test_update_grammar_answer_progress_creates_missing_record_and_logs(mo
     session_id = uuid.uuid4()
     now = datetime(2026, 4, 21, 12, 0, tzinfo=UTC)
     db = AsyncMock()
+    db.begin_nested = MagicMock(return_value=AsyncMock())
     db.execute = AsyncMock(return_value=_scalar_one_or_none_result(None))
     db.add = MagicMock()
     db.flush = AsyncMock()
@@ -128,6 +130,7 @@ async def test_update_vocab_answer_progress_creates_missing_record_with_defaults
     session_id = uuid.uuid4()
     now = datetime(2026, 4, 21, 12, 0, tzinfo=UTC)
     db = AsyncMock()
+    db.begin_nested = MagicMock(return_value=AsyncMock())
     db.execute = AsyncMock(return_value=_scalar_one_or_none_result(None))
     db.add = MagicMock()
     db.flush = AsyncMock()

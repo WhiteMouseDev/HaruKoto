@@ -11,6 +11,10 @@ class QuizResumeRequest(CamelModel):
     session_id: UUID
 
 
+class QuizWrongReviewRequest(CamelModel):
+    source_session_id: UUID
+
+
 class IncompleteQuizSession(CamelModel):
     id: str
     quiz_type: str

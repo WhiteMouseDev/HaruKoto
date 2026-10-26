@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../data/models/quiz_result_model.dart';
 import 'study_provider.dart';
 
 class QuizResultState {
   const QuizResultState({
+    this.sessionId,
     this.loadingWrong = true,
     this.wrongAnswers = const [],
     this.savedWords = const {},
@@ -16,18 +19,21 @@ class QuizResultState {
 
   static const _unchanged = Object();
 
+  final String? sessionId;
   final bool loadingWrong;
   final List<WrongAnswerModel> wrongAnswers;
   final Set<String> savedWords;
   final String? error;
 
   QuizResultState copyWith({
+    String? sessionId,
     bool? loadingWrong,
     List<WrongAnswerModel>? wrongAnswers,
     Set<String>? savedWords,
     Object? error = _unchanged,
   }) {
     return QuizResultState(
+      sessionId: sessionId ?? this.sessionId,
       loadingWrong: loadingWrong ?? this.loadingWrong,
       wrongAnswers: wrongAnswers ?? this.wrongAnswers,
       savedWords: savedWords ?? this.savedWords,
@@ -37,48 +43,50 @@ class QuizResultState {
 }
 
 class QuizResultController extends Notifier<QuizResultState> {
+  QuizResultController(this.sessionId);
+
+  final String sessionId;
   int _requestSerial = 0;
 
   @override
   QuizResultState build() {
-    return const QuizResultState();
+    ref.onDispose(() => _requestSerial++);
+    return QuizResultState(sessionId: sessionId);
   }
 
   Future<void> loadWrongAnswers({
-    required String sessionId,
     required int wrongCount,
   }) async {
     final requestId = ++_requestSerial;
+    final savedWords = state.savedWords;
+    state = QuizResultState(
+      sessionId: sessionId,
+      loadingWrong: wrongCount > 0,
+      savedWords: savedWords,
+    );
 
     if (wrongCount <= 0) {
-      state = state.copyWith(
-        loadingWrong: false,
-        wrongAnswers: const [],
-        error: null,
-      );
       return;
     }
-
-    state = state.copyWith(
-      loadingWrong: true,
-      error: null,
-    );
 
     try {
       final answers = await ref
           .read(studyRepositoryProvider)
           .fetchWrongAnswersBySession(sessionId);
-      if (requestId != _requestSerial) return;
+      if (!ref.mounted || requestId != _requestSerial) return;
       state = state.copyWith(
         loadingWrong: false,
         wrongAnswers: answers,
       );
     } catch (error, stackTrace) {
+      if (!ref.mounted || requestId != _requestSerial) return;
       unawaited(Sentry.captureException(error, stackTrace: stackTrace));
-      if (requestId != _requestSerial) return;
+      final cause = error is DioException ? error.error : error;
       state = state.copyWith(
         loadingWrong: false,
-        error: '오답을 불러올 수 없습니다',
+        error: cause is ApiException
+            ? cause.userMessage
+            : const ApiException(message: '잠시 후 다시 시도해 주세요.').userMessage,
       );
     }
   }
@@ -93,6 +101,7 @@ class QuizResultController extends Notifier<QuizResultState> {
             meaningKo: item.meaningKo,
             source: 'QUIZ',
           );
+      if (!ref.mounted) return true;
       state = state.copyWith(
         savedWords: Set.unmodifiable({
           ...state.savedWords,
@@ -113,7 +122,9 @@ class QuizResultController extends Notifier<QuizResultState> {
     var allSaved = true;
 
     for (final item in unsaved) {
+      if (!ref.mounted) return false;
       final saved = await saveToWordbook(item);
+      if (!ref.mounted) return false;
       allSaved = allSaved && saved;
     }
 
@@ -121,7 +132,7 @@ class QuizResultController extends Notifier<QuizResultState> {
   }
 }
 
-final quizResultProvider =
-    NotifierProvider.autoDispose<QuizResultController, QuizResultState>(
+final quizResultProvider = NotifierProvider.autoDispose
+    .family<QuizResultController, QuizResultState, String>(
   QuizResultController.new,
 );

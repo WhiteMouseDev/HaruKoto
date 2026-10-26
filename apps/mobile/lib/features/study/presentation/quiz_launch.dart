@@ -10,6 +10,7 @@ class QuizLaunchRequest {
     this.mode,
     this.resumeSessionId,
     this.stageId,
+    this.sourceSessionId,
   });
 
   final String quizType;
@@ -18,6 +19,7 @@ class QuizLaunchRequest {
   final String? mode;
   final String? resumeSessionId;
   final String? stageId;
+  final String? sourceSessionId;
 }
 
 typedef QuizRouteBuilder = Route<void> Function(QuizLaunchRequest request);
@@ -31,6 +33,7 @@ Route<void> buildQuizPageRoute(QuizLaunchRequest request) {
       mode: request.mode,
       resumeSessionId: request.resumeSessionId,
       stageId: request.stageId,
+      sourceSessionId: request.sourceSessionId,
     ),
   );
 }
@@ -88,6 +91,28 @@ Future<void> openReviewQuiz(
     jlptLevel: jlptLevel,
     count: 10,
     mode: 'review',
+    replace: replace,
+    routeBuilder: routeBuilder,
+  );
+}
+
+Future<void> openWrongAnswerReview(
+  BuildContext context, {
+  required String sourceSessionId,
+  required String quizType,
+  required String jlptLevel,
+  bool replace = false,
+  QuizRouteBuilder routeBuilder = buildQuizPageRoute,
+}) {
+  return openQuizPage(
+    context,
+    request: QuizLaunchRequest(
+      quizType: quizType,
+      jlptLevel: jlptLevel,
+      count: 0,
+      mode: 'wrong_answer_review',
+      sourceSessionId: sourceSessionId,
+    ),
     replace: replace,
     routeBuilder: routeBuilder,
   );

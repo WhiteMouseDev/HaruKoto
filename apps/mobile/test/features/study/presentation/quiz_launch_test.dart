@@ -4,6 +4,31 @@ import 'package:harukoto_mobile/features/study/presentation/quiz_launch.dart';
 
 void main() {
   group('quiz launch helpers', () {
+    testWidgets(
+        'source wrong-review launch keeps its source separate from general review',
+        (tester) async {
+      QuizLaunchRequest? captured;
+      await tester.pumpWidget(MaterialApp(home: Builder(builder: (context) {
+        return TextButton(
+          onPressed: () => openWrongAnswerReview(context,
+              sourceSessionId: 'completed-source',
+              quizType: 'GRAMMAR',
+              jlptLevel: 'N5', routeBuilder: (request) {
+            captured = request;
+            return MaterialPageRoute<void>(
+                builder: (_) => const _TestDestination());
+          }),
+          child: const Text('session wrong review'),
+        );
+      })));
+      await tester.tap(find.text('session wrong review'));
+      await tester.pumpAndSettle();
+      expect(captured!.sourceSessionId, 'completed-source');
+      expect(captured!.mode, 'wrong_answer_review');
+      expect(captured!.resumeSessionId, isNull);
+      expect(find.text('can-pop'), findsOneWidget);
+    });
+
     testWidgets('openQuizPageForSession pushes on top of current route',
         (tester) async {
       QuizLaunchRequest? capturedRequest;

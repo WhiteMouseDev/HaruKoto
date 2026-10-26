@@ -70,6 +70,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 32,
             "cognitive_level": "인식",
             "prompt": "図書館의 뜻은?",
             "options": [
@@ -84,6 +85,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 29,
             "cognitive_level": "인식",
             "prompt": "'역'을 뜻하는 일본어는?",
             "options": [
@@ -98,6 +100,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 40,
             "cognitive_level": "적용",
             "prompt": "____は学校の図書館です。(여기는 학교의 도서관입니다.)",
             "options": [
@@ -112,6 +115,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 40,
             "cognitive_level": "적용",
             "prompt": "____は駅です。(저기는 역입니다.) — 멀리 있는 곳을 가리킬 때",
             "options": [
@@ -126,6 +130,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 40,
             "cognitive_level": "산출유사",
             "prompt": "'거기는 공원입니다'를 올바른 순서로 배열하세요.",
             "tokens": ["公園", "そこは", "です"],
@@ -194,6 +199,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 585,
             "cognitive_level": "인식",
             "prompt": "郵便局의 뜻은?",
             "options": [
@@ -208,6 +214,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 447,
             "cognitive_level": "인식",
             "prompt": "'백화점'을 뜻하는 일본어는?",
             "options": [
@@ -222,6 +229,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 41,
             "cognitive_level": "적용",
             "prompt": "郵便局は____ですか。(우체국은 어디인가요?)",
             "options": [
@@ -236,6 +244,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 41,
             "cognitive_level": "적용",
             "prompt": "レストランは____ですか。(레스토랑은 어디인가요?)",
             "options": [
@@ -250,6 +259,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 41,
             "cognitive_level": "산출유사",
             "prompt": "'호텔은 어디인가요?'를 올바른 순서로 배열하세요.",
             "tokens": ["どこ", "ホテルは", "ですか"],
@@ -318,6 +328,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 244,
             "cognitive_level": "인식",
             "prompt": "上의 뜻은?",
             "options": [
@@ -332,6 +343,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 104,
             "cognitive_level": "인식",
             "prompt": "'있다(생물)'를 뜻하는 일본어는?",
             "options": [
@@ -346,6 +358,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 42,
             "cognitive_level": "적용",
             "prompt": "本は机の上____あります。(책은 책상 위에 있습니다.)",
             "options": [
@@ -360,6 +373,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 55,
             "cognitive_level": "적용",
             "prompt": "猫は箱の中に____。(고양이는 상자 안에 있습니다.) — 생물의 존재",
             "options": [
@@ -374,6 +388,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 42,
             "cognitive_level": "산출유사",
             "prompt": "'가방은 의자 아래에 있습니다'를 올바른 순서로 배열하세요.",
             "tokens": ["椅子の下に", "かばんは", "あります"],
@@ -442,6 +457,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 70,
             "cognitive_level": "인식",
             "prompt": "電車의 뜻은?",
             "options": [
@@ -456,6 +472,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 392,
             "cognitive_level": "인식",
             "prompt": "'식당'을 뜻하는 일본어는?",
             "options": [
@@ -470,6 +487,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 43,
             "cognitive_level": "적용",
             "prompt": "電車____来ます。(전철로 옵니다.) — 이동 수단을 말할 때",
             "options": [
@@ -484,6 +502,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 43,
             "cognitive_level": "적용",
             "prompt": "図書館____勉強します。(도서관에서 공부합니다.) — 행동하는 장소를 말할 때",
             "options": [
@@ -498,6 +517,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 43,
             "cognitive_level": "산출유사",
             "prompt": "'식당에서 먹습니다'를 올바른 순서로 배열하세요.",
             "tokens": ["食べます", "食堂で", "昼は"],
@@ -566,6 +586,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 59,
             "cognitive_level": "인식",
             "prompt": "海의 뜻은?",
             "options": [
@@ -580,6 +601,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 284,
             "cognitive_level": "인식",
             "prompt": "'외국'을 뜻하는 일본어는?",
             "options": [
@@ -594,6 +616,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 44,
             "cognitive_level": "적용",
             "prompt": "海____行きます。(바다로 갑니다.) — 이동 방향을 말할 때",
             "options": [
@@ -608,6 +631,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 44,
             "cognitive_level": "적용",
             "prompt": "外国____行きますよ。(외국으로 가요.) — 목적지 방향을 알려줄 때",
             "options": [
@@ -622,6 +646,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 44,
             "cognitive_level": "산출유사",
             "prompt": "'산으로 갑니다'를 올바른 순서로 배열하세요.",
             "tokens": ["行きます", "山へ", "私は"],

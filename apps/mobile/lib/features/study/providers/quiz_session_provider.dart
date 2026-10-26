@@ -1,7 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
 import 'quiz_session_service.dart';
@@ -14,6 +14,7 @@ class QuizSessionRequest {
     this.mode,
     this.resumeSessionId,
     this.stageId,
+    this.sourceSessionId,
   });
 
   final String quizType;
@@ -22,6 +23,7 @@ class QuizSessionRequest {
   final String? mode;
   final String? resumeSessionId;
   final String? stageId;
+  final String? sourceSessionId;
 }
 
 class QuizSessionState {
@@ -38,6 +40,7 @@ class QuizSessionState {
     this.resolvedMode,
     this.timeSpent = 0,
     this.completing = false,
+    this.loadError,
   });
 
   static const _unset = Object();
@@ -54,6 +57,7 @@ class QuizSessionState {
   final String? resolvedMode;
   final int timeSpent;
   final bool completing;
+  final String? loadError;
 
   QuizQuestionModel? get currentQuestion =>
       currentIndex < questions.length ? questions[currentIndex] : null;
@@ -106,6 +110,7 @@ class QuizSessionState {
     Object? resolvedMode = _unset,
     int? timeSpent,
     bool? completing,
+    Object? loadError = _unset,
   }) {
     return QuizSessionState(
       loading: loading ?? this.loading,
@@ -127,17 +132,25 @@ class QuizSessionState {
           : resolvedMode as String?,
       timeSpent: timeSpent ?? this.timeSpent,
       completing: completing ?? this.completing,
+      loadError:
+          identical(loadError, _unset) ? this.loadError : loadError as String?,
     );
   }
 }
 
 class QuizSessionController extends Notifier<QuizSessionState> {
+  final _answerSaves = <String, _PendingQuizAnswer>{};
+  int _initializationSerial = 0;
+
   @override
   QuizSessionState build() {
+    ref.onDispose(() => _initializationSerial++);
     return const QuizSessionState();
   }
 
   Future<void> initialize(QuizSessionRequest request) async {
+    final requestId = ++_initializationSerial;
+    _answerSaves.clear();
     state = QuizSessionState(
       loading: true,
       resolvedMode: request.mode,
@@ -152,7 +165,9 @@ class QuizSessionController extends Notifier<QuizSessionState> {
             mode: request.mode,
             resumeSessionId: request.resumeSessionId,
             stageId: request.stageId,
+            sourceSessionId: request.sourceSessionId,
           );
+      if (!ref.mounted || requestId != _initializationSerial) return;
       state = QuizSessionState(
         loading: false,
         sessionId: data.sessionId,
@@ -161,11 +176,16 @@ class QuizSessionController extends Notifier<QuizSessionState> {
         currentIndex: data.currentIndex,
         resolvedMode: data.resolvedMode,
       );
-    } catch (_) {
+    } catch (error) {
+      if (!ref.mounted || requestId != _initializationSerial) return;
+      final cause = error is DioException ? error.error : error;
       state = QuizSessionState(
         loading: false,
         resolvedMode: request.mode,
         sessionQuizType: request.quizType,
+        loadError: cause is ApiException
+            ? cause.userMessage
+            : const ApiException(message: '잠시 후 다시 시도해 주세요.').userMessage,
       );
     }
   }
@@ -199,8 +219,9 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       streak: nextStreak,
     );
 
-    unawaited(
-      ref.read(quizSessionServiceProvider).answerQuestion(
+    _saveAnswer(
+      question.questionId,
+      () => ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: question.questionId,
             selectedOptionId: optionId,
@@ -235,8 +256,9 @@ class QuizSessionController extends Notifier<QuizSessionState> {
 
     final question =
         state.questions.firstWhere((q) => q.questionId == questionId);
-    unawaited(
-      ref.read(quizSessionServiceProvider).answerQuestion(
+    _saveAnswer(
+      questionId,
+      () => ref.read(quizSessionServiceProvider).answerQuestion(
             sessionId: sessionId,
             questionId: questionId,
             selectedOptionId:
@@ -256,6 +278,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
 
     state = state.copyWith(completing: true);
     try {
+      await flushPendingAnswers();
       final result = await ref.read(quizSessionServiceProvider).completeQuiz(
             sessionId,
             stageId: stageId,
@@ -266,6 +289,48 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       state = state.copyWith(completing: false);
       rethrow;
     }
+  }
+
+  /// Keep this session alive until every submitted answer is durable. Reuse
+  /// the same payload when an exit or completion retries a failed request.
+  Future<void> flushPendingAnswers() async {
+    for (final answer in _answerSaves.values.where((answer) => answer.failed)) {
+      answer.submit();
+    }
+    await Future.wait(_answerSaves.values.map((answer) => answer.pending));
+    if (_answerSaves.values.any((answer) => !answer.saved)) {
+      throw const ApiException(
+        message: '답안을 저장하지 못했어요. 다시 시도해주세요.',
+        errorCode: 'QUIZ_ANSWER_SAVE_FAILED',
+      );
+    }
+  }
+
+  void _saveAnswer(String questionId, Future<void> Function() save) {
+    // Matching can report a corrected pair after its first scored attempt.
+    // The server keeps that first answer immutable, including on retries.
+    if (_answerSaves.containsKey(questionId)) return;
+    final answer = _PendingQuizAnswer(save);
+    _answerSaves[questionId] = answer;
+    answer.submit();
+  }
+}
+
+class _PendingQuizAnswer {
+  _PendingQuizAnswer(this.save);
+
+  final Future<void> Function() save;
+  late Future<void> pending;
+  bool saved = false;
+  bool failed = false;
+
+  void submit() {
+    failed = false;
+    pending = save().then((_) {
+      saved = true;
+    }, onError: (Object error, StackTrace stack) {
+      failed = true;
+    });
   }
 }
 

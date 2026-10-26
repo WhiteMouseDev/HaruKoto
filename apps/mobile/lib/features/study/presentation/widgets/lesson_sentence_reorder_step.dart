@@ -12,6 +12,11 @@ class LessonSentenceReorderStep extends StatefulWidget {
   final int totalSteps;
   final List<VocabItemModel> vocabItems;
   final ValueChanged<Map<String, dynamic>> onAnswer;
+  final List<String>? shuffledBank;
+  final List<String> initialSelected;
+  final List<String>? initialAvailable;
+  final void Function(List<String> selected, List<String> available)?
+      onDraftChanged;
 
   const LessonSentenceReorderStep({
     super.key,
@@ -20,6 +25,10 @@ class LessonSentenceReorderStep extends StatefulWidget {
     required this.totalSteps,
     required this.vocabItems,
     required this.onAnswer,
+    this.shuffledBank,
+    this.initialSelected = const [],
+    this.initialAvailable,
+    this.onDraftChanged,
   });
 
   @override
@@ -66,13 +75,22 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
       ..shuffle(Random());
     final picked = distractors.take(min(3, distractors.length)).toList();
 
-    _available = [...correctTokens, ...picked]..shuffle(Random());
-    _selected.clear();
+    _available = widget.initialAvailable != null
+        ? List<String>.from(widget.initialAvailable!)
+        : widget.shuffledBank != null
+            ? List<String>.from(widget.shuffledBank!)
+            : ([...correctTokens, ...picked]..shuffle(Random()));
+    _selected
+      ..clear()
+      ..addAll(widget.initialSelected);
     _submitting = false;
     _lastAddedToken = null;
     _lastRemovedToken = null;
     _dragHoverIndex = -1;
   }
+
+  void _notifyDraft() => widget.onDraftChanged
+      ?.call(List<String>.from(_selected), List<String>.from(_available));
 
   void _selectToken(String token) {
     if (_isFull || _submitting) return;
@@ -82,6 +100,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
       _lastAddedToken = token;
       _lastRemovedToken = null;
     });
+    _notifyDraft();
   }
 
   void _deselectToken(int index) {
@@ -93,6 +112,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
       _lastRemovedToken = token;
       _lastAddedToken = null;
     });
+    _notifyDraft();
   }
 
   void _onReorder(int fromIndex, int toIndex) {
@@ -108,6 +128,7 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
       _selected.insert(toIndex, token);
       _dragHoverIndex = -1;
     });
+    _notifyDraft();
   }
 
   void _submit() {

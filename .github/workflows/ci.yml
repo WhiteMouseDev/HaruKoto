@@ -50,8 +50,12 @@ jobs:
             backend:
               - 'apps/api/**'
               - 'packages/database/**'
+              - '.github/workflows/ci.yml'
+              - '.github/scripts/**'
+              - '.github/tests/**'
             mobile:
               - 'apps/mobile/**'
+              - '.github/workflows/ci.yml'
 
   # ============================
   # Frontend (Next.js / Turborepo)
@@ -130,13 +134,26 @@ jobs:
   backend:
     needs: changes
     if: needs.changes.outputs.backend == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/api
 
     steps:
       - uses: actions/checkout@v5
+
+      - name: Install isolated PostgreSQL test binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          echo '/usr/lib/postgresql/16/bin' >> "$GITHUB_PATH"
+
+      - name: Verify PostgreSQL test binaries
+        run: |
+          command -v initdb
+          command -v pg_ctl
+          initdb --version
+          pg_ctl --version
 
       - name: Install uv
         uses: astral-sh/setup-uv@v8.1.0
@@ -150,16 +167,22 @@ jobs:
         run: uv sync --frozen --extra dev
 
       - name: Lint (ruff)
-        run: uv run ruff check app/ tests/
+        run: uv run ruff check --config pyproject.toml app/ tests/ ../../.github/scripts/check_postgres_junit.py ../../.github/tests/test_check_postgres_junit.py
 
       - name: Format check (ruff)
-        run: uv run ruff format --check app/ tests/
+        run: uv run ruff format --check --config pyproject.toml app/ tests/ ../../.github/scripts/check_postgres_junit.py ../../.github/tests/test_check_postgres_junit.py
+
+      - name: Test PostgreSQL report guard
+        run: uv run python -m unittest discover -s ../../.github/tests -v
 
       - name: Run tests
-        run: uv run pytest tests/ -v --tb=short
+        run: uv run pytest tests/ -v --tb=short --junitxml=pytest-results.xml
         env:
           DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
           SUPABASE_URL: https://test.supabase.co
+
+      - name: Require PostgreSQL regressions to pass without skips
+        run: uv run python ../../.github/scripts/check_postgres_junit.py pytest-results.xml
 
   # ============================
   # API Contract Check (OpenAPI breaking changes)
@@ -307,6 +330,9 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate lesson review target contracts
+        run: pnpm --filter @harukoto/database lessons:validate
+
       - name: Apply Alembic migrations (single DDL authority)
         working-directory: apps/api
         env:
@@ -340,20 +366,19 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.41.3'
           cache: true
 
       - name: Cache pub dependencies
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.pub-cache
-            apps/mobile/.dart_tool
-          key: flutter-pub-${{ runner.os }}-${{ hashFiles('apps/mobile/pubspec.lock') }}
+          path: ~/.pub-cache
+          key: flutter-pub-3.41.3-${{ runner.os }}-${{ hashFiles('apps/mobile/pubspec.lock') }}
           restore-keys: |
-            flutter-pub-${{ runner.os }}-
+            flutter-pub-3.41.3-${{ runner.os }}-
 
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Format check
         run: dart format --set-exit-if-changed lib/ test/

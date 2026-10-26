@@ -82,6 +82,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 79,
             "cognitive_level": "인식",
             "prompt": "規則의 뜻은?",
             "options": [
@@ -108,6 +109,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 75,
             "cognitive_level": "인식",
             "prompt": "注意의 뜻은?",
             "options": [
@@ -134,6 +136,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 42,
             "cognitive_level": "적용",
             "prompt": "名前を書き___. (이름을 쓰세요.)",
             "options": [
@@ -160,6 +163,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 42,
             "cognitive_level": "적용",
             "prompt": "規則を確認___. (규칙을 확인하세요.)",
             "options": [
@@ -186,6 +190,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 42,
             "cognitive_level": "산출유사",
             "prompt": "'이름을 쓰세요'를 올바른 순서로 배열하세요.",
             "tokens": [
@@ -275,6 +280,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 40,
             "cognitive_level": "인식",
             "prompt": "心配의 뜻은?",
             "options": [
@@ -301,6 +307,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 61,
             "cognitive_level": "인식",
             "prompt": "相談의 뜻은?",
             "options": [
@@ -327,6 +334,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 43,
             "cognitive_level": "적용",
             "prompt": "早く寝___。 (일찍 자는 편이 좋습니다.)",
             "options": [
@@ -353,6 +361,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 43,
             "cognitive_level": "적용",
             "prompt": "医者に相談___。 (의사와 상담하는 편이 좋습니다.)",
             "options": [
@@ -379,6 +388,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 43,
             "cognitive_level": "산출유사",
             "prompt": "'오늘은 일찍 자는 편이 좋습니다'를 배열하세요.",
             "tokens": [
@@ -468,6 +478,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 44,
             "cognitive_level": "인식",
             "prompt": "台風의 뜻은?",
             "options": [
@@ -494,6 +505,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 97,
             "cognitive_level": "인식",
             "prompt": "間に合う의 뜻은?",
             "options": [
@@ -520,6 +532,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 41,
             "cognitive_level": "적용",
             "prompt": "電車が遅れる___。 (전철이 늦을지도 모릅니다.)",
             "options": [
@@ -546,6 +559,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 41,
             "cognitive_level": "적용",
             "prompt": "間に合わない___。 (시간에 맞지 못할지도 모릅니다.)",
             "options": [
@@ -572,6 +586,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 41,
             "cognitive_level": "산출유사",
             "prompt": "'전철이 늦을지도 모릅니다'를 배열하세요.",
             "tokens": [
@@ -660,6 +675,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 94,
             "cognitive_level": "인식",
             "prompt": "足りる의 뜻은?",
             "options": [
@@ -686,6 +702,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 17,
             "cognitive_level": "인식",
             "prompt": "予定의 뜻은?",
             "options": [
@@ -712,6 +729,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 48,
             "cognitive_level": "적용",
             "prompt": "走る___。 (달릴 수밖에 없습니다.)",
             "options": [
@@ -738,6 +756,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 48,
             "cognitive_level": "적용",
             "prompt": "電車に乗る___。 (전철을 탈 수밖에 없습니다.)",
             "options": [
@@ -764,6 +783,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 48,
             "cognitive_level": "산출유사",
             "prompt": "'역까지 달릴 수밖에 없습니다'를 배열하세요.",
             "tokens": [
@@ -852,6 +872,7 @@
           {
             "order": 1,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 52,
             "cognitive_level": "인식",
             "prompt": "翻訳의 뜻은?",
             "options": [
@@ -878,6 +899,7 @@
           {
             "order": 2,
             "type": "VOCAB_MCQ",
+            "vocabulary_order": 98,
             "cognitive_level": "인식",
             "prompt": "申し込む의 뜻은?",
             "options": [
@@ -904,6 +926,7 @@
           {
             "order": 3,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 44,
             "cognitive_level": "적용",
             "prompt": "漢字を調べ___。 (한자를 찾아볼 수 있습니다.)",
             "options": [
@@ -930,6 +953,7 @@
           {
             "order": 4,
             "type": "CONTEXT_CLOZE",
+            "grammar_order": 44,
             "cognitive_level": "적용",
             "prompt": "文を翻訳___。 (문장을 번역할 수 있습니다.)",
             "options": [
@@ -956,6 +980,7 @@
           {
             "order": 5,
             "type": "SENTENCE_REORDER",
+            "grammar_order": 44,
             "cognitive_level": "산출유사",
             "prompt": "'이 앱으로 한자를 찾아볼 수 있습니다'를 배열하세요.",
             "tokens": [

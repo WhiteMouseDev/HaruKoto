@@ -9,11 +9,25 @@ import '../../data/models/lesson_models.dart';
 class LessonMatchingGameStep extends StatefulWidget {
   final List<VocabItemModel> vocabItems;
   final VoidCallback onComplete;
+  final List<String>? pairOrder;
+  final List<int>? rightOrder;
+  final Set<int> initialMatched;
+  final int? initialLeft;
+  final int? initialRight;
+  final bool autoAdvance;
+  final void Function(Set<int> matched, int? left, int? right)? onProgress;
 
   const LessonMatchingGameStep({
     super.key,
     required this.vocabItems,
     required this.onComplete,
+    this.pairOrder,
+    this.rightOrder,
+    this.initialMatched = const {},
+    this.initialLeft,
+    this.initialRight,
+    this.autoAdvance = true,
+    this.onProgress,
   });
 
   @override
@@ -43,7 +57,7 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
       CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn),
     );
 
-    if (_pairs.length < 2) {
+    if (_pairs.length < 2 && widget.autoAdvance) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onComplete();
       });
@@ -64,13 +78,24 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
       if (key.isNotEmpty && seen.add(key)) unique.add(vocab);
     }
     unique.shuffle(Random());
-    _pairs = unique.take(min(4, unique.length)).toList();
-    _shuffledRightIndices = List.generate(_pairs.length, (index) => index)
-      ..shuffle(Random());
-    _selectedLeft = null;
-    _selectedRight = null;
-    _matched.clear();
+    _pairs = widget.pairOrder == null
+        ? unique.take(min(4, unique.length)).toList()
+        : [
+            for (final id in widget.pairOrder!)
+              widget.vocabItems.firstWhere((item) => item.id == id)
+          ];
+    _shuffledRightIndices = widget.rightOrder == null
+        ? (List.generate(_pairs.length, (index) => index)..shuffle(Random()))
+        : List<int>.from(widget.rightOrder!);
+    _selectedLeft = widget.initialLeft;
+    _selectedRight = widget.initialRight;
+    _matched
+      ..clear()
+      ..addAll(widget.initialMatched);
   }
+
+  void _notifyProgress() => widget.onProgress
+      ?.call(Set<int>.from(_matched), _selectedLeft, _selectedRight);
 
   void _onTapLeft(int index) {
     if (_matched.contains(index)) return;
@@ -79,6 +104,7 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
       _wrongFlash = false;
     });
     _checkMatch();
+    _notifyProgress();
   }
 
   void _onTapRight(int index) {
@@ -88,6 +114,7 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
       _wrongFlash = false;
     });
     _checkMatch();
+    _notifyProgress();
   }
 
   void _checkMatch() {
@@ -115,6 +142,7 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
         _selectedRight = null;
         _wrongFlash = false;
       });
+      _notifyProgress();
     });
   }
 
@@ -143,6 +171,12 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
             ),
           ),
           const SizedBox(height: AppSizes.lg),
+          if ((!widget.autoAdvance && _pairs.length < 2) ||
+              _matched.length == _pairs.length)
+            FilledButton(
+              onPressed: widget.onComplete,
+              child: const Text('계속하기'),
+            ),
           Expanded(
             child: AnimatedBuilder(
               animation: _shakeAnimation,

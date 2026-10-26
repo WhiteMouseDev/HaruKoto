@@ -11,6 +11,7 @@ import argparse
 import asyncio
 import json
 from collections.abc import Iterator, Sequence
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -49,6 +50,8 @@ CONTENT_FILES_BY_LEVEL = {
         "ch02-reasons-conditions-and-intent.json",
         "ch03-quality-and-degree.json",
         "ch04-everyday-action-extensions.json",
+        "ch05-observation-reporting-and-expectation.json",
+        "ch06-benefactive-contrast-and-passive.json",
     ],
 }
 
@@ -67,6 +70,7 @@ class SeedItemLink:
     vocabulary_id: UUID | None
     grammar_id: UUID | None
     item_order: int
+    is_core: bool = True
 
 
 def _jlpt_str(level: object) -> str:
@@ -114,36 +118,72 @@ def _resolve_extra_content_file(path: Path) -> Path:
     raise ValueError(f"Extra lesson content file not found: {path}")
 
 
-def _iter_content_filepaths(levels: Sequence[str] | None = None, *, extra_content_files: Sequence[Path] | None = None) -> Iterator[Path]:
-    seen: set[Path] = set()
+def _iter_registered_content_filepaths(levels: Sequence[str] | None = None) -> Iterator[Path]:
     for level in _selected_lesson_levels(levels):
         content_dir = _content_dir_for_level(level)
         for filename in CONTENT_FILES_BY_LEVEL[level]:
-            filepath = (content_dir / filename).resolve()
+            yield (content_dir / filename).resolve()
+
+
+def _iter_extra_content_filepaths(extra_content_files: Sequence[Path] | None = None) -> Iterator[Path]:
+    for extra_content_file in extra_content_files or ():
+        yield _resolve_extra_content_file(extra_content_file)
+
+
+def _iter_content_filepaths(
+    levels: Sequence[str] | None = None,
+    *,
+    extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+) -> Iterator[Path]:
+    seen: set[Path] = set()
+
+    if not only_extra_content_files:
+        for filepath in _iter_registered_content_filepaths(levels):
             if filepath in seen:
                 continue
             seen.add(filepath)
             yield filepath
 
-    for extra_content_file in extra_content_files or ():
-        filepath = _resolve_extra_content_file(extra_content_file)
+    for filepath in _iter_extra_content_filepaths(extra_content_files):
         if filepath in seen:
             continue
         seen.add(filepath)
         yield filepath
 
 
-def _lesson_is_published(meta: dict[str, Any]) -> bool:
+def _lesson_is_published(meta: dict[str, Any], *, force_unpublished: bool = False) -> bool:
     """Map content review status to DB publish state."""
     status = str(meta.get("status", "")).upper()
     if status not in ALLOWED_META_STATUSES:
         raise ValueError(f"Unsupported lesson meta.status: {status}")
+    if force_unpublished:
+        return False
     return status in PUBLISHABLE_META_STATUSES
 
 
-async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any]) -> Chapter:
+def _forced_unpublished_filepaths(
+    levels: Sequence[str] | None = None,
+    *,
+    extra_content_files: Sequence[Path] | None = None,
+    force_extra_unpublished: bool = False,
+) -> set[Path]:
+    if not force_extra_unpublished:
+        return set()
+
+    registered_paths = set(_iter_registered_content_filepaths(levels))
+    extra_paths = set(_iter_extra_content_filepaths(extra_content_files))
+    registered_extras = sorted(extra_paths & registered_paths)
+    if registered_extras:
+        labels = ", ".join(filepath.relative_to(CONTENT_ROOT).as_posix() for filepath in registered_extras)
+        raise ValueError(f"Cannot force registered extra lesson files unpublished: {labels}")
+    return extra_paths
+
+
+async def _upsert_chapter(db: AsyncSession, meta: dict[str, Any], *, is_published: bool | None = None) -> Chapter:
     """Create or update chapter record."""
-    is_published = _lesson_is_published(meta)
+    if is_published is None:
+        is_published = _lesson_is_published(meta)
     stmt = pg_insert(Chapter).values(
         jlpt_level=meta["jlpt_level"],
         part_no=meta["part_no"],
@@ -231,12 +271,61 @@ async def _resolve_grammar(db: AsyncSession, *, jlpt_level: object, order: int) 
     return grammar
 
 
+def _question_review_reference(question: dict[str, Any]) -> tuple[str, int] | None:
+    """Require authored, level-scoped targets; never infer from question position."""
+    reference_fields = [field for field in ("vocabulary_order", "grammar_order") if field in question]
+    if "vocabulary_id" in question or "grammar_id" in question:
+        raise ValueError("Lesson seed questions must use seed orders, not environment-specific UUIDs")
+    if "srs_skip_reason" in question:
+        reason = question["srs_skip_reason"]
+        if not reference_fields and isinstance(reason, str) and reason.strip():
+            return None
+        raise ValueError("Lesson seed question must have either a target or a non-empty srs_skip_reason")
+    if len(reference_fields) != 1:
+        raise ValueError("Lesson seed question must have exactly one review target or a non-empty srs_skip_reason")
+    field = reference_fields[0]
+    order = question[field]
+    if type(order) is not int or order < 1:
+        raise ValueError("Lesson seed question review target order must be a positive integer")
+    return ("WORD" if field == "vocabulary_order" else "GRAMMAR", order)
+
+
+async def _resolve_lesson_content(
+    db: AsyncSession, *, jlpt_level: object, content_jsonb: dict[str, Any]
+) -> tuple[dict[str, Any], list[SeedItemLink]]:
+    """Resolve source references without mutating source content or writing rows."""
+    content = deepcopy(content_jsonb)
+    targets: dict[tuple[str, int], SeedItemLink] = {}
+    for question in content.get("questions", []):
+        reference = _question_review_reference(question)
+        if reference is None:
+            continue
+        item_type, order = reference
+        if reference not in targets:
+            if item_type == "WORD":
+                vocabulary = await _resolve_vocabulary(db, jlpt_level=jlpt_level, order=order)
+                target = SeedItemLink(item_type="WORD", vocabulary_id=vocabulary.id, grammar_id=None, item_order=0, is_core=False)
+            else:
+                grammar = await _resolve_grammar(db, jlpt_level=jlpt_level, order=order)
+                target = SeedItemLink(item_type="GRAMMAR", vocabulary_id=None, grammar_id=grammar.id, item_order=0, is_core=False)
+            targets[reference] = target
+        target = targets[reference]
+        if item_type == "WORD":
+            question.pop("vocabulary_order")
+            question["vocabulary_id"] = str(target.vocabulary_id)
+        else:
+            question.pop("grammar_order")
+            question["grammar_id"] = str(target.grammar_id)
+    return content, list(targets.values())
+
+
 async def _build_expected_item_links(
     db: AsyncSession,
     *,
     jlpt_level: object,
     vocab_orders: list[int],
     grammar_order: int | None,
+    review_targets: Sequence[SeedItemLink] = (),
 ) -> list[SeedItemLink]:
     """Resolve seed order references into the exact link list a lesson should have."""
     expected_links: list[SeedItemLink] = []
@@ -263,6 +352,22 @@ async def _build_expected_item_links(
             )
         )
 
+    existing_targets = {(link.item_type, link.vocabulary_id, link.grammar_id) for link in expected_links}
+    for target in review_targets:
+        identity = (target.item_type, target.vocabulary_id, target.grammar_id)
+        if identity in existing_targets:
+            continue
+        expected_links.append(
+            SeedItemLink(
+                item_type=target.item_type,
+                vocabulary_id=target.vocabulary_id,
+                grammar_id=target.grammar_id,
+                item_order=len(expected_links) + 1,
+                is_core=False,
+            )
+        )
+        existing_targets.add(identity)
+
     return expected_links
 
 
@@ -271,6 +376,8 @@ async def _replace_item_links(
     lesson: Lesson,
     vocab_orders: list[int],
     grammar_order: int | None,
+    *,
+    review_targets: Sequence[SeedItemLink] = (),
 ) -> dict[str, int]:
     """Replace lesson item links with the seed file's canonical order."""
     expected_links = await _build_expected_item_links(
@@ -278,6 +385,7 @@ async def _replace_item_links(
         jlpt_level=lesson.jlpt_level,
         vocab_orders=vocab_orders,
         grammar_order=grammar_order,
+        review_targets=review_targets,
     )
 
     delete_result = await db.execute(sa.delete(LessonItemLink).where(LessonItemLink.lesson_id == lesson.id))
@@ -291,7 +399,7 @@ async def _replace_item_links(
             vocabulary_id=expected_link.vocabulary_id,
             grammar_id=expected_link.grammar_id,
             item_order=expected_link.item_order,
-            is_core=True,
+            is_core=expected_link.is_core,
         )
         stmt = stmt.on_conflict_do_nothing()
         await db.execute(stmt)
@@ -299,14 +407,19 @@ async def _replace_item_links(
     return {"created": len(expected_links), "deleted": deleted_count}
 
 
-async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+async def _seed_one_chapter(db: AsyncSession, filepath: Path, *, force_unpublished: bool = False) -> dict[str, int]:
     """Seed one chapter from a content JSON file."""
     data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
-    is_published = _lesson_is_published(meta)
+    is_published = _lesson_is_published(meta, force_unpublished=force_unpublished)
 
-    chapter = await _upsert_chapter(db, meta)
+    # Reject incomplete source metadata before issuing any chapter/lesson writes.
+    for lesson_data in lessons_data:
+        for question in lesson_data["content_jsonb"].get("questions", []):
+            _question_review_reference(question)
+
+    chapter = await _upsert_chapter(db, meta, is_published=is_published)
     print(f"✅ Chapter {meta['chapter_no']}: {chapter.title} (id={chapter.id}, status={meta['status']}, published={is_published})")
 
     lesson_count = 0
@@ -314,7 +427,8 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
     deleted_link_count = 0
 
     for ld in lessons_data:
-        lesson = await _upsert_lesson(db, chapter, ld, is_published=is_published)
+        content_jsonb, review_targets = await _resolve_lesson_content(db, jlpt_level=meta["jlpt_level"], content_jsonb=ld["content_jsonb"])
+        lesson = await _upsert_lesson(db, chapter, {**ld, "content_jsonb": content_jsonb}, is_published=is_published)
         print(f"  ✅ Lesson {ld['lesson_id']}: {ld['title']}")
 
         links = await _replace_item_links(
@@ -322,6 +436,7 @@ async def _seed_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
             lesson,
             vocab_orders=ld["vocab_orders"],
             grammar_order=ld["grammar"]["grammar_order"],
+            review_targets=review_targets,
         )
         print(f"     → {links['created']} items linked ({links['deleted']} stale removed)")
 
@@ -337,16 +452,27 @@ async def seed_lessons(
     *,
     levels: Sequence[str] | None = None,
     extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+    force_extra_unpublished: bool = False,
 ) -> dict[str, int]:
     """Seed lessons for configured levels. Returns counts summary."""
     totals: dict[str, int] = {"chapters": 0, "lessons": 0, "item_links": 0, "item_links_deleted": 0}
+    force_unpublished_paths = _forced_unpublished_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        force_extra_unpublished=force_extra_unpublished,
+    )
 
-    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
+    for filepath in _iter_content_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        only_extra_content_files=only_extra_content_files,
+    ):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
-        counts = await _seed_one_chapter(db, filepath)
+        counts = await _seed_one_chapter(db, filepath, force_unpublished=filepath in force_unpublished_paths)
         for key in totals:
             totals[key] += counts[key]
 
@@ -354,20 +480,41 @@ async def seed_lessons(
     return totals
 
 
-def _item_link_identity(item: SeedItemLink | LessonItemLink) -> tuple[str, str | None, str | None, int]:
+def _item_link_identity(item: SeedItemLink | LessonItemLink) -> tuple[str, str | None, str | None, int, bool]:
     return (
         item.item_type,
         str(item.vocabulary_id) if item.vocabulary_id is not None else None,
         str(item.grammar_id) if item.grammar_id is not None else None,
         item.item_order,
+        item.is_core,
     )
 
 
-async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]:
+async def _audit_one_chapter(db: AsyncSession, filepath: Path, *, force_unpublished: bool = False) -> dict[str, int]:
     data = json.loads(filepath.read_text(encoding="utf-8"))
     meta = data["meta"]
     lessons_data = data["lessons"]
-    counts = {"chapters": 1, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+    expected_is_published = _lesson_is_published(meta, force_unpublished=force_unpublished)
+    counts = {
+        "chapters": 1,
+        "lessons": 0,
+        "missing_lessons": 0,
+        "content_mismatches": 0,
+        "item_link_mismatches": 0,
+        "publish_state_mismatches": 0,
+    }
+
+    chapter_result = await db.execute(
+        select(Chapter).where(
+            cast(Chapter.jlpt_level, sa.Text()) == meta["jlpt_level"],
+            Chapter.part_no == meta["part_no"],
+            Chapter.chapter_no == meta["chapter_no"],
+        )
+    )
+    chapter = chapter_result.scalar_one_or_none()
+    if chapter is not None and chapter.is_published is not expected_is_published:
+        print(f"  Publish state mismatch: {meta['chapter_id']} (expected={expected_is_published}, actual={chapter.is_published})")
+        counts["publish_state_mismatches"] += 1
 
     for ld in lessons_data:
         result = await db.execute(
@@ -385,7 +532,14 @@ async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]
             counts["missing_lessons"] += 1
             continue
 
-        if lesson.content_jsonb != ld["content_jsonb"]:
+        if lesson.is_published is not expected_is_published:
+            print(f"  Publish state mismatch: {ld['lesson_id']} (expected={expected_is_published}, actual={lesson.is_published})")
+            counts["publish_state_mismatches"] += 1
+
+        expected_content, review_targets = await _resolve_lesson_content(
+            db, jlpt_level=meta["jlpt_level"], content_jsonb=ld["content_jsonb"]
+        )
+        if lesson.content_jsonb != expected_content:
             print(f"  Content mismatch: {ld['lesson_id']} ({meta['jlpt_level']} #{ld['lesson_no']})")
             counts["content_mismatches"] += 1
 
@@ -394,6 +548,7 @@ async def _audit_one_chapter(db: AsyncSession, filepath: Path) -> dict[str, int]
             jlpt_level=meta["jlpt_level"],
             vocab_orders=ld["vocab_orders"],
             grammar_order=ld["grammar"]["grammar_order"],
+            review_targets=review_targets,
         )
         expected_identities = sorted((_item_link_identity(link) for link in expected_links), key=lambda item: item[3])
         actual_identities = sorted((_item_link_identity(link) for link in lesson.item_links), key=lambda item: item[3])
@@ -409,16 +564,34 @@ async def audit_lesson_seed_sync(
     *,
     levels: Sequence[str] | None = None,
     extra_content_files: Sequence[Path] | None = None,
+    only_extra_content_files: bool = False,
+    force_extra_unpublished: bool = False,
 ) -> dict[str, int]:
     """Compare current DB lessons against the seed source without writing data."""
-    totals = {"chapters": 0, "lessons": 0, "missing_lessons": 0, "content_mismatches": 0, "item_link_mismatches": 0}
+    totals = {
+        "chapters": 0,
+        "lessons": 0,
+        "missing_lessons": 0,
+        "content_mismatches": 0,
+        "item_link_mismatches": 0,
+        "publish_state_mismatches": 0,
+    }
+    force_unpublished_paths = _forced_unpublished_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        force_extra_unpublished=force_extra_unpublished,
+    )
 
-    for filepath in _iter_content_filepaths(levels, extra_content_files=extra_content_files):
+    for filepath in _iter_content_filepaths(
+        levels,
+        extra_content_files=extra_content_files,
+        only_extra_content_files=only_extra_content_files,
+    ):
         if not filepath.exists():
             print(f"⚠️  {filepath.name} not found, skipping")
             continue
 
-        counts = await _audit_one_chapter(db, filepath)
+        counts = await _audit_one_chapter(db, filepath, force_unpublished=filepath in force_unpublished_paths)
         for key in totals:
             totals[key] += counts[key]
 
@@ -454,9 +627,26 @@ def _parse_args() -> argparse.Namespace:
             "default seed scope."
         ),
     )
+    parser.add_argument(
+        "--only-extra-content-files",
+        action="store_true",
+        help="Process only --extra-content-file paths, leaving the configured level registry untouched.",
+    )
+    parser.add_argument(
+        "--force-extra-unpublished",
+        action="store_true",
+        help=(
+            "Seed explicit extra content files with is_published=false even when meta.status is PILOT/PUBLISHED. "
+            "Registered default seed files keep their normal publish behavior."
+        ),
+    )
     args = parser.parse_args()
     if args.all_levels and args.levels:
         parser.error("--level cannot be combined with --all-levels")
+    if args.only_extra_content_files and not args.extra_content_file:
+        parser.error("--only-extra-content-files requires at least one --extra-content-file")
+    if args.force_extra_unpublished and not args.extra_content_file:
+        parser.error("--force-extra-unpublished requires at least one --extra-content-file")
     return args
 
 
@@ -481,14 +671,28 @@ async def main() -> None:
         if args.check:
             print(f"Checking lesson seed sync for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await audit_lesson_seed_sync(db, levels=levels, extra_content_files=args.extra_content_file)
+                counts = await audit_lesson_seed_sync(
+                    db,
+                    levels=levels,
+                    extra_content_files=args.extra_content_file,
+                    only_extra_content_files=args.only_extra_content_files,
+                    force_extra_unpublished=args.force_extra_unpublished,
+                )
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
-            has_mismatch = any(counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches"))
+            has_mismatch = any(
+                counts[key] for key in ("missing_lessons", "content_mismatches", "item_link_mismatches", "publish_state_mismatches")
+            )
         else:
             print(f"Seeding lessons for {_levels_label(levels)}...")
             async with async_session() as db:
-                counts = await seed_lessons(db, levels=levels, extra_content_files=args.extra_content_file)
+                counts = await seed_lessons(
+                    db,
+                    levels=levels,
+                    extra_content_files=args.extra_content_file,
+                    only_extra_content_files=args.only_extra_content_files,
+                    force_extra_unpublished=args.force_extra_unpublished,
+                )
                 for key, val in counts.items():
                     print(f"  {key}: {val}")
     finally:

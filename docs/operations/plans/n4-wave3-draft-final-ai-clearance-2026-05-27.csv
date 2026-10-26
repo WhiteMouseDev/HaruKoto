@@ -1,0 +1,4 @@
+target_key,packet,new_verdict,new_notes
+HN4-018 script:2,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT differs only by homophone kanji choice 機械/機会; not native-speaker review.
+HN4-019 script:0,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and STT differs only by numeral notation 三時/3時; not native-speaker review.
+HN4-019 question:4,docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md,PASS,Delegated AI-assisted PASS: machine probe passed and Japanese-oriented STT translated a Korean prompt shape; not native-speaker review.

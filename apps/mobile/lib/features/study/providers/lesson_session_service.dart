@@ -14,8 +14,11 @@ class LessonSessionService {
 
   final Ref _ref;
 
-  Future<void> startLesson(String lessonId) {
-    return _ref.read(studyRepositoryProvider).startLesson(lessonId);
+  Future<LessonProgressModel> startLesson(String lessonId) async {
+    final progress =
+        await _ref.read(studyRepositoryProvider).startLesson(lessonId);
+    if (_ref.mounted) _ref.invalidate(chaptersProvider);
+    return progress;
   }
 
   Future<LessonSubmitResultModel> submitLesson({

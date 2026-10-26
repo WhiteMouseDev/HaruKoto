@@ -160,10 +160,20 @@ def build_regeneration_plan(
     packet_paths: list[Path],
     machine_report_paths: list[Path],
     source_verdicts: set[str] | None = None,
+    target_keys: set[str] | None = None,
 ) -> FlagRegenerationPlan:
     queue = build_queue(packet_paths=packet_paths, machine_report_paths=machine_report_paths)
     allowed_verdicts = source_verdicts or {"FLAG"}
     items = [_to_regeneration_item(item) for item in queue.items if item.verdict in allowed_verdicts]
+    if target_keys is not None:
+        found_keys = {item.target_key for item in items}
+        missing_keys = target_keys - found_keys
+        if missing_keys:
+            verdict_label = ", ".join(sorted(allowed_verdicts))
+            raise ValueError(
+                f"target(s) not found in source verdict(s) {verdict_label}: {', '.join(sorted(missing_keys))}"
+            )
+        items = [item for item in items if item.target_key in target_keys]
 
     return FlagRegenerationPlan(
         total_review_items=queue.total_items,
@@ -349,6 +359,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Include rows with this current verdict. Defaults to FLAG. Repeatable, for example --source-verdict PENDING.",
     )
+    parser.add_argument("--target-key", action="append", default=None, help="Limit to one target key; repeatable.")
     parser.add_argument("--markdown-output", required=True, type=Path, help="Markdown regeneration plan output path.")
     parser.add_argument("--csv-output", type=Path, default=None, help="Optional regeneration manifest CSV output path.")
     return parser.parse_args()
@@ -363,6 +374,7 @@ def main() -> None:
         packet_paths=packet_paths,
         machine_report_paths=machine_report_paths,
         source_verdicts=source_verdicts,
+        target_keys=set(args.target_key) if args.target_key else None,
     )
 
     args.markdown_output.parent.mkdir(parents=True, exist_ok=True)

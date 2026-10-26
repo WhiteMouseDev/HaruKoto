@@ -18,7 +18,8 @@ import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_continue_banner.dart';
 import 'widgets/lesson_level_empty_state.dart';
-import 'widgets/study_skeleton.dart';
+import 'widgets/study_kana_section.dart';
+import 'widgets/saved_lesson_section.dart';
 
 /// Represents a study category tab.
 enum StudyCategory {
@@ -45,21 +46,10 @@ class _StudyPageState extends ConsumerState<StudyPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dashboardAsync = ref.watch(dashboardProvider);
     final preferences = ref.watch(userPreferencesProvider);
 
-    final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
     final jlptLevel = preferences.jlptLevel;
-
-    final isLoading = dashboardAsync.isLoading && !dashboardAsync.hasValue;
-    if (isLoading) {
-      return const Scaffold(body: SafeArea(child: StudySkeleton()));
-    }
-
-    // Kana visibility
     final showKana = preferences.showKana;
-    final kanaCompleted = dashboard?.kanaProgress?.completed ?? false;
-    final showKanaCard = showKana && !kanaCompleted;
 
     // Watch review summary
     final reviewAsync = ref.watch(reviewSummaryProvider(jlptLevel));
@@ -207,6 +197,11 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                   ),
                 ),
 
+              if (chapterList != null)
+                SliverToBoxAdapter(
+                  child: SavedLessonSection(jlptLevel: jlptLevel),
+                ),
+
               // Inline chapter cards
               SliverToBoxAdapter(
                 child: chaptersAsync.when(
@@ -263,17 +258,16 @@ class _StudyPageState extends ConsumerState<StudyPage> {
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
               // 4. Kana Card (conditional)
-              if (showKanaCard)
+              if (showKana)
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: _KanaBootcampCard(dashboard: dashboard!),
+                    child: StudyKanaSection(
+                      dataBuilder: (progress) =>
+                          _KanaBootcampCard(progress: progress),
+                    ),
                   ),
                 ),
-
-              if (showKanaCard)
-                // Bottom padding
-                const SliverToBoxAdapter(child: SizedBox(height: 40)),
             ],
           ),
         ),
@@ -548,9 +542,9 @@ class _ReviewIdleBar extends StatelessWidget {
 // ── Kana Bootcamp Card ──
 
 class _KanaBootcampCard extends StatelessWidget {
-  final DashboardModel dashboard;
+  final KanaProgressData progress;
 
-  const _KanaBootcampCard({required this.dashboard});
+  const _KanaBootcampCard({required this.progress});
 
   @override
   Widget build(BuildContext context) {
@@ -560,11 +554,9 @@ class _KanaBootcampCard extends StatelessWidget {
         isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
     final borderColor =
         isLight ? AppColors.lightBorder : theme.colorScheme.outline;
-    final kana = dashboard.kanaProgress;
-    final learned =
-        (kana?.hiragana.learned ?? 0) + (kana?.katakana.learned ?? 0);
-    final total = (kana?.hiragana.total ?? 0) + (kana?.katakana.total ?? 0);
-    final progress = total > 0 ? learned / total : 0.0;
+    final learned = progress.hiragana.learned + progress.katakana.learned;
+    final total = progress.hiragana.total + progress.katakana.total;
+    final fraction = learned / total;
 
     return Material(
       color: Colors.transparent,
@@ -626,7 +618,7 @@ class _KanaBootcampCard extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(AppSizes.progressRadius),
                             child: LinearProgressIndicator(
-                              value: progress,
+                              value: fraction,
                               minHeight: AppSizes.progressHeight,
                               backgroundColor: AppColors.sakuraTrack,
                               color: AppColors.sakura,

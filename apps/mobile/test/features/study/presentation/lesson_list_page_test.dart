@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/presentation/lesson_list_page.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
@@ -136,6 +137,8 @@ Future<void> _pumpLessonListPage(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
         sharedPreferencesProvider.overrideWith((ref) => prefs),
         chaptersProvider(jlptLevel).overrideWith(
           (ref) => Future.value(ChapterListModel(chapters: chapters)),
