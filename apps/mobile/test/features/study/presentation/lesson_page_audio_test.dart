@@ -86,6 +86,55 @@ void main() {
     expect(h.repository.submitCalls, 0);
     await h.close(tester);
   });
+
+  testWidgets(
+      'late disposal of an old page preserves the new same-lesson playback owner',
+      (tester) async {
+    final h = await _openPage(tester);
+    h.actions.goToVocabLearning();
+    h.actions.goToGrammarLearning();
+    h.actions.goToGuidedReading();
+    await tester.pumpAndSettle();
+    var keepOldPage = true;
+    late StateSetter updateHost;
+    const newPageKey = ValueKey('new-lesson-page');
+    // Retain the old page until the replacement has started its own audio,
+    // reproducing the ordering of a late route reverse-transition teardown.
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: h.container,
+      child: MaterialApp(
+        home: StatefulBuilder(builder: (context, setState) {
+          updateHost = setState;
+          return Stack(children: [
+            if (keepOldPage)
+              LessonPage(
+                  key: const ValueKey('old-lesson-page'),
+                  lessonId: resumeLessonId,
+                  ttsService: h.audio.service),
+            LessonPage(
+                key: newPageKey,
+                lessonId: resumeLessonId,
+                ttsService: h.audio.service),
+          ]);
+        }),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.descendant(
+        of: find.byKey(newPageKey), matching: find.text('전체 듣기')));
+    await _pumpTts(tester);
+    final newOwner = h.audio.service.playback.value.owner;
+    final newPlayer = h.audio.players.single;
+    expect(h.audio.service.playback.value.phase, TtsPlaybackPhase.playing);
+    updateHost(() => keepOldPage = false);
+    await tester.pump();
+    expect(find.byType(LessonPage), findsOneWidget);
+    expect(h.audio.service.playback.value.owner, same(newOwner));
+    expect(h.audio.service.playback.value.phase, TtsPlaybackPhase.playing);
+    expect(newPlayer.wantsPlayback, isTrue);
+    expect(newPlayer.disposed, isFalse);
+    await h.close(tester);
+  });
 }
 
 class _PageHarness {

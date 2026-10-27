@@ -40,7 +40,6 @@ class _LessonPageState extends ConsumerState<LessonPage>
 
   @override
   void dispose() {
-    _tts.stop(lessonId: widget.lessonId);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
