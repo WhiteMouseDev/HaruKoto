@@ -3,18 +3,21 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../../../shared/widgets/tts_play_button.dart';
+import '../../../../core/services/tts_service.dart';
 import '../../data/models/lesson_models.dart';
 import 'lesson_dialogue_bubble.dart';
+import 'lesson_dialogue_audio_control.dart';
 
 class LessonGuidedReadingStep extends StatefulWidget {
   final LessonDetailModel detail;
   final VoidCallback? onNext;
+  final TtsService? ttsService;
 
   const LessonGuidedReadingStep({
     super.key,
     required this.detail,
     required this.onNext,
+    this.ttsService,
   });
 
   @override
@@ -115,41 +118,12 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
                 ),
                 const SizedBox(height: AppSizes.sm),
               ],
-              if (reading.audioUrl != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSizes.gap,
-                    vertical: AppSizes.sm,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.headphones,
-                        size: 16,
-                        color: AppColors.primaryStrong,
-                      ),
-                      const SizedBox(width: AppSizes.sm),
-                      Text(
-                        '전체 듣기',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.primaryStrong,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Spacer(),
-                      TtsPlayButton(
-                        url: reading.audioUrl,
-                        iconSize: 18,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSizes.sm),
-              ],
+              LessonDialogueAudioControl(
+                lessonId: widget.detail.id,
+                reading: reading,
+                ttsService: widget.ttsService,
+              ),
+              const SizedBox(height: AppSizes.sm),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -176,6 +150,7 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
                       entry.key,
                       LessonDialogueBubble(
                         line: entry.value,
+                        ttsService: widget.ttsService,
                         lessonId: widget.detail.id,
                         scriptLineIndex: entry.key,
                         showTranslation: _showTranslation,
@@ -196,7 +171,13 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
               width: double.infinity,
               height: AppSizes.buttonHeight,
               child: FilledButton.icon(
-                onPressed: widget.onNext,
+                onPressed: widget.onNext == null
+                    ? null
+                    : () {
+                        (widget.ttsService ?? TtsService())
+                            .stop(lessonId: widget.detail.id);
+                        widget.onNext!();
+                      },
                 icon: const Icon(LucideIcons.checkCircle),
                 label: const Text('이해 체크로'),
               ),

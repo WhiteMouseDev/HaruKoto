@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/lesson_models.dart';
+import '../../../../core/services/tts_service.dart';
 import '../../domain/lesson_flow_policy.dart';
 import '../../providers/lesson_session_provider.dart';
 import 'lesson_learning_steps.dart';
@@ -19,6 +20,7 @@ class LessonStepContent extends ConsumerWidget {
     required this.session,
     required this.totalSteps,
     required this.onExit,
+    this.ttsService,
   });
 
   final String lessonId;
@@ -26,6 +28,7 @@ class LessonStepContent extends ConsumerWidget {
   final LessonSessionState session;
   final int totalSteps;
   final VoidCallback onExit;
+  final TtsService? ttsService;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,6 +65,7 @@ class LessonStepContent extends ConsumerWidget {
       case LessonStep.guidedReading:
         return LessonGuidedReadingStep(
           key: const ValueKey('step-1'),
+          ttsService: ttsService,
           detail: detail,
           onNext: session.starting
               ? null
