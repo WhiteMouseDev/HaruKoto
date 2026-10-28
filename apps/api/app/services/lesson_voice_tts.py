@@ -11,7 +11,8 @@ from typing import Any
 from app.config import settings
 from app.services.ai_speech import TtsResult
 
-_POLICY_VERSION = "n5-speaker-voices-v1"
+_POLICY_VERSION = "n5-speaker-voices-v2"
+_N5_DIALOGUE_MODEL_ID = "eleven_v4"
 _SPEECH_MODELS = frozenset({"eleven_multilingual_v2", "eleven_flash_v2_5", "eleven_turbo_v2_5"})
 _EXPRESSIVE_MODELS = frozenset({"eleven_v3", "eleven_v4"})
 
@@ -48,7 +49,7 @@ def lesson_voice_routing_enabled() -> bool:
 
 
 def build_lesson_voice_profile(text: str, voice_alias: str | None, *, model_id: str | None = None) -> LessonVoiceProfile:
-    """Resolve server-owned role metadata, without calling a provider or changing caches."""
+    """Resolve the selected N5 policy; model overrides are for explicit review jobs."""
     female = settings.ELEVENLABS_LESSON_FEMALE_VOICE_ID.strip()
     male = settings.ELEVENLABS_LESSON_MALE_VOICE_ID.strip()
     if not female or not male or female == male:
@@ -61,12 +62,15 @@ def build_lesson_voice_profile(text: str, voice_alias: str | None, *, model_id: 
         raise RuntimeError("Lesson speaker voice alias is missing or unsupported")
     assert voice_alias is not None
     voice_id = voices[voice_alias]
-    model = (settings.ELEVENLABS_MODEL_ID if model_id is None else model_id).strip()
+    # Dialogue adoption is independent of the global word/kana/question model.
+    model = (_N5_DIALOGUE_MODEL_ID if model_id is None else model_id).strip()
     if model not in _SPEECH_MODELS | _EXPRESSIVE_MODELS:
         raise RuntimeError("Lesson TTS model is unsupported")
 
     is_short = len(text) <= 8
-    actual_text = f"{text}。" if is_short else text
+    # The selected v4 samples used the exact source, including short punctuation.
+    # Preserve historical formatting only for explicit older-model review jobs.
+    actual_text = f"{text}。" if is_short and model != "eleven_v4" else text
     payload: dict[str, Any] = {
         "text": actual_text,
         "voice_id": voice_id,
@@ -77,6 +81,8 @@ def build_lesson_voice_profile(text: str, voice_alias: str | None, *, model_id: 
     if model in _EXPRESSIVE_MODELS:
         voice_settings = {"stability": 0.5}
         if model == "eleven_v4":
+            if voice_alias == "japanese_female_1":
+                voice_settings["stability"] = 0.8
             voice_settings["similarity_boost"] = 0.75
         payload["voice_settings"] = voice_settings
     else:

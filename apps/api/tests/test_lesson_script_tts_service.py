@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import json
 import uuid
 from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+from httpx import Client, MockTransport, Request, Response
 
 from app.models.enums import JlptLevel
 from app.models.tts import TtsAudio
@@ -212,6 +214,64 @@ async def test_n5_new_audio_routes_content_role_and_versions_only_new_file(
     assert db.added[0].field == "script_line" and db.added[0].speed == 1.0
     assert db.commit_calls == 1 and db.execute_calls == 2
     assert lesson.content_jsonb["reading"]["script"] == script
+    legacy.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("alias", "voice_id", "stability"),
+    [("japanese_male_1", "male-voice", 0.5), ("japanese_female_1", "female-voice", 0.8)],
+)
+async def test_n5_cache_miss_serializes_selected_v4_role_profile_without_changing_global_tts(
+    monkeypatch: pytest.MonkeyPatch, alias: str, voice_id: str, stability: float
+) -> None:
+    from elevenlabs.client import ElevenLabs
+
+    _enable_lesson_voices(monkeypatch)
+    text = "学生です。"
+    script = [{"text": text, "voice_id": alias}]
+    lesson = _make_lesson(script=script)
+    db = _FakeDb([_ScalarOneOrNoneResult(lesson), _ScalarOneOrNoneResult(None)])
+    legacy = AsyncMock(side_effect=AssertionError("N5 role generation must not call generic TTS"))
+    uploader = AsyncMock(return_value="https://cdn.example.com/selected-v4.mp3")
+    requests: list[Request] = []
+
+    def handle(request: Request) -> Response:
+        requests.append(request)
+        return Response(200, headers={"content-type": "audio/mpeg"}, content=b"synthetic-selected-v4")
+
+    # Exercise service routing, profile resolution and the locked SDK together;
+    # the in-memory transport cannot call ElevenLabs or create paid audio.
+    with Client(transport=MockTransport(handle)) as http_client:
+        sdk = ElevenLabs(api_key="test-api-key", httpx_client=http_client)
+        with patch("elevenlabs.client.ElevenLabs", return_value=sdk):
+            result = await generate_lesson_script_line_tts(
+                db,  # type: ignore[arg-type]
+                lesson_id=lesson.id,
+                line_index=0,
+                tts_generator=legacy,
+                upload_to_gcs=uploader,
+            )
+
+    assert len(requests) == 1
+    request = requests[0]
+    assert request.method == "POST" and request.url.path == f"/v1/text-to-speech/{voice_id}"
+    assert request.url.params["output_format"] == "mp3_44100_128"
+    assert json.loads(request.content) == {
+        "text": text,
+        "model_id": "eleven_v4",
+        "language_code": "ja",
+        "voice_settings": {"stability": stability, "similarity_boost": 0.75},
+    }
+    assert lesson_voice_tts.settings.ELEVENLABS_MODEL_ID == "eleven_multilingual_v2"
+    assert lesson.content_jsonb["reading"]["script"] == script
+    profile = lesson_voice_tts.build_lesson_voice_profile(text, alias)
+    path, audio = uploader.await_args.args
+    assert path.startswith(f"tts/lesson/{lesson.id}/script-line-0-voice-{profile.fingerprint}-gen-")
+    assert audio == b"synthetic-selected-v4"
+    assert db.added[0].model == "eleven_v4" and db.added[0].text == text
+    assert db.commit_calls == 1 and db.execute_calls == 2
+    assert result.audio_url == "https://cdn.example.com/selected-v4.mp3"
     legacy.assert_not_awaited()
 
 

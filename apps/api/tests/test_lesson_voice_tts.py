@@ -37,8 +37,8 @@ def test_activation_detects_partial_settings(monkeypatch: pytest.MonkeyPatch, fe
 
 
 @pytest.mark.parametrize(("alias", "voice_id"), [("japanese_female_1", "female-voice"), ("japanese_male_1", "male-voice")])
-def test_profile_resolves_role_and_exact_short_text_request(alias: str, voice_id: str) -> None:
-    profile = lesson_voice_tts.build_lesson_voice_profile("学生", alias)
+def test_explicit_legacy_model_preserves_exact_short_text_request(alias: str, voice_id: str) -> None:
+    profile = lesson_voice_tts.build_lesson_voice_profile("学生", alias, model_id="eleven_multilingual_v2")
     payload = json.loads(profile.request_json)
     assert profile.original_text == "学生"
     assert payload == {
@@ -49,13 +49,46 @@ def test_profile_resolves_role_and_exact_short_text_request(alias: str, voice_id
         "output_format": "mp3_44100_128",
         "voice_settings": {"stability": 0.85, "similarity_boost": 0.85, "style": 0.0, "speed": 1.0, "use_speaker_boost": True},
     }
-    assert profile.fingerprint == lesson_voice_tts.build_lesson_voice_profile("学生", alias).fingerprint
+    assert profile.fingerprint == lesson_voice_tts.build_lesson_voice_profile("学生", alias, model_id="eleven_multilingual_v2").fingerprint
 
 
-def test_profile_preserves_existing_short_input_punctuation_behavior() -> None:
-    profile = lesson_voice_tts.build_lesson_voice_profile("学生です。", "japanese_male_1")
+def test_explicit_legacy_model_preserves_existing_short_input_punctuation_behavior() -> None:
+    profile = lesson_voice_tts.build_lesson_voice_profile("学生です。", "japanese_male_1", model_id="eleven_multilingual_v2")
     assert profile.original_text == "学生です。"
     assert json.loads(profile.request_json)["text"] == "学生です。。"
+
+
+@pytest.mark.parametrize("global_model", ["eleven_flash_v2_5", "eleven_multilingual_v2", "unrelated-future-model", ""])
+@pytest.mark.parametrize(
+    ("alias", "voice_id", "stability"),
+    [("japanese_male_1", "male-voice", 0.5), ("japanese_female_1", "female-voice", 0.8)],
+)
+@pytest.mark.parametrize("text", ["学生", "学生です。", "はい！", "本当？", "はい、", "私は映画が好きです。"])
+def test_selected_v4_profile_preserves_raw_text_role_settings_and_global_isolation(
+    monkeypatch: pytest.MonkeyPatch, global_model: str, alias: str, voice_id: str, stability: float, text: str
+) -> None:
+    monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_MODEL_ID", global_model)
+    profile = lesson_voice_tts.build_lesson_voice_profile(text, alias)
+    assert profile.model_id == "eleven_v4" and profile.original_text == text
+    assert json.loads(profile.request_json) == {
+        "text": text,
+        "voice_id": voice_id,
+        "model_id": "eleven_v4",
+        "language_code": "ja",
+        "output_format": "mp3_44100_128",
+        "voice_settings": {"stability": stability, "similarity_boost": 0.75},
+    }
+    assert global_model == lesson_voice_tts.settings.ELEVENLABS_MODEL_ID
+    assert profile.policy_version == "n5-speaker-voices-v2"
+
+
+def test_selected_profile_fingerprint_covers_stability_without_other_changes() -> None:
+    profile = lesson_voice_tts.build_lesson_voice_profile("私は映画が好きです。", "japanese_female_1")
+    payload = json.loads(profile.request_json)
+    assert payload["voice_settings"]["stability"] == 0.8
+    payload["voice_settings"]["stability"] = 0.5
+    previous_stability = replace(profile, request_json=json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+    assert profile.fingerprint != previous_stability.fingerprint
 
 
 @pytest.mark.parametrize("alias", [None, "", "Kore", "japanese_male_2"])
@@ -98,9 +131,9 @@ def test_unknown_model_requires_explicit_support() -> None:
 
 
 def test_fingerprint_covers_role_voice_model_raw_and_sent_text_policy_and_speed(monkeypatch: pytest.MonkeyPatch) -> None:
-    original = lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1")
+    original = lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1", model_id="eleven_multilingual_v2")
     variants = [
-        lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_female_1"),
+        lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_female_1", model_id="eleven_multilingual_v2"),
         lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1", model_id="eleven_v4"),
         replace(original, original_text="another original"),
         replace(original, request_json=original.request_json.replace("学生。", "学生")),
@@ -108,10 +141,13 @@ def test_fingerprint_covers_role_voice_model_raw_and_sent_text_policy_and_speed(
         replace(original, speed=0.9),
     ]
     monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_LESSON_MALE_VOICE_ID", "another-male")
-    variants.append(lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1"))
+    variants.append(lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1", model_id="eleven_multilingual_v2"))
     assert all(profile.fingerprint != original.fingerprint for profile in variants)
     monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_API_KEY", "another-api-key")
-    assert lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1").fingerprint == variants[-1].fingerprint
+    assert (
+        lesson_voice_tts.build_lesson_voice_profile("学生", "japanese_male_1", model_id="eleven_multilingual_v2").fingerprint
+        == variants[-1].fingerprint
+    )
 
 
 @pytest.mark.asyncio
