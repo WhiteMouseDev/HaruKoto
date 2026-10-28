@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
+import '../../../../core/services/tts_service.dart';
 import '../../data/models/lesson_models.dart';
 
 final _kanaTtsTextPattern =
@@ -10,6 +11,7 @@ final _kanaTtsTextPattern =
 final _kanjiPattern = RegExp(r'[\u4E00-\u9FFF]');
 
 class LessonDialogueBubble extends StatelessWidget {
+  final TtsService? ttsService;
   final ScriptLineModel line;
   final String? lessonId;
   final int? scriptLineIndex;
@@ -19,6 +21,7 @@ class LessonDialogueBubble extends StatelessWidget {
 
   const LessonDialogueBubble({
     super.key,
+    this.ttsService,
     required this.line,
     this.lessonId,
     this.scriptLineIndex,
@@ -153,11 +156,15 @@ class LessonDialogueBubble extends StatelessWidget {
                       if (hasLessonScriptTarget)
                         TtsPlayButton(
                           lessonId: lessonId,
+                          ttsService: ttsService,
                           scriptLineIndex: scriptLineIndex,
                           iconSize: 16,
                         )
                       else if (_canUseKanaTts(line.text))
-                        TtsPlayButton(text: line.text.trim(), iconSize: 16),
+                        TtsPlayButton(
+                            text: line.text.trim(),
+                            iconSize: 16,
+                            ttsService: ttsService),
                     ],
                   ),
                   if (showTranslation && line.translation != null) ...[
