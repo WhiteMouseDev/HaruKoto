@@ -47,7 +47,7 @@ def test_resolve_lesson_script_line_tts_target_uses_server_content() -> None:
         "reading": {
             "script": [
                 {"text": "こんにちは。"},
-                {"text": "学生です。"},
+                {"text": "学生です。", "voice_id": "japanese_male_1"},
             ]
         }
     }
@@ -62,6 +62,7 @@ def test_resolve_lesson_script_line_tts_target_uses_server_content() -> None:
     assert target.target_id == f"{lesson_id}:script:1"
     assert target.field == "script_line"
     assert target.text == "学生です。"
+    assert target.voice_alias == "japanese_male_1"
 
 
 def test_resolve_lesson_script_line_tts_target_rejects_missing_line() -> None:

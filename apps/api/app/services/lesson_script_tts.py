@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,8 +10,10 @@ from sqlalchemy.sql import Select
 
 from app.models.lesson import Lesson
 from app.models.tts import TtsAudio
+from app.services.lesson_voice_tts import build_lesson_voice_profile, generate_lesson_voice_tts, lesson_voice_routing_enabled
 from app.services.tts_generation import (
     TTS_GENERATION_FAILED_DETAIL,
+    GeneratedTtsAudio,
     TtsGenerator,
     TtsServiceError,
     TtsUploader,
@@ -88,12 +90,19 @@ async def generate_lesson_script_line_tts(
     active_generations = _GENERATING if generating is None else generating
     with tts_generation_lock(target.target_id, active_generations, error_cls=LessonScriptTtsServiceError):
         try:
-            tts_result = await tts_generator(target.text)
+            tts_result: GeneratedTtsAudio
+            if getattr(lesson, "jlpt_level", None) == "N5" and lesson_voice_routing_enabled():
+                profile = build_lesson_voice_profile(target.text, target.voice_alias)
+                tts_result = await generate_lesson_voice_tts(profile)
+                gcs_path = f"tts/lesson/{lesson.id}/script-line-{line_index}-voice-{profile.fingerprint}-gen-{uuid4().hex}.mp3"
+            else:
+                tts_result = await tts_generator(target.text)
+                gcs_path = f"tts/lesson/{lesson.id}/script-line-{line_index}.mp3"
         except RuntimeError:
             logger.exception("TTS generation failed for lesson script target=%s, text=%r", target.target_id, target.text)
             raise LessonScriptTtsServiceError(status_code=502, detail=TTS_GENERATION_FAILED_DETAIL) from None
 
-        audio_url = await upload_to_gcs(f"tts/lesson/{lesson.id}/script-line-{line_index}.mp3", tts_result.audio)
+        audio_url = await upload_to_gcs(gcs_path, tts_result.audio)
 
         db.add(
             TtsAudio(
