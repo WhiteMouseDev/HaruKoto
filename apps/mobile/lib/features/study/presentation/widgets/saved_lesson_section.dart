@@ -6,14 +6,23 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/providers/user_preferences_provider.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
+import '../../domain/lesson_recommendation.dart';
 import '../../domain/saved_lesson_entry.dart';
 import '../../providers/saved_lesson_entry_provider.dart';
+import 'lesson_continue_banner.dart';
 
-/// A separate local entry point: server recommendations and route/station
-/// completion retain their original meanings.
+/// One continuation card; server recommendations remain the fallback and
+/// curriculum/station guidance retains its original order.
 class SavedLessonSection extends ConsumerStatefulWidget {
-  const SavedLessonSection({super.key, required this.jlptLevel});
+  const SavedLessonSection(
+      {super.key,
+      required this.jlptLevel,
+      this.recommendedLesson,
+      this.compact = false});
   final String jlptLevel;
+  final RecommendedLessonTarget? recommendedLesson;
+  final bool compact;
 
   @override
   ConsumerState<SavedLessonSection> createState() => _SavedLessonSectionState();
@@ -32,8 +41,8 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
     return entries.when(
       skipLoadingOnRefresh: false,
       skipLoadingOnReload: false,
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => _retry(context, () {
+      loading: () => _fallback(context, owner!),
+      error: (_, __) => _fallback(context, owner!, retry: () {
         if (!mounted || !_scopeCurrent(owner)) return;
         ref.invalidate(savedLessonEntriesProvider(jlptLevel));
       }),
@@ -44,8 +53,17 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
                 entry.accountId != owner || entry.jlptLevel != jlptLevel)) {
           return const SizedBox.shrink();
         }
-        if (data.entries.isEmpty && data.failedLessonIds.isEmpty) {
-          return const SizedBox.shrink();
+        void retry() {
+          if (!mounted || !_scopeCurrent(owner)) return;
+          for (final id in data.failedLessonIds) {
+            ref.invalidate(
+                savedLessonLookupProvider((accountId: owner!, lessonId: id)));
+          }
+        }
+
+        if (data.entries.isEmpty) {
+          return _fallback(context, owner!,
+              retry: data.failedLessonIds.isEmpty ? null : retry);
         }
         final theme = Theme.of(context);
         return Padding(
@@ -53,43 +71,53 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (data.entries.isNotEmpty) ...[
-                Text('이 기기에 저장된 레슨',
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text('학습 순서대로 표시해요. 열면 저장 위치를 확인해요.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.brightness == Brightness.light
-                            ? AppColors.lightSubtext
-                            : AppColors.darkSubtext)),
-                const SizedBox(height: 10),
-                for (final entry in data.entries.take(3))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _SavedEntryTile(
-                        entry: entry, onTap: () => _open(context, ref, entry)),
-                  ),
-                if (data.entries.length > 3)
-                  OutlinedButton(
-                    onPressed: () => _choose(context, ref, data.entries),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.onSurface),
-                    child: Text('저장된 레슨 ${data.entries.length}개 모두 보기'),
-                  ),
+              Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
+                    Text('이어서 학습하기',
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w700)),
+                    TextButton(
+                      onPressed: () => _choose(context, ref, data.entries),
+                      style: TextButton.styleFrom(
+                          foregroundColor: theme.colorScheme.onSurface),
+                      child: Text('모두 보기 · ${data.entries.length}개'),
+                    ),
+                  ]),
+              const SizedBox(height: 4),
+              _SavedEntryTile(
+                  entry: data.entries.first,
+                  onTap: () => _open(context, ref, data.entries.first)),
+              if (data.failedLessonIds.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _retry(context, retry),
               ],
-              if (data.failedLessonIds.isNotEmpty)
-                _retry(context, () {
-                  if (!mounted || !_scopeCurrent(owner)) return;
-                  for (final id in data.failedLessonIds) {
-                    ref.invalidate(savedLessonLookupProvider(
-                        (accountId: owner!, lessonId: id)));
-                  }
-                }),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _fallback(BuildContext context, String owner, {VoidCallback? retry}) {
+    final candidate = widget.recommendedLesson;
+    final target = candidate?.chapter.jlptLevel == jlptLevel ? candidate : null;
+    if (target == null && retry == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (target != null)
+          LessonContinueBanner(
+              target: target,
+              compact: widget.compact,
+              onTap: () => _openRecommended(context, owner, target)),
+        if (retry != null) ...[
+          if (target != null) const SizedBox(height: 8),
+          _retry(context, retry),
+        ],
+      ]),
     );
   }
 
@@ -113,9 +141,31 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
       ref.read(userPreferencesProvider).jlptLevel == jlptLevel;
 
   bool _current(WidgetRef ref, SavedLessonEntry entry) =>
-      ref.read(currentAccountReaderProvider)() == entry.accountId &&
-      ref.read(currentAccountIdProvider) == entry.accountId &&
-      ref.read(userPreferencesProvider).jlptLevel == entry.jlptLevel;
+      _scopeCurrent(entry.accountId) && entry.jlptLevel == jlptLevel;
+
+  Future<void> _openRecommended(BuildContext context, String owner,
+      RecommendedLessonTarget target) async {
+    if (!mounted ||
+        !context.mounted ||
+        _opening ||
+        !_scopeCurrent(owner) ||
+        target.chapter.jlptLevel != jlptLevel) {
+      return;
+    }
+    _opening = true;
+    try {
+      await context.push<void>('/study/lessons/${target.lesson.id}');
+      if (!context.mounted ||
+          !_scopeCurrent(owner) ||
+          target.chapter.jlptLevel != jlptLevel) {
+        return;
+      }
+      ref.invalidate(savedLessonLookupProvider(
+          (accountId: owner, lessonId: target.lesson.id)));
+    } finally {
+      _opening = false;
+    }
+  }
 
   Future<void> _open(
       BuildContext context, WidgetRef ref, SavedLessonEntry entry) async {
@@ -149,6 +199,7 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
         context: context,
         useRootNavigator: true,
         isScrollControlled: true,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         builder: (_) => _SavedLessonPicker(entries: entries),
       );
     } finally {
@@ -208,7 +259,7 @@ class _SavedEntryTile extends StatelessWidget {
                         : LucideIcons.playCircle,
                     size: 18,
                     color: theme.colorScheme.primary),
-                Text(hint.actionLabel,
+                Text(hint.needsRecordCheck ? hint.actionLabel : '이어하기',
                     style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w700)),
@@ -230,39 +281,89 @@ class _SavedLessonPicker extends ConsumerWidget {
     final owner = ref.watch(currentAccountIdProvider);
     final level = ref.watch(userPreferencesProvider).jlptLevel;
     final current = entries.isNotEmpty &&
-        owner == entries.first.accountId &&
+        owner != null &&
         ref.read(currentAccountReaderProvider)() == owner &&
-        level == entries.first.jlptLevel;
+        entries.every(
+            (entry) => entry.accountId == owner && entry.jlptLevel == level);
+    final hasLegacy = entries.any((entry) => entry.hint.lastStudiedAt == null);
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.8,
         child: !current
             ? const Center(child: Text('계정이나 학습 레벨이 변경됐어요. 목록을 다시 열어주세요.'))
-            : ListView(
-                padding: const EdgeInsets.all(20),
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('저장된 레슨 고르기',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 6),
-                  const Text('학습 순서대로 표시해요. 열면 저장 위치를 확인해요.'),
-                  const SizedBox(height: 16),
-                  for (final entry in entries)
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _SavedEntryTile(
-                            entry: entry,
-                            onTap: () {
-                              if (!context.mounted ||
-                                  ref.read(currentAccountIdProvider) !=
-                                      entry.accountId ||
-                                  ref.read(currentAccountReaderProvider)() !=
-                                      entry.accountId ||
-                                  ref.read(userPreferencesProvider).jlptLevel !=
-                                      entry.jlptLevel) {
-                                return;
-                              }
-                              Navigator.pop(context, entry);
-                            })),
+                  const Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: AppSheetHandle()),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('이어할 레슨 모두 보기',
+                                style: Theme.of(context).textTheme.titleLarge),
+                            const SizedBox(height: 6),
+                            Text(
+                                hasLegacy
+                                    ? '최근 학습순 · 이전 저장 기록은 학습 순서'
+                                    : '최근 학습한 순서예요.',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? AppColors.lightSubtext
+                                            : AppColors.darkSubtext)),
+                          ])),
+                  Expanded(
+                      child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                    itemCount: entries.length,
+                    separatorBuilder: (context, _) => Divider(
+                        height: 1,
+                        color: Theme.of(context).colorScheme.outline),
+                    itemBuilder: (context, index) {
+                      final entry = entries[index];
+                      return ListTile(
+                          contentPadding: const EdgeInsets.all(8),
+                          title: Text(entry.lesson.title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface)),
+                          subtitle: Text(
+                              '${entry.jlptLevel} · ${entry.chapter.chapterNo}번 역 · '
+                              '${entry.lesson.chapterLessonNo}번째 레슨\n${entry.hint.label}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.light
+                                          ? AppColors.lightSubtext
+                                          : AppColors.darkSubtext)),
+                          trailing: Icon(LucideIcons.chevronRight,
+                              color: Theme.of(context).colorScheme.onSurface),
+                          onTap: () {
+                            if (!context.mounted ||
+                                ref.read(currentAccountIdProvider) !=
+                                    entry.accountId ||
+                                ref.read(currentAccountReaderProvider)() !=
+                                    entry.accountId ||
+                                ref.read(userPreferencesProvider).jlptLevel !=
+                                    entry.jlptLevel) {
+                              return;
+                            }
+                            Navigator.pop(context, entry);
+                          });
+                    },
+                  )),
                 ],
               ),
       ),

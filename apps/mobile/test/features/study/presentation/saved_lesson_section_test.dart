@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -18,6 +19,9 @@ import 'package:harukoto_mobile/features/study/presentation/lesson_list_page.dar
 import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/study_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/saved_lesson_section.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_continue_banner.dart';
+import 'package:harukoto_mobile/features/study/providers/saved_lesson_entry_provider.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_recommendation.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,15 +30,178 @@ import '../fixtures/lesson_resume_fixture.dart';
 import '../fixtures/saved_lesson_entry_fixture.dart';
 
 void main() {
+  testWidgets('many saved lessons render one primary card and a view-all entry',
+      (tester) async {
+    final store = _WidgetStore();
+    for (final id in ['first', 'second', 'third', 'later']) {
+      store.values['account-a/$id'] = rawCheckpoint(id);
+    }
+    await _mount(tester, sectionOnly: true, store: store);
+    expect(find.byType(OutlinedButton), findsOneWidget);
+    expect(find.text('모두 보기 · 4개'), findsOneWidget);
+  });
+
+  testWidgets(
+      'forty saved lessons keep one card and the last lazy row is reachable',
+      (tester) async {
+    final store = _WidgetStore();
+    for (var i = 0; i < 40; i++) {
+      final id = 'lesson-${i.toString().padLeft(2, '0')}';
+      store.values['account-a/$id'] = _timedDraft(id, 1000 + i);
+    }
+    final before = Map<String, String>.from(store.values);
+    final f = await _mount(tester,
+        sectionOnly: true,
+        store: store,
+        addDefaultDraft: false,
+        repositoryOverride: _ManyLessonsRepository());
+    expect(find.byType(OutlinedButton), findsOneWidget);
+    expect(find.text('저장 레슨 39'), findsOneWidget);
+    expect(find.text('모두 보기 · 40개'), findsOneWidget);
+    await tester.tap(find.text('모두 보기 · 40개'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ListTile).evaluate().length, lessThan(40));
+    await tester.scrollUntilVisible(find.text('저장 레슨 00'), 500,
+        scrollable: find
+            .descendant(
+                of: find.byType(BottomSheet), matching: find.byType(Scrollable))
+            .first);
+    await tester.tap(find.widgetWithText(ListTile, '저장 레슨 00'));
+    await tester.pumpAndSettle();
+    expect(f.opened, ['lesson-00']);
+    expect(find.byType(BottomSheet), findsNothing);
+    expect(store.values, before);
+    expect(f.repository.fetchCalls, 0);
+    expect(f.repository.submitCalls, 0);
+  });
+
+  for (final fullList in [false, true]) {
+    testWidgets(
+        'one primary local card even when it is the recommendation $fullList',
+        (tester) async {
+      final store = _WidgetStore();
+      store.values['account-a/first'] = _timedDraft('first', 2000);
+      store.values['account-a/later'] = _timedDraft('later', 1000);
+      final f = await _mount(tester, fullList: fullList, store: store);
+      final section = find.byType(SavedLessonSection);
+      expect(
+          find.descendant(of: section, matching: find.byType(OutlinedButton)),
+          findsOneWidget);
+      expect(find.descendant(of: section, matching: find.text('저장 레슨 first')),
+          findsOneWidget);
+      expect(find.byType(LessonContinueBanner), findsNothing);
+      expect(find.text('모두 보기 · 2개'), findsOneWidget);
+      expect(f.repository.startCalls, 0);
+      expect(f.repository.submitCalls, 0);
+    });
+  }
+
+  testWidgets(
+      'newest primary and full-list order use study time, legacy remains reachable',
+      (tester) async {
+    final store = _WidgetStore();
+    store.values['account-a/first'] = rawCheckpoint('first');
+    store.values['account-a/second'] = _timedDraft('second', 1000);
+    store.values['account-a/later'] = _timedDraft('later', 2000);
+    await _mount(tester, sectionOnly: true, store: store);
+    expect(find.text('저장 레슨 later'), findsOneWidget);
+    expect(find.text('저장 레슨 first'), findsNothing);
+    await tester.tap(find.text('모두 보기 · 3개'));
+    await tester.pumpAndSettle();
+    final rows = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+    expect(rows.map((row) => (row.title! as Text).data),
+        ['저장 레슨 later', '저장 레슨 second', '저장 레슨 first']);
+    expect(find.text('최근 학습순 · 이전 저장 기록은 학습 순서'), findsOneWidget);
+  });
+
+  testWidgets('empty saved list leaves one server recommendation',
+      (tester) async {
+    final f = await _mount(tester, addDefaultDraft: false);
+    expect(find.byType(LessonContinueBanner), findsOneWidget);
+    expect(find.text('이어서 학습하기'), findsNothing);
+    expect(find.text('모두 보기 · 0개'), findsNothing);
+    expect(f.repository.startCalls, 0);
+    expect(f.repository.submitCalls, 0);
+  });
+
+  testWidgets('local loading replaces the fallback with one saved card',
+      (tester) async {
+    final gate = Completer<void>();
+    final store = _WidgetStore()..readGate = gate;
+    await _mount(tester, store: store);
+    expect(find.byType(LessonContinueBanner), findsOneWidget);
+    expect(find.text('이어서 학습하기'), findsNothing);
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.byType(LessonContinueBanner), findsNothing);
+    expect(find.text('이어서 학습하기'), findsOneWidget);
+    expect(find.byType(OutlinedButton), findsOneWidget);
+  });
+
+  testWidgets('projection error keeps one server fallback and retry',
+      (tester) async {
+    final f = await _mount(tester, projectionError: true);
+    expect(find.byType(LessonContinueBanner), findsOneWidget);
+    expect(find.text('저장 위치 다시 확인'), findsOneWidget);
+    expect(find.text('이어서 학습하기'), findsNothing);
+    expect(f.repository.startCalls, 0);
+    expect(f.repository.submitCalls, 0);
+  });
+
+  for (final changeLevel in [false, true]) {
+    testWidgets(
+        'retained server fallback rejects ${changeLevel ? 'level' : 'account'} switch',
+        (tester) async {
+      final f = await _mount(tester, addDefaultDraft: false);
+      final old = tester
+          .widget<LessonContinueBanner>(find.byType(LessonContinueBanner))
+          .onTap!;
+      if (changeLevel) {
+        await f.container
+            .read(userPreferencesProvider.notifier)
+            .setJlptLevel('N4');
+      } else {
+        f.account = 'account-b';
+        f.container.invalidate(currentAccountIdProvider);
+      }
+      await tester.pumpAndSettle();
+      old();
+      await tester.pumpAndSettle();
+      expect(f.opened, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets(
+      'same section State rejects a retained N5 fallback after N4 rebuild',
+      (tester) async {
+    final f = await _mount(tester,
+        sectionOnly: true, sectionFallback: true, addDefaultDraft: false);
+    final oldState = tester.state(find.byType(SavedLessonSection));
+    final old = tester
+        .widget<LessonContinueBanner>(find.byType(LessonContinueBanner))
+        .onTap!;
+    await f.container.read(userPreferencesProvider.notifier).setJlptLevel('N4');
+    await tester.pumpAndSettle();
+    expect(identical(tester.state(find.byType(SavedLessonSection)), oldState),
+        isTrue);
+    expect(find.byType(LessonContinueBanner), findsNothing);
+    old();
+    await tester.pumpAndSettle();
+    expect(f.opened, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final fullList in [false, true]) {
     testWidgets(
         '${fullList ? 'full list' : 'study tab'} exposes later local draft '
-        'without changing the server recommendation', (tester) async {
+        'with one local continuation instead of a duplicate server banner',
+        (tester) async {
       final f = await _mount(tester, fullList: fullList);
-      expect(find.text('이 기기에 저장된 레슨'), findsOneWidget);
+      expect(find.text('이어서 학습하기'), findsOneWidget);
       expect(find.text('단어 학습 저장 위치'), findsOneWidget);
-      expect(find.text('추천 레슨 · Ch.1 · 1/4'), findsOneWidget);
-      expect(find.text('바로 시작'), findsOneWidget);
+      expect(find.text('추천 레슨 · Ch.1 · 1/4'), findsNothing);
+      expect(find.text('바로 시작'), findsNothing);
       expect(f.repository.fetchCalls, 0);
       expect(f.repository.startCalls, 0);
       expect(f.repository.submitCalls, 0);
@@ -46,7 +213,7 @@ void main() {
       'real entry navigation restores second vocabulary with one detail GET',
       (tester) async {
     final f = await _mount(tester, sectionOnly: true, realLesson: true);
-    await tester.tap(find.text('저장 위치 열기'));
+    await tester.tap(find.text('이어하기'));
     await tester.pumpAndSettle();
     expect(find.text('단어 2/3'), findsOneWidget);
     expect(find.text('猫'), findsOneWidget);
@@ -56,7 +223,7 @@ void main() {
     expect(f.repository.submitCalls, 0);
     await tester.tap(find.byIcon(LucideIcons.x));
     await tester.pumpAndSettle();
-    expect(find.text('저장 위치 열기'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -67,12 +234,13 @@ void main() {
     store.values['account-a/first'] = rawCheckpoint('first');
     final f = await _mount(tester, sectionOnly: true, store: store);
     expect(find.text('일부 저장 위치를 확인하지 못했어요.'), findsOneWidget);
-    expect(find.text('저장 위치 열기'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
     final raw = Map<String, String>.from(store.values);
     store.failed.clear();
     await tester.tap(find.text('저장 위치 다시 확인'));
     await tester.pumpAndSettle();
-    expect(find.text('저장 위치 열기'), findsNWidgets(2));
+    expect(find.text('이어하기'), findsOneWidget);
+    expect(find.text('모두 보기 · 2개'), findsOneWidget);
     expect(find.text('일부 저장 위치를 확인하지 못했어요.'), findsNothing);
     expect(store.values, raw);
     expect(f.repository.fetchCalls, 0);
@@ -88,7 +256,7 @@ void main() {
     final f =
         await _mount(tester, sectionOnly: true, store: store, realLesson: true);
     expect(find.text('제출 기록 확인'), findsOneWidget);
-    expect(find.text('저장 위치 열기'), findsNothing);
+    expect(find.text('이어하기'), findsNothing);
     final raw = Map<String, String>.from(store.values);
     await tester.tap(find.text('기록 확인'));
     await tester.pumpAndSettle();
@@ -105,22 +273,22 @@ void main() {
       (tester) async {
     final f = await _mount(tester, sectionOnly: true);
     final old = tester
-        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '저장 위치 열기'))
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '이어하기'))
         .onPressed!;
     f.account = 'account-b';
     f.container.invalidate(currentAccountIdProvider);
     await tester.pumpAndSettle();
-    expect(find.text('이 기기에 저장된 레슨'), findsNothing);
+    expect(find.text('이어서 학습하기'), findsNothing);
     old();
     await tester.pumpAndSettle();
     expect(f.opened, isEmpty);
     f.account = 'account-a';
     f.container.invalidate(currentAccountIdProvider);
     await tester.pumpAndSettle();
-    expect(find.text('저장 위치 열기'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
     await f.container.read(userPreferencesProvider.notifier).setJlptLevel('N4');
     await tester.pumpAndSettle();
-    expect(find.text('저장 위치 열기'), findsNothing);
+    expect(find.text('이어하기'), findsNothing);
     old();
     await tester.pumpAndSettle();
     expect(f.opened, isEmpty);
@@ -132,14 +300,14 @@ void main() {
       (tester) async {
     final f = await _mount(tester, sectionOnly: true);
     final old = tester
-        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '저장 위치 열기'))
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '이어하기'))
         .onPressed!;
     f.account =
         'account-b'; // No currentAccountId invalidation: stream is late.
     await f.container.read(userPreferencesProvider.notifier).setDailyGoal(15);
     await tester.pumpAndSettle();
     expect(find.text('저장 레슨 later'), findsNothing);
-    expect(find.text('저장 위치 열기'), findsNothing);
+    expect(find.text('이어하기'), findsNothing);
     old();
     await tester.pumpAndSettle();
     expect(f.opened, isEmpty);
@@ -153,17 +321,17 @@ void main() {
       store.values['account-a/$id'] = rawCheckpoint(id);
     }
     final f = await _mount(tester, sectionOnly: true, store: store);
-    expect(find.text('저장 위치 열기'), findsNWidgets(3));
-    await tester.ensureVisible(find.text('저장된 레슨 4개 모두 보기'));
-    await tester.tap(find.text('저장된 레슨 4개 모두 보기'));
+    expect(find.text('이어하기'), findsOneWidget);
+    await tester.ensureVisible(find.text('모두 보기 · 4개'));
+    await tester.tap(find.text('모두 보기 · 4개'));
     await tester.pumpAndSettle();
-    expect(find.text('저장된 레슨 고르기'), findsOneWidget);
-    final fourth = find.widgetWithText(OutlinedButton, '저장 레슨 later').last;
+    expect(find.text('이어할 레슨 모두 보기'), findsOneWidget);
+    final fourth = find.widgetWithText(ListTile, '저장 레슨 later').last;
     await tester.ensureVisible(fourth);
     await tester.tap(fourth);
     await tester.pumpAndSettle();
     expect(f.opened, ['later']);
-    expect(find.text('저장된 레슨 고르기'), findsNothing);
+    expect(find.text('이어할 레슨 모두 보기'), findsNothing);
     expect(f.repository.fetchCalls, 0);
     expect(f.repository.startCalls, 0);
     expect(f.repository.submitCalls, 0);
@@ -177,13 +345,12 @@ void main() {
       store.values['account-a/$id'] = rawCheckpoint(id);
     }
     final f = await _mount(tester, sectionOnly: true, store: store);
-    await tester.ensureVisible(find.text('저장된 레슨 4개 모두 보기'));
-    await tester.tap(find.text('저장된 레슨 4개 모두 보기'));
+    await tester.ensureVisible(find.text('모두 보기 · 4개'));
+    await tester.tap(find.text('모두 보기 · 4개'));
     await tester.pumpAndSettle();
     final old = tester
-        .widget<OutlinedButton>(
-            find.widgetWithText(OutlinedButton, '저장 레슨 first').last)
-        .onPressed!;
+        .widget<ListTile>(find.widgetWithText(ListTile, '저장 레슨 first').last)
+        .onTap!;
     f.account = 'account-b';
     f.container.invalidate(currentAccountIdProvider);
     await tester.pumpAndSettle();
@@ -199,7 +366,7 @@ void main() {
       (tester) async {
     final f = await _mount(tester, sectionOnly: true);
     final old = tester
-        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '저장 위치 열기'))
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, '이어하기'))
         .onPressed!;
     old();
     old();
@@ -226,7 +393,7 @@ void main() {
           size: const Size(320, 844),
           textScale: 2,
           brightness: brightness);
-      final action = tester.widget<Text>(find.text('저장 위치 열기').first);
+      final action = tester.widget<Text>(find.text('이어하기').first);
       final cardColor = brightness == Brightness.light
           ? AppColors.lightCard
           : AppColors.darkCard;
@@ -236,29 +403,34 @@ void main() {
       final subtextColor = brightness == Brightness.light
           ? AppColors.lightSubtext
           : AppColors.darkSubtext;
-      final surface = Theme.of(tester.element(find.byType(SavedLessonSection)))
-          .colorScheme
-          .surface;
+      final viewAll = tester
+          .widget<TextButton>(find.widgetWithText(TextButton, '모두 보기 · 4개'));
+      final background =
+          Theme.of(tester.element(find.byType(SavedLessonSection)))
+              .colorScheme
+              .surface;
+      expect(
+          _contrast(viewAll.style!.foregroundColor!.resolve({})!, background),
+          greaterThanOrEqualTo(4.5));
       final tile = tester.widget<OutlinedButton>(
           find.widgetWithText(OutlinedButton, '저장 레슨 first').first);
       final meta = tester.widget<Text>(find.text('N5 · 1번 역 · 1번째 레슨').first);
-      final description =
-          tester.widget<Text>(find.text('학습 순서대로 표시해요. 열면 저장 위치를 확인해요.'));
       expect(tile.style!.backgroundColor!.resolve({}), cardColor);
       expect(tile.style!.side!.resolve({})!.color, borderColor);
       expect(meta.style!.color, subtextColor);
-      expect(description.style!.color, subtextColor);
       expect(_contrast(action.style!.color!, cardColor),
           greaterThanOrEqualTo(4.5));
       expect(
           _contrast(meta.style!.color!, cardColor), greaterThanOrEqualTo(4.5));
-      expect(_contrast(description.style!.color!, surface),
-          greaterThanOrEqualTo(4.5));
       expect(tester.takeException(), isNull);
-      await tester.ensureVisible(find.text('저장된 레슨 4개 모두 보기'));
-      await tester.tap(find.text('저장된 레슨 4개 모두 보기'));
+      await tester.ensureVisible(find.text('모두 보기 · 4개'));
+      await tester.tap(find.text('모두 보기 · 4개'));
       await tester.pumpAndSettle();
-      final fourth = find.widgetWithText(OutlinedButton, '저장 레슨 later').last;
+      final row = tester.widget<ListTile>(find.byType(ListTile).first);
+      expect((row.subtitle! as Text).style!.color, subtextColor);
+      expect(_contrast((row.subtitle! as Text).style!.color!, cardColor),
+          greaterThanOrEqualTo(4.5));
+      final fourth = find.widgetWithText(ListTile, '저장 레슨 later').last;
       await tester.scrollUntilVisible(find.text('저장 레슨 later'), 300,
           scrollable: find
               .descendant(
@@ -280,7 +452,7 @@ void main() {
       ..failed.addAll(['first', 'second', 'third', 'later']);
     final f = await _mount(tester, store: store);
     expect(find.text('저장 위치 다시 확인'), findsOneWidget);
-    expect(find.text('이 기기에 저장된 레슨'), findsNothing);
+    expect(find.text('이어서 학습하기'), findsNothing);
     expect(find.text('바로 시작'), findsOneWidget);
     await tester.tap(find.text('바로 시작'));
     await tester.pumpAndSettle();
@@ -297,13 +469,12 @@ void main() {
       store.values['account-a/$id'] = rawCheckpoint(id);
     }
     final f = await _mount(tester, sectionOnly: true, store: store);
-    await tester.ensureVisible(find.text('저장된 레슨 4개 모두 보기'));
-    await tester.tap(find.text('저장된 레슨 4개 모두 보기'));
+    await tester.ensureVisible(find.text('모두 보기 · 4개'));
+    await tester.tap(find.text('모두 보기 · 4개'));
     await tester.pumpAndSettle();
     final old = tester
-        .widget<OutlinedButton>(
-            find.widgetWithText(OutlinedButton, '저장 레슨 first').last)
-        .onPressed!;
+        .widget<ListTile>(find.widgetWithText(ListTile, '저장 레슨 first').last)
+        .onTap!;
     await f.container.read(userPreferencesProvider.notifier).setJlptLevel('N4');
     await tester.pumpAndSettle();
     expect(find.text('저장 레슨 first'), findsNothing);
@@ -335,7 +506,7 @@ void main() {
     }));
     final f = await _mount(tester,
         sectionOnly: true, apiRepository: ApiStudyRepository(dio));
-    expect(find.text('저장 위치 열기'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
     expect(requests, ['GET /lessons/chapters']);
     expect(f.store.operations.where((op) => op.startsWith('write:')), isEmpty);
     expect(f.store.operations.where((op) => op.startsWith('remove:')), isEmpty);
@@ -346,10 +517,12 @@ void main() {
 
 class _WidgetStore extends MemoryCheckpointStore {
   final failed = <String>{};
+  Completer<void>? readGate;
   @override
-  Future<String?> read(String accountId, String lessonId) {
+  Future<String?> read(String accountId, String lessonId) async {
+    await readGate?.future;
     if (failed.contains(lessonId)) {
-      return Future.error(const LessonCheckpointStorageException());
+      throw const LessonCheckpointStorageException();
     }
     return super.read(accountId, lessonId);
   }
@@ -368,7 +541,11 @@ Future<_Fixture> _mount(WidgetTester tester,
     {bool fullList = false,
     bool sectionOnly = false,
     bool realLesson = false,
+    bool addDefaultDraft = true,
+    bool projectionError = false,
+    bool sectionFallback = false,
     _WidgetStore? store,
+    _DisplayRepository? repositoryOverride,
     ApiStudyRepository? apiRepository,
     Size size = const Size(390, 844),
     double textScale = 1,
@@ -380,9 +557,11 @@ Future<_Fixture> _mount(WidgetTester tester,
   SharedPreferences.setMockInitialValues({'user_jlpt_level': 'N5'});
   final prefs = await SharedPreferences.getInstance();
   final localStore = store ?? _WidgetStore();
-  localStore.values
-      .putIfAbsent('account-a/later', () => rawCheckpoint('later'));
-  final repository = _DisplayRepository();
+  if (addDefaultDraft) {
+    localStore.values
+        .putIfAbsent('account-a/later', () => rawCheckpoint('later'));
+  }
+  final repository = repositoryOverride ?? _DisplayRepository();
   final f = _Fixture(localStore, repository);
   f.container = ProviderContainer(retry: (_, __) => null, overrides: [
     currentAccountIdProvider.overrideWith((ref) => f.account),
@@ -390,6 +569,9 @@ Future<_Fixture> _mount(WidgetTester tester,
     sharedPreferencesProvider.overrideWithValue(prefs),
     lessonCheckpointStoreProvider.overrideWithValue(localStore),
     studyRepositoryProvider.overrideWithValue(apiRepository ?? repository),
+    if (projectionError)
+      savedLessonEntriesProvider('N5').overrideWith(
+          (ref) async => throw StateError('projection unavailable')),
     lessonPilotTelemetrySinkProvider.overrideWithValue((_) {}),
   ]);
   addTearDown(f.container.dispose);
@@ -397,8 +579,10 @@ Future<_Fixture> _mount(WidgetTester tester,
     GoRoute(
         path: '/study',
         builder: (_, __) => sectionOnly
-            ? const Scaffold(
-                body: SingleChildScrollView(child: _LevelBoundSection()))
+            ? Scaffold(
+                body: SingleChildScrollView(
+                    child: _LevelBoundSection(
+                        includeRecommendation: sectionFallback)))
             : fullList
                 ? const LessonListPage()
                 : const StudyPage()),
@@ -449,11 +633,23 @@ Future<_Fixture> _mount(WidgetTester tester,
   return f;
 }
 
+String _timedDraft(String id, int milliseconds) {
+  final json = jsonDecode(rawCheckpoint(id)) as Map<String, dynamic>;
+  json['lastStudiedAtMs'] = milliseconds;
+  return jsonEncode(json);
+}
+
 class _LevelBoundSection extends ConsumerWidget {
-  const _LevelBoundSection();
+  const _LevelBoundSection({this.includeRecommendation = false});
+  final bool includeRecommendation;
   @override
   Widget build(BuildContext context, WidgetRef ref) => SavedLessonSection(
-      jlptLevel: ref.watch(userPreferencesProvider).jlptLevel);
+      jlptLevel: ref.watch(userPreferencesProvider).jlptLevel,
+      recommendedLesson: includeRecommendation
+          ? findRecommendedLesson(ChapterListModel.fromJson(
+                  jsonDecode(_chapterJson) as Map<String, dynamic>)
+              .chapters)
+          : null);
 }
 
 class _DisplayRepository extends ResumeStudyRepository {
@@ -468,6 +664,34 @@ class _DisplayRepository extends ResumeStudyRepository {
   Future<ReviewSummaryModel> fetchReviewSummary(String jlptLevel) async =>
       const ReviewSummaryModel(
           wordDue: 0, grammarDue: 0, totalDue: 0, wordNew: 1, grammarNew: 1);
+}
+
+class _ManyLessonsRepository extends _DisplayRepository {
+  @override
+  Future<ChapterListModel> fetchChapters(String jlptLevel) async =>
+      ChapterListModel(chapters: [
+        ChapterModel(
+            id: 'many',
+            jlptLevel: jlptLevel,
+            partNo: 1,
+            chapterNo: 1,
+            title: '많은 레슨',
+            completedLessons: 0,
+            totalLessons: 40,
+            lessons: [
+              for (var i = 0; i < 40; i++)
+                LessonSummaryModel(
+                    id: 'lesson-${i.toString().padLeft(2, '0')}',
+                    lessonNo: i + 1,
+                    chapterLessonNo: i + 1,
+                    title: '저장 레슨 ${i.toString().padLeft(2, '0')}',
+                    topic: '인사',
+                    estimatedMinutes: 10,
+                    status: 'NOT_STARTED',
+                    scoreCorrect: 0,
+                    scoreTotal: 0)
+            ])
+      ]);
 }
 
 const _chapterJson =

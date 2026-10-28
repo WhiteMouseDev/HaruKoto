@@ -9,14 +9,25 @@ class LessonCheckpoint {
   const LessonCheckpoint(
       {required this.state,
       required this.progressStamp,
-      this.acknowledged = false});
+      this.acknowledged = false,
+      this.lastStudiedAt});
 
   final LessonSessionState state;
   final String progressStamp;
   final bool acknowledged;
+  final DateTime? lastStudiedAt;
+
+  /// Optional ranking metadata never makes a valid saved answer unreadable.
+  static DateTime? readLastStudiedAt(Map<String, dynamic> json) {
+    final value = json['lastStudiedAtMs'];
+    if (value is! int || value <= 0 || value > 253402300799999) return null;
+    return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
+  }
 
   String encode(LessonDetailModel detail) => jsonEncode({
         'version': 1,
+        if (lastStudiedAt != null)
+          'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
         'lessonId': detail.id,
         'content': lessonContentSignature(detail),
         'progressStamp': progressStamp,
@@ -231,6 +242,7 @@ class LessonCheckpoint {
     return LessonCheckpoint(
       progressStamp: json['progressStamp'] as String,
       acknowledged: json['acknowledged'] as bool,
+      lastStudiedAt: readLastStudiedAt(json),
       state: LessonSessionState(
         step: step,
         vocabIndex: vocabIndex,

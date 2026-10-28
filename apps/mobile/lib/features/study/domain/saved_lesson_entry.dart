@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../data/models/lesson_models.dart';
+import 'lesson_checkpoint.dart';
 import 'lesson_session_state.dart';
 
 /// A local navigation hint, never proof that a checkpoint can be restored.
@@ -9,11 +10,13 @@ class SavedLessonHint {
   const SavedLessonHint(
       {this.step,
       this.needsRecordCheck = false,
-      this.submissionPending = false});
+      this.submissionPending = false,
+      this.lastStudiedAt});
 
   final LessonStep? step;
   final bool needsRecordCheck;
   final bool submissionPending;
+  final DateTime? lastStudiedAt;
 
   String get label {
     if (submissionPending) return '제출 기록 확인';
@@ -43,9 +46,12 @@ class SavedLessonHint {
       }
       if (json['lessonId'] != lessonId) return unknown;
       if (json['version'] != 1) return unknown;
+      final lastStudiedAt = LessonCheckpoint.readLastStudiedAt(json);
       if (json['submissionPending'] == true) {
-        return const SavedLessonHint(
-            needsRecordCheck: true, submissionPending: true);
+        return SavedLessonHint(
+            needsRecordCheck: true,
+            submissionPending: true,
+            lastStudiedAt: lastStudiedAt);
       }
       if (json['acknowledged'] == true && json['submissionPending'] == false) {
         return null;
@@ -82,7 +88,7 @@ class SavedLessonHint {
       ]) {
         if (json[key] is! int || (json[key] as int) < 0) return unknown;
       }
-      return SavedLessonHint(step: step);
+      return SavedLessonHint(step: step, lastStudiedAt: lastStudiedAt);
     } on FormatException {
       return unknown;
     }

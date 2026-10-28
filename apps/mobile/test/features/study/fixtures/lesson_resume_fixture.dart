@@ -191,6 +191,7 @@ class ResumeHarness {
   ResumeHarness(
       {MemoryCheckpointStore? store,
       ResumeStudyRepository? repository,
+      DateTime Function()? clock,
       this.account = 'account-a'})
       : store = store ?? MemoryCheckpointStore(),
         repository = repository ?? ResumeStudyRepository() {
@@ -199,6 +200,7 @@ class ResumeHarness {
       currentAccountReaderProvider.overrideWithValue(() => account),
       lessonCheckpointStoreProvider.overrideWithValue(this.store),
       studyRepositoryProvider.overrideWithValue(this.repository),
+      if (clock != null) lessonStudyClockProvider.overrideWithValue(clock),
     ]);
     subscription =
         container.listen(lessonSessionProvider(resumeLessonId), (_, __) {});
