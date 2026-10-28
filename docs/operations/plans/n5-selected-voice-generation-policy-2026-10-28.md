@@ -85,4 +85,4 @@
 
 안전한 검사 기록은 `/private/tmp/harukoto-pr196-selected-policy-20261028/backend-selected-policy-validation-safe.json`에, 세부 로그는 같은 임시 디렉터리에 보존했다. 테스트는 Python 3.12와 합성 설정·격리 로컬 PostgreSQL을 사용했다. SDK 검증은 메모리 transport로 수행했으며 실제 보이스 ID 연결이나 새 음성 청취 품질을 통과 처리하지 않았다.
 
-PR #197의 아이폰 대화 전체 듣기 검수와 이 백엔드 정책 변경을 혼합하지 않는다. 아이폰의 강제 재실행 뒤 동일 위치 복원 확인은 사용자가 다시 확인 가능한 시점까지 대기 중이다. [블로그용 문제·설계·수정 기록](../../blog/2026-10-28-selected-voice-and-generation-policy.md)에도 이 범위를 구분했다.
+PR #197의 아이폰 대화 전체 듣기 검수와 이 백엔드 정책 변경을 혼합하지 않는다. 소스 준비 당시 아이폰의 강제 재실행 뒤 동일 위치 복원 확인은 사용자 가능 시점까지 대기 중이었다. 이후 별도 승인한 [운영 적용·검증](n5-selected-voice-production-rollout-2026-10-28.md)에서 실제 아이폰의 재생·정지·다시 듣기와 강제 재실행 전후 이해 체크 4/4 복원을 완료했다. [블로그용 문제·설계·수정 기록](../../blog/2026-10-28-selected-voice-and-generation-policy.md)에도 시점과 검증 범위를 구분했다.
