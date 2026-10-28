@@ -3,8 +3,19 @@ raised_by: codex-root
 raised_at: 2026-10-26T17:10:34+09:00
 phase: n5-audio-qa
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-10-28T13:09:15+09:00
 ---
+
+## Resolution
+
+사용자는 후속 샘플을 듣고 남성 Kenzo·여성 Shizuka v4를 채택했다. 지정 HN5-004 새 객체 4개 업로드·캐시 4행 갱신을 별도로 승인해 10월 27일 적용했고, PR #196 병합·서버 배포·두 역할 설정 활성화도 별도로 승인해 10월 28일 완료했다. PR #197은 문장 음원의 순차 전체 듣기를 구현했다. 이 결정 요청은 해결됐으며 추가 운영 변경 승인 대기로 남기지 않는다.
+
+전체 448개 음원의 사람·일본어 검수는 별도 미완료 품질 과제로 유지한다. 이 escalation의 종료는 전체 음성 PASS나 추가 생성·캐시 교체 승인이 아니다. [현재 상태와 대표 링크](../../docs/operations/plans/n5-audio-qa-current-state-2026-10-28.md), [운영 결과·원복](../../docs/operations/plans/n5-selected-voice-production-rollout-2026-10-28.md)을 따른다.
+
+## Original request — 2026-10-26
+
+아래 미승인·미적용 표현은 당시 요청 이력으로 보존한다.
 
 ## What happened
 

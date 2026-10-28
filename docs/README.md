@@ -17,25 +17,31 @@ docs/
 ## 핵심 문서 (빠른 접근)
 
 ### 제품
+
 - [PRD (제품 요구사항)](product/prd.md)
 - [화면 구조](product/screens/)
 
 ### 학습 시스템 (Part 1 완성)
+
 - [학습 트랙 설계](domain/learning/learning-track.md) — 마이크로 레슨 10분 구조
 - [퀴즈 트랙 설계](domain/learning/quiz-track.md) — 4탭 퀴즈 시스템
 - [SRS 엔진](domain/learning/srs-engine.md) — 6단계 상태 머신, PROVISIONAL, FSRS
 - [N5 커리큘럼 맵](domain/learning/n5-curriculum-map.md) — 90레슨 × 18챕터
 
 ### 아키텍처
+
 - [학습 데이터 스키마](architecture/data/learning-data-schema.md) — 5개 테이블 + review_events
 - [FastAPI 엔드포인트 맵](architecture/api/fastapi-endpoint-map.md)
 - [인프라 구성](architecture/platform/infrastructure-overview.md)
 
 ### 의사결정
+
 - [ADR-001: MVP-β 스코프](decisions/ADR-001-mvp-beta-scope.md) — synonym_groups/quiz_sessions 보류
 
 ### 운영
+
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
+- [N5 현재 음성·대표 청취 링크](operations/plans/n5-audio-qa-current-state-2026-10-28.md) — Kenzo·Shizuka v4 적용 범위, 전체 듣기와 별도 남은 전체 청취 검수
 - [이어하기 카드와 최근 학습순](operations/plans/mobile-resume-recent-study-2026-10-28.md) — 대표 카드 한 개·전체 목록, 기존 저장 위치/답안 호환과 최근 활동 정렬
 - [저장 목록을 짧게 만든 과정 (블로그)](blog/2026-10-28-one-resume-card-and-recent-study.md) — 중복 카드·학습 시각·실패 상태와 접근성 개선 기록
 - [레슨 Seed/TTS Rollout Runbook](operations/content/lesson-audio-qa-rollout-runbook.md) — N4 seed/TTS 운영 반영 preflight와 N3+ 확장 gate
@@ -59,6 +65,7 @@ docs/
 ## 콘텐츠 데이터
 
 레슨 콘텐츠 JSON은 `packages/database/data/lessons/n5/`에 위치합니다:
+
 ```
 packages/database/data/lessons/n5/
 ├── ch01-greetings-and-first-meetings.json

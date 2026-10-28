@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # N5 Seed/TTS Generation Run
 
 > Generated: 2026-05-26
@@ -141,3 +143,5 @@ Remaining work:
   question prompt TTS.
 - Keep native-speaker approval as a separate product-quality gate when a human
   reviewer is available.
+
+<!-- prettier-ignore-end -->

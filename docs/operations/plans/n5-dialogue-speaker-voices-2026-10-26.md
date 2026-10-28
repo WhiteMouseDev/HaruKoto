@@ -1,14 +1,18 @@
 # N5 대화의 화자별 음성 수정안
 
-상태: 제안·결정 대기. 사용자 기능 확인과 소스·공식 문서 조사를 기록하며 코드·설정·DB·음성은 아직 변경하지 않는다.
+> **10월 26일 제안 이력:** 아래 원인·대기·미적용 표현은 당시 기준이다. 이후 사용자가 Kenzo·Shizuka v4 선택, HN5-004 4행 적용, PR #196 배포·역할 활성화를 승인했고 실행을 완료했다. 현재 생성 경로와 앱 전체 듣기·남은 전체 청취 검수는 [10월 28일 상태](n5-audio-qa-current-state-2026-10-28.md)와 [운영 기록](n5-selected-voice-production-rollout-2026-10-28.md)을 따른다. 추가 승인 대기나 현재 소스의 단일 voice 동작으로 읽지 않는다.
 
-## 관찰과 확인한 원인
+10월 26일 당시 상태: 제안·결정 대기. 사용자 기능 확인과 소스·공식 문서 조사를 기록하며 코드·설정·DB·음성은 아직 변경하지 않는다.
+
+## 당시 관찰과 확인한 원인
 
 사용자는 기본 재생 네 항목이 정상이라고 보고했지만 두 화자가 동일한 여성 목소리로 들려 어색하다고 했다. 실제 확인한 레슨·문장·기기는 이번 메시지에서 명시되지 않았다. 기능 PASS와 화자 구분 FLAG를 분리하고 448개 문장별 정식 판정은 PENDING으로 둔다.
 
 N5 원본 50레슨·198대사에는 남성 alias 100줄·여성 alias 98줄이 있고 누락·동일 화자의 alias 비일관은 없다. 김은 남성 alias, 다나카는 여성 alias로 설정돼 있다. 이는 voice 선택 메타데이터이며 성씨를 근거로 새 인물 성별을 확정한 결과가 아니다. 원문과 manifest도 198/198 일치한다.
 
 - [콘텐츠 변환 규칙](../content/content-conversion-guide.md): 화자마다 voice_id를 부여한다.
+  다음 소스 연결은 현재 파일 위치다. 설명한 단일 음성 동작은 10월 26일 당시 조사 결과이며, 현재 구현은 [정책 기록](n5-selected-voice-generation-policy-2026-10-28.md)을 따른다.
+
 - [resolver](../../../apps/api/app/services/tts_target_resolver.py): text만 읽는다.
 - [레슨 TTS 서비스](../../../apps/api/app/services/lesson_script_tts.py): 생성기에 text만 보내고 기존 target/speed/field 캐시를 즉시 반환한다.
 - [제공업체 구현](../../../apps/api/app/services/ai_speech.py): ElevenLabs에는 단일 ELEVENLABS_VOICE_ID만 보낸다. generate_tts의 voice 인자는 Gemini 경로에만 전달된다.

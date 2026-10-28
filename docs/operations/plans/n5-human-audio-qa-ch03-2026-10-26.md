@@ -1,5 +1,7 @@
 # N5 Pilot Human Audio QA Packet - Chapter 3
 
+> Historical snapshot (2026-10-26): URLs, lengths, hashes and PENDING verdicts below are preserved evidence, not current-file approval. HN5-004 dialogue files were replaced later; use the [current representative links](n5-audio-qa-current-state-2026-10-28.md) for that lesson. Do not transfer verdicts to replacement audio.
+
 > Date: 2026-10-26
 > Scope: N5 chapter 3 `위치와 이동`, HN5-011, HN5-012, HN5-013, HN5-014, HN5-015
 > Status: REVIEW PACKET - human verdict pending

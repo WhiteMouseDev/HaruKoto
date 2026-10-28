@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # N5 TTS Audio QA Machine Report
 
 > Status: REVIEW
@@ -81,3 +83,5 @@ uv run python scripts/audit_n4_pilot_tts_audio_quality.py --level N5 --markdown-
 ## Decision
 
 REVIEW: inspect non-blocking warnings before recording final audio verdicts.
+
+<!-- prettier-ignore-end -->

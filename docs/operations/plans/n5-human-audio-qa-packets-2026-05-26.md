@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # N5 Human Audio QA Packets
 
 > Generated: 2026-05-26
@@ -101,3 +103,5 @@ Next gate:
 2. Direct-listen the 36 warning targets.
 3. Apply explicit verdicts to packets only after review evidence exists.
 4. Re-run the verdict report with `--fail-on-blocker`.
+
+<!-- prettier-ignore-end -->

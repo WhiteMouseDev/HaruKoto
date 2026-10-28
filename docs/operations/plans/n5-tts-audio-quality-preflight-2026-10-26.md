@@ -1,5 +1,7 @@
 # N5 TTS Audio QA Machine Report — 2026-10-26
 
+> **10월 26일 기계 검사 증거:** 아래 수치·파일 지문은 당시 결과이며 현재 전체 음원이나 발음의 승인이 아니다. HN5-004 네 파일 교체와 이후 적용 상태는 [현재 상태](n5-audio-qa-current-state-2026-10-28.md)를 따른다. 이번 갱신에서 아래 파일 판정을 재작성하지 않는다.
+
 > Status: REVIEW
 > Scope: generated lesson script-line and question-prompt TTS targets
 > Boundary: machine/STT evidence only; human audio verdicts remain required

@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # N5 Pilot Human Audio QA Packet - Chapter 5
 
 > Date: 2026-05-26
@@ -157,3 +159,5 @@ broad rollout until regenerated or explicitly waived.
 
 Human verdict is pending. This packet closes only the preparation step for
 representative full-chapter playback review.
+
+<!-- prettier-ignore-end -->
