@@ -63,19 +63,36 @@ final savedLessonEntriesProvider = FutureProvider.autoDispose
   if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
     return const SavedLessonEntries();
   }
+  final entries = [
+    for (var i = 0; i < targets.length; i++)
+      if (lookups[i].hint != null)
+        SavedLessonEntry(
+            accountId: owner,
+            jlptLevel: jlptLevel,
+            chapter: targets[i].chapter,
+            lesson: targets[i].lesson,
+            hint: lookups[i].hint!),
+  ];
+  // List.sort is not stable. Preserve curriculum order explicitly for ties
+  // and for legacy drafts whose historical study time is unknown.
+  final curriculumOrder = {
+    for (var i = 0; i < targets.length; i++) targets[i].lesson.id: i,
+  };
+  entries.sort((a, b) {
+    final aTime = a.hint.lastStudiedAt;
+    final bTime = b.hint.lastStudiedAt;
+    if (aTime == null && bTime != null) return 1;
+    if (aTime != null && bTime == null) return -1;
+    final recent = aTime == null ? 0 : bTime!.compareTo(aTime);
+    return recent != 0
+        ? recent
+        : curriculumOrder[a.lesson.id]!
+            .compareTo(curriculumOrder[b.lesson.id]!);
+  });
   return SavedLessonEntries(
     accountId: owner,
     jlptLevel: jlptLevel,
-    entries: [
-      for (var i = 0; i < targets.length; i++)
-        if (lookups[i].hint != null)
-          SavedLessonEntry(
-              accountId: owner,
-              jlptLevel: jlptLevel,
-              chapter: targets[i].chapter,
-              lesson: targets[i].lesson,
-              hint: lookups[i].hint!),
-    ],
+    entries: entries,
     failedLessonIds: [
       for (var i = 0; i < targets.length; i++)
         if (lookups[i].failed) targets[i].lesson.id,

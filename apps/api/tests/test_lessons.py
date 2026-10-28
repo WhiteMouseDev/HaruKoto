@@ -1,10 +1,12 @@
 import uuid
 from datetime import UTC, datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.db.session import get_db
+from app.services import lesson_voice_tts
 
 
 class _AsyncNullContext:
@@ -13,6 +15,58 @@ class _AsyncNullContext:
 
     async def __aexit__(self, exc_type, exc, tb):
         return False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("provider_failure", [False, True])
+async def test_n5_voice_routing_preserves_tts_http_response(client, monkeypatch, provider_failure):
+    from app.main import app
+
+    monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_API_KEY", "test-key")
+    monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
+    monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_LESSON_FEMALE_VOICE_ID", "female-test")
+    monkeypatch.setattr(lesson_voice_tts.settings, "ELEVENLABS_LESSON_MALE_VOICE_ID", "male-test")
+    lesson_id = uuid.uuid4()
+    lesson = SimpleNamespace(
+        id=lesson_id,
+        jlpt_level="N5",
+        content_jsonb={"reading": {"script": [{"text": "学生です。", "voice_id": "japanese_male_1"}]}},
+    )
+    lesson_result, cache_result = MagicMock(), MagicMock()
+    lesson_result.scalar_one_or_none.return_value = lesson
+    cache_result.scalar_one_or_none.return_value = None
+    session = AsyncMock()
+    session.execute.side_effect = [lesson_result, cache_result]
+    session.add = MagicMock()
+
+    async def override_get_db():
+        yield session
+
+    app.dependency_overrides[get_db] = override_get_db
+    result = SimpleNamespace(audio=b"role-audio", provider="elevenlabs", model="eleven_multilingual_v2")
+    with (
+        patch("app.routers.lessons.rate_limit", new_callable=AsyncMock, return_value=SimpleNamespace(success=True)),
+        patch("app.routers.lessons.generate_tts", new_callable=AsyncMock) as legacy,
+        patch("app.routers.lessons.upload_tts_to_gcs", new_callable=AsyncMock, return_value="https://cdn.example/role.mp3") as upload,
+        patch(
+            "app.services.lesson_script_tts.generate_lesson_voice_tts",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("provider down") if provider_failure else None,
+            return_value=result,
+        ) as generate,
+    ):
+        response = await client.post(f"/api/v1/lessons/{lesson_id}/script-lines/0/tts")
+    assert generate.await_args.args[0].voice_id == "male-test"
+    legacy.assert_not_awaited()
+    if provider_failure:
+        assert response.status_code == 502
+        assert response.json() == {"error": {"code": "SYSTEM_ERROR", "message": "TTS 음성 생성에 실패했습니다", "details": None}}
+        session.commit.assert_not_awaited()
+        session.add.assert_not_called()
+        upload.assert_not_awaited()
+    else:
+        assert response.status_code == 200 and response.json() == {"audioUrl": "https://cdn.example/role.mp3"}
+        session.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio

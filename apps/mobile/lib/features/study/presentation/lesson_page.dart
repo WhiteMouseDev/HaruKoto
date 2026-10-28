@@ -7,6 +7,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/services/tts_service.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../providers/lesson_session_provider.dart';
@@ -17,7 +18,8 @@ import 'widgets/lesson_step_content.dart';
 /// 레슨 학습 플로우: 6-Step (상황 프리뷰 → 가이드 리딩 → 이해 체크 → 매칭 게임 → 문장 재구성 → 결과)
 class LessonPage extends ConsumerStatefulWidget {
   final String lessonId;
-  const LessonPage({super.key, required this.lessonId});
+  final TtsService? ttsService;
+  const LessonPage({super.key, required this.lessonId, this.ttsService});
 
   @override
   ConsumerState<LessonPage> createState() => _LessonPageState();
@@ -28,6 +30,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
   static const _totalSteps = 8;
   bool _exiting = false;
   bool _allowPop = false;
+  TtsService get _tts => widget.ttsService ?? TtsService();
 
   @override
   void initState() {
@@ -45,7 +48,9 @@ class _LessonPageState extends ConsumerState<LessonPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached) {
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      _tts.stop(lessonId: widget.lessonId);
       unawaited(
           ref.read(lessonSessionProvider(widget.lessonId).notifier).flush());
     }
@@ -53,6 +58,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
 
   Future<void> _exit() async {
     if (_exiting) return;
+    _tts.stop(lessonId: widget.lessonId);
     setState(() => _exiting = true);
     final owner = ref.read(currentAccountReaderProvider)();
     final notifier =
@@ -112,6 +118,9 @@ class _LessonPageState extends ConsumerState<LessonPage>
     ref.listen<LessonSessionState>(
       lessonSessionProvider(widget.lessonId),
       (previous, next) {
+        if (previous != null && previous.step != next.step) {
+          _tts.stop(lessonId: widget.lessonId);
+        }
         final nextStartError = next.startErrorMessage;
         if (nextStartError != null &&
             nextStartError != previous?.startErrorMessage) {
@@ -144,6 +153,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
               session.serverRecorded) {
             unawaited(_exit());
           } else {
+            _tts.stop(lessonId: widget.lessonId);
             sessionActions.goBack();
           }
         }
@@ -196,8 +206,11 @@ class _LessonPageState extends ConsumerState<LessonPage>
                         if (session.showDialogueShortcut) ...[
                           const SizedBox(width: AppSizes.sm),
                           GestureDetector(
-                            onTap: () =>
-                                showLessonDialogueSheet(context, detail),
+                            onTap: () {
+                              _tts.stop(lessonId: widget.lessonId);
+                              unawaited(showLessonDialogueSheet(context, detail,
+                                  ttsService: _tts));
+                            },
                             child: const Icon(
                               LucideIcons.messageSquare,
                               size: 18,
@@ -218,6 +231,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
                               onCheck: () =>
                                   unawaited(sessionActions.checkSubmission()))
                           : LessonStepContent(
+                              ttsService: _tts,
                               lessonId: widget.lessonId,
                               detail: detail,
                               session: session,

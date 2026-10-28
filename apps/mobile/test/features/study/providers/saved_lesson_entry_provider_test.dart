@@ -39,6 +39,69 @@ void main() {
     expect(data.entries.map((entry) => entry.lesson.id), ['first', 'later']);
   });
 
+  test('known study timestamps rank newest first without changing raw drafts',
+      () async {
+    final h = _Harness();
+    h.store.values['account-a/first'] = _withStudyTime('first', 1000);
+    h.store.values['account-a/later'] = _withStudyTime('later', 2000);
+    final before = Map<String, String>.from(h.store.values);
+    final data = await h.entries();
+    expect(data.entries.map((entry) => entry.lesson.id), ['later', 'first']);
+    expect(h.store.values, before);
+    expect(h.repository.detailReads, 0);
+    expect(h.repository.writes, 0);
+  });
+
+  for (final times in [
+    (first: 1000, later: 1000, order: ['first', 'later']),
+    (first: null, later: 2000, order: ['later', 'first']),
+    (first: 2000, later: null, order: ['first', 'later']),
+    (first: 'invalid', later: 1000, order: ['later', 'first']),
+    (first: 253402300800000, later: 1000, order: ['later', 'first']),
+  ]) {
+    test('recent order has deterministic legacy and tie fallback $times',
+        () async {
+      final h = _Harness();
+      h.store.values['account-a/first'] = _withStudyTime('first', times.first);
+      h.store.values['account-a/later'] = _withStudyTime('later', times.later);
+      final raw = Map<String, String>.from(h.store.values);
+      expect((await h.entries()).entries.map((e) => e.lesson.id), times.order);
+      expect(h.store.values, raw);
+      expect(h.repository.writes, 0);
+    });
+  }
+
+  test('known pending submission retains recency and safe record-check hint',
+      () async {
+    final h = _Harness();
+    h.store.values['account-a/first'] = _withStudyTime('first', 1000);
+    final json = jsonDecode(rawCheckpoint('later', pending: true))
+        as Map<String, dynamic>;
+    json['lastStudiedAtMs'] = 2000;
+    h.store.values['account-a/later'] = jsonEncode(json);
+    final before = Map<String, String>.from(h.store.values);
+    final entries = (await h.entries()).entries;
+    expect(entries.map((e) => e.lesson.id), ['later', 'first']);
+    expect(entries.first.hint.submissionPending, isTrue);
+    expect(entries.first.hint.actionLabel, '기록 확인');
+    expect(h.store.values, before);
+  });
+
+  test('unreadable record is accessible without trusting its ranking metadata',
+      () async {
+    final h = _Harness();
+    h.store.values['account-a/first'] = _withStudyTime('first', 1000);
+    h.store.values['account-a/later'] = jsonEncode({
+      'lessonId': 'later',
+      'version': 99,
+      'lastStudiedAtMs': 999999999999,
+    });
+    final entries = (await h.entries()).entries;
+    expect(entries.map((e) => e.lesson.id), ['first', 'later']);
+    expect(entries.last.hint.needsRecordCheck, isTrue);
+    expect(entries.last.hint.lastStudiedAt, isNull);
+  });
+
   test('sign out reads no checkpoint and another account cannot see a draft',
       () async {
     final h = _Harness();
@@ -268,6 +331,12 @@ void main() {
             .needsRecordCheck,
         isTrue);
   });
+}
+
+String _withStudyTime(String id, Object? time) {
+  final json = jsonDecode(rawCheckpoint(id)) as Map<String, dynamic>;
+  json['lastStudiedAtMs'] = time;
+  return jsonEncode(json);
 }
 
 class _SelectiveStore extends MemoryCheckpointStore {
