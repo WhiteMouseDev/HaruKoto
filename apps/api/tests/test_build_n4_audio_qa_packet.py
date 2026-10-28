@@ -9,6 +9,7 @@ from scripts.build_n4_audio_qa_packet import (
 
 def test_build_targets_for_lesson_uses_lesson_scoped_tts_shape() -> None:
     lesson = LessonSource(
+        level="N4",
         lesson_id="lesson-1",
         lesson_no=1,
         chapter_no=1,
@@ -120,3 +121,29 @@ def test_render_packet_markdown_can_label_pilot_draft_scope() -> None:
     )
 
     assert "# N4 Pilot/Draft Human Audio QA Packet - Chapter 4" in markdown
+
+
+def test_lesson_source_label_uses_configured_level() -> None:
+    lesson = LessonSource(
+        level="N5",
+        lesson_id="lesson-1",
+        lesson_no=7,
+        chapter_no=2,
+        chapter_title="chapter",
+        title="title",
+        topic="topic",
+        content={},
+    )
+
+    assert lesson.label == "HN5-007"
+
+
+def test_render_packet_markdown_uses_level_specific_rollout_boundary() -> None:
+    markdown = render_packet_markdown(
+        generated_at="2026-05-26T00:00:00+00:00",
+        level="N5",
+        chapter_no=1,
+        targets=[],
+    )
+
+    assert "before considering broader N5 rollout" in markdown

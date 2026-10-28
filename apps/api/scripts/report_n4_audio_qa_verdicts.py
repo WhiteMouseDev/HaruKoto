@@ -2,16 +2,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from dataclasses import asdict, dataclass
+from datetime import date
 from pathlib import Path
 
-DEFAULT_PACKET_GLOBS = (
-    "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
-    "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
-    "docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md",
-    "docs/operations/plans/n4-ch06-pilot-human-audio-qa-ch06-2026-06-01.md",
-    "docs/operations/plans/n4-ch07-pilot-human-audio-qa-ch07-2026-06-05.md",
-)
+DEFAULT_PACKET_GLOBS_BY_LEVEL = {
+    "N4": (
+        "docs/operations/plans/n4-pilot-human-audio-qa-ch*-2026-05-13.md",
+        "docs/operations/plans/n4-wave2-draft-human-audio-qa-ch04-2026-05-20.md",
+        "docs/operations/plans/n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md",
+        "docs/operations/plans/n4-ch06-pilot-human-audio-qa-ch06-2026-06-01.md",
+        "docs/operations/plans/n4-ch07-pilot-human-audio-qa-ch07-2026-06-05.md",
+    ),
+    "N5": ("docs/operations/plans/n5-human-audio-qa-ch*-*.md",),
+}
+_N5_PACKET_NAME = re.compile(r"^n5-human-audio-qa-ch(?P<chapter>\d+)-(?P<date>\d{4}-\d{2}-\d{2})\.md$")
+
 REVIEW_TARGET_KINDS = ("script ", "question ")
 KNOWN_VERDICTS = {"PASS", "FLAG", "FAIL", "PENDING", "WAIVED"}
 BLOCKING_VERDICTS = {"FLAG", "FAIL", "PENDING"}
@@ -174,19 +181,43 @@ def build_report(packet_paths: list[Path]) -> VerdictReport:
     )
 
 
-def default_packet_paths() -> list[Path]:
+def _latest_n5_packet_paths(paths: list[Path]) -> list[Path]:
+    """Keep one dated snapshot per chapter; historical verdicts stay separate."""
+    latest: dict[int, tuple[date, Path]] = {}
+    for path in sorted(paths):
+        match = _N5_PACKET_NAME.fullmatch(path.name)
+        if match is None:
+            raise ValueError(f"N5 packet must have a dated chapter filename: {path.name}")
+        try:
+            packet_date = date.fromisoformat(match["date"])
+        except ValueError as exc:
+            raise ValueError(f"N5 packet has an invalid snapshot date: {path.name}") from exc
+        chapter = int(match["chapter"])
+        previous = latest.get(chapter)
+        if previous is None or packet_date > previous[0]:
+            latest[chapter] = (packet_date, path)
+        elif packet_date == previous[0] and path != previous[1]:
+            raise ValueError(f"Multiple latest N5 packets for chapter {chapter} on {packet_date}")
+    return sorted(packet for _, packet in latest.values())
+
+
+def default_packet_paths(level: str = "N4") -> list[Path]:
     paths: dict[Path, None] = {}
     root = _repo_root()
-    for pattern in DEFAULT_PACKET_GLOBS:
+    normalized_level = level.upper()
+    for pattern in DEFAULT_PACKET_GLOBS_BY_LEVEL.get(normalized_level, ()):
         for path in root.glob(pattern):
             paths[path] = None
-    return sorted(paths)
+    candidates = sorted(paths)
+    if normalized_level == "N5":
+        return _latest_n5_packet_paths(candidates)
+    return candidates
 
 
-def _packet_paths_from_args(values: list[Path] | None) -> list[Path]:
+def _packet_paths_from_args(values: list[Path] | None, *, level: str) -> list[Path]:
     if values:
         return values
-    return default_packet_paths()
+    return default_packet_paths(level=level)
 
 
 def _print_human(report: VerdictReport) -> None:
@@ -214,13 +245,14 @@ def _print_human(report: VerdictReport) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Report human verdict progress for N4 audio QA packets.")
+    parser = argparse.ArgumentParser(description="Report human verdict progress for lesson audio QA packets.")
+    parser.add_argument("--level", default="N4", help="JLPT level for default packet discovery, for example N4 or N5")
     parser.add_argument(
         "--packet",
         action="append",
         type=Path,
         default=None,
-        help="Packet markdown path. Defaults to all N4 human audio QA chapter packets.",
+        help="Packet markdown path. Defaults to selected-level packets (N5 uses the latest dated snapshot per chapter).",
     )
     parser.add_argument("--json", action="store_true", help="Print JSON instead of the default line-oriented report")
     parser.add_argument("--fail-on-blocker", action="store_true", help="Exit 1 when PENDING/FLAG/FAIL/invalid verdicts remain")
@@ -229,7 +261,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    packet_paths = _packet_paths_from_args(args.packet)
+    packet_paths = _packet_paths_from_args(args.packet, level=args.level)
     report = build_report(packet_paths)
     if args.json:
         print(json.dumps(asdict(report), ensure_ascii=False, indent=2))

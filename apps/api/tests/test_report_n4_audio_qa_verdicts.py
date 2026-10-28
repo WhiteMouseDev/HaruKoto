@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import pytest
+
+import scripts.report_n4_audio_qa_verdicts as verdicts
 from scripts.report_n4_audio_qa_verdicts import build_report, default_packet_paths, parse_packet
 
 
@@ -80,3 +83,67 @@ def test_default_packet_paths_include_pilot_packets_through_ch07() -> None:
     assert any("n4-wave3-draft-human-audio-qa-ch05-2026-05-27.md" in packet for packet in packets)
     assert any("n4-ch06-pilot-human-audio-qa-ch06-2026-06-01.md" in packet for packet in packets)
     assert any("n4-ch07-pilot-human-audio-qa-ch07-2026-06-05.md" in packet for packet in packets)
+
+
+def test_default_packet_paths_can_select_n5_packets() -> None:
+    packets = default_packet_paths(level="N5")
+
+    assert any("n5-human-audio-qa-ch01-" in packet.name for packet in packets)
+    assert all(packet.name.startswith("n5-human-audio-qa-ch") for packet in packets)
+
+
+def test_n5_discovery_uses_latest_packet_per_chapter_without_reusing_old_passes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    directory = tmp_path / "docs/operations/plans"
+    directory.mkdir(parents=True)
+    old = _write_packet(directory / "n5-human-audio-qa-ch01-2026-05-26.md", ["PASS"])
+    current = _write_packet(directory / "n5-human-audio-qa-ch01-2026-10-26.md", ["PENDING"])
+    chapter_two = _write_packet(directory / "n5-human-audio-qa-ch02-2026-05-26.md", ["FLAG"])
+    monkeypatch.setattr(verdicts, "_repo_root", lambda: tmp_path)
+
+    paths = default_packet_paths(level="n5")
+    report = build_report(paths)
+
+    assert paths == sorted([current, chapter_two])
+    assert old not in paths
+    assert report.total_targets == 2
+    assert report.pass_count == 0
+    assert report.pending_count == 1
+    assert report.flag_count == 1
+
+
+def test_n5_discovery_rejects_ambiguous_same_day_chapter_packets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    directory = tmp_path / "docs/operations/plans"
+    directory.mkdir(parents=True)
+    _write_packet(directory / "n5-human-audio-qa-ch1-2026-10-26.md", ["PASS"])
+    _write_packet(directory / "n5-human-audio-qa-ch01-2026-10-26.md", ["PENDING"])
+    monkeypatch.setattr(verdicts, "_repo_root", lambda: tmp_path)
+
+    with pytest.raises(ValueError, match="Multiple latest N5 packets for chapter 1"):
+        default_packet_paths(level="N5")
+
+
+def test_explicit_packet_selection_can_inspect_a_historical_snapshot(tmp_path: Path) -> None:
+    historical = _write_packet(tmp_path / "n5-human-audio-qa-ch01-2026-05-26.md", ["PASS"])
+
+    assert verdicts._packet_paths_from_args([historical], level="N5") == [historical]
+
+
+def test_unknown_level_default_discovery_remains_blocked() -> None:
+    report = build_report(default_packet_paths(level="N1"))
+
+    assert report.total_targets == 0
+    assert report.blockers == ["NO_REVIEW_TARGETS: no review item rows were found"]
+
+
+@pytest.mark.parametrize("name", ["n5-human-audio-qa-ch01-2026-99-99.md", "n5-human-audio-qa-ch01-undated.md"])
+def test_n5_discovery_rejects_invalid_snapshot_names_instead_of_falling_back_to_old_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str
+) -> None:
+    directory = tmp_path / "docs/operations/plans"
+    directory.mkdir(parents=True)
+    _write_packet(directory / "n5-human-audio-qa-ch01-2026-05-26.md", ["PASS"])
+    _write_packet(directory / name, ["PENDING"])
+    monkeypatch.setattr(verdicts, "_repo_root", lambda: tmp_path)
+
+    with pytest.raises(ValueError, match="N5 packet"):
+        default_packet_paths(level="N5")
