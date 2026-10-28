@@ -8,7 +8,6 @@ import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'widgets/lesson_chapter_list.dart';
-import 'widgets/lesson_continue_banner.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/saved_lesson_section.dart';
 
@@ -54,12 +53,8 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
                 jlptLevel: jlptLevel,
                 target: recommendedLesson,
               ),
-              if (recommendedLesson != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
-                  child: LessonContinueBanner(target: recommendedLesson),
-                ),
-              SavedLessonSection(jlptLevel: jlptLevel),
+              SavedLessonSection(
+                  jlptLevel: jlptLevel, recommendedLesson: recommendedLesson),
               if (data.chapters.isEmpty)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),

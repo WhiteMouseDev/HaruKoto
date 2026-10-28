@@ -16,7 +16,6 @@ import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/lesson_chapter_list.dart';
-import 'widgets/lesson_continue_banner.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/study_kana_section.dart';
 import 'widgets/saved_lesson_section.dart';
@@ -186,20 +185,12 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 ),
               ),
 
-              if (recommendedLesson != null)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
-                    child: LessonContinueBanner(
-                      target: recommendedLesson,
-                      compact: true,
-                    ),
-                  ),
-                ),
-
               if (chapterList != null)
                 SliverToBoxAdapter(
-                  child: SavedLessonSection(jlptLevel: jlptLevel),
+                  child: SavedLessonSection(
+                      jlptLevel: jlptLevel,
+                      recommendedLesson: recommendedLesson,
+                      compact: true),
                 ),
 
               // Inline chapter cards

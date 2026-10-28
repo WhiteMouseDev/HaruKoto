@@ -11,10 +11,12 @@ class LessonContinueBanner extends StatelessWidget {
     super.key,
     required this.target,
     this.compact = false,
+    this.onTap,
   });
 
   final RecommendedLessonTarget target;
   final bool compact;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class LessonContinueBanner extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () => context.push('/study/lessons/${lesson.id}'),
+        onTap: onTap ?? () => context.push('/study/lessons/${lesson.id}'),
         child: Container(
           padding: EdgeInsets.all(compact ? 14 : 16),
           decoration: BoxDecoration(

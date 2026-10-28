@@ -36,6 +36,8 @@ docs/
 
 ### 운영
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
+- [이어하기 카드와 최근 학습순](operations/plans/mobile-resume-recent-study-2026-10-28.md) — 대표 카드 한 개·전체 목록, 기존 저장 위치/답안 호환과 최근 활동 정렬
+- [저장 목록을 짧게 만든 과정 (블로그)](blog/2026-10-28-one-resume-card-and-recent-study.md) — 중복 카드·학습 시각·실패 상태와 접근성 개선 기록
 - [레슨 Seed/TTS Rollout Runbook](operations/content/lesson-audio-qa-rollout-runbook.md) — N4 seed/TTS 운영 반영 preflight와 N3+ 확장 gate
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)

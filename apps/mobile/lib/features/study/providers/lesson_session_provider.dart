@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/current_account_provider.dart';
@@ -19,6 +20,10 @@ import 'study_provider.dart';
 import 'saved_lesson_entry_provider.dart';
 
 export '../domain/lesson_session_state.dart';
+
+/// Tests can control activity time without changing clocks used by auth/API.
+final lessonStudyClockProvider =
+    Provider<DateTime Function()>((ref) => DateTime.now);
 
 /// A fresh account-bound GET for every visit; never hydrate an account's draft
 /// using a cached detail response belonging to a previous signed-in account.
@@ -47,6 +52,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   bool _preserveRawCheckpoint = false;
   LessonDetailModel? _detail;
   String _progressStamp = 'null';
+  DateTime? _lastStudiedAt;
   Future<void>? _initializing;
 
   LessonSessionActions get actions => LessonSessionActions._(this, _generation);
@@ -61,6 +67,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _closing = false;
     _preserveRawCheckpoint = false;
     _detail = null;
+    _lastStudiedAt = null;
     _initializing = null;
     ref.onDispose(() => _generation++);
     return const LessonSessionState();
@@ -116,6 +123,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     }
     try {
       final checkpoint = LessonCheckpoint.decode(raw, detail);
+      _lastStudiedAt = checkpoint.lastStudiedAt;
       if (checkpoint.acknowledged) {
         _acknowledged = true;
         state = state.copyWith(
@@ -198,11 +206,22 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     }
     final generation = _generation;
     final version = ++_writeVersion;
-    final payload = LessonCheckpoint(
+    var payload = LessonCheckpoint(
             state: state,
             progressStamp: _progressStamp,
-            acknowledged: _acknowledged)
+            acknowledged: _acknowledged,
+            lastStudiedAt: _lastStudiedAt)
         .encode(detail);
+    if (payload.length > 512 * 1024 && _lastStudiedAt != null) {
+      // Ranking metadata must not prevent an otherwise valid legacy-sized
+      // checkpoint from preserving its position and answers.
+      final withoutStudyTime = LessonCheckpoint(
+              state: state,
+              progressStamp: _progressStamp,
+              acknowledged: _acknowledged)
+          .encode(detail);
+      if (withoutStudyTime.length <= 512 * 1024) payload = withoutStudyTime;
+    }
     if (payload.length > 512 * 1024) {
       state = state.copyWith(storageError: true);
       return Future<bool>.value(false);
@@ -263,10 +282,29 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   void _change(LessonSessionState next) {
-    if (!_editable) return;
+    if (!_editable || _sameActivityState(state, next)) return;
+    _recordStudyActivity();
     state = next;
     unawaited(_persist());
   }
+
+  void _recordStudyActivity() =>
+      _lastStudiedAt = ref.read(lessonStudyClockProvider)().toUtc();
+
+  bool _sameActivityState(LessonSessionState a, LessonSessionState b) =>
+      a.step == b.step &&
+      a.vocabIndex == b.vocabIndex &&
+      a.grammarIndex == b.grammarIndex &&
+      a.recognitionIndex == b.recognitionIndex &&
+      a.reorderIndex == b.reorderIndex &&
+      a.practiceStarted == b.practiceStarted &&
+      a.recognitionSelection == b.recognitionSelection &&
+      a.matchingLeft == b.matchingLeft &&
+      a.matchingRight == b.matchingRight &&
+      setEquals(a.matchingMatched, b.matchingMatched) &&
+      listEquals(a.reorderSelected, b.reorderSelected) &&
+      listEquals(a.reorderAvailable, b.reorderAvailable) &&
+      mapEquals(a.answers, b.answers);
 
   void goToVocabLearning() {
     if (!_editable || state.step != LessonStep.contextPreview) return;
@@ -374,6 +412,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         hasReorderStep: plan.hasReorderStep,
         recognitionQuestionCount: plan.recognitionQuestions.length,
         reorderQuestionCount: plan.reorderQuestions.length);
+    _recordStudyActivity();
     state = state.copyWith(
         step: plan.hasRecognitionStep
             ? LessonStep.recognition
