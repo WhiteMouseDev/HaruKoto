@@ -8,6 +8,57 @@ from pathlib import Path
 # closed. Unrelated optional AI integration skips remain permitted.
 REQUIRED_CASES = frozenset(
     {
+        *{
+            (
+                "tests.test_review_event_february_partition_postgres",
+                f"test_february_preserves_existing_rows_security_and_routes_exact_utc_boundaries[{timezone}]",
+            )
+            for timezone in ("utc", "korea", "los-angeles")
+        },
+        (
+            "tests.test_review_event_february_partition_postgres",
+            "test_february_preserves_auth_saved_answers_and_partial_quiz_resume",
+        ),
+        (
+            "tests.test_review_event_february_partition_postgres",
+            "test_february_accepts_exact_existing_target_and_concurrent_reapplication",
+        ),
+        (
+            "tests.test_review_event_february_partition_postgres",
+            "test_february_lock_timeout_rolls_back_and_allows_bounded_retry",
+        ),
+        (
+            "tests.test_review_event_february_partition_postgres",
+            "test_february_offline_sql_is_atomic_and_downgrade_never_drops_data",
+        ),
+        *{
+            (
+                "tests.test_review_event_february_partition_postgres",
+                f"test_february_rejects_conflicting_catalog_or_security_without_repairing_old_objects[{mutation}]",
+            )
+            for mutation in (
+                "table-name",
+                "view-name",
+                "wrong-bounds",
+                "unexpected-child",
+                "default-partition",
+                "wrong-owner",
+                "parent-rls",
+                "old-child-rls",
+                "ddl-guard",
+                "guard-search-path",
+                "guard-tags",
+                "missing-index",
+                "column-privilege",
+                "old-column-privilege",
+                "public-privilege",
+                "historical-gap",
+                "target-rls",
+                "target-privilege",
+                "target-column-privilege",
+                "target-owner",
+            )
+        },
         (
             "tests.test_stats_vocabulary_goal_postgres",
             "test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answer_day[aware-korea]",

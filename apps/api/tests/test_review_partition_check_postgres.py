@@ -27,7 +27,10 @@ AS_OF = datetime(2026, 10, 21, tzinfo=UTC)
 @pytest.fixture
 async def check_database(repair_database):
     engine, url = repair_database
-    applied = await asyncio.to_thread(_alembic, url, "upgrade", "head")
+    # These inspector regressions deliberately describe the original eleven
+    # months, including detecting the missing February reserve. Later dated
+    # additions have their own integration coverage and must not erase this gap.
+    applied = await asyncio.to_thread(_alembic, url, "upgrade", "m3n4o5p6q7r8")
     assert applied.returncode == 0, applied.stderr
     return engine, url
 
