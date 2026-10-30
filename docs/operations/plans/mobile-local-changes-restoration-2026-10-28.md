@@ -1,12 +1,12 @@
 # 로컬 학습 UI 누락 점검과 노선도 복구 계획
 
-작성일: 2026-10-28 KST. 최종 정리: 2026-10-30 KST. 사용자는 지하철 UI가 일반 목록으로 돌아온 원인의 블로그용 Markdown 기록, 다른 누락 점검, 복구 작업을 승인했다. 최신 main `fa82a4b855aac6b677529dd0dcf8e82ce7fe2d55` 위에서 원본 미커밋 변경을 보존하며 진행한다.
+작성일: 2026-10-28 KST. 최종 정리: 2026-10-30 KST. 사용자는 지하철 UI가 일반 목록으로 돌아온 원인의 블로그용 Markdown 기록, 다른 누락 점검, 복구 작업을 승인했다. 조사 당시 main `fa82a4b855aac6b677529dd0dcf8e82ce7fe2d55` 위에서 원본 미커밋 변경을 보존하며 진행했다. 아래는 조사와 소스 복구 기록이며, 이후 병합·배포·아이폰 확인은 [운영 반영 기록](learning-ui-production-rollout-2026-10-30.md)을 따른다.
 
 ## 확인된 원인과 실행 경계
 
-원본 작업 폴더의 노선도는 미커밋 selector 변경과 미추적 station/color/config/test 파일로 남아 있다. 기본 source flag는 true다. 최신 main에는 이 파일들이 없어 기존 ChapterCard 목록을 사용한다. PR #199는 이어하기 구역을 변경했으며 챕터 렌더러 세 파일을 바꾸지 않았다. PR #197의 main 기준 모바일 652파일 일치 기록과 2026-10-28 09:46경 아이폰 설치 receipt는 노선도 없는 빌드의 실제 설치를 확인하는 근거다. 최초 회귀 순간을 화면으로 기록했다고 확대하지 않는다.
+조사 당시 원본 작업 폴더의 노선도는 미커밋 selector 변경과 미추적 station/color/config/test 파일로 남아 있었다. 기본 source flag는 true였지만 당시 main에는 이 파일들이 없어 기존 ChapterCard 목록을 사용했다. PR #199는 이어하기 구역을 변경했으며 챕터 렌더러 세 파일을 바꾸지 않았다. PR #197의 main 기준 모바일 652파일 일치 기록과 2026-10-28 09:46경 아이폰 설치 receipt는 노선도 없는 빌드의 실제 설치를 확인하는 근거다. 최초 회귀 순간을 화면으로 기록했다고 확대하지 않는다.
 
-이번에 준비한 기존 일반 목록 빌드는 설치하지 않았다. 실제 아이폰 기준 위치는 ‘물건을 가리킬 때’ 단어 4/6 傘（かさ）·우산이며, 답안·완료 제출이나 초기화 없이 화면 증거만 보존했다.
+조사 중 준비한 기존 일반 목록 빌드는 설치하지 않았다. 업데이트 전 실제 아이폰 기준 위치는 ‘물건을 가리킬 때’ 단어 4/6 傘（かさ）·우산이었으며, 답안·완료 제출이나 초기화 없이 화면 증거를 먼저 보존했다.
 
 ## 진행 순서
 
@@ -95,7 +95,7 @@ API의 수정 전 경계 사례 4개 실패를 확인한 뒤 관련 98개가 통
 
 승인 필드 포함 서버는 **1056 passed / 기존 admin fixture 13 skipped**, 필수 PG 85개는 skip 없이 통과했다. Ruff 302개 파일·mypy 174개 source가 통과했다. OpenAPI에서 새 속성과 required 항목만 제거하면 이전 snapshot과 바이트 동일하다. 공유 TS도 2줄 추가뿐이며 두 번 생성 결과가 같다. 직접 consumer admin의 lint/typecheck·45 tests(기존 TODO 10)·11페이지 build가 통과했다. 이 build는 synthetic localhost와 offline font fixture를 사용해 운영 폰트 검수로 확대하지 않는다.
 
-서버·웹·생성 타입은 [PR #202](https://github.com/WhiteMouseDev/HaruKoto/pull/202), 앱·블로그·감사 기록은 [PR #201](https://github.com/WhiteMouseDev/HaruKoto/pull/201)에서 검토한다. 영속 출석과 특수 모드 재개는 각각 [기존 출석 마커 미결](../../../.planning/escalations/2026-09-29-streak-attendance-marker.md), [특수 퀴즈 재개 미결](../../../.planning/escalations/2026-10-07-special-quiz-resume-contract.md)을 복구·갱신해 구체안 없이 적용하지 않는다.
+서버·웹·생성 타입은 [PR #202](https://github.com/WhiteMouseDev/HaruKoto/pull/202), 앱·블로그·감사 기록은 [PR #201](https://github.com/WhiteMouseDev/HaruKoto/pull/201)을 통해 병합했다. 영속 출석과 특수 모드 재개는 각각 [기존 출석 마커 미결](../../../.planning/escalations/2026-09-29-streak-attendance-marker.md), [특수 퀴즈 재개 미결](../../../.planning/escalations/2026-10-07-special-quiz-resume-contract.md)을 복구·갱신해 구체안 없이 적용하지 않는다.
 
 | 최종 모바일 2차 검사                         | 결과                                                     |
 | -------------------------------------------- | -------------------------------------------------------- |
@@ -110,14 +110,14 @@ API의 수정 전 경계 사례 4개 실패를 확인한 뒤 관련 98개가 통
 
 최종 모바일 673개 파일 manifest SHA-256은 `146c0330f54a1d5fe931a35a62dd17bf3552cfdf45b42553f975aad6c5910e8f`다. 독립 검토본에서 변경된 것은 openCalendar guard의 중괄호 스타일뿐이며, 이 정확한 최종 소스로 전체·timezone 검사를 재실행했다. 신규 버그·회귀 finding은 없다. streak pending/today·history·history error의 밝은/어두운 모드 합성 렌더 8개를 추가 확인했다. 실제 기기·계정·음성 청취 검증으로 확대하지 않는다.
 
-API 최종 커밋 `363109a0`의 [CI 40981077518](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/40981077518)은 backend·api-contract·schema-drift·frontend·admin-e2e 모두 통과했다. 모바일 최종 커밋은 PR #201의 최신 CI 상태를 따른다. 두 PR은 아직 병합·운영 배포·기기 설치하지 않았다.
+API 최종 커밋 `363109a0`의 [CI 40981077518](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/40981077518)은 backend·api-contract·schema-drift·frontend·admin-e2e 모두 통과했다. 위 결과는 병합 전 소스 검증 단계의 기록이다. 이후 10월 30일 사용자 승인으로 #202 병합·서버 배포, #201 병합·아이폰 교체 설치와 main CI까지 완료했다. 정확한 커밋·리비전·기기 보존 비교와 실제 기능 확인 범위는 [운영 반영 기록](learning-ui-production-rollout-2026-10-30.md)에 구분한다.
 
 ## 롤백과 적용 전 확인
 
 1. 노선 표시만 철회하려면 소스 기본값을 false로 바꾸어 fallback 회귀 테스트 후 다시 빌드한다. 저장 키·v1 체크포인트·답안·로그인·DB는 그대로다.
 2. 이번 모바일 변경 전체를 철회하려면 복구 PR을 revert한다. 데이터 마이그레이션이나 운영 음원 삭제는 필요 없다. KST 수정은 별도 PR이므로 영향을 분리할 수 있다.
 3. 기존 main 기준 일반 목록 빌드는 폐기 대상이며 복구본 설치에 재사용하지 않는다. 병합 후 정확한 커밋에서 새로 빌드·서명 검증하고, 앱 삭제 없이 같은 앱 위에 업데이트한다.
-4. 아이폰에서 기존 저장 레슨의 이름·위치, 로그인, 전체 듣기/정지/이탈 취소와 재실행 후 이어하기를 실제 확인한다. 현재는 소스·자동 테스트·합성 렌더 검증까지 완료했으며, 복구본 기기 설치나 운영 배포를 완료했다고 보고하지 않는다.
+4. 아이폰에서 기존 저장 레슨의 이름·위치, 로그인, 전체 듣기/정지/이탈 취소와 재실행 후 이어하기를 실제 확인한다. 소스 검증과 기기 설치·청취·재실행 확인을 같은 단계로 취급하지 않으며, 10월 30일 적용 후 실제 완료한 항목은 [운영 반영 기록](learning-ui-production-rollout-2026-10-30.md)의 체크리스트를 따른다.
 
 ## 재발 방지
 
