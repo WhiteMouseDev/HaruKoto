@@ -46,6 +46,7 @@ docs/
 - [저장 목록을 짧게 만든 과정 (블로그)](blog/2026-10-28-one-resume-card-and-recent-study.md) — 중복 카드·학습 시각·실패 상태와 접근성 개선 기록
 - [지하철 학습 UI가 사라진 원인과 복구 (블로그)](blog/2026-10-28-why-the-subway-ui-disappeared.md) — 미커밋 승인 디자인의 빌드 누락, 세 방향 소스 감사와 선택 복구
 - [로컬 변경 누락 감사·복구 기록](operations/plans/mobile-local-changes-restoration-2026-10-28.md) — 446개 후보 분류, 모바일 회귀·KST 수정·별도 승인 항목과 롤백
+- [학습 UI·연속일 실제 운영 반영](operations/plans/learning-ui-production-rollout-2026-10-30.md) — #202 서버 배포·#201 아이폰 업데이트, 기존 기록/캐시 보존과 실제 기기 확인 범위
 - [레슨 Seed/TTS Rollout Runbook](operations/content/lesson-audio-qa-rollout-runbook.md) — N4 seed/TTS 운영 반영 preflight와 N3+ 확장 gate
 - [콘텐츠 변환 가이드](operations/content/content-conversion-guide.md)
 - [앱스토어 배포](operations/release/app-store-submission-guide.md)
