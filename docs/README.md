@@ -60,6 +60,8 @@ docs/
 - [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
 - [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안
 - [파티션 정기 점검 운영 적용](operations/plans/partition-monitor-deployment-2026-10-21.md) — 최소 권한 계정, 오전 9시 예약, 실제 실행·누락·오류·복구 알림 검증과 중단 절차
+- [파티션 자동 점검 감사·2월 보완 제안](operations/plans/partition-monitor-audit-2026-10-30.md) — 9일 연속 자연 실행 확인, 2027년 2월 부재와 승인 전 추가·보존 절차
+- [특수 퀴즈 이어하기 계약 제안](operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md) — matching/arrange 모드·표시 snapshot, 기존 세션 무백필 처리와 웹·모바일 회귀안
 - [레슨 문항과 복습 항목 연결 수정](operations/plans/lesson-review-target-fix-2026-10-21.md) — 명시 참조 계약, 회귀 테스트, 기존 기록 영향과 승인 전 운영 데이터 적용안
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
