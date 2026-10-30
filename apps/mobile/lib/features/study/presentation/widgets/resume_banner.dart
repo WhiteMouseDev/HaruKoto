@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/quiz_session_model.dart';
 import '../quiz_launch.dart';
+import '../study_entry_flow.dart';
 
 class ResumeBanner extends StatelessWidget {
   final IncompleteSessionModel session;
@@ -52,7 +55,7 @@ class ResumeBanner extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${s.jlptLevel} ${s.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${s.answeredCount}/${s.totalQuestions} 문제',
+                      '${s.jlptLevel} ${s.quizType == 'SENTENCE_ARRANGE' ? '문장 배열' : s.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${s.answeredCount}/${s.totalQuestions} 문제',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color:
                             theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -66,24 +69,31 @@ class ResumeBanner extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    openQuizPageForSession(
-                      context,
-                      quizType: s.quizType,
-                      jlptLevel: s.jlptLevel,
-                      count: s.totalQuestions,
-                    );
-                  },
-                  icon: const Icon(LucideIcons.rotateCcw, size: 14),
-                  label: const Text('새로 시작'),
+              if (s.canResume)
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      openQuizPageForSession(
+                        context,
+                        quizType: s.quizType,
+                        jlptLevel: s.jlptLevel,
+                        count: s.totalQuestions,
+                        mode: defaultQuizModeForCategory(s.quizType),
+                      );
+                    },
+                    icon: const Icon(LucideIcons.rotateCcw, size: 14),
+                    label: const Text('새로 시작'),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
+              if (s.canResume) const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () {
+                    if (!s.canResume) {
+                      unawaited(showQuizResumeUnavailable(context,
+                          legacy: s.resumeStatus == 'legacy_unavailable'));
+                      return;
+                    }
                     openQuizPageForSession(
                       context,
                       quizType: s.quizType,
@@ -93,7 +103,7 @@ class ResumeBanner extends StatelessWidget {
                     );
                   },
                   icon: const Icon(LucideIcons.playCircle, size: 14),
-                  label: const Text('이어서 풀기'),
+                  label: Text(s.canResume ? '이어서 풀기' : '저장된 퀴즈 안내'),
                 ),
               ),
             ],

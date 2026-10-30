@@ -10,6 +10,99 @@ REQUIRED_CASES = frozenset(
     {
         *{
             (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_free_matching_uses_requested_level_and_cold_resume_keeps_first_answers_and_records[{category}]",
+            )
+            for category in ("VOCABULARY", "GRAMMAR")
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_stage_matching_keeps_content_id_scope_when_level_pool_has_other_items[{category}]",
+            )
+            for category in ("VOCABULARY", "GRAMMAR")
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_unsupported_free_matching_rolls_back_pending_completion_and_xp[{category}]",
+            )
+            for category in ("KANJI", "LISTENING", "SENTENCE_ARRANGE", "CLOZE")
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_conflicting_stage_matching_category_rolls_back_pending_completion_and_xp[{category}]",
+            )
+            for category in ("VOCABULARY", "GRAMMAR")
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_special_start_partial_resume_keeps_snapshot_saved_right_and_wrong_and_completes_once[{category}-{mode}]",
+            )
+            for category, mode in (
+                ("VOCABULARY", "matching"),
+                ("GRAMMAR", "matching"),
+                ("SENTENCE", "matching"),
+                ("SENTENCE", "arrange"),
+            )
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_legacy_special_snapshots_resume_without_backfill_or_review_date_changes[{envelope}-{category}-{mode}]",
+            )
+            for envelope in ("array", "stage-envelope")
+            for category, mode in (("VOCABULARY", "matching"), ("GRAMMAR", "matching"), ("SENTENCE", "arrange"))
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_unavailable_special_session_returns_409_without_mutating_learning_or_backfilling[{mutation}]",
+            )
+            for mutation in (
+                "missing-japanese",
+                "missing-side",
+                "mixed-mode",
+                "duplicate-id",
+                "unknown-mode",
+                "foreign-answer",
+                "wrong-grade",
+                "foreign-pair",
+            )
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_study_capabilities_reads_text_and_enum_chapter_levels_without_rewriting_records[{storage}]",
+            )
+            for storage in ("text", "enum")
+        },
+        (
+            "tests.test_special_quiz_resume_postgres",
+            "test_special_retries_concurrent_answers_and_completion_apply_srs_and_xp_once",
+        ),
+        (
+            "tests.test_special_quiz_resume_postgres",
+            "test_legacy_duplicate_special_answers_keep_first_grade_and_no_read_side_effects",
+        ),
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_legacy_arrange_category_conflict_is_unavailable_without_regrading_or_srs_rewrite[{category}]",
+            )
+            for category in ("VOCABULARY", "GRAMMAR")
+        },
+        *{
+            (
+                "tests.test_special_quiz_resume_postgres",
+                f"test_invalid_new_arrange_category_rolls_back_pending_auto_completion_and_xp[{category}]",
+            )
+            for category in ("VOCABULARY", "GRAMMAR")
+        },
+        *{
+            (
                 "tests.test_review_event_february_partition_postgres",
                 f"test_february_preserves_existing_rows_security_and_routes_exact_utc_boundaries[{timezone}]",
             )

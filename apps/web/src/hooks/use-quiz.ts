@@ -4,6 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
+import {
+  QUIZ_SNAPSHOT_INVALID_MESSAGE,
+  QUIZ_WEB_UNSUPPORTED_MESSAGE,
+} from '@/lib/quiz-session-snapshot';
 
 // Types
 
@@ -43,7 +47,19 @@ type QuizQuestion = {
   // SentenceArrange fields
   koreanSentence?: string;
   japaneseSentence?: string;
-  tokens?: { text: string; type: 'noun' | 'particle' | 'verb' | 'adjective' | 'copula' | 'adverb' | 'suffix'; meaning: string; order: number }[];
+  tokens?: {
+    text: string;
+    type:
+      | 'noun'
+      | 'particle'
+      | 'verb'
+      | 'adjective'
+      | 'copula'
+      | 'adverb'
+      | 'suffix';
+    meaning: string;
+    order: number;
+  }[];
   // Typing fields
   prompt?: string;
   answer?: string;
@@ -67,7 +83,9 @@ type ResumeQuizResponse = {
   questions: QuizQuestion[];
   answeredQuestionIds: string[];
   correctCount: number;
+  totalQuestions?: number;
   quizType?: string;
+  mode?: string | null;
 };
 
 type AnswerQuestionParams = {
@@ -90,7 +108,10 @@ type CompleteQuizResponse = {
   accuracy: number;
   currentXp?: number;
   xpForNext?: number;
-  events?: { type: 'level_up' | 'streak' | 'achievement'; data: Record<string, unknown> }[];
+  events?: {
+    type: 'level_up' | 'streak' | 'achievement';
+    data: Record<string, unknown>;
+  }[];
 };
 
 type WrongAnswer = {
@@ -119,9 +140,7 @@ export function useQuizStats(level: string, type: string) {
   return useQuery<StudyStats>({
     queryKey: [...queryKeys.quizStats, level, type],
     queryFn: () =>
-      apiFetch<StudyStats>(
-        `/api/v1/quiz/stats?level=${level}&type=${type}`
-      ),
+      apiFetch<StudyStats>(`/api/v1/quiz/stats?level=${level}&type=${type}`),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -148,8 +167,7 @@ type RecommendationData = {
 export function useRecommendations() {
   return useQuery<RecommendationData>({
     queryKey: ['recommendations'],
-    queryFn: () =>
-      apiFetch<RecommendationData>('/api/v1/quiz/recommendations'),
+    queryFn: () => apiFetch<RecommendationData>('/api/v1/quiz/recommendations'),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -181,8 +199,14 @@ export function useResumeQuiz() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
-    onError: () => {
-      toast.error('퀴즈를 이어할 수 없어요. 다시 시도해주세요.');
+    onError: (error) => {
+      toast.error(
+        [QUIZ_WEB_UNSUPPORTED_MESSAGE, QUIZ_SNAPSHOT_INVALID_MESSAGE].includes(
+          error.message
+        )
+          ? error.message
+          : '퀴즈를 이어할 수 없어요. 다시 시도해주세요.'
+      );
     },
   });
 }

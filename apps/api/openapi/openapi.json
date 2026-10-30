@@ -8984,6 +8984,33 @@
           "startedAt": {
             "type": "string",
             "title": "Startedat"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "resumeStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "legacy_unavailable",
+                  "invalid_snapshot"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resumestatus"
           }
         },
         "type": "object",
@@ -11172,6 +11199,31 @@
           "quizType": {
             "type": "string",
             "title": "Quiztype"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "matchingPairs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MatchingPair"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matchingpairs"
           }
         },
         "type": "object",
@@ -11254,6 +11306,17 @@
               }
             ],
             "title": "Matchingpairs"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
           }
         },
         "type": "object",

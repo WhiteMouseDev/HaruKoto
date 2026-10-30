@@ -213,7 +213,7 @@ void main() {
             currentIndex: 1);
         await _pumpQuizPageContent(tester,
             session: session, onComplete: () => completionCalls++);
-        expect(session.headerCount, '1/1');
+        expect(session.headerCount, mode == null ? '1/1' : '1/1 저장');
         expect(find.text('모든 답안이 저장됐어요'), findsOneWidget);
         await tester.tap(find.text('결과 확인하기'));
         expect(completionCalls, 1);

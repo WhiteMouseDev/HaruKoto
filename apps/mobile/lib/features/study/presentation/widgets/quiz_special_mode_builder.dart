@@ -19,6 +19,8 @@ class QuizSpecialModeBuilder {
   Widget? build({
     required String resolvedMode,
     required List<QuizQuestionModel> questions,
+    int initialAnsweredCount = 0,
+    int? totalQuestions,
     required String quizType,
     required bool showFurigana,
     required VoidCallback onComplete,
@@ -51,6 +53,8 @@ class QuizSpecialModeBuilder {
         ),
       'arrange' => SentenceArrangeQuiz(
           questions: questions,
+          initialAnsweredCount: initialAnsweredCount,
+          totalQuestions: totalQuestions,
           onAnswer: (questionId, isCorrect) {
             onSubmitSpecialAnswer(
               questionId,

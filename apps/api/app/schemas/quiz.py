@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from app.models.enums import JlptLevel, QuizType
@@ -23,6 +23,8 @@ class IncompleteQuizSession(CamelModel):
     answered_count: int
     correct_count: int
     started_at: str
+    mode: str | None = None
+    resume_status: Literal["available", "legacy_unavailable", "invalid_snapshot"] | None = None
 
 
 class IncompleteQuizResponse(CamelModel):
@@ -75,6 +77,7 @@ class QuizStartResponse(CamelModel):
     questions: list[QuizQuestion]
     total_questions: int
     matching_pairs: list[MatchingPair] | None = None
+    mode: str | None = None
 
 
 class QuizAnswerRequest(CamelModel):
@@ -113,6 +116,8 @@ class QuizResumeResponse(CamelModel):
     total_questions: int
     correct_count: int
     quiz_type: str
+    mode: str | None = None
+    matching_pairs: list[MatchingPair] | None = None
 
 
 class QuizStatsResponse(CamelModel):

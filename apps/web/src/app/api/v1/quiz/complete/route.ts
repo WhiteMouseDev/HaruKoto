@@ -9,6 +9,10 @@ import {
 } from '@/lib/gamification';
 import { REWARDS } from '@/lib/constants';
 import { getTodayKST } from '@/lib/date';
+import {
+  decodeWebQuizSnapshot,
+  QuizSnapshotError,
+} from '@/lib/quiz-session-snapshot';
 
 export async function POST(request: Request) {
   try {
@@ -40,9 +44,24 @@ export async function POST(request: Request) {
         { status: 404 }
       );
     }
+    // Preserve the read-only result path for very old completed web records
+    // without a snapshot. Active/known snapshots must pass before any XP write.
+    if (
+      existingSession.questionsData !== null ||
+      !existingSession.completedAt
+    ) {
+      decodeWebQuizSnapshot(
+        existingSession.questionsData,
+        existingSession.totalQuestions,
+        existingSession.quizType
+      );
+    }
     if (existingSession.completedAt) {
       const levelInfo = calculateLevel(
-        (await prisma.user.findUnique({ where: { id: user.id }, select: { experiencePoints: true } }))!.experiencePoints
+        (await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { experiencePoints: true },
+        }))!.experiencePoints
       );
       return NextResponse.json({
         sessionId: existingSession.id,
@@ -75,61 +94,68 @@ export async function POST(request: Request) {
     );
 
     // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
-    const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(async (tx) => {
-      const currentUser = await tx.user.findUniqueOrThrow({
-        where: { id: user.id },
-      });
+    const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(
+      async (tx) => {
+        const currentUser = await tx.user.findUniqueOrThrow({
+          where: { id: user.id },
+        });
 
-      const today = getTodayKST();
+        const today = getTodayKST();
 
-      await tx.dailyProgress.upsert({
-        where: {
-          userId_date: { userId: user.id, date: today },
-        },
-        update: {
-          quizzesCompleted: { increment: 1 },
-          correctAnswers: { increment: session.correctCount },
-          totalAnswers: { increment: session.totalQuestions },
-          wordsStudied: { increment: session.totalQuestions },
-          xpEarned: { increment: xpEarned },
-          studyTimeSeconds: { increment: studyTimeSeconds },
-        },
-        create: {
-          userId: user.id,
-          date: today,
-          quizzesCompleted: 1,
-          correctAnswers: session.correctCount,
-          totalAnswers: session.totalQuestions,
-          wordsStudied: session.totalQuestions,
-          xpEarned,
-          studyTimeSeconds,
-        },
-      });
+        await tx.dailyProgress.upsert({
+          where: {
+            userId_date: { userId: user.id, date: today },
+          },
+          update: {
+            quizzesCompleted: { increment: 1 },
+            correctAnswers: { increment: session.correctCount },
+            totalAnswers: { increment: session.totalQuestions },
+            wordsStudied: { increment: session.totalQuestions },
+            xpEarned: { increment: xpEarned },
+            studyTimeSeconds: { increment: studyTimeSeconds },
+          },
+          create: {
+            userId: user.id,
+            date: today,
+            quizzesCompleted: 1,
+            correctAnswers: session.correctCount,
+            totalAnswers: session.totalQuestions,
+            wordsStudied: session.totalQuestions,
+            xpEarned,
+            studyTimeSeconds,
+          },
+        });
 
-      const txTotalXp = currentUser.experiencePoints + xpEarned;
-      const { level: txNewLevel } = calculateLevel(txTotalXp);
-      const txOldLevel = currentUser.level;
+        const txTotalXp = currentUser.experiencePoints + xpEarned;
+        const { level: txNewLevel } = calculateLevel(txTotalXp);
+        const txOldLevel = currentUser.level;
 
-      const txStreak = updateStreak(
-        currentUser.lastStudyDate,
-        currentUser.streakCount,
-        currentUser.longestStreak,
-        today
-      );
+        const txStreak = updateStreak(
+          currentUser.lastStudyDate,
+          currentUser.streakCount,
+          currentUser.longestStreak,
+          today
+        );
 
-      await tx.user.update({
-        where: { id: user.id },
-        data: {
-          experiencePoints: txTotalXp,
-          level: txNewLevel,
-          streakCount: txStreak.streakCount,
-          longestStreak: txStreak.longestStreak,
-          lastStudyDate: today,
-        },
-      });
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            experiencePoints: txTotalXp,
+            level: txNewLevel,
+            streakCount: txStreak.streakCount,
+            longestStreak: txStreak.longestStreak,
+            lastStudyDate: today,
+          },
+        });
 
-      return { totalXp: txTotalXp, newLevel: txNewLevel, oldLevel: txOldLevel, streak: txStreak };
-    });
+        return {
+          totalXp: txTotalXp,
+          newLevel: txNewLevel,
+          oldLevel: txOldLevel,
+          streak: txStreak,
+        };
+      }
+    );
 
     // 퀴즈 수 + 총 학습 단어 수 조회
     const [quizCount, wordsAggregate] = await Promise.all([
@@ -185,6 +211,9 @@ export async function POST(request: Request) {
       events,
     });
   } catch (err) {
+    if (err instanceof QuizSnapshotError) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
+    }
     console.error('Quiz complete error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },

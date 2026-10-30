@@ -23,14 +23,15 @@ abstract class StudyRepository {
     String jlptLevel = 'N5',
   });
 
-  Future<({String sessionId, List<QuizQuestionModel> questions})>
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
       startSmartQuiz({
     String category = 'VOCABULARY',
     String jlptLevel = 'N5',
     int count = 20,
   });
 
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,
@@ -45,6 +46,7 @@ abstract class StudyRepository {
         List<String> answeredQuestionIds,
         int correctCount,
         String? quizType,
+        String? mode,
       })> resumeQuiz(String sessionId);
 
   Future<
@@ -54,6 +56,7 @@ abstract class StudyRepository {
         List<String> answeredQuestionIds,
         int correctCount,
         String? quizType,
+        String? mode,
       })> startWrongAnswerReview(String sourceSessionId);
 
   Future<void> answerQuestion({

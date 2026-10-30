@@ -228,16 +228,17 @@ class _SavingRepository extends Fake implements StudyRepository {
   int maxConcurrentSaves = 0;
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz(
-          {required String quizType,
-          required String jlptLevel,
-          required int count,
-          String? mode,
-          String? stageId}) async =>
-      (sessionId: 'session-${++starts}', questions: questions);
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz(
+              {required String quizType,
+              required String jlptLevel,
+              required int count,
+              String? mode,
+              String? stageId}) async =>
+          (sessionId: 'session-${++starts}', questions: questions, mode: null);
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})>
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
       startSmartQuiz({
     String category = 'VOCABULARY',
     String jlptLevel = 'N5',
@@ -245,7 +246,7 @@ class _SavingRepository extends Fake implements StudyRepository {
   }) async {
     smartStarts++;
     smartRequest = (category: category, jlptLevel: jlptLevel, count: count);
-    return (sessionId: 'smart-session', questions: questions);
+    return (sessionId: 'smart-session', questions: questions, mode: null);
   }
 
   @override
@@ -255,9 +256,11 @@ class _SavingRepository extends Fake implements StudyRepository {
         List<QuizQuestionModel> questions,
         List<String> answeredQuestionIds,
         int correctCount,
-        String? quizType
+        String? quizType,
+        String? mode,
       })> resumeQuiz(String sessionId) async => (
         sessionId: sessionId,
+        mode: null,
         questions: questions,
         answeredQuestionIds: saved.keys.toList(),
         correctCount: saved.length,

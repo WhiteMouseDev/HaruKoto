@@ -42,7 +42,9 @@ class QuizPageContent extends ConsumerWidget {
       ? '이번 퀴즈의 오답 복습'
       : session.resolvedMode == 'review'
           ? '복습'
-          : '$jlptLevel ${quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
+          : session.resolvedMode == 'arrange'
+              ? '$jlptLevel 문장 배열'
+              : '$jlptLevel ${quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +55,8 @@ class QuizPageContent extends ConsumerWidget {
     if (session.loadError != null) {
       return _QuizLoadErrorState(
         message: session.loadError!,
-        onRetry: onRetryLoad,
+        onRetry: session.loadErrorCanRetry ? onRetryLoad : null,
+        permanent: !session.loadErrorCanRetry,
         onExit: onExit,
         exitLabel: exitLabel,
       );
@@ -100,7 +103,9 @@ class QuizPageContent extends ConsumerWidget {
     final specialModeChild = _specialModeBuilder.build(
       resolvedMode: session.resolvedMode ?? '',
       questions: session.unansweredQuestions,
-      quizType: quizType,
+      initialAnsweredCount: session.currentIndex,
+      totalQuestions: session.questions.length,
+      quizType: session.effectiveQuizType(quizType),
       showFurigana: showFurigana,
       onComplete: onComplete,
       onSubmitSpecialAnswer: onSubmitSpecialAnswer,
@@ -206,12 +211,14 @@ class _QuizLoadErrorState extends StatelessWidget {
     required this.onRetry,
     required this.onExit,
     required this.exitLabel,
+    this.permanent = false,
   });
 
   final String message;
   final VoidCallback? onRetry;
   final VoidCallback onExit;
   final String exitLabel;
+  final bool permanent;
 
   @override
   Widget build(BuildContext context) {
@@ -224,13 +231,13 @@ class _QuizLoadErrorState extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.cloud_off_outlined,
+                Icon(permanent ? Icons.info_outline : Icons.cloud_off_outlined,
                     size: 48, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(height: 16),
                 Text('퀴즈를 불러오지 못했어요', style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
                 Text(message, textAlign: TextAlign.center),
-                if (onRetry == null) ...[
+                if (onRetry == null && !permanent) ...[
                   const SizedBox(height: 8),
                   const Text(
                     '퀴즈가 준비되었지만 화면을 불러오지 못했을 수 있어요. '

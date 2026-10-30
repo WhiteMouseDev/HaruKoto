@@ -150,7 +150,8 @@ class _SessionReviewRepository extends Fake implements StudyRepository {
         List<QuizQuestionModel> questions,
         List<String> answeredQuestionIds,
         int correctCount,
-        String? quizType
+        String? quizType,
+        String? mode,
       })> startWrongAnswerReview(String sourceSessionId) async {
     sources.add(sourceSessionId);
     if (failStarts > 0) {
@@ -159,6 +160,7 @@ class _SessionReviewRepository extends Fake implements StudyRepository {
     }
     return (
       sessionId: 'review-child',
+      mode: null,
       questions: const [
         QuizQuestionModel(
           questionId: 'wrong-only',
@@ -177,7 +179,8 @@ class _SessionReviewRepository extends Fake implements StudyRepository {
   }
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,

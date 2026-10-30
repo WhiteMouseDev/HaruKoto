@@ -28,7 +28,7 @@ void main() {
         ),
       );
 
-      expect(find.text('0/2 연결 완료'), findsOneWidget);
+      expect(find.text('남은 2개 중 0개 연결'), findsOneWidget);
       expect(find.text('라운드 1/2'), findsOneWidget);
 
       await tester.tap(find.text('食べる'));
@@ -37,7 +37,7 @@ void main() {
       await tester.pump();
 
       expect(results, ['q1:true']);
-      expect(find.text('1/2 연결 완료'), findsOneWidget);
+      expect(find.text('남은 2개 중 1개 연결'), findsOneWidget);
 
       await tester.pump(const Duration(milliseconds: 401));
 
@@ -76,7 +76,7 @@ void main() {
       expect(find.text('라운드 2/2'), findsOneWidget);
       await pumpQuiz();
       expect(find.text('라운드 2/2'), findsOneWidget);
-      expect(find.text('1/2 연결 완료'), findsOneWidget);
+      expect(find.text('남은 2개 중 1개 연결'), findsOneWidget);
       expect(find.text('食べる'), findsNothing);
     });
   });

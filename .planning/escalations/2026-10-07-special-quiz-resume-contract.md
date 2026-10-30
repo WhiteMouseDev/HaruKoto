@@ -3,8 +3,15 @@ raised_by: codex-root
 raised_at: 2026-10-07
 phase: quiz-answer-persistence
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-10-30
 ---
+
+## Resolution
+
+2026년 10월 30일 사용자가 PR #208 병합과 [API·기존 세션 처리안](../../docs/operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md)의 구현·회귀 테스트·시뮬레이터 검증을 승인했다. 기존 세션은 백필하지 않고, 학습 기록·복습 기한·Data API 차단을 유지한다. API/mobile/web/생성 타입을 함께 수정한 [구현·검증 기록](../../docs/operations/plans/special-quiz-resume-implementation-2026-10-30.md)을 남긴다.
+
+이 결정은 계약 구현 승인을 해결한 것이며 **신규 기능의 운영 서버·웹 배포나 아이폰 설치 완료를 뜻하지 않는다.** DB 구조·권한·운영 설정 변경은 없다. 아래 내용은 승인 전 조사 이력이다.
 
 ## What happened
 

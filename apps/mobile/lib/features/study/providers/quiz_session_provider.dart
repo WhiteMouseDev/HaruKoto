@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../domain/quiz_resume_exception.dart';
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
 import 'quiz_session_service.dart';
@@ -42,6 +43,8 @@ class QuizSessionState {
     this.completing = false,
     this.completionError,
     this.loadError,
+    this.loadErrorCanRetry = true,
+    this.savedSpecialQuestionIds = const {},
   });
 
   static const _unset = Object();
@@ -60,6 +63,10 @@ class QuizSessionState {
   final bool completing;
   final ApiException? completionError;
   final String? loadError;
+  final bool loadErrorCanRetry;
+  final Set<String> savedSpecialQuestionIds;
+
+  int get savedSpecialCount => currentIndex + savedSpecialQuestionIds.length;
 
   QuizQuestionModel? get currentQuestion =>
       currentIndex < questions.length ? questions[currentIndex] : null;
@@ -81,9 +88,11 @@ class QuizSessionState {
       resolvedMode == 'arrange' ||
       resolvedMode == 'typing';
 
-  String get headerCount => questions.isEmpty
-      ? '0/0'
-      : '${currentQuestion == null ? questions.length : currentIndex + 1}/${questions.length}';
+  String get headerCount => isSpecialMode && questions.isNotEmpty
+      ? '$savedSpecialCount/${questions.length} 저장'
+      : questions.isEmpty
+          ? '0/0'
+          : '${currentQuestion == null ? questions.length : currentIndex + 1}/${questions.length}';
 
   String effectiveQuizType(String fallback) => sessionQuizType ?? fallback;
 
@@ -115,6 +124,8 @@ class QuizSessionState {
     bool? completing,
     Object? completionError = _unset,
     Object? loadError = _unset,
+    bool? loadErrorCanRetry,
+    Set<String>? savedSpecialQuestionIds,
   }) {
     return QuizSessionState(
       loading: loading ?? this.loading,
@@ -141,6 +152,9 @@ class QuizSessionState {
           : completionError as ApiException?,
       loadError:
           identical(loadError, _unset) ? this.loadError : loadError as String?,
+      loadErrorCanRetry: loadErrorCanRetry ?? this.loadErrorCanRetry,
+      savedSpecialQuestionIds:
+          savedSpecialQuestionIds ?? this.savedSpecialQuestionIds,
     );
   }
 }
@@ -193,6 +207,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
         loadError: cause is ApiException
             ? cause.userMessage
             : const ApiException(message: '잠시 후 다시 시도해 주세요.').userMessage,
+        loadErrorCanRetry: cause is! QuizResumeException,
       );
     }
   }
@@ -260,6 +275,12 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   }) {
     final sessionId = state.sessionId;
     if (sessionId == null) return;
+
+    if (state.questions
+        .take(state.currentIndex)
+        .any((q) => q.questionId == questionId)) {
+      return;
+    }
 
     final question =
         state.questions.firstWhere((q) => q.questionId == questionId);
@@ -332,16 +353,24 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     // Matching can report a corrected pair after its first scored attempt.
     // The server keeps that first answer immutable, including on retries.
     if (_answerSaves.containsKey(questionId)) return;
-    final answer = _PendingQuizAnswer(save);
+    final revision = _initializationSerial;
+    final answer = _PendingQuizAnswer(save, () {
+      if (!ref.mounted || revision != _initializationSerial) return;
+      state = state.copyWith(savedSpecialQuestionIds: {
+        ...state.savedSpecialQuestionIds,
+        questionId,
+      });
+    });
     _answerSaves[questionId] = answer;
     answer.submit();
   }
 }
 
 class _PendingQuizAnswer {
-  _PendingQuizAnswer(this.save);
+  _PendingQuizAnswer(this.save, this.onSaved);
 
   final Future<void> Function() save;
+  final void Function() onSaved;
   late Future<void> pending;
   bool saved = false;
   bool failed = false;
@@ -350,6 +379,7 @@ class _PendingQuizAnswer {
     failed = false;
     pending = save().then((_) {
       saved = true;
+      onSaved();
     }, onError: (Object error, StackTrace stack) {
       failed = true;
     });
