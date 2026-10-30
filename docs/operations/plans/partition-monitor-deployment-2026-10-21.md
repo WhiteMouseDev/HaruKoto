@@ -1,5 +1,9 @@
 # Review partition monitor deployment — 2026-10-21
 
+## Later read-only follow-up
+
+On 2026-10-30, [the production audit](partition-monitor-audit-2026-10-30.md) verified all nine naturally scheduled runs from October 22 through October 30, including successful inspection and accepted Sentry delivery. The first natural run is no longer pending. The catalog still has eleven partitions through exclusive February 1, 2027; the February partition is absent, and adding it before the November 1 UTC horizon change is a separate approval-pending proposal. The ledger below retains the original October 21 rollout observations; this follow-up made no DB or cloud changes.
+
 ## Authorization and current status
 
 On 2026-10-21 the user approved merging PR #181 and deploying the previously proposed minimum-privilege DB login, daily 09:00 Asia/Seoul inspection and problem notifications. Existing learning records and the blocked Data API must remain intact. This document is the deployment runbook and evidence ledger; the implementation, manual end-to-end run and actual notification receipts are verified below. The first naturally scheduled daily run is still a future observation.
@@ -13,29 +17,29 @@ Use an explicit verified deployment account and project on cloud commands. Prese
 
 ## Verified production configuration
 
-| Resource | Configuration and boundary |
-|---|---|
-| DB login | `partition_monitor_catalog`; no application table, column or sequence grants, privileged memberships, object ownership, BYPASSRLS or administrative rights |
-| Job runtime identity | `harukoto-partition-monitor`; Secret Accessor only on the three specific secrets listed below |
-| Scheduler identity | `harukoto-partition-scheduler`; Cloud Run Invoker only on the inspection job |
-| Run job | Dedicated job in `asia-northeast3`; reviewed immutable image digest; one task, parallelism one, zero automatic task retries, maximum task duration 120 seconds |
-| Command | `/app/.venv/bin/python scripts/monitor_review_event_partitions.py --monitor-slug new-monitor`; no Alembic, seed or HTTP server startup |
-| Runtime settings | `ENVIRONMENT=production`; `PGSSLROOTCERT=/var/run/partition-monitor-ca/root.crt`; explicit version-pinned Secret references |
-| Schedule | `0 9 * * *`, timezone `Asia/Seoul`; Scheduler POST to the Cloud Run v2 `jobs:run` API using the separate identity's OAuth token |
-| Sentry production monitor | ID `10708112`, slug `new-monitor`, display name `HaruKoto review partitions`; the existing slug is intentionally preserved |
-| Sentry timing | Daily 09:00 Asia/Seoul; check-in margin 30 minutes; maximum runtime 2 minutes; failure/recovery thresholds one |
-| Alert recipient | Existing verified organization member, alert ID `6203133`; retain the selected member action without recording personal contact data here |
-| Rehearsal monitor | ID `10708141`, slug `harukoto-partition-rehearsal`; disabled except during controlled validation |
+| Resource                  | Configuration and boundary                                                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DB login                  | `partition_monitor_catalog`; no application table, column or sequence grants, privileged memberships, object ownership, BYPASSRLS or administrative rights     |
+| Job runtime identity      | `harukoto-partition-monitor`; Secret Accessor only on the three specific secrets listed below                                                                  |
+| Scheduler identity        | `harukoto-partition-scheduler`; Cloud Run Invoker only on the inspection job                                                                                   |
+| Run job                   | Dedicated job in `asia-northeast3`; reviewed immutable image digest; one task, parallelism one, zero automatic task retries, maximum task duration 120 seconds |
+| Command                   | `/app/.venv/bin/python scripts/monitor_review_event_partitions.py --monitor-slug new-monitor`; no Alembic, seed or HTTP server startup                         |
+| Runtime settings          | `ENVIRONMENT=production`; `PGSSLROOTCERT=/var/run/partition-monitor-ca/root.crt`; explicit version-pinned Secret references                                    |
+| Schedule                  | `0 9 * * *`, timezone `Asia/Seoul`; Scheduler POST to the Cloud Run v2 `jobs:run` API using the separate identity's OAuth token                                |
+| Sentry production monitor | ID `10708112`, slug `new-monitor`, display name `HaruKoto review partitions`; the existing slug is intentionally preserved                                     |
+| Sentry timing             | Daily 09:00 Asia/Seoul; check-in margin 30 minutes; maximum runtime 2 minutes; failure/recovery thresholds one                                                 |
+| Alert recipient           | Existing verified organization member, alert ID `6203133`; retain the selected member action without recording personal contact data here                      |
+| Rehearsal monitor         | ID `10708141`, slug `harukoto-partition-rehearsal`; disabled except during controlled validation                                                               |
 
 Confirm the final job command against the pinned image's interpreter path before creating the job. Do not attach the API service's privileged `DATABASE_URL` secret or other application secrets to this job. Scheduler API acceptance starts an execution; it does not prove the inspection completed.
 
 ### Secret and certificate inventory
 
-| Secret | Version / use |
-|---|---|
+| Secret                           | Version / use                                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `PARTITION_MONITOR_DATABASE_URL` | Version `1`; dedicated catalog-only login, verified before storing; never the API owner connection |
-| `SENTRY_DSN` | Existing version `3`; SDK ingestion only, not a Sentry management token |
-| `PARTITION_MONITOR_CA_CERT` | Version `1`; public Supabase CA, mounted at `/var/run/partition-monitor-ca/root.crt` |
+| `SENTRY_DSN`                     | Existing version `3`; SDK ingestion only, not a Sentry management token                            |
+| `PARTITION_MONITOR_CA_CERT`      | Version `1`; public Supabase CA, mounted at `/var/run/partition-monitor-ca/root.crt`               |
 
 The CA was obtained from the official dashboard-linked [Supabase certificate](https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt). Its SHA-256 fingerprint is `807025AD50D4ED219D2C9C7D299C004F824EB00CF7F65AFEF607D07B72E6CAFA`, with expiry `2031-04-26`. It is public trust material, not a private key. Verify the certificate chain and connection hostname with `sslmode=verify-full`; mounting a certificate does not itself prove successful verification.
 
@@ -69,20 +73,20 @@ HTTP transport-close failure after both check-ins were acknowledged is recorded 
 
 ## Evidence ledger
 
-| Verification | Actual result / reference |
-|---|---|
-| Final wrapper CI and exact merge commit | PASS — 710 passed, 13 optional skips; 52 required PostgreSQL cases passed; CI 39529405806, merge `eee951835953d9aac0f06747d7e8bfc065381734` |
-| Job image digest / final job and Scheduler resource names | PASS — `harukoto-partition-check`, Scheduler `harukoto-partition-check-daily`; image digest `sha256:fb43171826a47e75b512db829d4ac45e82f1bdde9793ba97b3aba5223f2a6fbb`; task timeout 120s, one task, zero retries, pinned secret versions |
-| Monitor DB login, secret version and verified TLS | PASS — `partition_monitor_catalog`, DB secret version 1, zero application data/routine grants or privileged membership; official-CA client-to-pooler TLS `verify-full` |
-| Preserved security metadata / Alembic head | PASS — protected catalog SHA-256 unchanged (`2730c873415b3620136ef6fc853ff270d7de8a233688c706ff6e457a1acdaba5`); no customer-row reads/writes or migrations |
-| Direct job success | PASS — `harukoto-partition-check-sg9c6`, completed 02:23:00 UTC / 11:23:00 KST; task succeeded, structured OK and acknowledged Sentry recovery `3b20d081...` |
-| Rehearsal failure + email | PASS — real Nov1 evaluation reported missing February; new regression event 02:14:49 UTC, error email received 11:17 KST, explicit “An error check-in was detected”; same issue HARUKOTO-API-1W and alert 6203133 |
-| Rehearsal missed start + email | PASS — expected 02:02 UTC, actual missed incident 02:03 UTC, regression email received 11:12 KST; body explicitly states “A missed check-in was detected”, issue HARUKOTO-API-1W, alert 6203133 |
-| Recovery | First recovery PASS — `1c843b07...`, actual healthy inspection at 02:01:23 UTC and resolved Sentry state; recovery email received at 11:01 KST. Final Cloud Run recovery `3b20d081...` at 02:22:56–57 UTC also shows resolved, followed by rehearsal disable. |
-| Production restored / rehearsal disabled | PASS — rehearsal disabled and production enabled as sole active Cron monitor; production UI confirms 09:00 Asia/Seoul, 30min margin, 2min timeout and connected email alert |
-| Scheduler force-run completion | PASS — Scheduler dispatch 02:25:51 UTC → execution `harukoto-partition-check-bts4v`, creator is the dedicated Scheduler identity → completed 02:26:08 UTC with one succeeded task / exit0 → Sentry `b31c0a6fdb2d4490996113a27eb15bf0` Okay at 02:26:02–03 UTC |
-| Next daily 09:00 KST run | CONFIGURED — 2026-10-22 around 09:00 KST (Scheduler readback 00:00:04.979742 UTC); naturally scheduled completion has not yet occurred. Cron expression remains exactly `0 9 * * *`. |
-| Login / learning / unfinished quiz / Data API denial | PASS — baseline14/14 and post-deployment14/14: dedicated login, profile, stats, subscription, dashboard, review, vocabulary/grammar preview, chapter/lesson content, incomplete lookup; anonymous and authenticated Data API requests remain404; zero learning writes |
+| Verification                                              | Actual result / reference                                                                                                                                                                                                                                             |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final wrapper CI and exact merge commit                   | PASS — 710 passed, 13 optional skips; 52 required PostgreSQL cases passed; CI 39529405806, merge `eee951835953d9aac0f06747d7e8bfc065381734`                                                                                                                           |
+| Job image digest / final job and Scheduler resource names | PASS — `harukoto-partition-check`, Scheduler `harukoto-partition-check-daily`; image digest `sha256:fb43171826a47e75b512db829d4ac45e82f1bdde9793ba97b3aba5223f2a6fbb`; task timeout 120s, one task, zero retries, pinned secret versions                              |
+| Monitor DB login, secret version and verified TLS         | PASS — `partition_monitor_catalog`, DB secret version 1, zero application data/routine grants or privileged membership; official-CA client-to-pooler TLS `verify-full`                                                                                                |
+| Preserved security metadata / Alembic head                | PASS — protected catalog SHA-256 unchanged (`2730c873415b3620136ef6fc853ff270d7de8a233688c706ff6e457a1acdaba5`); no customer-row reads/writes or migrations                                                                                                           |
+| Direct job success                                        | PASS — `harukoto-partition-check-sg9c6`, completed 02:23:00 UTC / 11:23:00 KST; task succeeded, structured OK and acknowledged Sentry recovery `3b20d081...`                                                                                                          |
+| Rehearsal failure + email                                 | PASS — real Nov1 evaluation reported missing February; new regression event 02:14:49 UTC, error email received 11:17 KST, explicit “An error check-in was detected”; same issue HARUKOTO-API-1W and alert 6203133                                                     |
+| Rehearsal missed start + email                            | PASS — expected 02:02 UTC, actual missed incident 02:03 UTC, regression email received 11:12 KST; body explicitly states “A missed check-in was detected”, issue HARUKOTO-API-1W, alert 6203133                                                                       |
+| Recovery                                                  | First recovery PASS — `1c843b07...`, actual healthy inspection at 02:01:23 UTC and resolved Sentry state; recovery email received at 11:01 KST. Final Cloud Run recovery `3b20d081...` at 02:22:56–57 UTC also shows resolved, followed by rehearsal disable.         |
+| Production restored / rehearsal disabled                  | PASS — rehearsal disabled and production enabled as sole active Cron monitor; production UI confirms 09:00 Asia/Seoul, 30min margin, 2min timeout and connected email alert                                                                                           |
+| Scheduler force-run completion                            | PASS — Scheduler dispatch 02:25:51 UTC → execution `harukoto-partition-check-bts4v`, creator is the dedicated Scheduler identity → completed 02:26:08 UTC with one succeeded task / exit0 → Sentry `b31c0a6fdb2d4490996113a27eb15bf0` Okay at 02:26:02–03 UTC         |
+| Next daily 09:00 KST run                                  | CONFIGURED — 2026-10-22 around 09:00 KST (Scheduler readback 00:00:04.979742 UTC); naturally scheduled completion has not yet occurred. Cron expression remains exactly `0 9 * * *`.                                                                                  |
+| Login / learning / unfinished quiz / Data API denial      | PASS — baseline14/14 and post-deployment14/14: dedicated login, profile, stats, subscription, dashboard, review, vocabulary/grammar preview, chapter/lesson content, incomplete lookup; anonymous and authenticated Data API requests remain404; zero learning writes |
 
 ## Response and rollback
 

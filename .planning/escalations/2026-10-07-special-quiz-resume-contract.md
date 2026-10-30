@@ -14,10 +14,13 @@ status: open
 
 특수 모드의 원래 mode·표시 데이터를 저장/반환하고 이전 세션 호환까지 정의하는 별도 API/mobile 수정 범위를 먼저 제안해야 한다. 현재 사용자 승인된 history `hasStudied` 추가는 이 quiz 계약 확장의 승인이 아니다.
 
+10월 30일 사용자는 구체안 준비를 요청했으며 구현·운영 적용은 아직 승인하지 않았다. [API·기존 세션 처리 제안](../../docs/operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md)에 신규 matching/arrange JSON·mode/matchingPairs 응답·제한된 legacy decoder·복원 불가 안내·웹 BFF 호환·회귀 기준을 정리했다. 새 DDL이나 기존 행 백필은 필요하지 않은 안이다.
+
 ## Options considered
 
 1. 완전한 재개 계약과 구 세션 호환을 설계하고 API·mobile·생성 타입을 함께 검증한다.
 2. 불완전한 문항 모양만 보고 앱이 원래 mode를 추정한다. 장기 계약으로 신뢰하기 어려워 채택하지 않는다.
+3. mode 없는 특수 세션을 모두 복원 불가로 처리한다. 보수적 대안이며, 제안의 제한된 서버 decoder는 완전한 과거 직렬화 스냅샷만 fixture로 검증하고 누락된 SENTENCE matching은 거절한다. 원본 요청 mode를 확실히 복구했다고 주장하지 않는다.
 
 ## Recommended direction
 
