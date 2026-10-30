@@ -116,26 +116,21 @@ class ApiStudyRepository implements StudyRepository {
     );
     final data = response.data!;
 
-    // API may return matchingPairs for matching mode instead of questions
-    List<QuizQuestionModel> questions;
-    if (data['matchingPairs'] != null) {
-      questions = (data['matchingPairs'] as List<dynamic>? ?? []).map((e) {
-        final pair = e as Map<String, dynamic>;
-        return QuizQuestionModel.fromJson({
-          'questionId': pair['id'] as String,
-          'questionText': pair['word'] as String,
-          'questionSubText': pair['reading'] as String?,
-          'word': pair['word'] as String,
-          'meaning': pair['meaning'] as String,
-          'options': <Map<String, dynamic>>[],
-          'correctOptionId': '',
-        });
-      }).toList();
-    } else {
-      questions = (data['questions'] as List<dynamic>? ?? [])
-          .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
+    // Pair IDs identify the answer option, not the vocabulary/grammar item
+    // accepted by /quiz/answer. Preserve the canonical question IDs.
+    final pairsById = <String, Map<String, dynamic>>{
+      for (final value in data['matchingPairs'] as List<dynamic>? ?? [])
+        (value as Map<String, dynamic>)['id'] as String: value,
+    };
+    final questions = (data['questions'] as List<dynamic>? ?? []).map((value) {
+      final question = value as Map<String, dynamic>;
+      final pair = pairsById[question['correctOptionId']];
+      return QuizQuestionModel.fromJson({
+        ...question,
+        if (pair != null) 'word': pair['word'],
+        if (pair != null) 'meaning': pair['meaning'],
+      });
+    }).toList();
 
     return (
       sessionId: data['sessionId'] as String,

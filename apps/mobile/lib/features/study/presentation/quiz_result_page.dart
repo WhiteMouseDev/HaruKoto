@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -42,18 +40,12 @@ class QuizResultPage extends ConsumerStatefulWidget {
 }
 
 class _QuizResultPageState extends ConsumerState<QuizResultPage> {
-  late final ConfettiController _confettiController;
   ProviderContainer? _container;
   bool _openingReview = false;
 
   @override
   void initState() {
     super.initState();
-    _confettiController =
-        ConfettiController(duration: const Duration(seconds: 3));
-    if (widget.result.accuracy >= 80) {
-      _confettiController.play();
-    }
     _scheduleLoadWrongAnswers();
   }
 
@@ -75,7 +67,6 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
 
   @override
   void dispose() {
-    _confettiController.dispose();
     // Refresh all dependent providers across tabs (deferred to avoid build-phase conflicts)
     final container = _container;
     if (container != null) {
@@ -196,22 +187,21 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
         children: [
           SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
               children: [
-                const SizedBox(height: 24),
-
                 // Icon & message
                 Center(
                   child: Column(
                     children: [
                       Icon(
                         _resultIcon,
-                        size: 56,
+                        size: 48,
                         color: theme.colorScheme.primary,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         _resultMessage,
+                        textAlign: TextAlign.center,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -230,7 +220,8 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   currentXp: r.currentXp,
                   xpForNext: r.xpForNext,
                 ),
-                const SizedBox(height: 16),
+
+                const SizedBox(height: 20),
 
                 // Wrong answers
                 if (!resultState.loadingWrong &&
@@ -250,13 +241,13 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                     error: resultState.error,
                     onRetry: () => unawaited(_loadWrongAnswers()),
                   ),
-                const SizedBox(height: 16),
 
                 // Next recommendations
                 if (wrongCount > 0 &&
                     !resultState.loadingWrong &&
                     resultState.error == null &&
                     resultState.wrongAnswers.isNotEmpty) ...[
+                  const SizedBox(height: 20),
                   Text(
                     '다음에 이걸 해보세요',
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -293,12 +284,13 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                                     size: 16,
                                     color: AppColors.error(theme.brightness)),
                                 const SizedBox(width: 8),
-                                Text(
+                                Expanded(
+                                    child: Text(
                                   '이번 퀴즈의 오답 복습',
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
-                                ),
+                                )),
                               ],
                             ),
                             const SizedBox(height: 4),
@@ -326,16 +318,25 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                 const SizedBox(height: 24),
 
                 // Action buttons
-                SizedBox(
-                  height: 48,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      unawaited(_retryQuiz(context));
-                    },
-                    icon: const Icon(LucideIcons.rotateCcw, size: 16),
-                    label:
-                        const Text('한 번 더 도전', style: TextStyle(fontSize: 16)),
+                FilledButton.icon(
+                  onPressed: () {
+                    unawaited(_retryQuiz(context));
+                  },
+                  icon: const Icon(LucideIcons.rotateCcw, size: 16),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    textStyle: theme.textTheme.labelLarge
+                        ?.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                    backgroundColor: theme.brightness == Brightness.light
+                        ? AppColors.sakuraContainer
+                        : Color.alphaBlend(
+                            AppColors.primary.withValues(alpha: 0.22),
+                            AppColors.darkCard),
+                    foregroundColor: theme.brightness == Brightness.light
+                        ? AppColors.sakuraOn
+                        : AppColors.sakuraContainer,
                   ),
+                  label: const Text('한 번 더 도전'),
                 ),
                 const SizedBox(height: 8),
                 if (widget.returnToPreviousResult) ...[
@@ -346,37 +347,21 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   ),
                   const SizedBox(height: 8),
                 ],
-                SizedBox(
-                  height: 48,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    icon: const Icon(LucideIcons.home, size: 16),
-                    label:
-                        const Text('홈으로 돌아가기', style: TextStyle(fontSize: 16)),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  icon: const Icon(LucideIcons.home, size: 16),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    textStyle:
+                        theme.textTheme.labelLarge?.copyWith(fontSize: 16),
+                    foregroundColor: theme.brightness == Brightness.light
+                        ? AppColors.lightSubtext
+                        : AppColors.darkSubtext,
                   ),
+                  label: const Text('홈으로 돌아가기'),
                 ),
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: ConfettiWidget(
-              confettiController: _confettiController,
-              blastDirection: pi / 2,
-              blastDirectionality: BlastDirectionality.explosive,
-              maxBlastForce: 20,
-              minBlastForce: 8,
-              emissionFrequency: 0.05,
-              numberOfParticles: 25,
-              gravity: 0.1,
-              colors: const [
-                Color(0xFFFF6B6B),
-                Color(0xFFFFD93D),
-                Color(0xFF6BCB77),
-                Color(0xFF4D96FF),
-                Color(0xFFFF85B3),
               ],
             ),
           ),

@@ -57,7 +57,7 @@ void main() {
       expect(controller.totalCount, 3);
       expect(controller.totalRounds, 2);
       expect(controller.hasMultipleRounds, isTrue);
-      expect(controller.scoreLabel, '0/3 맞춤');
+      expect(controller.scoreLabel, '0/3 연결 완료');
       expect(controller.roundLabel, '라운드 1/2');
       expect(controller.unmatchedLeftPairs.map((pair) => pair.id), [
         'q1',
@@ -81,7 +81,7 @@ void main() {
       expect(result.rightPair.id, 'q1');
       expect(result.isCorrect, isTrue);
       expect(controller.totalCorrect, 1);
-      expect(controller.scoreLabel, '1/3 맞춤');
+      expect(controller.scoreLabel, '1/3 연결 완료');
       expect(controller.unmatchedLeftPairs.map((pair) => pair.id), ['q2']);
       expect(controller.isResolving, isTrue);
 

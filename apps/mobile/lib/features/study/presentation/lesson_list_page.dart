@@ -7,6 +7,7 @@ import '../../my/providers/settings_sync_provider.dart';
 import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
+import '../providers/study_map_config.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/saved_lesson_section.dart';
@@ -123,7 +124,7 @@ class _LessonListPageState extends ConsumerState<LessonListPage> {
   }
 }
 
-class _LessonListHeader extends StatelessWidget {
+class _LessonListHeader extends ConsumerWidget {
   const _LessonListHeader({
     required this.jlptLevel,
     required this.target,
@@ -133,9 +134,10 @@ class _LessonListHeader extends StatelessWidget {
   final RecommendedLessonTarget? target;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final target = this.target;
+    final mapEnabled = ref.watch(studyMapEnabledProvider);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
@@ -177,7 +179,9 @@ class _LessonListHeader extends StatelessWidget {
                 ? '관심 있는 주제부터 골라도 돼요'
                 : '이어갈 위치를 먼저 보여주고, 전체 경로도 함께 확인해요',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.lightSubtext,
+              color: mapEnabled && theme.brightness == Brightness.dark
+                  ? AppColors.darkSubtext
+                  : AppColors.lightSubtext,
             ),
           ),
         ],

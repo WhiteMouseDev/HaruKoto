@@ -142,9 +142,8 @@ class QuizFeedbackPlayer {
     required int streak,
   }) {
     if (isCorrect) {
-      final isCombo = streak >= 3;
-      unawaited(isCombo ? heavyHaptic() : mediumHaptic());
-      unawaited(playSound(isCombo ? SoundType.combo : SoundType.correct));
+      unawaited(mediumHaptic());
+      unawaited(playSound(SoundType.correct));
       return;
     }
 
@@ -154,7 +153,6 @@ class QuizFeedbackPlayer {
 
   void playCompletionFeedback() {
     unawaited(heavyHaptic());
-    unawaited(playSound(SoundType.complete));
   }
 }
 
@@ -220,6 +218,7 @@ class QuizInteractionCoordinator {
       questionType: questionType,
       optionId: optionId,
     );
+    _feedbackPlayer.playAnswerFeedback(isCorrect: isCorrect, streak: 0);
   }
 }
 

@@ -1,6 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/services/haptic_service.dart';
-import '../../../../core/services/sound_service.dart';
 import '../../data/models/quiz_question_model.dart';
 import 'matching_quiz_controller.dart';
 
@@ -37,7 +36,7 @@ class _MatchingQuizState extends State<MatchingQuiz> {
   @override
   void didUpdateWidget(covariant MatchingQuiz oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.questions != widget.questions ||
+    if (!listEquals(oldWidget.questions, widget.questions) ||
         oldWidget.pairsPerRound != widget.pairsPerRound) {
       _controller = _createController();
     }
@@ -70,13 +69,6 @@ class _MatchingQuizState extends State<MatchingQuiz> {
     if (result == null) return;
 
     widget.onMatchResult(result.leftPair.id, result.isCorrect);
-    if (result.isCorrect) {
-      HapticService().light();
-      SoundService().play(SoundType.match);
-    } else {
-      HapticService().heavy();
-      SoundService().play(SoundType.wrong);
-    }
 
     Future.delayed(const Duration(milliseconds: 400), () {
       if (!mounted) return;
@@ -108,7 +100,14 @@ class _MatchingQuizState extends State<MatchingQuiz> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
+        Text(
+          '점수는 각 문제의 첫 시도를 기준으로 해요.',
+          style: theme.textTheme.bodySmall,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 16,
+          runSpacing: 4,
           children: [
             Text(
               _controller.scoreLabel,
@@ -117,7 +116,6 @@ class _MatchingQuizState extends State<MatchingQuiz> {
               ),
             ),
             if (_controller.hasMultipleRounds) ...[
-              const Spacer(),
               Text(
                 _controller.roundLabel,
                 style: theme.textTheme.bodySmall?.copyWith(

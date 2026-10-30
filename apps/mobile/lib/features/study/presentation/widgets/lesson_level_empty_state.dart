@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../providers/study_map_config.dart';
+import '../study_map_colors.dart';
 
-class LessonLevelEmptyState extends StatelessWidget {
+class LessonLevelEmptyState extends ConsumerWidget {
   const LessonLevelEmptyState({
     super.key,
     required this.jlptLevel,
@@ -19,8 +22,9 @@ class LessonLevelEmptyState extends StatelessWidget {
   bool get _isN5 => jlptLevel == 'N5';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final mapEnabled = ref.watch(studyMapEnabledProvider);
     final isLight = theme.brightness == Brightness.light;
     final cardColor =
         isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
@@ -50,13 +54,17 @@ class LessonLevelEmptyState extends StatelessWidget {
                 width: compact ? 36 : 42,
                 height: compact ? 36 : 42,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: mapEnabled
+                      ? StudyMapColors.panel(theme.brightness)
+                      : AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
-                child: const Icon(
+                child: Icon(
                   LucideIcons.bookOpen,
                   size: 20,
-                  color: AppColors.primaryStrong,
+                  color: mapEnabled
+                      ? StudyMapColors.accent(theme.brightness)
+                      : AppColors.primaryStrong,
                 ),
               ),
               const SizedBox(width: 12),
@@ -77,7 +85,9 @@ class LessonLevelEmptyState extends StatelessWidget {
                           ? '레슨 데이터가 준비되면 여기에 학습 경로가 표시돼요.'
                           : '검토가 끝난 레슨부터 순서대로 열릴 예정이에요. 지금은 N5 레슨으로 학습 흐름을 이어갈 수 있어요.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightSubtext,
+                        color: mapEnabled && !isLight
+                            ? AppColors.darkSubtext
+                            : AppColors.lightSubtext,
                       ),
                     ),
                   ],
@@ -92,7 +102,12 @@ class LessonLevelEmptyState extends StatelessWidget {
                 await onSwitchToN5!();
               },
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primaryStrong,
+                backgroundColor: mapEnabled
+                    ? StudyMapColors.button(theme.brightness)
+                    : AppColors.primaryStrong,
+                foregroundColor: mapEnabled
+                    ? StudyMapColors.onButton(theme.brightness)
+                    : null,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 9,

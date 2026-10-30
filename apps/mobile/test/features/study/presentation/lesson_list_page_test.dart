@@ -8,9 +8,38 @@ import 'package:harukoto_mobile/features/study/presentation/lesson_list_page.dar
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:harukoto_mobile/features/study/providers/study_map_config.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/legacy_lesson_chapter_list.dart';
 
 void main() {
   group('LessonListPage', () {
+    testWidgets('rollback keeps the original list and recommendation',
+        (tester) async {
+      await _pumpLessonListPage(
+        tester,
+        mapEnabled: false,
+        chapters: [
+          _chapter(chapterNo: 5, lessons: const [
+            LessonSummaryModel(
+                id: 'later-lesson',
+                lessonNo: 5,
+                chapterLessonNo: 1,
+                title: 'Later lesson',
+                topic: 'Topic',
+                estimatedMinutes: 5,
+                status: 'IN_PROGRESS',
+                scoreCorrect: 0,
+                scoreTotal: 0),
+          ])
+        ],
+      );
+      expect(find.byType(LegacyLessonChapterList), findsOneWidget);
+      expect(find.byType(ChapterCard), findsOneWidget);
+      expect(find.byType(LessonTile), findsOneWidget);
+      expect(find.text('이어하기 · Ch.5 · 1/1'), findsOneWidget);
+      expect(find.text('N5 학습 노선'), findsNothing);
+    });
+
     testWidgets('frames the recommendation as guidance in the full list',
         (tester) async {
       final events = <LessonPilotEvent>[];
@@ -52,10 +81,15 @@ void main() {
       expect(find.text('학습'), findsOneWidget);
       expect(find.text('전체 레슨'), findsOneWidget);
       expect(find.text('이어갈 위치를 먼저 보여주고, 전체 경로도 함께 확인해요'), findsOneWidget);
-      expect(find.text('추천 레슨 · Ch.1 · 2/2'), findsOneWidget);
-      expect(find.text('바로 시작'), findsOneWidget);
-      expect(find.text('추천'), findsOneWidget);
-      expect(find.text('다음'), findsOneWidget);
+      expect(find.text('추천 레슨'), findsOneWidget);
+      expect(find.text('1번 역 · 2번째 레슨'), findsOneWidget);
+      expect(find.text('시작하기'), findsOneWidget);
+      expect(find.text('추천 역'), findsOneWidget);
+      expect(find.text('학습 시작'), findsNothing);
+      expect(find.text('Lesson 1'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-1')));
+      await tester.pumpAndSettle();
+      expect(find.text('학습 시작'), findsOneWidget);
       expect(find.text('Lesson 1'), findsOneWidget);
       expect(find.text('Lesson 2'), findsWidgets);
 
@@ -108,7 +142,7 @@ void main() {
       );
 
       expect(find.text('전체 레슨'), findsOneWidget);
-      expect(find.text('N5'), findsOneWidget);
+      expect(find.text('0 / 9개 역 완료'), findsOneWidget);
       expect(find.text('인사와 첫 만남'), findsOneWidget);
       expect(find.text('기초 표현 보강'), findsOneWidget);
       expect(find.text('생활 표현과 동사 기초'), findsOneWidget);
@@ -129,6 +163,7 @@ Future<void> _pumpLessonListPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
   String jlptLevel = 'N5',
+  bool? mapEnabled,
   List<LessonPilotEvent>? telemetryEvents,
 }) async {
   SharedPreferences.setMockInitialValues({'user_jlpt_level': jlptLevel});
@@ -137,6 +172,8 @@ Future<void> _pumpLessonListPage(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        if (mapEnabled != null)
+          studyMapEnabledProvider.overrideWithValue(mapEnabled),
         currentAccountIdProvider.overrideWithValue('test-account'),
         currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
         sharedPreferencesProvider.overrideWith((ref) => prefs),

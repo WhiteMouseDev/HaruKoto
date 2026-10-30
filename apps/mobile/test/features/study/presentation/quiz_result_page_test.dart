@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:confetti/confetti.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
@@ -11,6 +12,47 @@ import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
 void main() {
   group('QuizResultPage', () {
+    for (final brightness in Brightness.values) {
+      testWidgets('result remains usable at 320px and 2x text in $brightness',
+          (tester) async {
+        await tester.binding.setSurfaceSize(const Size(320, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        var retryCalls = 0;
+        await tester.pumpWidget(ProviderScope(
+          overrides: [
+            studyRepositoryProvider.overrideWithValue(_FakeStudyRepository())
+          ],
+          child: MaterialApp(
+            theme: ThemeData(brightness: brightness),
+            builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: const TextScaler.linear(2),
+                    disableAnimations: true),
+                child: child!),
+            home: QuizResultPage(
+              result: _buildResult(correctCount: 99, totalQuestions: 100),
+              quizType: 'VOCABULARY',
+              jlptLevel: 'N4',
+              sessionId: 'large-text',
+              retryLauncher: (_) async {
+                retryCalls++;
+              },
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+        expect(find.byType(ConfettiWidget), findsNothing);
+        expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(find.text('한 번 더 도전'), 350,
+            scrollable: find.byType(Scrollable).first);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.text('한 번 더 도전'));
+        expect(retryCalls, 1);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump(const Duration(milliseconds: 1));
+      });
+    }
     testWidgets('malformed wrong-answer content is visible as an error',
         (tester) async {
       final repository = _FakeStudyRepository()..loadError = TypeError();
@@ -128,6 +170,7 @@ void main() {
       expect(find.text('오답 복습 →'), findsOneWidget);
 
       await tester.ensureVisible(find.text('오답 복습 →'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('오답 복습 →'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));

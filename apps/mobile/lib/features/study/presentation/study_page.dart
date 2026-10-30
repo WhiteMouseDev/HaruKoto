@@ -14,7 +14,9 @@ import '../data/models/review_summary_model.dart';
 import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
+import '../providers/study_map_config.dart';
 import 'quiz_launch.dart';
+import 'study_map_colors.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/study_kana_section.dart';
@@ -45,6 +47,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mapEnabled = ref.watch(studyMapEnabledProvider);
     final preferences = ref.watch(userPreferencesProvider);
 
     final jlptLevel = preferences.jlptLevel;
@@ -75,7 +78,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          color: theme.colorScheme.primary,
+          color: mapEnabled
+              ? StudyMapColors.marker(theme.brightness)
+              : theme.colorScheme.primary,
           onRefresh: () async {
             ref.invalidate(dashboardProvider);
             ref.invalidate(reviewSummaryProvider(jlptLevel));
@@ -99,6 +104,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                       const Spacer(),
                       _JlptLevelChip(
                         level: jlptLevel,
+                        mapEnabled: mapEnabled,
                         onChanged: (newLevel) async {
                           await ref
                               .read(settingsSyncServiceProvider)
@@ -123,6 +129,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                       if (summary.totalDue > 0) {
                         return _ReviewDueCard(
                           summary: summary,
+                          mapEnabled: mapEnabled,
                           jlptLevel: jlptLevel,
                           onReviewCtaClicked: () {
                             ref
@@ -142,6 +149,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                       if (!hasEverStudied && recommendedLesson != null) {
                         return _ReviewIdleBar(
                           firstLessonId: recommendedLesson.lesson.id,
+                          mapEnabled: mapEnabled,
                         );
                       }
                       return const SizedBox.shrink();
@@ -164,24 +172,46 @@ class _StudyPageState extends ConsumerState<StudyPage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Icon(LucideIcons.bookOpen,
-                          size: 20, color: theme.colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Text(
-                        '체계적 학습',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  child: Builder(builder: (context) {
+                    final heading = Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.bookOpen,
+                            size: 20,
+                            color: mapEnabled
+                                ? StudyMapColors.icon(theme.brightness)
+                                : theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          mapEnabled ? '학습 노선' : '체계적 학습',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () => context.push('/study/lessons'),
-                        child: const Text('전체 보기'),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                    final allLessons = TextButton(
+                      onPressed: () => context.push('/study/lessons'),
+                      style: mapEnabled
+                          ? TextButton.styleFrom(
+                              foregroundColor:
+                                  StudyMapColors.accent(theme.brightness),
+                            )
+                          : null,
+                      child: const Text('전체 보기'),
+                    );
+                    return mapEnabled
+                        ? SizedBox(
+                            width: double.infinity,
+                            child: Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 12,
+                              children: [heading, allLessons],
+                            ),
+                          )
+                        : Row(children: [heading, const Spacer(), allLessons]);
+                  }),
                 ),
               ),
 
@@ -254,8 +284,10 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: StudyKanaSection(
-                      dataBuilder: (progress) =>
-                          _KanaBootcampCard(progress: progress),
+                      dataBuilder: (progress) => _KanaBootcampCard(
+                        progress: progress,
+                        mapEnabled: mapEnabled,
+                      ),
                     ),
                   ),
                 ),
@@ -300,10 +332,12 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 class _ReviewDueCard extends StatelessWidget {
   final String jlptLevel;
   final ReviewSummaryModel summary;
+  final bool mapEnabled;
   final VoidCallback onReviewCtaClicked;
 
   const _ReviewDueCard({
     required this.summary,
+    required this.mapEnabled,
     required this.jlptLevel,
     required this.onReviewCtaClicked,
   });
@@ -324,11 +358,59 @@ class _ReviewDueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    if (mapEnabled) return _buildMapCard(context, theme);
+
+    final subtext = mapEnabled && theme.brightness == Brightness.dark
+        ? AppColors.darkSubtext
+        : AppColors.lightSubtext;
+    final accent = mapEnabled
+        ? StudyMapColors.accent(theme.brightness)
+        : AppColors.primaryStrong;
     final isLight = theme.brightness == Brightness.light;
     final cardColor =
         isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
     final borderColor =
         isLight ? AppColors.lightBorder : theme.colorScheme.outline;
+
+    final dueBadge = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: mapEnabled
+            ? StudyMapColors.panel(theme.brightness)
+            : AppColors.primaryContainer,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '복습 ${summary.totalDue}개',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: mapEnabled
+              ? StudyMapColors.accent(theme.brightness)
+              : AppColors.primaryStrong,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+    final reviewActions = <Widget>[
+      _ReviewCountPill(
+          label: '단어', count: summary.wordDue, mapEnabled: mapEnabled),
+      if (!mapEnabled) const SizedBox(width: 8),
+      _ReviewCountPill(
+          label: '문법', count: summary.grammarDue, mapEnabled: mapEnabled),
+      if (!mapEnabled) const Spacer(),
+      FilledButton(
+        onPressed: () => _openReview(context),
+        style: FilledButton.styleFrom(
+          backgroundColor: mapEnabled
+              ? StudyMapColors.button(theme.brightness)
+              : AppColors.primaryStrong,
+          foregroundColor:
+              mapEnabled ? StudyMapColors.onButton(theme.brightness) : null,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+        child: const Text('복습하고 시작하기'),
+      ),
+    ];
 
     return Material(
       color: Colors.transparent,
@@ -361,15 +443,19 @@ class _ReviewDueCard extends StatelessWidget {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
-                      color: AppColors.sakuraContainer,
+                    decoration: BoxDecoration(
+                      color: mapEnabled
+                          ? StudyMapColors.panel(theme.brightness)
+                          : AppColors.sakuraContainer,
                       shape: BoxShape.circle,
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Icon(
                         LucideIcons.rotateCcw,
                         size: 22,
-                        color: AppColors.sakuraOn,
+                        color: mapEnabled
+                            ? StudyMapColors.icon(theme.brightness)
+                            : AppColors.sakuraOn,
                       ),
                     ),
                   ),
@@ -381,7 +467,7 @@ class _ReviewDueCard extends StatelessWidget {
                         Text(
                           '오늘의 학습 루틴',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.primaryStrong,
+                            color: accent,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -397,53 +483,112 @@ class _ReviewDueCard extends StatelessWidget {
                         Text(
                           '어제 배운 단어와 문법을 먼저 확인해요',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.lightSubtext,
+                            color: subtext,
                           ),
                         ),
+                        if (mapEnabled) ...[
+                          const SizedBox(height: 8),
+                          dueBadge,
+                        ],
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryContainer,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      '복습 ${summary.totalDue}개',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: AppColors.primaryStrong,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
+                  if (!mapEnabled) ...[
+                    const SizedBox(width: 12),
+                    dueBadge,
+                  ],
                 ],
               ),
               const SizedBox(height: 14),
-              Row(
-                children: [
-                  _ReviewCountPill(label: '단어', count: summary.wordDue),
-                  const SizedBox(width: 8),
-                  _ReviewCountPill(label: '문법', count: summary.grammarDue),
-                  const Spacer(),
-                  FilledButton(
-                    onPressed: () => _openReview(context),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primaryStrong,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      textStyle: const TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600),
-                    ),
-                    child: const Text('복습하고 시작하기'),
-                  ),
-                ],
-              ),
+              if (mapEnabled)
+                Wrap(spacing: 8, runSpacing: 8, children: reviewActions)
+              else
+                Row(children: reviewActions),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMapCard(BuildContext context, ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
+    final subtext = isLight ? AppColors.lightSubtext : AppColors.darkSubtext;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isLight ? AppColors.cardWarm : AppColors.darkCard,
+        border: Border.all(
+          color: isLight ? AppColors.lightBorder : AppColors.darkBorder,
+        ),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.rotateCcw,
+                size: 20,
+                color: StudyMapColors.icon(theme.brightness),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '오늘의 복습',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: subtext,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '복습할 표현 ${summary.totalDue}개',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '단어 ${summary.wordDue}개 · 문법 ${summary.grammarDue}개',
+            style: theme.textTheme.bodyMedium?.copyWith(color: subtext),
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () => _openReview(context),
+              style: FilledButton.styleFrom(
+                backgroundColor: StudyMapColors.button(theme.brightness),
+                foregroundColor: StudyMapColors.onButton(theme.brightness),
+                minimumSize: const Size.fromHeight(48),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                textStyle: theme.textTheme.labelLarge?.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              child: const Row(
+                children: [
+                  Expanded(
+                    child: Text('복습 시작하기', textAlign: TextAlign.center),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(LucideIcons.arrowRight, size: 18),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -452,15 +597,20 @@ class _ReviewDueCard extends StatelessWidget {
 class _ReviewCountPill extends StatelessWidget {
   final String label;
   final int count;
+  final bool mapEnabled;
 
   const _ReviewCountPill({
     required this.label,
     required this.count,
+    required this.mapEnabled,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final subtext = mapEnabled && theme.brightness == Brightness.dark
+        ? AppColors.darkSubtext
+        : AppColors.lightSubtext;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -471,7 +621,7 @@ class _ReviewCountPill extends StatelessWidget {
       child: Text(
         '$label $count',
         style: theme.textTheme.labelMedium?.copyWith(
-          color: AppColors.lightSubtext,
+          color: subtext,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -484,11 +634,16 @@ class _ReviewCountPill extends StatelessWidget {
 class _ReviewIdleBar extends StatelessWidget {
   final String? firstLessonId;
 
-  const _ReviewIdleBar({this.firstLessonId});
+  final bool mapEnabled;
+
+  const _ReviewIdleBar({this.firstLessonId, required this.mapEnabled});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final accent = mapEnabled
+        ? StudyMapColors.accent(theme.brightness)
+        : AppColors.primaryStrong;
     final isLight = theme.brightness == Brightness.light;
     final cardColor =
         isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
@@ -508,21 +663,21 @@ class _ReviewIdleBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(LucideIcons.sparkles,
-                size: 20, color: AppColors.primaryStrong),
+            Icon(LucideIcons.sparkles, size: 20, color: accent),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 '첫 레슨을 시작해보세요',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.neutralOn,
+                  color: mapEnabled
+                      ? theme.colorScheme.onSurface
+                      : AppColors.neutralOn,
                 ),
               ),
             ),
             if (firstLessonId != null)
-              const Icon(LucideIcons.arrowRight,
-                  size: 18, color: AppColors.primaryStrong),
+              Icon(LucideIcons.arrowRight, size: 18, color: accent),
           ],
         ),
       ),
@@ -535,11 +690,19 @@ class _ReviewIdleBar extends StatelessWidget {
 class _KanaBootcampCard extends StatelessWidget {
   final KanaProgressData progress;
 
-  const _KanaBootcampCard({required this.progress});
+  final bool mapEnabled;
+
+  const _KanaBootcampCard({required this.progress, required this.mapEnabled});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final subtext = mapEnabled && theme.brightness == Brightness.dark
+        ? AppColors.darkSubtext
+        : AppColors.lightSubtext;
+    final accent = mapEnabled
+        ? StudyMapColors.accent(theme.brightness)
+        : AppColors.primaryStrong;
     final isLight = theme.brightness == Brightness.light;
     final cardColor =
         isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
@@ -548,6 +711,17 @@ class _KanaBootcampCard extends StatelessWidget {
     final learned = progress.hiragana.learned + progress.katakana.learned;
     final total = progress.hiragana.total + progress.katakana.total;
     final fraction = learned / total;
+
+    final kanaButton = OutlinedButton(
+      onPressed: () => context.push('/study/kana'),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: accent,
+        side: BorderSide(color: accent),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      ),
+      child: const Text('계속하기'),
+    );
 
     return Material(
       color: Colors.transparent,
@@ -567,17 +741,19 @@ class _KanaBootcampCard extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: const BoxDecoration(
-                  color: AppColors.sakuraContainer,
+                decoration: BoxDecoration(
+                  color: mapEnabled
+                      ? StudyMapColors.panel(theme.brightness)
+                      : AppColors.sakuraContainer,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'あ',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.sakuraOn,
+                      color: mapEnabled ? accent : AppColors.sakuraOn,
                     ),
                   ),
                 ),
@@ -598,7 +774,7 @@ class _KanaBootcampCard extends StatelessWidget {
                     Text(
                       '매일 5분이면 46자 금방 익혀요',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightSubtext,
+                        color: subtext,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -611,8 +787,12 @@ class _KanaBootcampCard extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: fraction,
                               minHeight: AppSizes.progressHeight,
-                              backgroundColor: AppColors.sakuraTrack,
-                              color: AppColors.sakura,
+                              backgroundColor: mapEnabled
+                                  ? StudyMapColors.track(theme.brightness)
+                                  : AppColors.sakuraTrack,
+                              color: mapEnabled
+                                  ? StudyMapColors.marker(theme.brightness)
+                                  : AppColors.sakura,
                             ),
                           ),
                         ),
@@ -620,27 +800,20 @@ class _KanaBootcampCard extends StatelessWidget {
                         Text(
                           '$learned/$total',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.lightSubtext,
+                            color: subtext,
                           ),
                         ),
                       ],
                     ),
+                    if (mapEnabled) ...[
+                      const SizedBox(height: 10),
+                      kanaButton,
+                    ],
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: () => context.push('/study/kana'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.sakura,
-                  side: const BorderSide(color: AppColors.sakura),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  textStyle: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w600),
-                ),
-                child: const Text('계속하기'),
-              ),
+              if (!mapEnabled) const SizedBox(width: 8),
+              if (!mapEnabled) kanaButton,
             ],
           ),
         ),
@@ -653,24 +826,36 @@ class _KanaBootcampCard extends StatelessWidget {
 class _JlptLevelChip extends StatelessWidget {
   final String level;
   final ValueChanged<String> onChanged;
+  final bool mapEnabled;
 
   static const _levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
-  const _JlptLevelChip({required this.level, required this.onChanged});
+  const _JlptLevelChip({
+    required this.level,
+    required this.onChanged,
+    required this.mapEnabled,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final accent = mapEnabled
+        ? StudyMapColors.accent(theme.brightness)
+        : AppColors.primaryStrong;
 
     return GestureDetector(
       onTap: () => _showLevelPicker(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: AppColors.sakuraTrack,
+          color: mapEnabled
+              ? StudyMapColors.panel(theme.brightness)
+              : AppColors.sakuraTrack,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AppColors.sakura.withValues(alpha: 0.35),
+            color: mapEnabled
+                ? StudyMapColors.track(theme.brightness)
+                : AppColors.sakura.withValues(alpha: 0.35),
           ),
         ),
         child: Row(
@@ -680,14 +865,14 @@ class _JlptLevelChip extends StatelessWidget {
               level,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.sakura,
+                color: mapEnabled ? accent : AppColors.sakura,
               ),
             ),
             const SizedBox(width: 4),
             Icon(
               LucideIcons.chevronDown,
               size: 16,
-              color: theme.colorScheme.primary,
+              color: mapEnabled ? accent : theme.colorScheme.primary,
             ),
           ],
         ),
@@ -697,6 +882,9 @@ class _JlptLevelChip extends StatelessWidget {
 
   void _showLevelPicker(BuildContext context) {
     final theme = Theme.of(context);
+    final accent = mapEnabled
+        ? StudyMapColors.accent(theme.brightness)
+        : theme.colorScheme.primary;
 
     showModalBottomSheet(
       context: context,
@@ -724,7 +912,10 @@ class _JlptLevelChip extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Material(
                       color: isSelected
-                          ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                          ? mapEnabled
+                              ? StudyMapColors.panel(theme.brightness)
+                              : theme.colorScheme.primary
+                                  .withValues(alpha: 0.08)
                           : theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       child: InkWell(
@@ -739,7 +930,7 @@ class _JlptLevelChip extends StatelessWidget {
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: isSelected
-                                  ? theme.colorScheme.primary
+                                  ? accent
                                   : theme.colorScheme.outline,
                               width: isSelected ? 2 : 1,
                             ),
@@ -751,9 +942,7 @@ class _JlptLevelChip extends StatelessWidget {
                                 l,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : null,
+                                  color: isSelected ? accent : null,
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -770,7 +959,7 @@ class _JlptLevelChip extends StatelessWidget {
                                 Icon(
                                   LucideIcons.check,
                                   size: 20,
-                                  color: theme.colorScheme.primary,
+                                  color: accent,
                                 ),
                             ],
                           ),

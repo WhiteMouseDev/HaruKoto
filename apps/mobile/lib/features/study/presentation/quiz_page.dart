@@ -168,11 +168,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   void _showCompletionError(Object error) {
     debugPrint('Failed to complete quiz: $error');
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
-    );
   }
 
   Future<void> _requestPop() async {
@@ -205,7 +200,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('퀴즈를 종료할까요?'),
-        content: const Text('진행 상황은 저장돼요.'),
+        content: const Text('저장된 답안부터 이어서 학습할 수 있어요. 저장하지 못한 답안은 다시 풀어야 해요.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
