@@ -64,6 +64,7 @@ docs/
 - [2027년 2월 파티션 보완 적용 기록](operations/plans/review-event-february-partition-rollout-2026-10-30.md) — 승인된 단일 파티션 마이그레이션, 보존 회귀와 운영·시뮬레이터 검증 단계
 - [특수 퀴즈 이어하기 계약 제안](operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md) — matching/arrange 모드·표시 snapshot, 기존 세션 무백필 처리와 웹·모바일 회귀안
 - [특수 퀴즈 이어하기 구현·검증](operations/plans/special-quiz-resume-implementation-2026-10-30.md) — 같은 세션·원본 ID 복원, 정답/오답 제외, 기존 복습 기한 보존과 격리 시뮬레이터 검증
+- [특수 퀴즈 이어하기 운영 반영](operations/plans/special-quiz-resume-production-rollout-2026-10-30.md) — 웹 선행 배포·#209 병합·서버/앱 반영 순서와 기존 기록·복습 기한·음원·보안 보존 확인
 - [레슨 문항과 복습 항목 연결 수정](operations/plans/lesson-review-target-fix-2026-10-21.md) — 명시 참조 계약, 회귀 테스트, 기존 기록 영향과 승인 전 운영 데이터 적용안
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
