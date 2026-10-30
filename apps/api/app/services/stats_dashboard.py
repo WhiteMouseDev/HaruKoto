@@ -27,7 +27,7 @@ from app.schemas.stats import (
     TodayStats,
     WeeklyStatItem,
 )
-from app.utils.date import KST, get_today_kst
+from app.utils.date import get_today_kst, study_date_kst
 
 
 async def get_dashboard_data(
@@ -108,11 +108,7 @@ def _build_streak_info(
 
 
 def _last_study_day(value: date | datetime | None) -> date | None:
-    if isinstance(value, datetime):
-        if value.tzinfo is not None:
-            return value.astimezone(KST).date()
-        return value.date()
-    return value
+    return study_date_kst(value) if value is not None else None
 
 
 def _effective_current_streak(

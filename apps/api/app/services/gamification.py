@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import math
 import uuid
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 from typing import Any, TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import AiCharacter, UserAchievement, UserCharacterUnlock
+from app.utils.date import get_today_kst, study_date_kst
 
 # ==========================================
 # 레벨 시스템
@@ -45,17 +46,13 @@ class StreakResult(TypedDict):
 
 
 def update_streak(
-    last_study_date: datetime | None,
+    last_study_date: datetime | date | None,
     current_streak: int,
     longest_streak: int,
     today_kst: datetime | date | None = None,
 ) -> StreakResult:
     """연속 학습일(스트릭) 업데이트."""
-    if today_kst is not None:
-        today = date(today_kst.year, today_kst.month, today_kst.day)
-    else:
-        now = datetime.now(tz=UTC)
-        today = now.date()
+    today = study_date_kst(today_kst) if today_kst is not None else get_today_kst()
 
     if last_study_date is None:
         return {
@@ -64,10 +61,10 @@ def update_streak(
             "streak_broken": False,
         }
 
-    last_day = last_study_date.date() if isinstance(last_study_date, datetime) else last_study_date
+    last_day = study_date_kst(last_study_date)
     diff_days = (today - last_day).days
 
-    if diff_days == 0:
+    if diff_days <= 0:
         return {
             "streak_count": current_streak,
             "longest_streak": longest_streak,

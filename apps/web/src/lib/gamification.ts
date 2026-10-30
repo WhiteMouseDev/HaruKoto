@@ -1,4 +1,12 @@
 import { prisma } from '@harukoto/database';
+import { getTodayKST } from '@/lib/date';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// KST calendar dates are represented by UTC midnight, independent of the server zone.
+function calendarDay(date: Date): number {
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / DAY_MS;
+}
 
 // ==========================================
 // 레벨 시스템
@@ -45,21 +53,17 @@ export function updateStreak(
   longestStreak: number;
   streakBroken: boolean;
 } {
-  // todayKST가 전달되면 그것을 사용, 아니면 서버 로컬 시간 (후방 호환)
-  const today = todayKST
-    ? new Date(todayKST.getUTCFullYear(), todayKST.getUTCMonth(), todayKST.getUTCDate())
-    : (() => { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate()); })();
+  const today = todayKST ?? getTodayKST();
 
   if (!lastStudyDate) {
     return { streakCount: 1, longestStreak: Math.max(1, currentLongestStreak), streakBroken: false };
   }
 
-  const lastDate = new Date(lastStudyDate);
-  const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
-  const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24));
+  // Stored timestamps and the current date key must use the same Korean calendar day.
+  const diffDays = calendarDay(today) - calendarDay(getTodayKST(lastStudyDate));
 
-  if (diffDays === 0) {
-    // 오늘 이미 학습함 - 변경 없음
+  if (diffDays <= 0) {
+    // 오늘 이미 학습했거나 오래된 요청이면 기존 기록을 유지한다.
     return {
       streakCount: currentStreakCount,
       longestStreak: currentLongestStreak,

@@ -1,4 +1,6 @@
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta, timezone
+
+import pytest
 
 from app.utils.constants import (
     AI_LIMITS,
@@ -10,10 +12,26 @@ from app.utils.constants import (
     REWARDS,
     SRS_CONFIG,
 )
-from app.utils.date import KST, get_now_kst, get_today_kst
+from app.utils.date import KST, get_now_kst, get_today_kst, study_date_kst
 from app.utils.shuffle import shuffle
 
 # ---- date utils ----
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (date(2026, 9, 28), date(2026, 9, 28)),
+        (datetime(2026, 9, 28, 14, 59, tzinfo=UTC), date(2026, 9, 28)),
+        (datetime(2026, 9, 28, 15, tzinfo=UTC), date(2026, 9, 29)),
+        (datetime(2026, 9, 28, 15), date(2026, 9, 29)),
+        (datetime(2026, 9, 29, 0, 30, tzinfo=KST), date(2026, 9, 29)),
+        (datetime(2026, 9, 28, 8, tzinfo=timezone(timedelta(hours=-7))), date(2026, 9, 29)),
+        (datetime(2026, 12, 31, 15, tzinfo=UTC), date(2027, 1, 1)),
+    ],
+)
+def test_study_date_kst_normalizes_calendar_boundaries(value, expected):
+    assert study_date_kst(value) == expected
 
 
 def test_kst_offset():
