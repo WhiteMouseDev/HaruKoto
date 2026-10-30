@@ -2,6 +2,8 @@
 
 ## 범위와 결론
 
+이 문서는 14:34~14:35 KST의 읽기 전용 감사다. 이후 사용자가 보완을 승인해 2월 파티션을 추가했으며, 적용 후 12개 파티션과 exclusive `2027-03-01` 커버리지를 확인했다. 현재 상태는 [별도 실제 적용 기록](review-event-february-partition-rollout-2026-10-30.md)을 따른다. 아래의 “2월 없음/승인 전”은 감사 당시 상태를 보존한 것이다.
+
 2026년 10월 30일 사용자 요청에 따라 PR #203·#205를 병합하고, 운영 파티션 자동 점검과 2027년 2월 커버리지를 **읽기 전용**으로 확인했다. 아래 보완안은 미적용이며 DB 쓰기·DDL·권한·운영 설정 변경은 별도 승인 후 진행한다.
 
 - [PR #203](https://github.com/WhiteMouseDev/HaruKoto/pull/203): `de60b0db`, 14:33:37 KST 병합. [main CI](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41009107930) 성공.
@@ -72,4 +74,4 @@
 
 실행별 원본과 비밀 접속 정보는 저장소에 넣지 않았다. 로컬 `/private/tmp/harukoto-partition-audit-20261030/`에 접근이 제한된 원본과 `final-audit-safe.json`, `natural-run-summary-safe.json`, `catalog-summary-safe.json`, `privileges-safe.json`, `data-api-safe.json`을 보관했다. 임시 경로이므로 영구 증거 저장소가 아니며, 이 문서는 식별자와 자격 증명을 제외한 실제 결과를 기록한다.
 
-관련 결정은 [2월 커버리지 승인 대기](../../../.planning/escalations/2026-10-30-review-event-february-coverage.md)에 남긴다.
+당시 승인 대기와 이후 승인 결정은 [2월 커버리지 결정 기록](../../../.planning/escalations/2026-10-30-review-event-february-coverage.md)에 남긴다.

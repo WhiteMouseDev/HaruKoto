@@ -4,6 +4,8 @@
 
 On 2026-10-30, [the production audit](partition-monitor-audit-2026-10-30.md) verified all nine naturally scheduled runs from October 22 through October 30, including successful inspection and accepted Sentry delivery. The first natural run is no longer pending. The catalog still has eleven partitions through exclusive February 1, 2027; the February partition is absent, and adding it before the November 1 UTC horizon change is a separate approval-pending proposal. The ledger below retains the original October 21 rollout observations; this follow-up made no DB or cloud changes.
 
+The operator subsequently approved the February addition. [The actual rollout](review-event-february-partition-rollout-2026-10-30.md) records twelve partitions through exclusive March 1, 2027, preservation checks, and one successful manual invocation of the unchanged Scheduler-to-Job-to-Sentry path. That later write is distinct from the earlier read-only audit and does not change the daily schedule or monitor privileges.
+
 ## Authorization and current status
 
 On 2026-10-21 the user approved merging PR #181 and deploying the previously proposed minimum-privilege DB login, daily 09:00 Asia/Seoul inspection and problem notifications. Existing learning records and the blocked Data API must remain intact. This document is the deployment runbook and evidence ledger; the implementation, manual end-to-end run and actual notification receipts are verified below. The first naturally scheduled daily run is still a future observation.
