@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/providers/user_preferences_provider.dart';
-import '../../../home/providers/home_provider.dart';
+import '../../../../shared/widgets/app_error_retry.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../data/models/smart_preview_model.dart';
 import '../../providers/study_provider.dart';
@@ -32,17 +33,32 @@ class TodayStudySheet extends ConsumerStatefulWidget {
 
 class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
   bool _isGoalLoading = false;
+  String? _vocabularyOwner;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.category == 'VOCABULARY') {
+      _vocabularyOwner = ref.read(currentAccountIdProvider);
+    }
+  }
+
+  bool get _accountCurrent =>
+      widget.category != 'VOCABULARY' ||
+      (_vocabularyOwner != null &&
+          ref.read(currentAccountReaderProvider)() == _vocabularyOwner);
 
   Future<void> _updateGoal(int goal) async {
-    if (_isGoalLoading) return;
+    if (_isGoalLoading || !_accountCurrent) return;
     setState(() => _isGoalLoading = true);
     try {
       await ref.read(settingsSyncServiceProvider).updateDailyGoal(goal);
-      ref.invalidate(dashboardProvider);
-      ref.invalidate(
-        smartPreviewProvider(
-            (category: widget.category, jlptLevel: widget.jlptLevel)),
-      );
+      if (!mounted || !_accountCurrent) return;
+      // Vocabulary refreshes once in SettingsSyncService, across active levels.
+      if (widget.category != 'VOCABULARY') {
+        ref.invalidate(smartPreviewProvider(
+            (category: widget.category, jlptLevel: widget.jlptLevel)));
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -65,21 +81,49 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
     }
   }
 
-  Future<void> _showGoalPicker() async {
+  Future<void> _showGoalPicker(int currentGoal) async {
     final goal = await showTodayStudyGoalPicker(
       context: context,
-      currentGoal: ref.read(userPreferencesProvider).dailyGoal,
+      currentGoal: currentGoal,
       isGoalLoading: _isGoalLoading,
     );
-    if (!mounted || goal == null) return;
+    if (!mounted || goal == null || !_accountCurrent) return;
+    if (widget.category == 'VOCABULARY' && goal == currentGoal) return;
     await _updateGoal(goal);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final data = widget.data;
-    final currentGoal = ref.watch(userPreferencesProvider).dailyGoal;
+    final isVocabulary = widget.category == 'VOCABULARY';
+    final previewProvider = smartPreviewProvider(
+        (category: widget.category, jlptLevel: widget.jlptLevel));
+    final livePreview = isVocabulary ? ref.watch(previewProvider) : null;
+    if (isVocabulary) ref.watch(currentAccountIdProvider);
+    if (isVocabulary &&
+        (!_accountCurrent ||
+            livePreview!.isLoading ||
+            livePreview.hasError ||
+            !livePreview.hasValue)) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: livePreview!.isLoading && _accountCurrent
+              ? const CircularProgressIndicator(semanticsLabel: '오늘의 학습 확인 중')
+              : AppErrorRetry(onRetry: () {
+                  if (!_accountCurrent) {
+                    Navigator.pop(context);
+                    return;
+                  }
+                  ref.invalidate(previewProvider);
+                }),
+        ),
+      );
+    }
+    final data = isVocabulary ? livePreview!.value! : widget.data;
+    final preferencesGoal = ref.watch(userPreferencesProvider).dailyGoal;
+    final currentGoal =
+        isVocabulary && !_isGoalLoading ? data.dailyGoal : preferencesGoal;
     final dist = data.sessionDistribution;
     final progress = data.overallProgress;
 
@@ -103,7 +147,7 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
               jlptLevel: widget.jlptLevel,
               category: widget.category,
               currentGoal: currentGoal,
-              onGoalTap: _showGoalPicker,
+              onGoalTap: () => _showGoalPicker(currentGoal),
             ),
             const SizedBox(height: 24),
             TodayStudyDistributionBreakdown(
@@ -114,8 +158,9 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
             TodayStudyStartButton(
               totalCount: dist.total,
               category: widget.category,
-              onStart: dist.total > 0
+              onStart: dist.total > 0 && (!isVocabulary || !_isGoalLoading)
                   ? () {
+                      if (!_accountCurrent) return;
                       Navigator.pop(context);
                       openQuizPageForSession(
                         context,

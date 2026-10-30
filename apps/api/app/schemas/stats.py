@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import datetime
+
+from pydantic import Field
+
 from app.schemas.common import CamelModel
 from app.schemas.kana import KanaProgressResponse
 
@@ -15,6 +19,11 @@ class LevelProgress(CamelModel):
     grammar: ProgressStat
 
 
+class VocabularyGoal(CamelModel):
+    date: datetime.date
+    answered_count: int = Field(ge=0)
+
+
 class TodayStats(CamelModel):
     words_studied: int
     quizzes_completed: int
@@ -23,6 +32,7 @@ class TodayStats(CamelModel):
     xp_earned: int
     goal_progress: float
     has_studied: bool
+    vocabulary_goal: VocabularyGoal
 
 
 class StreakInfo(CamelModel):

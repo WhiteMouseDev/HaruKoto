@@ -2,6 +2,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 
 void main() {
+  group('VocabularyGoalData', () {
+    test('parses zero and positive saved vocabulary answers', () {
+      for (final count in [0, 8, 24]) {
+        final today = TodayStats.fromJson({
+          'vocabularyGoal': {'date': '2026-10-30', 'answeredCount': count},
+        });
+        expect(today.vocabularyGoal!.date, '2026-10-30');
+        expect(today.vocabularyGoal!.answeredCount, count);
+      }
+    });
+
+    test('older or malformed payloads stay unknown without activity fallback',
+        () {
+      for (final value in [
+        null,
+        0,
+        [],
+        <String, dynamic>{},
+        {'date': '2026-10-30'},
+        {'date': '2026-10-30', 'answeredCount': null},
+        {'date': '2026-10-30', 'answeredCount': '8'},
+        {'date': '2026-10-30', 'answeredCount': 8.0},
+        {'date': '2026-10-30', 'answeredCount': -1},
+        {'date': null, 'answeredCount': 8},
+        {'date': 20261030, 'answeredCount': 8},
+        {'date': '2026-02-30', 'answeredCount': 8},
+        {'date': '2026-13-01', 'answeredCount': 8},
+        {'date': '2026-1-01', 'answeredCount': 8},
+        {'date': '2026-10-30T00:00:00Z', 'answeredCount': 8},
+      ]) {
+        expect(
+          TodayStats.fromJson({
+            'wordsStudied': 100,
+            'totalAnswers': 100,
+            'xpEarned': 100,
+            'vocabularyGoal': value,
+          }).vocabularyGoal,
+          isNull,
+          reason: '$value',
+        );
+      }
+      expect(TodayStats.fromJson({'wordsStudied': 100}).vocabularyGoal, isNull);
+    });
+  });
+
   group('TodayStats', () {
     test('fromJson parses complete data', () {
       final json = {

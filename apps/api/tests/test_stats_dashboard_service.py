@@ -85,6 +85,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 46), (KanaType.KATAKANA, 46)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 12)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 20), (KanaType.KATAKANA, 5)]),
+                _DbResult(scalar_value=5),
             ]
         )
     )
@@ -95,6 +96,16 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert response.today.words_studied == 8
     assert response.today.goal_progress == 1.0
     assert response.today.has_studied is True
+    assert response.today.model_dump(mode="json", by_alias=True) == {
+        "wordsStudied": 8,
+        "quizzesCompleted": 2,
+        "correctAnswers": 17,
+        "totalAnswers": 20,
+        "xpEarned": 120,
+        "goalProgress": 1.0,
+        "hasStudied": True,
+        "vocabularyGoal": {"date": "2026-04-23", "answeredCount": 5},
+    }
     assert response.streak.current == 4
     assert response.streak.longest == 9
     assert response.streak.studied_today is True

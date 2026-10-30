@@ -40,8 +40,8 @@ class SettingsSyncService {
     );
   }
 
-  Future<void> updateDailyGoal(int value) {
-    return _runOptimistic(
+  Future<void> updateDailyGoal(int value) async {
+    await _runOptimistic(
       next: _preferences.copyWith(dailyGoal: value),
       remoteUpdate: () async {
         await _ref.read(myRepositoryProvider).updateProfile({
@@ -49,6 +49,9 @@ class SettingsSyncService {
         });
       },
     );
+    if (_ref.mounted) {
+      _ref.read(vocabularyPreviewRefreshProvider.notifier).refresh();
+    }
   }
 
   Future<void> updateJlptLevel(String value) {

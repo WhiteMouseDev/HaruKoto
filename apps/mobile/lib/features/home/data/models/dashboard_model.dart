@@ -49,6 +49,7 @@ class TodayStats {
   final int xpEarned;
   final double goalProgress;
   final bool hasStudied;
+  final VocabularyGoalData? vocabularyGoal;
 
   const TodayStats({
     required this.wordsStudied,
@@ -58,6 +59,7 @@ class TodayStats {
     required this.xpEarned,
     required this.goalProgress,
     required this.hasStudied,
+    this.vocabularyGoal,
   });
 
   factory TodayStats.fromJson(Map<String, dynamic> json) {
@@ -73,7 +75,34 @@ class TodayStats {
       goalProgress: (json['goalProgress'] as num?)?.toDouble() ?? 0.0,
       hasStudied: json['hasStudied'] as bool? ??
           (wordsStudied > 0 || quizzesCompleted > 0 || xpEarned > 0),
+      vocabularyGoal: VocabularyGoalData.tryFromJson(json['vocabularyGoal']),
     );
+  }
+}
+
+/// Day-scoped saved vocabulary answers, independent of XP and mastery.
+/// Older or malformed responses remain unknown instead of becoming zero.
+class VocabularyGoalData {
+  final String date;
+  final int answeredCount;
+
+  const VocabularyGoalData({required this.date, required this.answeredCount});
+
+  static VocabularyGoalData? tryFromJson(Object? json) {
+    if (json is! Map<String, dynamic>) return null;
+    final date = json['date'];
+    final answeredCount = json['answeredCount'];
+    if (date is! String || answeredCount is! int || answeredCount < 0) {
+      return null;
+    }
+    if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date)) return null;
+    final parsed = DateTime.tryParse(date);
+    if (parsed == null ||
+        parsed.year < 1 ||
+        parsed.toIso8601String().substring(0, 10) != date) {
+      return null;
+    }
+    return VocabularyGoalData(date: date, answeredCount: answeredCount);
   }
 }
 
