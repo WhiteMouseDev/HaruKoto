@@ -42,6 +42,7 @@ docs/
 
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [홈 단어 카드의 오늘 목표 진행률](operations/plans/daily-vocabulary-goal-2026-10-30.md) — 하루 목표·퀴즈 이어하기·누적 숙련도 분리와 KST 고유 단어 집계
+- [오늘 단어 목표의 실제 운영 반영](operations/plans/daily-vocabulary-goal-production-rollout-2026-10-30.md) — #204 배포·시뮬레이터 목표/추천/재실행 검증, 기존 기록·음원·보안 보존
 - [N5 현재 음성·대표 청취 링크](operations/plans/n5-audio-qa-current-state-2026-10-28.md) — Kenzo·Shizuka v4 적용 범위, 전체 듣기와 별도 남은 전체 청취 검수
 - [이어하기 카드와 최근 학습순](operations/plans/mobile-resume-recent-study-2026-10-28.md) — 대표 카드 한 개·전체 목록, 기존 저장 위치/답안 호환과 최근 활동 정렬
 - [저장 목록을 짧게 만든 과정 (블로그)](blog/2026-10-28-one-resume-card-and-recent-study.md) — 중복 카드·학습 시각·실패 상태와 접근성 개선 기록
