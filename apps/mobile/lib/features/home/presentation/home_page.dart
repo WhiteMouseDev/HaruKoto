@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/providers/quiz_progress_refresh_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import 'widgets/home_skeleton.dart';
 import '../providers/home_provider.dart';
+import '../providers/study_activity_refresh_provider.dart';
 import 'widgets/daily_missions_card.dart';
 import 'widgets/home_header.dart';
 import 'widgets/kana_cta_card.dart';
@@ -44,7 +46,7 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   Widget _staggered(int index, Widget child) {
-    if (_hasAnimated) return child;
+    if (_hasAnimated || MediaQuery.disableAnimationsOf(context)) return child;
 
     final start = (index * 0.12).clamp(0.0, 0.7);
     final end = (start + 0.4).clamp(0.0, 1.0);
@@ -67,13 +69,16 @@ class _HomePageState extends ConsumerState<HomePage>
 
   void _refresh() {
     ref.read(quizProgressRefreshProvider).refresh();
-    ref.invalidate(dashboardProvider);
+    ref.read(studyActivityRefreshProvider).refresh();
     ref.invalidate(profileProvider);
     ref.invalidate(missionsProvider);
   }
 
   @override
   Widget build(BuildContext context) {
+    final owner = ref.watch(currentAccountIdProvider);
+    final accountCurrent =
+        owner != null && ref.watch(currentAccountReaderProvider)() == owner;
     final dashboardAsync = ref.watch(dashboardProvider);
     final profileAsync = ref.watch(profileProvider);
     final missionsAsync = ref.watch(missionsProvider);
@@ -107,7 +112,12 @@ class _HomePageState extends ConsumerState<HomePage>
       );
     }
 
-    final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
+    // Never present yesterday's completion as today's while a date/resume
+    // refresh is pending or has failed.
+    final dashboard =
+        accountCurrent && !dashboardAsync.isLoading && !dashboardAsync.hasError
+            ? dashboardAsync.value
+            : null;
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
 
@@ -158,6 +168,27 @@ class _HomePageState extends ConsumerState<HomePage>
                     weeklyStats: dashboard.weeklyStats,
                     dailyGoal: preferences.dailyGoal,
                   ),
+                ),
+                const SizedBox(height: AppSizes.md),
+              ] else ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.pageHorizontal, vertical: 16),
+                  child: dashboardAsync.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              semanticsLabel: '학습 기록 확인 중'))
+                      : Column(
+                          children: [
+                            const Text('학습 기록을 확인하지 못했어요'),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                  minimumSize: const Size(48, 48)),
+                              onPressed: _refresh,
+                              child: const Text('다시 확인'),
+                            ),
+                          ],
+                        ),
                 ),
                 const SizedBox(height: AppSizes.md),
               ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/study_clock_provider.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_skeleton.dart';
@@ -22,18 +24,28 @@ class StatsPage extends ConsumerStatefulWidget {
 
 class _StatsPageState extends ConsumerState<StatsPage> {
   int _selectedTab = 0;
-  int _heatmapYear = DateTime.now().year;
+  late int _heatmapYear;
+
+  @override
+  void initState() {
+    super.initState();
+    _heatmapYear = ref.read(studyDateProvider).year;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final owner = ref.watch(currentAccountIdProvider);
+    final accountCurrent =
+        owner != null && ref.watch(currentAccountReaderProvider)() == owner;
     final dashboardAsync = ref.watch(dashboardProvider);
     final historyAsync = ref.watch(statsHistoryProvider(_heatmapYear));
     final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
 
     // Multi-provider composition: manual AsyncValue handling is used instead
     // of .when() because loading/error states are combined across providers.
-    final allLoading = dashboardAsync.isLoading && historyAsync.isLoading;
+    final allLoading =
+        !accountCurrent || dashboardAsync.isLoading || historyAsync.isLoading;
 
     if (allLoading) {
       return Scaffold(
@@ -45,11 +57,8 @@ class _StatsPageState extends ConsumerState<StatsPage> {
       );
     }
 
-    // Show error if main data failed and no fallback available
-    final hasAnyError = dashboardAsync.hasError;
-    final hasAnyValue = dashboardAsync.hasValue;
-
-    if (hasAnyError && !hasAnyValue) {
+    // A failed history request must not look like an empty study calendar.
+    if (dashboardAsync.hasError || historyAsync.hasError) {
       return Scaffold(
         appBar: AppBar(title: const Text('학습 통계')),
         body: AppErrorRetry(onRetry: () {

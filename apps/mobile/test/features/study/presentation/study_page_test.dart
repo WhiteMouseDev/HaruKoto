@@ -8,12 +8,42 @@ import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/data/models/review_summary_model.dart';
 import 'package:harukoto_mobile/features/study/presentation/study_page.dart';
+import 'package:harukoto_mobile/features/study/presentation/quiz_page.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:harukoto_mobile/features/study/providers/study_map_config.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/legacy_lesson_chapter_list.dart';
 
 void main() {
   group('StudyPage', () {
+    testWidgets('rollback keeps the original list and recommendation',
+        (tester) async {
+      await _pumpStudyPage(
+        tester,
+        mapEnabled: false,
+        chapters: [
+          _chapter(chapterNo: 5, lessons: const [
+            LessonSummaryModel(
+                id: 'later-lesson',
+                lessonNo: 5,
+                chapterLessonNo: 1,
+                title: 'Later lesson',
+                topic: 'Topic',
+                estimatedMinutes: 5,
+                status: 'IN_PROGRESS',
+                scoreCorrect: 0,
+                scoreTotal: 0),
+          ])
+        ],
+      );
+      expect(find.byType(LegacyLessonChapterList), findsOneWidget);
+      expect(find.byType(ChapterCard), findsOneWidget);
+      expect(find.byType(LessonTile), findsOneWidget);
+      expect(find.text('이어하기 · Ch.5 · 1/1'), findsOneWidget);
+      expect(find.text('N5 학습 노선'), findsNothing);
+    });
+
     testWidgets('shows recommended lesson copy for the first incomplete lesson',
         (tester) async {
       final events = <LessonPilotEvent>[];
@@ -52,11 +82,15 @@ void main() {
         ],
       );
 
-      expect(find.text('추천 레슨 · Ch.1 · 2/2'), findsOneWidget);
+      expect(find.text('추천 레슨'), findsOneWidget);
+      expect(find.text('1번 역 · 2번째 레슨'), findsOneWidget);
       expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('바로 시작'), findsOneWidget);
-      expect(find.text('추천'), findsOneWidget);
-      expect(find.text('다음'), findsOneWidget);
+      expect(find.text('시작하기'), findsOneWidget);
+      expect(find.text('추천 역'), findsOneWidget);
+      expect(find.text('학습 시작'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-1')));
+      await tester.pumpAndSettle();
+      expect(find.text('학습 시작'), findsOneWidget);
       expect(find.text('Lesson 2'), findsWidgets);
 
       final viewedEvent = events.singleWhere(
@@ -103,21 +137,87 @@ void main() {
         ],
       );
 
-      expect(find.text('이어하기'), findsNWidgets(2));
-      expect(find.text('이어하기 · Ch.1 · 1/2'), findsOneWidget);
+      expect(find.text('이어하기'), findsOneWidget);
+      expect(find.text('이어할 레슨'), findsOneWidget);
+      expect(find.text('1번 역 · 1번째 레슨'), findsOneWidget);
       expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('추천'), findsOneWidget);
+      expect(find.text('이어할 역'), findsOneWidget);
       expect(find.text('Lesson 1'), findsWidgets);
       expect(find.text('추천 레슨'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-1')));
+      await tester.pumpAndSettle();
+      expect(find.text('이어하기'), findsNWidgets(2));
     });
 
-    testWidgets('tracks review CTA when due items are available',
+    for (final (words, grammar, quizType) in [
+      (2, 5, 'GRAMMAR'),
+      (12, 2, 'VOCABULARY'),
+      (2, 2, 'VOCABULARY'),
+    ]) {
+      testWidgets('review CTA opens $quizType once for $words/$grammar due',
+          (tester) async {
+        final events = <LessonPilotEvent>[];
+        final observer = _ReviewRouteObserver();
+        await _pumpStudyPage(
+          tester,
+          telemetryEvents: events,
+          navigatorObserver: observer,
+          reviewSummary: ReviewSummaryModel(
+            wordDue: words,
+            grammarDue: grammar,
+            totalDue: words + grammar,
+            wordNew: 0,
+            grammarNew: 0,
+          ),
+          chapters: const [],
+        );
+        observer.routes.clear();
+
+        expect(find.text('오늘의 복습'), findsOneWidget);
+        expect(find.text('복습할 표현 ${words + grammar}개'), findsOneWidget);
+        expect(find.text('단어 $words개 · 문법 $grammar개'), findsOneWidget);
+        expect(find.text('어제 배운 단어와 문법을 먼저 확인해요'), findsNothing);
+        final button = find.widgetWithText(FilledButton, '복습 시작하기');
+        expect(button, findsOneWidget);
+        expect(tester.getSize(button).height, greaterThanOrEqualTo(48));
+
+        // Reading or tapping the summary does not launch a second action.
+        await tester
+            .tapAt(tester.getCenter(find.text('복습할 표현 ${words + grammar}개')));
+        expect(observer.routes, isEmpty);
+        expect(
+            events
+                .where((e) => e.name == LessonPilotEventNames.reviewCtaClicked),
+            isEmpty);
+        await tester.tap(button);
+
+        final event = events.singleWhere(
+          (event) => event.name == LessonPilotEventNames.reviewCtaClicked,
+        );
+        expect(event.properties['jlptLevel'], 'N5');
+        expect(event.properties['totalDue'], words + grammar);
+        expect(event.properties['wordDue'], words);
+        expect(event.properties['grammarDue'], grammar);
+        expect(event.properties['quizType'], quizType);
+        final destination =
+            observer.singleQuiz(tester.element(find.byType(StudyPage)));
+        expect(destination.quizType, quizType);
+        expect(destination.jlptLevel, 'N5');
+        expect(destination.mode, 'review');
+        expect(destination.count, 10);
+        await tester.pumpWidget(const SizedBox.shrink());
+      });
+    }
+
+    testWidgets('rollback retains the legacy review copy and whole-card action',
         (tester) async {
       final events = <LessonPilotEvent>[];
-
+      final observer = _ReviewRouteObserver();
       await _pumpStudyPage(
         tester,
+        mapEnabled: false,
         telemetryEvents: events,
+        navigatorObserver: observer,
         reviewSummary: const ReviewSummaryModel(
           wordDue: 2,
           grammarDue: 5,
@@ -125,43 +225,24 @@ void main() {
           wordNew: 0,
           grammarNew: 0,
         ),
-        chapters: [
-          _chapter(
-            chapterNo: 1,
-            lessons: const [
-              LessonSummaryModel(
-                id: 'lesson-1',
-                lessonNo: 1,
-                chapterLessonNo: 1,
-                title: 'Lesson 1',
-                topic: 'Intro',
-                estimatedMinutes: 10,
-                status: 'COMPLETED',
-                scoreCorrect: 5,
-                scoreTotal: 5,
-              ),
-            ],
-          ),
-        ],
+        chapters: const [],
       );
-
+      observer.routes.clear();
       expect(find.text('오늘의 학습 루틴'), findsOneWidget);
-      expect(find.text('복습하고 시작해요'), findsOneWidget);
       expect(find.text('어제 배운 단어와 문법을 먼저 확인해요'), findsOneWidget);
       expect(find.text('복습 7개'), findsOneWidget);
       expect(find.text('단어 2'), findsOneWidget);
       expect(find.text('문법 5'), findsOneWidget);
-
-      await tester.tap(find.text('복습하고 시작하기'));
-
-      final event = events.singleWhere(
-        (event) => event.name == LessonPilotEventNames.reviewCtaClicked,
-      );
-      expect(event.properties['jlptLevel'], 'N5');
-      expect(event.properties['totalDue'], 7);
-      expect(event.properties['wordDue'], 2);
-      expect(event.properties['grammarDue'], 5);
-      expect(event.properties['quizType'], 'GRAMMAR');
+      expect(find.text('복습하고 시작하기'), findsOneWidget);
+      expect(find.text('오늘의 복습'), findsNothing);
+      await tester.tap(find.text('복습하고 시작해요'));
+      expect(
+          events.where((e) => e.name == LessonPilotEventNames.reviewCtaClicked),
+          hasLength(1));
+      expect(
+          observer.singleQuiz(tester.element(find.byType(StudyPage))).quizType,
+          'GRAMMAR');
+      await tester.pumpWidget(const SizedBox.shrink());
     });
 
     testWidgets('shows level readiness copy when selected level has no lessons',
@@ -175,7 +256,7 @@ void main() {
         chapters: const [],
       );
 
-      expect(find.text('체계적 학습'), findsOneWidget);
+      expect(find.text('학습 노선'), findsOneWidget);
       expect(find.text('N4 레슨 준비 중'), findsOneWidget);
       expect(find.text('N5 레슨 보기'), findsOneWidget);
       expect(find.text('첫 레슨을 시작해보세요'), findsNothing);
@@ -197,6 +278,8 @@ Future<void> _pumpStudyPage(
   WidgetTester tester, {
   required List<ChapterModel> chapters,
   String jlptLevel = 'N5',
+  bool? mapEnabled,
+  NavigatorObserver? navigatorObserver,
   List<LessonPilotEvent>? telemetryEvents,
   ReviewSummaryModel reviewSummary = const ReviewSummaryModel(
     wordDue: 0,
@@ -212,6 +295,8 @@ Future<void> _pumpStudyPage(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        if (mapEnabled != null)
+          studyMapEnabledProvider.overrideWithValue(mapEnabled),
         currentAccountIdProvider.overrideWithValue('test-account'),
         currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
         sharedPreferencesProvider.overrideWith((ref) => prefs),
@@ -229,7 +314,10 @@ Future<void> _pumpStudyPage(
             (ref) => telemetryEvents.add,
           ),
       ],
-      child: const MaterialApp(home: StudyPage()),
+      child: MaterialApp(
+        navigatorObservers: [if (navigatorObserver != null) navigatorObserver],
+        home: const StudyPage(),
+      ),
     ),
   );
 
@@ -274,4 +362,24 @@ ChapterModel _chapter({
         lessons.where((lesson) => lesson.status == 'COMPLETED').length,
     totalLessons: lessons.length,
   );
+}
+
+class _ReviewRouteObserver extends NavigatorObserver {
+  final routes = <Route<dynamic>>[];
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    routes.add(route);
+    super.didPush(route, previousRoute);
+  }
+
+  QuizPage singleQuiz(BuildContext context) {
+    expect(routes, hasLength(1));
+    final route = routes.single as PageRouteBuilder<void>;
+    return route.pageBuilder(
+      context,
+      const AlwaysStoppedAnimation(1),
+      const AlwaysStoppedAnimation(0),
+    ) as QuizPage;
+  }
 }

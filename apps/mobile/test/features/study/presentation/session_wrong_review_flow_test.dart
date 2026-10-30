@@ -21,7 +21,7 @@ void main() {
       (tester) async {
     final repository = _SessionReviewRepository();
     final container = await _pumpSourceResult(tester, repository);
-    await tester.ensureVisible(find.text('오답 복습 →'));
+    await tester.scrollUntilVisible(find.text('오답 복습 →'), 200);
     await tester.pumpAndSettle();
     await tester.tap(find.text('오답 복습 →'));
     await tester.tap(find.text('오답 복습 →'));
@@ -72,7 +72,7 @@ void main() {
       (tester) async {
     final repository = _SessionReviewRepository()..failStarts = 2;
     await _pumpSourceResult(tester, repository);
-    await tester.ensureVisible(find.text('오답 복습 →'));
+    await tester.scrollUntilVisible(find.text('오답 복습 →'), 200);
     await tester.pumpAndSettle();
     await tester.tap(find.text('오답 복습 →'));
     await tester.pumpAndSettle();

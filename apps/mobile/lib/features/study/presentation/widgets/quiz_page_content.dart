@@ -68,30 +68,32 @@ class QuizPageContent extends ConsumerWidget {
     }
 
     if (session.currentQuestion == null) {
-      return Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.check_circle_outline, size: 48),
-                  const SizedBox(height: 16),
-                  const Text('모든 답안이 저장됐어요'),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: session.completing ? null : onComplete,
-                    child:
-                        Text(session.completing ? '결과를 확인하고 있어요' : '결과 확인하기'),
+      return _withSaveStatus(
+          context,
+          Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check_circle_outline, size: 48),
+                      const SizedBox(height: 16),
+                      const Text('모든 답안이 저장됐어요'),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: session.completing ? null : onComplete,
+                        child: Text(
+                            session.completing ? '결과를 확인하고 있어요' : '결과 확인하기'),
+                      ),
+                      TextButton(onPressed: onExit, child: Text(exitLabel)),
+                    ],
                   ),
-                  TextButton(onPressed: onExit, child: Text(exitLabel)),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      );
+          ));
     }
 
     final showFurigana = ref.watch(quizSettingsProvider).showFurigana;
@@ -104,29 +106,96 @@ class QuizPageContent extends ConsumerWidget {
       onSubmitSpecialAnswer: onSubmitSpecialAnswer,
     );
     if (specialModeChild != null) {
-      return QuizSpecialModeContent(
-        title: _headerTitle,
-        count: session.headerCount,
-        onBack: onBackRequested,
-        child: specialModeChild,
+      return _withSaveStatus(
+        context,
+        QuizSpecialModeContent(
+          title: _headerTitle,
+          count: session.headerCount,
+          onBack: onBackRequested,
+          child: specialModeChild,
+        ),
       );
     }
 
     final question = session.currentQuestion!;
-    return QuizStandardModeContent(
-      title: _headerTitle,
-      count: session.headerCount,
-      question: question,
-      progress: session.progress,
-      streak: session.streak,
-      selectedOptionId: session.selectedOptionId,
-      answered: session.answered,
-      isCorrect: session.isCorrect,
-      isLastQuestion: session.isLastQuestion,
-      showFurigana: showFurigana,
-      onBack: onBackRequested,
-      onAnswer: onAnswer,
-      onNext: onNext,
+    return _withSaveStatus(
+        context,
+        QuizStandardModeContent(
+          title: _headerTitle,
+          count: session.headerCount,
+          question: question,
+          progress: session.progress,
+          streak: session.streak,
+          selectedOptionId: session.selectedOptionId,
+          answered: session.answered,
+          isCorrect: session.isCorrect,
+          isLastQuestion: session.isLastQuestion,
+          showFurigana: showFurigana,
+          onBack: onBackRequested,
+          onAnswer: onAnswer,
+          onNext: onNext,
+        ));
+  }
+
+  Widget _withSaveStatus(BuildContext context, Widget content) {
+    final theme = Theme.of(context);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        AbsorbPointer(absorbing: session.completing, child: content),
+        if (session.completing) ...[
+          ModalBarrier(color: theme.colorScheme.surface.withValues(alpha: 0.9)),
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Semantics(
+                liveRegion: true,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text('답안을 저장하고 있어요...', style: theme.textTheme.bodyLarge),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+        if (session.completionError case final error?)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Material(
+              color: theme.colorScheme.surfaceContainer,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(error.userMessage,
+                            style: theme.textTheme.bodyMedium),
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: onComplete,
+                        style: FilledButton.styleFrom(
+                            minimumSize: const Size(0, 48)),
+                        child: const Text('다시 시도'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

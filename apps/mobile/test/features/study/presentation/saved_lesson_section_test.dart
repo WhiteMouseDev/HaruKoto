@@ -24,6 +24,9 @@ import 'package:harukoto_mobile/features/study/providers/saved_lesson_entry_prov
 import 'package:harukoto_mobile/features/study/domain/lesson_recommendation.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
+import 'package:harukoto_mobile/features/study/providers/study_map_config.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_station_list.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/legacy_lesson_chapter_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fixtures/lesson_resume_fixture.dart';
@@ -76,6 +79,51 @@ void main() {
   });
 
   for (final fullList in [false, true]) {
+    for (final mapEnabled in [null, false]) {
+      testWidgets(
+          'route and recent saved card coexist on fullList=$fullList map=$mapEnabled',
+          (tester) async {
+        final store = _WidgetStore();
+        store.values['account-a/first'] = _timedDraft('first', 1000);
+        store.values['account-a/second'] = rawCheckpoint('second');
+        store.values['account-a/later'] = _timedDraft('later', 2000);
+        final before = Map<String, String>.from(store.values);
+        final f = await _mount(tester,
+            fullList: fullList, mapEnabled: mapEnabled, store: store);
+        final section = find.byType(SavedLessonSection);
+        expect(
+            find.descendant(of: section, matching: find.byType(OutlinedButton)),
+            findsOneWidget);
+        expect(find.descendant(of: section, matching: find.text('저장 레슨 later')),
+            findsOneWidget);
+        expect(find.byType(LessonContinueBanner), findsNothing);
+        expect(find.text('모두 보기 · 3개'), findsOneWidget);
+        if (mapEnabled == false) {
+          expect(find.byType(LegacyLessonChapterList), findsOneWidget);
+          expect(find.byType(LessonStationList), findsNothing);
+        } else {
+          expect(find.byType(LessonStationList), findsOneWidget);
+          expect(find.byType(LegacyLessonChapterList), findsNothing);
+          expect(find.byKey(const ValueKey('station-train')), findsOneWidget);
+          final signSize =
+              tester.getSize(find.byKey(const ValueKey('station-sign-N5-01')));
+          expect(signSize.width, greaterThanOrEqualTo(56));
+          expect(signSize.width, signSize.height);
+          expect(find.text('추천 역'), findsOneWidget);
+        }
+        await tester.tap(find.text('모두 보기 · 3개'));
+        await tester.pumpAndSettle();
+        final rows =
+            tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+        expect(rows.map((row) => (row.title! as Text).data),
+            ['저장 레슨 later', '저장 레슨 first', '저장 레슨 second']);
+        expect(find.text('최근 학습순 · 이전 저장 기록은 학습 순서'), findsOneWidget);
+        expect(store.values, before);
+        expect(f.repository.startCalls, 0);
+        expect(f.repository.submitCalls, 0);
+        expect(tester.takeException(), isNull);
+      });
+    }
     testWidgets(
         'one primary local card even when it is the recommendation $fullList',
         (tester) async {
@@ -201,7 +249,7 @@ void main() {
       expect(find.text('이어서 학습하기'), findsOneWidget);
       expect(find.text('단어 학습 저장 위치'), findsOneWidget);
       expect(find.text('추천 레슨 · Ch.1 · 1/4'), findsNothing);
-      expect(find.text('바로 시작'), findsNothing);
+      expect(find.text('시작하기'), findsNothing);
       expect(f.repository.fetchCalls, 0);
       expect(f.repository.startCalls, 0);
       expect(f.repository.submitCalls, 0);
@@ -453,8 +501,8 @@ void main() {
     final f = await _mount(tester, store: store);
     expect(find.text('저장 위치 다시 확인'), findsOneWidget);
     expect(find.text('이어서 학습하기'), findsNothing);
-    expect(find.text('바로 시작'), findsOneWidget);
-    await tester.tap(find.text('바로 시작'));
+    expect(find.text('시작하기'), findsOneWidget);
+    await tester.tap(find.text('시작하기'));
     await tester.pumpAndSettle();
     expect(f.opened, ['first']);
     expect(f.repository.startCalls, 0);
@@ -539,6 +587,7 @@ class _Fixture {
 
 Future<_Fixture> _mount(WidgetTester tester,
     {bool fullList = false,
+    bool? mapEnabled,
     bool sectionOnly = false,
     bool realLesson = false,
     bool addDefaultDraft = true,
@@ -564,6 +613,8 @@ Future<_Fixture> _mount(WidgetTester tester,
   final repository = repositoryOverride ?? _DisplayRepository();
   final f = _Fixture(localStore, repository);
   f.container = ProviderContainer(retry: (_, __) => null, overrides: [
+    if (mapEnabled != null)
+      studyMapEnabledProvider.overrideWithValue(mapEnabled),
     currentAccountIdProvider.overrideWith((ref) => f.account),
     currentAccountReaderProvider.overrideWithValue(() => f.account),
     sharedPreferencesProvider.overrideWithValue(prefs),

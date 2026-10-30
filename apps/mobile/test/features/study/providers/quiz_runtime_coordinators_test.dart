@@ -84,13 +84,23 @@ void main() {
       expect(events, ['medium', SoundType.correct]);
     });
 
-    test('plays combo feedback at combo threshold', () {
+    test('keeps the correct sound at and beyond the former combo threshold',
+        () {
       final events = <Object>[];
       final player = _buildFeedbackPlayer(events);
 
-      player.playAnswerFeedback(isCorrect: true, streak: 3);
+      for (final streak in [3, 5, 10]) {
+        player.playAnswerFeedback(isCorrect: true, streak: streak);
+      }
 
-      expect(events, ['heavy', SoundType.combo]);
+      expect(events, [
+        'medium',
+        SoundType.correct,
+        'medium',
+        SoundType.correct,
+        'medium',
+        SoundType.correct
+      ]);
     });
 
     test('plays wrong and completion feedback', () {
@@ -104,7 +114,6 @@ void main() {
         'heavy',
         SoundType.wrong,
         'heavy',
-        SoundType.complete,
       ]);
     });
   });
@@ -147,7 +156,7 @@ void main() {
       expect(timerCoordinator.isActive, isFalse);
       expect(answeredOptionId, 'o1');
       expect(answeredQuestionType, 'MATCHING');
-      expect(events, ['heavy', SoundType.combo]);
+      expect(events, ['medium', SoundType.correct]);
     });
 
     test('ignores unanswered results without reading streak or feedback', () {
@@ -246,6 +255,40 @@ void main() {
       expect(restarted, isTrue);
       expect(completed, isFalse);
     });
+
+    for (final type in [
+      'VOCABULARY',
+      'MATCHING',
+      'CLOZE',
+      'SENTENCE_ARRANGE',
+      'TYPING'
+    ]) {
+      test('special $type answers play one correct or wrong sound per attempt',
+          () {
+        final events = <Object>[];
+        final coordinator = QuizInteractionCoordinator(
+          timerCoordinator:
+              QuizTimerCoordinator(createTimer: _FakeTimerFactory().create),
+          feedbackPlayer: _buildFeedbackPlayer(events),
+        );
+        var submitted = 0;
+        for (final correct in [false, true]) {
+          coordinator.submitSpecialAnswer(
+            questionId: 'same-question',
+            isCorrect: correct,
+            questionType: type,
+            submitSpecialAnswer: (
+                    {required questionId,
+                    required isCorrect,
+                    required questionType,
+                    optionId}) =>
+                submitted++,
+          );
+        }
+        expect(submitted, 2);
+        expect(events, ['heavy', SoundType.wrong, 'medium', SoundType.correct]);
+      });
+    }
 
     test('forwards special answers to the session action', () {
       final coordinator = QuizInteractionCoordinator(
@@ -410,7 +453,7 @@ void main() {
       expect(outcome, QuizCompletionOutcome.completed);
       expect(timerCoordinator.isActive, isFalse);
       expect(completedStageId, 'stage-1');
-      expect(events, ['heavy', SoundType.complete]);
+      expect(events, ['heavy']);
       expect(destination, isNotNull);
       expect(destination!.result, _result);
       expect(destination!.quizType, 'VOCABULARY');

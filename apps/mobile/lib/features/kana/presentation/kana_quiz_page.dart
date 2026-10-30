@@ -9,6 +9,7 @@ import '../../study/data/models/quiz_result_model.dart';
 import '../../study/presentation/quiz_result_page.dart';
 import '../data/models/kana_stage_model.dart';
 import '../providers/kana_provider.dart';
+import '../providers/kana_completion_service.dart';
 import 'widgets/kana_quiz_content.dart';
 import 'widgets/kana_quiz_master_result.dart';
 
@@ -154,7 +155,7 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
     if (_sessionId != null) {
       try {
         final res = await ref
-            .read(kanaRepositoryProvider)
+            .read(kanaCompletionServiceProvider)
             .completeQuiz(sessionId: _sessionId!);
 
         if (widget.isMaster) {

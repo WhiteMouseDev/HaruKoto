@@ -51,7 +51,7 @@ class MatchingQuizController {
       _allPairs.isEmpty ? 0 : (_allPairs.length / _pairsPerRound).ceil();
   bool get hasMultipleRounds => totalRounds > 1;
   bool get isResolving => _isResolving;
-  String get scoreLabel => '$_totalCorrect/${_allPairs.length} 맞춤';
+  String get scoreLabel => '$_totalCorrect/${_allPairs.length} 연결 완료';
   String get roundLabel => '라운드 ${_roundIndex + 1}/$totalRounds';
 
   List<MatchingQuizPair> get currentPairs => List.unmodifiable(_currentPairs);

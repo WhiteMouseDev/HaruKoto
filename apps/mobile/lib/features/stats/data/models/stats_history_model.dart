@@ -1,3 +1,4 @@
+// OPENAPI_SCHEMA: DailyProgressItem
 class StatsHistoryRecord {
   final String date;
   final int wordsStudied;
@@ -8,6 +9,9 @@ class StatsHistoryRecord {
   final int studyTimeSeconds;
   final int xpEarned;
 
+  /// Null only for a legacy server response; explicit false stays authoritative.
+  final bool? hasStudied;
+
   const StatsHistoryRecord({
     required this.date,
     required this.wordsStudied,
@@ -17,14 +21,16 @@ class StatsHistoryRecord {
     required this.conversationCount,
     required this.studyTimeSeconds,
     required this.xpEarned,
+    this.hasStudied,
   });
 
   bool get hasStudyActivity =>
-      wordsStudied > 0 ||
-      quizzesCompleted > 0 ||
-      conversationCount > 0 ||
-      xpEarned > 0 ||
-      studyTimeSeconds > 0;
+      hasStudied ??
+      (wordsStudied > 0 ||
+          quizzesCompleted > 0 ||
+          conversationCount > 0 ||
+          xpEarned > 0 ||
+          studyTimeSeconds > 0);
 
   factory StatsHistoryRecord.fromJson(Map<String, dynamic> json) {
     return StatsHistoryRecord(
@@ -36,6 +42,7 @@ class StatsHistoryRecord {
       conversationCount: json['conversationCount'] as int? ?? 0,
       studyTimeSeconds: json['studyTimeSeconds'] as int? ?? 0,
       xpEarned: json['xpEarned'] as int? ?? 0,
+      hasStudied: json['hasStudied'] as bool?,
     );
   }
 }

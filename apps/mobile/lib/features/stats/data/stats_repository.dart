@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import '../../../core/providers/study_clock_provider.dart';
 import 'models/by_category_model.dart';
 import 'models/heatmap_data_model.dart';
 import 'models/level_progress_model.dart';
@@ -11,33 +12,33 @@ import 'models/volume_chart_model.dart';
 
 class StatsRepository {
   final Dio _dio;
+  final DateTime Function() _now;
 
-  StatsRepository(this._dio);
+  StatsRepository(this._dio, {DateTime Function()? now})
+      : _now = now ?? DateTime.now;
 
   Future<List<StatsHistoryRecord>> fetchHistory(int year) async {
-    final now = DateTime.now();
+    final now = studyDateInKorea(_now());
     final currentYear = now.year;
     final maxMonth = year == currentYear ? now.month : 12;
 
-    final futures = List.generate(maxMonth, (i) async {
-      final month = i + 1;
-      try {
-        final response = await _dio.get<Map<String, dynamic>>(
-          '/stats/history',
-          queryParameters: {'year': year, 'month': month},
-        );
-        final records = response.data?['records'] as List<dynamic>? ?? [];
-        return records
-            .map((e) => StatsHistoryRecord.fromJson(e as Map<String, dynamic>))
-            .toList();
-      } catch (e) {
-        unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
-        return <StatsHistoryRecord>[];
-      }
-    });
+    final futures =
+        List.generate(maxMonth, (i) => fetchMonthHistory(year, i + 1));
 
     final results = await Future.wait(futures);
     return results.expand((list) => list).toList();
+  }
+
+  Future<List<StatsHistoryRecord>> fetchMonthHistory(
+      int year, int month) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/stats/history',
+      queryParameters: {'year': year, 'month': month},
+    );
+    final records = response.data?['records'] as List<dynamic>? ?? [];
+    return records
+        .map((e) => StatsHistoryRecord.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<HeatmapResponse> fetchHeatmap(int year, {int? month}) async {

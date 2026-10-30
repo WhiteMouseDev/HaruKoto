@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/cloze_quiz.dart';
@@ -160,6 +161,65 @@ void main() {
       expect(capturedQuestionType, 'CLOZE');
       expect(capturedOptionId, 'o2');
     });
+
+    testWidgets(
+        'saving blocks duplicate result actions while preserving the quiz',
+        (tester) async {
+      var nextCalls = 0;
+      await _pumpQuizPageContent(
+        tester,
+        session: QuizSessionState(
+            loading: false,
+            questions: [_multipleChoiceQuestion()],
+            answered: true,
+            isCorrect: true,
+            completing: true),
+        onNext: () => nextCalls++,
+      );
+      expect(find.text('답안을 저장하고 있어요...'), findsOneWidget);
+      expect(find.byType(FourChoiceQuiz), findsOneWidget);
+      await tester.tap(find.text('결과 보기'), warnIfMissed: false);
+      expect(nextCalls, 0);
+    });
+
+    for (final mode in [null, 'matching']) {
+      testWidgets('save failure offers a persistent retry in $mode mode',
+          (tester) async {
+        var retryCalls = 0;
+        await _pumpQuizPageContent(
+          tester,
+          session: QuizSessionState(
+              loading: false,
+              resolvedMode: mode,
+              questions: [_multipleChoiceQuestion()],
+              completionError:
+                  const ApiException(message: '답안을 저장하지 못했어요. 다시 시도해주세요.')),
+          onComplete: () => retryCalls++,
+        );
+        await tester.pump(const Duration(seconds: 10));
+        expect(find.text('답안을 저장하지 못했어요. 다시 시도해주세요.'), findsOneWidget);
+        await tester.tap(find.text('다시 시도'));
+        expect(retryCalls, 1);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('fully saved resumed $mode quiz can request its result',
+          (tester) async {
+        var completionCalls = 0;
+        final session = QuizSessionState(
+            loading: false,
+            resolvedMode: mode,
+            questions: [_multipleChoiceQuestion()],
+            currentIndex: 1);
+        await _pumpQuizPageContent(tester,
+            session: session, onComplete: () => completionCalls++);
+        expect(session.headerCount, '1/1');
+        expect(find.text('모든 답안이 저장됐어요'), findsOneWidget);
+        await tester.tap(find.text('결과 확인하기'));
+        expect(completionCalls, 1);
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 }
 

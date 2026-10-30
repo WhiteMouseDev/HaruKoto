@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/study_clock_provider.dart';
 import '../../data/models/stats_history_model.dart';
 
 enum BarChartViewMode { week, month, year }
@@ -12,16 +14,16 @@ class _BarData {
   const _BarData({required this.label, required this.value});
 }
 
-class StatsBarChart extends StatefulWidget {
+class StatsBarChart extends ConsumerStatefulWidget {
   final List<StatsHistoryRecord> records;
 
   const StatsBarChart({super.key, required this.records});
 
   @override
-  State<StatsBarChart> createState() => _StatsBarChartState();
+  ConsumerState<StatsBarChart> createState() => _StatsBarChartState();
 }
 
-class _StatsBarChartState extends State<StatsBarChart> {
+class _StatsBarChartState extends ConsumerState<StatsBarChart> {
   BarChartViewMode _viewMode = BarChartViewMode.week;
 
   static const double _chartHeight = 120;
@@ -44,14 +46,13 @@ class _StatsBarChartState extends State<StatsBarChart> {
     return scaled.clamp(_minBarPx, _maxBarPx);
   }
 
-  List<_BarData> _getWeekBars() {
+  List<_BarData> _getWeekBars(DateTime today) {
     const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
-    final today = DateTime.now();
     final dayOfWeek = today.weekday; // Mon=1
     final monday = today.subtract(Duration(days: dayOfWeek - 1));
 
     return List.generate(7, (i) {
-      final d = DateTime(monday.year, monday.month, monday.day + i);
+      final d = DateTime.utc(monday.year, monday.month, monday.day + i);
       final dateStr =
           '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       final record = widget.records.cast<StatsHistoryRecord?>().firstWhere(
@@ -63,8 +64,7 @@ class _StatsBarChartState extends State<StatsBarChart> {
     });
   }
 
-  List<_BarData> _getMonthBars() {
-    final today = DateTime.now();
+  List<_BarData> _getMonthBars(DateTime today) {
     return List.generate(5, (w) {
       final weekEnd = today.subtract(Duration(days: (4 - w) * 7));
       final weekStart = weekEnd.subtract(const Duration(days: 6));
@@ -72,7 +72,7 @@ class _StatsBarChartState extends State<StatsBarChart> {
       for (final r in widget.records) {
         final parts = r.date.split('-');
         if (parts.length == 3) {
-          final rDate = DateTime(
+          final rDate = DateTime.utc(
             int.parse(parts[0]),
             int.parse(parts[1]),
             int.parse(parts[2]),
@@ -124,9 +124,10 @@ class _StatsBarChartState extends State<StatsBarChart> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final today = ref.watch(studyDateProvider);
     final bars = switch (_viewMode) {
-      BarChartViewMode.week => _getWeekBars(),
-      BarChartViewMode.month => _getMonthBars(),
+      BarChartViewMode.week => _getWeekBars(today),
+      BarChartViewMode.month => _getMonthBars(today),
       BarChartViewMode.year => _getYearBars(),
     };
 

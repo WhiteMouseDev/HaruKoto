@@ -40,6 +40,7 @@ class QuizSessionState {
     this.resolvedMode,
     this.timeSpent = 0,
     this.completing = false,
+    this.completionError,
     this.loadError,
   });
 
@@ -57,6 +58,7 @@ class QuizSessionState {
   final String? resolvedMode;
   final int timeSpent;
   final bool completing;
+  final ApiException? completionError;
   final String? loadError;
 
   QuizQuestionModel? get currentQuestion =>
@@ -79,8 +81,9 @@ class QuizSessionState {
       resolvedMode == 'arrange' ||
       resolvedMode == 'typing';
 
-  String get headerCount =>
-      questions.isEmpty ? '0/0' : '${currentIndex + 1}/${questions.length}';
+  String get headerCount => questions.isEmpty
+      ? '0/0'
+      : '${currentQuestion == null ? questions.length : currentIndex + 1}/${questions.length}';
 
   String effectiveQuizType(String fallback) => sessionQuizType ?? fallback;
 
@@ -110,6 +113,7 @@ class QuizSessionState {
     Object? resolvedMode = _unset,
     int? timeSpent,
     bool? completing,
+    Object? completionError = _unset,
     Object? loadError = _unset,
   }) {
     return QuizSessionState(
@@ -132,6 +136,9 @@ class QuizSessionState {
           : resolvedMode as String?,
       timeSpent: timeSpent ?? this.timeSpent,
       completing: completing ?? this.completing,
+      completionError: identical(completionError, _unset)
+          ? this.completionError
+          : completionError as ApiException?,
       loadError:
           identical(loadError, _unset) ? this.loadError : loadError as String?,
     );
@@ -276,17 +283,28 @@ class QuizSessionController extends Notifier<QuizSessionState> {
       return null;
     }
 
-    state = state.copyWith(completing: true);
+    final revision = _initializationSerial;
+    state = state.copyWith(completing: true, completionError: null);
     try {
       await flushPendingAnswers();
+      if (!ref.mounted || revision != _initializationSerial) return null;
       final result = await ref.read(quizSessionServiceProvider).completeQuiz(
             sessionId,
             stageId: stageId,
           );
+      if (!ref.mounted || revision != _initializationSerial) return null;
       state = state.copyWith(completing: false);
       return result;
-    } catch (_) {
-      state = state.copyWith(completing: false);
+    } catch (error) {
+      if (!ref.mounted || revision != _initializationSerial) return null;
+      state = state.copyWith(
+        completing: false,
+        completionError: error is ApiException && error.statusCode == 409
+            ? const ApiException(message: '답안 저장을 확인하지 못했어요. 다시 시도해주세요.')
+            : error is ApiException
+                ? error
+                : const ApiException(message: '퀴즈 결과를 저장하지 못했어요. 다시 시도해주세요.'),
+      );
       rethrow;
     }
   }
@@ -294,11 +312,15 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   /// Keep this session alive until every submitted answer is durable. Reuse
   /// the same payload when an exit or completion retries a failed request.
   Future<void> flushPendingAnswers() async {
-    for (final answer in _answerSaves.values.where((answer) => answer.failed)) {
+    final revision = _initializationSerial;
+    final answers = _answerSaves.values.toList();
+    for (final answer in answers.where((answer) => answer.failed)) {
       answer.submit();
     }
-    await Future.wait(_answerSaves.values.map((answer) => answer.pending));
-    if (_answerSaves.values.any((answer) => !answer.saved)) {
+    await Future.wait(answers.map((answer) => answer.pending));
+    if (!ref.mounted ||
+        revision != _initializationSerial ||
+        answers.any((answer) => !answer.saved)) {
       throw const ApiException(
         message: '답안을 저장하지 못했어요. 다시 시도해주세요.',
         errorCode: 'QUIZ_ANSWER_SAVE_FAILED',
