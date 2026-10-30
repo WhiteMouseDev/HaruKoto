@@ -1,6 +1,10 @@
 from datetime import UTC, date, datetime, timedelta
 
+import pytest
+
+from app.services import gamification
 from app.services.gamification import calculate_level, update_streak
+from app.utils.date import KST
 
 
 def test_calculate_level_zero_xp():
@@ -72,3 +76,51 @@ def test_update_streak_broken():
     assert result["streak_count"] == 1
     assert result["longest_streak"] == 10
     assert result["streak_broken"] is True
+
+
+@pytest.mark.parametrize(
+    ("last_study", "today", "current", "expected"),
+    [
+        (datetime(2026, 9, 28, 15, 30, tzinfo=UTC), date(2026, 9, 29), 1, 1),
+        (datetime(2026, 9, 27, 23, tzinfo=UTC), date(2026, 9, 29), 4, 5),
+        (datetime(2026, 9, 28, 14, 59, tzinfo=UTC), datetime(2026, 9, 28, 15, tzinfo=UTC), 2, 3),
+        (datetime(2026, 9, 28, 15, 30), date(2026, 9, 29), 1, 1),
+    ],
+    ids=["same-kst-morning", "consecutive-kst-mornings", "kst-midnight", "legacy-naive-utc"],
+)
+def test_update_streak_uses_kst_learning_days(last_study, today, current, expected):
+    result = update_streak(last_study, current, current, today)
+
+    assert result == {
+        "streak_count": expected,
+        "longest_streak": expected,
+        "streak_broken": False,
+    }
+
+
+@pytest.mark.parametrize(
+    ("last_study", "today"),
+    [
+        (date(2026, 9, 29), date(2026, 9, 29)),
+        (datetime(2026, 9, 29, 0, 30, tzinfo=KST), date(2026, 9, 29)),
+        (datetime(2026, 9, 28, 15, 30, tzinfo=UTC), datetime(2026, 9, 28, 15, 45)),
+        (datetime(2026, 9, 30, 3, tzinfo=UTC), date(2026, 9, 29)),
+    ],
+    ids=["date-value", "aware-kst", "naive-today-utc", "earlier-request-day"],
+)
+def test_update_streak_keeps_existing_counts_for_same_or_earlier_learning_day(last_study, today):
+    assert update_streak(last_study, 4, 9, today) == {
+        "streak_count": 4,
+        "longest_streak": 9,
+        "streak_broken": False,
+    }
+
+
+def test_update_streak_defaults_to_kst_today(monkeypatch):
+    monkeypatch.setattr(gamification, "get_today_kst", lambda: date(2026, 9, 29))
+
+    assert update_streak(datetime(2026, 9, 28, 15, 30, tzinfo=UTC), 4, 9) == {
+        "streak_count": 4,
+        "longest_streak": 9,
+        "streak_broken": False,
+    }

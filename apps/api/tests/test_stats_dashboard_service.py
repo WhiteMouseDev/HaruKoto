@@ -168,3 +168,19 @@ def test_last_study_day_uses_kst_for_aware_datetime() -> None:
     last_study_at = datetime(2026, 4, 22, 15, 30, tzinfo=UTC)
 
     assert stats_dashboard._last_study_day(last_study_at) == date(2026, 4, 23)
+
+
+def test_last_study_day_treats_legacy_naive_timestamp_as_utc() -> None:
+    assert stats_dashboard._last_study_day(datetime(2026, 9, 28, 15, 30)) == date(2026, 9, 29)
+
+
+def test_build_streak_info_keeps_stored_counts_after_normalizing_legacy_day() -> None:
+    user = SimpleNamespace(streak_count=4, longest_streak=9, last_study_date=datetime(2026, 9, 28, 15, 30))
+
+    streak = stats_dashboard._build_streak_info(user=user, today_progress=None, today=date(2026, 9, 29))
+
+    assert streak.current == 4
+    assert streak.longest == 9
+    assert streak.studied_today is True
+    assert streak.needs_action_today is False
+    assert user.last_study_date == datetime(2026, 9, 28, 15, 30)

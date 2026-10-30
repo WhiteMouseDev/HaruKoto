@@ -7,6 +7,8 @@ import {
   type AchievementType,
 } from '@/lib/gamification';
 
+vi.mock('@harukoto/database', () => ({ prisma: {} }));
+
 // ==========================================
 // calculateLevel
 // ==========================================

@@ -8494,6 +8494,10 @@
           "xpEarned": {
             "type": "integer",
             "title": "Xpearned"
+          },
+          "hasStudied": {
+            "type": "boolean",
+            "title": "Hasstudied"
           }
         },
         "type": "object",
@@ -8505,7 +8509,8 @@
           "totalAnswers",
           "conversationCount",
           "studyTimeSeconds",
-          "xpEarned"
+          "xpEarned",
+          "hasStudied"
         ],
         "title": "DailyProgressItem"
       },

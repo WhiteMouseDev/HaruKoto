@@ -76,3 +76,63 @@ async def test_get_history_data_defaults_missing_month_independently(monkeypatch
     assert response.year == 2025
     assert response.month == 4
     assert response.records == []
+
+
+@pytest.mark.parametrize(
+    "activity_field",
+    [
+        "words_studied",
+        "quizzes_completed",
+        "conversation_count",
+        "xp_earned",
+        "kana_learned",
+        "grammar_studied",
+        "sentences_studied",
+        "study_time_seconds",
+        "study_minutes",
+    ],
+)
+def test_history_activity_includes_each_existing_aggregate_without_mutating_row(activity_field: str) -> None:
+    progress = SimpleNamespace(
+        date=date(2026, 10, 3),
+        words_studied=0,
+        quizzes_completed=0,
+        correct_answers=0,
+        total_answers=0,
+        conversation_count=0,
+        study_time_seconds=0,
+        xp_earned=0,
+        kana_learned=0,
+        grammar_studied=None,
+        sentences_studied=None,
+        study_minutes=None,
+    )
+    setattr(progress, activity_field, 1)
+    original = vars(progress).copy()
+
+    record = stats_history._build_daily_progress_item(progress)
+
+    assert record.has_studied is True
+    assert vars(progress) == original
+
+
+def test_history_all_zero_activity_does_not_count_answer_totals_or_row_existence() -> None:
+    progress = SimpleNamespace(
+        date=date(2026, 10, 3),
+        words_studied=0,
+        quizzes_completed=0,
+        correct_answers=4,
+        total_answers=5,
+        conversation_count=0,
+        study_time_seconds=0,
+        xp_earned=0,
+        grammar_studied=None,
+        sentences_studied=None,
+        study_minutes=None,
+    )
+
+    record = stats_history._build_daily_progress_item(progress)
+
+    assert record.has_studied is False
+    assert record.correct_answers == 4
+    assert record.total_answers == 5

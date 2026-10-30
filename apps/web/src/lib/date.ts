@@ -7,8 +7,7 @@ const KST_OFFSET = 9 * 60 * 60 * 1000; // UTC+9
  * 예: KST 2026-03-06 02:00 → UTC 2026-03-05 17:00
  *     KST 날짜는 3월 6일 → 반환값: 2026-03-06T00:00:00Z (UTC)
  */
-export function getTodayKST(): Date {
-  const now = new Date();
+export function getTodayKST(now: Date = new Date()): Date {
   const kstTime = new Date(now.getTime() + KST_OFFSET);
   const year = kstTime.getUTCFullYear();
   const month = kstTime.getUTCMonth();
