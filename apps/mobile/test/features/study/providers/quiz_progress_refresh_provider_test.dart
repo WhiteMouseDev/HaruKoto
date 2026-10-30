@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_session_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/smart_preview_model.dart';
 import 'package:harukoto_mobile/features/study/providers/quiz_progress_refresh_provider.dart';
@@ -10,8 +12,17 @@ void main() {
       () async {
     var answered = 0;
     var sessionReads = 0;
+    var dashboardReads = 0;
     final previewReads = <String, int>{};
     final container = ProviderContainer(overrides: [
+      dashboardProvider.overrideWith((ref) async {
+        dashboardReads++;
+        return DashboardModel.fromJson({
+          'today': {
+            'vocabularyGoal': {'date': '2026-10-30', 'answeredCount': answered},
+          },
+        });
+      }),
       incompleteQuizProvider.overrideWith((ref) async {
         sessionReads++;
         return IncompleteSessionModel(
@@ -33,6 +44,13 @@ void main() {
     addTearDown(container.dispose);
     // Home and its preview remain mounted while the quiz covers them.
     container.listen(incompleteQuizProvider, (_, __) {});
+    container.listen(dashboardProvider, (_, __) {});
+    expect(
+        (await container.read(dashboardProvider.future))
+            .today
+            .vocabularyGoal!
+            .answeredCount,
+        0);
     for (final category in ['VOCABULARY', 'GRAMMAR']) {
       container.listen(
         smartPreviewProvider((category: category, jlptLevel: 'N5')),
@@ -48,6 +66,12 @@ void main() {
 
     answered = 1;
     container.read(quizProgressRefreshProvider).refresh();
+    expect(
+        (await container.read(dashboardProvider.future))
+            .today
+            .vocabularyGoal!
+            .answeredCount,
+        1);
     expect((await container.read(incompleteQuizProvider.future))?.answeredCount,
         1);
     for (final category in ['VOCABULARY', 'GRAMMAR']) {
@@ -55,6 +79,7 @@ void main() {
           smartPreviewProvider((category: category, jlptLevel: 'N5')).future);
     }
     expect(sessionReads, 2);
+    expect(dashboardReads, 2);
     expect(previewReads, {'VOCABULARY': 2, 'GRAMMAR': 2});
   });
 }

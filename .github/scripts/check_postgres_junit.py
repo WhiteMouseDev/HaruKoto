@@ -9,6 +9,22 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         (
+            "tests.test_stats_vocabulary_goal_postgres",
+            "test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answer_day[aware-korea]",
+        ),
+        (
+            "tests.test_stats_vocabulary_goal_postgres",
+            "test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answer_day[aware-los-angeles]",
+        ),
+        (
+            "tests.test_stats_vocabulary_goal_postgres",
+            "test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answer_day[legacy-korea]",
+        ),
+        (
+            "tests.test_stats_vocabulary_goal_postgres",
+            "test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answer_day[legacy-los-angeles]",
+        ),
+        (
             "tests.test_quiz_wrong_review_postgres",
             "test_wrong_review_uses_only_source_wrong_items_and_preserves_existing_records[VOCABULARY]",
         ),

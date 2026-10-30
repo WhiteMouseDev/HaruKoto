@@ -41,6 +41,7 @@ docs/
 ### 운영
 
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
+- [홈 단어 카드의 오늘 목표 진행률](operations/plans/daily-vocabulary-goal-2026-10-30.md) — 하루 목표·퀴즈 이어하기·누적 숙련도 분리와 KST 고유 단어 집계
 - [N5 현재 음성·대표 청취 링크](operations/plans/n5-audio-qa-current-state-2026-10-28.md) — Kenzo·Shizuka v4 적용 범위, 전체 듣기와 별도 남은 전체 청취 검수
 - [이어하기 카드와 최근 학습순](operations/plans/mobile-resume-recent-study-2026-10-28.md) — 대표 카드 한 개·전체 목록, 기존 저장 위치/답안 호환과 최근 활동 정렬
 - [저장 목록을 짧게 만든 과정 (블로그)](blog/2026-10-28-one-resume-card-and-recent-study.md) — 중복 카드·학습 시각·실패 상태와 접근성 개선 기록
@@ -53,6 +54,7 @@ docs/
 - [**AI Coding Harness**](operations/harness.md) — Claude Code + Codex 운영체계 (도메인 에이전트, 스킬, 훅, 계약 관리, 에스컬레이션)
 - [AI 하네스 엔지니어링 실전 구축기 (블로그)](blog/2026-04-23-ai-harness-engineering-실전-구축기.md) — 4-pillar 하네스 설계와 실제 드리프트 버그를 잡아낸 사례
 - [학습 앱 개선 사례 기록](blog/2026-10-21-harukoto-improvement-casebook.md) — 학습 UI, 퀴즈 저장, 이어 풀기, DB 보안과 파티션 문제의 원인·설계·수정·검증
+- [하루 목표 옆의 2%는 무엇을 뜻할까 (블로그)](blog/2026-10-30-daily-word-goal-and-quiz-progress.md) — 오늘 단어 목표와 퀴즈 진행·장기 숙련도를 분리한 이유와 검증
 - [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
 - [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안
 - [파티션 정기 점검 운영 적용](operations/plans/partition-monitor-deployment-2026-10-21.md) — 최소 권한 계정, 오전 9시 예약, 실제 실행·누락·오류·복구 알림 검증과 중단 절차

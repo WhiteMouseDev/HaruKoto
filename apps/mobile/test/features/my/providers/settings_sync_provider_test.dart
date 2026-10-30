@@ -61,6 +61,24 @@ void main() {
       expect(current.subtitleEnabled, initial.subtitleEnabled);
       expect(current.autoAnalysis, initial.autoAnalysis);
     });
+
+    test('rolls back daily goal when the update fails', () async {
+      SharedPreferences.setMockInitialValues({'user_daily_goal': 20});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = _FakeMyRepository(shouldThrow: true);
+      final container = ProviderContainer(overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        myRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final initial = container.read(userPreferencesProvider).dailyGoal;
+      await expectLater(
+        container.read(settingsSyncServiceProvider).updateDailyGoal(30),
+        throwsStateError,
+      );
+      expect(container.read(userPreferencesProvider).dailyGoal, initial);
+      expect(repository.lastPayload, {'dailyGoal': 30});
+    });
   });
 }
 

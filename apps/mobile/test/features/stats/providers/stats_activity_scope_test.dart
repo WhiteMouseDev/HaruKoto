@@ -26,6 +26,9 @@ void main() {
     final home = _HomeRepository(() => account == 'account-a'
         ? oldDashboard.future
         : Future.value(DashboardModel.fromJson({
+            'today': {
+              'vocabularyGoal': {'date': '2026-10-30', 'answeredCount': 2},
+            },
             'streak': {'current': 2}
           })));
     final stats = _StatsRepository(
@@ -60,6 +63,9 @@ void main() {
         isEmpty);
     expect((await container.read(heatmapProvider(2026).future)).data, isEmpty);
     oldDashboard.complete(DashboardModel.fromJson({
+      'today': {
+        'vocabularyGoal': {'date': '2026-10-30', 'answeredCount': 99},
+      },
       'streak': {'current': 99}
     }));
     oldYear.complete([
@@ -72,6 +78,14 @@ void main() {
         data: [HeatmapData(date: 'old-account', wordsStudied: 99)]));
     await Future<void>.delayed(Duration.zero);
     expect(container.read(dashboardProvider).value!.streak.current, 2);
+    expect(
+        container
+            .read(dashboardProvider)
+            .value!
+            .today
+            .vocabularyGoal!
+            .answeredCount,
+        2);
     expect(container.read(statsHistoryProvider(2026)).value, isEmpty);
     expect(
         container

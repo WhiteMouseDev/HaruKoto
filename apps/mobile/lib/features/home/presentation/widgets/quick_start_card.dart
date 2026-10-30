@@ -6,12 +6,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
 import '../../data/models/dashboard_model.dart';
 import '../../domain/quick_start_progress.dart';
+import '../../domain/daily_vocabulary_goal_progress.dart';
 
 // ═══════════════════════════════════════════════════════════════
 //  Constants
@@ -348,6 +350,7 @@ class _MainContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final mutedForeground = theme.colorScheme.onSurface.withValues(alpha: 0.65);
     final cat = _categories[selectedIndex];
     final apiType = _apiTypeForCategory(cat.quizType);
     final progress = _getProgress(cat.quizType);
@@ -370,8 +373,23 @@ class _MainContent extends ConsumerWidget {
       incomplete: incompleteAsync.hasValue ? incompleteAsync.value : null,
       mastery: progress,
     );
+    final isVocabulary = apiType == 'VOCABULARY';
+    final vocabularyProgress = resolveDailyVocabularyGoalProgress(
+      vocabularyGoal: today?.vocabularyGoal,
+      dailyGoal: dailyGoal,
+      studyDate: ref.watch(studyDateProvider),
+    );
+    final ringFraction =
+        isVocabulary ? vocabularyProgress.fraction : cardProgress.fraction;
+    final ringPercentage =
+        isVocabulary ? vocabularyProgress.percentage : cardProgress.percentage;
+    final ringLabel = isVocabulary ? '오늘 목표' : cardProgress.label;
     final incomplete = cardProgress.session;
-    final preview = previewAsync?.hasValue == true ? previewAsync!.value : null;
+    final preview = previewAsync?.hasValue == true &&
+            (!isVocabulary ||
+                (!previewAsync!.isLoading && !previewAsync.hasError))
+        ? previewAsync!.value
+        : null;
     final decision = resolveStudyEntryDecision(
       category: apiType,
       hasIncomplete: incomplete != null && categorySupportsSmartStudy(apiType),
@@ -381,6 +399,153 @@ class _MainContent extends ConsumerWidget {
     final ctaLabel = decision.action == StudyEntryActionKind.resumeOrNew
         ? '이어서 학습하기'
         : cat.ctaLabel;
+
+    final stackDailyProgress = isVocabulary &&
+        (MediaQuery.sizeOf(context).width < 360 ||
+            MediaQuery.textScalerOf(context).scale(14) > 18.2);
+    final goalEditor = Tooltip(
+      message: '하루 목표 설정',
+      child: InkWell(
+        key: const ValueKey('quick-start-edit-goal'),
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _showDailyGoalSheet(context, ref),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: isVocabulary
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        vocabularyProgress.countLabel,
+                        key: const ValueKey('quick-start-daily-count'),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(LucideIcons.pencil,
+                        size: 14,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                  ],
+                )
+              : Center(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: Icon(LucideIcons.pencil,
+                      size: 14,
+                      color:
+                          theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                ),
+        ),
+      ),
+    );
+    final progressSummary = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          cat.title,
+          style:
+              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        if (isVocabulary) ...[
+          goalEditor,
+          if (vocabularyProgress.remainingLabel != null)
+            Text(
+              vocabularyProgress.remainingLabel!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          if (cardProgress.savedAnswerLabel != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              stackDailyProgress
+                  ? '이번 퀴즈\n${cardProgress.savedAnswerLabel!}'
+                  : '이번 퀴즈 ${cardProgress.savedAnswerLabel!}',
+              key: const ValueKey('quick-start-saved-progress'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
+        ] else if (cardProgress.savedAnswerLabel != null)
+          Text(
+            cardProgress.savedAnswerLabel!,
+            key: const ValueKey('quick-start-saved-progress'),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          )
+        else
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text('하루 목표  ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  )),
+              Text('$dailyGoal개',
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(width: 6),
+              goalEditor,
+            ],
+          ),
+      ],
+    );
+    final progressRing = ringLabel == null
+        ? null
+        : SizedBox(
+            width: stackDailyProgress ? 100 : 72,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (ringFraction != null) ...[
+                  SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: CustomPaint(
+                      painter: _CircularProgressPainter(
+                        progress: ringFraction,
+                        trackColor: theme.brightness == Brightness.dark
+                            ? theme.colorScheme.onSurface
+                                .withValues(alpha: 0.12)
+                            : AppColors.surfaceMuted,
+                        progressColor: cat.color,
+                        strokeWidth: 5,
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              ringPercentage!,
+                              key: const ValueKey('quick-start-percentage'),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: cat.color),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+                Text(
+                  ringLabel,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,11 +564,7 @@ class _MainContent extends ConsumerWidget {
                   color: cat.containerColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Icon(
-                  cat.icon,
-                  size: 36,
-                  color: cat.color,
-                ),
+                child: Icon(cat.icon, size: 36, color: cat.color),
               ),
             ),
           ),
@@ -423,20 +584,30 @@ class _MainContent extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(LucideIcons.checkCircle,
-                    size: 14, color: AppColors.neutralOn),
+                Icon(
+                  LucideIcons.checkCircle,
+                  size: 14,
+                  color: mutedForeground,
+                ),
                 const SizedBox(width: 4),
-                Text(
-                  hasProgress ? '복습 정답률 ${_getAccuracy(today)}%' : '복습 정답률 -%',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.neutralOn,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
+                Flexible(
+                  child: Text(
+                    hasProgress
+                        ? '복습 정답률 ${_getAccuracy(today)}%'
+                        : '복습 정답률 -%',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: mutedForeground,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 2),
-                const Icon(LucideIcons.chevronRight,
-                    size: 14, color: AppColors.neutralOn),
+                Icon(
+                  LucideIcons.chevronRight,
+                  size: 14,
+                  color: mutedForeground,
+                ),
               ],
             ),
           ),
@@ -449,111 +620,28 @@ class _MainContent extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
-            child: Row(
-              key: ValueKey('content_$selectedIndex'),
-              children: [
-                Expanded(
-                  child: Column(
+            child: stackDailyProgress
+                ? Column(
+                    key: ValueKey('content_$selectedIndex'),
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        cat.title,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (cardProgress.savedAnswerLabel != null)
-                        Text(
-                          cardProgress.savedAnswerLabel!,
-                          key: const ValueKey('quick-start-saved-progress'),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                        )
-                      else
-                        Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Text(
-                              '하루 목표  ',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.6),
-                              ),
-                            ),
-                            Text(
-                              '$dailyGoal개',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () => _showDailyGoalSheet(context, ref),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6),
-                                child: Icon(
-                                  LucideIcons.pencil,
-                                  size: 14,
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.4),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      progressSummary,
+                      if (progressRing != null) ...[
+                        const SizedBox(height: 12),
+                        Center(child: progressRing),
+                      ],
+                    ],
+                  )
+                : Row(
+                    key: ValueKey('content_$selectedIndex'),
+                    children: [
+                      Expanded(child: progressSummary),
+                      if (progressRing != null) ...[
+                        const SizedBox(width: 8),
+                        progressRing,
+                      ],
                     ],
                   ),
-                ),
-                if (cardProgress.label != null) ...[
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 72,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (cardProgress.fraction != null)
-                          SizedBox(
-                            width: 64,
-                            height: 64,
-                            child: CustomPaint(
-                              painter: _CircularProgressPainter(
-                                progress: cardProgress.fraction!,
-                                trackColor: AppColors.surfaceMuted,
-                                progressColor: cat.color,
-                                strokeWidth: 5,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  cardProgress.percentage!,
-                                  key: const ValueKey('quick-start-percentage'),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: cat.color,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (cardProgress.fraction != null)
-                          const SizedBox(height: 6),
-                        Text(
-                          cardProgress.label!,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
           ),
         ),
 
@@ -584,15 +672,21 @@ class _MainContent extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(LucideIcons.bookOpen,
-                        color: Colors.white, size: 20),
+                    const Icon(
+                      LucideIcons.bookOpen,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
-                    Text(
-                      ctaLabel,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        ctaLabel,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -637,6 +731,7 @@ class _MainContent extends ConsumerWidget {
     final selectedGoal = await showModalBottomSheet<int>(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       shape: AppSizes.sheetShape,
       builder: (ctx) {
         return _DailyGoalSheetContent(
@@ -692,42 +787,44 @@ class _DailyGoalSheetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = this.theme;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AppSheetHandle(),
-            const SizedBox(height: 16),
-            Text('하루 목표 설정',
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            ...goals.map((g) {
-              final isActive = g == currentGoal;
-              return ListTile(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                selected: isActive,
-                selectedTileColor:
-                    theme.colorScheme.primary.withValues(alpha: 0.08),
-                title: Text('$g개',
-                    style: TextStyle(
-                      fontWeight:
-                          isActive ? FontWeight.bold : FontWeight.normal,
-                      color: isActive
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface,
-                    )),
-                trailing: isActive
-                    ? Icon(LucideIcons.check,
-                        color: theme.colorScheme.primary, size: 20)
-                    : null,
-                onTap: () => Navigator.of(context).pop(g),
-              );
-            }),
-            const SizedBox(height: 8),
-          ],
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const AppSheetHandle(),
+              const SizedBox(height: 16),
+              Text('하루 목표 설정',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              ...goals.map((g) {
+                final isActive = g == currentGoal;
+                return ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  selected: isActive,
+                  selectedTileColor:
+                      theme.colorScheme.primary.withValues(alpha: 0.08),
+                  title: Text('$g개',
+                      style: TextStyle(
+                        fontWeight:
+                            isActive ? FontWeight.bold : FontWeight.normal,
+                        color: isActive
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface,
+                      )),
+                  trailing: isActive
+                      ? Icon(LucideIcons.check,
+                          color: theme.colorScheme.primary, size: 20)
+                      : null,
+                  onTap: () => Navigator.of(context).pop(g),
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );

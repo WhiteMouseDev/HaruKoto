@@ -25,9 +25,11 @@ from app.schemas.stats import (
     ProgressStat,
     StreakInfo,
     TodayStats,
+    VocabularyGoal,
     WeeklyStatItem,
 )
 from app.services.study_activity import has_study_activity as _has_study_activity
+from app.services.vocabulary_goal import get_vocabulary_goal
 from app.utils.date import get_today_kst, study_date_kst
 
 
@@ -40,10 +42,11 @@ async def get_dashboard_data(
     weekly_stats = await _get_weekly_stats(db, user_id=user.id, today=today)
     level_progress = await _get_level_progress(db, user=user)
     kana_progress = await _get_kana_progress(db, user_id=user.id)
+    vocabulary_goal = await get_vocabulary_goal(db, user_id=user.id, day=today)
 
     return DashboardResponse(
         show_kana=user.show_kana,
-        today=_build_today_stats(today_progress, daily_goal=user.daily_goal),
+        today=_build_today_stats(today_progress, daily_goal=user.daily_goal, vocabulary_goal=vocabulary_goal),
         streak=_build_streak_info(user=user, today_progress=today_progress, today=today),
         weekly_stats=weekly_stats,
         level_progress=level_progress,
@@ -70,6 +73,7 @@ def _build_today_stats(
     progress: DailyProgress | None,
     *,
     daily_goal: int,
+    vocabulary_goal: VocabularyGoal,
 ) -> TodayStats:
     goal_progress = 0.0
     if progress and daily_goal > 0:
@@ -83,6 +87,7 @@ def _build_today_stats(
         xp_earned=progress.xp_earned if progress else 0,
         goal_progress=goal_progress,
         has_studied=_has_study_activity(progress),
+        vocabulary_goal=vocabulary_goal,
     )
 
 

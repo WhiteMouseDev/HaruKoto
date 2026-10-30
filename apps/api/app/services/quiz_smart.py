@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Grammar, QuizAnswer, QuizSession, UserGrammarProgress, UserVocabProgress, Vocabulary
 from app.models.user import User
 from app.services.quiz_policy import calculate_smart_distribution
+from app.services.vocabulary_goal import get_vocabulary_goal
 from app.utils.constants import SMART_QUIZ, SRS_CONFIG
 from app.utils.date import get_today_kst
 
@@ -179,7 +180,11 @@ async def build_smart_preview_data(
         category=category,
         jlpt_level=jlpt_level,
     )
-    today_completed = await load_today_completed_count(db, user_id=user.id)
+    if category == "VOCABULARY":
+        vocabulary_goal = await get_vocabulary_goal(db, user_id=user.id, day=get_today_kst())
+        today_completed = vocabulary_goal.answered_count
+    else:
+        today_completed = await load_today_completed_count(db, user_id=user.id)
 
     raw_goal = getattr(user, "daily_goal", None) or SMART_QUIZ.DAILY_GOAL
     daily_goal = max(1, raw_goal)

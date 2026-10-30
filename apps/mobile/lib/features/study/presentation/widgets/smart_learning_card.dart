@@ -19,6 +19,7 @@ class SmartLearningCard extends ConsumerWidget {
     );
 
     return previewAsync.when(
+      skipLoadingOnRefresh: false,
       loading: () => _buildSkeleton(context),
       error: (_, __) => const SizedBox.shrink(),
       data: (data) => _buildCard(context, ref, data),

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_session_model.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
@@ -22,7 +24,19 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final repository = _DelayedAnswerRepository()
         ..failedWrites = failFirstSave ? 1 : 0;
+      var dashboardReads = 0;
       final container = ProviderContainer(overrides: [
+        dashboardProvider.overrideWith((ref) async {
+          dashboardReads++;
+          return DashboardModel.fromJson({
+            'today': {
+              'vocabularyGoal': {
+                'date': '2026-10-30',
+                'answeredCount': repository.savedAnswers,
+              },
+            },
+          });
+        }),
         sharedPreferencesProvider.overrideWithValue(prefs),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
@@ -32,9 +46,12 @@ void main() {
           child: MaterialApp(
             home: Consumer(builder: (context, ref, child) {
               final progress = ref.watch(incompleteQuizProvider).value;
+              final daily = ref.watch(dashboardProvider).value;
               return Scaffold(
                   body: Column(children: [
                 Text('저장 ${progress?.answeredCount ?? 0}/2'),
+                Text(
+                    '오늘 ${daily?.today.vocabularyGoal?.answeredCount ?? 0}/20'),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).push<void>(
                     quizRoute(const QuizPage(count: 2)),
@@ -47,6 +64,7 @@ void main() {
         ));
         await tester.pumpAndSettle();
         expect(repository.sessionReads, 1);
+        expect(dashboardReads, 1);
         await tester.tap(find.text('퀴즈 열기'));
         await tester.pumpAndSettle();
         container.read(quizSessionProvider.notifier).answerCurrentQuestion(
@@ -72,6 +90,7 @@ void main() {
           expect(find.text('답안을 저장하지 못했어요. 다시 시도해주세요.'), findsOneWidget);
           expect(find.text('답안을 저장하고 있어요'), findsNothing);
           expect(repository.sessionReads, 1);
+          expect(dashboardReads, 1);
           tester
               .widget<QuizPageContent>(find.byType(QuizPageContent))
               .onBackRequested();
@@ -82,6 +101,8 @@ void main() {
         expect(find.byType(QuizPage), findsNothing);
         expect(find.text('저장 1/2'), findsOneWidget);
         expect(repository.sessionReads, 2);
+        expect(find.text('오늘 1/20'), findsOneWidget);
+        expect(dashboardReads, 2);
       } finally {
         await tester.pumpWidget(const SizedBox());
         await tester.pump();

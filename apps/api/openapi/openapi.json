@@ -12420,6 +12420,9 @@
           "hasStudied": {
             "type": "boolean",
             "title": "Hasstudied"
+          },
+          "vocabularyGoal": {
+            "$ref": "#/components/schemas/VocabularyGoal"
           }
         },
         "type": "object",
@@ -12430,7 +12433,8 @@
           "totalAnswers",
           "xpEarned",
           "goalProgress",
-          "hasStudied"
+          "hasStudied",
+          "vocabularyGoal"
         ],
         "title": "TodayStats"
       },
@@ -13040,6 +13044,26 @@
           "updatedAt"
         ],
         "title": "VocabularyDetailResponse"
+      },
+      "VocabularyGoal": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "answeredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Answeredcount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "answeredCount"
+        ],
+        "title": "VocabularyGoal"
       },
       "VocabularyUpdateRequest": {
         "properties": {

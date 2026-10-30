@@ -4155,6 +4155,7 @@ export interface components {
             goalProgress: number;
             /** Hasstudied */
             hasStudied: boolean;
+            vocabularyGoal: components["schemas"]["VocabularyGoal"];
         };
         /** TtsGenerationStatusSummary */
         TtsGenerationStatusSummary: {
@@ -4355,6 +4356,16 @@ export interface components {
             createdAt: string;
             /** Updatedat */
             updatedAt: string | null;
+        };
+        /** VocabularyGoal */
+        VocabularyGoal: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Answeredcount */
+            answeredCount: number;
         };
         /** VocabularyUpdateRequest */
         VocabularyUpdateRequest: {

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../home/providers/home_provider.dart';
 import 'study_provider.dart';
 
 final quizProgressRefreshProvider = Provider<QuizProgressRefresh>((ref) {
@@ -14,7 +15,11 @@ class QuizProgressRefresh {
   final Ref _ref;
 
   void refresh() {
+    if (!_ref.mounted) return;
     _ref.invalidate(incompleteQuizProvider);
     _ref.invalidate(smartPreviewProvider);
+    // Saved answers contribute before the quiz is completed. Home remains
+    // mounted under the quiz route, so it must reload on a saved-answer exit.
+    _ref.invalidate(dashboardProvider);
   }
 }
