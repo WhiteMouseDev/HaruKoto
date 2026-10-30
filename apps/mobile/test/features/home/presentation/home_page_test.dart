@@ -1,18 +1,68 @@
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/mission_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/user_profile_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/home_page.dart';
+import 'package:harukoto_mobile/features/home/presentation/widgets/streak_daily_card.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('HomePage', () {
+    testWidgets('midnight never shows yesterday completion while reloading',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var now = DateTime.utc(2026, 9, 27, 14);
+      final nextDashboard = Completer<DashboardModel>();
+      var requests = 0;
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          studyClockProvider.overrideWithValue(() => now),
+          dashboardProvider.overrideWith((ref) {
+            ref.watch(studyDateProvider);
+            requests++;
+            return requests == 1
+                ? Future.value(DashboardModel.fromJson({
+                    'streak': {'current': 2, 'longest': 2, 'studiedToday': true}
+                  }))
+                : nextDashboard.future;
+          }),
+          profileProvider.overrideWith((ref) async => const UserProfileModel(
+              nickname: 'Test',
+              dailyGoal: 10,
+              showKana: false,
+              jlptLevel: 'N5')),
+          missionsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(home: HomePage()),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('오늘 학습 완료 · 내일도 이어가요'), findsOneWidget);
+      final container =
+          ProviderScope.containerOf(tester.element(find.byType(HomePage)));
+      now = DateTime.utc(2026, 9, 27, 15);
+      container.read(studyDateProvider.notifier).refresh();
+      await tester.pump();
+      expect(find.byType(StreakDailyCard), findsNothing);
+      expect(find.text('오늘 학습 완료 · 내일도 이어가요'), findsNothing);
+      nextDashboard.complete(DashboardModel.fromJson({
+        'streak': {'current': 2, 'longest': 2, 'studiedToday': false}
+      }));
+      await tester.pumpAndSettle();
+      expect(find.text('어제까지의 기록 · 오늘 마치면 3일'), findsOneWidget);
+    });
+
     testWidgets('shows skeleton when all providers are loading',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
@@ -26,6 +76,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            currentAccountIdProvider.overrideWithValue('test-account'),
+            currentAccountReaderProvider
+                .overrideWithValue(() => 'test-account'),
             sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => dashboardCompleter.future,
@@ -62,6 +115,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            currentAccountIdProvider.overrideWithValue('test-account'),
+            currentAccountReaderProvider
+                .overrideWithValue(() => 'test-account'),
             sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => Future<DashboardModel>.error(Exception('API down')),
@@ -105,6 +161,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            currentAccountIdProvider.overrideWithValue('test-account'),
+            currentAccountReaderProvider
+                .overrideWithValue(() => 'test-account'),
             sharedPreferencesProvider.overrideWith((ref) => prefs),
             dashboardProvider.overrideWith(
               (ref) => Future.value(dashboard),

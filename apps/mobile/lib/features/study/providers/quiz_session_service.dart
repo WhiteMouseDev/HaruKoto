@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../home/providers/study_activity_refresh_provider.dart';
 
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
@@ -112,11 +113,13 @@ class QuizSessionService {
   Future<QuizResultModel> completeQuiz(
     String sessionId, {
     String? stageId,
-  }) {
-    return _ref.read(studyRepositoryProvider).completeQuiz(
+  }) async {
+    final result = await _ref.read(studyRepositoryProvider).completeQuiz(
           sessionId,
           stageId: stageId,
         );
+    if (_ref.mounted) _ref.read(studyActivityRefreshProvider).refresh();
+    return result;
   }
 
   String? _resolveMode({

@@ -19,7 +19,7 @@
 ## 보존과 승인 경계
 
 - 원본 checkout과 별도 음성 작업 트리의 기존 미커밋 파일을 수정·reset·stash·clean하지 않는다.
-- API 계약·DB·권한/RLS·Data API·환경 계약·생산 의존성·학습 기록·복습 기한은 변경하지 않는다. 필요한 변경은 구체안을 먼저 제시한다.
+- API는 구체안에 사용자 승인을 받은 `records[].hasStudied` 한 필드만 추가한다. DB·권한/RLS·Data API·환경 계약·생산 의존성·기존 학습 기록·복습 기한은 변경하지 않는다. 영속 출석 마커·특수 모드 재개 계약은 별도 승인 전 적용하지 않는다.
 - 현재 음원 캐시·Kenzo/Shizuka v4 정책·전체 448개 음원 청취 검수의 별도 PENDING 상태를 유지한다.
 - 아이폰은 복구된 통합본을 검토·검증하기 전 일반 목록 빌드를 설치하지 않는다. 앱 삭제·로그아웃·키체인/기록 초기화는 하지 않는다.
 
@@ -31,23 +31,23 @@
 
 실제 디스크에 남은 후보 **446개를 전부 분류**했다. 원본 파일의 해시와 실행 모드를 다시 확인한 결과 변경은 **0개**, 미분류는 **0개**다. 조사 대상은 원본의 변경·미추적 소스와 자료이며 비밀·환경·생성 파일을 제외했다. 과거 모든 대화의 승인이나 현재 운영 상태를 빠짐없이 입증한 전수 감사로 확대하지 않는다.
 
-초기 비교는 main과 동일 96개, 의미 비교 필요 80개, 로컬 전용 후보 270개였다. 담당 영역별 분류표를 합쳐 중복된 생성 타입 한 항목을 제거했다. 파일별 최초 상태와 판단 근거는 [446개 후보 목록](mobile-local-changes-audit-2026-10-28.tsv)에 남긴다. 이 목록의 분류는 복구 전 main과 원본의 비교 결과이며, 실제 복구 상태는 아래 표와 PR의 최종 diff를 따른다.
+초기 비교는 main과 동일 96개, 의미 비교 필요 80개, 로컬 전용 후보 270개였다. 담당 영역별 분류표를 합쳐 중복된 생성 타입 한 항목을 제거했다. 파일별 최초 상태와 판단 근거는 [446개 후보 목록](mobile-local-changes-audit-2026-10-28.tsv)에 남긴다. 최초 분류는 복구 전 main과 원본의 비교이며 `recovery_action` 열에는 승인 후의 최종 복구·보존·보류 결정을 추가했다. 실제 구현은 아래 표와 PR의 최종 diff를 따른다.
 
-| 영역                                 | 확인 결과                                                                                                          | 이번 처리                                                                                                                         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| 노선도·학습 표면                     | 승인된 selector·역/열차·색상·테스트가 main에 없음                                                                  | 최신 저장 카드와 함께 선택 복구                                                                                                   |
-| 결과·피드백                          | 동일 높이 결과 카드, 색종이 제거, 정답/오답 음원만 쓰는 변경이 없음                                                | 선택 복구, 특수 유형 피드백도 회귀 검사                                                                                           |
-| 매칭 퀴즈                            | `matchingPairs.id`를 문항 ID로 보내 현재 서버가 거부하는 경로 확인                                                 | canonical `questions.questionId`와 `correctOptionId` 보존. API 변경 없음                                                          |
-| 완료 저장·재시도                     | main의 병렬 저장·서버 잠금·첫 답안 멱등성은 이미 존재. 로컬의 모든 큐 변경을 옮길 필요 없음                        | pending 답안 snapshot·세션 revision guard·완료 차단/재시도만 보강                                                                 |
-| KST 연속 학습일                      | API와 웹에서 저장 UTC 시각과 학습 날짜를 다른 기준으로 비교                                                        | 별도 `codex/restore-streak-date-compat`에서 순수 날짜 수정·회귀 테스트                                                            |
-| 학습 달력·일일 활동 새로고침         | 모바일 25개 후보가 streak/history/clock/refresh 묶음. `hasStudied` API 필드는 main에 없음                          | [API 추가 구체안](streak-omission-compatibility-proposal-2026-10-28.md) 승인 대기. 표시·refresh를 불완전하게 통째로 복사하지 않음 |
-| Android·시작 알림                    | receiver·R8/resource keep·시작 오류 보호 관련 8개 후보가 main에 없음                                               | 별도 Android release/startup 검증 대상으로 보류                                                                                   |
-| 답안 저장·오답 복습·이어하기·DB 보안 | 최근 main에 이미 통합됐거나 원본보다 강화된 구현                                                                   | main 보존. 오래된 OpenAPI·생성 타입은 덮지 않음                                                                                   |
-| 커리큘럼·DB 데이터 파일              | 후보 21개가 main과 동일                                                                                            | 변경 없음. 문항 대상 validator 8/8 통과                                                                                           |
-| 문서·디자인 자료·도구                | 로컬 전용 문서 219개 중 디자이너 자료 202개, 제품 감사 자료 6개, 계획 11개. Discord 지원 스크립트 16개도 별도 존재 | 앱 기능 누락으로 세지 않음. 원본 보존·분류하고 최신 운영 문서를 이전 자료로 교체하지 않음                                         |
-| 과거 escalation                      | 로컬 자료의 open 선언 2개, resolved 선언 6개 확인                                                                  | 영속 출석 마커·특수 퀴즈 이어하기의 기존 미결 선언을 후속 판단 목록으로 보존. 현재 구현으로 해결됐다고 추정하지 않음              |
+| 영역                                 | 확인 결과                                                                                                          | 이번 처리                                                                                                                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 노선도·학습 표면                     | 승인된 selector·역/열차·색상·테스트가 main에 없음                                                                  | 최신 저장 카드와 함께 선택 복구                                                                                                                                |
+| 결과·피드백                          | 동일 높이 결과 카드, 색종이 제거, 정답/오답 음원만 쓰는 변경이 없음                                                | 선택 복구, 특수 유형 피드백도 회귀 검사                                                                                                                        |
+| 매칭 퀴즈                            | `matchingPairs.id`를 문항 ID로 보내 현재 서버가 거부하는 경로 확인                                                 | canonical `questions.questionId`와 `correctOptionId` 보존. API 변경 없음                                                                                       |
+| 완료 저장·재시도                     | main의 병렬 저장·서버 잠금·첫 답안 멱등성은 이미 존재. 로컬의 모든 큐 변경을 옮길 필요 없음                        | pending 답안 snapshot·세션 revision guard·완료 차단/재시도만 보강                                                                                              |
+| KST 연속 학습일                      | API와 웹에서 저장 UTC 시각과 학습 날짜를 다른 기준으로 비교                                                        | 별도 `codex/restore-streak-date-compat`에서 순수 날짜 수정·회귀 테스트                                                                                         |
+| 학습 달력·일일 활동 새로고침         | 모바일 25개 후보가 streak/history/clock/refresh 묶음. `hasStudied` API 필드는 main에 없음                          | [API 추가 구체안](streak-omission-compatibility-proposal-2026-10-28.md) 승인 후 API·생성 타입·구 응답 지원 소비자를 복구. 표시·refresh는 최신 코드에 선택 연결 |
+| Android·시작 알림                    | receiver·R8/resource keep·시작 오류 보호 관련 8개 후보가 main에 없음                                               | 별도 Android release/startup 검증 대상으로 보류                                                                                                                |
+| 답안 저장·오답 복습·이어하기·DB 보안 | 최근 main에 이미 통합됐거나 원본보다 강화된 구현                                                                   | main 보존. 오래된 OpenAPI·생성 타입은 덮지 않음                                                                                                                |
+| 커리큘럼·DB 데이터 파일              | 후보 21개가 main과 동일                                                                                            | 변경 없음. 문항 대상 validator 8/8 통과                                                                                                                        |
+| 문서·디자인 자료·도구                | 로컬 전용 문서 219개 중 디자이너 자료 202개, 제품 감사 자료 6개, 계획 11개. Discord 지원 스크립트 16개도 별도 존재 | 앱 기능 누락으로 세지 않음. 원본 보존·분류하고 최신 운영 문서를 이전 자료로 교체하지 않음                                                                      |
+| 과거 escalation                      | 로컬 자료의 open 선언 2개, resolved 선언 6개 확인                                                                  | 영속 출석 마커·특수 퀴즈 이어하기의 기존 미결 선언을 후속 판단 목록으로 보존. 현재 구현으로 해결됐다고 추정하지 않음                                           |
 
-### 모바일 최종 소스와 검증
+### 1차 모바일 소스와 검증 — 노선·결과·퀴즈 저장
 
 모바일 변경은 **34개 파일**이다. 노선도 selector의 `studyMapEnabledProvider` 기본값은 true이며, false로 바꾸면 최신 main에서 가져온 `LegacyLessonChapterList`로 돌아갈 수 있다. remote config나 환경변수를 신설하지 않았다.
 
@@ -68,7 +68,7 @@
 | 완료 저장·세션 보호·wrong-review focused 검사  | 36 passed                 |
 | `git diff --check`                             | 통과                      |
 
-focused 검사는 서로 겹치므로 합산하지 않는다. 최종 모바일 663개 파일 동결 manifest의 SHA-256은 `b10e9c0d8de5bae11dba4e2cbdb4ff79a895a94cab1c7f47b2f67e48dff21573`이다. 테스트 후 소스 변경은 없다. Dart/Flutter는 3.11.1/3.41.3을 사용했다. 의존성·lock 파일은 바꾸지 않았다.
+focused 검사는 서로 겹치므로 합산하지 않는다. 1차 모바일 663개 파일 동결 manifest의 SHA-256은 `b10e9c0d8de5bae11dba4e2cbdb4ff79a895a94cab1c7f47b2f67e48dff21573`이다. 해당 검증 후 동일 소스를 커밋 `3d8b22b7`로 올렸고 PR #201의 CI 40979711592에서 format/analyze/test/Android debug build를 통과했다. 이후 승인된 달력·연속일 복구 검증과 구분한다. Dart/Flutter는 3.11.1/3.41.3을 사용했다. 의존성·lock 파일은 바꾸지 않았다.
 
 light/dark 학습 홈·노선·결과 총 6장의 Flutter 위젯 렌더를 합성 데이터로 검토했다. 앱 색상 토큰과 시스템 한국어 대체 폰트를 사용했으며, 실제 기기·실제 사용자 데이터·실제 음원 청취를 검증한 이미지가 아니다.
 
@@ -76,11 +76,41 @@ light/dark 학습 홈·노선·결과 총 6장의 Flutter 위젯 렌더를 합�
 
 API는 `date`를 유지하고 aware 시각과 과거 naive UTC 시각을 KST 날짜로 정규화한다. 같은 날·이전 날 요청에서 기존 current/longest 카운터를 보존한다. 새 완료 요청의 날짜 계산만 고치며, 과거 기록이나 카운터의 일괄 재계산은 하지 않는다.
 
-API의 수정 전 경계 사례 4개 실패를 확인한 뒤 관련 98개가 통과했다. 최종 전체 API는 **1039 passed / 기존 admin fixture 13 skipped**, 필수 실제 PostgreSQL 검사는 **85/85 skipped 없이 통과**했다. Ruff lint/format, mypy 173개 소스, PostgreSQL guard 자체 테스트 10개도 통과했다. OpenAPI 103개 경로는 동일하고 최신 wrong-review 계약을 보존했다. 웹의 별도 검증과 최종 diff는 해당 PR에 기록한다.
+API의 수정 전 경계 사례 4개 실패를 확인한 뒤 관련 98개가 통과했다. 순수 날짜 수정 단계의 전체 API는 **1039 passed / 기존 admin fixture 13 skipped**, 필수 실제 PostgreSQL 검사는 **85/85 skipped 없이 통과**했다. Ruff lint/format, mypy 173개 소스, PostgreSQL guard 자체 테스트 10개도 통과했다. 이 단계의 OpenAPI 103개 경로는 동일하고 최신 wrong-review 계약을 보존했다. 이후 사용자 승인된 additive 필드와 최종 서버 결과는 다음 절에 구분한다.
 
 웹은 새 날짜 회귀 23개가 UTC·서울·LA·뉴욕에서 각각 통과했고 lint/typecheck가 통과했다. 전체 웹 테스트는 **134 passed / 7 failed**다. 같은 7개 실패를 변경 전 main의 `git archive`에서도 재현했으므로 새 수정의 실패와 구분한다. 기존 achievement 두 개와 stats-component 다섯 개 assertion을 후속으로 정비해야 한다. CI frontend 작업은 install/lint/typecheck/build만 실행하고 웹 `pnpm test`를 실행하지 않는다. 단위 테스트를 CI에 편입하는 작업도 필요하다.
 
 독립 코드 검토에서 이번 복원 diff의 신규 결함은 발견하지 못했다. 단, 실제 부분 진행 매칭 resume는 기존 서버가 mode를 저장하지 않고 재개 응답에 표시용 `word`/`meaning`을 보존하지 않는 제한이 있다. 이번 matching 검사는 start→answer→result와 전부 저장된 합성 resume를 검사했으며 실제 부분 매칭 resume 검증으로 확대하지 않는다. API/DB 계약을 먼저 제시할 별도 후속이다.
+
+### 2차 승인 범위 — 연속일·집계 기반 달력·새로고침
+
+사용자가 `hasStudied` API 추가까지 승인한 뒤 모바일의 원본 후보 25개 모두를 최신 소스에 선택 반영했다. 통계의 기간 탭·heatmap·시간 차트에서 남아 있던 휴대폰 현지 날짜 사용도 KST 날짜 key에 맞췄다. 원본의 직렬 답안 큐나 미승인 출석 마커를 옮기지 않았다.
+
+- 모바일은 명시적 bool을 우선한다. `false`를 true로 추정하지 않으며 absent/null 구 서버 응답만 기존 숫자 집계로 fallback한다. 시작만 한 행이나 answer totals만 있는 응답은 출석으로 만들지 않는다.
+- KST 자정·월요일·연도 경계에서 홈·달력 조회·통계의 오늘·차트가 같은 날짜를 쓴다. 앱 복귀 후 날짜 갱신과 미래 날짜의 완료 표시 억제를 검사한다.
+- 학습일 카드는 브랜드 핑크와 읽기 쉬운 글자색으로 표시한다. 조회·재조회·실패 상태에서는 예전 완료 상태를 재사용하지 않는다.
+- quiz·lesson·kana stage·kana quiz·conversation·call 완료가 성공한 뒤에만 dashboard/history 캐시를 갱신한다. 실패→재시도와 provider dispose 이후 응답도 검사한다. 서버 요청의 내용·XP·복습 기한은 바꾸지 않는다.
+- 기존 계정 reader를 사용해 계정이 바뀐 뒤 늦게 도착한 응답, 열린 달력과 보관된 retry callback을 보호한다. 로그인/인증 로직이나 저장 위치의 소유권 형식은 바꾸지 않는다.
+- 최신 OpenAPI와 직접 비교해 Dio 61개 경로, annotated model 1개, DailyProgressItem 9개 JSON key의 drift 0을 확인했다. `hasStudied`가 required non-null bool인 새 계약과 구 응답 모두를 테스트한다.
+
+승인 필드 포함 서버는 **1056 passed / 기존 admin fixture 13 skipped**, 필수 PG 85개는 skip 없이 통과했다. Ruff 302개 파일·mypy 174개 source가 통과했다. OpenAPI에서 새 속성과 required 항목만 제거하면 이전 snapshot과 바이트 동일하다. 공유 TS도 2줄 추가뿐이며 두 번 생성 결과가 같다. 직접 consumer admin의 lint/typecheck·45 tests(기존 TODO 10)·11페이지 build가 통과했다. 이 build는 synthetic localhost와 offline font fixture를 사용해 운영 폰트 검수로 확대하지 않는다.
+
+서버·웹·생성 타입은 [PR #202](https://github.com/WhiteMouseDev/HaruKoto/pull/202), 앱·블로그·감사 기록은 [PR #201](https://github.com/WhiteMouseDev/HaruKoto/pull/201)에서 검토한다. 영속 출석과 특수 모드 재개는 각각 [기존 출석 마커 미결](../../../.planning/escalations/2026-09-29-streak-attendance-marker.md), [특수 퀴즈 재개 미결](../../../.planning/escalations/2026-10-07-special-quiz-resume-contract.md)을 복구·갱신해 구체안 없이 적용하지 않는다.
+
+| 최종 모바일 2차 검사                         | 결과                                                     |
+| -------------------------------------------- | -------------------------------------------------------- |
+| 새 source/test 변경                          | 30개 파일 — source 20 / test 10                          |
+| `dart format --set-exit-if-changed lib test` | 572개 파일, 변경 0                                       |
+| `flutter analyze --no-pub`                   | 문제 0                                                   |
+| `flutter test --no-pub`                      | **889/889 passed**, 1차 대비 새 회귀 65개                |
+| KST 소비자 회귀                              | UTC·Asia/Seoul·America/Los_Angeles 각각 **26/26 passed** |
+| 새 OpenAPI와 소비자 비교                     | 경로 61·annotated model 1·JSON key 9, drift 0            |
+| 원본 모바일 117개 해시                       | 변경 0                                                   |
+| `git diff --check`                           | 통과                                                     |
+
+최종 모바일 673개 파일 manifest SHA-256은 `146c0330f54a1d5fe931a35a62dd17bf3552cfdf45b42553f975aad6c5910e8f`다. 독립 검토본에서 변경된 것은 openCalendar guard의 중괄호 스타일뿐이며, 이 정확한 최종 소스로 전체·timezone 검사를 재실행했다. 신규 버그·회귀 finding은 없다. streak pending/today·history·history error의 밝은/어두운 모드 합성 렌더 8개를 추가 확인했다. 실제 기기·계정·음성 청취 검증으로 확대하지 않는다.
+
+API 최종 커밋 `363109a0`의 [CI 40981077518](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/40981077518)은 backend·api-contract·schema-drift·frontend·admin-e2e 모두 통과했다. 모바일 최종 커밋은 PR #201의 최신 CI 상태를 따른다. 두 PR은 아직 병합·운영 배포·기기 설치하지 않았다.
 
 ## 롤백과 적용 전 확인
 

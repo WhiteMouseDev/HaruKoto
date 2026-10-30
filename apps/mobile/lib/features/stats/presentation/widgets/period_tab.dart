@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/study_clock_provider.dart';
 import '../../../home/data/models/dashboard_model.dart';
 import '../../data/models/heatmap_data_model.dart';
 import '../../data/models/stats_history_model.dart';
@@ -30,7 +31,7 @@ class PeriodTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final todayStr = DateTime.now().toIso8601String().split('T')[0];
+    final todayStr = studyDateKey(ref.watch(studyDateProvider));
     final todayRecord = historyRecords.cast<StatsHistoryRecord?>().firstWhere(
           (r) => r?.date == todayStr,
           orElse: () => null,

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../home/providers/study_activity_refresh_provider.dart';
 
 import '../data/chat_repository.dart' as chat_data;
 import 'chat_provider.dart';
@@ -18,8 +19,11 @@ class ConversationEndService {
   ) async {
     final response =
         await _ref.read(chatRepositoryProvider).endConversation(conversationId);
-    _ref.invalidate(chatHistoryProvider);
-    _ref.invalidate(conversationFeedbackProvider(conversationId));
+    if (_ref.mounted) {
+      _ref.invalidate(chatHistoryProvider);
+      _ref.invalidate(conversationFeedbackProvider(conversationId));
+      if (response.success) _ref.read(studyActivityRefreshProvider).refresh();
+    }
     return response;
   }
 }

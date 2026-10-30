@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/providers/study_clock_provider.dart';
+import '../../features/home/providers/study_activity_refresh_provider.dart';
 import '../../features/study/providers/quiz_progress_refresh_provider.dart';
 import 'bottom_nav.dart';
 import 'offline_banner.dart';
@@ -28,15 +30,20 @@ class _MainShellState extends ConsumerState<MainShell>
     super.dispose();
   }
 
+  void _refreshActivity() {
+    ref.read(quizProgressRefreshProvider).refresh();
+    ref.read(studyDateProvider.notifier).refresh();
+    ref.read(studyActivityRefreshProvider).refresh();
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      ref.read(quizProgressRefreshProvider).refresh();
-    }
+    if (state == AppLifecycleState.resumed) _refreshActivity();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(studyDateProvider);
     final navigationShell = widget.navigationShell;
     return Scaffold(
       body: Column(
@@ -48,7 +55,7 @@ class _MainShellState extends ConsumerState<MainShell>
       bottomNavigationBar: BottomNav(
         currentIndex: navigationShell.currentIndex,
         onTap: (index) {
-          if (index == 0) ref.read(quizProgressRefreshProvider).refresh();
+          if (index == 0) _refreshActivity();
           navigationShell.goBranch(
             index,
             initialLocation: index == navigationShell.currentIndex,

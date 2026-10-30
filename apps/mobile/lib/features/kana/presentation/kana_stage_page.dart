@@ -8,6 +8,7 @@ import '../../home/providers/home_provider.dart';
 import '../data/models/kana_character_model.dart';
 import '../data/models/kana_stage_model.dart';
 import '../providers/kana_provider.dart';
+import '../providers/kana_completion_service.dart';
 import 'widgets/stage_intro.dart';
 import 'widgets/stage_practice.dart';
 import 'widgets/stage_quiz.dart';
@@ -378,7 +379,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     if (_quizSessionId != null) {
       try {
         final res = await ref
-            .read(kanaRepositoryProvider)
+            .read(kanaCompletionServiceProvider)
             .completeQuiz(sessionId: _quizSessionId!);
         if (!mounted) return;
         setState(() => _xpEarned = res.xpEarned);
@@ -398,7 +399,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
         stages.where((s) => s.stageNumber == widget.stageNumber).firstOrNull;
     if (stage != null) {
       final score = (correct / total * 100).round();
-      unawaited(ref.read(kanaRepositoryProvider).completeStage(
+      unawaited(ref.read(kanaCompletionServiceProvider).completeStage(
             stageId: stage.id,
             quizScore: score,
           ));

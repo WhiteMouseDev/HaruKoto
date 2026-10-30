@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/providers/dio_provider.dart';
+import '../../../core/providers/study_clock_provider.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../data/home_repository.dart';
 import '../data/models/dashboard_model.dart';
@@ -14,6 +16,8 @@ final homeRepositoryProvider = Provider((ref) {
 
 final dashboardProvider =
     FutureProvider.autoDispose<DashboardModel>((ref) async {
+  ref.watch(currentAccountIdProvider);
+  ref.watch(studyDateProvider);
   return await ref.watch(homeRepositoryProvider).fetchDashboard();
 });
 

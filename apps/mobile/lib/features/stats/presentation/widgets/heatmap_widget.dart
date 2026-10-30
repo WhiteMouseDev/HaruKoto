@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/study_clock_provider.dart';
 import '../../data/models/heatmap_data_model.dart';
 
-class HeatmapWidget extends StatefulWidget {
+class HeatmapWidget extends ConsumerStatefulWidget {
   final List<HeatmapData> records;
   final int year;
   final ValueChanged<int> onYearChange;
@@ -17,10 +19,10 @@ class HeatmapWidget extends StatefulWidget {
   });
 
   @override
-  State<HeatmapWidget> createState() => _HeatmapWidgetState();
+  ConsumerState<HeatmapWidget> createState() => _HeatmapWidgetState();
 }
 
-class _HeatmapWidgetState extends State<HeatmapWidget> {
+class _HeatmapWidgetState extends ConsumerState<HeatmapWidget> {
   String? _hoveredDate;
 
   static const double _cellSize = 11;
@@ -91,7 +93,7 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
         cells.fold<int>(0, (m, c) => c.weekIndex > m ? c.weekIndex : m) + 1;
     final totalStudied = cells.fold<int>(0, (s, c) => s + c.count);
     final activeDays = cells.where((c) => c.count > 0).length;
-    final currentYear = DateTime.now().year;
+    final currentYear = ref.watch(studyDateProvider).year;
 
     // Build week columns
     final weekColumns = <List<DayCell?>>[];
