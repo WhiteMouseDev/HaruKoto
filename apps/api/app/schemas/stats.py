@@ -57,6 +57,7 @@ class DailyProgressItem(CamelModel):
     conversation_count: int
     study_time_seconds: int
     xp_earned: int
+    has_studied: bool
 
 
 class HistoryResponse(CamelModel):

@@ -27,6 +27,7 @@ from app.schemas.stats import (
     TodayStats,
     WeeklyStatItem,
 )
+from app.services.study_activity import has_study_activity as _has_study_activity
 from app.utils.date import get_today_kst, study_date_kst
 
 
@@ -120,26 +121,6 @@ def _effective_current_streak(
     if last_study_day is None:
         return 0
     return current_streak if (today - last_study_day).days <= 1 else 0
-
-
-def _has_study_activity(progress: DailyProgress | None) -> bool:
-    if progress is None:
-        return False
-
-    return any(
-        (getattr(progress, field, 0) or 0) > 0
-        for field in (
-            "words_studied",
-            "quizzes_completed",
-            "conversation_count",
-            "xp_earned",
-            "kana_learned",
-            "grammar_studied",
-            "sentences_studied",
-            "study_time_seconds",
-            "study_minutes",
-        )
-    )
 
 
 async def _get_weekly_stats(

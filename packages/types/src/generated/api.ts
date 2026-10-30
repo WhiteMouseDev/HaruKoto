@@ -2704,6 +2704,8 @@ export interface components {
             studyTimeSeconds: number;
             /** Xpearned */
             xpEarned: number;
+            /** Hasstudied */
+            hasStudied: boolean;
         };
         /** DashboardResponse */
         DashboardResponse: {

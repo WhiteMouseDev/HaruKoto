@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyProgress
 from app.schemas.stats import DailyProgressItem, HistoryResponse
+from app.services.study_activity import has_study_activity
 from app.utils.date import get_today_kst
 
 
@@ -78,4 +79,5 @@ def _build_daily_progress_item(progress: DailyProgress) -> DailyProgressItem:
         conversation_count=progress.conversation_count,
         study_time_seconds=progress.study_time_seconds,
         xp_earned=progress.xp_earned,
+        has_studied=has_study_activity(progress),
     )
