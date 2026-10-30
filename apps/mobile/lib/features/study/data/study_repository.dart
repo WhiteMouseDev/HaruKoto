@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../domain/study_repository.dart';
+import '../domain/quiz_resume_exception.dart';
 import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
@@ -73,7 +74,7 @@ class ApiStudyRepository implements StudyRepository {
   }
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})>
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
       startSmartQuiz({
     String category = 'VOCABULARY',
     String jlptLevel = 'N5',
@@ -90,6 +91,7 @@ class ApiStudyRepository implements StudyRepository {
     final data = response.data!;
     return (
       sessionId: data['sessionId'] as String,
+      mode: data['mode'] as String?,
       questions: (data['questions'] as List<dynamic>? ?? [])
           .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -97,7 +99,8 @@ class ApiStudyRepository implements StudyRepository {
   }
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,
@@ -116,24 +119,11 @@ class ApiStudyRepository implements StudyRepository {
     );
     final data = response.data!;
 
-    // Pair IDs identify the answer option, not the vocabulary/grammar item
-    // accepted by /quiz/answer. Preserve the canonical question IDs.
-    final pairsById = <String, Map<String, dynamic>>{
-      for (final value in data['matchingPairs'] as List<dynamic>? ?? [])
-        (value as Map<String, dynamic>)['id'] as String: value,
-    };
-    final questions = (data['questions'] as List<dynamic>? ?? []).map((value) {
-      final question = value as Map<String, dynamic>;
-      final pair = pairsById[question['correctOptionId']];
-      return QuizQuestionModel.fromJson({
-        ...question,
-        if (pair != null) 'word': pair['word'],
-        if (pair != null) 'meaning': pair['meaning'],
-      });
-    }).toList();
+    final questions = _questionsFromResponse(data);
 
     return (
       sessionId: data['sessionId'] as String,
+      mode: data['mode'] as String?,
       questions: questions,
     );
   }
@@ -146,23 +136,39 @@ class ApiStudyRepository implements StudyRepository {
         List<String> answeredQuestionIds,
         int correctCount,
         String? quizType,
+        String? mode,
       })> resumeQuiz(String sessionId) async {
-    final response = await _dio.post<Map<String, dynamic>>(
-      '/quiz/resume',
-      data: {'sessionId': sessionId},
-    );
-    final data = response.data!;
-    return (
-      sessionId: data['sessionId'] as String,
-      questions: (data['questions'] as List<dynamic>? ?? [])
-          .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      answeredQuestionIds: (data['answeredQuestionIds'] as List<dynamic>? ?? [])
-          .map((e) => e as String)
-          .toList(),
-      correctCount: data['correctCount'] as int,
-      quizType: data['quizType'] as String?,
-    );
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/quiz/resume',
+        data: {'sessionId': sessionId},
+      );
+      final data = response.data!;
+      return (
+        sessionId: data['sessionId'] as String,
+        mode: data['mode'] as String?,
+        questions: _questionsFromResponse(data),
+        answeredQuestionIds:
+            (data['answeredQuestionIds'] as List<dynamic>? ?? [])
+                .map((e) => e as String)
+                .toList(),
+        correctCount: data['correctCount'] as int,
+        quizType: data['quizType'] as String?,
+      );
+    } on DioException catch (error) {
+      final exception = ApiException.fromDioException(error);
+      if (exception.statusCode == 409) {
+        throw QuizResumeException(
+          legacy: exception.message ==
+              '이 퀴즈는 이전 형식으로 저장되어 이어서 불러올 수 없어요. 저장된 학습 기록은 유지됩니다.',
+        );
+      }
+      rethrow;
+    } on FormatException {
+      throw const QuizResumeException();
+    } on TypeError {
+      throw const QuizResumeException();
+    }
   }
 
   @override
@@ -173,6 +179,7 @@ class ApiStudyRepository implements StudyRepository {
         List<String> answeredQuestionIds,
         int correctCount,
         String? quizType,
+        String? mode,
       })> startWrongAnswerReview(String sourceSessionId) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -182,6 +189,7 @@ class ApiStudyRepository implements StudyRepository {
       final data = response.data!;
       return (
         sessionId: data['sessionId'] as String,
+        mode: data['mode'] as String?,
         questions: (data['questions'] as List<dynamic>)
             .map((e) => QuizQuestionModel.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -202,6 +210,32 @@ class ApiStudyRepository implements StudyRepository {
             );
       throw _WrongAnswerReviewException(exception);
     }
+  }
+
+  List<QuizQuestionModel> _questionsFromResponse(Map<String, dynamic> data) {
+    // Answer option IDs identify pairs, while question IDs identify the
+    // canonical vocabulary/grammar/sentence records accepted by /quiz/answer.
+    final pairsById = <String, Map<String, dynamic>>{};
+    for (final value in data['matchingPairs'] as List<dynamic>? ?? []) {
+      final pair = value as Map<String, dynamic>;
+      final id = pair['id'] as String;
+      if (pairsById.containsKey(id)) throw const FormatException();
+      pairsById[id] = pair;
+    }
+    final questions = (data['questions'] as List<dynamic>? ?? []).map((value) {
+      final question = value as Map<String, dynamic>;
+      final pair = pairsById[question['correctOptionId']];
+      return QuizQuestionModel.fromJson({
+        ...question,
+        if (pair != null) 'word': pair['word'],
+        if (pair != null) 'meaning': pair['meaning'],
+      });
+    }).toList();
+    final total = data['totalQuestions'];
+    if (total != null && (total is! int || total != questions.length)) {
+      throw const FormatException();
+    }
+    return questions;
   }
 
   @override

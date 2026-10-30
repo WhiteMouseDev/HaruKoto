@@ -123,6 +123,7 @@ async def test_wrong_review_route_uses_source_uuid_and_existing_resume_response(
             total_questions=1,
             correct_count=1,
             quiz_type="GRAMMAR",
+            mode="wrong_answer_review",
         )
     )
     monkeypatch.setattr("app.routers.quiz.start_wrong_answer_review", service)
@@ -131,7 +132,17 @@ async def test_wrong_review_route_uses_source_uuid_and_existing_resume_response(
 
     assert response.status_code == 200
     payload = response.json()
-    assert set(payload) == {"sessionId", "questions", "answeredQuestionIds", "totalQuestions", "correctCount", "quizType"}
+    assert set(payload) == {
+        "sessionId",
+        "questions",
+        "answeredQuestionIds",
+        "totalQuestions",
+        "correctCount",
+        "quizType",
+        "mode",
+        "matchingPairs",
+    }
+    assert payload["mode"] == "wrong_answer_review" and payload["matchingPairs"] is None
     assert payload["sessionId"] == str(review_id)
     assert payload["answeredQuestionIds"] == [str(question_id)]
     assert payload["correctCount"] == 1

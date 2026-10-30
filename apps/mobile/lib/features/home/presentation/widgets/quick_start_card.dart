@@ -392,7 +392,7 @@ class _MainContent extends ConsumerWidget {
         : null;
     final decision = resolveStudyEntryDecision(
       category: apiType,
-      hasIncomplete: incomplete != null && categorySupportsSmartStudy(apiType),
+      hasIncomplete: incomplete != null,
       hasPreview: preview != null,
     );
 

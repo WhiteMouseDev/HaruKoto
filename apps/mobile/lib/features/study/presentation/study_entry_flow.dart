@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../data/models/quiz_session_model.dart';
 import '../data/models/smart_preview_model.dart';
+import '../domain/quiz_resume_exception.dart';
 import 'quiz_launch.dart';
 import 'widgets/today_study_sheet.dart';
 
@@ -36,7 +37,7 @@ String? defaultQuizModeForCategory(String category) {
   return null;
 }
 
-/// 진입 전략. unavailable 상태 없음 — 항상 시작 가능한 경로 보장.
+/// 미완료 원본을 먼저 확인하고 임의의 새 퀴즈로 대체하지 않는다.
 ///
 /// 우선순위: resume > smart preview > 기본 퀴즈
 StudyEntryDecision resolveStudyEntryDecision({
@@ -44,14 +45,11 @@ StudyEntryDecision resolveStudyEntryDecision({
   bool hasIncomplete = false,
   bool hasPreview = false,
 }) {
+  if (hasIncomplete) {
+    return const StudyEntryDecision(action: StudyEntryActionKind.resumeOrNew);
+  }
   // Smart 카테고리 (VOCABULARY, GRAMMAR)
   if (categorySupportsSmartStudy(category)) {
-    // 1순위: 미완료 세션 이어하기
-    if (hasIncomplete) {
-      return const StudyEntryDecision(
-        action: StudyEntryActionKind.resumeOrNew,
-      );
-    }
     // 2순위: Smart Preview 있으면 오늘의 학습
     if (hasPreview) {
       return const StudyEntryDecision(
@@ -100,6 +98,11 @@ Future<void> showResumeOrNewStudySheet(
 }) {
   final theme = Theme.of(context);
 
+  if (!session.canResume) {
+    return showQuizResumeUnavailable(context,
+        legacy: session.resumeStatus == 'legacy_unavailable');
+  }
+
   return showModalBottomSheet<void>(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -129,7 +132,7 @@ Future<void> showResumeOrNewStudySheet(
               ),
               const SizedBox(height: 8),
               Text(
-                '${session.jlptLevel} ${session.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${session.answeredCount}/${session.totalQuestions} 문제 진행',
+                '${session.jlptLevel} ${session.quizType == 'SENTENCE_ARRANGE' ? '문장 배열' : session.quizType == 'VOCABULARY' ? '단어' : '문법'} · ${session.answeredCount}/${session.totalQuestions} 문제 진행',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: AppColors.lightSubtext,
                 ),
@@ -178,6 +181,7 @@ Future<void> showResumeOrNewStudySheet(
                             quizType: selectedCategory,
                             jlptLevel: jlptLevel,
                             count: 10,
+                            mode: defaultQuizModeForCategory(selectedCategory),
                           );
                         }
                       : () {
@@ -208,6 +212,22 @@ Future<void> showResumeOrNewStudySheet(
         ),
       );
     },
+  );
+}
+
+Future<void> showQuizResumeUnavailable(BuildContext context,
+    {bool legacy = false}) async {
+  final message = QuizResumeException(legacy: legacy).userMessage;
+  await showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('저장된 퀴즈 안내'),
+      content: Text(message),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: const Text('돌아가기')),
+      ],
+    ),
   );
 }
 

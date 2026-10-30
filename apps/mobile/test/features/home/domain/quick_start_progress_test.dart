@@ -66,14 +66,15 @@ void main() {
       ).percentage,
       isNull,
     );
-    final unsupported = resolveQuickStartProgress(
+    final sentence = resolveQuickStartProgress(
       category: 'SENTENCE_ARRANGE',
       jlptLevel: 'N5',
       sessionLoading: false,
       incomplete: _session(category: 'SENTENCE_ARRANGE'),
     );
-    expect(unsupported.label, isNull);
-    expect(unsupported.percentage, isNull);
+    expect(sentence.label, '이번 퀴즈');
+    expect(sentence.session, isNotNull);
+    expect(sentence.savedAnswerLabel, '1/10문제 저장됨');
   });
 
   test('inconsistent counts stay within zero and all saved answers', () {

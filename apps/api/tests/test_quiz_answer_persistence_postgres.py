@@ -421,6 +421,8 @@ async def test_legacy_naive_timestamp_session_can_be_found_resumed_and_completed
                     "answeredCount": 1,
                     "correctCount": 1,
                     "startedAt": original_started_at,
+                    "mode": "smart" if questions_shape == "smart" else "cloze",
+                    "resumeStatus": "available",
                 }
             }
             authenticated_user_id = other_user_id

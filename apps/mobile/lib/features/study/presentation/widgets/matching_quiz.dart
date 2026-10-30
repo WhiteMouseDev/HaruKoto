@@ -110,7 +110,7 @@ class _MatchingQuizState extends State<MatchingQuiz> {
           runSpacing: 4,
           children: [
             Text(
-              _controller.scoreLabel,
+              '남은 ${_controller.totalCount}개 중 ${_controller.totalCorrect}개 연결',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),

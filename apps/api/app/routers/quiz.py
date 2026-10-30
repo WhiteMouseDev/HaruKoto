@@ -68,6 +68,8 @@ async def start_session_wrong_answer_review(
         total_questions=result.total_questions,
         correct_count=result.correct_count,
         quiz_type=result.quiz_type,
+        mode=result.mode,
+        matching_pairs=result.matching_pairs,
     )
 
 
@@ -89,6 +91,7 @@ async def start_quiz(
         questions=response_questions,
         total_questions=len(result.questions),
         matching_pairs=result.matching_pairs,
+        mode=result.mode,
     )
 
 
@@ -153,6 +156,8 @@ async def get_incomplete_quiz(
             answered_count=session.answered_count,
             correct_count=session.correct_count,
             started_at=session.started_at,
+            mode=session.mode,
+            resume_status=session.resume_status,
         )
     )
 
@@ -175,6 +180,8 @@ async def resume_quiz(
         total_questions=result.total_questions,
         correct_count=result.correct_count,
         quiz_type=result.quiz_type,
+        mode=result.mode,
+        matching_pairs=result.matching_pairs,
     )
 
 
@@ -294,6 +301,7 @@ async def smart_start(
         questions=response_questions,
         total_questions=len(result.questions),
         matching_pairs=None,
+        mode=result.mode,
     )
 
 

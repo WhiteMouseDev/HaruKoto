@@ -8,12 +8,16 @@ class SentenceArrangeQuiz extends StatefulWidget {
   final List<QuizQuestionModel> questions;
   final void Function(String questionId, bool isCorrect) onAnswer;
   final VoidCallback onComplete;
+  final int initialAnsweredCount;
+  final int? totalQuestions;
 
   const SentenceArrangeQuiz({
     super.key,
     required this.questions,
     required this.onAnswer,
     required this.onComplete,
+    this.initialAnsweredCount = 0,
+    this.totalQuestions,
   });
 
   @override
@@ -84,6 +88,8 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final q = widget.questions[_flow.currentIndex];
+    final total = widget.totalQuestions ?? widget.questions.length;
+    final position = widget.initialAnsweredCount + _flow.currentIndex + 1;
 
     return Column(
       children: [
@@ -96,7 +102,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: _flow.progressFor(widget.questions.length),
+                    value: total == 0 ? 0 : position / total,
                     minHeight: 6,
                     backgroundColor: theme.colorScheme.surfaceContainerHigh,
                     color: theme.colorScheme.primary,
@@ -104,8 +110,7 @@ class _SentenceArrangeQuizState extends State<SentenceArrangeQuiz> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(_flow.countLabelFor(widget.questions.length),
-                  style: theme.textTheme.bodySmall),
+              Text('$position/$total', style: theme.textTheme.bodySmall),
             ],
           ),
         ),

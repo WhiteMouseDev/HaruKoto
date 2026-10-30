@@ -4,13 +4,19 @@ import { prisma } from '@harukoto/database';
 import { calculateSM2 } from '@/lib/spaced-repetition';
 import { SRS_CONFIG } from '@/lib/constants';
 import { z } from 'zod';
+import {
+  decodeWebQuizSnapshot,
+  QuizSnapshotError,
+} from '@/lib/quiz-session-snapshot';
 
 const quizAnswerSchema = z.object({
   sessionId: z.string().min(1),
   questionId: z.string().min(1),
   selectedOptionId: z.string().min(1),
   timeSpentSeconds: z.number().int().min(0).default(0),
-  questionType: z.enum(['VOCABULARY', 'GRAMMAR', 'CLOZE', 'SENTENCE_ARRANGE']).default('VOCABULARY'),
+  questionType: z
+    .enum(['VOCABULARY', 'GRAMMAR', 'CLOZE', 'SENTENCE_ARRANGE'])
+    .default('VOCABULARY'),
 });
 
 export async function POST(request: Request) {
@@ -27,10 +33,7 @@ export async function POST(request: Request) {
     const parseResult = quizAnswerSchema.safeParse(body);
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Invalid input' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
     const {
@@ -55,13 +58,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
     }
 
-    // Server-side correctness verification using questionsData
-    type QuestionData = { questionId: string; correctOptionId: string };
-    const questionsData = session.questionsData as unknown as QuestionData[] | null;
-    const questionData = questionsData?.find((q) => q.questionId === questionId);
-    const isCorrect = questionData
-      ? selectedOptionId === questionData.correctOptionId
-      : false;
+    // Validate the stored serializer before any answer/SRS write. API snapshots
+    // must stay on their own canonical grading and retry path in the app.
+    const snapshot = decodeWebQuizSnapshot(
+      session.questionsData,
+      session.totalQuestions,
+      session.quizType
+    );
+    const questionData = snapshot.questions.find(
+      (question) => question.questionId === questionId
+    );
+    if (!questionData) throw new QuizSnapshotError('invalid');
+    const isCorrect = selectedOptionId === questionData.correctOptionId;
 
     // Save answer
     await prisma.quizAnswer.create({
@@ -182,6 +190,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
+    if (err instanceof QuizSnapshotError) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
+    }
     console.error('Quiz answer error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },

@@ -416,7 +416,8 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
   String? lastCompletedStageId;
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,
@@ -431,6 +432,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     }
     return (
       sessionId: 'start-session',
+      mode: null,
       questions: questions,
     );
   }
@@ -443,6 +445,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
         List<String> answeredQuestionIds,
         int correctCount,
         String? quizType,
+        String? mode,
       })> resumeQuiz(String sessionId) async {
     resumeQuizCalls++;
     resumedSessionIds.add(sessionId);
@@ -452,6 +455,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     }
     return (
       sessionId: 'resume-session',
+      mode: null,
       questions: questions,
       answeredQuestionIds: ['q1'],
       correctCount: 1,
@@ -466,7 +470,8 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
         List<QuizQuestionModel> questions,
         List<String> answeredQuestionIds,
         int correctCount,
-        String? quizType
+        String? quizType,
+        String? mode,
       })> startWrongAnswerReview(String sourceSessionId) async {
     wrongReviewSources.add(sourceSessionId);
     if (failedWrongReviews > 0) {
@@ -475,6 +480,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     }
     return (
       sessionId: 'wrong-review-child',
+      mode: null,
       questions: [
         ...questions,
         const QuizQuestionModel(

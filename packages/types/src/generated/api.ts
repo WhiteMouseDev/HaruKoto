@@ -2883,6 +2883,10 @@ export interface components {
             correctCount: number;
             /** Startedat */
             startedAt: string;
+            /** Mode */
+            mode?: string | null;
+            /** Resumestatus */
+            resumeStatus?: ("available" | "legacy_unavailable" | "invalid_snapshot") | null;
         };
         /**
          * JlptLevel
@@ -3699,6 +3703,10 @@ export interface components {
             correctCount: number;
             /** Quiztype */
             quizType: string;
+            /** Mode */
+            mode?: string | null;
+            /** Matchingpairs */
+            matchingPairs?: components["schemas"]["MatchingPair"][] | null;
         };
         /** QuizStartRequest */
         QuizStartRequest: {
@@ -3730,6 +3738,8 @@ export interface components {
             totalQuestions: number;
             /** Matchingpairs */
             matchingPairs?: components["schemas"]["MatchingPair"][] | null;
+            /** Mode */
+            mode?: string | null;
         };
         /** QuizStatsResponse */
         QuizStatsResponse: {

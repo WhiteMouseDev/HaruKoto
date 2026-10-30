@@ -288,6 +288,8 @@ async def test_get_incomplete_quiz_returns_session_banner(client):
             answered_count=3,
             correct_count=2,
             started_at=started_at,
+            mode="normal",
+            resume_status="available",
         )
 
         response = await client.get("/api/v1/quiz/incomplete")
@@ -302,6 +304,8 @@ async def test_get_incomplete_quiz_returns_session_banner(client):
             "answeredCount": 3,
             "correctCount": 2,
             "startedAt": started_at,
+            "mode": "normal",
+            "resumeStatus": "available",
         }
     }
 
@@ -334,6 +338,7 @@ async def test_resume_quiz_returns_response_model_shape(client):
             total_questions=10,
             correct_count=7,
             quiz_type="VOCABULARY",
+            mode="normal",
         )
 
         response = await client.post("/api/v1/quiz/resume", json={"sessionId": session_id})
@@ -361,6 +366,8 @@ async def test_resume_quiz_returns_response_model_shape(client):
         "totalQuestions": 10,
         "correctCount": 7,
         "quizType": "VOCABULARY",
+        "mode": "normal",
+        "matchingPairs": None,
     }
 
 

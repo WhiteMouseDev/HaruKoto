@@ -6,6 +6,10 @@ class IncompleteSessionModel {
   final int answeredCount;
   final int correctCount;
   final String startedAt;
+  final String? mode;
+  final String? resumeStatus;
+
+  bool get canResume => resumeStatus == null || resumeStatus == 'available';
 
   const IncompleteSessionModel({
     required this.id,
@@ -15,6 +19,8 @@ class IncompleteSessionModel {
     required this.answeredCount,
     required this.correctCount,
     required this.startedAt,
+    this.mode,
+    this.resumeStatus,
   });
 
   factory IncompleteSessionModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +32,8 @@ class IncompleteSessionModel {
       answeredCount: json['answeredCount'] as int,
       correctCount: json['correctCount'] as int,
       startedAt: json['startedAt'] as String,
+      mode: json['mode'] as String?,
+      resumeStatus: json['resumeStatus'] as String?,
     );
   }
 }

@@ -133,28 +133,30 @@ class _DelayedAnswerRepository extends Fake implements StudyRepository {
   }
 
   @override
-  Future<({String sessionId, List<QuizQuestionModel> questions})> startQuiz({
+  Future<({String sessionId, List<QuizQuestionModel> questions, String? mode})>
+      startQuiz({
     required String quizType,
     required String jlptLevel,
     required int count,
     String? mode,
     String? stageId,
   }) async =>
-      (
-        sessionId: 'same-session',
-        questions: const [
-          QuizQuestionModel(
-              questionId: 'q1',
-              questionText: '猫',
-              options: [QuizOption(id: 'correct', text: '고양이')],
-              correctOptionId: 'correct'),
-          QuizQuestionModel(
-              questionId: 'q2',
-              questionText: '犬',
-              options: [QuizOption(id: 'correct', text: '개')],
-              correctOptionId: 'correct'),
-        ]
-      );
+          (
+            sessionId: 'same-session',
+            mode: null,
+            questions: const [
+              QuizQuestionModel(
+                  questionId: 'q1',
+                  questionText: '猫',
+                  options: [QuizOption(id: 'correct', text: '고양이')],
+                  correctOptionId: 'correct'),
+              QuizQuestionModel(
+                  questionId: 'q2',
+                  questionText: '犬',
+                  options: [QuizOption(id: 'correct', text: '개')],
+                  correctOptionId: 'correct'),
+            ]
+          );
 
   @override
   Future<void> answerQuestion({

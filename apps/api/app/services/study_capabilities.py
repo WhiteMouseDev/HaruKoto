@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sqlalchemy import func, select
+from sqlalchemy import Text, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums import effective_jlpt_level
@@ -102,7 +102,9 @@ async def get_study_capabilities_data(
             select(func.count())
             .select_from(Chapter)
             .where(
-                Chapter.jlpt_level == effective,
+                # The deployed Alembic column is TEXT; ORM-only fixtures may
+                # use JlptLevel. Compare text on both without changing either.
+                cast(Chapter.jlpt_level, Text()) == effective,
                 Chapter.is_published.is_(True),
             )
         )

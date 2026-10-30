@@ -17,6 +17,7 @@ from app.services.quiz_mode_questions import (
     load_sentence_arrange_questions,
 )
 from app.services.quiz_policy import calculate_smart_distribution
+from app.services.quiz_resume_snapshot import decode_quiz_resume_snapshot
 from app.services.quiz_session import (
     auto_complete_sessions,
     build_session_questions_data,
@@ -39,6 +40,7 @@ class QuizStartResult:
     session: QuizSession
     questions: list[dict[str, Any]]
     matching_pairs: list[MatchingPair] | None = None
+    mode: str | None = None
 
 
 async def _create_quiz_session(
@@ -50,13 +52,14 @@ async def _create_quiz_session(
     questions: list[dict[str, Any]],
     mode: str | None = None,
     stage_id: uuid.UUID | None = None,
+    matching_pairs: list[MatchingPair] | None = None,
 ) -> QuizSession:
     session = QuizSession(
         user_id=user_id,
         quiz_type=quiz_type,
         jlpt_level=jlpt_level,
         total_questions=len(questions),
-        questions_data=build_session_questions_data(questions, mode=mode, stage_id=stage_id),
+        questions_data=build_session_questions_data(questions, mode=mode, stage_id=stage_id, matching_pairs=matching_pairs),
     )
     try:
         db.add(session)
@@ -75,7 +78,7 @@ async def start_quiz_session(
 ) -> QuizStartResult:
     await auto_complete_sessions(db, user)
 
-    mode = body.mode
+    mode = body.mode if body.mode in {"matching", "cloze", "arrange", "review"} else "normal"
     quiz_type = body.quiz_type.value
     jlpt_level = body.jlpt_level.value
     count = body.count
@@ -93,9 +96,11 @@ async def start_quiz_session(
             raise QuizStartServiceError(status_code=400, detail="스테이지에 콘텐츠가 없습니다")
 
     if mode == "matching":
-        if not stage:
-            raise QuizStartServiceError(status_code=400, detail="매칭 모드는 stage_id가 필요합니다")
-        questions, matching_pairs = await generate_matching_pairs(db, stage, stage_content_ids, count)
+        if stage is None and quiz_type not in {"VOCABULARY", "GRAMMAR"}:
+            raise QuizStartServiceError(status_code=400, detail="자유 매칭은 단어와 문법에서만 사용할 수 있습니다")
+        questions, matching_pairs = await generate_matching_pairs(
+            db, stage, stage_content_ids, count, quiz_type=quiz_type, jlpt_level=jlpt_level
+        )
     elif mode == "cloze":
         questions = await load_cloze_questions(db, jlpt_level=jlpt_level, count=count, stage_content_ids=stage_content_ids)
     elif mode == "arrange":
@@ -118,6 +123,13 @@ async def start_quiz_session(
             stage_content_ids=stage_content_ids,
         )
 
+    # New special sessions preserve the original rendering snapshot atomically.
+    # Keep normal/review/cloze storage shapes compatible with existing readers.
+    stored_mode = mode if mode in {"matching", "arrange"} else None
+    if stored_mode is not None:
+        payload = build_session_questions_data(questions, mode=stored_mode, stage_id=body.stage_id, matching_pairs=matching_pairs)
+        if decode_quiz_resume_snapshot(payload, total_questions=len(questions), quiz_type=quiz_type).status != "available":
+            raise QuizStartServiceError(status_code=400, detail="퀴즈의 표시 정보를 안전하게 준비할 수 없습니다")
     session = await _create_quiz_session(
         db,
         user_id=user.id,
@@ -125,8 +137,10 @@ async def start_quiz_session(
         jlpt_level=body.jlpt_level,
         questions=questions,
         stage_id=body.stage_id,
+        mode=stored_mode,
+        matching_pairs=matching_pairs,
     )
-    return QuizStartResult(session=session, questions=questions, matching_pairs=matching_pairs)
+    return QuizStartResult(session=session, questions=questions, matching_pairs=matching_pairs, mode=mode)
 
 
 async def start_smart_quiz_session(
@@ -167,4 +181,4 @@ async def start_smart_quiz_session(
         questions=questions,
         mode="smart",
     )
-    return QuizStartResult(session=session, questions=questions, matching_pairs=None)
+    return QuizStartResult(session=session, questions=questions, matching_pairs=None, mode="smart")

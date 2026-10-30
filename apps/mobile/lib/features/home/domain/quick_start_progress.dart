@@ -27,7 +27,9 @@ QuickStartProgress resolveQuickStartProgress({
   IncompleteSessionModel? incomplete,
   ProgressStat? mastery,
 }) {
-  if (category != 'VOCABULARY' && category != 'GRAMMAR') {
+  if (category != 'VOCABULARY' &&
+      category != 'GRAMMAR' &&
+      category != 'SENTENCE_ARRANGE') {
     return const QuickStartProgress(label: null);
   }
   if (sessionLoading) {
@@ -57,6 +59,9 @@ QuickStartProgress resolveQuickStartProgress({
     );
   }
 
+  if (category == 'SENTENCE_ARRANGE') {
+    return const QuickStartProgress(label: null);
+  }
   return QuickStartProgress(
     label: '$jlptLevel 숙련도',
     fraction: mastery != null && mastery.total > 0

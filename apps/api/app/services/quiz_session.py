@@ -46,6 +46,7 @@ def build_session_questions_data(
     *,
     stage_id: uuid.UUID | None = None,
     mode: str | None = None,
+    matching_pairs: list[MatchingPair] | None = None,
 ) -> dict[str, Any] | list[dict[str, Any]]:
     """Persist question payloads in the existing shape while attaching metadata when needed."""
     metadata: dict[str, Any] = {}
@@ -53,6 +54,8 @@ def build_session_questions_data(
         metadata["stage_id"] = str(stage_id)
     if mode is not None:
         metadata["mode"] = mode
+    if matching_pairs is not None:
+        metadata["matchingPairs"] = [pair.model_dump() for pair in matching_pairs]
 
     if not metadata:
         return questions
@@ -101,16 +104,23 @@ async def fetch_stage_content_ids(db: AsyncSession, stage_id: uuid.UUID) -> tupl
 
 async def generate_matching_pairs(
     db: AsyncSession,
-    stage: StudyStage,
+    stage: StudyStage | None,
     content_uuids: list[uuid.UUID],
     count: int,
+    *,
+    quiz_type: str,
+    jlpt_level: str,
 ) -> tuple[list[dict[str, Any]], list[MatchingPair]]:
     """Generate question payloads and pair data for matching mode."""
     questions: list[dict[str, Any]] = []
     matching_pairs: list[MatchingPair] = []
+    category = stage.category if stage is not None else quiz_type
 
-    if stage.category == "VOCABULARY":
-        vocab_result = await db.execute(select(Vocabulary).where(Vocabulary.id.in_(content_uuids)).order_by(func.random()).limit(count))
+    if category == "VOCABULARY":
+        vocab_query = select(Vocabulary).where(
+            Vocabulary.id.in_(content_uuids) if stage is not None else Vocabulary.jlpt_level == jlpt_level
+        )
+        vocab_result = await db.execute(vocab_query.order_by(func.random()).limit(count))
         vocab_items = vocab_result.scalars().all()
         for vocab in vocab_items:
             pair_id = str(uuid.uuid4())
@@ -127,8 +137,9 @@ async def generate_matching_pairs(
                     "meaningKo": vocab.meaning_ko,
                 }
             )
-    elif stage.category == "GRAMMAR":
-        grammar_result = await db.execute(select(Grammar).where(Grammar.id.in_(content_uuids)).order_by(func.random()).limit(count))
+    elif category == "GRAMMAR":
+        grammar_query = select(Grammar).where(Grammar.id.in_(content_uuids) if stage is not None else Grammar.jlpt_level == jlpt_level)
+        grammar_result = await db.execute(grammar_query.order_by(func.random()).limit(count))
         grammar_items = grammar_result.scalars().all()
         for grammar in grammar_items:
             pair_id = str(uuid.uuid4())
@@ -144,7 +155,7 @@ async def generate_matching_pairs(
                     "meaningKo": grammar.meaning_ko,
                 }
             )
-    elif stage.category == "SENTENCE":
+    elif category == "SENTENCE":
         sentence_result = await db.execute(
             select(SentenceArrangeQuestion).where(SentenceArrangeQuestion.id.in_(content_uuids)).order_by(func.random()).limit(count)
         )
@@ -157,6 +168,7 @@ async def generate_matching_pairs(
                     "id": str(item.id),
                     "type": "SENTENCE_ARRANGE",
                     "question": item.korean_sentence,
+                    "japaneseSentence": item.japanese_sentence,
                     "options": [],
                     "correctOptionId": pair_id,
                 }

@@ -176,6 +176,7 @@ async def start_wrong_answer_review(db: AsyncSession, user: User, body: QuizWron
             total_questions=review.total_questions,
             correct_count=correct_count,
             quiz_type=quiz_type,
+            mode=WRONG_REVIEW_MODE,
         )
         await db.commit()
         return result
@@ -203,6 +204,7 @@ async def start_wrong_answer_review(db: AsyncSession, user: User, body: QuizWron
         total_questions=review.total_questions,
         correct_count=0,
         quiz_type=quiz_type,
+        mode=WRONG_REVIEW_MODE,
     )
     await db.commit()
     return result

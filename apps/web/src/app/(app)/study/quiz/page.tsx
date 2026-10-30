@@ -29,10 +29,29 @@ import {
   type QuizQuestion,
 } from '@/hooks/use-quiz';
 import { useAddWord } from '@/hooks/use-wordbook';
-import { MatchingPairQuiz, type MatchingPair } from '@/components/features/quiz/matching-pair';
-import { ClozeQuiz, type ClozeQuizQuestion } from '@/components/features/quiz/cloze-quiz';
-import { SentenceArrangeQuiz, type SentenceArrangeQuestion as SentenceArrangeQ } from '@/components/features/quiz/sentence-arrange';
-import { TypingQuiz, type TypingQuestion } from '@/components/features/quiz/typing-quiz';
+import {
+  MatchingPairQuiz,
+  type MatchingPair,
+} from '@/components/features/quiz/matching-pair';
+import {
+  ClozeQuiz,
+  type ClozeQuizQuestion,
+} from '@/components/features/quiz/cloze-quiz';
+import {
+  SentenceArrangeQuiz,
+  type SentenceArrangeQuestion as SentenceArrangeQ,
+} from '@/components/features/quiz/sentence-arrange';
+import {
+  TypingQuiz,
+  type TypingQuestion,
+} from '@/components/features/quiz/typing-quiz';
+import {
+  decodeWebQuizSnapshot,
+  QuizSnapshotError,
+  QUIZ_SNAPSHOT_INVALID_MESSAGE,
+  QUIZ_WEB_UNSUPPORTED_MESSAGE,
+  restoreWebQuizProgress,
+} from '@/lib/quiz-session-snapshot';
 
 function speakJapanese(text: string) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -85,6 +104,13 @@ function QuizContent() {
   const [answerState, setAnswerState] = useState<AnswerState>('idle');
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [initAttempt, setInitAttempt] = useState(0);
+  const [initError, setInitError] = useState<{
+    message: string;
+    retryable: boolean;
+  } | null>(null);
+  const [sessionQuizType, setSessionQuizType] = useState<string | null>(null);
+  const activeQuizType = sessionQuizType ?? quizType;
   const [, setResults] = useState<boolean[]>([]);
   const [wordSaved, setWordSaved] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -99,35 +125,39 @@ function QuizContent() {
 
   // Start or resume quiz
   useEffect(() => {
+    let cancelled = false;
     async function initQuiz() {
+      setLoading(true);
+      setInitError(null);
       try {
         if (resumeSessionId) {
           const data = await resumeQuizMutation.mutateAsync({
             sessionId: resumeSessionId,
           });
+          if (cancelled) return;
           if (data.questions) {
+            const snapshot = decodeWebQuizSnapshot(
+              { questions: data.questions, mode: data.mode },
+              data.totalQuestions ?? data.questions.length,
+              data.quizType ?? quizType
+            );
+            const restored = restoreWebQuizProgress(
+              snapshot.questions,
+              data.answeredQuestionIds
+            );
             setSessionId(data.sessionId);
-            setQuestions(data.questions);
-            const answeredCount = data.answeredQuestionIds.length;
-            setCurrentIndex(answeredCount);
+            setSessionQuizType(data.quizType ?? quizType);
+            setQuestions(restored.questions);
+            setCurrentIndex(restored.currentIndex);
             const restoredResults = Array.from(
-              { length: answeredCount },
+              { length: restored.currentIndex },
               (_, i) => i < data.correctCount
             );
             setResults(restoredResults);
 
-            // Resolve mode from session quizType
-            if (data.quizType) {
-              const modeMap: Record<string, string> = {
-                CLOZE: 'cloze',
-                SENTENCE_ARRANGE: 'arrange',
-                TYPING: 'typing',
-                MATCHING: 'matching',
-              };
-              if (modeMap[data.quizType]) {
-                setResolvedMode(modeMap[data.quizType]);
-              }
-            }
+            setResolvedMode(snapshot.mode);
+          } else {
+            throw new QuizSnapshotError('invalid');
           }
         } else {
           const data = await startQuizMutation.mutateAsync({
@@ -136,22 +166,47 @@ function QuizContent() {
             count,
             mode: mode || undefined,
           });
+          if (cancelled) return;
           setSessionId(data.sessionId);
+          setSessionQuizType(quizType);
           setQuestions(data.questions);
         }
       } catch (err) {
-        console.error('Failed to init quiz:', err);
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : '';
+        const unavailable =
+          err instanceof QuizSnapshotError ||
+          [
+            QUIZ_WEB_UNSUPPORTED_MESSAGE,
+            QUIZ_SNAPSHOT_INVALID_MESSAGE,
+          ].includes(message);
+        setSessionId(null);
+        setQuestions([]);
+        setInitError({
+          message: unavailable
+            ? message
+            : '퀴즈를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+          retryable: !unavailable,
+        });
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     initQuiz();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizType, jlptLevel, count, mode, resumeSessionId]);
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizType, jlptLevel, count, mode, resumeSessionId, initAttempt]);
 
   // Timer
   useEffect(() => {
-    if (!loading && answerState === 'idle') {
+    if (
+      !loading &&
+      !initError &&
+      currentIndex < questions.length &&
+      answerState === 'idle'
+    ) {
       timerRef.current = 0;
       intervalRef.current = setInterval(() => {
         timerRef.current += 1;
@@ -160,7 +215,7 @@ function QuizContent() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [currentIndex, loading, answerState]);
+  }, [currentIndex, loading, initError, questions.length, answerState]);
 
   // Warn before leaving during quiz (browser tab close + back navigation)
   useEffect(() => {
@@ -211,10 +266,17 @@ function QuizContent() {
         selectedOptionId: optionId,
         isCorrect,
         timeSpentSeconds: timerRef.current,
-        questionType: quizType,
+        questionType: activeQuizType,
       });
     },
-    [answerState, sessionId, questions, currentIndex, quizType, answerMutation]
+    [
+      answerState,
+      sessionId,
+      questions,
+      currentIndex,
+      activeQuizType,
+      answerMutation,
+    ]
   );
 
   async function handleNext() {
@@ -225,7 +287,7 @@ function QuizContent() {
       });
       showGameEvents(data.events);
       router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${activeQuizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
       );
       return;
     }
@@ -296,7 +358,7 @@ function QuizContent() {
         selectedOptionId: isCorrect ? question.correctOptionId : 'wrong',
         isCorrect,
         timeSpentSeconds: 0,
-        questionType: quizType,
+        questionType: activeQuizType,
       });
     }
   }
@@ -322,7 +384,7 @@ function QuizContent() {
       });
       showGameEvents(data.events);
       router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${quizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
+        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${activeQuizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
       );
     }
   }
@@ -334,6 +396,26 @@ function QuizContent() {
           <Logo size="sm" className="animate-pulse" />
           <p className="text-muted-foreground">퀴즈를 준비하고 있어요...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (initError) {
+    return (
+      <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-6 text-center">
+        <Frown className="text-primary size-10" aria-hidden="true" />
+        <h1 className="text-lg font-semibold">퀴즈를 불러올 수 없어요</h1>
+        <p role="alert" className="text-muted-foreground max-w-sm text-sm">
+          {initError.message}
+        </p>
+        {initError.retryable && (
+          <Button onClick={() => setInitAttempt((attempt) => attempt + 1)}>
+            다시 시도
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => router.push('/study')}>
+          학습으로 돌아가기
+        </Button>
       </div>
     );
   }
@@ -353,6 +435,24 @@ function QuizContent() {
             ? '복습할 문제가 없어요!'
             : '이 레벨의 콘텐츠를 준비하고 있어요'}
         </p>
+        <Button variant="outline" onClick={() => router.push('/study')}>
+          학습으로 돌아가기
+        </Button>
+      </div>
+    );
+  }
+
+  if (currentIndex >= questions.length) {
+    return (
+      <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-6 text-center">
+        <CircleCheck className="text-primary size-10" aria-hidden="true" />
+        <h1 className="text-lg font-semibold">모든 답안이 저장됐어요</h1>
+        <p className="text-muted-foreground text-sm">
+          저장된 답안으로 결과를 확인해 주세요.
+        </p>
+        <Button onClick={handleNext} disabled={completeQuizMutation.isPending}>
+          결과 확인하기
+        </Button>
         <Button variant="outline" onClick={() => router.push('/study')}>
           학습으로 돌아가기
         </Button>
@@ -381,7 +481,7 @@ function QuizContent() {
             <ArrowLeft className="size-5" />
           </button>
           <span className="flex-1 text-center text-sm font-medium">
-            {jlptLevel} {quizType === 'VOCABULARY' ? '단어' : '문법'} 매칭
+            {jlptLevel} {activeQuizType === 'VOCABULARY' ? '단어' : '문법'} 매칭
           </span>
           <span className="text-muted-foreground text-sm">
             {matchingRound + 1}/{matchingRounds.length}
@@ -410,15 +510,17 @@ function QuizContent() {
 
   // Cloze mode rendering
   if (isCloze) {
-    const clozeQuestions: ClozeQuizQuestion[] = unansweredQuestions.map((q) => ({
-      questionId: q.questionId,
-      sentence: q.sentence || q.questionText,
-      translation: q.translation || '',
-      options: q.options,
-      correctOptionId: q.correctOptionId,
-      explanation: q.explanation || '',
-      grammarPoint: q.grammarPoint || null,
-    }));
+    const clozeQuestions: ClozeQuizQuestion[] = unansweredQuestions.map(
+      (q) => ({
+        questionId: q.questionId,
+        sentence: q.sentence || q.questionText,
+        translation: q.translation || '',
+        options: q.options,
+        correctOptionId: q.correctOptionId,
+        explanation: q.explanation || '',
+        grammarPoint: q.grammarPoint || null,
+      })
+    );
 
     async function handleClozeComplete() {
       const data = await completeQuizMutation.mutateAsync({
@@ -458,14 +560,16 @@ function QuizContent() {
 
   // Sentence arrange mode rendering
   if (isArrange) {
-    const arrangeQuestions: SentenceArrangeQ[] = unansweredQuestions.map((q) => ({
-      questionId: q.questionId,
-      koreanSentence: q.koreanSentence || q.questionText,
-      japaneseSentence: q.japaneseSentence || '',
-      tokens: q.tokens || [],
-      explanation: q.explanation || '',
-      grammarPoint: q.grammarPoint || null,
-    }));
+    const arrangeQuestions: SentenceArrangeQ[] = unansweredQuestions.map(
+      (q) => ({
+        questionId: q.questionId,
+        koreanSentence: q.koreanSentence || q.questionText,
+        japaneseSentence: q.japaneseSentence || '',
+        tokens: q.tokens || [],
+        explanation: q.explanation || '',
+        grammarPoint: q.grammarPoint || null,
+      })
+    );
 
     async function handleArrangeComplete() {
       const data = await completeQuizMutation.mutateAsync({
@@ -560,7 +664,7 @@ function QuizContent() {
         <span className="flex-1 text-center text-sm font-medium">
           {isReview
             ? '오답 복습'
-            : `${jlptLevel} ${quizType === 'VOCABULARY' ? '단어' : '문법'} 퀴즈`}
+            : `${jlptLevel} ${activeQuizType === 'VOCABULARY' ? '단어' : '문법'} 퀴즈`}
         </span>
         <span className="text-muted-foreground text-sm">
           {currentIndex + 1}/{questions.length}
@@ -633,11 +737,10 @@ function QuizContent() {
               <Volume2 className="size-5" />
             </button>
             <p className="text-muted-foreground mt-1 text-sm">
-              이 {quizType === 'VOCABULARY' ? '단어' : '문법'}의 뜻은?
+              이 {activeQuizType === 'VOCABULARY' ? '단어' : '문법'}의 뜻은?
             </p>
           </motion.div>
         </AnimatePresence>
-
       </div>
 
       {/* Options */}
@@ -682,7 +785,9 @@ function QuizContent() {
                   )}
                   onClick={() => handleAnswer(option.id)}
                   disabled={answerState !== 'idle'}
-                  whileTap={answerState === 'idle' ? { scale: 0.98 } : undefined}
+                  whileTap={
+                    answerState === 'idle' ? { scale: 0.98 } : undefined
+                  }
                   variants={{
                     hidden: { opacity: 0, y: 12 },
                     visible: {
@@ -754,10 +859,10 @@ function QuizContent() {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'fixed bottom-0 left-0 right-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5 pb-24',
+              'fixed right-0 bottom-0 left-0 z-30 mx-auto max-w-lg rounded-t-2xl border-t p-5 pb-24',
               answerState === 'correct'
-                ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950 dark:border-emerald-800'
-                : 'bg-rose-100 border-rose-300 dark:bg-rose-950 dark:border-rose-800'
+                ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950'
+                : 'border-rose-300 bg-rose-100 dark:border-rose-800 dark:bg-rose-950'
             )}
           >
             <div className="flex flex-col gap-3">
@@ -796,7 +901,7 @@ function QuizContent() {
                       )?.text
                     }
                   </p>
-                  {quizType === 'VOCABULARY' && (
+                  {activeQuizType === 'VOCABULARY' && (
                     <button
                       className={cn(
                         'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors',
