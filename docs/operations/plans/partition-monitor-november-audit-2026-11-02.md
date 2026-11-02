@@ -6,7 +6,7 @@
 
 PR #210은 `2026-11-02T00:59:22Z`(09:59:22 KST)에 squash `ccb9e8e6610b0d3c7f9e2dfa94dccea41ead9e3e`로 병합했다. [병합 CI](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41370069479)는 성공했다. 문서 세 개만 바뀌어 앱/서버 검사는 경로 조건으로 생략됐으며 API 배포는 발생하지 않았다. 이 문서 병합을 새 앱·서버 테스트 실행이나 재배포로 표현하지 않는다.
 
-운영 파티션 검사는 09:58~10:00 KST에 완료했다. Sentry UI 재발 확인은 로그인 상태를 확인한 뒤 별도 결과로 기록한다. 자동 점검의 전송 수락과 실제 오류 목록·이메일 수신은 구분한다.
+운영 파티션 검사는 09:58~10:00 KST에 완료했다. Sentry 원본 UI 재발 확인도 10:35~10:37 KST에 완료했다. 자동 점검의 전송 수락과 실제 오류 목록·이메일 수신은 구분한다.
 
 ## 자연 실행 연결 확인
 
@@ -43,9 +43,22 @@ PR #210은 `2026-11-02T00:59:22Z`(09:59:22 KST)에 squash `ccb9e8e6610b0d3c7f9e2
 
 확인 대상은 WhiteMouseDev / `harukoto-api`다. 원래 `offset-naive`·`offset-aware` 날짜 비교 오류와 최근 배포 이후 오류를 구분해 확인한다. 당시 수정은 #177과 이후 미완료 조회·이어하기 회귀 기록에 연결된다.
 
-연결 가능한 Sentry 전용 플러그인을 찾지 못해 공식 웹 화면을 사용한다. 기존 Chrome에서는 로그아웃 상태였고, 사용자가 창을 닫았다고 알려 재요청대로 공식 WhiteMouseDev 로그인 창을 다시 열었다. 쿠키·토큰을 추출하거나 다른 대상에 전송하지 않았다. Chrome의 Apple Events JavaScript 설정도 변경하지 않았다.
+연결 가능한 Sentry 전용 플러그인을 찾지 못해 공식 웹 화면을 사용했다. 사용자의 재요청대로 로그인 창을 다시 열었으나, 기존 Chrome 앱 전체 읽기는 무관한 사적 창 노출 위험으로 자동 승인 검토가 거절했다. 대신 Sentry 전용 브라우저 탭을 만들고 사용자가 직접 로그인한 뒤 그 탭만 읽었다. Google 인증 화면·쿠키·토큰을 추출하지 않았고 Chrome의 Apple Events JavaScript 설정도 변경하지 않았다.
 
-현재 이 절은 로그인 뒤 실제 UI의 조회 범위·마지막 발생 시각·재발 건수를 확인하기 전이다. 파티션 wrapper의 `accepted`만으로 애플리케이션 오류 재발이 없다고 판정하지 않는다. 최종 Sentry 결과는 확인 후 갱신한다.
+조회 조건은 `project:harukoto-api`, 최근 30일, 모든 환경, Last Seen 내림차순이다. `is:unresolved`를 제거해 resolved/ongoing도 포함했으며, 페이지는 1–6 of 6이고 다음 페이지가 없었다. 다음은 직접 확인한 결과다. 건수는 해당 30일 범위의 누적 건수이며 11월 재발 건수로 해석하지 않는다.
+
+| 이슈                                                                                                   | 구간 건수 | 마지막 발생(KST)   | 직접 관찰                                       |
+| ------------------------------------------------------------------------------------------------------ | --------- | ------------------ | ----------------------------------------------- |
+| [HARUKOTO-API-1V](https://whitemousedev.sentry.io/issues/7778425690/) 날짜 비교 TypeError              | 58        | 10월 13일 17:45:56 | Ongoing 표시는 남아 있지만 이후 새 이벤트 없음  |
+| [HARUKOTO-API-1X](https://whitemousedev.sentry.io/issues/7812508767/) 가나 진도 `updated_at`           | 9         | 10월 26일 16:28:33 | 미해결 과거 이슈. 이후 새 이벤트 없음           |
+| [HARUKOTO-API-1Y](https://whitemousedev.sentry.io/issues/7812509611/) 가나 답안 `updated_at`           | 5         | 10월 26일 16:30:12 | 미해결 과거 이슈. 이후 새 이벤트 없음           |
+| [HARUKOTO-API-1Z](https://whitemousedev.sentry.io/issues/7812511133/) 가나 단계 완료 `updated_at`      | 1         | 10월 26일 16:30:14 | 미해결 과거 이슈. 목록 중 가장 최근 발생        |
+| [HARUKOTO-API-1W](https://whitemousedev.sentry.io/issues/7803596946/) 파티션 rehearsal missed check-in | 23        | 10월 21일 11:22:00 | Resolved. 실운영 자연 실행 장애로 해석하지 않음 |
+| [HARUKOTO-API-1T](https://whitemousedev.sentry.io/issues/7700270253/) 퀴즈 답안 DBAPIError             | 10        | 10월 7일 16:13:58  | Ongoing 과거 이슈. 이후 새 이벤트 없음          |
+
+원래 날짜 비교 오류는 최초 `2026-10-07T09:08:36.441Z`, 마지막 `2026-10-13T08:45:56Z`였고 누적 58건이다. 상세에서 production release `harukoto-api-00234-dr9`, `GET /api/v1/quiz/incomplete`, `app/services/quiz_session_query.py:57`의 `session.started_at < cutoff` 비교와 `app/routers/quiz.py:120` 호출을 확인했다. 오래된 이벤트를 현재 release 오류로 혼동하지 않는다.
+
+**이 조회 범위에서 11월 1일 00:00 KST 이후 점검 시점까지 새 이벤트와 날짜 비교 오류 재발은 0건으로 확인했다.** 이는 Sentry가 수집해 표시한 이벤트의 결과이며, 모든 요청의 무오류·알림 이메일 신규 수신을 보장하는 판정은 아니다. 기존 미해결 가나 이슈의 현재 코드 수정 여부·Resolve 처리는 별도 후속 범위로 남기고 이번 읽기 전용 점검에서 상태를 바꾸지 않았다. 파티션 wrapper의 `accepted`만으로 재발이 없다고 판정한 것이 아니다.
 
 보조 증거로 Cloud Run API 로그를 읽기 전용 조회했다. **2026년 10월 30일 17:53:23~11월 2일 10:24:06 KST** 구간에서 `harukoto-api`의 ERROR 이상 또는 HTTP 5xx는 0건, `offset-naive`/`offset-aware` 문자열 로그도 0건이었다. 각각 최대 500건 제한이며 반환 0건이므로 상한으로 잘린 결과는 아니다. **이 결과를 Sentry 원본 이벤트·이슈 상태의 직접 검증으로 대체하지 않는다.**
 
@@ -59,6 +72,6 @@ API는 `harukoto-api-00251-cwz`·트래픽 100%다. 실제 이미지 digest·Ser
 - 기존 로그인 토큰 읽기·갱신·로그아웃·시뮬레이터 설치/조작 0.
 - 기존 학습 기록·복습 기한·음원 캐시·Data API 설정을 변경하는 작업 0. 학습 행을 조회하지 않았으므로 전 사용자의 행 해시를 새로 전수 비교했다고 표현하지 않는다.
 
-원문·접속 값은 저장소에 넣지 않았다. 로컬 비공개 `/private/tmp/harukoto-november-audit-20261102/ops/`의 `final-audit-safe.json`, `natural-run-summary-safe.json`, `catalog-summary-safe.json`, `privileges-safe.json`, `anonymous-data-api-safe.json`에 비식별 증거를 남겼다. 이 임시 경로는 영구 보관소가 아니므로 실제 결과와 한계를 문서로 기록한다.
+원문·접속 값·오류에 포함된 사용자 식별자·HTTP 헤더는 저장소에 넣지 않았다. 로컬 비공개 `/private/tmp/harukoto-november-audit-20261102/ops/`의 `final-audit-safe.json`, `natural-run-summary-safe.json`, `catalog-summary-safe.json`, `privileges-safe.json`, `anonymous-data-api-safe.json`에 비식별 증거를 남겼다. 이 임시 경로는 영구 보관소가 아니므로 실제 결과와 한계를 문서로 기록한다.
 
 레슨 제출의 API·DB 변경안은 [별도 설계 문서](lesson-submit-idempotency-proposal-2026-11-02.md)다. 설계와 이번 읽기 전용 감사는 실제 변경 승인·적용과 구분한다.
