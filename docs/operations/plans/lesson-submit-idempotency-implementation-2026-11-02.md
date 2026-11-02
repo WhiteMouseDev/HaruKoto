@@ -51,7 +51,7 @@
 | API 정적 검사           | Ruff·format 312파일, Mypy 178파일 통과                                                                                                                     |
 | 모바일 전체             | Flutter 3.41.3 전체 962개 통과. 이후 테스트 2개 추가 및 마지막 보강은 영향 범위 51개 재검증 통과                                                           |
 | 모바일 정적 검사        | analyze 문제 0, format 582파일 0변경, 기존 lockfile 유지                                                                                                   |
-| 계약·공유 패키지        | OpenAPI 103→105경로, 삭제 0. 모바일 61 Dio 호출·3 annotated model 일치. 생성 TS 149줄 추가·Prisma 18줄 추가, 기존 계약 삭제 0                              |
+| 계약·공유 패키지        | OpenAPI 103→105경로, 삭제 0. 모바일 61 Dio 호출·3 annotated model 일치. 생성 TS 300줄 추가·Prisma 18줄 추가, 기존 계약 삭제 0                              |
 | Prisma                  | 격리 DB의 `pnpm db:sync`·validate/generate·drift 0·database lint 통과                                                                                      |
 | 직접 소비자             | types lint, web/admin typecheck와 webpack build 통과(83/11페이지)                                                                                          |
 | CI 필수 회귀            | 새 PostgreSQL 21개를 추가해 152→173개 실행 필수. 실제 전체 JUnit으로 gate 통과, 누락/skip/중복/실패를 거절하는 checker 자체 테스트 10개 통과               |
@@ -61,6 +61,8 @@
 ### 도구·환경 차이에서 잡은 검증 문제
 
 원래 체크아웃의 Python editable install이 export 스크립트에서 먼저 잡혀, 처음 생성한 OpenAPI가 오래된 102경로를 읽는 드리프트를 공유 패키지 검증에서 발견했다. 현재 worktree의 `PYTHONPATH`를 명시하고 `app.__file__`·`lesson_submission.__file__`을 확인해 105경로로 다시 생성했다. 현재 결과는 기존 경로 삭제 0이며 로컬 QA 서버도 105경로다. 잘못 생성된 삭제 diff는 채택하지 않았다.
+
+PR #212의 첫 CI 계약 검사는 최종 오류 DTO·상태별 응답을 추가한 뒤 TypeScript 생성을 다시 수행하지 않은 누락을 잡았다. 마지막 OpenAPI에서 타입을 재생성하고 별도 임시 파일로 생성한 결과와 바이트 단위 일치, types lint와 web/admin typecheck를 확인했다. 런타임·앱·DB 변경은 없었다. 최종 생성 타입은 main 대비 300줄 추가·삭제 0이다.
 
 설치된 Flutter 3.47.2는 기존 lucide_icons와 맞지 않아 공식 3.41.3 tag `48c32af0`를 임시 SDK로 복원했다. 프로젝트 dependency·lockfile을 올리지 않았다. Xcode QA 전용 비추적 xcconfig에서만 simulator target 15/arm64를 지정했다. 자동 CocoaPods 실행이 바꾼 도구 버전 한 줄은 HEAD와 대조해 복구했다. App Store 릴리스 빌드 검증을 의미하지 않는다.
 
