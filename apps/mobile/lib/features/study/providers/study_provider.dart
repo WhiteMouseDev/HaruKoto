@@ -82,8 +82,17 @@ final stagesProvider = FutureProvider.autoDispose
 // ── Review Summary ──
 
 final reviewSummaryProvider = FutureProvider.autoDispose
-    .family<ReviewSummaryModel, String>((ref, jlptLevel) {
-  return ref.watch(studyRepositoryProvider).fetchReviewSummary(jlptLevel);
+    .family<ReviewSummaryModel, String>((ref, jlptLevel) async {
+  final owner = ref.watch(currentAccountIdProvider);
+  if (owner == null || ref.read(currentAccountReaderProvider)() != owner) {
+    throw StateError('Review summary account is no longer current');
+  }
+  final summary =
+      await ref.watch(studyRepositoryProvider).fetchReviewSummary(jlptLevel);
+  if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
+    throw StateError('Review summary account changed while loading');
+  }
+  return summary;
 });
 
 // ── Lesson Providers ──

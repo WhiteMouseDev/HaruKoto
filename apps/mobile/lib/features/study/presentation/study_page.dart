@@ -10,16 +10,15 @@ import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
 import '../../my/providers/settings_sync_provider.dart';
-import '../data/models/review_summary_model.dart';
 import '../domain/lesson_recommendation.dart';
 import '../providers/lesson_pilot_telemetry_provider.dart';
 import '../providers/study_provider.dart';
 import '../providers/study_map_config.dart';
-import 'quiz_launch.dart';
 import 'study_map_colors.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/study_kana_section.dart';
+import 'widgets/study_review_section.dart';
 import 'widgets/saved_lesson_section.dart';
 
 /// Represents a study category tab.
@@ -52,9 +51,6 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
     final jlptLevel = preferences.jlptLevel;
     final showKana = preferences.showKana;
-
-    // Watch review summary
-    final reviewAsync = ref.watch(reviewSummaryProvider(jlptLevel));
 
     // Watch chapters for inline lesson list
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
@@ -118,50 +114,14 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-              // 2. SRS Review Card (hidden when no due items for existing users)
+              // 2. Review reads and retries stay independent of lesson reads.
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: reviewAsync.when(
-                    data: (summary) {
-                      final hasEverStudied =
-                          summary.wordNew > 0 || summary.grammarNew > 0;
-                      if (summary.totalDue > 0) {
-                        return _ReviewDueCard(
-                          summary: summary,
-                          mapEnabled: mapEnabled,
-                          jlptLevel: jlptLevel,
-                          onReviewCtaClicked: () {
-                            ref
-                                .read(lessonPilotTelemetryProvider)
-                                .trackReviewCtaClicked(
-                                  jlptLevel: jlptLevel,
-                                  totalDue: summary.totalDue,
-                                  wordDue: summary.wordDue,
-                                  grammarDue: summary.grammarDue,
-                                  quizType: summary.grammarDue > summary.wordDue
-                                      ? 'GRAMMAR'
-                                      : 'VOCABULARY',
-                                );
-                          },
-                        );
-                      }
-                      if (!hasEverStudied && recommendedLesson != null) {
-                        return _ReviewIdleBar(
-                          firstLessonId: recommendedLesson.lesson.id,
-                          mapEnabled: mapEnabled,
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                    loading: () => Container(
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                      ),
-                    ),
-                    error: (_, __) => const SizedBox.shrink(),
+                  child: StudyReviewSection(
+                    key: ValueKey('review-section-$jlptLevel'),
+                    jlptLevel: jlptLevel,
+                    mapEnabled: mapEnabled,
                   ),
                 ),
               ),
@@ -324,364 +284,6 @@ class _StudyPageState extends ConsumerState<StudyPage> {
             recommendedLessonId: recommendedLessonId,
           );
     });
-  }
-}
-
-// ── SRS Review Card (due items) ──
-
-class _ReviewDueCard extends StatelessWidget {
-  final String jlptLevel;
-  final ReviewSummaryModel summary;
-  final bool mapEnabled;
-  final VoidCallback onReviewCtaClicked;
-
-  const _ReviewDueCard({
-    required this.summary,
-    required this.mapEnabled,
-    required this.jlptLevel,
-    required this.onReviewCtaClicked,
-  });
-
-  // Pick review category: prefer the one with more due items
-  String get _reviewQuizType =>
-      summary.grammarDue > summary.wordDue ? 'GRAMMAR' : 'VOCABULARY';
-
-  void _openReview(BuildContext context) {
-    onReviewCtaClicked();
-    openReviewQuiz(
-      context,
-      quizType: _reviewQuizType,
-      jlptLevel: jlptLevel,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    if (mapEnabled) return _buildMapCard(context, theme);
-
-    final subtext = mapEnabled && theme.brightness == Brightness.dark
-        ? AppColors.darkSubtext
-        : AppColors.lightSubtext;
-    final accent = mapEnabled
-        ? StudyMapColors.accent(theme.brightness)
-        : AppColors.primaryStrong;
-    final isLight = theme.brightness == Brightness.light;
-    final cardColor =
-        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
-    final borderColor =
-        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
-
-    final dueBadge = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: mapEnabled
-            ? StudyMapColors.panel(theme.brightness)
-            : AppColors.primaryContainer,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        '복습 ${summary.totalDue}개',
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: mapEnabled
-              ? StudyMapColors.accent(theme.brightness)
-              : AppColors.primaryStrong,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-    final reviewActions = <Widget>[
-      _ReviewCountPill(
-          label: '단어', count: summary.wordDue, mapEnabled: mapEnabled),
-      if (!mapEnabled) const SizedBox(width: 8),
-      _ReviewCountPill(
-          label: '문법', count: summary.grammarDue, mapEnabled: mapEnabled),
-      if (!mapEnabled) const Spacer(),
-      FilledButton(
-        onPressed: () => _openReview(context),
-        style: FilledButton.styleFrom(
-          backgroundColor: mapEnabled
-              ? StudyMapColors.button(theme.brightness)
-              : AppColors.primaryStrong,
-          foregroundColor:
-              mapEnabled ? StudyMapColors.onButton(theme.brightness) : null,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-        ),
-        child: const Text('복습하고 시작하기'),
-      ),
-    ];
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        onTap: () => _openReview(context),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cardColor,
-            border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            boxShadow: isLight
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 14,
-                      offset: const Offset(0, 6),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: mapEnabled
-                          ? StudyMapColors.panel(theme.brightness)
-                          : AppColors.sakuraContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        LucideIcons.rotateCcw,
-                        size: 22,
-                        color: mapEnabled
-                            ? StudyMapColors.icon(theme.brightness)
-                            : AppColors.sakuraOn,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '오늘의 학습 루틴',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: accent,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '복습하고 시작해요',
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '어제 배운 단어와 문법을 먼저 확인해요',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: subtext,
-                          ),
-                        ),
-                        if (mapEnabled) ...[
-                          const SizedBox(height: 8),
-                          dueBadge,
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (!mapEnabled) ...[
-                    const SizedBox(width: 12),
-                    dueBadge,
-                  ],
-                ],
-              ),
-              const SizedBox(height: 14),
-              if (mapEnabled)
-                Wrap(spacing: 8, runSpacing: 8, children: reviewActions)
-              else
-                Row(children: reviewActions),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMapCard(BuildContext context, ThemeData theme) {
-    final isLight = theme.brightness == Brightness.light;
-    final subtext = isLight ? AppColors.lightSubtext : AppColors.darkSubtext;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isLight ? AppColors.cardWarm : AppColors.darkCard,
-        border: Border.all(
-          color: isLight ? AppColors.lightBorder : AppColors.darkBorder,
-        ),
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                LucideIcons.rotateCcw,
-                size: 20,
-                color: StudyMapColors.icon(theme.brightness),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '오늘의 복습',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: subtext,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '복습할 표현 ${summary.totalDue}개',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '단어 ${summary.wordDue}개 · 문법 ${summary.grammarDue}개',
-            style: theme.textTheme.bodyMedium?.copyWith(color: subtext),
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () => _openReview(context),
-              style: FilledButton.styleFrom(
-                backgroundColor: StudyMapColors.button(theme.brightness),
-                foregroundColor: StudyMapColors.onButton(theme.brightness),
-                minimumSize: const Size.fromHeight(48),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                textStyle: theme.textTheme.labelLarge?.copyWith(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Expanded(
-                    child: Text('복습 시작하기', textAlign: TextAlign.center),
-                  ),
-                  SizedBox(width: 8),
-                  Icon(LucideIcons.arrowRight, size: 18),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReviewCountPill extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool mapEnabled;
-
-  const _ReviewCountPill({
-    required this.label,
-    required this.count,
-    required this.mapEnabled,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final subtext = mapEnabled && theme.brightness == Brightness.dark
-        ? AppColors.darkSubtext
-        : AppColors.lightSubtext;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        '$label $count',
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: subtext,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-// ── SRS Review Complete Bar ──
-
-class _ReviewIdleBar extends StatelessWidget {
-  final String? firstLessonId;
-
-  final bool mapEnabled;
-
-  const _ReviewIdleBar({this.firstLessonId, required this.mapEnabled});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final accent = mapEnabled
-        ? StudyMapColors.accent(theme.brightness)
-        : AppColors.primaryStrong;
-    final isLight = theme.brightness == Brightness.light;
-    final cardColor =
-        isLight ? AppColors.cardWarm : theme.colorScheme.surfaceContainerLow;
-    final borderColor =
-        isLight ? AppColors.lightBorder : theme.colorScheme.outline;
-
-    return GestureDetector(
-      onTap: firstLessonId != null
-          ? () => context.push('/study/lessons/$firstLessonId')
-          : null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(color: borderColor),
-        ),
-        child: Row(
-          children: [
-            Icon(LucideIcons.sparkles, size: 20, color: accent),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                '첫 레슨을 시작해보세요',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: mapEnabled
-                      ? theme.colorScheme.onSurface
-                      : AppColors.neutralOn,
-                ),
-              ),
-            ),
-            if (firstLessonId != null)
-              Icon(LucideIcons.arrowRight, size: 18, color: accent),
-          ],
-        ),
-      ),
-    );
   }
 }
 

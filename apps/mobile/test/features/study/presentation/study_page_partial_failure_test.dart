@@ -24,6 +24,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('StudyPage dashboard isolation', () {
+    testWidgets(
+        'review failure stays visible while other lessons remain usable',
+        (tester) async {
+      final fixture = await _pump(tester,
+          dashboard: () async => _dashboard(),
+          showKana: false,
+          reviewRead: () async => throw _transportError());
+      expect(find.text('복습 현황을 확인하지 못했어요.'), findsOneWidget);
+      expect(find.text('지금 복습할 표현이 없어요'), findsNothing);
+      expect(
+          find.byKey(const ValueKey('review-summary-retry')), findsOneWidget);
+      expect(fixture.repository.chapterReads, 1);
+      expect(fixture.repository.reviewReads, 1);
+      await _openLesson(tester, fixture);
+    });
+
     testWidgets('fresh dashboard failure keeps lessons usable with showKana on',
         (tester) async {
       final fixture = await _pump(tester, dashboard: _timeout);
@@ -394,6 +410,7 @@ Future<_Fixture> _pump(
   bool sectionOnly = false,
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  Future<ReviewSummaryModel> Function()? reviewRead,
 }) async {
   SharedPreferences.setMockInitialValues({
     'user_show_kana': showKana,
@@ -432,7 +449,7 @@ Future<_Fixture> _pump(
     }
   }));
   dio.interceptors.add(AppErrorInterceptor());
-  final repository = _StudyRepository();
+  final repository = _StudyRepository(reviewRead: reviewRead);
   final container = ProviderContainer(
     retry: (_, __) => null,
     overrides: [
@@ -543,6 +560,8 @@ Map<String, dynamic> _dashboard(
     };
 
 class _StudyRepository extends Fake implements StudyRepository {
+  _StudyRepository({this.reviewRead});
+  final Future<ReviewSummaryModel> Function()? reviewRead;
   int chapterReads = 0;
   int reviewReads = 0;
   int writes = 0;
@@ -580,6 +599,7 @@ class _StudyRepository extends Fake implements StudyRepository {
   @override
   Future<ReviewSummaryModel> fetchReviewSummary(String jlptLevel) async {
     reviewReads++;
+    if (reviewRead != null) return reviewRead!();
     return const ReviewSummaryModel(
         wordDue: 2, grammarDue: 3, totalDue: 5, wordNew: 0, grammarNew: 0);
   }
