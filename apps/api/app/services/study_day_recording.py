@@ -18,7 +18,7 @@ from app.services.daily_progress_upsert import build_daily_progress_insert_value
 from app.services.gamification import update_streak
 from app.utils.date import study_date_kst
 
-ANSWERED_STUDY_DAY_RECOGNITION_ENABLED = False
+ANSWERED_STUDY_DAY_RECOGNITION_ENABLED = True
 
 ACTIVITY_FIELDS = ["id", "experience_points", "level", "last_study_date", "streak_count", "longest_streak"]
 
