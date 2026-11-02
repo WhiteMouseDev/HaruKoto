@@ -68,6 +68,7 @@ docs/
 - [특수 퀴즈 이어하기 운영 반영](operations/plans/special-quiz-resume-production-rollout-2026-10-30.md) — 웹 선행 배포·#209 병합·서버/앱 반영 순서와 기존 기록·복습 기한·음원·보안 보존 확인
 - [레슨 제출 중복 반영 방지 API·DB 설계안](operations/plans/lesson-submit-idempotency-proposal-2026-11-02.md) — 신규 제출/조회·완료 영수증·계정 격리·기존 pending 보존과 승인 전 회귀·롤백 범위
 - [레슨 제출 중복 반영 방지 구현·검증](operations/plans/lesson-submit-idempotency-implementation-2026-11-02.md) — 한 번 반영·원래 결과 복구, 실제 PostgreSQL·시뮬레이터 재시도/완전 재실행 검증과 운영 적용 순서
+- [레슨 제출 중복 반영 방지 운영 적용](operations/plans/lesson-submit-idempotency-rollout-2026-11-02.md) — 승인 마이그레이션·PR #212 배포·실제 운영 시뮬레이터 재시도/재실행 복구·기존 5,468행 및 음원 보존 확인
 - [레슨 문항과 복습 항목 연결 수정](operations/plans/lesson-review-target-fix-2026-10-21.md) — 명시 참조 계약, 회귀 테스트, 기존 기록 영향과 승인 전 운영 데이터 적용안
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음
