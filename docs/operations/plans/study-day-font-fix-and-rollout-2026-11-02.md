@@ -57,9 +57,9 @@
 
 새 bridge는 **현재 운영 코드/스키마/잠금 순서** 기반의 별도 작은 PR로 제안한다. p6 모델이나 새 사용자→세션 잠금 코드를 섞지 않는다. 임시 소스 플래그로 학습 저장 진입을 DB/외부 AI 호출 전에 거절하고 `503`, `Retry-After`, `private, no-store`를 반환하는 안이다. 새 runtime 환경 변수를 신설한 구현은 아직 없다. 이 HTTP 동작·라우트 범위와 회귀 검증도 별도 승인 후 구현한다.
 
-구체 대상은 퀴즈 시작/smart-start/이번 오답 복습 시작/이어하기/답안/완료, 가나 progress·퀴즈 시작/답안/완료·단계 완료, 레슨 시작/제출·신규 활동 POST, 회화 시작/메시지/종료·live-token/live-feedback이다. **시작도 기존 세션 자동 완료와 XP를 실행하므로 막아야 한다.** 최종 bridge 검토에서는 mission claim·목표/계정 수정 등 사용자 보상/행 잠금 writer를 함께 분류해 테스트 목록을 확정한다.
+구체 대상은 퀴즈 시작/smart-start/이번 오답 복습 시작/이어하기/답안/완료, 가나 progress·퀴즈 시작/답안/완료·단계 완료, 레슨 시작·구형 `POST /api/v1/lessons/{lesson_id}/submit`·멱등 `POST /api/v1/lessons/{lesson_id}/submissions`·신규 활동 POST, 회화 시작/메시지/종료·live-token/live-feedback이다. **시작도 기존 세션 자동 완료와 XP를 실행하므로 막아야 한다.** 최종 bridge 검토에서는 mission claim·목표/계정 수정 등 사용자 보상/행 잠금 writer를 함께 분류해 테스트 목록을 확정한다.
 
-인증/로그인, 콘텐츠·통계·달력·제출/활동 영수증 GET, 일반 음원 재생, 결제 callback은 허용한다. 모든 POST를 일괄 차단하는 방식은 사용하지 않는다. 중단 중 사용자는 학습 저장/시작에 일시 중지 안내를 보며 기존 로컬 답안·pending·세션을 지우지 않는다. 로그인과 저장 조회는 계속 사용할 수 있어야 한다.
+인증/로그인, 콘텐츠·통계·달력·제출/활동 영수증 GET(`GET /api/v1/lessons/{lesson_id}/submissions/{submission_id}`·`GET /api/v1/lessons/{lesson_id}/study-activities/{activity_id}` 포함), 일반 음원 재생, 결제 callback은 허용한다. 모든 POST를 일괄 차단하는 방식은 사용하지 않는다. 중단 중 사용자는 학습 저장/시작에 일시 중지 안내를 보며 기존 로컬 답안·pending·세션을 지우지 않는다. 로그인과 저장 조회는 계속 사용할 수 있어야 한다.
 
 ### 2. 구 배포 URL 전체의 새 쓰기 진입을 막는다
 
@@ -96,3 +96,7 @@ STOP bridge, 자동 배포 freeze, 정확한 WAF/host 규칙, runtime 종료/삭
 - [Vercel function duration](https://vercel.com/docs/functions/configuring-functions/duration), [custom WAF rules](https://vercel.com/docs/vercel-firewall/vercel-waf/custom-rules), [deployment protection](https://vercel.com/docs/deployment-protection): 실행 한도·진입 차단·인증 보호의 서로 다른 의미를 따른다.
 
 운영 적용 완료 문서가 아니다. 실제 private 메타데이터 산출물은 `/private/tmp/harukoto-*metadata-20261102.json`에 보존하고 토큰·DSN·전체 학습 행·비공개 배포 URL은 이 문서나 블로그에 넣지 않는다.
+
+## 최종 활성화 코드의 빌드 확인
+
+2026-11-02 ON 코드 `414964e9`의 웹·관리자·랜딩 Vercel Preview가 모두 성공했다. 같은 ON 소스에서 Google 두 호스트를 차단한 clean 기본 Turbopack 웹 빌드도 18.39초·exit 0으로 통과했고, 248개 원본 자산 SHA/Unicode/굵기/swap과 외부 font URL 부재를 다시 확인했다. 이 절과 제출 경로 명시는 문서만 보완하며 활성화 코드는 바꾸지 않는다. 운영 DB/설정/병합·배포는 미적용 상태다.
