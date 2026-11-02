@@ -146,8 +146,8 @@ class StreakDailyCard extends ConsumerWidget {
 (String, String) _streakCopy(StreakData streak) {
   if (streak.studiedToday) {
     return (
-      streak.current > 0 ? '${streak.current}일 연속 학습' : '오늘 학습 완료',
-      streak.current > 0 ? '오늘 학습 완료 · 내일도 이어가요' : '오늘의 학습 기록을 남겼어요',
+      streak.current > 0 ? '${streak.current}일 연속 학습' : '오늘도 학습했어요',
+      streak.current > 0 ? '오늘도 학습했어요 · 내일도 이어가요' : '오늘의 학습 기록을 남겼어요',
     );
   }
   if (streak.current > 0) {

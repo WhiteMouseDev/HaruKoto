@@ -20,13 +20,13 @@ void main() {
     await _pumpCard(tester, streak: _streak(current: 3));
     expect(find.text('3일 연속 학습'), findsOneWidget);
     expect(find.text('어제까지의 기록 · 오늘 마치면 4일'), findsOneWidget);
-    expect(find.text('오늘 학습 완료'), findsNothing);
+    expect(find.text('오늘도 학습했어요'), findsNothing);
   });
 
   testWidgets('today completed takes priority even with a zero current count',
       (tester) async {
     await _pumpCard(tester, streak: _streak(studied: true));
-    expect(find.text('오늘 학습 완료'), findsOneWidget);
+    expect(find.text('오늘도 학습했어요'), findsOneWidget);
     expect(find.text('오늘의 학습 기록을 남겼어요'), findsOneWidget);
     expect(find.text('첫 학습을 시작해요'), findsNothing);
   });

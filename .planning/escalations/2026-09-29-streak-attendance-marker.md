@@ -3,13 +3,22 @@ raised_by: codex-root
 raised_at: 2026-09-29
 phase: streak-integrity
 severity: warn
-status: resolved
-resolved_at: 2026-11-02T14:36:57+09:00
+status: open
+previously_resolved_at: 2026-11-02T14:36:57+09:00
+reopened_at: 2026-11-02
 ---
 
 ## What happened
 
 9월 29일 로컬 작업에 영속 출석 마커 제안이 open 상태로 남아 있었고, 10월 30일 누락 감사에서 이를 다시 확인했다. 기존 일별 행은 시작만 해도 생성될 수 있고, 레슨 재학습의 마지막 완료일만으로 모든 과거 학습일을 복원할 수 없다.
+
+## Current decision — 2026-11-02 한 문항 기준 채택, 새 API·DB 구체안 확인 대기
+
+사용자가 한 문제라도 답하면 학습일로 인정하는 제품 정책을 채택했다. 앞선 레슨 전체 완료 기준은 구현·격리 검증을 마쳤지만 아직 운영에 적용하지 않았다. 같은 사안의 새 escalation을 만들지 않고 이 항목을 재개한다. 아래 Resolution은 이전 완료 기준 구현 승인 이력이다.
+
+[새 구체안](../../docs/operations/plans/answered-study-day-policy-proposal-2026-11-02.md)은 미적용 마커를 `activity_recorded`로 대체하고 비공개 `study_activity_receipts` 하나, 레슨 활동 POST/GET와 상세 선택 필드·웹 표시 필드, 기존 답안 원자성·가나 재전송·앱 outbox를 포함한다. 과거 백필·기존 기한/목표/XP 재계산·Data API 재개방은 없다. 독립 문구만 수정하고 새 API·DDL/운영 적용은 아직 하지 않았다. 이전의 ‘변경 전 구체안’ 요청에 따라 이 새 계약/스키마의 구현 범위를 확인받는다.
+
+PR #215·#216은 draft 상태로 두고 기존 완료 기준을 활성화하지 않는다. 운영 마이그레이션·클라우드 설정·배포 승인은 계속 별도다.
 
 ## Resolution — 2026-11-02 구현 승인, 운영 적용 미승인
 
