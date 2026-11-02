@@ -11,14 +11,17 @@ class SavedLessonHint {
       {this.step,
       this.needsRecordCheck = false,
       this.submissionPending = false,
+      this.submissionReceipt = false,
       this.lastStudiedAt});
 
   final LessonStep? step;
   final bool needsRecordCheck;
   final bool submissionPending;
+  final bool submissionReceipt;
   final DateTime? lastStudiedAt;
 
   String get label {
+    if (submissionReceipt) return '제출 결과 확인';
     if (submissionPending) return '제출 기록 확인';
     if (needsRecordCheck) return '저장 기록 확인';
     return switch (step) {
@@ -32,7 +35,11 @@ class SavedLessonHint {
     };
   }
 
-  String get actionLabel => needsRecordCheck ? '기록 확인' : '저장 위치 열기';
+  String get actionLabel => submissionReceipt
+      ? '제출 결과 확인'
+      : needsRecordCheck
+          ? '기록 확인'
+          : '저장 위치 열기';
 
   static SavedLessonHint? inspect(String raw, String lessonId) {
     const unknown = SavedLessonHint(needsRecordCheck: true);
@@ -45,8 +52,15 @@ class SavedLessonHint {
         return null;
       }
       if (json['lessonId'] != lessonId) return unknown;
-      if (json['version'] != 1) return unknown;
       final lastStudiedAt = LessonCheckpoint.readLastStudiedAt(json);
+      if (json['version'] == 2 && json['submissionPending'] == true) {
+        return SavedLessonHint(
+            needsRecordCheck: true,
+            submissionPending: true,
+            submissionReceipt: true,
+            lastStudiedAt: lastStudiedAt);
+      }
+      if (json['version'] != 1) return unknown;
       if (json['submissionPending'] == true) {
         return SavedLessonHint(
             needsRecordCheck: true,
@@ -101,12 +115,14 @@ class SavedLessonEntry {
       required this.jlptLevel,
       required this.chapter,
       required this.lesson,
+      this.recoveryOnly = false,
       required this.hint});
   final String accountId;
   final String jlptLevel;
   final ChapterModel chapter;
   final LessonSummaryModel lesson;
   final SavedLessonHint hint;
+  final bool recoveryOnly;
 }
 
 class SavedLessonEntries {

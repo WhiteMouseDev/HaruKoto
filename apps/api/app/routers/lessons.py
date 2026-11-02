@@ -21,6 +21,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.middleware.rate_limit import rate_limit
 from app.models.user import User
+from app.routers.lesson_submissions import router as lesson_submissions_router
 from app.schemas.lesson import (
     ChapterListResponse,
     ChapterResponse,
@@ -52,6 +53,7 @@ from app.services.tts_storage import upload_tts_to_gcs
 from app.utils.constants import RATE_LIMITS
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
+router.include_router(lesson_submissions_router)
 
 
 # ── GET /chapters ──

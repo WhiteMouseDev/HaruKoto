@@ -161,7 +161,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
       child: Scaffold(
         appBar: AppBar(
           title: detailAsync.when(
-            data: (d) => Text(d.title),
+            data: (d) => Text(d?.title ?? '레슨 제출 결과'),
             loading: () => const Text('레슨'),
             error: (_, __) => const Text('레슨'),
           ),
@@ -173,79 +173,98 @@ class _LessonPageState extends ConsumerState<LessonPage>
         body: AbsorbPointer(
             absorbing: _exiting,
             child: detailAsync.when(
-              data: (detail) => Column(
-                children: [
-                  if (session.storageError)
-                    MaterialBanner(
-                      content: const Text('최근 진행이 기기에 저장되지 않았어요.'),
-                      actions: [
-                        TextButton(
-                            onPressed: () => unawaited(sessionActions.flush()),
-                            child: const Text('저장 재시도'))
-                      ],
-                    ),
-                  if (session.notice != null)
-                    Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.md, vertical: AppSizes.sm),
-                        child: Text(session.notice!,
-                            style: Theme.of(context).textTheme.bodySmall)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.md,
-                      vertical: AppSizes.sm,
-                    ),
-                    child: Row(
+              data: (detail) => detail == null
+                  ? _SubmissionRecovery(
+                      session: session,
+                      onCheck: session.submissionCanCheck
+                          ? () => unawaited(sessionActions.checkSubmission())
+                          : null,
+                      onRetry: session.submissionCanRetry
+                          ? () => unawaited(sessionActions.retrySubmission())
+                          : null,
+                      onExit: () => unawaited(_exit()))
+                  : Column(
                       children: [
-                        Expanded(
-                          child: LessonStepProgressBar(
-                            currentStep: session.step.index,
-                            totalSteps: _totalSteps,
+                        if (session.storageError)
+                          MaterialBanner(
+                            content: const Text('최근 진행이 기기에 저장되지 않았어요.'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () =>
+                                      unawaited(sessionActions.flush()),
+                                  child: const Text('저장 재시도'))
+                            ],
+                          ),
+                        if (session.notice != null)
+                          Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSizes.md,
+                                  vertical: AppSizes.sm),
+                              child: Text(session.notice!,
+                                  style:
+                                      Theme.of(context).textTheme.bodySmall)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.md,
+                            vertical: AppSizes.sm,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: LessonStepProgressBar(
+                                  currentStep: session.step.index,
+                                  totalSteps: _totalSteps,
+                                ),
+                              ),
+                              if (session.showDialogueShortcut) ...[
+                                const SizedBox(width: AppSizes.sm),
+                                GestureDetector(
+                                  onTap: () {
+                                    _tts.stop(lessonId: widget.lessonId);
+                                    unawaited(showLessonDialogueSheet(
+                                        context, detail,
+                                        ttsService: _tts));
+                                  },
+                                  child: const Icon(
+                                    LucideIcons.messageSquare,
+                                    size: 18,
+                                    color: AppColors.sakura,
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
-                        if (session.showDialogueShortcut) ...[
-                          const SizedBox(width: AppSizes.sm),
-                          GestureDetector(
-                            onTap: () {
-                              _tts.stop(lessonId: widget.lessonId);
-                              unawaited(showLessonDialogueSheet(context, detail,
-                                  ttsService: _tts));
-                            },
-                            child: const Icon(
-                              LucideIcons.messageSquare,
-                              size: 18,
-                              color: AppColors.sakura,
-                            ),
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: session.submissionPending ||
+                                    session.serverRecorded
+                                ? _SubmissionStatus(
+                                    detail: detail,
+                                    session: session,
+                                    onCheck: () => unawaited(
+                                        sessionActions.checkSubmission()),
+                                    onRetry: session.submissionCanRetry
+                                        ? () => unawaited(
+                                            sessionActions.retrySubmission())
+                                        : null)
+                                : LessonStepContent(
+                                    ttsService: _tts,
+                                    lessonId: widget.lessonId,
+                                    detail: detail,
+                                    session: session,
+                                    totalSteps: _totalSteps,
+                                    onExit: () {
+                                      if (sessionActions.isCurrent) {
+                                        unawaited(_exit());
+                                      }
+                                    },
+                                  ),
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: session.submissionPending || session.serverRecorded
-                          ? _SubmissionStatus(
-                              detail: detail,
-                              session: session,
-                              onCheck: () =>
-                                  unawaited(sessionActions.checkSubmission()))
-                          : LessonStepContent(
-                              ttsService: _tts,
-                              lessonId: widget.lessonId,
-                              detail: detail,
-                              session: session,
-                              totalSteps: _totalSteps,
-                              onExit: () {
-                                if (sessionActions.isCurrent) {
-                                  unawaited(_exit());
-                                }
-                              },
-                            ),
-                    ),
-                  ),
-                ],
-              ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                   child: Padding(
@@ -271,10 +290,14 @@ class _LessonPageState extends ConsumerState<LessonPage>
 
 class _SubmissionStatus extends StatelessWidget {
   const _SubmissionStatus(
-      {required this.detail, required this.session, required this.onCheck});
+      {required this.detail,
+      required this.session,
+      required this.onCheck,
+      this.onRetry});
   final LessonDetailModel detail;
   final LessonSessionState session;
   final VoidCallback onCheck;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -300,6 +323,74 @@ class _SubmissionStatus extends StatelessWidget {
               onPressed: session.submitting ? null : onCheck,
               child: Text(session.submitting ? '확인 중…' : '서버 기록 다시 확인'),
             ),
+          if (onRetry != null)
+            TextButton(
+                onPressed: session.submitting ? null : onRetry,
+                child: const Text('같은 답안으로 제출 재시도')),
         ]),
       ));
+}
+
+/// Historical receipt deliberately does not render questions from current content.
+class _SubmissionRecovery extends StatelessWidget {
+  const _SubmissionRecovery(
+      {required this.session,
+      required this.onExit,
+      this.onCheck,
+      this.onRetry});
+  final LessonSessionState session;
+  final VoidCallback onExit;
+  final VoidCallback? onCheck;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final receipt = session.receipt;
+    final time = receipt?.processedAt.toLocal();
+    String two(int value) => value.toString().padLeft(2, '0');
+    return Center(
+        child: SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSizes.lg),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Icon(receipt == null ? LucideIcons.cloud : LucideIcons.checkCircle,
+            size: 40, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(height: AppSizes.md),
+        Text(receipt == null ? '제출 결과 확인' : '레슨 제출 결과를 복구했어요',
+            style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: AppSizes.md),
+        if (session.notice != null)
+          Text(session.notice!, textAlign: TextAlign.center),
+        if (receipt != null) ...[
+          const SizedBox(height: AppSizes.lg),
+          Text(
+              '${receipt.result.scoreCorrect}/${receipt.result.scoreTotal}문항 정답',
+              style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: AppSizes.sm),
+          Text(receipt.result.status == 'COMPLETED' ? '레슨 완료' : '학습 결과 저장됨'),
+          const SizedBox(height: AppSizes.sm),
+          Text('제출 당시 · ${time!.year}.${two(time.month)}.${two(time.day)} '
+              '${two(time.hour)}:${two(time.minute)}'),
+          const SizedBox(height: AppSizes.sm),
+          const Text('처음 처리한 결과예요. 현재 문항이나 복습 기한을 다시 계산하지 않았어요.',
+              textAlign: TextAlign.center),
+        ],
+        if (session.storageError) ...[
+          const SizedBox(height: AppSizes.md),
+          const Text('기기 저장을 마무리하지 못했어요. 제출 정보는 보관하고 있어요.'),
+        ],
+        if (session.submissionPending && onCheck != null) ...[
+          const SizedBox(height: AppSizes.lg),
+          FilledButton(
+              onPressed: session.submitting ? null : onCheck,
+              child: Text(session.submitting ? '확인 중…' : '제출 결과 다시 확인')),
+          if (onRetry != null)
+            TextButton(
+                onPressed: session.submitting ? null : onRetry,
+                child: const Text('같은 답안으로 제출 재시도')),
+        ],
+        const SizedBox(height: AppSizes.lg),
+        OutlinedButton(onPressed: onExit, child: const Text('학습으로 돌아가기')),
+      ]),
+    ));
+  }
 }

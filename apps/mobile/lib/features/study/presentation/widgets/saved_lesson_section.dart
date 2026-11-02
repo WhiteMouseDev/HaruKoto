@@ -236,8 +236,10 @@ class _SavedEntryTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-              '${entry.jlptLevel} · ${entry.chapter.chapterNo}번 역 · '
-              '${entry.lesson.chapterLessonNo}번째 레슨',
+              entry.recoveryOnly
+                  ? '${entry.jlptLevel} · 제출 결과 확인'
+                  : '${entry.jlptLevel} · ${entry.chapter.chapterNo}번 역 · '
+                      '${entry.lesson.chapterLessonNo}번째 레슨',
               style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.brightness == Brightness.light
                       ? AppColors.lightSubtext
@@ -338,8 +340,10 @@ class _SavedLessonPicker extends ConsumerWidget {
                                           .colorScheme
                                           .onSurface)),
                           subtitle: Text(
-                              '${entry.jlptLevel} · ${entry.chapter.chapterNo}번 역 · '
-                              '${entry.lesson.chapterLessonNo}번째 레슨\n${entry.hint.label}',
+                              entry.recoveryOnly
+                                  ? '${entry.jlptLevel} · ${entry.hint.label}'
+                                  : '${entry.jlptLevel} · ${entry.chapter.chapterNo}번 역 · '
+                                      '${entry.lesson.chapterLessonNo}번째 레슨\n${entry.hint.label}',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall

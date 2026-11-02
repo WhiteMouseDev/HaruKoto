@@ -62,12 +62,24 @@ class LessonSubmitResult:
     srs_items_registered: int
 
 
+async def lock_lesson_user(db: AsyncSession, user_id: UUID) -> None:
+    """Serialize first progress/SRS creation and all lesson submit protocols.
+
+    NO KEY UPDATE is compatible with FK KEY SHARE locks. Do not replace this
+    with FOR UPDATE, which can deadlock against in-flight lesson child inserts.
+    """
+    found = await db.scalar(select(User.id).where(User.id == user_id).with_for_update(key_share=True))
+    if found is None:
+        raise LessonServiceError(status_code=403, detail="학습 계정을 확인할 수 없습니다")
+
+
 async def start_lesson_progress(
     db: AsyncSession,
     user: User,
     *,
     lesson_id: UUID,
 ) -> LessonProgressResult:
+    await lock_lesson_user(db, user.id)
     lesson = await db.get(Lesson, lesson_id)
     if lesson is None or not lesson.is_published:
         raise LessonServiceError(status_code=404, detail="레슨을 찾을 수 없습니다")
@@ -215,6 +227,24 @@ async def submit_lesson_attempt(
     lesson_id: UUID,
     answers: list[AnswerSubmission],
 ) -> LessonSubmitResult:
+    try:
+        await lock_lesson_user(db, user.id)
+        result = await apply_lesson_attempt(db, user, lesson_id=lesson_id, answers=answers)
+        await db.commit()
+        return result
+    except Exception:
+        await db.rollback()
+        raise
+
+
+async def apply_lesson_attempt(
+    db: AsyncSession,
+    user: User,
+    *,
+    lesson_id: UUID,
+    answers: list[AnswerSubmission],
+) -> LessonSubmitResult:
+    """Apply the existing grading/SRS policy, without owning the transaction."""
     result = await db.execute(select(Lesson).where(Lesson.id == lesson_id).options(selectinload(Lesson.item_links)))
     lesson = result.scalar_one_or_none()
     if lesson is None:
@@ -336,8 +366,6 @@ async def submit_lesson_attempt(
         progress.completed_at = now
         if has_srs_items and progress.srs_registered_at is None:
             progress.srs_registered_at = now
-
-    await db.commit()
 
     return LessonSubmitResult(
         score_correct=correct_count,

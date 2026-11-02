@@ -5,6 +5,7 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
 import '../fixtures/lesson_resume_fixture.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_submission.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
@@ -465,6 +466,22 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
       scoreTotal: 0,
     );
   }
+
+  @override
+  Future<LessonSubmissionReceiptModel> submitLessonIdempotent(
+          String lessonId, LessonSubmissionDraft submission) async =>
+      LessonSubmissionReceiptModel(
+          submissionId: submission.submissionId,
+          processedAt: DateTime.utc(2026, 11, 2),
+          result: await submitLesson(
+              lessonId,
+              (submission.toJson()['answers'] as List)
+                  .cast<Map<String, dynamic>>()));
+
+  @override
+  Future<LessonSubmissionReceiptModel?> fetchLessonSubmission(
+          String lessonId, String submissionId, String expectedUserId) async =>
+      null;
 
   @override
   Future<LessonSubmitResultModel> submitLesson(

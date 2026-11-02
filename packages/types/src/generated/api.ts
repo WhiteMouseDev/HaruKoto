@@ -1804,6 +1804,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lessons/{lesson_id}/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Lesson Submission */
+        post: operations["create_lesson_submission_api_v1_lessons__lesson_id__submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/lessons/{lesson_id}/submissions/{submission_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Lesson Submission */
+        get: operations["read_lesson_submission_api_v1_lessons__lesson_id__submissions__submission_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/lessons/chapters": {
         parameters: {
             query?: never;
@@ -2718,6 +2752,9 @@ export interface components {
             weeklyStats: components["schemas"]["WeeklyStatItem"][];
             levelProgress: components["schemas"]["LevelProgress"];
         };
+        ErrorDetails: {
+            [key: string]: unknown;
+        } | unknown[];
         /** FeedbackSummary */
         FeedbackSummary: {
             /** Overallscore */
@@ -3161,6 +3198,64 @@ export interface components {
             completedAt?: string | null;
             /** Srsregisteredat */
             srsRegisteredAt?: string | null;
+        };
+        /**
+         * LessonSubmissionAnswer
+         * @description Strict new-protocol input; legacy answer coercion remains unchanged.
+         */
+        LessonSubmissionAnswer: {
+            /** Order */
+            order: number;
+            /** Selectedanswer */
+            selectedAnswer?: string | null;
+            /** Submittedorder */
+            submittedOrder?: string[] | null;
+            /**
+             * Responsems
+             * @default 0
+             */
+            responseMs: number;
+        };
+        /** LessonSubmissionError */
+        LessonSubmissionError: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            details?: components["schemas"]["ErrorDetails"] | null;
+        };
+        /** LessonSubmissionErrorResponse */
+        LessonSubmissionErrorResponse: {
+            error: components["schemas"]["LessonSubmissionError"];
+        };
+        /** LessonSubmissionRequest */
+        LessonSubmissionRequest: {
+            /**
+             * Submissionid
+             * Format: uuid4
+             */
+            submissionId: string;
+            /**
+             * Expecteduserid
+             * Format: uuid
+             */
+            expectedUserId: string;
+            /** Answers */
+            answers: components["schemas"]["LessonSubmissionAnswer"][];
+        };
+        /** LessonSubmissionResponse */
+        LessonSubmissionResponse: {
+            /**
+             * Submissionid
+             * Format: uuid4
+             */
+            submissionId: string;
+            /**
+             * Processedat
+             * Format: date-time
+             */
+            processedAt: string;
+            result: components["schemas"]["LessonSubmitResponse"];
         };
         /** LessonSubmitRequest */
         LessonSubmitRequest: {
@@ -8012,6 +8107,211 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_lesson_submission_api_v1_lessons__lesson_id__submissions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LessonSubmissionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionResponse"];
+                };
+            };
+            /** @description 답안 검증 실패. 같은 제출의 답안을 자동 변경하지 않음 */
+            400: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도 */
+            401: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음 */
+            403: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 대상 없음. 진행 중 POST의 미처리를 증명하지 않음 */
+            404: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 같은 제출 ID에 다른 레슨/답안/순서/응답 시간. 쓰기 없음 */
+            409: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 요청 구조 검증 실패 */
+            422: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 기존 SRS 처리 실패. 원자적으로 롤백하고 같은 제출 ID 유지 */
+            500: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 일시 장애 또는 결과 불명. 같은 제출 ID로 재확인 */
+            503: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+        };
+    };
+    read_lesson_submission_api_v1_lessons__lesson_id__submissions__submission_id__get: {
+        parameters: {
+            query: {
+                expectedUserId: string;
+            };
+            header?: never;
+            path: {
+                lesson_id: string;
+                submission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionResponse"];
+                };
+            };
+            /** @description 원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도 */
+            401: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음 */
+            403: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 대상 없음. 진행 중 POST의 미처리를 증명하지 않음 */
+            404: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 요청 구조 검증 실패 */
+            422: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 기존 SRS 처리 실패. 원자적으로 롤백하고 같은 제출 ID 유지 */
+            500: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 일시 장애 또는 결과 불명. 같은 제출 ID로 재확인 */
+            503: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
                 };
             };
         };

@@ -3,8 +3,13 @@ raised_by: codex-root
 raised_at: 2026-11-02
 phase: lesson-submit-idempotency
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-02
 ---
+
+## Resolution
+
+사용자가 2026년 11월 2일 PR #211 병합과 제안된 API·DB 안의 구현, 회귀·시뮬레이터 검증을 명시적으로 승인했다. PR #211은 `2d78c1de`로 병합했다. 신규 제출/조회·빈 완료 영수증 테이블·원자적 처리·모바일 복구를 구현하고 격리 로컬 DB에서 검증한다. 운영 배포·운영 마이그레이션 실행은 이번 구현 단계와 분리하며, 기존 학습 기록·기한·로그인·음원 캐시·Data API 차단은 유지한다.
 
 ## What happened
 
