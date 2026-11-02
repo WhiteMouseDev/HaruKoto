@@ -13,6 +13,11 @@ const property = (face, name) =>
 const normalized = (value) => value.replace(/\s+/g, '').toLowerCase();
 
 export function checkFontAssets(root = repositoryRoot) {
+  const turbo = JSON.parse(readFileSync(path.join(root, 'turbo.json'), 'utf8'));
+  assert(
+    turbo.globalDependencies?.includes('assets/fonts/**'),
+    'Shared font changes must invalidate the build cache'
+  );
   const directory = path.join(root, 'assets/fonts');
   const manifest = JSON.parse(
     readFileSync(path.join(directory, 'manifest.json'), 'utf8')

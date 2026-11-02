@@ -18,6 +18,10 @@ function fixture(t) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'harukoto-font-check-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   cpSync(
+    path.join(repositoryRoot, 'turbo.json'),
+    path.join(root, 'turbo.json')
+  );
+  cpSync(
     path.join(repositoryRoot, 'assets/fonts'),
     path.join(root, 'assets/fonts'),
     { recursive: true }
