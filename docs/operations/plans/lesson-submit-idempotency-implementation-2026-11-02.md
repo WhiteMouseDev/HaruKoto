@@ -2,7 +2,7 @@
 
 ## 승인과 진행 계획
 
-2026년 11월 2일 사용자가 [설계안](lesson-submit-idempotency-proposal-2026-11-02.md)의 구현·회귀·시뮬레이터 검증을 승인했다. PR #211은 `2d78c1de`로 병합했고, 구현은 그 main 기준 `codex/lesson-submit-idempotency`에서 완료했다. **운영 DB 마이그레이션·서버 배포·운영 앱/아이폰 업데이트는 이번 구현·격리 검증에 포함하지 않았다.**
+2026년 11월 2일 사용자가 [설계안](lesson-submit-idempotency-proposal-2026-11-02.md)의 구현·회귀·시뮬레이터 검증을 승인했다. PR #211은 `2d78c1de`로 병합했고, 구현은 그 main 기준 `codex/lesson-submit-idempotency`에서 완료했다. **운영 DB 마이그레이션·서버 배포·운영 앱/아이폰 업데이트는 이 문서의 구현·격리 검증에 포함하지 않았다.** 이후 별도 승인으로 완료한 PR #212 병합·마이그레이션·배포·운영 시뮬레이터 검증은 [운영 적용 기록](lesson-submit-idempotency-rollout-2026-11-02.md)에 남겼다.
 
 1. Backend: 새 제출/완료 결과 조회 계약, 완료 영수증 테이블과 Alembic, 기존 레슨 의미를 유지한 단일 transaction·mutex, 실제 PostgreSQL 동시성·rollback 회귀.
 2. Mobile: 단일 checkpoint V2에 ID·계정·동결 답안을 저장한 뒤 POST, 같은 ID 복구, 기존 pending·계정 전환·콘텐츠 변경·구 앱 reader 회귀.
