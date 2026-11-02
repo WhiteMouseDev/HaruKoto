@@ -8,9 +8,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../data/lesson_checkpoint_store.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_checkpoint.dart';
+import '../domain/lesson_submission.dart';
 import '../domain/lesson_flow_policy.dart';
 import '../domain/lesson_practice_layout.dart';
 import '../domain/lesson_session_state.dart';
@@ -28,8 +30,11 @@ final lessonStudyClockProvider =
 /// A fresh account-bound GET for every visit; never hydrate an account's draft
 /// using a cached detail response belonging to a previous signed-in account.
 final lessonResumeDetailProvider = FutureProvider.autoDispose
-    .family<LessonDetailModel, String>((ref, lessonId) async {
+    .family<LessonDetailModel?, String>((ref, lessonId) async {
   final owner = ref.watch(currentAccountIdProvider);
+  final controller = ref.read(lessonSessionProvider(lessonId).notifier);
+  // Receipts survive deleted/edited content: restore before any detail GET.
+  if (await controller.restoreSubmission()) return null;
   final detail =
       await ref.read(studyRepositoryProvider).fetchLessonDetail(lessonId);
   if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
@@ -54,6 +59,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   String _progressStamp = 'null';
   DateTime? _lastStudiedAt;
   Future<void>? _initializing;
+  LessonSubmissionEnvelope? _submission;
 
   LessonSessionActions get actions => LessonSessionActions._(this, _generation);
 
@@ -69,6 +75,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _detail = null;
     _lastStudiedAt = null;
     _initializing = null;
+    _submission = null;
     ref.onDispose(() => _generation++);
     return const LessonSessionState();
   }
@@ -89,8 +96,49 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       !state.serverRecorded &&
       state.result == null;
 
-  Future<void> initialize(LessonDetailModel detail) {
-    if (_initialized) return Future<void>.value();
+  Future<bool> restoreSubmission() async {
+    if (_initialized) return _submission != null || state.receiptRecovery;
+    final generation = _generation;
+    final owner = _owner;
+    if (owner == null) throw const LessonCheckpointStorageException();
+    final raw =
+        await ref.read(lessonCheckpointStoreProvider).read(owner, lessonId);
+    if (!_current(generation) || raw == null) return false;
+    LessonSubmissionEnvelope? envelope;
+    try {
+      envelope = LessonSubmissionEnvelope.inspect(raw, owner, lessonId);
+    } on FormatException {
+      // Legacy malformed records retain their established fail-closed handling.
+      // A new/unknown envelope must remain reachable without current content.
+      if (!raw.contains('"version":2') && !raw.contains('"protocolVersion"')) {
+        return false;
+      }
+      _preserveRawCheckpoint = true;
+      _initialized = true;
+      state = state.copyWith(
+          receiptRecovery: true,
+          submissionPending: true,
+          notice: '저장된 제출 정보를 안전하게 읽을 수 없어요. 답안을 새로 제출하지 않고 보관할게요.');
+      return true;
+    }
+    if (envelope == null) return false;
+    _submission = envelope;
+    _acknowledged = envelope.acknowledged;
+    _initialized = true;
+    _lastStudiedAt = LessonCheckpoint.readLastStudiedAt(envelope.draft);
+    state = state.copyWith(
+        receiptRecovery: true,
+        submissionPending: true,
+        submissionCanRetry: !envelope.acknowledged,
+        submissionCanCheck: true,
+        restored: true,
+        notice: '저장된 제출 결과를 확인하고 있어요.');
+    await checkSubmission();
+    return true;
+  }
+
+  Future<void> initialize(LessonDetailModel detail) async {
+    if (_initialized || await restoreSubmission()) return;
     final generation = _generation;
     return _initializing ??= _initialize(detail).whenComplete(() {
       if (_current(generation)) _initializing = null;
@@ -196,6 +244,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   Future<bool> _persist() {
     if (_preserveRawCheckpoint) return Future<bool>.value(true);
+    if (_submission != null) return _persistSubmission();
     final detail = _detail;
     final owner = _owner;
     if (detail == null ||
@@ -233,6 +282,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         if (_current(generation)) {
           ref.invalidate(savedLessonLookupProvider(
               (accountId: owner, lessonId: lessonId)));
+          ref.invalidate(savedSubmissionIdsProvider(owner));
         }
         if (_current(generation) && version == _writeVersion) {
           state = state.copyWith(storageError: false);
@@ -244,6 +294,34 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       }
     })();
     return write;
+  }
+
+  Future<bool> _persistSubmission() async {
+    final submission = _submission;
+    final owner = _owner;
+    final generation = _generation;
+    if (submission == null || owner == null || !_current(generation)) {
+      return false;
+    }
+    final payload = submission.encode(acknowledged: _acknowledged);
+    if (payload.length > 512 * 1024) {
+      state = state.copyWith(storageError: true);
+      return false;
+    }
+    try {
+      await ref
+          .read(lessonCheckpointStoreProvider)
+          .write(owner, lessonId, payload);
+      if (!_current(generation)) return false;
+      ref.invalidate(
+          savedLessonLookupProvider((accountId: owner, lessonId: lessonId)));
+      ref.invalidate(savedSubmissionIdsProvider(owner));
+      state = state.copyWith(storageError: false);
+      return true;
+    } catch (_) {
+      if (_current(generation)) state = state.copyWith(storageError: true);
+      return false;
+    }
   }
 
   Future<bool> _clearCheckpoint() {
@@ -260,6 +338,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         if (_current(generation)) {
           ref.invalidate(savedLessonLookupProvider(
               (accountId: owner, lessonId: lessonId)));
+          ref.invalidate(savedSubmissionIdsProvider(owner));
         }
         if (_current(generation) && version == _writeVersion) {
           state = state.copyWith(storageError: false);
@@ -277,6 +356,11 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   /// a write; the UI never promises persistence when a write has failed.
   Future<bool> flush() async {
     if (!_initialized) return true;
+    // Do not delete the only ID until its acknowledgement is durable.
+    if (_acknowledged && _submission != null) {
+      if (!await _persistSubmission()) return false;
+      return _clearCheckpoint();
+    }
     if (_acknowledged || state.serverRecorded) return _clearCheckpoint();
     return _persist();
   }
@@ -497,37 +581,56 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final answers = [
       for (final key in ordered) Map<String, dynamic>.from(state.answers[key]!)
     ];
+    final owner = _owner;
+    final detail = _detail;
+    if (owner == null || detail == null) return;
+    final resolvedJlptLevel =
+        jlptLevel ?? ref.read(userPreferencesProvider).jlptLevel;
+    try {
+      final draft =
+          LessonSubmissionDraft.create(owner: owner, answers: answers);
+      final legacy = LessonCheckpoint(
+              state: state.copyWith(submissionPending: true),
+              progressStamp: _progressStamp,
+              lastStudiedAt: _lastStudiedAt)
+          .encode(detail);
+      _submission = LessonSubmissionEnvelope(
+          lessonId: lessonId,
+          submission: draft,
+          draft: jsonDecode(legacy) as Map<String, dynamic>,
+          title: detail.title,
+          jlptLevel: resolvedJlptLevel);
+    } catch (_) {
+      state = state.copyWith(
+          submissionErrorMessage: '제출 정보를 안전하게 만들지 못했어요. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
     state = state.copyWith(
         submitting: true,
         submissionPending: true,
+        submissionCanRetry: true,
+        submissionCanCheck: true,
         submissionErrorMessage: null);
-    // A durable pending marker must precede a non-idempotent POST.
-    if (!await _persist()) {
+    // The complete immutable request, not only a marker, precedes the POST.
+    if (!await _persistSubmission()) {
       if (_current(generation)) {
+        // Retain the ID even if storage may have partially succeeded.
         state = state.copyWith(
             submitting: false,
-            submissionPending: false,
             submissionErrorMessage: '답안을 기기에 저장하지 못해 제출하지 않았어요. 저장을 재시도해 주세요.');
       }
       return;
     }
     if (!_current(generation)) return;
     try {
-      final result = await service.submitLesson(
-          lessonId: lessonId, jlptLevel: jlptLevel, answers: answers);
+      final receipt = await service.submitSubmission(
+          lessonId: lessonId,
+          jlptLevel: resolvedJlptLevel,
+          submission: _submission!.submission);
       if (!_current(generation)) return;
-      _acknowledged = true;
-      state = state.copyWith(
-          step: LessonStep.result,
-          result: result,
-          submitting: false,
-          submissionPending: false,
-          submissionErrorMessage: null);
-      // If either operation fails, the old pending marker still prevents a
-      // duplicate submission after restart. Never remove before writing it.
-      await _persist();
-      if (_current(generation)) await _clearCheckpoint();
+      await _acceptReceipt(receipt);
       if (!_current(generation)) return;
+      final result = receipt.result;
       telemetry.trackLessonSubmitted(
           lessonId: lessonId,
           outcome: 'success',
@@ -553,14 +656,115 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       state = state.copyWith(
           submitting: false,
           submissionErrorMessage: '${_userMessage(error)} 제출 결과를 먼저 확인해 주세요.',
-          notice: '중복 반영을 막기 위해 답안을 다시 보내지 않아요. 아래에서 서버 기록을 확인할 수 있어요.');
-      await _persist();
+          notice: '답안은 안전하게 보관했어요. 같은 제출의 결과를 먼저 확인해 주세요.');
+      await _persistSubmission();
+    }
+  }
+
+  Future<void> _acceptReceipt(LessonSubmissionReceiptModel receipt) async {
+    final submission = _submission;
+    if (submission == null ||
+        receipt.submissionId != submission.submission.submissionId) {
+      throw const FormatException('Receipt ID mismatch');
+    }
+    _acknowledged = true;
+    state = state.copyWith(
+        step: LessonStep.result,
+        result: receipt.result,
+        receipt: receipt,
+        submitting: false,
+        submissionPending: false,
+        submissionCanRetry: false,
+        submissionCanCheck: false,
+        submissionErrorMessage: null,
+        notice: state.receiptRecovery
+            ? '처음 제출한 결과를 복구했어요. 학습 기록을 다시 반영하지 않았어요.'
+            : null);
+    final generation = _generation;
+    if (await _persistSubmission() && _current(generation)) {
+      await _clearCheckpoint();
+    }
+  }
+
+  Future<void> retrySubmission() async {
+    final submission = _submission;
+    if (!_initialized ||
+        submission == null ||
+        _acknowledged ||
+        !state.submissionPending ||
+        state.submitting ||
+        !_current(_generation)) {
+      return;
+    }
+    final generation = _generation;
+    state = state.copyWith(submitting: true);
+    // Always lookup first. 404 does not prove that another POST cannot commit.
+    try {
+      final service = ref.read(lessonSessionServiceProvider);
+      final existing = await service.lookupSubmission(
+          lessonId: lessonId,
+          submission: submission.submission,
+          jlptLevel: submission.jlptLevel);
+      if (!_current(generation)) return;
+      if (existing != null) {
+        await _acceptReceipt(existing);
+        return;
+      }
+      if (!await _persistSubmission() || !_current(generation)) {
+        if (_current(generation)) {
+          state = state.copyWith(submitting: false);
+        }
+        return;
+      }
+      final receipt = await service.submitSubmission(
+          lessonId: lessonId,
+          submission: submission.submission,
+          jlptLevel: submission.jlptLevel);
+      if (_current(generation)) {
+        await _acceptReceipt(receipt);
+      }
+    } catch (error) {
+      if (_current(generation)) {
+        state = state.copyWith(
+            submitting: false, submissionErrorMessage: _userMessage(error));
+      }
     }
   }
 
   Future<void> checkSubmission() async {
-    if (!_initialized || !state.submissionPending || state.submitting) return;
+    if (!_initialized ||
+        !state.submissionPending ||
+        state.submitting ||
+        _preserveRawCheckpoint) {
+      return;
+    }
     final generation = _generation;
+    final submission = _submission;
+    if (submission != null) {
+      state = state.copyWith(submitting: true);
+      try {
+        final receipt = await ref
+            .read(lessonSessionServiceProvider)
+            .lookupSubmission(
+                lessonId: lessonId,
+                submission: submission.submission,
+                jlptLevel: submission.jlptLevel);
+        if (!_current(generation)) return;
+        if (receipt != null) {
+          await _acceptReceipt(receipt);
+        } else {
+          state = state.copyWith(
+              submitting: false,
+              notice: '아직 제출 결과를 확인하지 못했어요. 같은 답안으로 다시 확인하거나 재시도할 수 있어요.');
+        }
+      } catch (error) {
+        if (_current(generation)) {
+          state = state.copyWith(
+              submitting: false, submissionErrorMessage: _userMessage(error));
+        }
+      }
+      return;
+    }
     final repository = ref.read(studyRepositoryProvider);
     state = state.copyWith(submitting: true);
     try {
@@ -620,6 +824,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         .trackLessonRetryClicked(lessonId: lessonId);
     _initialized = false;
     _acknowledged = false;
+    _submission = null;
     // The previous completed response is not a baseline for a new attempt.
     ref.invalidate(lessonResumeDetailProvider(lessonId));
   }
@@ -738,6 +943,10 @@ class LessonSessionActions {
 
   Future<void> checkSubmission() async {
     if (_current) await _controller.checkSubmission();
+  }
+
+  Future<void> retrySubmission() async {
+    if (_current) await _controller.retrySubmission();
   }
 
   Future<void> reset() async {

@@ -8,6 +8,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_sentence_reorder_step.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_checkpoint.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_submission.dart';
 import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_recognition_check_step.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
@@ -135,15 +137,21 @@ void main() {
   });
 
   testWidgets(
-      'unknown response has only read-only check; newer server score replaces old score',
+      'legacy ID-less pending has only record check and never acquires a new submission ID',
       (tester) async {
     final repo =
         ResumeStudyRepository(detail: resumeDetail(progress: completedProgress))
           ..submitError = TimeoutException('lost');
-    final h = ResumeHarness(repository: repo);
+    final before = ResumeHarness(repository: repo);
+    await before.recognition();
+    final raw = LessonCheckpoint(
+            state: before.state.copyWith(submissionPending: true),
+            progressStamp: lessonProgressStamp(repo.detail.progress))
+        .encode(repo.detail);
+    before.store.values[before.store.key(before.account, resumeLessonId)] = raw;
+    before.dispose();
+    final h = ResumeHarness(store: before.store, repository: repo);
     addTearDown(h.dispose);
-    await h.recognition();
-    await h.controller.submitAnswers(lessonId: resumeLessonId, jlptLevel: 'N5');
     await _mount(tester, h);
     expect(find.text('서버 기록 다시 확인'), findsOneWidget);
     expect(find.text('답안 제출하기'), findsNothing);
@@ -159,6 +167,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('저장된 레슨 기록 · 4/4문항'), findsOneWidget);
     expect(find.text('저장된 레슨 기록 · 2/4문항'), findsNothing);
+    expect(repo.submitCalls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+      'cold receipt recovery renders historical summary without fetching current content',
+      (tester) async {
+    final repo = ResumeStudyRepository();
+    final before = ResumeHarness(repository: repo);
+    await before.recognition();
+    repo.submitError = TimeoutException('response lost');
+    await before.controller
+        .submitAnswers(lessonId: resumeLessonId, jlptLevel: 'N5');
+    final envelope = LessonSubmissionEnvelope.inspect(
+        before.store.values.values.single, before.account, resumeLessonId)!;
+    repo.receipts[envelope.submission.submissionId] =
+        LessonSubmissionReceiptModel(
+            submissionId: envelope.submission.submissionId,
+            processedAt: DateTime.utc(2026, 11, 2),
+            result: const LessonSubmitResultModel(
+                scoreCorrect: 1,
+                scoreTotal: 2,
+                results: [],
+                status: 'COMPLETED'));
+    before.dispose();
+    final h = ResumeHarness(repository: repo, store: before.store);
+    addTearDown(h.dispose);
+    await _mount(tester, h, size: const Size(320, 844), textScale: 2);
+    expect(find.text('레슨 제출 결과를 복구했어요'), findsOneWidget);
+    expect(find.text('1/2문항 정답'), findsOneWidget);
+    expect(find.textContaining('제출 당시'), findsOneWidget);
+    expect(repo.fetchCalls, 0);
+    expect(find.text('First choice'), findsNothing);
     expect(repo.submitCalls, 1);
     expect(tester.takeException(), isNull);
   });
@@ -190,7 +231,7 @@ void main() {
     h.repository.submitError = TimeoutException('lost');
     await h.controller.submitAnswers(lessonId: resumeLessonId, jlptLevel: 'N5');
     await _mount(tester, h, size: const Size(320, 844), textScale: 2);
-    expect(find.text('서버 기록 다시 확인'), findsOneWidget);
+    expect(find.text('제출 결과 다시 확인'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets(

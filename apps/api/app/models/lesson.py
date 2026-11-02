@@ -128,3 +128,28 @@ class UserLessonProgress(Base):
         UniqueConstraint("user_id", "lesson_id"),
         Index("idx_user_lesson_progress_user", "user_id", "status"),
     )
+
+
+class LessonSubmission(Base):
+    """Completed receipts only, committed atomically with lesson/SRS changes.
+
+    lesson_id intentionally has no FK: deleting source content must not erase
+    the immutable result of an already completed submission.
+    """
+
+    __tablename__ = "lesson_submissions"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    submission_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    lesson_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    request_fingerprint: Mapped[str] = mapped_column(Text, nullable=False)
+    fingerprint_version: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    response_schema_version: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    response_body: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("request_fingerprint ~ '^[0-9a-f]{64}$'", name="ck_lesson_submissions_fingerprint"),
+        CheckConstraint("jsonb_typeof(response_body) = 'object'", name="ck_lesson_submissions_response_object"),
+        Index("idx_lesson_submissions_user_lesson_processed", "user_id", "lesson_id", "processed_at"),
+    )

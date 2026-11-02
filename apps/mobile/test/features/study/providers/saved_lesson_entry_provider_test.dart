@@ -7,6 +7,7 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/saved_lesson_entry.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_submission.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/saved_lesson_entry_provider.dart';
@@ -16,6 +17,55 @@ import '../fixtures/lesson_resume_fixture.dart';
 import '../fixtures/saved_lesson_entry_fixture.dart';
 
 void main() {
+  test(
+      'deleted or unlisted lesson keeps an account-scoped submission recovery entry',
+      () async {
+    final h = _Harness();
+    final raw = jsonDecode(rawCheckpoint('deleted-lesson', pending: true))
+        as Map<String, dynamic>;
+    final submission =
+        LessonSubmissionDraft.create(owner: 'account-a', answers: []);
+    h.store.values['account-a/deleted-lesson'] = LessonSubmissionEnvelope(
+            lessonId: 'deleted-lesson',
+            submission: submission,
+            draft: raw,
+            title: '제출 당시 레슨',
+            jlptLevel: 'N5')
+        .encode();
+    h.store.values['account-b/private-lesson'] =
+        h.store.values['account-a/deleted-lesson']!;
+    final before = Map<String, String>.from(h.store.values);
+    final data = await h.entries();
+    expect(data.entries.single.lesson.title, '제출 당시 레슨');
+    expect(data.entries.single.recoveryOnly, isTrue);
+    expect(data.entries.single.hint.actionLabel, '제출 결과 확인');
+    expect(h.repository.detailReads, 0);
+    expect(h.repository.writes, 0);
+    expect(h.store.values, before);
+    expect(
+        h.store.operations, isNot(contains('read:account-b/private-lesson')));
+  });
+
+  test(
+      'curriculum failure still exposes stored pending result and read-only retry',
+      () async {
+    final h = _Harness(repository: _Repository()..chaptersFail = true);
+    h.store.values['account-a/removed'] = LessonSubmissionEnvelope(
+            lessonId: 'removed',
+            submission:
+                LessonSubmissionDraft.create(owner: 'account-a', answers: []),
+            draft: jsonDecode(rawCheckpoint('removed', pending: true))
+                as Map<String, dynamic>,
+            title: '결과 확인할 레슨',
+            jlptLevel: 'N5')
+        .encode();
+    final data = await h.entries();
+    expect(data.entries.single.lesson.title, '결과 확인할 레슨');
+    expect(data.failedLessonIds, contains('curriculum-unavailable'));
+    expect(h.repository.detailReads, 0);
+    expect(h.repository.writes, 0);
+  });
+
   test('later NOT_STARTED lesson draft is discoverable without a detail GET',
       () async {
     final h = _Harness();
@@ -132,17 +182,23 @@ void main() {
   });
 
   test(
-      'only current-level known lesson IDs are read, unknown keys are untouched',
+      'account-scoped unlisted keys are inspected for receipts without changing their drafts',
       () async {
     final h = _Harness(level: 'N4');
     h.store.values['account-a/foreign'] = rawCheckpoint('foreign');
     h.store.values['account-a/later'] = rawCheckpoint('later');
     final n4 = await h.container.read(savedLessonEntriesProvider('N4').future);
     expect(n4.entries, isEmpty);
-    expect(h.store.operations, ['read:account-a/n4-lesson']);
+    expect(h.store.operations, [
+      'read:account-a/foreign',
+      'read:account-a/later',
+      'read:account-a/n4-lesson'
+    ]);
     final n5 = await h.container.read(savedLessonEntriesProvider('N5').future);
     expect(n5.entries.map((entry) => entry.lesson.id), ['later']);
-    expect(h.store.operations, isNot(contains('read:account-a/foreign')));
+    expect(h.store.operations, contains('read:account-a/foreign'));
+    expect(h.store.operations.any((op) => op.startsWith('read:account-b/')),
+        isFalse);
     expect(h.store.values.containsKey('account-a/foreign'), isTrue);
   });
 
@@ -193,7 +249,7 @@ void main() {
   });
 
   test(
-      'acknowledged tombstone hides a completed local entry even if removal failed',
+      'acknowledged receipt stays recoverable when removal failed without creating another attempt',
       () async {
     final h = _Harness();
     h.store.values['account-a/later'] = rawCheckpoint('later');
@@ -203,7 +259,7 @@ void main() {
     await controller.initialize(detailFor('later'));
     h.store.failRemove = true;
     await controller.submitAnswers(lessonId: 'later', jlptLevel: 'N5');
-    expect((await h.entries()).entries, isEmpty);
+    expect((await h.entries()).entries.single.hint.submissionReceipt, isTrue);
     expect(h.store.values.containsKey('account-a/later'), isTrue);
     expect(h.repository.writes, 1);
   });
@@ -278,7 +334,8 @@ void main() {
     expect(data.entries.length, 1);
     expect(data.entries.single.lesson.status, 'COMPLETED');
     expect(data.entries.single.lesson.title, '완료 레슨 다시 학습');
-    expect(h.store.operations, ['read:account-a/later']);
+    expect(h.store.operations,
+        ['read:account-a/deleted-from-curriculum', 'read:account-a/later']);
     expect(h.store.values, raw);
     expect(repository.detailReads, 0);
     expect(repository.writes, 0);
@@ -381,9 +438,11 @@ class _Repository extends Fake implements StudyRepository {
   int detailReads = 0;
   int writes = 0;
   List<ChapterModel>? chaptersOverride;
+  bool chaptersFail = false;
   @override
-  Future<ChapterListModel> fetchChapters(String jlptLevel) async =>
-      ChapterListModel(
+  Future<ChapterListModel> fetchChapters(String jlptLevel) async => chaptersFail
+      ? throw StateError('curriculum unavailable')
+      : ChapterListModel(
           chapters: chaptersOverride ??
               [
                 ChapterModel(
@@ -442,6 +501,22 @@ class _Repository extends Fake implements StudyRepository {
     writes++;
     throw StateError('List projection must never start a lesson');
   }
+
+  @override
+  Future<LessonSubmissionReceiptModel> submitLessonIdempotent(
+          String lessonId, LessonSubmissionDraft submission) async =>
+      LessonSubmissionReceiptModel(
+          submissionId: submission.submissionId,
+          processedAt: DateTime.utc(2026, 11, 2),
+          result: await submitLesson(
+              lessonId,
+              (submission.toJson()['answers'] as List)
+                  .cast<Map<String, dynamic>>()));
+
+  @override
+  Future<LessonSubmissionReceiptModel?> fetchLessonSubmission(
+          String lessonId, String submissionId, String expectedUserId) async =>
+      null;
 
   @override
   Future<LessonSubmitResultModel> submitLesson(

@@ -276,7 +276,8 @@ void main() {
     expect(fresh.repository.submitCalls, 0);
   });
 
-  test('failed pending marker save prevents POST and save can be retried',
+  test(
+      'failed frozen submission save prevents POST and preserves its ID for retry',
       () async {
     final h = ResumeHarness();
     addTearDown(h.dispose);
@@ -285,7 +286,7 @@ void main() {
     await h.controller.submitAnswers(lessonId: resumeLessonId, jlptLevel: 'N5');
     expect(h.repository.submitCalls, 0);
     expect(h.state.storageError, isTrue);
-    expect(h.state.submissionPending, isFalse);
+    expect(h.state.submissionPending, isTrue);
     h.store.failWrite = false;
     expect(await h.controller.flush(), isTrue);
     expect(h.state.storageError, isFalse);
@@ -314,12 +315,12 @@ void main() {
     final raw = h.store.values[h.store.key('account-a', resumeLessonId)]!;
     expect((jsonDecode(raw) as Map<String, dynamic>)['acknowledged'], isTrue);
     h.dispose();
-    final fresh = ResumeHarness(store: h.store);
+    final fresh = ResumeHarness(store: h.store, repository: h.repository);
     addTearDown(fresh.dispose);
     await fresh.initialize();
-    expect(fresh.state.serverRecorded, isTrue);
-    expect(fresh.state.result, isNull);
-    expect(fresh.repository.submitCalls, 0);
+    expect(fresh.state.receiptRecovery, isTrue);
+    expect(fresh.state.result, isNotNull);
+    expect(fresh.repository.submitCalls, 1);
   });
 
   test(
@@ -337,11 +338,10 @@ void main() {
     await fresh.controller.reset();
     expect(fresh.state.submissionPending, isTrue);
     expect(fresh.repository.submitCalls, 1);
-    expect(fresh.state.notice, contains('확정할 수 없어요'));
+    expect(fresh.state.notice, contains('아직 제출 결과를 확인하지 못했어요'));
   });
 
-  test(
-      'completed redo is unresolved until attempt stamp advances and new server score is shown',
+  test('new submission never infers its receipt from a different attempt stamp',
       () async {
     final repo =
         ResumeStudyRepository(detail: resumeDetail(progress: completedProgress))
@@ -362,8 +362,9 @@ void main() {
             startedAt: '2026-10-21T01:00:00Z',
             completedAt: '2026-10-21T03:00:00Z'));
     await h.controller.checkSubmission();
-    expect(h.state.serverRecorded, isTrue);
-    expect(h.state.serverProgress?.scoreCorrect, 4);
+    expect(h.state.serverRecorded, isFalse);
+    expect(h.state.submissionPending, isTrue);
+    expect(h.state.serverProgress, isNull);
     expect(h.state.result, isNull);
     expect(repo.submitCalls, 1);
   });

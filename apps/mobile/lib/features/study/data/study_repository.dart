@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../core/network/network_base.dart';
+import '../domain/lesson_submission.dart';
 import '../domain/study_repository.dart';
 import '../domain/quiz_resume_exception.dart';
 import 'models/lesson_models.dart';
@@ -473,6 +475,51 @@ class ApiStudyRepository implements StudyRepository {
       data: {'answers': answers},
     );
     return LessonSubmitResultModel.fromJson(response.data!);
+  }
+
+  @override
+  Future<LessonSubmissionReceiptModel> submitLessonIdempotent(
+      String lessonId, LessonSubmissionDraft submission) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/lessons/$lessonId/submissions',
+        data: submission.toJson(),
+        options: Options(extra: {
+          RequestMetadata.skipAuthRefresh: true,
+          RequestMetadata.skipNetworkRetry: true,
+        }),
+      );
+      final receipt = LessonSubmissionReceiptModel.fromJson(response.data!);
+      if (receipt.submissionId != submission.submissionId) {
+        throw const FormatException('Submission receipt ID mismatch');
+      }
+      return receipt;
+    } on DioException catch (error) {
+      throw LessonSubmissionException(ApiException.fromDioException(error));
+    }
+  }
+
+  @override
+  Future<LessonSubmissionReceiptModel?> fetchLessonSubmission(
+      String lessonId, String submissionId, String expectedUserId) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/lessons/$lessonId/submissions/$submissionId',
+        queryParameters: {'expectedUserId': expectedUserId},
+        options: Options(extra: {
+          RequestMetadata.skipAuthRefresh: true,
+          RequestMetadata.skipNetworkRetry: true,
+        }),
+      );
+      final receipt = LessonSubmissionReceiptModel.fromJson(response.data!);
+      if (receipt.submissionId != submissionId) {
+        throw const FormatException('Submission receipt ID mismatch');
+      }
+      return receipt;
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) return null;
+      throw LessonSubmissionException(ApiException.fromDioException(error));
+    }
   }
 }
 

@@ -5,6 +5,9 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import UUID4, ConfigDict, StrictInt, StrictStr
+
+from app.exceptions import ErrorDetails
 from app.schemas.common import CamelModel
 
 # ── Response: 챕터 목록 ──
@@ -153,6 +156,43 @@ class LessonSubmitResponse(CamelModel):
     results: list[QuestionResult]
     status: str  # IN_PROGRESS | COMPLETED
     srs_items_registered: int = 0
+
+
+class LessonSubmissionAnswer(AnswerSubmission):
+    """Strict new-protocol input; legacy answer coercion remains unchanged."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    order: StrictInt
+    selected_answer: StrictStr | None = None
+    submitted_order: list[StrictStr] | None = None
+    response_ms: StrictInt = 0
+
+
+class LessonSubmissionRequest(CamelModel):
+    model_config = ConfigDict(extra="forbid")
+
+    submission_id: UUID4
+    expected_user_id: UUID
+    answers: list[LessonSubmissionAnswer]
+
+
+class LessonSubmissionResponse(CamelModel):
+    model_config = ConfigDict(extra="forbid")
+
+    submission_id: UUID4
+    processed_at: datetime
+    result: LessonSubmitResponse
+
+
+class LessonSubmissionError(CamelModel):
+    code: str
+    message: str
+    details: ErrorDetails | None = None
+
+
+class LessonSubmissionErrorResponse(CamelModel):
+    error: LessonSubmissionError
 
 
 # ── Response: SRS 복습 요약 ──

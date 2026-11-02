@@ -1,4 +1,5 @@
 import '../data/models/lesson_models.dart';
+import 'lesson_submission.dart';
 import 'lesson_practice_layout.dart';
 
 enum LessonStep {
@@ -42,6 +43,10 @@ class LessonSessionState {
     this.restored = false,
     this.startErrorMessage,
     this.submissionErrorMessage,
+    this.receiptRecovery = false,
+    this.submissionCanRetry = false,
+    this.submissionCanCheck = false,
+    this.receipt,
   });
 
   static const _noResultChange = Object();
@@ -76,6 +81,10 @@ class LessonSessionState {
   final bool restored;
   final String? startErrorMessage;
   final String? submissionErrorMessage;
+  final bool receiptRecovery;
+  final bool submissionCanRetry;
+  final bool submissionCanCheck;
+  final LessonSubmissionReceiptModel? receipt;
 
   bool get canPop => step == LessonStep.contextPreview;
 
@@ -112,6 +121,10 @@ class LessonSessionState {
     bool? restored,
     Object? startErrorMessage = _noStartErrorChange,
     Object? submissionErrorMessage = _noSubmissionErrorChange,
+    bool? receiptRecovery,
+    bool? submissionCanRetry,
+    bool? submissionCanCheck,
+    LessonSubmissionReceiptModel? receipt,
   }) {
     return LessonSessionState(
       step: step ?? this.step,
@@ -158,6 +171,10 @@ class LessonSessionState {
           identical(submissionErrorMessage, _noSubmissionErrorChange)
               ? this.submissionErrorMessage
               : submissionErrorMessage as String?,
+      receiptRecovery: receiptRecovery ?? this.receiptRecovery,
+      submissionCanRetry: submissionCanRetry ?? this.submissionCanRetry,
+      submissionCanCheck: submissionCanCheck ?? this.submissionCanCheck,
+      receipt: receipt ?? this.receipt,
     );
   }
 }

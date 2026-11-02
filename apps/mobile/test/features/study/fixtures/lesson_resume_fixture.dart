@@ -6,6 +6,7 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_submission.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
@@ -120,6 +121,12 @@ class MemoryCheckpointStore implements LessonCheckpointStore {
     return result;
   }
 
+  @override
+  Future<List<String>> listLessonIds(String accountId) async => [
+        for (final key in values.keys)
+          if (key.startsWith('$accountId/')) key.substring(accountId.length + 1)
+      ];
+
   String key(String owner, String lesson) => '$owner/$lesson';
   @override
   Future<String?> read(String accountId, String lessonId) =>
@@ -151,6 +158,7 @@ class ResumeStudyRepository extends Fake implements StudyRepository {
   ResumeStudyRepository({LessonDetailModel? detail})
       : detail = detail ?? resumeDetail();
   LessonDetailModel detail;
+  final receipts = <String, LessonSubmissionReceiptModel>{};
   int fetchCalls = 0;
   int startCalls = 0;
   int submitCalls = 0;
@@ -172,6 +180,24 @@ class ResumeStudyRepository extends Fake implements StudyRepository {
     return startGate != null
         ? await startGate!.future
         : detail.progress ?? inProgress;
+  }
+
+  @override
+  Future<LessonSubmissionReceiptModel?> fetchLessonSubmission(
+          String lessonId, String submissionId, String expectedUserId) async =>
+      receipts[submissionId];
+
+  @override
+  Future<LessonSubmissionReceiptModel> submitLessonIdempotent(
+      String lessonId, LessonSubmissionDraft submission) async {
+    final result = await submitLesson(lessonId,
+        (submission.toJson()['answers'] as List).cast<Map<String, dynamic>>());
+    final receipt = LessonSubmissionReceiptModel(
+        submissionId: submission.submissionId,
+        processedAt: DateTime.utc(2026, 11, 2),
+        result: result);
+    receipts[submission.submissionId] = receipt;
+    return receipt;
   }
 
   @override

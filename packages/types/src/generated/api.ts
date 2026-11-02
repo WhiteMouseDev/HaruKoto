@@ -1804,6 +1804,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lessons/{lesson_id}/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Lesson Submission */
+        post: operations["create_lesson_submission_api_v1_lessons__lesson_id__submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/lessons/{lesson_id}/submissions/{submission_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Lesson Submission */
+        get: operations["read_lesson_submission_api_v1_lessons__lesson_id__submissions__submission_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/lessons/chapters": {
         parameters: {
             query?: never;
@@ -3161,6 +3195,52 @@ export interface components {
             completedAt?: string | null;
             /** Srsregisteredat */
             srsRegisteredAt?: string | null;
+        };
+        /**
+         * LessonSubmissionAnswer
+         * @description Strict new-protocol input; legacy answer coercion remains unchanged.
+         */
+        LessonSubmissionAnswer: {
+            /** Order */
+            order: number;
+            /** Selectedanswer */
+            selectedAnswer?: string | null;
+            /** Submittedorder */
+            submittedOrder?: string[] | null;
+            /**
+             * Responsems
+             * @default 0
+             */
+            responseMs: number;
+        };
+        /** LessonSubmissionRequest */
+        LessonSubmissionRequest: {
+            /**
+             * Submissionid
+             * Format: uuid4
+             */
+            submissionId: string;
+            /**
+             * Expecteduserid
+             * Format: uuid
+             */
+            expectedUserId: string;
+            /** Answers */
+            answers: components["schemas"]["LessonSubmissionAnswer"][];
+        };
+        /** LessonSubmissionResponse */
+        LessonSubmissionResponse: {
+            /**
+             * Submissionid
+             * Format: uuid4
+             */
+            submissionId: string;
+            /**
+             * Processedat
+             * Format: date-time
+             */
+            processedAt: string;
+            result: components["schemas"]["LessonSubmitResponse"];
         };
         /** LessonSubmitRequest */
         LessonSubmitRequest: {
@@ -8003,6 +8083,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StudyCapabilitiesResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_lesson_submission_api_v1_lessons__lesson_id__submissions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LessonSubmissionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_lesson_submission_api_v1_lessons__lesson_id__submissions__submission_id__get: {
+        parameters: {
+            query: {
+                expectedUserId: string;
+            };
+            header?: never;
+            path: {
+                lesson_id: string;
+                submission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionResponse"];
                 };
             };
             /** @description Validation Error */

@@ -9,6 +9,34 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         *{
+            ("tests.test_lesson_submissions_postgres", name)
+            for name in (
+                "test_receipt_migration_is_private_preserves_auth_and_fails_on_existing_object",
+                "test_same_key_after_lost_response_and_separate_connections_never_reapplies",
+                "test_twenty_concurrent_first_submissions_commit_one_attempt",
+                "test_different_id_is_real_relearning_and_legacy_still_uses_same_policy",
+                "test_get_race_does_not_treat_uncommitted_absence_as_a_new_attempt",
+                "test_successful_commit_with_lost_ack_recovers_original_result",
+                "test_replay_survives_edit_unpublish_and_content_deletion",
+                "test_new_and_legacy_start_share_user_mutex_for_first_progress",
+                "test_user_mutex_timeout_keeps_id_unprocessed_and_all_learning_unchanged",
+                "test_other_users_continue_while_one_users_submission_is_in_flight",
+                "test_other_users_cannot_read_receipts_and_owner_assertion_writes_nothing",
+                "test_populated_receipts_block_destructive_downgrade",
+            )
+        },
+        *{
+            ("tests.test_lesson_submissions_postgres", f"test_same_key_conflict_changes_no_learning_rows[{mutation}]")
+            for mutation in ("answer", "order", "time", "lesson")
+        },
+        *{
+            (
+                "tests.test_lesson_submissions_postgres",
+                f"test_failed_processing_rolls_back_receipt_progress_srs_and_events[{failure}]",
+            )
+            for failure in ("registration", "second_answer", "after_apply", "receipt_flush", "precommit")
+        },
+        *{
             (
                 "tests.test_special_quiz_resume_postgres",
                 f"test_free_matching_uses_requested_level_and_cold_resume_keeps_first_answers_and_records[{category}]",

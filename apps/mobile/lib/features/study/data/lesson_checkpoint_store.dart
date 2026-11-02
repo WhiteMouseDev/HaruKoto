@@ -9,6 +9,7 @@ abstract class LessonCheckpointStore {
   Future<String?> read(String accountId, String lessonId);
   Future<void> write(String accountId, String lessonId, String value);
   Future<void> remove(String accountId, String lessonId);
+  Future<List<String>> listLessonIds(String accountId);
 }
 
 /// One queue includes reads and deletion, so an older write cannot resurrect a
@@ -47,6 +48,23 @@ class PreferencesLessonCheckpointStore implements LessonCheckpointStore {
         if (!await _preferences.remove(key(accountId, lessonId))) {
           throw const LessonCheckpointStorageException();
         }
+      });
+
+  @override
+  Future<List<String>> listLessonIds(String accountId) => _serialized(() async {
+        final prefix =
+            'lesson_checkpoint.v1.${Uri.encodeComponent(accountId)}.';
+        final ids = <String>[];
+        for (final candidate in _preferences.getKeys()) {
+          if (!candidate.startsWith(prefix)) continue;
+          try {
+            final id = Uri.decodeComponent(candidate.substring(prefix.length));
+            if (id.isNotEmpty) ids.add(id);
+          } on FormatException {
+            // A malformed key cannot be attached to another account/lesson.
+          }
+        }
+        return ids;
       });
 }
 

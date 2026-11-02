@@ -8,6 +8,7 @@ import '../data/models/smart_preview_model.dart';
 import '../data/models/stage_model.dart';
 import '../data/models/word_entry_model.dart';
 import '../data/models/wordbook_entry_model.dart';
+import 'lesson_submission.dart';
 
 abstract class StudyRepository {
   Future<List<StageModel>> fetchStages(String category, String jlptLevel);
@@ -137,5 +138,16 @@ abstract class StudyRepository {
   Future<LessonSubmitResultModel> submitLesson(
     String lessonId,
     List<Map<String, dynamic>> answers,
+  );
+
+  Future<LessonSubmissionReceiptModel> submitLessonIdempotent(
+    String lessonId,
+    LessonSubmissionDraft submission,
+  );
+
+  Future<LessonSubmissionReceiptModel?> fetchLessonSubmission(
+    String lessonId,
+    String submissionId,
+    String expectedUserId,
   );
 }

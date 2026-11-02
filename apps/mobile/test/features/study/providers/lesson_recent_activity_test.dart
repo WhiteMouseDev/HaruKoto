@@ -202,8 +202,18 @@ void main() {
     await h.matching();
     await h.controller.submitAnswers(lessonId: resumeLessonId, jlptLevel: 'N5');
     expect(h.repository.submittedAnswers, [
-      {'order': 2, 'selectedAnswer': 'a', 'responseMs': 0},
-      {'order': 7, 'selectedAnswer': 'd', 'responseMs': 0},
+      {
+        'order': 2,
+        'selectedAnswer': 'a',
+        'submittedOrder': null,
+        'responseMs': 0
+      },
+      {
+        'order': 7,
+        'selectedAnswer': 'd',
+        'submittedOrder': null,
+        'responseMs': 0
+      },
     ]);
     expect(h.repository.submitCalls, 1);
   });
