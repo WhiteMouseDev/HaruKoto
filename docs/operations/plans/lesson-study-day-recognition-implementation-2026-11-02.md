@@ -74,6 +74,13 @@ API, 모바일, CI gate 수는 서로 다른 검사다. 중복 실행을 합쳐 
 
 최종 마이그레이션 SHA-256: `bfed009c9bc138755f3d6c846cacd375ce3a8940cf9d6548bdfccf98e67b0c4b`. 최종 API JUnit은 `/private/tmp/lesson-study-day-api-compat-off.xml`이며 source OFF/ON 회귀 모두 명시적으로 검사한다. 독립 최종 코드 검토에서 미해결 P0/P1/P2 지적은 없다.
 
+### 검토 PR과 원격 검사
+
+- [PR #215](https://github.com/WhiteMouseDev/HaruKoto/pull/215)는 호환 OFF 버전이다. 코드 커밋 `36b0dfe3`의 [GitHub CI](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41399407622)에서 frontend·admin-e2e·backend·api-contract·schema-drift가 모두 통과했다. 모바일 소스 무변경으로 원격 mobile job은 skip이며, 위 로컬 988개 검사는 별도 수행했다.
+- [draft PR #216](https://github.com/WhiteMouseDev/HaruKoto/pull/216)은 #215 기반 활성화 한 줄이다. 실제 ON 소스·최종 마이그레이션의 PostgreSQL 37개+단위 10개, 총 **47개 통과**를 확인했다. main 대상만 CI를 실행하는 현재 규칙 때문에 이 stacked draft에는 원격 CI가 실행되지 않는다. #215 squash 병합 후 main으로 rebase·base 전환하고 CI를 다시 확인해야 한다.
+- PR #215의 Vercel 웹 미리보기는 통과했고 landing은 ignore 규칙으로 취소·성공 처리됐다. **관리자 Vercel 미리보기 1개는 폰트 빌드 실패로 남는다.** 변경하지 않은 Noto Sans JP import에서 Google의 확장자 없는 URL과 Next 16.1.6 Turbopack의 쿼리 파싱 결함이 만났다. 이 결과를 ‘모든 원격 검사 통과’라고 쓰지 않는다.
+- 관리자 폰트 이슈는 [upstream #99114](https://github.com/vercel/next.js/issues/99114)·[수정 PR #100158](https://github.com/vercel/next.js/pull/100158)과 맞으며, webpack도 해당 URL의 확장자를 가정해 단순 bundler 전환을 영구 해결책으로 삼지 않는다. 로컬/원격 GitHub 빌드 성공과 별개인 간헐적 외부 폰트 빌드 위험이다. [별도 판단 기록](../../../.planning/escalations/2026-11-02-admin-preview-font-build.md)에 비운영 재확인·장기 개선안을 남겼다. 이번 범위에서 Next 의존성·브랜드 폰트·Vercel 설정·운영 배포는 바꾸지 않았다.
+
 ## 운영 적용안 — 아직 실행하지 않음
 
 한 번의 코드 배포로 인정을 켜지 않는다. 새 컬럼과 호환 writer/reader를 배포하는 **호환 PR(소스 상수 OFF)**, 인정을 켜는 **활성화 PR(True 한 줄)**로 나눈다. 이는 새 환경 변수·원격 설정이 아니라 코드 변경 두 단계다.
