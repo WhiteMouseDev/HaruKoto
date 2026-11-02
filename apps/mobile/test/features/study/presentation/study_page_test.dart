@@ -149,12 +149,13 @@ void main() {
       expect(find.text('이어하기'), findsNWidgets(2));
     });
 
-    for (final (words, grammar, quizType) in [
-      (2, 5, 'GRAMMAR'),
-      (12, 2, 'VOCABULARY'),
-      (2, 2, 'VOCABULARY'),
+    for (final (words, grammar, quizType, count) in [
+      (2, 5, 'GRAMMAR', 5),
+      (12, 2, 'VOCABULARY', 10),
+      (2, 2, 'VOCABULARY', 2),
     ]) {
-      testWidgets('review CTA opens $quizType once for $words/$grammar due',
+      testWidgets(
+          'review category opens $quizType once for $words/$grammar due',
           (tester) async {
         final events = <LessonPilotEvent>[];
         final observer = _ReviewRouteObserver();
@@ -172,16 +173,11 @@ void main() {
           chapters: const [],
         );
         observer.routes.clear();
-
         expect(find.text('오늘의 복습'), findsOneWidget);
         expect(find.text('복습할 표현 ${words + grammar}개'), findsOneWidget);
         expect(find.text('단어 $words개 · 문법 $grammar개'), findsOneWidget);
-        expect(find.text('어제 배운 단어와 문법을 먼저 확인해요'), findsNothing);
-        final button = find.widgetWithText(FilledButton, '복습 시작하기');
-        expect(button, findsOneWidget);
+        final button = find.byKey(ValueKey('review-category-$quizType'));
         expect(tester.getSize(button).height, greaterThanOrEqualTo(48));
-
-        // Reading or tapping the summary does not launch a second action.
         await tester
             .tapAt(tester.getCenter(find.text('복습할 표현 ${words + grammar}개')));
         expect(observer.routes, isEmpty);
@@ -190,10 +186,8 @@ void main() {
                 .where((e) => e.name == LessonPilotEventNames.reviewCtaClicked),
             isEmpty);
         await tester.tap(button);
-
         final event = events.singleWhere(
-          (event) => event.name == LessonPilotEventNames.reviewCtaClicked,
-        );
+            (e) => e.name == LessonPilotEventNames.reviewCtaClicked);
         expect(event.properties['jlptLevel'], 'N5');
         expect(event.properties['totalDue'], words + grammar);
         expect(event.properties['wordDue'], words);
@@ -204,12 +198,49 @@ void main() {
         expect(destination.quizType, quizType);
         expect(destination.jlptLevel, 'N5');
         expect(destination.mode, 'review');
-        expect(destination.count, 10);
+        expect(destination.count, count);
         await tester.pumpWidget(const SizedBox.shrink());
       });
     }
 
-    testWidgets('rollback retains the legacy review copy and whole-card action',
+    for (final (selectedLevel, quizLevel) in [
+      ('ABSOLUTE_ZERO', 'N5'),
+      ('N4', 'N4'),
+    ]) {
+      for (final (quizType, count) in [('VOCABULARY', 2), ('GRAMMAR', 5)]) {
+        testWidgets('$selectedLevel $quizType routes to $quizLevel review',
+            (tester) async {
+          final events = <LessonPilotEvent>[];
+          final observer = _ReviewRouteObserver();
+          await _pumpStudyPage(tester,
+              jlptLevel: selectedLevel,
+              telemetryEvents: events,
+              navigatorObserver: observer,
+              chapters: const [],
+              reviewSummary: const ReviewSummaryModel(
+                  wordDue: 2,
+                  grammarDue: 5,
+                  totalDue: 7,
+                  wordNew: 0,
+                  grammarNew: 0));
+          observer.routes.clear();
+          await tester.tap(find.byKey(ValueKey('review-category-$quizType')));
+          final quiz =
+              observer.singleQuiz(tester.element(find.byType(StudyPage)));
+          expect(quiz.quizType, quizType);
+          expect(quiz.jlptLevel, quizLevel);
+          expect(quiz.count, count);
+          expect(quiz.mode, 'review');
+          final event = events.singleWhere(
+              (event) => event.name == LessonPilotEventNames.reviewCtaClicked);
+          expect(event.properties['jlptLevel'], selectedLevel);
+          await tester.pumpWidget(const SizedBox.shrink());
+        });
+      }
+    }
+
+    testWidgets(
+        'rollback keeps category scope explicit and summary non-clickable',
         (tester) async {
       final events = <LessonPilotEvent>[];
       final observer = _ReviewRouteObserver();
@@ -219,23 +250,17 @@ void main() {
         telemetryEvents: events,
         navigatorObserver: observer,
         reviewSummary: const ReviewSummaryModel(
-          wordDue: 2,
-          grammarDue: 5,
-          totalDue: 7,
-          wordNew: 0,
-          grammarNew: 0,
-        ),
+            wordDue: 2, grammarDue: 5, totalDue: 7, wordNew: 0, grammarNew: 0),
         chapters: const [],
       );
       observer.routes.clear();
-      expect(find.text('오늘의 학습 루틴'), findsOneWidget);
-      expect(find.text('어제 배운 단어와 문법을 먼저 확인해요'), findsOneWidget);
-      expect(find.text('복습 7개'), findsOneWidget);
-      expect(find.text('단어 2'), findsOneWidget);
-      expect(find.text('문법 5'), findsOneWidget);
-      expect(find.text('복습하고 시작하기'), findsOneWidget);
-      expect(find.text('오늘의 복습'), findsNothing);
-      await tester.tap(find.text('복습하고 시작해요'));
+      expect(find.text('오늘의 복습'), findsOneWidget);
+      expect(find.text('복습할 표현 7개'), findsOneWidget);
+      expect(find.text('단어 최대 2개 복습'), findsOneWidget);
+      expect(find.text('문법 최대 5개 복습'), findsOneWidget);
+      await tester.tap(find.text('복습할 표현 7개'));
+      expect(observer.routes, isEmpty);
+      await tester.tap(find.text('문법 최대 5개 복습'));
       expect(
           events.where((e) => e.name == LessonPilotEventNames.reviewCtaClicked),
           hasLength(1));

@@ -30,3 +30,11 @@ status: open
 ## Side effects
 
 추후 채택하면 API model/Alembic·Prisma mirror·집계 처리·생성 타입과 모바일에 영향이 있다. 이번 작업에서는 스키마·기존 기록·XP·복습 기한·권한·Data API를 변경하지 않는다.
+
+## 2026-11-02 구체안 갱신 — 설계 승인, 구현 미승인
+
+사용자가 레슨 완료의 학습일 인정 **설계**와 복습 카드 개선을 요청했다. 복습 카드는 기존 API로 구현하고, 학습일 인정은 [구체 제안](../../docs/operations/plans/lesson-study-day-recognition-proposal-2026-11-02.md)으로 남긴다. 동일 사안의 escalation을 새로 만들지 않고 이 미결 항목에 연결한다.
+
+권장안은 `daily_progress.lesson_completed BOOLEAN NOT NULL DEFAULT false` 한 컬럼을 추가하고, 신규 멱등 제출의 최초 `COMPLETED`와 같은 트랜잭션에 KST 학습일·연속일을 기록하는 것이다. FastAPI 필드 추가 없이 기존 `hasStudied`·연속일 응답의 의미를 확장한다. 같은 ID 재전송·다음 날 결과 복구는 추가 인정하지 않는다. 사용자별 퀴즈/가나/회화·웹 writer의 잠금 순서와 최신 값 재조회도 구현 범위에 포함해야 한다.
+
+기존 영수증·구 pending·과거 날짜는 백필하지 않는다. XP·오늘 단어 목표·SRS 기한·Data API·권한을 변경하지 않는다. **현재 DB 마이그레이션·서버/API 동작 변경·운영 적용 승인은 없으며 실행하지 않았다.** 사용자가 구체안을 채택하면 이 항목에 승인 범위와 시각을 기록한다. 운영 적용은 구현·회귀 이후 보존/배포/롤백안을 별도로 확인한다.
