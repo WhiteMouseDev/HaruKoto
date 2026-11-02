@@ -27,3 +27,7 @@ status: open
 ## Side effects
 
 영향은 운영 학습 저장의 전환 창과 API/웹 배포 경로다. 로그인·기존 기록·SRS 기한·음원·Data API 차단은 보존한다. 롤백은 새 컬럼/영수증을 이해하는 OFF 버전이며 기존 writer로 단순 되돌리거나 인정 기록을 삭제하지 않는다. [상세 적용·롤백안](../../docs/operations/plans/answered-study-day-policy-implementation-2026-11-02.md)을 따른다.
+
+## 2026-11-02 읽기 조사와 구체안 갱신
+
+실제 운영 head o5/p6 미적용·공유 postgres 역할·Cloud Run 공개 최신 라우팅·자동 배포와 보관 웹 배포 114개/READY16개를 확인했다. 기존 유지보수 gate나 active WAF는 없고, 현재 DB에 writer가 없다는 순간 스냅샷은 실행 종료 증거가 아니다. [구체 운영안](../../docs/operations/plans/study-day-font-fix-and-rollout-2026-11-02.md)은 자동 배포 freeze → legacy STOP bridge/모든 구 host 차단 → 실제 종료와 DB 증거 → p6 → OFF → 별도 ON을 제시한다. 새 API 동작·bridge 코드·클라우드/WAF·종료/삭제·마이그레이션은 미구현/미적용 제안이며 별도 승인을 받는다. Data API·권한·기록은 유지했다.

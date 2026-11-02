@@ -1,24 +1,11 @@
 import type { Metadata } from 'next';
-import { Noto_Sans_KR, Noto_Sans_JP } from 'next/font/google';
+import '../../../../assets/fonts/noto-sans-kr.css';
+import '../../../../assets/fonts/noto-sans-jp.css';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || 'https://www.harukoto.co.kr';
-
-const notoSansKR = Noto_Sans_KR({
-  variable: '--font-noto-sans-kr',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-});
-
-const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -113,9 +100,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body
-        className={`${notoSansKR.variable} ${notoSansJP.variable} antialiased`}
-      >
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

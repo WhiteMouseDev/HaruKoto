@@ -1,0 +1,2 @@
+# Preserve byte-pinned upstream OFL notices, including their original end spaces.
+assets/fonts/OFL-*.txt whitespace=-blank-at-eol

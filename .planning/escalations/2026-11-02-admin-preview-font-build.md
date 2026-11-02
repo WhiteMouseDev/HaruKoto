@@ -7,7 +7,11 @@ status: resolved
 resolved_at: 2026-11-02
 ---
 
-## Resolution
+## Resolution — 고정 로컬 폰트로 원인 제거
+
+사용자가 폰트 빌드 수정을 승인한 뒤 웹·관리자·랜딩의 Google loader를 기존과 바이트가 같은 공식 WOFF2 Unicode 분할 자산으로 교체했다. 새 의존성/Next 버전/환경 변수/운영 설정은 바꾸지 않았다. Google 호스트 차단·clean 기본 Turbopack 세 앱 빌드, 자산 248개 무결성/4개 회귀·실제 HTTP SHA/cache·브라우저 한/일 4굵기 표본을 통과했다. 폰트 수정된 최종 활성화 head의 Preview는 별도로 확인해 PR에 기록한다. 성공할 때까지 재빌드하는 것으로 해결 처리하지 않는다. [상세 결과와 운영안](../../docs/operations/plans/study-day-font-fix-and-rollout-2026-11-02.md)을 따른다. 아래는 이전 Preview 성공/실패 조사 이력이다.
+
+## Previous resolution
 
 2026-11-02 읽기 확인에서 직전 PR #215 head `659aac68`의 관리자·웹·랜딩 Vercel 상태는 모두 성공이었다. 이 재발 위험 때문에 이번 학습일 구현을 보류하거나 폰트/Next/클라우드를 변경할 결정은 필요하지 않다. 원래 upstream 문제가 고쳐졌다는 의미는 아니며, 새 head에서 재발하면 별도 후속으로 다시 조사한다. 아래 원인·선택지는 이력으로 보존한다. 새 한 문항 코드의 CI는 그 head에서 별도 확인한다.
 

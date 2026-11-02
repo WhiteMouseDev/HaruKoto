@@ -29,6 +29,9 @@ jobs:
         with:
           filters: |
             frontend:
+              - 'assets/fonts/**'
+              - '.github/scripts/check-font-assets.mjs'
+              - '.github/tests/check-font-assets.test.mjs'
               - 'apps/admin/**'
               - 'apps/landing/**'
               - 'apps/web/**'
@@ -38,6 +41,7 @@ jobs:
               - 'pnpm-workspace.yaml'
               - 'turbo.json'
             admin:
+              - 'assets/fonts/**'
               - 'apps/admin/**'
               - 'packages/config/**'
               - 'packages/database/**'
@@ -87,6 +91,11 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Verify pinned local fonts and guard regressions
+        run: |
+          node .github/scripts/check-font-assets.mjs
+          node --test .github/tests/check-font-assets.test.mjs
 
       - name: Typecheck
         run: pnpm typecheck

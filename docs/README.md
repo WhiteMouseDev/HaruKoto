@@ -75,6 +75,7 @@ docs/
 - [한 문항 답변의 학습일 인정 구체안](operations/plans/answered-study-day-policy-proposal-2026-11-02.md) — 승인한 개별 답안·비공개 접수 영수증·기존 세션/기한 보존·모바일 outbox·웹 계약 이력
 - [한 문항 학습일 구현·격리 검증과 운영안](operations/plans/answered-study-day-policy-implementation-2026-11-02.md) — 실제 한 답안·저장 실패/응답 유실·완전 재실행 검증, 호환 OFF/활성화 ON·구 writer 통제와 보존 롤백
 - [한 단어 저장 직후 주간 통계 반영](operations/plans/weekly-saved-vocabulary-stats-proposal-2026-11-02.md) — KST 일별 고유 단어 선택 필드, 오답·미완료 퀴즈 표시와 과거 출석 무백필
+- [폰트 빌드 복구와 학습일 운영 전환 구체안](operations/plans/study-day-font-fix-and-rollout-2026-11-02.md) — 공식 원본 WOFF2 고정·Google 차단 빌드, 실제 운영 읽기 조사와 STOP bridge·자동 배포 통제·구 writer 종료·p6/OFF/ON의 미적용 제안
 - [레슨 문항과 복습 항목 연결 수정](operations/plans/lesson-review-target-fix-2026-10-21.md) — 명시 참조 계약, 회귀 테스트, 기존 기록 영향과 승인 전 운영 데이터 적용안
 - [Codex 운영 가이드](operations/codex-workflows.md) — 프로필, 프롬프트 템플릿, 모노레포 검증 기준
 - [Codex 스모크 테스트](operations/codex-smoke-test.md) — 첫 실전 테스트용 프롬프트 모음

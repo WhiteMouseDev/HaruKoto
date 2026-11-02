@@ -84,3 +84,7 @@
 ## 릴리스 준비 상태
 
 구현·격리 ON 검증과 최종 OFF 회귀를 완료했다. [호환 구현 PR #215](https://github.com/WhiteMouseDev/HaruKoto/pull/215)와 [활성화 draft #216](https://github.com/WhiteMouseDev/HaruKoto/pull/216)은 병합/운영 적용하지 않는다. 새 커밋의 원격 CI는 각 PR의 현재 head를 기준으로 확인하며 이전 head의 성공을 재사용하지 않는다. 관리자 Vercel Preview의 기존 폰트 외부 다운로드 결함은 [별도 미결 항목](../../../.planning/escalations/2026-11-02-admin-preview-font-build.md)이며 이력이 있으며 직전 문구 head의 현재 Preview는 성공했다. 재발 시 기능 회귀와 별도로 보고하고 임의 폰트/의존성 변경은 하지 않는다. 운영 쓰기 중지/구 writer 종료의 구체 통제는 [미결 운영 항목](../../../.planning/escalations/2026-11-02-study-day-writer-cutover.md)이며 별도 운영 승인 전에 결정해야 한다. 테스트 전용 API·PostgreSQL과 새 시뮬레이터는 검증 뒤 종료했고 fixture 데이터와 증빙은 보존했다.
+
+## 2026-11-02 폰트 수정과 운영 조사 후속
+
+사용자가 활성화 폰트 오류 수정과 적용안 구체화를 요청했다. 기존과 같은 공식 WOFF2 분할을 고정하는 코드/CI를 추가했고, 실제 운영은 읽기만 했다. API 자동 배포·공유 postgres 역할·p6 미적용·기존 web host를 확인했으므로 #215부터 병합하면 안 된다. [최신 구체안](study-day-font-fix-and-rollout-2026-11-02.md)의 자동 배포 freeze와 legacy STOP bridge/구 host 차단·실제 종료 증거를 선행한 뒤 p6/OFF/ON을 검토한다. 이번에 DB/운영 설정/배포/병합은 변경하지 않았다.

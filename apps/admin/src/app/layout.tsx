@@ -1,17 +1,10 @@
 import type { Metadata } from 'next';
-import { Noto_Sans_JP } from 'next/font/google';
+import '../../../../assets/fonts/noto-sans-jp.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Toaster } from 'sonner';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/query-provider';
-
-const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'HaruKoto Admin',
@@ -27,10 +20,12 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning className="h-full overflow-hidden">
-      <body
-        className={`${notoSansJP.variable} font-jp h-full overflow-hidden bg-background antialiased`}
-      >
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className="h-full overflow-hidden"
+    >
+      <body className="font-jp bg-background h-full overflow-hidden antialiased">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
