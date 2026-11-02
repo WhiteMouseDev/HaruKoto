@@ -43,6 +43,7 @@ class StreakInfo(CamelModel):
 
 
 class WeeklyStatItem(CamelModel):
+    vocabulary_answered_count: int | None = Field(default=None, ge=0)
     date: str
     words_studied: int
     xp_earned: int

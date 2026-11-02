@@ -6,6 +6,7 @@ export type DashboardData = {
   showKana?: boolean;
   today: {
     wordsStudied: number;
+    hasStudied?: boolean;
     quizzesCompleted: number;
     correctAnswers: number;
     totalAnswers: number;
@@ -13,7 +14,13 @@ export type DashboardData = {
     goalProgress: number;
   };
   streak: { current: number; longest: number };
-  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
+  weeklyStats: {
+    date: string;
+    wordsStudied: number;
+    xpEarned: number;
+    hasStudied?: boolean;
+    vocabularyAnsweredCount?: number | null;
+  }[];
   levelProgress: {
     vocabulary: { total: number; mastered: number; inProgress: number };
     grammar: { total: number; mastered: number; inProgress: number };

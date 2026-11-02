@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
@@ -38,6 +39,9 @@ void main() {
           });
         }),
         sharedPreferencesProvider.overrideWithValue(prefs),
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       try {
@@ -102,7 +106,8 @@ void main() {
         expect(find.text('저장 1/2'), findsOneWidget);
         expect(repository.sessionReads, 2);
         expect(find.text('오늘 1/20'), findsOneWidget);
-        expect(dashboardReads, 2);
+        // The answer ACK refreshes the daily state before the exit refresh.
+        expect(dashboardReads, 3);
       } finally {
         await tester.pumpWidget(const SizedBox());
         await tester.pump();

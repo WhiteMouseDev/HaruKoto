@@ -62,7 +62,7 @@ class DailyProgress(Base):
     grammar_studied: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     sentences_studied: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     study_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
-    lesson_completed: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=false())
+    activity_recorded: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=false())
 
     user: Mapped[User] = relationship(back_populates="daily_progress")  # noqa: F821
 

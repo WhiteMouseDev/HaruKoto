@@ -4,6 +4,7 @@ import { queryKeys } from '@/lib/query-keys';
 
 export type HistoryRecord = {
   date: string;
+  hasStudied?: boolean;
   wordsStudied: number;
   quizzesCompleted: number;
   correctAnswers: number;

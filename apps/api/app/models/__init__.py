@@ -23,6 +23,7 @@ from app.models.progress import UserGrammarProgress, UserVocabProgress
 from app.models.quiz import QuizAnswer, QuizSession
 from app.models.social import UserCharacterUnlock, UserFavoriteCharacter, WordbookEntry
 from app.models.stage import StudyStage, UserStudyStageProgress
+from app.models.study_activity import StudyActivityReceipt
 from app.models.subscription import DailyAiUsage, Payment, Subscription
 from app.models.tts import TtsAudio
 from app.models.user import User
@@ -58,6 +59,7 @@ __all__ = [
     "ScenarioCategory",
     "SentenceArrangeQuestion",
     "StudyStage",
+    "StudyActivityReceipt",
     "Subscription",
     "SubscriptionPlan",
     "SubscriptionStatus",

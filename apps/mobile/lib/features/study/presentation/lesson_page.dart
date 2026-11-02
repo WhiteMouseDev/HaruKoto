@@ -14,6 +14,7 @@ import '../providers/lesson_session_provider.dart';
 import '../data/models/lesson_models.dart';
 import 'widgets/lesson_intro_steps.dart';
 import 'widgets/lesson_step_content.dart';
+import 'widgets/lesson_activity_pending_banner.dart';
 
 /// 레슨 학습 플로우: 6-Step (상황 프리뷰 → 가이드 리딩 → 이해 체크 → 매칭 게임 → 문장 재구성 → 결과)
 class LessonPage extends ConsumerStatefulWidget {
@@ -170,119 +171,129 @@ class _LessonPageState extends ConsumerState<LessonPage>
             onPressed: () => unawaited(_exit()),
           ),
         ),
-        body: AbsorbPointer(
-            absorbing: _exiting,
-            child: detailAsync.when(
-              data: (detail) => detail == null
-                  ? _SubmissionRecovery(
-                      session: session,
-                      onCheck: session.submissionCanCheck
-                          ? () => unawaited(sessionActions.checkSubmission())
-                          : null,
-                      onRetry: session.submissionCanRetry
-                          ? () => unawaited(sessionActions.retrySubmission())
-                          : null,
-                      onExit: () => unawaited(_exit()))
-                  : Column(
-                      children: [
-                        if (session.storageError)
-                          MaterialBanner(
-                            content: const Text('최근 진행이 기기에 저장되지 않았어요.'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () =>
-                                      unawaited(sessionActions.flush()),
-                                  child: const Text('저장 재시도'))
-                            ],
-                          ),
-                        if (session.notice != null)
-                          Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSizes.md,
-                                  vertical: AppSizes.sm),
-                              child: Text(session.notice!,
-                                  style:
-                                      Theme.of(context).textTheme.bodySmall)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.md,
-                            vertical: AppSizes.sm,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: LessonStepProgressBar(
-                                  currentStep: session.step.index,
-                                  totalSteps: _totalSteps,
-                                ),
+        body: Column(children: [
+          const LessonActivityPendingBanner(),
+          Expanded(
+            child: AbsorbPointer(
+                absorbing: _exiting,
+                child: detailAsync.when(
+                  data: (detail) => detail == null
+                      ? _SubmissionRecovery(
+                          session: session,
+                          onCheck: session.submissionCanCheck
+                              ? () =>
+                                  unawaited(sessionActions.checkSubmission())
+                              : null,
+                          onRetry: session.submissionCanRetry
+                              ? () =>
+                                  unawaited(sessionActions.retrySubmission())
+                              : null,
+                          onExit: () => unawaited(_exit()))
+                      : Column(
+                          children: [
+                            if (session.storageError)
+                              MaterialBanner(
+                                content: const Text('최근 진행이 기기에 저장되지 않았어요.'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () =>
+                                          unawaited(sessionActions.flush()),
+                                      child: const Text('저장 재시도'))
+                                ],
                               ),
-                              if (session.showDialogueShortcut) ...[
-                                const SizedBox(width: AppSizes.sm),
-                                GestureDetector(
-                                  onTap: () {
-                                    _tts.stop(lessonId: widget.lessonId);
-                                    unawaited(showLessonDialogueSheet(
-                                        context, detail,
-                                        ttsService: _tts));
-                                  },
-                                  child: const Icon(
-                                    LucideIcons.messageSquare,
-                                    size: 18,
-                                    color: AppColors.sakura,
+                            if (session.notice != null)
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSizes.md,
+                                      vertical: AppSizes.sm),
+                                  child: Text(session.notice!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSizes.md,
+                                vertical: AppSizes.sm,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: LessonStepProgressBar(
+                                      currentStep: session.step.index,
+                                      totalSteps: _totalSteps,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  if (session.showDialogueShortcut) ...[
+                                    const SizedBox(width: AppSizes.sm),
+                                    GestureDetector(
+                                      onTap: () {
+                                        _tts.stop(lessonId: widget.lessonId);
+                                        unawaited(showLessonDialogueSheet(
+                                            context, detail,
+                                            ttsService: _tts));
+                                      },
+                                      child: const Icon(
+                                        LucideIcons.messageSquare,
+                                        size: 18,
+                                        color: AppColors.sakura,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: session.submissionPending ||
+                                        session.serverRecorded
+                                    ? _SubmissionStatus(
+                                        detail: detail,
+                                        session: session,
+                                        onCheck: () => unawaited(
+                                            sessionActions.checkSubmission()),
+                                        onRetry: session.submissionCanRetry
+                                            ? () => unawaited(sessionActions
+                                                .retrySubmission())
+                                            : null)
+                                    : LessonStepContent(
+                                        ttsService: _tts,
+                                        lessonId: widget.lessonId,
+                                        detail: detail,
+                                        session: session,
+                                        totalSteps: _totalSteps,
+                                        onExit: () {
+                                          if (sessionActions.isCurrent) {
+                                            unawaited(_exit());
+                                          }
+                                        },
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => Center(
+                      child: Padding(
+                          padding: const EdgeInsets.all(AppSizes.lg),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(e is ApiException
+                                  ? e.userMessage
+                                  : '레슨과 저장된 진행을 불러오지 못했어요. 다시 시도해 주세요.'),
+                              const SizedBox(height: AppSizes.md),
+                              FilledButton(
+                                  onPressed: () => ref.invalidate(
+                                      lessonResumeDetailProvider(
+                                          widget.lessonId)),
+                                  child: const Text('다시 시도')),
                             ],
-                          ),
-                        ),
-                        Expanded(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: session.submissionPending ||
-                                    session.serverRecorded
-                                ? _SubmissionStatus(
-                                    detail: detail,
-                                    session: session,
-                                    onCheck: () => unawaited(
-                                        sessionActions.checkSubmission()),
-                                    onRetry: session.submissionCanRetry
-                                        ? () => unawaited(
-                                            sessionActions.retrySubmission())
-                                        : null)
-                                : LessonStepContent(
-                                    ttsService: _tts,
-                                    lessonId: widget.lessonId,
-                                    detail: detail,
-                                    session: session,
-                                    totalSteps: _totalSteps,
-                                    onExit: () {
-                                      if (sessionActions.isCurrent) {
-                                        unawaited(_exit());
-                                      }
-                                    },
-                                  ),
-                          ),
-                        ),
-                      ],
-                    ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(
-                  child: Padding(
-                      padding: const EdgeInsets.all(AppSizes.lg),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(e is ApiException
-                              ? e.userMessage
-                              : '레슨과 저장된 진행을 불러오지 못했어요. 다시 시도해 주세요.'),
-                          const SizedBox(height: AppSizes.md),
-                          FilledButton(
-                              onPressed: () => ref.invalidate(
-                                  lessonResumeDetailProvider(widget.lessonId)),
-                              child: const Text('다시 시도')),
-                        ],
-                      ))),
-            )),
+                          ))),
+                )),
+          ),
+        ]),
       ),
     );
   }

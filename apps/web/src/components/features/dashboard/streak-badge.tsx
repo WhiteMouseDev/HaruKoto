@@ -2,24 +2,30 @@
 
 import { motion } from 'framer-motion';
 import { Check, Flame } from 'lucide-react';
+import { getTodayKST } from '@/lib/date';
 
 type StreakBadgeProps = {
   currentStreak: number;
-  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
+  weeklyStats: {
+    date: string;
+    wordsStudied: number;
+    xpEarned: number;
+    hasStudied?: boolean;
+  }[];
 };
 
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
 
 export function StreakBadge({ currentStreak, weeklyStats }: StreakBadgeProps) {
-  const today = new Date();
-  const todayIndex = (today.getDay() + 6) % 7; // Mon=0
+  const today = getTodayKST();
+  const todayIndex = (today.getUTCDay() + 6) % 7; // Mon=0
 
   const weekDays = weeklyStats.map((day) => {
     const date = new Date(day.date + 'T00:00:00Z');
     const dayIndex = (date.getUTCDay() + 6) % 7;
     return {
       label: DAY_LABELS[dayIndex],
-      studied: day.wordsStudied > 0 || day.xpEarned > 0,
+      studied: day.hasStudied ?? (day.wordsStudied > 0 || day.xpEarned > 0),
       isToday:
         dayIndex === todayIndex &&
         date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10),
@@ -49,6 +55,7 @@ export function StreakBadge({ currentStreak, weeklyStats }: StreakBadgeProps) {
               {day.label}
             </span>
             <div
+              aria-label={`${day.label}요일 · ${day.studied ? '학습 기록 있음' : '학습 기록 없음'}`}
               className={`flex size-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 day.studied
                   ? 'bg-primary text-primary-foreground shadow-sm'

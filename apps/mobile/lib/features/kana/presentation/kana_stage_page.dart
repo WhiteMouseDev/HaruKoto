@@ -319,11 +319,12 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
 
     if (_quizSessionId != null) {
       try {
-        final result = await ref.read(kanaRepositoryProvider).answerQuestion(
-              sessionId: _quizSessionId!,
-              questionId: current.questionId,
-              selectedOptionId: optionId,
-            );
+        final result =
+            await ref.read(kanaCompletionServiceProvider).answerQuestion(
+                  sessionId: _quizSessionId!,
+                  questionId: current.questionId,
+                  selectedOptionId: optionId,
+                );
         isCorrect = result.isCorrect;
         // correctOptionId가 없으면 서버 응답으로 채워서 UI 하이라이트
         if (current.correctOptionId == null && mounted) {

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
+import { useStudyAnswer } from '@/hooks/use-study-answer';
 
 type QuizQuestion = {
   questionId: string;
@@ -53,16 +54,7 @@ export function useStartKanaQuiz() {
 }
 
 export function useAnswerKanaQuestion() {
-  return useMutation<unknown, Error, AnswerKanaQuestionParams>({
-    mutationFn: (params) =>
-      apiFetch('/api/v1/kana/quiz/answer', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      }),
-    onError: () => {
-      toast.error('답안 저장에 실패했어요.');
-    },
-  });
+  return useStudyAnswer<AnswerKanaQuestionParams>('/api/v1/kana/quiz/answer');
 }
 
 export function useCompleteKanaQuiz() {

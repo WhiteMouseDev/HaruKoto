@@ -185,6 +185,7 @@ async def test_answer_kana_quiz(client, mock_user, test_user_id):
     mock_quiz.correct_count = 0
 
     mock_session = AsyncMock()
+    mock_session.scalar = AsyncMock(return_value=None)
     mock_session.get = AsyncMock(return_value=mock_quiz)
     mock_session.execute = AsyncMock(return_value=MagicMock())
     mock_session.commit = AsyncMock()

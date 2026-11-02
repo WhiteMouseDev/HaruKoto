@@ -16,15 +16,12 @@ from app.models.lesson import LessonSubmission
 from app.models.user import User
 from app.schemas.lesson import LessonSubmissionRequest, LessonSubmissionResponse, LessonSubmitResponse
 from app.services.lesson_command import LessonServiceError, apply_lesson_attempt
-from app.services.study_day_recording import canonical_study_instant, lock_study_user, record_lesson_study_day
+from app.services.study_day_recording import canonical_study_instant, lock_study_user
 
 logger = logging.getLogger(__name__)
 
 FINGERPRINT_VERSION = 1
 RESPONSE_SCHEMA_VERSION = 1
-# Source-controlled activation follows the compatibility deployment and writer drain.
-# This is deliberately not an environment or runtime configuration contract.
-LESSON_STUDY_DAY_RECOGNITION_ENABLED = False
 NO_STORE_HEADERS = {"Cache-Control": "private, no-store"}
 UNCONFIRMED_DETAIL = "제출 결과를 아직 확인할 수 없습니다. 같은 제출로 다시 확인해주세요"
 
@@ -116,8 +113,6 @@ async def submit_lesson_once(
         # or unpublished source does not remove an already committed result.
         applied = await apply_lesson_attempt(db, user, lesson_id=lesson_id, answers=list(request.answers))
         processed_at = canonical_study_instant(datetime.now(UTC))
-        if LESSON_STUDY_DAY_RECOGNITION_ENABLED and applied.status == "COMPLETED":
-            await record_lesson_study_day(db, user, processed_at=processed_at)
         result = LessonSubmissionResponse(
             submission_id=request.submission_id,
             processed_at=processed_at,

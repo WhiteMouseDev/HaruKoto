@@ -13,6 +13,7 @@ import '../data/lesson_checkpoint_store.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_checkpoint.dart';
 import '../domain/lesson_submission.dart';
+import '../domain/lesson_study_activity.dart';
 import '../domain/lesson_flow_policy.dart';
 import '../domain/lesson_practice_layout.dart';
 import '../domain/lesson_session_state.dart';
@@ -20,6 +21,7 @@ import 'lesson_pilot_telemetry_provider.dart';
 import 'lesson_session_service.dart';
 import 'study_provider.dart';
 import 'saved_lesson_entry_provider.dart';
+import 'lesson_activity_sync_provider.dart';
 
 export '../domain/lesson_session_state.dart';
 
@@ -60,6 +62,8 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   DateTime? _lastStudiedAt;
   Future<void>? _initializing;
   LessonSubmissionEnvelope? _submission;
+  String? _activityAttemptId;
+  final _unpersistedActivities = <String, LessonStudyActivityDraft>{};
 
   LessonSessionActions get actions => LessonSessionActions._(this, _generation);
 
@@ -76,6 +80,8 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _lastStudiedAt = null;
     _initializing = null;
     _submission = null;
+    _activityAttemptId = null;
+    _unpersistedActivities.clear();
     ref.onDispose(() => _generation++);
     return const LessonSessionState();
   }
@@ -153,6 +159,12 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final raw = await store.read(owner, lessonId);
     if (!_current(generation)) return;
     _detail = detail;
+    final activityStore = ref.read(lessonActivityJournalStoreProvider);
+    if (activityStore != null) {
+      _activityAttemptId =
+          await activityStore.readActivityAttemptId(owner, lessonId);
+      if (!_current(generation)) return;
+    }
     _progressStamp = lessonProgressStamp(detail.progress);
     final seed = Random.secure().nextInt(1 << 30);
     state = LessonSessionState(
@@ -275,10 +287,9 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       state = state.copyWith(storageError: true);
       return Future<bool>.value(false);
     }
-    final store = ref.read(lessonCheckpointStoreProvider);
     final write = (() async {
       try {
-        await store.write(owner, lessonId, payload);
+        await _writeCheckpointPayload(owner, payload);
         if (_current(generation)) {
           ref.invalidate(savedLessonLookupProvider(
               (accountId: owner, lessonId: lessonId)));
@@ -309,9 +320,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       return false;
     }
     try {
-      await ref
-          .read(lessonCheckpointStoreProvider)
-          .write(owner, lessonId, payload);
+      await _writeCheckpointPayload(owner, payload);
       if (!_current(generation)) return false;
       ref.invalidate(
           savedLessonLookupProvider((accountId: owner, lessonId: lessonId)));
@@ -350,6 +359,45 @@ class LessonSessionController extends Notifier<LessonSessionState> {
       }
     })();
     return removal;
+  }
+
+  Future<void> _writeCheckpointPayload(String owner, String payload) async {
+    final requests = _unpersistedActivities.values.toList();
+    final journal = ref.read(lessonActivityJournalStoreProvider);
+    final attemptId = _activityAttemptId;
+    if (requests.isNotEmpty && journal != null && attemptId != null) {
+      await journal.writeCheckpointAndActivities(
+          owner, lessonId, payload, attemptId, requests);
+      for (final request in requests) {
+        _unpersistedActivities.remove(request.activityId);
+      }
+      if (_current(_generation) && _owner == owner) {
+        unawaited(ref.read(lessonActivitySyncProvider.notifier).sync());
+      }
+    } else {
+      await ref
+          .read(lessonCheckpointStoreProvider)
+          .write(owner, lessonId, payload);
+    }
+  }
+
+  void _queueActivity(String kind, Map<String, dynamic> answer) {
+    final owner = _owner;
+    final version = _detail?.activityContentVersion;
+    if (!_editable ||
+        owner == null ||
+        version == null ||
+        ref.read(lessonActivityJournalStoreProvider) == null) {
+      return;
+    }
+    _activityAttemptId ??= newLessonActivityId();
+    final request = LessonStudyActivityDraft.create(
+        owner: owner,
+        attemptId: _activityAttemptId!,
+        contentVersion: version,
+        kind: kind,
+        answer: answer);
+    _unpersistedActivities[request.activityId] = request;
   }
 
   /// Explicit navigation waits for durable writes. OS termination can interrupt
@@ -426,8 +474,46 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   }
 
   void selectRecognition(String selected) {
-    if (state.step == LessonStep.recognition) {
+    if (_editable &&
+        state.step == LessonStep.recognition &&
+        state.recognitionSelection == null) {
+      final questions = lessonRecognitionQuestions(_detail!);
+      final question = questions[state.recognitionIndex];
+      if (state.answers.containsKey(question.order) ||
+          !(question.options ?? []).any((option) => option.id == selected)) {
+        return;
+      }
+      _queueActivity('RECOGNITION', {
+        'questionOrder': question.order,
+        'selectedAnswer': selected,
+      });
       _change(state.copyWith(recognitionSelection: selected));
+    }
+  }
+
+  void answerMatching(
+      {required String leftVocabularyId,
+      required String rightVocabularyId,
+      required Set<int> matched,
+      int? left,
+      int? right}) {
+    if (!_editable || state.step != LessonStep.matching) return;
+    final ids = state.layout.matchingVocabIds;
+    if (!ids.contains(leftVocabularyId) || !ids.contains(rightVocabularyId)) {
+      return;
+    }
+    _queueActivity('MATCHING', {
+      'leftVocabularyId': leftVocabularyId,
+      'rightVocabularyId': rightVocabularyId
+    });
+    final next = state.copyWith(
+        matchingMatched: Set<int>.from(matched),
+        matchingLeft: left,
+        matchingRight: right);
+    if (_sameActivityState(state, next)) {
+      unawaited(_persist());
+    } else {
+      _change(next);
     }
   }
 
@@ -556,6 +642,12 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final questions = lessonReorderQuestions(detail);
     final question = questions[state.reorderIndex];
     if (answer['order'] != question.order) return;
+    if (!state.answers.containsKey(question.order)) {
+      _queueActivity('SENTENCE_REORDER', {
+        'questionOrder': question.order,
+        'submittedOrder': answer['submittedOrder'],
+      });
+    }
     final answers = Map<int, Map<String, dynamic>>.from(state.answers)
       ..[question.order] = Map<String, dynamic>.from(answer);
     if (state.reorderIndex < questions.length - 1) {
@@ -825,6 +917,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _initialized = false;
     _acknowledged = false;
     _submission = null;
+    _activityAttemptId = null;
     // The previous completed response is not a baseline for a new attempt.
     ref.invalidate(lessonResumeDetailProvider(lessonId));
   }
@@ -907,6 +1000,22 @@ class LessonSessionActions {
   void updateMatching({required Set<int> matched, int? left, int? right}) {
     if (_current) {
       _controller.updateMatching(matched: matched, left: left, right: right);
+    }
+  }
+
+  void answerMatching(
+      {required String leftVocabularyId,
+      required String rightVocabularyId,
+      required Set<int> matched,
+      int? left,
+      int? right}) {
+    if (_current) {
+      _controller.answerMatching(
+          leftVocabularyId: leftVocabularyId,
+          rightVocabularyId: rightVocabularyId,
+          matched: matched,
+          left: left,
+          right: right);
     }
   }
 

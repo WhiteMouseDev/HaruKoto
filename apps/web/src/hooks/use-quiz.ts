@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
+import { useStudyAnswer } from '@/hooks/use-study-answer';
 import {
   QUIZ_SNAPSHOT_INVALID_MESSAGE,
   QUIZ_WEB_UNSUPPORTED_MESSAGE,
@@ -212,16 +213,7 @@ export function useResumeQuiz() {
 }
 
 export function useAnswerQuestion() {
-  return useMutation<unknown, Error, AnswerQuestionParams>({
-    mutationFn: (params) =>
-      apiFetch('/api/v1/quiz/answer', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      }),
-    onError: () => {
-      toast.error('답안 저장에 실패했어요.');
-    },
-  });
+  return useStudyAnswer<AnswerQuestionParams>('/api/v1/quiz/answer');
 }
 
 export function useCompleteQuiz() {

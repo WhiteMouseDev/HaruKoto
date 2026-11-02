@@ -60,7 +60,7 @@ void main() {
           weeklyStats: [_entry('2026-09-27', true)]);
       expect(find.text('오늘'), findsOneWidget);
       expect(find.byIcon(LucideIcons.check), findsOneWidget);
-      expect(find.bySemanticsLabel('9월 23일 수요일, 오늘, 학습 완료'), findsOneWidget);
+      expect(find.bySemanticsLabel('9월 23일 수요일, 오늘, 학습 기록 있음'), findsOneWidget);
       expect(find.bySemanticsLabel('9월 27일 일요일, 예정'), findsOneWidget);
       expect(tester.hasRunningAnimations, isFalse);
     } finally {
@@ -80,12 +80,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(repository.calls, [(2026, 9)]);
-    expect(find.text('체크는 학습 완료 · 테두리는 오늘'), findsNothing);
+    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsNothing);
 
     pending.completeError(StateError('offline'));
     await tester.pumpAndSettle();
     expect(find.text('학습 기록을 불러오지 못했어요'), findsOneWidget);
-    expect(find.text('체크는 학습 완료 · 테두리는 오늘'), findsNothing);
+    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsNothing);
     repository.result = Future.value([
       StatsHistoryRecord.fromJson({'date': '2026-09-27', 'hasStudied': true}),
     ]);
@@ -93,7 +93,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(repository.calls, [(2026, 9), (2026, 9)]);
     expect(find.text('학습 기록을 불러오지 못했어요'), findsNothing);
-    expect(find.text('체크는 학습 완료 · 테두리는 오늘'), findsOneWidget);
+    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsOneWidget);
     expect(find.byIcon(LucideIcons.check), findsOneWidget);
 
     await tester.tap(find.byTooltip('이전 달'));
@@ -119,9 +119,9 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('streak-calendar-action')));
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('2026년 9월 21일 월요일, 학습 기록 없음'), findsOneWidget);
-    expect(find.bySemanticsLabel('2026년 9월 22일 화요일, 학습 완료'), findsOneWidget);
+    expect(find.bySemanticsLabel('2026년 9월 22일 화요일, 학습 기록 있음'), findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 23일 수요일, 학습 기록 없음'), findsOneWidget);
-    expect(find.bySemanticsLabel('2026년 9월 24일 목요일, 학습 완료'), findsOneWidget);
+    expect(find.bySemanticsLabel('2026년 9월 24일 목요일, 학습 기록 있음'), findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 28일 월요일, 예정'), findsOneWidget);
     expect(find.textContaining('하루에 한 번만'), findsNothing);
     semantics.dispose();

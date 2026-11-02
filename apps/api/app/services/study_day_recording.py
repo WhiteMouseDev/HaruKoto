@@ -18,14 +18,17 @@ from app.services.daily_progress_upsert import build_daily_progress_insert_value
 from app.services.gamification import update_streak
 from app.utils.date import study_date_kst
 
-ACTIVITY_FIELDS = ["experience_points", "level", "last_study_date", "streak_count", "longest_streak"]
+ANSWERED_STUDY_DAY_RECOGNITION_ENABLED = False
+
+ACTIVITY_FIELDS = ["id", "experience_points", "level", "last_study_date", "streak_count", "longest_streak"]
 
 
 async def lock_study_user(db: AsyncSession, user: User) -> None:
-    """Reload the locked activity snapshot before any domain or reward writes.
+    """Reload identity and locked activity state before domain or reward writes.
 
     no_autoflush prevents a pending domain mutation from reversing lock order.
     Callers must invoke this before calculating/changing User reward fields.
+    Explicit id refresh also supports reuse after rollback expired the identity.
     NO KEY UPDATE remains compatible with child-row FK KEY SHARE locks.
     """
     with db.no_autoflush:
@@ -59,8 +62,10 @@ def apply_study_streak(user: User, *, processed_at: datetime) -> date:
     return day
 
 
-async def record_lesson_study_day(db: AsyncSession, user: User, *, processed_at: datetime) -> None:
-    """Called only by the first successful keyed lesson receipt transaction."""
+async def record_answered_study_day(db: AsyncSession, user: User, *, processed_at: datetime) -> None:
+    """Record a fresh durable answer only; caller owns the transaction/mutex."""
+    if not ANSWERED_STUDY_DAY_RECOGNITION_ENABLED:
+        return
     day = apply_study_streak(user, processed_at=processed_at)
-    statement = insert(DailyProgress).values(**build_daily_progress_insert_values(user_id=user.id, today=day, lesson_completed=True))
-    await db.execute(statement.on_conflict_do_update(index_elements=["user_id", "date"], set_={"lesson_completed": True}))
+    statement = insert(DailyProgress).values(**build_daily_progress_insert_values(user_id=user.id, today=day, activity_recorded=True))
+    await db.execute(statement.on_conflict_do_update(index_elements=["user_id", "date"], set_={"activity_recorded": True}))

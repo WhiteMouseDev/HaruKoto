@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/services/haptic_service.dart';
@@ -101,6 +102,8 @@ Future<ProviderContainer> _pumpSourceResult(
   await HapticService().setEnabled(false);
   final container = ProviderContainer(overrides: [
     sharedPreferencesProvider.overrideWithValue(prefs),
+    currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+    currentAccountReaderProvider.overrideWithValue(() => 'quiz-answer-fixture'),
     studyRepositoryProvider.overrideWithValue(repository),
   ]);
   addTearDown(() async {

@@ -23,6 +23,9 @@ class _WeeklyChartState extends State<WeeklyChart>
 
   static const _dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
 
+  int _wordCount(WeeklyStatEntry entry) =>
+      entry.vocabularyAnsweredCount ?? entry.wordsStudied;
+
   String _dayOfWeek(String dateStr) {
     try {
       final date = DateTime.parse(dateStr);
@@ -55,8 +58,14 @@ class _WeeklyChartState extends State<WeeklyChart>
     final theme = Theme.of(context);
 
     final totalWords =
-        widget.weeklyStats.fold<int>(0, (a, e) => a + e.wordsStudied);
+        widget.weeklyStats.fold<int>(0, (a, e) => a + _wordCount(e));
     final totalXp = widget.weeklyStats.fold<int>(0, (a, e) => a + e.xpEarned);
+    final hasActivity = widget.weeklyStats.any(
+      (entry) =>
+          entry.hasStudied || _wordCount(entry) > 0 || entry.xpEarned > 0,
+    );
+    final usesCompletionFallback = widget.weeklyStats
+        .any((entry) => entry.vocabularyAnsweredCount == null);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -94,7 +103,7 @@ class _WeeklyChartState extends State<WeeklyChart>
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final barCount = widget.weeklyStats.length.clamp(0, 7);
-                  if (barCount == 0 || totalWords == 0) {
+                  if (barCount == 0 || !hasActivity) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +124,9 @@ class _WeeklyChartState extends State<WeeklyChart>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '오늘 단어 1개만 학습해도 그래프가 채워져요',
+                            usesCompletionFallback
+                                ? '학습을 마치면 완료 기준 기록이 표시돼요'
+                                : '오늘 단어 1개만 학습해도 그래프가 채워져요',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurface
                                   .withValues(alpha: 0.35),
@@ -127,7 +138,15 @@ class _WeeklyChartState extends State<WeeklyChart>
                     );
                   }
 
-                  const goalLineY = 120.0 * 0.3;
+                  // Bars and target share a linear scale. Keep the upper 20px
+                  // for goal checks, without inflating small or zero counts.
+                  const barAreaHeight = 100.0;
+                  final maxWords =
+                      widget.weeklyStats.map(_wordCount).fold(0, math.max);
+                  final scaleMax =
+                      math.max(1, math.max(widget.dailyGoal, maxWords));
+                  final goalLineY =
+                      120 - widget.dailyGoal / scaleMax * barAreaHeight;
 
                   return AnimatedBuilder(
                     animation: _controller,
@@ -140,54 +159,46 @@ class _WeeklyChartState extends State<WeeklyChart>
                       return Stack(
                         children: [
                           // Goal dashed line
-                          Positioned(
-                            top: goalLineY,
-                            left: 0,
-                            right: 0,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: CustomPaint(
-                                    size: const Size(double.infinity, 1),
-                                    painter: _DashedLinePainter(
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.15),
-                                    ),
-                                  ),
+                          if (widget.dailyGoal > 0)
+                            Positioned(
+                              key: const ValueKey('weekly-goal-line'),
+                              top: goalLineY,
+                              left: 0,
+                              right: 64,
+                              child: CustomPaint(
+                                size: const Size(double.infinity, 1),
+                                painter: _DashedLinePainter(
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.15),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '목표',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.35),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                          if (widget.dailyGoal > 0)
+                            Positioned(
+                              top: goalLineY - 7,
+                              right: 0,
+                              child: Text(
+                                '목표 ${widget.dailyGoal}개',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.35),
+                                ),
+                              ),
+                            ),
 
                           // Bars
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: List.generate(barCount, (i) {
-                              final value = widget.weeklyStats[i].wordsStudied;
-                              final metGoal =
-                                  value >= widget.dailyGoal && value > 0;
-
-                              double barHeight;
-                              if (value <= 0) {
-                                barHeight = 3;
-                              } else {
-                                barHeight =
-                                    math.sqrt(value / widget.dailyGoal) *
-                                        0.7 *
-                                        120;
-                                barHeight = barHeight.clamp(16, 120);
-                              }
-
-                              final animatedHeight = barHeight * animValue;
+                              final entry = widget.weeklyStats[i];
+                              final value = _wordCount(entry);
+                              final metGoal = widget.dailyGoal > 0 &&
+                                  value >= widget.dailyGoal;
+                              final animatedHeight = math.max(0, value) /
+                                  scaleMax *
+                                  barAreaHeight *
+                                  animValue;
 
                               return Expanded(
                                 child: Padding(
@@ -209,15 +220,14 @@ class _WeeklyChartState extends State<WeeklyChart>
                                           ),
                                         ),
                                       Container(
+                                        key: ValueKey(
+                                            'weekly-word-bar-${entry.date}'),
                                         height: animatedHeight,
                                         decoration: BoxDecoration(
-                                          color: value <= 0
-                                              ? theme.colorScheme.onSurface
-                                                  .withValues(alpha: 0.15)
-                                              : metGoal
-                                                  ? theme.colorScheme.primary
-                                                  : theme.colorScheme.primary
-                                                      .withValues(alpha: 0.5),
+                                          color: metGoal
+                                              ? theme.colorScheme.primary
+                                              : theme.colorScheme.primary
+                                                  .withValues(alpha: 0.5),
                                           borderRadius: const BorderRadius.only(
                                             topLeft: Radius.circular(6),
                                             topRight: Radius.circular(6),
@@ -245,15 +255,54 @@ class _WeeklyChartState extends State<WeeklyChart>
                 widget.weeklyStats.length.clamp(0, 7),
                 (i) => Expanded(
                   child: Center(
-                    child: Text(
-                      _dayOfWeek(widget.weeklyStats[i].date),
-                      style: TextStyle(
-                        fontSize: 10,
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    child: Semantics(
+                      label: '${widget.weeklyStats[i].date}, '
+                          '${widget.weeklyStats[i].hasStudied ? '학습 기록 있음' : '학습 기록 없음'}, '
+                          '단어 ${_wordCount(widget.weeklyStats[i])}개'
+                          '${widget.weeklyStats[i].vocabularyAnsweredCount == null ? ', 완료 기준' : ''}',
+                      excludeSemantics: true,
+                      child: Column(
+                        children: [
+                          Text(
+                            _dayOfWeek(widget.weeklyStats[i].date),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.4),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          SizedBox(
+                            height: 4,
+                            child: widget.weeklyStats[i].hasStudied
+                                ? Container(
+                                    key: ValueKey(
+                                        'weekly-activity-${widget.weeklyStats[i].date}'),
+                                    width: 4,
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Center(
+              child: Text(
+                usesCompletionFallback
+                    ? '완료 기준 단어 수 포함 · 점은 학습한 날'
+                    : '일별 저장 단어 합계 · 점은 학습한 날',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ),

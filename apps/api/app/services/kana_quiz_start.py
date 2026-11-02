@@ -12,6 +12,7 @@ from app.models import KanaCharacter, KanaLearningStage, QuizSession
 from app.models.enums import KanaType, QuizType
 from app.models.user import User
 from app.schemas.kana import KanaQuizStartRequest
+from app.services import study_day_recording
 from app.services.kana_quiz_questions import QuestionPayload, build_kana_quiz_questions, strip_kana_quiz_answers
 
 
@@ -93,7 +94,9 @@ async def create_kana_quiz_session(
         quiz_type=QuizType.KANA,
         jlpt_level=user.jlpt_level,
         total_questions=len(questions),
-        questions_data=questions,
+        questions_data=[{**q, "_answerActivityVersion": 1} for q in questions]
+        if study_day_recording.ANSWERED_STUDY_DAY_RECOGNITION_ENABLED
+        else questions,
     )
     db.add(session)
     await db.commit()

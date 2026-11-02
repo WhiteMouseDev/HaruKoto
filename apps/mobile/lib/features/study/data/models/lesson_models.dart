@@ -109,6 +109,9 @@ class LessonDetailModel {
   final List<GrammarItemModel> grammarItems;
   final LessonProgressModel? progress;
 
+  /// Missing/null on old servers and while attendance acceptance is disabled.
+  final String? activityContentVersion;
+
   const LessonDetailModel({
     required this.id,
     required this.lessonNo,
@@ -121,6 +124,7 @@ class LessonDetailModel {
     required this.vocabItems,
     required this.grammarItems,
     this.progress,
+    this.activityContentVersion,
   });
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
@@ -143,6 +147,11 @@ class LessonDetailModel {
       progress: json['progress'] != null
           ? LessonProgressModel.fromJson(
               json['progress'] as Map<String, dynamic>)
+          : null,
+      activityContentVersion: json['activityContentVersion'] is String &&
+              RegExp(r'^[0-9a-f]{64}$')
+                  .hasMatch(json['activityContentVersion'] as String)
+          ? json['activityContentVersion'] as String
           : null,
     );
   }

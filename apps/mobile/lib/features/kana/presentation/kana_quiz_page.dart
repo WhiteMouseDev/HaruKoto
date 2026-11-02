@@ -104,11 +104,12 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
 
     if (_sessionId != null) {
       try {
-        final result = await ref.read(kanaRepositoryProvider).answerQuestion(
-              sessionId: _sessionId!,
-              questionId: current.questionId,
-              selectedOptionId: optionId,
-            );
+        final result =
+            await ref.read(kanaCompletionServiceProvider).answerQuestion(
+                  sessionId: _sessionId!,
+                  questionId: current.questionId,
+                  selectedOptionId: optionId,
+                );
         isCorrect = result.isCorrect;
         // 서버에서 받은 correctOptionId로 UI 업데이트 (정답 하이라이트용)
         if (current.correctOptionId == null && mounted) {

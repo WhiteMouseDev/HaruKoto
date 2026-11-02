@@ -18,6 +18,7 @@ from app.models import Vocabulary
 from app.models.enums import JlptLevel, PartOfSpeech, QuizType
 from app.models.user import User
 from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest, SmartStartRequest
+from app.services import study_day_recording
 from app.services.quiz_answer import submit_quiz_answer
 from app.services.quiz_complete import complete_quiz_session
 from app.services.quiz_start import start_smart_quiz_session
@@ -68,7 +69,13 @@ async def _apply_again(engine: AsyncEngine) -> None:
 
 
 @pytest.mark.asyncio
-async def test_public_boundary_migration_preserves_server_auth_and_learning_and_blocks_clients(isolated_postgres_url: str) -> None:
+async def test_public_boundary_migration_preserves_server_auth_and_learning_and_blocks_clients(
+    isolated_postgres_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # This historical schema deliberately predates the new marker/receipt DDL.
+    # Exercise its original learning smoke in compatibility mode; full-head ON
+    # answer attendance is verified by the dedicated real PostgreSQL suite.
+    monkeypatch.setattr(study_day_recording, "ANSWERED_STUDY_DAY_RECOGNITION_ENABLED", False)
     engine = create_async_engine(isolated_postgres_url)
     try:
         for statement in [

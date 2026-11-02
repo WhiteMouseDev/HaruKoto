@@ -4,6 +4,11 @@ import { prisma } from '@harukoto/database';
 import { calculateSM2 } from '@/lib/spaced-repetition';
 import { SRS_CONFIG } from '@/lib/constants';
 import { z } from 'zod';
+import { lockStudyActivityUser } from '@/lib/study-activity-lock';
+import {
+  lockStudyQuizSession,
+  recordAnsweredStudyDay,
+} from '@/lib/answered-study-day';
 import {
   decodeWebQuizSnapshot,
   QuizSnapshotError,
@@ -69,126 +74,160 @@ export async function POST(request: Request) {
       (question) => question.questionId === questionId
     );
     if (!questionData) throw new QuizSnapshotError('invalid');
-    const isCorrect = selectedOptionId === questionData.correctOptionId;
 
-    // Save answer
-    await prisma.quizAnswer.create({
-      data: {
-        sessionId,
-        questionId,
-        questionType,
-        selectedOptionId,
-        isCorrect,
-        timeSpentSeconds,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const currentUser = await lockStudyActivityUser(tx, user.id);
+      const lockedSession = await lockStudyQuizSession(tx, sessionId);
+      if (!lockedSession) {
+        return NextResponse.json(
+          { error: '세션을 찾을 수 없습니다' },
+          { status: 404 }
+        );
+      }
+      if (lockedSession.userId !== user.id) {
+        return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
+      }
+      const lockedSnapshot = decodeWebQuizSnapshot(
+        lockedSession.questionsData,
+        lockedSession.totalQuestions,
+        lockedSession.quizType
+      );
+      const question = lockedSnapshot.questions.find(
+        (item) => item.questionId === questionId
+      );
+      if (!question) throw new QuizSnapshotError('invalid');
+      const isCorrect = selectedOptionId === question.correctOptionId;
+      const previousAnswer = await tx.quizAnswer.findFirst({
+        where: { sessionId, questionId },
+        orderBy: [{ answeredAt: 'asc' }, { id: 'asc' }],
+        select: { id: true },
+      });
+      const processedAt = new Date();
+      // Save answer
+      await tx.quizAnswer.create({
+        data: {
+          sessionId,
+          questionId,
+          questionType,
+          selectedOptionId,
+          isCorrect,
+          timeSpentSeconds,
+          answeredAt: processedAt,
+        },
+      });
+
+      // Update correct count on session
+      if (isCorrect) {
+        await tx.quizSession.update({
+          where: { id: sessionId },
+          data: { correctCount: { increment: 1 } },
+        });
+      }
+
+      // Update spaced repetition progress
+      if (questionType === 'VOCABULARY') {
+        const existing = await tx.userVocabProgress.findUnique({
+          where: {
+            userId_vocabularyId: {
+              userId: user.id,
+              vocabularyId: questionId,
+            },
+          },
+        });
+
+        const sm2Result = calculateSM2({
+          easeFactor: existing?.easeFactor ?? 2.5,
+          interval: existing?.interval ?? 0,
+          streak: existing?.streak ?? 0,
+          isCorrect,
+          timeSpentSeconds,
+        });
+
+        await tx.userVocabProgress.upsert({
+          where: {
+            userId_vocabularyId: {
+              userId: user.id,
+              vocabularyId: questionId,
+            },
+          },
+          update: {
+            correctCount: isCorrect ? { increment: 1 } : undefined,
+            incorrectCount: !isCorrect ? { increment: 1 } : undefined,
+            streak: sm2Result.streak,
+            easeFactor: sm2Result.easeFactor,
+            interval: sm2Result.interval,
+            nextReviewAt: sm2Result.nextReviewAt,
+            lastReviewedAt: new Date(),
+            mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
+          },
+          create: {
+            userId: user.id,
+            vocabularyId: questionId,
+            correctCount: isCorrect ? 1 : 0,
+            incorrectCount: isCorrect ? 0 : 1,
+            streak: sm2Result.streak,
+            easeFactor: sm2Result.easeFactor,
+            interval: sm2Result.interval,
+            nextReviewAt: sm2Result.nextReviewAt,
+            lastReviewedAt: new Date(),
+          },
+        });
+      } else if (questionType === 'GRAMMAR') {
+        const existing = await tx.userGrammarProgress.findUnique({
+          where: {
+            userId_grammarId: {
+              userId: user.id,
+              grammarId: questionId,
+            },
+          },
+        });
+
+        const sm2Result = calculateSM2({
+          easeFactor: existing?.easeFactor ?? 2.5,
+          interval: existing?.interval ?? 0,
+          streak: existing?.streak ?? 0,
+          isCorrect,
+          timeSpentSeconds,
+        });
+
+        await tx.userGrammarProgress.upsert({
+          where: {
+            userId_grammarId: {
+              userId: user.id,
+              grammarId: questionId,
+            },
+          },
+          update: {
+            correctCount: isCorrect ? { increment: 1 } : undefined,
+            incorrectCount: !isCorrect ? { increment: 1 } : undefined,
+            streak: sm2Result.streak,
+            easeFactor: sm2Result.easeFactor,
+            interval: sm2Result.interval,
+            nextReviewAt: sm2Result.nextReviewAt,
+            lastReviewedAt: new Date(),
+            mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
+          },
+          create: {
+            userId: user.id,
+            grammarId: questionId,
+            correctCount: isCorrect ? 1 : 0,
+            incorrectCount: isCorrect ? 0 : 1,
+            streak: sm2Result.streak,
+            easeFactor: sm2Result.easeFactor,
+            interval: sm2Result.interval,
+            nextReviewAt: sm2Result.nextReviewAt,
+            lastReviewedAt: new Date(),
+          },
+        });
+      }
+
+      // Native web retries (including wrong -> correct matching) keep their
+      // existing answer/SRS effects. Only attendance uses first-answer evidence.
+      if (!previousAnswer && !lockedSession.completedAt) {
+        await recordAnsweredStudyDay(tx, currentUser, processedAt);
+      }
+      return NextResponse.json({ success: true });
     });
-
-    // Update correct count on session
-    if (isCorrect) {
-      await prisma.quizSession.update({
-        where: { id: sessionId },
-        data: { correctCount: { increment: 1 } },
-      });
-    }
-
-    // Update spaced repetition progress
-    if (questionType === 'VOCABULARY') {
-      const existing = await prisma.userVocabProgress.findUnique({
-        where: {
-          userId_vocabularyId: {
-            userId: user.id,
-            vocabularyId: questionId,
-          },
-        },
-      });
-
-      const sm2Result = calculateSM2({
-        easeFactor: existing?.easeFactor ?? 2.5,
-        interval: existing?.interval ?? 0,
-        streak: existing?.streak ?? 0,
-        isCorrect,
-        timeSpentSeconds,
-      });
-
-      await prisma.userVocabProgress.upsert({
-        where: {
-          userId_vocabularyId: {
-            userId: user.id,
-            vocabularyId: questionId,
-          },
-        },
-        update: {
-          correctCount: isCorrect ? { increment: 1 } : undefined,
-          incorrectCount: !isCorrect ? { increment: 1 } : undefined,
-          streak: sm2Result.streak,
-          easeFactor: sm2Result.easeFactor,
-          interval: sm2Result.interval,
-          nextReviewAt: sm2Result.nextReviewAt,
-          lastReviewedAt: new Date(),
-          mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
-        },
-        create: {
-          userId: user.id,
-          vocabularyId: questionId,
-          correctCount: isCorrect ? 1 : 0,
-          incorrectCount: isCorrect ? 0 : 1,
-          streak: sm2Result.streak,
-          easeFactor: sm2Result.easeFactor,
-          interval: sm2Result.interval,
-          nextReviewAt: sm2Result.nextReviewAt,
-          lastReviewedAt: new Date(),
-        },
-      });
-    } else if (questionType === 'GRAMMAR') {
-      const existing = await prisma.userGrammarProgress.findUnique({
-        where: {
-          userId_grammarId: {
-            userId: user.id,
-            grammarId: questionId,
-          },
-        },
-      });
-
-      const sm2Result = calculateSM2({
-        easeFactor: existing?.easeFactor ?? 2.5,
-        interval: existing?.interval ?? 0,
-        streak: existing?.streak ?? 0,
-        isCorrect,
-        timeSpentSeconds,
-      });
-
-      await prisma.userGrammarProgress.upsert({
-        where: {
-          userId_grammarId: {
-            userId: user.id,
-            grammarId: questionId,
-          },
-        },
-        update: {
-          correctCount: isCorrect ? { increment: 1 } : undefined,
-          incorrectCount: !isCorrect ? { increment: 1 } : undefined,
-          streak: sm2Result.streak,
-          easeFactor: sm2Result.easeFactor,
-          interval: sm2Result.interval,
-          nextReviewAt: sm2Result.nextReviewAt,
-          lastReviewedAt: new Date(),
-          mastered: sm2Result.interval >= SRS_CONFIG.MASTERY_INTERVAL,
-        },
-        create: {
-          userId: user.id,
-          grammarId: questionId,
-          correctCount: isCorrect ? 1 : 0,
-          incorrectCount: isCorrect ? 0 : 1,
-          streak: sm2Result.streak,
-          easeFactor: sm2Result.easeFactor,
-          interval: sm2Result.interval,
-          nextReviewAt: sm2Result.nextReviewAt,
-          lastReviewedAt: new Date(),
-        },
-      });
-    }
-
-    return NextResponse.json({ success: true });
   } catch (err) {
     if (err instanceof QuizSnapshotError) {
       return NextResponse.json({ error: err.message }, { status: 409 });

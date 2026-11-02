@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 type HeatmapRecord = {
   date: string;
   wordsStudied: number;
+  hasStudied?: boolean;
 };
 
 type HeatmapProps = {
@@ -17,8 +18,18 @@ type HeatmapProps = {
 };
 
 const MONTH_LABELS = [
-  '1월', '2월', '3월', '4월', '5월', '6월',
-  '7월', '8월', '9월', '10월', '11월', '12월',
+  '1월',
+  '2월',
+  '3월',
+  '4월',
+  '5월',
+  '6월',
+  '7월',
+  '8월',
+  '9월',
+  '10월',
+  '11월',
+  '12월',
 ];
 
 const DAY_LABELS = ['월', '', '수', '', '금', '', ''];
@@ -52,6 +63,7 @@ const DARK_INTENSITY_COLORS = [
 type DayCell = {
   date: string;
   count: number;
+  hasStudied: boolean;
   weekIndex: number;
   dayIndex: number;
 };
@@ -66,7 +78,7 @@ function getGridStart(year: number): Date {
 }
 
 function buildYearGrid(year: number, records: HeatmapRecord[]) {
-  const recordMap = new Map(records.map((r) => [r.date, r.wordsStudied]));
+  const recordMap = new Map(records.map((r) => [r.date, r]));
 
   const endDate = new Date(Date.UTC(year, 11, 31));
   const gridStart = getGridStart(year);
@@ -81,7 +93,10 @@ function buildYearGrid(year: number, records: HeatmapRecord[]) {
 
     cells.push({
       date: dateStr,
-      count: recordMap.get(dateStr) ?? 0,
+      count: recordMap.get(dateStr)?.wordsStudied ?? 0,
+      hasStudied:
+        recordMap.get(dateStr)?.hasStudied ??
+        (recordMap.get(dateStr)?.wordsStudied ?? 0) > 0,
       weekIndex,
       dayIndex,
     });
@@ -95,7 +110,10 @@ function buildYearGrid(year: number, records: HeatmapRecord[]) {
   return cells;
 }
 
-function getMonthPositions(year: number, totalWeeks: number): { label: string; weekIndex: number; span: number }[] {
+function getMonthPositions(
+  year: number,
+  totalWeeks: number
+): { label: string; weekIndex: number; span: number }[] {
   const gridStart = getGridStart(year);
   const positions: { label: string; weekIndex: number; span: number }[] = [];
 
@@ -143,7 +161,7 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
   );
 
   const activeDays = useMemo(
-    () => cells.filter((c) => c.count > 0).length,
+    () => cells.filter((c) => c.hasStudied).length,
     [cells]
   );
 
@@ -198,7 +216,9 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
 
         {/* Heatmap grid */}
         <div className="overflow-x-auto">
-          <div style={{ width: gridWidth + DAY_LABEL_WIDTH + 4, minWidth: 640 }}>
+          <div
+            style={{ width: gridWidth + DAY_LABEL_WIDTH + 4, minWidth: 640 }}
+          >
             {/* Month labels — same grid as cells */}
             <div
               className="mb-1"
@@ -229,7 +249,10 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
             {/* Grid with day labels */}
             <div className="flex" style={{ gap: 4 }}>
               {/* Day labels */}
-              <div className="flex flex-col" style={{ width: DAY_LABEL_WIDTH, gap: GAP }}>
+              <div
+                className="flex flex-col"
+                style={{ width: DAY_LABEL_WIDTH, gap: GAP }}
+              >
                 {DAY_LABELS.map((label, i) => (
                   <span
                     key={i}
@@ -265,7 +288,9 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
                             delay: wi * 0.005,
                             duration: 0.2,
                           }}
-                          className={`rounded-sm ${INTENSITY_COLORS[intensity]} ${DARK_INTENSITY_COLORS[intensity]} cursor-pointer transition-transform hover:scale-125`}
+                          aria-label={`${cell.date} · 단어 ${cell.count}개 · ${cell.hasStudied ? '학습 기록 있음' : '학습 기록 없음'}`}
+                          data-studied={cell.hasStudied}
+                          className={`rounded-sm ${INTENSITY_COLORS[intensity]} ${DARK_INTENSITY_COLORS[intensity]} ${cell.hasStudied && cell.count === 0 ? 'ring-primary ring-1 ring-inset' : ''} cursor-pointer transition-transform hover:scale-125`}
                           style={{ width: CELL_SIZE, height: CELL_SIZE }}
                           onMouseEnter={() => setHoveredCell(cell)}
                           onMouseLeave={() => setHoveredCell(null)}
@@ -282,14 +307,20 @@ export function Heatmap({ records, year, onYearChange }: HeatmapProps) {
         {/* Tooltip — fixed height to prevent layout shift */}
         <div className="text-muted-foreground h-5 text-center text-xs">
           {hoveredCell
-            ? `${hoveredCell.date} · ${hoveredCell.count}개 학습`
+            ? `${hoveredCell.date} · 단어 ${hoveredCell.count}개${hoveredCell.hasStudied ? ' · 학습 기록 있음' : ''}`
             : '\u00A0'}
         </div>
+
+        <p className="text-muted-foreground text-[10px]">
+          테두리만 표시된 날도 학습 기록이 있어요. 색의 진하기는 단어 수예요.
+        </p>
 
         {/* Legend + Summary */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <span className="text-muted-foreground text-[10px]">Less</span>
+            <span className="text-muted-foreground text-[10px]">
+              단어 수 · Less
+            </span>
             {INTENSITY_COLORS.map((color, i) => (
               <div
                 key={i}

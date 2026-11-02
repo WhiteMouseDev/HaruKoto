@@ -52,10 +52,10 @@ def test_same_day_older_processing_instant_does_not_regress_last_study_time():
 
 
 def test_lesson_marker_is_activity_without_inventing_legacy_aggregates():
-    assert has_study_activity(SimpleNamespace(lesson_completed=True))
-    assert not has_study_activity(SimpleNamespace(lesson_completed=False))
+    assert has_study_activity(SimpleNamespace(activity_recorded=True))
+    assert not has_study_activity(SimpleNamespace(activity_recorded=False))
     assert not has_study_activity(SimpleNamespace())
-    assert has_study_activity(SimpleNamespace(lesson_completed=False, quizzes_completed=1))
+    assert has_study_activity(SimpleNamespace(activity_recorded=False, quizzes_completed=1))
     assert not has_study_activity(None)
 
 

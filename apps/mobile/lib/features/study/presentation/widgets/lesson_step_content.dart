@@ -106,6 +106,13 @@ class LessonStepContent extends ConsumerWidget {
           autoAdvance: !session.restored,
           onProgress: (matched, left, right) => sessionNotifier.updateMatching(
               matched: matched, left: left, right: right),
+          onAnswer: (leftId, rightId, matched, left, right) =>
+              sessionNotifier.answerMatching(
+                  leftVocabularyId: leftId,
+                  rightVocabularyId: rightId,
+                  matched: matched,
+                  left: left,
+                  right: right),
           onComplete: () =>
               unawaited(sessionNotifier.completeMatching(detail: detail)),
         );

@@ -194,7 +194,7 @@ class _StreakWeek extends StatelessWidget {
             container: true,
             label: '${date.month}월 ${date.day}일 ${_weekdays[index]}요일, '
                 '${isToday ? '오늘, ' : ''}'
-                '${studied ? '학습 완료' : future ? '예정' : '학습 기록 없음'}',
+                '${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}',
             child: ExcludeSemantics(
               child: Column(
                 children: [
@@ -430,7 +430,7 @@ class _CalendarGrid extends StatelessWidget {
                     container: true,
                     label:
                         '${date.year}년 ${date.month}월 ${date.day}일 ${_weekdays[index]}요일, '
-                        '${isToday ? '오늘, ' : ''}${studied ? '학습 완료' : future ? '예정' : '학습 기록 없음'}',
+                        '${isToday ? '오늘, ' : ''}${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}',
                     child: ExcludeSemantics(
                       child: Container(
                         constraints: BoxConstraints(minHeight: fontSize + 30),
@@ -470,7 +470,7 @@ class _CalendarGrid extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        Text('체크는 학습 완료 · 테두리는 오늘',
+        Text('체크는 학습한 날 · 테두리는 오늘',
             style:
                 theme.textTheme.bodySmall?.copyWith(color: palette.secondary)),
         const SizedBox(height: 8),

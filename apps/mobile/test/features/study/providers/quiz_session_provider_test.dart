@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
@@ -16,6 +17,9 @@ void main() {
       final repository = _FakeStudyRepository()
         ..wrongReviewAnsweredIds = ['q2', 'q2', 'not-in-this-session'];
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -46,6 +50,9 @@ void main() {
         () async {
       final repository = _FakeStudyRepository()..failedWrongReviews = 1;
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -69,6 +76,9 @@ void main() {
         () async {
       final repository = _FakeStudyRepository()..failedStarts = 1;
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -93,6 +103,9 @@ void main() {
         () async {
       final repository = _FakeStudyRepository()..failedResumes = 1;
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -117,6 +130,9 @@ void main() {
         () async {
       final repository = _FakeStudyRepository()..startGate = Completer<void>();
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -142,6 +158,9 @@ void main() {
         () async {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -169,6 +188,9 @@ void main() {
     test('exit drain waits for delayed answer POST to finish', () async {
       final repository = _FakeStudyRepository()..answerGate = Completer<void>();
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -197,6 +219,9 @@ void main() {
         ..answerGate = Completer<void>()
         ..failedAnswerSaves = 1;
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'quiz-answer-fixture'),
         studyRepositoryProvider.overrideWithValue(repository),
       ]);
       addTearDown(container.dispose);
@@ -223,6 +248,9 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'quiz-answer-fixture'),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -249,6 +277,9 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'quiz-answer-fixture'),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -276,6 +307,9 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'quiz-answer-fixture'),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -318,6 +352,9 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'quiz-answer-fixture'),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -350,6 +387,9 @@ void main() {
       final repository = _FakeStudyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'quiz-answer-fixture'),
           studyRepositoryProvider.overrideWith((ref) => repository),
         ],
       );

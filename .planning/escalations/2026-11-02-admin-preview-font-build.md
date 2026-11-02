@@ -3,8 +3,13 @@ raised_by: codex-root
 raised_at: 2026-11-02
 phase: lesson-study-day-release-readiness
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-02
 ---
+
+## Resolution
+
+2026-11-02 읽기 확인에서 직전 PR #215 head `659aac68`의 관리자·웹·랜딩 Vercel 상태는 모두 성공이었다. 이 재발 위험 때문에 이번 학습일 구현을 보류하거나 폰트/Next/클라우드를 변경할 결정은 필요하지 않다. 원래 upstream 문제가 고쳐졌다는 의미는 아니며, 새 head에서 재발하면 별도 후속으로 다시 조사한다. 아래 원인·선택지는 이력으로 보존한다. 새 한 문항 코드의 CI는 그 head에서 별도 확인한다.
 
 ## What happened
 
@@ -22,7 +27,7 @@ PR #215의 GitHub frontend/admin-e2e/backend/API 계약/스키마 검사는 통�
 
 ## Recommended direction
 
-학습일 PR과 분리해 비운영 Preview 재확인안을 먼저 제시하고, 폰트 외부 다운로드 의존성 제거 또는 수정 안정 버전 도입을 후속 유지보수로 검토한다. 실제 Next/폰트/클라우드 변경은 구체안 승인 뒤 수행한다. 학습일 운영 적용안의 마이그레이션 → 호환 OFF → 구 writer 종료 확인 → ON 순서는 그대로 둔다.
+학습일 PR과 분리해 비운영 Preview 재확인안을 먼저 제시하고, 폰트 외부 다운로드 의존성 제거 또는 수정 안정 버전 도입을 후속 유지보수로 검토한다. 실제 Next/폰트/클라우드 변경은 구체안 승인 뒤 수행한다. 학습일 운영 적용안은 새 [한 문항 구현 기록](../../docs/operations/plans/answered-study-day-policy-implementation-2026-11-02.md)의 호환 배포 전 쓰기 통제·종료 확인 순서를 따른다.
 
 ## Evidence and side effects
 

@@ -78,6 +78,43 @@ void main() {
   });
 
   group('WeeklyStatEntry', () {
+    test(
+        'saved vocabulary answer count preserves known zero and positive counts',
+        () {
+      for (final count in [0, 1, 24]) {
+        final model = WeeklyStatEntry.fromJson({
+          'date': '2026-11-02',
+          'wordsStudied': 5,
+          'vocabularyAnsweredCount': count,
+        });
+        expect(model.vocabularyAnsweredCount, count);
+        expect(model.wordsStudied, 5);
+      }
+    });
+
+    test('missing, null or malformed saved vocabulary counts stay unknown', () {
+      for (final value in [null, -1, 1.0, '1', true, [], {}]) {
+        final model = WeeklyStatEntry.fromJson({
+          'date': '2026-11-02',
+          'wordsStudied': 5,
+          'vocabularyAnsweredCount': value,
+        });
+        expect(model.vocabularyAnsweredCount, isNull, reason: '$value');
+        expect(model.wordsStudied, 5);
+      }
+      expect(WeeklyStatEntry.fromJson({}).vocabularyAnsweredCount, isNull);
+    });
+
+    test('saved count does not replace explicit attendance flags', () {
+      final model = WeeklyStatEntry.fromJson({
+        'date': '2026-11-02',
+        'vocabularyAnsweredCount': 1,
+        'hasStudied': false,
+      });
+      expect(model.vocabularyAnsweredCount, 1);
+      expect(model.hasStudied, false);
+    });
+
     test('fromJson parses complete data', () {
       final json = {
         'date': '2026-03-10',

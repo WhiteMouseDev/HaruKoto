@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => {
     tx,
     prisma: {
       quizSession: { findUnique: vi.fn(), update: vi.fn(), count: vi.fn() },
-      quizAnswer: { create: vi.fn() },
+      quizAnswer: { create: vi.fn(), findFirst: vi.fn() },
       userVocabProgress: { findUnique: vi.fn(), upsert: vi.fn() },
       userGrammarProgress: { findUnique: vi.fn(), upsert: vi.fn() },
       user: { findUnique: vi.fn(), update: vi.fn() },
@@ -110,6 +110,13 @@ const noWrites = () =>
 beforeEach(() => {
   vi.resetAllMocks();
   mocks.getUser.mockResolvedValue({ data: { user: { id: userId } } });
+  Object.assign(mocks.tx, {
+    quizSession: mocks.prisma.quizSession,
+    quizAnswer: mocks.prisma.quizAnswer,
+    userVocabProgress: mocks.prisma.userVocabProgress,
+    userGrammarProgress: mocks.prisma.userGrammarProgress,
+  });
+  mocks.prisma.quizAnswer.findFirst.mockResolvedValue(null);
   mocks.prisma.quizSession.findUnique.mockResolvedValue(nativeSession());
   mocks.prisma.userVocabProgress.findUnique.mockResolvedValue(null);
   mocks.prisma.userGrammarProgress.findUnique.mockResolvedValue(null);

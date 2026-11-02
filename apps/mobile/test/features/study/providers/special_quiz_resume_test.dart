@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -442,6 +443,9 @@ class _Fixture {
       }
     }));
     container = ProviderContainer(overrides: [
+      currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+      currentAccountReaderProvider
+          .overrideWithValue(() => 'quiz-answer-fixture'),
       studyRepositoryProvider.overrideWithValue(ApiStudyRepository(dio)),
       if (prefs != null) sharedPreferencesProvider.overrideWithValue(prefs),
     ]);

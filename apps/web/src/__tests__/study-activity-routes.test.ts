@@ -233,7 +233,7 @@ describe.each(cases)(
         date: new Date('2026-11-02T00:00:00Z'),
       });
       expect(dayWrite.update.xpEarned).toEqual({ increment: xp });
-      expect(dayWrite.update).not.toHaveProperty('lesson_completed');
+      expect(dayWrite.update).not.toHaveProperty('activity_recorded');
       expect(dayWrite.update).not.toHaveProperty('lessonCompleted');
       expect(mocks.generateText).not.toHaveBeenCalled();
       expect(mocks.generateObject).not.toHaveBeenCalled();

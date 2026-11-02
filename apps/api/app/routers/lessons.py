@@ -21,6 +21,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.middleware.rate_limit import rate_limit
 from app.models.user import User
+from app.routers.lesson_study_activities import router as lesson_study_activities_router
 from app.routers.lesson_submissions import router as lesson_submissions_router
 from app.schemas.lesson import (
     ChapterListResponse,
@@ -54,6 +55,7 @@ from app.utils.constants import RATE_LIMITS
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
 router.include_router(lesson_submissions_router)
+router.include_router(lesson_study_activities_router)
 
 
 # ── GET /chapters ──
@@ -200,6 +202,7 @@ async def get_lesson_detail(
 
     return LessonDetailResponse(
         id=lesson.id,
+        activity_content_version=lesson.activity_content_version,
         lesson_no=lesson.lesson_no,
         chapter_lesson_no=lesson.chapter_lesson_no,
         title=lesson.title,

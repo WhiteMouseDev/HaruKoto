@@ -151,7 +151,10 @@ async def test_answer_question_correct(client, mock_user, mock_quiz_session, tes
 
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
-    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.execute = AsyncMock(
+        # Read first answer/progress, then accept review-event and attendance writes.
+        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+    )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()
@@ -206,7 +209,10 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
 
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
-    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.execute = AsyncMock(
+        # Read first answer/progress, then accept review-event and attendance writes.
+        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+    )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()

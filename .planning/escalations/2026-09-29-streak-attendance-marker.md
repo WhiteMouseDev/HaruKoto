@@ -3,16 +3,21 @@ raised_by: codex-root
 raised_at: 2026-09-29
 phase: streak-integrity
 severity: warn
-status: open
+status: resolved
 previously_resolved_at: 2026-11-02T14:36:57+09:00
 reopened_at: 2026-11-02
+resolved_at: 2026-11-02
 ---
 
 ## What happened
 
 9월 29일 로컬 작업에 영속 출석 마커 제안이 open 상태로 남아 있었고, 10월 30일 누락 감사에서 이를 다시 확인했다. 기존 일별 행은 시작만 해도 생성될 수 있고, 레슨 재학습의 마지막 완료일만으로 모든 과거 학습일을 복원할 수 없다.
 
-## Current decision — 2026-11-02 한 문항 기준 채택, 새 API·DB 구체안 확인 대기
+## Resolution — 2026-11-02 한 문항 API·DB 구현 승인, 운영 미승인
+
+사용자가 [한 문항 구체안](../../docs/operations/plans/answered-study-day-policy-proposal-2026-11-02.md)의 마커·비공개 영수증·레슨 API와 기존 답안 연결을 확인하고 **구현·회귀 테스트·시뮬레이터 검증 진행**을 승인했다. 새 계약/스키마의 구현 판단을 해결로 기록한다. 실제 결과는 [구현·검증 기록](../../docs/operations/plans/answered-study-day-policy-implementation-2026-11-02.md)에 남기며 운영 DB·클라우드 설정·배포 승인은 여전히 별도다.
+
+## Previous decision — 2026-11-02 한 문항 기준 채택, 구체안 확인 대기 당시
 
 사용자가 한 문제라도 답하면 학습일로 인정하는 제품 정책을 채택했다. 앞선 레슨 전체 완료 기준은 구현·격리 검증을 마쳤지만 아직 운영에 적용하지 않았다. 같은 사안의 새 escalation을 만들지 않고 이 항목을 재개한다. 아래 Resolution은 이전 완료 기준 구현 승인 이력이다.
 
