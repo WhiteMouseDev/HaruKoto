@@ -269,6 +269,7 @@ model DailyProgress {
   grammar_studied   Int?     @default(0)
   sentences_studied Int?     @default(0)
   study_minutes     Int?     @default(0)
+  lesson_completed  Boolean  @default(false)
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])

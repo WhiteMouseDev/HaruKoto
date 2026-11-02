@@ -9,6 +9,7 @@ import {
 
 const mocks = vi.hoisted(() => {
   const tx = {
+    $queryRaw: vi.fn(),
     user: { findUniqueOrThrow: vi.fn(), update: vi.fn() },
     dailyProgress: { upsert: vi.fn() },
   };
@@ -123,6 +124,16 @@ beforeEach(() => {
     streakCount: 0,
     longestStreak: 0,
   });
+  mocks.tx.$queryRaw.mockResolvedValue([
+    {
+      id: userId,
+      experiencePoints: 0,
+      level: 1,
+      lastStudyDate: null,
+      streakCount: 0,
+      longestStreak: 0,
+    },
+  ]);
   mocks.prisma.$transaction.mockImplementation(
     async (execute: (tx: typeof mocks.tx) => Promise<unknown>) =>
       execute(mocks.tx)

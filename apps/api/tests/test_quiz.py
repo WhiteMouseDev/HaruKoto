@@ -96,9 +96,10 @@ async def test_start_quiz_success(client, mock_user, test_user_id):
     mock_session.commit = AsyncMock()
     mock_session.flush = AsyncMock()
 
-    # Mock refresh to set session.id
-    async def mock_refresh(obj):
-        obj.id = uuid.uuid4()
+    # User refresh only reloads its activity fields; new session refresh gets an ID.
+    async def mock_refresh(obj, **kwargs):
+        if obj is not mock_user:
+            obj.id = uuid.uuid4()
 
     mock_session.refresh = mock_refresh
 

@@ -13,6 +13,7 @@ from app.models.enums import ConversationType
 from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest, LiveTokenResponse
 from app.services.ai import generate_live_feedback, generate_live_token, generate_tts, transcribe_audio
 from app.services.conversation_rewards import grant_conversation_completion_rewards
+from app.services.study_day_recording import lock_study_user
 from app.services.subscription_ai_usage import check_ai_limit
 from app.utils.constants import RATE_LIMITS
 from app.utils.date import get_now_kst
@@ -111,7 +112,6 @@ async def submit_live_conversation_feedback(
     user: User,
     body: LiveFeedbackRequest,
 ) -> dict[str, Any]:
-    now = get_now_kst()
     conversation = None
 
     if body.conversation_id:
@@ -145,6 +145,12 @@ async def submit_live_conversation_feedback(
             )
             feedback_error = "generation_failed"
 
+    # External feedback generation is complete before locking activity state.
+    # New domain inserts and existing-domain refreshes follow the user mutex.
+    await lock_study_user(db, user)
+    if conversation is not None:
+        await db.refresh(conversation, with_for_update=True)
+    now = get_now_kst()
     if not conversation:
         conversation = Conversation(
             user_id=user.id,

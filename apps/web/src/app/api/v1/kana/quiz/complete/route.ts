@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
 import {
+  lockStudyActivityUser,
+  preserveNewerStudyDate,
+} from '@/lib/study-activity-lock';
+import {
   calculateLevel,
   updateStreak,
   checkAndGrantAchievements,
@@ -55,9 +59,7 @@ export async function POST(request: Request) {
     // Gamification transaction
     const { totalXp, newLevel, oldLevel, streak } =
       await prisma.$transaction(async (tx) => {
-        const currentUser = await tx.user.findUniqueOrThrow({
-          where: { id: user.id },
-        });
+        const currentUser = await lockStudyActivityUser(tx, user.id);
 
         const today = getTodayKST();
 
@@ -99,7 +101,10 @@ export async function POST(request: Request) {
             level: txNewLevel,
             streakCount: txStreak.streakCount,
             longestStreak: txStreak.longestStreak,
-            lastStudyDate: today,
+            lastStudyDate: preserveNewerStudyDate(
+              currentUser.lastStudyDate,
+              today
+            ),
           },
         });
 

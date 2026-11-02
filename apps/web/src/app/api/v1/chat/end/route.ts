@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
+import {
+  lockStudyActivityUser,
+  preserveNewerStudyDate,
+} from '@/lib/study-activity-lock';
 import { generateText } from 'ai';
 import { getAIProvider } from '@harukoto/ai';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
@@ -143,9 +147,7 @@ export async function POST(request: Request) {
 
     // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
     const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(async (tx) => {
-      const currentUser = await tx.user.findUniqueOrThrow({
-        where: { id: user.id },
-      });
+      const currentUser = await lockStudyActivityUser(tx, user.id);
 
       const today = getTodayKST();
 
@@ -188,7 +190,10 @@ export async function POST(request: Request) {
           level: txNewLevel,
           streakCount: txStreak.streakCount,
           longestStreak: txStreak.longestStreak,
-          lastStudyDate: today,
+          lastStudyDate: preserveNewerStudyDate(
+            currentUser.lastStudyDate,
+            today
+          ),
         },
       });
 

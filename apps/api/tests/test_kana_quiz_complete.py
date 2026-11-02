@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -58,7 +57,6 @@ async def test_complete_kana_quiz_session_awards_progress_and_marks_completed(mo
         achievement_context.update(context)
         return [{"type": "level_up"}]
 
-    monkeypatch.setattr(kana_quiz_complete, "get_today_kst", lambda: date(2026, 4, 21))
     monkeypatch.setattr(kana_quiz_complete, "check_and_grant_achievements", fake_check_and_grant_achievements)
 
     result = await complete_kana_quiz_session(
@@ -111,7 +109,6 @@ async def test_complete_kana_quiz_session_uses_pass_reward_for_non_perfect(monke
     async def fake_check_and_grant_achievements(db_arg, user_id, context):
         return []
 
-    monkeypatch.setattr(kana_quiz_complete, "get_today_kst", lambda: date(2026, 4, 21))
     monkeypatch.setattr(kana_quiz_complete, "check_and_grant_achievements", fake_check_and_grant_achievements)
 
     result = await complete_kana_quiz_session(

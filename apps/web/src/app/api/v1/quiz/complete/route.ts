@@ -10,6 +10,10 @@ import {
 import { REWARDS } from '@/lib/constants';
 import { getTodayKST } from '@/lib/date';
 import {
+  lockStudyActivityUser,
+  preserveNewerStudyDate,
+} from '@/lib/study-activity-lock';
+import {
   decodeWebQuizSnapshot,
   QuizSnapshotError,
 } from '@/lib/quiz-session-snapshot';
@@ -96,9 +100,7 @@ export async function POST(request: Request) {
     // 게임화 로직을 트랜잭션으로 감싸서 레이스 컨디션 방지
     const { totalXp, newLevel, oldLevel, streak } = await prisma.$transaction(
       async (tx) => {
-        const currentUser = await tx.user.findUniqueOrThrow({
-          where: { id: user.id },
-        });
+        const currentUser = await lockStudyActivityUser(tx, user.id);
 
         const today = getTodayKST();
 
@@ -144,7 +146,10 @@ export async function POST(request: Request) {
             level: txNewLevel,
             streakCount: txStreak.streakCount,
             longestStreak: txStreak.longestStreak,
-            lastStudyDate: today,
+            lastStudyDate: preserveNewerStudyDate(
+              currentUser.lastStudyDate,
+              today
+            ),
           },
         });
 

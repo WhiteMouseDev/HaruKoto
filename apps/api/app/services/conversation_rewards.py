@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 from sqlalchemy import func, select, update
@@ -11,10 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Conversation, DailyProgress, Notification, User
 from app.services.daily_progress_upsert import build_daily_progress_insert_values
-from app.services.gamification import calculate_level, check_and_grant_achievements, update_streak
+from app.services.gamification import calculate_level, check_and_grant_achievements
+from app.services.study_day_recording import apply_study_streak, lock_study_user
 from app.services.subscription_ai_usage import track_ai_usage
 from app.utils.constants import REWARDS
-from app.utils.date import get_today_kst
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +31,14 @@ async def _update_daily_conversation_progress(
     user_id: Any,
     xp: int,
     study_minutes: int,
+    today: date,
 ) -> None:
     await db.execute(
         insert(DailyProgress)
         .values(
             **build_daily_progress_insert_values(
                 user_id=user_id,
-                today=get_today_kst(),
+                today=today,
                 xp_earned=xp,
                 study_minutes=study_minutes,
                 conversation_count=1,
@@ -69,6 +70,7 @@ async def grant_conversation_completion_rewards(
     duration_seconds: int,
     usage_type: Literal["chat", "call"],
 ) -> ConversationRewardResult:
+    await lock_study_user(db, user)
     xp = REWARDS.CONVERSATION_COMPLETE_XP
     logger.info("Conversation complete - awarding XP", extra={"user_id": str(user.id), "xp": xp, "usage_type": usage_type})
     old_level = calculate_level(user.experience_points)["level"]
@@ -80,16 +82,14 @@ async def grant_conversation_completion_rewards(
     if new_level != user.level:
         user.level = new_level
 
-    streak = update_streak(user.last_study_date, user.streak_count, user.longest_streak, now)
-    user.streak_count = streak["streak_count"]
-    user.longest_streak = streak["longest_streak"]
-    user.last_study_date = now
+    today = apply_study_streak(user, processed_at=now)
 
     await _update_daily_conversation_progress(
         db,
         user_id=user.id,
         xp=xp,
         study_minutes=max(0, duration_seconds // 60),
+        today=today,
     )
 
     await track_ai_usage(db, user.id, usage_type, duration_seconds)
@@ -102,7 +102,7 @@ async def grant_conversation_completion_rewards(
             "total_xp": user.experience_points,
             "new_level": new_level,
             "old_level": old_level,
-            "streak_count": streak["streak_count"],
+            "streak_count": user.streak_count,
             "conversation_count": conversation_count,
         },
     )

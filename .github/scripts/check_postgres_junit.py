@@ -9,6 +9,48 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         *{
+            ("tests.test_lesson_study_day_postgres", name)
+            for name in (
+                "test_marker_migration_keeps_old_columns_private_and_rejects_existing_marker",
+                "test_existing_trusted_service_role_grants_survive_without_reopening_clients",
+                "test_preexisting_receipt_replay_never_backfills_a_study_day",
+                "test_first_keyed_completion_marks_study_without_xp_goal_or_fake_aggregates[all-correct]",
+                "test_first_keyed_completion_marks_study_without_xp_goal_or_fake_aggregates[zero-score-completed]",
+                "test_compatibility_receipt_stays_unrecognized_after_activation",
+                "test_same_id_next_day_get_and_post_recovery_change_no_rows",
+                "test_same_day_new_attempt_and_next_day_new_attempt_count_days_once",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[before-kst-midnight]",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[after-kst-midnight]",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[before-month]",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[after-month]",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[before-year]",
+                "test_receipt_daily_and_user_share_single_kst_boundary_instant[after-year]",
+                "test_study_day_and_streak_rollback_with_failed_receipt_transaction[marker]",
+                "test_study_day_and_streak_rollback_with_failed_receipt_transaction[after-marker]",
+                "test_study_day_and_streak_rollback_with_failed_receipt_transaction[receipt-flush]",
+                "test_study_day_and_streak_rollback_with_failed_receipt_transaction[precommit]",
+                "test_legacy_unkeyed_submission_does_not_create_attendance",
+                "test_auth_loaded_stale_activity_snapshot_is_refreshed_without_losing_xp",
+                "test_concurrent_same_and_different_keyed_lessons_recognize_one_day",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[quiz-lesson-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[quiz-other-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[kana-quiz-lesson-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[kana-quiz-other-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[kana-stage-lesson-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[kana-stage-other-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[conversation-lesson-first]",
+                "test_concurrent_other_completion_and_lesson_keep_one_day_and_both_effects[conversation-other-first]",
+                "test_auto_completion_and_conversation_preserve_both_xp_rewards[auto-first]",
+                "test_auto_completion_and_conversation_preserve_both_xp_rewards[conversation-first]",
+                "test_web_lock_protocol_and_api_lesson_share_user_mutex",
+                "test_marker_upsert_preserves_other_daily_aggregates",
+                "test_populated_study_marker_prevents_destructive_downgrade",
+                "test_waiting_for_user_lock_across_midnight_uses_after_lock_processing_day",
+                "test_stage_timestamp_upserts_work_on_unchanged_not_null_schema",
+                "test_start_and_incomplete_answers_do_not_recognize_a_study_day",
+            )
+        },
+        *{
             ("tests.test_lesson_submissions_postgres", name)
             for name in (
                 "test_receipt_migration_is_private_preserves_auth_and_fails_on_existing_object",

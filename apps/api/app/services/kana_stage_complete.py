@@ -13,10 +13,10 @@ from app.models import KanaCharacter, KanaLearningStage, UserKanaProgress, UserK
 from app.models.enums import KanaType
 from app.models.user import User
 from app.schemas.kana import KanaStageCompleteRequest
-from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements
 from app.services.kana_daily_progress import apply_daily_progress_increment
+from app.services.study_day_recording import apply_study_streak, canonical_study_instant, lock_study_user
 from app.utils.constants import KANA_REWARDS
-from app.utils.date import get_today_kst
 
 
 class KanaStageCompleteServiceError(Exception):
@@ -62,11 +62,12 @@ async def complete_kana_stage(
     user: User,
     body: KanaStageCompleteRequest,
 ) -> KanaStageCompleteResult:
+    await lock_study_user(db, user)
     stage = await db.get(KanaLearningStage, body.stage_id)
     if not stage:
         raise KanaStageCompleteServiceError(status_code=404, detail="스테이지를 찾을 수 없습니다")
 
-    now = datetime.now(UTC)
+    now = canonical_study_instant(datetime.now(UTC))
     await mark_kana_stage_complete(
         db,
         user_id=user.id,
@@ -74,7 +75,7 @@ async def complete_kana_stage(
         quiz_score=body.quiz_score,
         completed_at=now,
     )
-    next_stage_unlocked = await unlock_next_kana_stage(db, user_id=user.id, stage=stage)
+    next_stage_unlocked = await unlock_next_kana_stage(db, user_id=user.id, stage=stage, completed_at=now)
 
     xp_earned = KANA_REWARDS.STAGE_COMPLETE_XP
     old_level = user.level
@@ -82,11 +83,7 @@ async def complete_kana_stage(
     level_info = calculate_level(user.experience_points)
     user.level = level_info["level"]
 
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = now
+    today = apply_study_streak(user, processed_at=now)
 
     await apply_daily_progress_increment(db, user_id=user.id, today=today, xp_earned=xp_earned)
 
@@ -126,15 +123,16 @@ async def mark_kana_stage_complete(
         is_completed=True,
         quiz_score=quiz_score,
         completed_at=completed_at,
+        updated_at=completed_at,
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["user_id", "stage_id"],
-        set_={"is_completed": True, "quiz_score": quiz_score, "completed_at": completed_at},
+        set_={"is_completed": True, "quiz_score": quiz_score, "completed_at": completed_at, "updated_at": completed_at},
     )
     await db.execute(stmt)
 
 
-async def unlock_next_kana_stage(db: AsyncSession, *, user_id: uuid.UUID, stage: KanaLearningStage) -> bool:
+async def unlock_next_kana_stage(db: AsyncSession, *, user_id: uuid.UUID, stage: KanaLearningStage, completed_at: datetime) -> bool:
     next_stage_result = await db.execute(
         select(KanaLearningStage).where(
             KanaLearningStage.kana_type == stage.kana_type,
@@ -149,10 +147,11 @@ async def unlock_next_kana_stage(db: AsyncSession, *, user_id: uuid.UUID, stage:
         user_id=user_id,
         stage_id=next_stage.id,
         is_unlocked=True,
+        updated_at=completed_at,
     )
     unlock_stmt = unlock_stmt.on_conflict_do_update(
         index_elements=["user_id", "stage_id"],
-        set_={"is_unlocked": True},
+        set_={"is_unlocked": True, "updated_at": completed_at},
     )
     await db.execute(unlock_stmt)
     return True

@@ -15,12 +15,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.lesson import LessonSubmission
 from app.models.user import User
 from app.schemas.lesson import LessonSubmissionRequest, LessonSubmissionResponse, LessonSubmitResponse
-from app.services.lesson_command import LessonServiceError, apply_lesson_attempt, lock_lesson_user
+from app.services.lesson_command import LessonServiceError, apply_lesson_attempt
+from app.services.study_day_recording import canonical_study_instant, lock_study_user, record_lesson_study_day
 
 logger = logging.getLogger(__name__)
 
 FINGERPRINT_VERSION = 1
 RESPONSE_SCHEMA_VERSION = 1
+# Source-controlled activation follows the compatibility deployment and writer drain.
+# This is deliberately not an environment or runtime configuration contract.
+LESSON_STUDY_DAY_RECOGNITION_ENABLED = False
 NO_STORE_HEADERS = {"Cache-Control": "private, no-store"}
 UNCONFIRMED_DETAIL = "제출 결과를 아직 확인할 수 없습니다. 같은 제출로 다시 확인해주세요"
 
@@ -103,7 +107,7 @@ async def submit_lesson_once(
         # Bound only this new protocol's transaction, never global DB settings.
         await db.execute(text("SET LOCAL lock_timeout = '2s'"))
         await db.execute(text("SET LOCAL statement_timeout = '15s'"))
-        await lock_lesson_user(db, user.id)
+        await lock_study_user(db, user)
         receipt = await db.get(LessonSubmission, (user.id, request.submission_id))
         if receipt is not None:
             return _replay(receipt, lesson_id, fingerprint)
@@ -111,9 +115,12 @@ async def submit_lesson_once(
         # Query current lesson only after historical receipt recovery. A deleted
         # or unpublished source does not remove an already committed result.
         applied = await apply_lesson_attempt(db, user, lesson_id=lesson_id, answers=list(request.answers))
+        processed_at = canonical_study_instant(datetime.now(UTC))
+        if LESSON_STUDY_DAY_RECOGNITION_ENABLED and applied.status == "COMPLETED":
+            await record_lesson_study_day(db, user, processed_at=processed_at)
         result = LessonSubmissionResponse(
             submission_id=request.submission_id,
-            processed_at=datetime.now(UTC),
+            processed_at=processed_at,
             result=LessonSubmitResponse.model_validate(applied),
         )
         db.add(

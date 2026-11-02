@@ -3,12 +3,19 @@ raised_by: codex-root
 raised_at: 2026-09-29
 phase: streak-integrity
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-02T14:36:57+09:00
 ---
 
 ## What happened
 
 9월 29일 로컬 작업에 영속 출석 마커 제안이 open 상태로 남아 있었고, 10월 30일 누락 감사에서 이를 다시 확인했다. 기존 일별 행은 시작만 해도 생성될 수 있고, 레슨 재학습의 마지막 완료일만으로 모든 과거 학습일을 복원할 수 없다.
+
+## Resolution — 2026-11-02 구현 승인, 운영 적용 미승인
+
+사용자가 PR #214 병합과 [구체안 A](../../docs/operations/plans/lesson-study-day-recognition-proposal-2026-11-02.md)의 구현·회귀·시뮬레이터 검증을 승인했다. 신규 멱등 레슨 완료에만 일별 `lesson_completed`를 기록하고 과거 백필·XP·오늘 단어 목표·SRS 정책은 유지한다. 사용자별 동시 writer 보완과 Prisma 미러도 구체안의 구현 범위에 포함한다.
+
+이 항목의 **설계 선택·코드 구현 승인**을 해결로 기록한다. 운영 마이그레이션·새 구현 PR의 병합/서버·웹 배포 승인은 아니며, [구현·검증 기록](../../docs/operations/plans/lesson-study-day-recognition-implementation-2026-11-02.md)의 결과와 운영안을 먼저 보고한다. 아래의 과거 ‘미승인’ 표시는 해당 날짜의 이력이다.
 
 ## Decision required
 

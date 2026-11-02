@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
@@ -76,7 +75,6 @@ async def test_complete_kana_stage_unlocks_next_stage_and_disables_show_kana(mon
         achievement_context.update(context)
         return [{"type": "achievement"}]
 
-    monkeypatch.setattr(kana_stage_complete, "get_today_kst", lambda: date(2026, 4, 21))
     monkeypatch.setattr(kana_stage_complete, "check_and_grant_achievements", fake_check_and_grant_achievements)
 
     result = await complete_kana_stage(
@@ -142,7 +140,6 @@ async def test_complete_kana_stage_keeps_next_stage_locked_when_none(monkeypatch
     async def fake_check_and_grant_achievements(db_arg, user_id, context):
         return []
 
-    monkeypatch.setattr(kana_stage_complete, "get_today_kst", lambda: date(2026, 4, 21))
     monkeypatch.setattr(kana_stage_complete, "check_and_grant_achievements", fake_check_and_grant_achievements)
 
     result = await complete_kana_stage(

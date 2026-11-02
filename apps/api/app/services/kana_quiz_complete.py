@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import QuizSession
 from app.models.user import User
 from app.schemas.kana import KanaQuizCompleteRequest
-from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements
 from app.services.kana_daily_progress import apply_daily_progress_increment
+from app.services.study_day_recording import apply_study_streak, lock_study_user
 from app.utils.constants import KANA_REWARDS
-from app.utils.date import get_today_kst
 
 
 class KanaQuizCompleteServiceError(Exception):
@@ -37,7 +37,8 @@ async def complete_kana_quiz_session(
     user: User,
     body: KanaQuizCompleteRequest,
 ) -> KanaQuizCompleteResult:
-    session = await db.get(QuizSession, body.session_id)
+    await lock_study_user(db, user)
+    session = await db.get(QuizSession, body.session_id, with_for_update=True, populate_existing=True)
     if not session or session.user_id != user.id:
         raise KanaQuizCompleteServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
 
@@ -50,11 +51,7 @@ async def complete_kana_quiz_session(
     user.level = level_info["level"]
 
     now = datetime.now(UTC)
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = now
+    today = apply_study_streak(user, processed_at=now)
 
     await apply_daily_progress_increment(
         db,

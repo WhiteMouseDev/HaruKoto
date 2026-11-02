@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
@@ -49,7 +49,6 @@ async def test_completion_paths_share_kst_streak_days(monkeypatch, activity, las
         "conversation": conversation_rewards,
     }
     module = modules[activity]
-    monkeypatch.setattr(module, "get_today_kst", lambda: date(2026, 9, 29))
 
     if activity == "quiz":
         monkeypatch.setattr(module, "datetime", FrozenDatetime)

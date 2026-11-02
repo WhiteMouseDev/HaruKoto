@@ -4,7 +4,7 @@ import uuid
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Text, UniqueConstraint, false, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -62,6 +62,7 @@ class DailyProgress(Base):
     grammar_studied: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     sentences_studied: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     study_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
+    lesson_completed: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=false())
 
     user: Mapped[User] = relationship(back_populates="daily_progress")  # noqa: F821
 

@@ -14,11 +14,11 @@ from app.models import DailyProgress, QuizAnswer, QuizSession, UserStudyStagePro
 from app.models.user import User
 from app.schemas.quiz import QuizCompleteRequest
 from app.services.daily_progress_upsert import build_daily_progress_insert_values
-from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements, update_streak
+from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements
 from app.services.quiz_complete_metrics import calculate_accuracy, calculate_daily_progress_increments, calculate_study_minutes
 from app.services.quiz_session import extract_questions_data
+from app.services.study_day_recording import apply_study_streak, lock_study_user
 from app.utils.constants import REWARDS
-from app.utils.date import get_today_kst
 
 
 class QuizCompleteServiceError(Exception):
@@ -202,6 +202,7 @@ async def complete_quiz_session(
     user: User,
     body: QuizCompleteRequest,
 ) -> QuizCompleteResult:
+    await lock_study_user(db, user)
     session = await db.get(QuizSession, body.session_id, with_for_update=True, populate_existing=True)
     if not session or session.user_id != user.id:
         raise QuizCompleteServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
@@ -240,11 +241,7 @@ async def complete_quiz_session(
     level_info = calculate_level(user.experience_points)
     user.level = level_info["level"]
 
-    today = get_today_kst()
-    streak_info = update_streak(user.last_study_date, user.streak_count, user.longest_streak, today)
-    user.streak_count = streak_info["streak_count"]
-    user.longest_streak = streak_info["longest_streak"]
-    user.last_study_date = now
+    today = apply_study_streak(user, processed_at=now)
 
     await _update_daily_progress(
         db,
