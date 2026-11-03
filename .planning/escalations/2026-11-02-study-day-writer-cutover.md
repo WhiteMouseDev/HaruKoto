@@ -39,3 +39,5 @@ legacy STOP #218과 p6 통합 OFF #219·갱신한 #216 ON의 코드 검증을 �
 [구체 설정·복구 요청 명세](../../docs/operations/plans/study-day-operating-change-proposal-2026-11-03.md)와 private JSON/host snapshot을 준비했다. 권장안은 현재 승인 host의 앱503 STOP과 이전 host 전체deny WAF1규칙이다. 이전 주소의 로그인/조회/콜백까지 차단하는 추가 영향은 별도 승인 대상이다. 현재 WAF NONE에서 최초 생성/게시 후 완전 NONE 복원은 공식 절차를 확정하지 못했으며 빈 active rules와 같다고 설명하지 않는다. 현재 관측으로 old handler 실제 종료를 증명하지 못했으므로 운영 전환 NO-GO를 유지한다.
 
 첫 WAF 절차·원복과 callback 영향 검증, 최종 legacy ON artifact·digest, 기존 실행 종료 증거/필요 계측안을 먼저 확정해야 한다. 운영 변경·유료전환·revision삭제·DB세션종료·권한/비밀번호 변경은 수행하지 않았다. 이는 코드 작업을 중단한다는 뜻이 아니며 통합/시뮬레이터/CI 검증은 계속한다.
+
+추가 key/target 읽기에서 Vercel DATABASE_URL·DIRECT_URL은 같은항목이production/preview/development에공유된것을확인했다(값복호화없음). 현재Preview는분리QA환경이아니므로 live학습검증에사용하지않는다. 이번검증은전부localhost폐기형DB/합성Auth/API였다. 온라인Preview가필요하면production값을유지한preview전용DB/Auth/API·Secret범위분리와복구payload를별도승인받는다. 새자원/비용/설정변경은적용하지않았다.

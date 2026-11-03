@@ -18,9 +18,14 @@
 | API | harukoto-api-00252-6jq 100%, source26a81bce, revision252개, tag없음, timeout300초 |
 | 자동 배포 | Deploy API workflow244540898 active, 웹 Git createDeployments enabled |
 | 웹 | 보관123개·READY22개(기존production9/preview13)·alias57개, WAF active/draft/version 없음 |
+| Preview 환경 | DATABASE_URL·DIRECT_URL 각각 동일한 설정 항목이production/preview/development에 함께 적용, branch전용아님. 값은복호화/보관하지않고key/target만조회 |
 | 실제 주소 연결 | 현재 사용자 custom alias는 READY 기존운영배포를 가리킴. project.targets.production은 CANCELED 포인터이므로 현재 서비스 판정에 사용하지 않음 |
 
 현재 DB lock waiter/준비 트랜잭션 없음은 실행 종료 증거가 아니다. DB source별 연결 식별도 충분하지 않아 순간 snapshot으로 drain을 증명하지 않는다. 전체 주소·식별자·settings snapshot은 private `ops/` 산출물에만 보존한다.
+
+**현재 Vercel Preview는 격리 QA 환경으로 사용하지 않는다.** 운영과preview가 같은DB 설정 항목을 공유하므로 Preview 성공을 분리된 DB의 기능 검증으로 표현하지 않는다. 이번 기능/재시도/재실행 검증은 모두localhost 일회용PG·합성Auth/API·별도QA앱으로 수행했으며 live Preview에서 학습/제출하지 않았다. READY 숫자는 사용 가능한 안전한QA환경의 숫자가 아니다.
+
+실제 온라인Preview 검증이 필요하면 비운영 DB와 인증/API 구성을 먼저 분리하는 별도 변경안을 승인받아야 한다. 구체안은 (1) production의현재값/역할을보존한채 원래공유항목에서preview target만분리, (2) preview전용DATABASE_URL/DIRECT_URL과분리된Supabase/Auth/API 설정추가, (3) prod Secret/결제/음원생성key가preview로전달되지않도록전체key/target조사, (4) 새preview를검토한소스로빌드한뒤접속대상identity확인이다. 실제자원ID·비용·필요key목록·값을보존한역변경payload가확정되기전에는적용하지않는다. shared항목전체를지워production을바꾸거나기존배포가자동으로새값을쓴다고가정하지않는다.
 
 ## 구체 변경 요청 1: 자동 배포 통제
 
@@ -76,4 +81,4 @@ marker·receipt·학습 기록을 삭제하거나 Data API를 여는 동작은 �
 
 ## 다음 승인 전에 남은 항목
 
-권장 one-rule의 첫 생성/게시/완전 복구 절차, 이전 host 전체차단의 callback/로그인 영향, legacy ON 최종 artifact digest, 구 runtime 실제 실행 종료 증거와 필요 계측안을 확정해야 한다. 코드·CI가 성공했다는 이유로 이 조건을 완료로 표시하지 않는다. 현재 단계를 승인하면 즉시 운영을 바꾸는 것으로 해석하지 않는다.
+권장 one-rule의 첫 생성/게시/완전 복구 절차, 이전 host 전체차단의 callback/로그인 영향, legacy ON 최종 artifact digest, 구 runtime 실제 실행 종료 증거와 필요 계측안, 온라인Preview를사용하려면전용DB/Auth/API분리안을 확정해야 한다. 코드·CI가 성공했다는 이유로 이 조건을 완료로 표시하지 않는다. 현재 단계를 승인하면 즉시 운영을 바꾸는 것으로 해석하지 않는다.
