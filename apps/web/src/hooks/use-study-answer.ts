@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { queryKeys } from '@/lib/query-keys';
+import { studyWriteErrorMessage } from '@/lib/study-write-stop';
 
 type AccountBoundary = { userId: string | null; generation: number };
 
@@ -70,14 +71,14 @@ export function useStudyAnswer<Parameters>(url: string) {
         queryClient.invalidateQueries({ queryKey: ['stats-history'] }),
       ]);
     },
-    onError: (_error, _parameters, boundary) => {
+    onError: (error, _parameters, boundary) => {
       if (
         boundary &&
         (account.current.userId !== boundary.userId ||
           account.current.generation !== boundary.generation)
       )
         return;
-      toast.error('답안 저장에 실패했어요.');
+      toast.error(studyWriteErrorMessage(error, '답안 저장에 실패했어요.'));
     },
   });
 }

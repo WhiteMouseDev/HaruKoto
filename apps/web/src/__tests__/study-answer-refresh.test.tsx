@@ -3,6 +3,7 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAnswerQuestion } from '@/hooks/use-quiz';
 import { useAnswerKanaQuestion } from '@/hooks/use-kana-quiz';
+import { STUDY_WRITE_STOP_MESSAGE } from '@/lib/study-write-stop';
 
 const mocks = vi.hoisted(() => ({
   owner: 'account-a' as string | null,
@@ -97,6 +98,18 @@ describe.each([
     });
     expect(invalidate).not.toHaveBeenCalled();
     expect(mocks.toast).toHaveBeenCalledWith('답안 저장에 실패했어요.');
+  });
+
+  it('preserves the STOP explanation without treating a refused answer as saved', async () => {
+    mocks.fetch.mockRejectedValue(new Error(STUDY_WRITE_STOP_MESSAGE));
+    const { result, invalidate } = setup();
+    await act(async () => {
+      await expect(result.current.mutateAsync(parameters)).rejects.toThrow(
+        STUDY_WRITE_STOP_MESSAGE
+      );
+    });
+    expect(invalidate).not.toHaveBeenCalled();
+    expect(mocks.toast).toHaveBeenCalledWith(STUDY_WRITE_STOP_MESSAGE);
   });
 
   it('ignores an old ACK after an A→B→A login generation change', async () => {

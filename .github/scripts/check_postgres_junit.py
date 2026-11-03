@@ -9,6 +9,16 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         *{
+            ("tests.test_study_write_stop_integration_postgres", name)
+            for name in (
+                "test_p6_stop_preserves_existing_markers_receipts_history_and_security[feature-off]",
+                "test_p6_stop_preserves_existing_markers_receipts_history_and_security[feature-on]",
+                "test_p6_stop_allows_login_audio_receipt_get_and_reopens_same_activity_and_submission_ids[feature-off]",
+                "test_p6_stop_allows_login_audio_receipt_get_and_reopens_same_activity_and_submission_ids[feature-on]",
+                "test_p6_stop_rejects_before_mutex_then_reopens_concurrent_activity_and_submission_retries_once",
+            )
+        },
+        *{
             ("tests.test_kana_completion_safety_postgres", name)
             for name in (
                 "test_tagged_kana_completion_requires_all_durable_answers[no-answers-recognition-off]",

@@ -34,6 +34,10 @@ from app.error_handlers import register_error_handlers  # noqa: E402
 
 register_error_handlers(app)
 
+from app.middleware.study_write_stop import StudyWriteStopMiddleware
+
+# CORS remains outside the admission gate, including for paused responses.
+app.add_middleware(StudyWriteStopMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,

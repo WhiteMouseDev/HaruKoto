@@ -16,9 +16,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `pnpm dev --hostname 127.0.0.1 --port ${port}`,
+    command: `node e2e/helpers/start-admin-server.mjs ${port}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    // Always use the isolated E2E launcher, including its offline font fixture.
+    reuseExistingServer: false,
+    gracefulShutdown: { signal: 'SIGTERM', timeout: 5000 },
     timeout: 120_000,
     env: {
       ADMIN_E2E_AUTH_BYPASS: '1',

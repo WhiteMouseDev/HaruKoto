@@ -1,8 +1,41 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@harukoto/database';
+import { STUDY_WRITES_PAUSED } from '@/lib/study-write-stop-policy';
+import {
+  STUDY_WRITE_STOP_MESSAGE,
+  STUDY_WRITE_STOP_RETRY_SECONDS,
+  canonicalStudyWritePath,
+  studyWriteRouteDecision,
+} from '@/lib/study-write-stop';
 
 export async function proxy(request: NextRequest) {
+  // Run before auth/session refresh, Prisma or an external provider. A stopped
+  // request must never reach its handler, including GET mission auto-claims.
+  if (
+    STUDY_WRITES_PAUSED &&
+    studyWriteRouteDecision(request.method, request.nextUrl.pathname) ===
+      'pause'
+  ) {
+    return NextResponse.json(
+      { error: STUDY_WRITE_STOP_MESSAGE },
+      {
+        status: 503,
+        headers: {
+          'Retry-After': String(STUDY_WRITE_STOP_RETRY_SECONDS),
+          'Cache-Control': 'private, no-store',
+        },
+      }
+    );
+  }
+  // Preserve the previous static-image fast path, but only after considering
+  // canonical API paths: an encoded API/dynamic ID is not a static image.
+  if (
+    /\.(?:svg|png|jpg|jpeg|gif|webp)$/.test(request.nextUrl.pathname) &&
+    !canonicalStudyWritePath(request.nextUrl.pathname).startsWith('/api/')
+  ) {
+    return NextResponse.next({ request });
+  }
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -65,9 +98,7 @@ export async function proxy(request: NextRequest) {
             id: user.id,
             email: user.email || '',
             nickname:
-              user.user_metadata?.full_name ||
-              user.user_metadata?.name ||
-              '',
+              user.user_metadata?.full_name || user.user_metadata?.name || '',
             avatarUrl: user.user_metadata?.avatar_url || null,
           },
           select: { onboardingCompleted: true },
@@ -135,6 +166,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Do not exempt image extensions here: dynamic/encoded API IDs can contain
+    // them. Static-image requests use the fast path after the STOP decision.
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

@@ -40,6 +40,10 @@ docs/
 
 ### 운영
 
+- [운영 코드 호환 학습 저장 STOP](operations/plans/legacy-study-write-stop-2026-11-03.md) — 구 스키마 기반 선택적 저장 중지, 격리 검증·클라이언트 한계와 별도 승인할 적용/롤백안
+- [학습일·완료 보호·STOP 통합 검증](operations/plans/study-day-integration-qa-2026-11-03.md) — p6 통합 회귀·기존 웹 실패 7개 분류·읽기 전용 운영 조사와 적용 전 준비
+- [블로그: 한 문제의 학습 기록을 인정하기 전 통합 검증](blog/2026-11-03-integrating-study-days-and-pause-safety.md) — ACK·계정 경계·중복 방지·스키마별 STOP 검증을 함께 보존한 과정
+
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [홈 단어 카드의 오늘 목표 진행률](operations/plans/daily-vocabulary-goal-2026-10-30.md) — 하루 목표·퀴즈 이어하기·누적 숙련도 분리와 KST 고유 단어 집계
 - [오늘 단어 목표의 실제 운영 반영](operations/plans/daily-vocabulary-goal-production-rollout-2026-10-30.md) — #204 배포·시뮬레이터 목표/추천/재실행 검증, 기존 기록·음원·보안 보존
