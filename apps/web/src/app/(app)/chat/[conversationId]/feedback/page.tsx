@@ -36,18 +36,41 @@ type TranscriptMessage = {
   text: string;
 };
 
-type FeedbackSummary = {
+type FeedbackScoreValues = {
   overallScore: number;
   fluency: number;
   accuracy: number;
   vocabularyDiversity: number;
   naturalness: number;
+};
+
+type FeedbackSummary = {
+  [K in keyof FeedbackScoreValues]?: number | null;
+} & {
   strengths: string[];
   improvements: string[];
   recommendedExpressions: RecommendedExpression[] | string[];
   corrections?: GrammarCorrection[];
   translatedTranscript?: TranslatedMessage[];
 };
+
+function hasFeedbackScores(
+  summary: FeedbackSummary | null
+): summary is FeedbackSummary & FeedbackScoreValues {
+  const keys: (keyof FeedbackScoreValues)[] = [
+    'overallScore',
+    'fluency',
+    'accuracy',
+    'vocabularyDiversity',
+    'naturalness',
+  ];
+  return (
+    summary !== null &&
+    keys.every(
+      (key) => typeof summary[key] === 'number' && Number.isFinite(summary[key])
+    )
+  );
+}
 
 type Vocabulary = {
   word: string;
@@ -161,16 +184,28 @@ export default function FeedbackPage({
         const res = await fetch(`/api/v1/chat/${conversationId}`);
         if (!res.ok || cancelled) return;
         const data = await res.json();
-        if (data.feedbackSummary && !cancelled) {
-          const transcript: TranscriptMessage[] =
-            data.messages?.map(
-              (m: { role: string; messageJa?: string; content?: string }) => ({
-                role: m.role === 'ai' ? 'assistant' : m.role,
-                text: m.messageJa ?? m.content ?? '',
-              })
-            ) ?? [];
+        if (!cancelled) {
+          const messages: {
+            role: string;
+            messageJa?: string;
+            content?: string;
+          }[] = Array.isArray(data.messages) ? data.messages : [];
+          const transcript: TranscriptMessage[] = messages
+            .filter(
+              (message) =>
+                message && ['user', 'ai', 'assistant'].includes(message.role)
+            )
+            .map((message) => ({
+              role: message.role === 'user' ? 'user' : 'assistant',
+              text:
+                typeof message.messageJa === 'string'
+                  ? message.messageJa
+                  : typeof message.content === 'string'
+                    ? message.content
+                    : '',
+            }));
           setFeedback({
-            feedbackSummary: data.feedbackSummary,
+            feedbackSummary: data.feedbackSummary ?? null,
             transcript,
             vocabulary: [],
             scenario: data.scenario,
@@ -184,7 +219,9 @@ export default function FeedbackPage({
     }
 
     fetchFeedbackFromServer();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
@@ -193,7 +230,11 @@ export default function FeedbackPage({
     return (
       <div className="flex flex-col gap-4 p-4">
         <div className="flex items-center gap-3 pt-2">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/chat')}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push('/chat')}
+          >
             <ArrowLeft className="size-5" />
           </Button>
           <h1 className="text-xl font-bold">회화 리포트</h1>
@@ -207,8 +248,8 @@ export default function FeedbackPage({
     );
   }
 
-  // No data state — server fetch completed but no feedback
-  if (!feedback || !feedback.feedbackSummary) {
+  // A saved conversation without analysis is still a valid record.
+  if (!feedback) {
     return (
       <div className="flex flex-col gap-4 p-4">
         <div className="flex items-center gap-3 pt-2">
@@ -235,14 +276,40 @@ export default function FeedbackPage({
   }
 
   const { feedbackSummary, vocabulary, scenario } = feedback;
+  const translatedTranscript = Array.isArray(
+    feedbackSummary?.translatedTranscript
+  )
+    ? feedbackSummary.translatedTranscript
+        .filter(
+          (message) =>
+            message &&
+            ['user', 'assistant', 'ai'].includes(message.role) &&
+            typeof message.ja === 'string'
+        )
+        .map((message) => ({
+          role:
+            message.role === 'user'
+              ? ('user' as const)
+              : ('assistant' as const),
+          ja: message.ja,
+          ko: typeof message.ko === 'string' ? message.ko : '',
+        }))
+    : [];
+  const transcript =
+    translatedTranscript.length > 0
+      ? translatedTranscript
+      : (Array.isArray(feedback.transcript) ? feedback.transcript : [])
+          .filter(
+            (message) =>
+              message &&
+              ['user', 'assistant'].includes(message.role) &&
+              typeof message.text === 'string'
+          )
+          .map((message) => ({ role: message.role, ja: message.text, ko: '' }));
 
   // Normalize expressions: can be string[] or {ja, ko}[]
-  const normalizedExpressions = (feedbackSummary.recommendedExpressions ?? [])
-    .map((expr) =>
-      typeof expr === 'string'
-        ? { ja: expr, ko: '' }
-        : expr
-    )
+  const normalizedExpressions = (feedbackSummary?.recommendedExpressions ?? [])
+    .map((expr) => (typeof expr === 'string' ? { ja: expr, ko: '' } : expr))
     .filter((e) => e.ja);
 
   return (
@@ -261,48 +328,67 @@ export default function FeedbackPage({
         >
           <ArrowLeft className="size-5" />
         </Button>
-        <h1 className="text-xl font-bold">회화 리포트</h1>
+        <h1 className="text-xl font-bold">
+          {feedbackSummary ? '회화 리포트' : '회화 기록'}
+        </h1>
       </motion.div>
 
       {/* Scores */}
-      <motion.div variants={item}>
-        <FeedbackScores
-          overallScore={feedbackSummary.overallScore}
-          fluency={feedbackSummary.fluency}
-          accuracy={feedbackSummary.accuracy}
-          vocabularyDiversity={feedbackSummary.vocabularyDiversity}
-          naturalness={feedbackSummary.naturalness}
-        />
-      </motion.div>
+      {hasFeedbackScores(feedbackSummary) && (
+        <motion.div variants={item}>
+          <FeedbackScores
+            overallScore={feedbackSummary.overallScore}
+            fluency={feedbackSummary.fluency}
+            accuracy={feedbackSummary.accuracy}
+            vocabularyDiversity={feedbackSummary.vocabularyDiversity}
+            naturalness={feedbackSummary.naturalness}
+          />
+        </motion.div>
+      )}
+
+      {!feedbackSummary && (
+        <p className="text-muted-foreground text-sm">
+          분석 결과 없이 저장된 회화 기록이에요.
+        </p>
+      )}
 
       {/* Transcript */}
-      {feedbackSummary.translatedTranscript &&
-        feedbackSummary.translatedTranscript.length > 0 && (
-          <motion.div variants={item}>
-            <FeedbackTranscript
-              translatedTranscript={feedbackSummary.translatedTranscript}
-              corrections={feedbackSummary.corrections ?? []}
-            />
-          </motion.div>
-        )}
+      {transcript.length > 0 ? (
+        <motion.div variants={item}>
+          <FeedbackTranscript
+            translatedTranscript={transcript}
+            corrections={feedbackSummary?.corrections ?? []}
+          />
+        </motion.div>
+      ) : (
+        !feedbackSummary && (
+          <p className="text-muted-foreground text-sm">
+            저장된 대화 내용이 없어요.
+          </p>
+        )
+      )}
 
       {/* Details */}
-      <motion.div variants={item}>
-        <FeedbackDetails
-          strengths={feedbackSummary.strengths ?? []}
-          improvements={feedbackSummary.improvements ?? []}
-          recommendedExpressions={feedbackSummary.recommendedExpressions ?? []}
-          vocabulary={vocabulary ?? []}
-        />
-      </motion.div>
+      {feedbackSummary && (
+        <motion.div variants={item}>
+          <FeedbackDetails
+            strengths={feedbackSummary.strengths ?? []}
+            improvements={feedbackSummary.improvements ?? []}
+            recommendedExpressions={
+              feedbackSummary.recommendedExpressions ?? []
+            }
+            vocabulary={vocabulary ?? []}
+          />
+        </motion.div>
+      )}
 
       {/* Expression Flashcards + Corrections → Wordbook */}
       {(normalizedExpressions.length > 0 ||
-        (feedbackSummary.corrections ?? []).length > 0) && (
+        (feedbackSummary?.corrections ?? []).length > 0) && (
         <motion.div variants={item}>
           <ExpressionFlashcards
             expressions={normalizedExpressions}
-            corrections={feedbackSummary.corrections ?? []}
+            corrections={feedbackSummary?.corrections ?? []}
             conversationId={conversationId}
           />
         </motion.div>
@@ -316,7 +402,9 @@ export default function FeedbackPage({
             onClick={handleRestartScenario}
             disabled={restarting}
           >
-            <RotateCcw className={`size-4 ${restarting ? 'animate-spin' : ''}`} />
+            <RotateCcw
+              className={`size-4 ${restarting ? 'animate-spin' : ''}`}
+            />
             {restarting ? '시나리오 준비 중...' : '같은 시나리오 다시하기'}
           </Button>
         )}

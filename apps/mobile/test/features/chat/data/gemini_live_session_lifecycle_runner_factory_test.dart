@@ -39,10 +39,10 @@ void main() {
         [
           'connect',
           'flushTranscripts',
+          'closeTransport',
           'stopRecording',
           'closeTransport',
           'disposeAudio',
-          'closeTransport',
         ],
       );
       expect(states, ['connecting', 'ending', 'ended']);

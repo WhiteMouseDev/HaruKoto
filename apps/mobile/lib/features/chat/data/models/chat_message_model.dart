@@ -17,7 +17,7 @@ class ChatMessageModel {
     return ChatMessageModel(
       id: json['id'] as String? ?? '',
       role: json['role'] as String? ?? 'ai',
-      messageJa: json['messageJa'] as String? ?? '',
+      messageJa: (json['messageJa'] ?? json['content']) as String? ?? '',
       messageKo: json['messageKo'] as String?,
       feedback: (json['feedback'] as List<dynamic>?)
           ?.map((e) => MessageFeedback.fromJson(e as Map<String, dynamic>))
@@ -82,7 +82,7 @@ class MessageResponse {
 
   factory MessageResponse.fromJson(Map<String, dynamic> json) {
     return MessageResponse(
-      messageJa: json['messageJa'] as String? ?? '',
+      messageJa: (json['messageJa'] ?? json['content']) as String? ?? '',
       messageKo: json['messageKo'] as String? ?? '',
       feedback: (json['feedback'] as List<dynamic>?)
               ?.map((e) => MessageFeedback.fromJson(e as Map<String, dynamic>))
@@ -148,7 +148,7 @@ class FirstMessage {
 
   factory FirstMessage.fromJson(Map<String, dynamic> json) {
     return FirstMessage(
-      messageJa: json['messageJa'] as String? ?? '',
+      messageJa: (json['messageJa'] ?? json['content']) as String? ?? '',
       messageKo: json['messageKo'] as String? ?? '',
       hint: json['hint'] as String?,
     );

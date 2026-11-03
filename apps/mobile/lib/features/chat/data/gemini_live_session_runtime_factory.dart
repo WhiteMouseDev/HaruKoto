@@ -18,13 +18,16 @@ class GeminiLiveSessionRuntime {
     required GeminiLiveConnectionInput connectionInput,
     required GeminiLiveSessionConnector sessionConnector,
     required GeminiLiveInboundDispatcher inboundDispatcher,
+    required GeminiLiveSetupCompleteHandler setupCompleteHandler,
   })  : _connectionInput = connectionInput,
         _sessionConnector = sessionConnector,
-        _inboundDispatcher = inboundDispatcher;
+        _inboundDispatcher = inboundDispatcher,
+        _setupCompleteHandler = setupCompleteHandler;
 
   final GeminiLiveConnectionInput _connectionInput;
   final GeminiLiveSessionConnector _sessionConnector;
   final GeminiLiveInboundDispatcher _inboundDispatcher;
+  final GeminiLiveSetupCompleteHandler _setupCompleteHandler;
 
   Future<void> connect() {
     return _sessionConnector.connect(_connectionInput);
@@ -33,6 +36,8 @@ class GeminiLiveSessionRuntime {
   void dispatch(dynamic raw) {
     _inboundDispatcher.dispatch(raw);
   }
+
+  void cancelPendingGreeting() => _setupCompleteHandler.cancelPendingGreeting();
 }
 
 class GeminiLiveSessionRuntimeFactory {
@@ -54,6 +59,7 @@ class GeminiLiveSessionRuntimeFactory {
     required void Function(String text) onAiTextDelta,
     required void Function(TranscriptEntry entry) onTranscriptEntry,
     required void Function(String base64Data) onAudioChunk,
+    Future<String> Function()? refreshToken,
   }) {
     final connectionInput = GeminiLiveConnectionInput(
       wsUri: wsUri,
@@ -62,6 +68,12 @@ class GeminiLiveSessionRuntimeFactory {
     );
     late final GeminiLiveReconnectRunner reconnectRunner;
     late final GeminiLiveInboundDispatcher inboundDispatcher;
+
+    void reconnect() {
+      if (!lifecycleController.isActive) return;
+      emitState(GeminiLiveState.connecting);
+      reconnectRunner.attemptReconnect();
+    }
 
     final setupCompleteHandler = GeminiLiveSetupCompleteHandler(
       reconnectCoordinator: reconnectCoordinator,
@@ -75,7 +87,7 @@ class GeminiLiveSessionRuntimeFactory {
       reconnectCoordinator: reconnectCoordinator,
       isActive: () => lifecycleController.isActive,
       onMessage: (raw) => inboundDispatcher.dispatch(raw),
-      onReconnect: () => reconnectRunner.attemptReconnect(),
+      onReconnect: reconnect,
     );
     final sessionConnector = GeminiLiveSessionConnector(
       connectionRunner: connectionRunner,
@@ -85,10 +97,29 @@ class GeminiLiveSessionRuntimeFactory {
     reconnectRunner = GeminiLiveReconnectRunner(
       coordinator: reconnectCoordinator,
       isActive: () => lifecycleController.isActive,
-      onConnect: (handle) {
+      onConnect: (handle) async {
+        var reconnectInput = connectionInput;
+        if (refreshToken != null) {
+          final token =
+              await refreshToken().timeout(const Duration(seconds: 10));
+          // Ending the call while the request is pending must not open a new
+          // socket. Future.timeout also discards any token arriving late.
+          if (!lifecycleController.isActive) return;
+          if (token.trim().isEmpty) {
+            throw StateError('Live token refresh returned an empty token');
+          }
+          // Only credentials change. Resumption must use the original model,
+          // endpoint and setup even if a newer model is deployed mid-call.
+          reconnectInput = GeminiLiveConnectionInput(
+            wsUri: connectionInput.wsUri,
+            token: token,
+            model: connectionInput.model,
+          );
+        }
+        if (!lifecycleController.isActive) return;
         return sessionConnector.connect(
-          connectionInput,
-          resumptionHandle: handle,
+          reconnectInput,
+          resumptionHandle: reconnectCoordinator.resumptionHandle ?? handle,
         );
       },
       onExhausted: () {
@@ -101,7 +132,7 @@ class GeminiLiveSessionRuntimeFactory {
       isActive: () => lifecycleController.isActive,
       onSetupComplete: setupCompleteHandler.handle,
       onUpdateResumptionHandle: reconnectCoordinator.updateResumptionHandle,
-      onReconnect: () => reconnectRunner.attemptReconnect(),
+      onReconnect: reconnect,
       onAiTextDelta: onAiTextDelta,
       onTranscriptEntry: onTranscriptEntry,
       onAudioChunk: onAudioChunk,
@@ -112,6 +143,7 @@ class GeminiLiveSessionRuntimeFactory {
       connectionInput: connectionInput,
       sessionConnector: sessionConnector,
       inboundDispatcher: inboundDispatcher,
+      setupCompleteHandler: setupCompleteHandler,
     );
   }
 }

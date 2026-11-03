@@ -17,6 +17,42 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_transport.dart';
 
 void main() {
   group('GeminiLiveSessionRuntimeFactory', () {
+    testWidgets('announces recovery and does not repeat the call greeting',
+        (tester) async {
+      final transport = _FakeGeminiLiveTransport();
+      final lifecycle = GeminiLiveLifecycleController()..markStarted();
+      final states = <GeminiLiveState>[];
+      final runtime = _buildRuntime(
+        transport: transport,
+        lifecycleController: lifecycle,
+        states: states,
+      );
+
+      final connecting = runtime.connect();
+      await tester.pump();
+      transport.emitMessage('{"setupComplete":{}}');
+      await tester.pump();
+      await connecting;
+      transport.emitMessage(
+          '{"sessionResumptionUpdate":{"resumable":true,"newHandle":"resume-1"}}');
+      transport.emitMessage(
+          '{"sessionResumptionUpdate":{"resumable":false,"newHandle":""}}');
+      transport.emitMessage('{"goAway":{}}');
+      expect(states.last, GeminiLiveState.connecting);
+
+      await tester.pump(const Duration(seconds: 1));
+      expect(transport.connectCalls, 2);
+      expect(_setupResumptionHandle(transport.sent.last), 'resume-1');
+      transport.emitMessage('{"setupComplete":{}}');
+      await tester.pump();
+      expect(states.last, GeminiLiveState.connected);
+      expect(transport.sent.where((payload) {
+        final decoded = jsonDecode(payload) as Map<String, dynamic>;
+        return decoded.containsKey('realtimeInput');
+      }), hasLength(1));
+      lifecycle.markEnding();
+    });
+
     test('connects, sends setup, and handles setup complete', () async {
       final transport = _FakeGeminiLiveTransport();
       final audioAdapter = _FakeGeminiLiveAudioAdapter();
@@ -29,7 +65,8 @@ void main() {
         states: states,
       );
 
-      await runtime.connect();
+      final connecting = runtime.connect();
+      await Future<void>.delayed(Duration.zero);
 
       expect(transport.connectCalls, 1);
       expect(
@@ -40,6 +77,7 @@ void main() {
       expect(_setupResumptionHandle(transport.sent.single), isNull);
 
       transport.emitMessage('{"setupComplete":{}}');
+      await connecting;
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connected]);
@@ -88,10 +126,13 @@ void main() {
       final transport = _FakeGeminiLiveTransport();
       final runtime = _buildRuntime(transport: transport);
 
-      runtime.dispatch('{"sessionResumptionUpdate":{"newHandle":"resume-1"}}');
-      await runtime.connect();
-
+      runtime.dispatch(
+          '{"sessionResumptionUpdate":{"resumable":true,"newHandle":"resume-1"}}');
+      final connecting = runtime.connect();
+      await Future<void>.delayed(Duration.zero);
       expect(_setupResumptionHandle(transport.sent.single), 'resume-1');
+      transport.emitMessage('{"setupComplete":{}}');
+      await connecting;
     });
   });
 }

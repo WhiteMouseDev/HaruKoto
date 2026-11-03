@@ -289,6 +289,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     required String reading,
     required String meaningKo,
     String source = 'MANUAL',
+    bool preserveExisting = false,
     String? note,
   }) async {
     addWordCalls++;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 typedef GeminiLiveSocketConnector = GeminiLiveSocket Function(Uri uri);
@@ -61,6 +62,7 @@ class DefaultGeminiLiveTransport implements GeminiLiveTransport {
   GeminiLiveSocket? _socket;
   StreamSubscription<dynamic>? _subscription;
   bool _connected = false;
+  int _generation = 0;
 
   @override
   bool get isConnected => _connected && _socket != null;
@@ -72,6 +74,11 @@ class DefaultGeminiLiveTransport implements GeminiLiveTransport {
     required void Function(Object error) onError,
     required void Function() onDone,
   }) async {
+    final generation = ++_generation;
+    await _closeCurrentSocket();
+    if (generation != _generation) {
+      throw StateError('Connection was cancelled');
+    }
     final socket = _connector(uri);
     _socket = socket;
 
@@ -82,16 +89,25 @@ class DefaultGeminiLiveTransport implements GeminiLiveTransport {
         _socket = null;
         _connected = false;
       }
+      unawaited(socket.close().catchError((Object error) {
+        debugPrint('[GeminiLive] Failed socket cleanup: $error');
+      }));
       rethrow;
     }
 
+    if (generation != _generation || !identical(_socket, socket)) {
+      throw StateError('Connection was cancelled');
+    }
     _connected = true;
     _subscription = socket.stream.listen(
-      onMessage,
+      (dynamic message) {
+        if (generation == _generation) onMessage(message);
+      },
       onError: (Object error) {
-        onError(error);
+        if (generation == _generation) onError(error);
       },
       onDone: () {
+        if (generation != _generation) return;
         if (identical(_socket, socket)) {
           _socket = null;
           _connected = false;
@@ -108,11 +124,19 @@ class DefaultGeminiLiveTransport implements GeminiLiveTransport {
 
   @override
   Future<void> close() async {
+    _generation++;
+    await _closeCurrentSocket();
+  }
+
+  Future<void> _closeCurrentSocket() async {
     final socket = _socket;
     _socket = null;
-    _connected = false;
-    await _subscription?.cancel();
+    final cancelSubscription = _subscription?.cancel();
     _subscription = null;
-    await socket?.close();
+    _connected = false;
+    await Future.wait<void>([
+      if (cancelSubscription != null) cancelSubscription,
+      if (socket != null) socket.close(),
+    ]);
   }
 }

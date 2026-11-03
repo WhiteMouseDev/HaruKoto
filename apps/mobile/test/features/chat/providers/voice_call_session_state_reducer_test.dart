@@ -57,7 +57,7 @@ void main() {
       expect(next.errorMessage, isNull);
     });
 
-    test('appends AI text and clears it for assistant transcript entries', () {
+    test('retains the completed caption until the next response starts', () {
       var state = reducer.appendAiTextDelta(
         const VoiceCallSessionState(),
         'こん',
@@ -76,7 +76,11 @@ void main() {
       );
 
       expect(afterUserEntry.currentAiText, 'こんにちは');
-      expect(afterAssistantEntry.currentAiText, isEmpty);
+      expect(afterAssistantEntry.currentAiText, 'こんにちは');
+      expect(afterAssistantEntry.receivingAiText, isFalse);
+      final nextResponse = reducer.appendAiTextDelta(afterAssistantEntry, '次の');
+      expect(nextResponse.currentAiText, '次の');
+      expect(nextResponse.receivingAiText, isTrue);
     });
 
     test('sets error message and increments duration', () {

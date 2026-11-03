@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'gemini_live_lifecycle_actions.dart';
 import 'gemini_live_lifecycle_controller.dart';
 
@@ -32,14 +34,27 @@ class GeminiLiveSessionShutdownRunner {
     _lifecycleController.markEnding();
     _emitEndingState();
     _flushTranscripts();
-    await _stopRecording();
-    unawaited(_closeTransport());
-    _emitEndedState();
+    // Disconnect independently of native audio teardown. A slow or failing
+    // plugin must not leave a terminated call connected to the model.
+    unawaited(_closeTransportSafely());
+    try {
+      await _stopRecording();
+    } finally {
+      _emitEndedState();
+    }
   }
 
   Future<void> dispose() async {
     _lifecycleController.markDisposed();
+    unawaited(_closeTransportSafely());
     await _disposeAudio();
-    unawaited(_closeTransport());
+  }
+
+  Future<void> _closeTransportSafely() async {
+    try {
+      await _closeTransport();
+    } catch (error) {
+      debugPrint('[GeminiLive] Socket cleanup failed: $error');
+    }
   }
 }

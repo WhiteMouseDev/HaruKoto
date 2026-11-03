@@ -91,6 +91,7 @@ GeminiLiveSessionComponents _buildComponents({
     promptBuilder: const GeminiLivePromptBuilder(jlptLevel: 'N3'),
     lifecycleController: lifecycleController ?? GeminiLiveLifecycleController(),
     transport: liveTransport,
+    isSessionConnected: () => true,
     emitError: errors?.add ?? _ignoreError,
     emitAudioUnavailable: onUnavailable ?? _ignoreUnavailable,
     voiceName: 'Kore',

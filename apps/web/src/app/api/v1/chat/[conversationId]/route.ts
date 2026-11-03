@@ -79,17 +79,21 @@ export async function GET(
       return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
     }
 
-    const storedMessages = conversation.messages as unknown as StoredMessage[];
+    const storedMessages: StoredMessage[] = Array.isArray(conversation.messages)
+      ? (conversation.messages as unknown as StoredMessage[])
+      : [];
 
-    // Extract AI/user messages (exclude system prompt)
+    // Only conversational turns belong in the learner's saved transcript.
     const messages = storedMessages
-      .filter((m) => m.role !== 'system')
+      .filter((m) => m && (m.role === 'user' || m.role === 'assistant'))
       .map((m, i) => {
         // Try to parse assistant messages as JSON (same format as chat/message response)
         if (m.role === 'assistant') {
           try {
             const jsonMatch = m.content.match(/```(?:json)?\s*([\s\S]*?)```/);
-            const parsed = JSON.parse(jsonMatch?.[1]?.trim() || m.content.trim());
+            const parsed = JSON.parse(
+              jsonMatch?.[1]?.trim() || m.content.trim()
+            );
             return {
               id: `${m.role}-${i}`,
               role: 'ai' as const,

@@ -4,17 +4,19 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.rate_limit import rate_limit
-from app.models import Conversation, User
+from app.models import Conversation, ConversationScenario, User
 from app.models.enums import ConversationType
 from app.schemas.chat import ChatTTSRequest, LiveFeedbackRequest, LiveTokenRequest, LiveTokenResponse
 from app.services.ai import generate_live_feedback, generate_live_token, generate_tts, transcribe_audio
+from app.services.chat_live_session import load_live_conversation, validate_live_context
+from app.services.chat_voice_errors import ChatVoiceServiceError as ChatVoiceServiceError
 from app.services.conversation_rewards import grant_conversation_completion_rewards
+from app.services.live_scenario import build_live_scenario_greeting, build_live_scenario_instruction, scenario_feedback_context
 from app.services.study_day_recording import lock_study_user
-from app.services.subscription_ai_usage import check_ai_limit
+from app.services.subscription_ai_usage import check_ai_limit, track_ai_usage
 from app.utils.constants import RATE_LIMITS
 from app.utils.date import get_now_kst
 
@@ -24,14 +26,6 @@ ALLOWED_AUDIO_TYPES = {"audio/webm", "audio/mp3", "audio/mpeg", "audio/wav", "au
 MAX_AUDIO_SIZE = 4_500_000  # 4.5MB
 LIVE_FEEDBACK_SAVE_ERROR_DETAIL = "라이브 피드백 저장에 실패했습니다"
 FALLBACK_USER_NICKNAME = "학습자"
-
-
-class ChatVoiceServiceError(Exception):
-    def __init__(self, status_code: int, detail: str, headers: dict[str, str] | None = None) -> None:
-        self.status_code = status_code
-        self.detail = detail
-        self.headers = headers
-        super().__init__(detail)
 
 
 @dataclass(slots=True)
@@ -71,7 +65,6 @@ async def transcribe_chat_voice(audio_bytes: bytes, content_type: str | None) ->
 
 
 async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest) -> LiveTokenResponse:
-    del body
     rl = await rate_limit(f"live:{user.id}", RATE_LIMITS.LIVE_TOKEN.max_requests, RATE_LIMITS.LIVE_TOKEN.window_seconds)
     if not rl.success:
         raise ChatVoiceServiceError(status_code=429, detail="요청이 너무 많습니다")
@@ -80,15 +73,36 @@ async def create_live_token(db: AsyncSession, user: User, body: LiveTokenRequest
     if not limit_check["allowed"]:
         raise ChatVoiceServiceError(status_code=429, detail=limit_check["reason"])
 
+    scenario_id, character_id = body.scenario_id, body.character_id
+    if body.conversation_id:
+        conversation = await load_live_conversation(db, user.id, body.conversation_id)
+        if conversation.ended_at is not None:
+            raise ChatVoiceServiceError(status_code=400, detail="이미 종료된 대화입니다")
+        if (scenario_id is not None and scenario_id != conversation.scenario_id) or (
+            character_id is not None and character_id != conversation.character_id
+        ):
+            raise ChatVoiceServiceError(status_code=409, detail="대화의 상황 또는 상대가 일치하지 않습니다")
+        scenario_id, character_id = conversation.scenario_id, conversation.character_id
+    scenario = await validate_live_context(db, user.id, scenario_id=scenario_id, character_id=character_id)
+
     token = await generate_live_token()
+    if body.conversation_id:
+        # Token issuance may finish after the user cancelled the prepared call.
+        conversation = await load_live_conversation(db, user.id, body.conversation_id)
+        if conversation.ended_at is not None:
+            raise ChatVoiceServiceError(status_code=400, detail="이미 종료된 대화입니다")
     nickname = (user.nickname or "").strip() or FALLBACK_USER_NICKNAME
+    jlpt_level = str(user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level)
 
     return LiveTokenResponse(
         token=token["token"],
         ws_uri=token["wsUri"],
         model=token["model"],
         user_nickname=nickname,
-        jlpt_level=str(user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level),
+        jlpt_level=jlpt_level,
+        system_instruction=build_live_scenario_instruction(scenario, jlpt_level) if scenario else None,
+        scenario_greeting=build_live_scenario_greeting(scenario) if scenario else None,
+        conversation_id=body.conversation_id,
     )
 
 
@@ -100,11 +114,23 @@ def _transcript_from_messages(raw_messages: Any) -> list[dict[str, str]]:
     for message in raw_messages:
         if not isinstance(message, dict):
             continue
-        role = str(message.get("role", "user"))
-        if role == "system":
+        role, content = message.get("role"), message.get("content")
+        if role not in ("user", "assistant") or not isinstance(content, str):
             continue
-        transcript.append({"role": role, "text": str(message.get("content", ""))})
+        transcript.append({"role": role, "text": content})
     return transcript
+
+
+def _live_feedback_result(
+    conversation: Conversation, *, feedback_error: str | None = None, xp: int = 0, events: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    return {
+        "conversationId": str(conversation.id),
+        "feedbackSummary": conversation.feedback_summary,
+        "feedbackError": feedback_error,
+        "xpEarned": xp,
+        "events": events or [],
+    }
 
 
 async def submit_live_conversation_feedback(
@@ -112,101 +138,81 @@ async def submit_live_conversation_feedback(
     user: User,
     body: LiveFeedbackRequest,
 ) -> dict[str, Any]:
-    conversation = None
+    """Commit a call once before any optional provider analysis.
 
-    if body.conversation_id:
-        result = await db.execute(select(Conversation).where(Conversation.id == body.conversation_id, Conversation.user_id == user.id))
-        conversation = result.scalar_one_or_none()
-
-    if conversation and conversation.messages:
-        transcript = _transcript_from_messages(conversation.messages)
-    elif body.transcript:
-        transcript = body.transcript
-    else:
-        transcript = []
-
-    feedback: dict[str, Any] | None = None
-    feedback_error: str | None = None
-    # "no_transcript" covers both an empty list AND a list whose entries all have
-    # empty/whitespace text — otherwise whitespace-only transcripts would hit the
-    # AI call, fail, and be misclassified as generation_failed.
-    has_content = any((entry.get("text") or "").strip() for entry in transcript)
-    if not has_content:
-        feedback_error = "no_transcript"
-    else:
-        try:
-            feedback = await generate_live_feedback(transcript)
-        except Exception:
-            logger.exception(
-                "Live feedback generation failed (user_id=%s, conversation_id=%s, transcript_entries=%d)",
-                user.id,
-                body.conversation_id,
-                len(transcript),
-            )
-            feedback_error = "generation_failed"
-
-    # External feedback generation is complete before locking activity state.
-    # New domain inserts and existing-domain refreshes follow the user mutex.
+    Stable IDs from /live-session allow retries after a lost HTTP response.
+    Legacy callers without an ID cannot receive this guarantee.
+    """
+    # Preserve the shared writer order: user -> conversation -> daily progress.
+    # The save commit below releases both locks before optional model analysis.
     await lock_study_user(db, user)
-    if conversation is not None:
-        await db.refresh(conversation, with_for_update=True)
     now = get_now_kst()
-    if not conversation:
+    conversation = await load_live_conversation(db, user.id, body.conversation_id, lock=True) if body.conversation_id else None
+    if conversation is None:
         conversation = Conversation(
             user_id=user.id,
             type=ConversationType.VOICE,
             scenario_id=body.scenario_id,
             character_id=body.character_id,
-            messages=[{"role": entry.get("role", "user"), "content": entry.get("text", "")} for entry in transcript],
         )
         db.add(conversation)
-        await db.flush()
-
-    conversation.ended_at = now
-    conversation.feedback_summary = feedback
-
     xp = 0
     events: list[dict[str, Any]] = []
     try:
-        rewards = await grant_conversation_completion_rewards(
-            db,
-            user,
-            now=now,
-            duration_seconds=body.duration_seconds,
-            usage_type="call",
-        )
-        xp = rewards.xp_earned
-        events = rewards.events
-    except Exception:
-        logger.exception("Live feedback gamification failed")
-        try:
-            await db.rollback()
-            if conversation not in db:
-                db.add(conversation)
+        if conversation.ended_at is None:
+            if body.transcript is not None:
+                conversation.messages = [
+                    {"role": entry.get("role", "user"), "content": entry.get("text", "")}
+                    for entry in body.transcript
+                    if entry.get("role", "user") in {"user", "assistant"}
+                ]
+            transcript = _transcript_from_messages(conversation.messages)
+            conversation.message_count = sum(1 for entry in transcript if entry["text"].strip())
             conversation.ended_at = now
-            conversation.feedback_summary = feedback
-            await db.commit()
-        except Exception:
-            await _rollback_live_feedback_save_failure(
-                db,
-                log_message="Live feedback conversation save also failed",
-            )
-    else:
-        try:
-            await db.commit()
-        except Exception:
-            await _rollback_live_feedback_save_failure(
-                db,
-                log_message="Live feedback commit failed",
-            )
+            await db.flush()
+            has_user_content = any(entry["role"] == "user" and entry["text"].strip() for entry in transcript)
+            if body.duration_seconds >= 15 and has_user_content:
+                rewards = await grant_conversation_completion_rewards(
+                    db, user, now=now, duration_seconds=body.duration_seconds, usage_type="call"
+                )
+                xp, events = rewards.xp_earned, rewards.events
+            elif body.duration_seconds > 0:
+                # Saving a short/empty call must not turn it into an XP completion.
+                # Connected time still consumes usage; a cancelled zero-second call does not.
+                await track_ai_usage(db, user.id, "call", body.duration_seconds)
+        # Also release the row lock on retries before waiting for the provider.
+        await db.commit()
+    except Exception:
+        await _rollback_live_feedback_save_failure(db, log_message="Live conversation completion save failed")
 
-    return {
-        "conversationId": str(conversation.id),
-        "feedbackSummary": feedback,
-        # Additive field (backward compatible). Null on success; "no_transcript" or
-        # "generation_failed" when feedbackSummary is null but the mobile client
-        # should distinguish the cause to show a useful retry/empty message.
-        "feedbackError": feedback_error,
-        "xpEarned": xp,
-        "events": events,
-    }
+    if not body.analysis_enabled or conversation.feedback_summary is not None:
+        return _live_feedback_result(conversation, xp=xp, events=events)
+    transcript = _transcript_from_messages(conversation.messages)
+    if not any(entry["role"] == "user" and entry["text"].strip() for entry in transcript):
+        return _live_feedback_result(conversation, feedback_error="no_transcript", xp=xp, events=events)
+
+    conversation_id, user_id = conversation.id, user.id
+    jlpt_level = str(user.jlpt_level.value if hasattr(user.jlpt_level, "value") else user.jlpt_level)
+    try:
+        scenario = await db.get(ConversationScenario, conversation.scenario_id) if conversation.scenario_id else None
+        scenario_info = scenario_feedback_context(scenario) if scenario else ""
+        # Finish this read transaction too: no database transaction spans the model call.
+        await db.commit()
+        feedback = await generate_live_feedback(transcript, scenario_info=scenario_info, jlpt_level=jlpt_level)
+        # Concurrent analyses may both finish, but retain the first stored result.
+        conversation = await load_live_conversation(db, user_id, conversation_id, lock=True)
+        if conversation.feedback_summary is None:
+            conversation.feedback_summary = feedback
+        await db.commit()
+    except Exception as exc:
+        await db.rollback()
+        # Completion is already durable. Do not misreport this as an unknown call save.
+        logger.warning("Live feedback analysis failed (conversation_id=%s, error_type=%s)", conversation_id, type(exc).__name__)
+        return {
+            "conversationId": str(conversation_id),
+            "feedbackSummary": None,
+            "feedbackError": "generation_failed",
+            "xpEarned": xp,
+            "events": events,
+        }
+    return _live_feedback_result(conversation, xp=xp, events=events)

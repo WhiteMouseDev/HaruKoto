@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -9,6 +10,181 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_transport.dart';
 
 void main() {
   group('GeminiLiveAudioSession', () {
+    test('manual resume waits for an in-flight suspension stop', () async {
+      final stopped = Completer<void>();
+      final adapter = _FakeGeminiLiveAudioAdapter(stopResult: stopped.future);
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(
+          transport: _FakeGeminiLiveTransport(),
+        ),
+        isActive: () => true,
+        isTransportConnected: () => true,
+        isMuted: () => false,
+        onError: (_) {},
+        onUnavailable: () {},
+      );
+      final suspending = session.suspendMicrophone();
+      final resuming = session.resumeMicrophone();
+      await Future<void>.delayed(Duration.zero);
+      expect(adapter.startCalls, 0);
+      stopped.complete();
+      await suspending;
+      expect(await resuming, isTrue);
+      expect(adapter.startCalls, 1);
+    });
+
+    test('stops a microphone that finishes starting after the call ended',
+        () async {
+      final started = Completer<GeminiLiveAudioStartResult>();
+      final adapter = _FakeGeminiLiveAudioAdapter(startResult: started.future);
+      var active = true;
+      final errors = <String>[];
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(
+          transport: _FakeGeminiLiveTransport(),
+        ),
+        isActive: () => active,
+        isTransportConnected: () => true,
+        isMuted: () => false,
+        onError: errors.add,
+        onUnavailable: () => errors.add('unavailable'),
+      );
+
+      final starting = session.startRecording();
+      await Future<void>.delayed(Duration.zero);
+      active = false;
+      await session.stopRecording();
+      started.complete(GeminiLiveAudioStartResult.started);
+      await starting;
+
+      expect(adapter.stopCalls, 2);
+      expect(errors, isEmpty);
+    });
+
+    test('interruption blocks automatic starts until an explicit resume',
+        () async {
+      final adapter = _FakeGeminiLiveAudioAdapter();
+      final transport = _FakeGeminiLiveTransport();
+      var interrupted = 0;
+      var muted = true;
+      var connected = true;
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(transport: transport),
+        isActive: () => true,
+        isTransportConnected: () => connected,
+        isMuted: () => muted,
+        onError: (_) {},
+        onUnavailable: () {},
+        onMicrophoneInterrupted: () => interrupted++,
+      );
+
+      await session.startRecording();
+      adapter.onMicrophoneInterrupted?.call();
+      await Future<void>.delayed(Duration.zero);
+      await session.startRecording();
+      adapter.emitRecordedAudio(Uint8List.fromList([1, 2]));
+      expect(interrupted, 1);
+      expect(adapter.startCalls, 1);
+      expect(transport.sent, isEmpty);
+      connected = false;
+      expect(await session.resumeMicrophone(), isFalse);
+      connected = true;
+      expect(await session.resumeMicrophone(), isTrue);
+      expect(adapter.startCalls, 2);
+      adapter.emitRecordedAudio(Uint8List.fromList([3, 4]));
+      expect(transport.sent, isEmpty); // The learner's mute choice survives.
+      muted = false;
+      adapter.emitRecordedAudio(Uint8List.fromList([5, 6]));
+      expect(transport.sent, hasLength(1));
+    });
+
+    test('resume waits for and cleans a suspended pending start only once',
+        () async {
+      final started = Completer<GeminiLiveAudioStartResult>();
+      final adapter = _FakeGeminiLiveAudioAdapter(startResult: started.future);
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(
+          transport: _FakeGeminiLiveTransport(),
+        ),
+        isActive: () => true,
+        isTransportConnected: () => true,
+        isMuted: () => false,
+        onError: (_) {},
+        onUnavailable: () {},
+      );
+
+      final starting = session.startRecording();
+      await Future<void>.delayed(Duration.zero);
+      await session.suspendMicrophone();
+      final resuming = session.resumeMicrophone();
+      final duplicateResume = session.resumeMicrophone();
+      await Future<void>.delayed(Duration.zero);
+      expect(adapter.startCalls, 1);
+      started.complete(GeminiLiveAudioStartResult.started);
+      await starting;
+      expect(await resuming, isTrue);
+      expect(await duplicateResume, isTrue);
+      expect(adapter.startCalls, 2);
+      expect(adapter.stopCalls, 2);
+    });
+
+    testWidgets('a timed out mic resume stays suspended after late completion',
+        (tester) async {
+      final started = Completer<GeminiLiveAudioStartResult>();
+      final adapter = _FakeGeminiLiveAudioAdapter(startResult: started.future);
+      final transport = _FakeGeminiLiveTransport();
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(transport: transport),
+        isActive: () => true,
+        isTransportConnected: () => true,
+        isMuted: () => false,
+        onError: (_) {},
+        onUnavailable: () {},
+      );
+
+      final resuming = session.resumeMicrophone();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 8));
+      expect(await resuming, isFalse);
+      started.complete(GeminiLiveAudioStartResult.started);
+      await tester.pump();
+      await session.startRecording();
+      adapter.emitRecordedAudio(Uint8List.fromList([1, 2]));
+      expect(adapter.startCalls, 1);
+      expect(adapter.stopCalls, 2);
+      expect(transport.sent, isEmpty);
+    });
+
+    test('late playback preparation cannot send a greeting after call end',
+        () async {
+      final prepared = Completer<GeminiLiveAudioPlaybackPrepareResult>();
+      final adapter = _FakeGeminiLiveAudioAdapter(
+        prepareResult: prepared.future,
+      );
+      var active = true;
+      final session = GeminiLiveAudioSession(
+        audioAdapter: adapter,
+        outboundSender: GeminiLiveOutboundSender(
+          transport: _FakeGeminiLiveTransport(),
+        ),
+        isActive: () => active,
+        isTransportConnected: () => true,
+        isMuted: () => false,
+        onError: (_) {},
+        onUnavailable: () {},
+      );
+
+      final preparing = session.preparePlayback();
+      active = false;
+      prepared.complete(GeminiLiveAudioPlaybackPrepareResult.ready);
+      expect(await preparing, isFalse);
+    });
+
     test(
         'startRecording sends mic audio only while active connected and unmuted',
         () async {
@@ -168,14 +344,23 @@ GeminiLiveAudioSession _newSession({
   );
 }
 
-class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
+class _FakeGeminiLiveAudioAdapter
+    implements GeminiLiveAudioAdapter, GeminiLiveAudioInterruptionSource {
   _FakeGeminiLiveAudioAdapter({
     this.result = GeminiLiveAudioStartResult.started,
     this.playbackResult = GeminiLiveAudioPlaybackPrepareResult.ready,
+    this.startResult,
+    this.prepareResult,
+    this.stopResult,
   });
 
   final GeminiLiveAudioStartResult result;
   final GeminiLiveAudioPlaybackPrepareResult playbackResult;
+  final Future<GeminiLiveAudioStartResult>? startResult;
+  final Future<GeminiLiveAudioPlaybackPrepareResult>? prepareResult;
+  final Future<void>? stopResult;
+  @override
+  void Function()? onMicrophoneInterrupted;
   int prepareCalls = 0;
   int startCalls = 0;
   int stopCalls = 0;
@@ -186,7 +371,7 @@ class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   @override
   Future<GeminiLiveAudioPlaybackPrepareResult> preparePlayback() async {
     prepareCalls++;
-    return playbackResult;
+    return await prepareResult ?? playbackResult;
   }
 
   @override
@@ -195,7 +380,7 @@ class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   }) async {
     startCalls++;
     _onData = onData;
-    return result;
+    return await startResult ?? result;
   }
 
   void emitRecordedAudio(Uint8List data) {
@@ -205,6 +390,7 @@ class _FakeGeminiLiveAudioAdapter implements GeminiLiveAudioAdapter {
   @override
   Future<void> stopRecording() async {
     stopCalls++;
+    await stopResult;
   }
 
   @override

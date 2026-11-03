@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -8,6 +10,7 @@ import '../../../core/settings/call_settings.dart';
 import '../../../shared/widgets/call_settings_sheet.dart';
 import '../../my/providers/settings_sync_provider.dart';
 import '../providers/chat_provider.dart';
+import '../providers/chat_mode_provider.dart';
 import '../data/models/scenario_model.dart';
 import 'chat_entry_mode.dart';
 import 'conversation_launch.dart';
@@ -34,11 +37,24 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: ref.read(chatModeProvider),
+    );
+    _tabController.addListener(_rememberMode);
+  }
+
+  void _rememberMode() {
+    if (!_tabController.indexIsChanging) {
+      unawaited(
+          ref.read(chatModeProvider.notifier).select(_tabController.index));
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_rememberMode);
     _tabController.dispose();
     super.dispose();
   }
@@ -52,6 +68,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       final repo = ref.read(chatRepositoryProvider);
       final result = await repo.startConversation(scenario.id);
       if (!mounted) return;
+      setState(() => _starting = false);
       openConversationPage(
         context,
         conversationId: result.conversationId,
@@ -75,6 +92,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     try {
       final repo = ref.read(chatRepositoryProvider);
       final scenarios = await repo.fetchScenarios(category: 'FREE');
+      if (!mounted) return;
       if (scenarios.isNotEmpty) {
         await _handleStartConversation(scenarios.first);
       } else {
@@ -141,6 +159,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
         category: _selectedCategory!,
         entryMode: _entryMode,
         starting: _starting,
+        errorMessage: _error,
         onBack: () => setState(() => _selectedCategory = null),
         onStartConversation: _handleStartConversation,
       );
@@ -158,10 +177,12 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                         AppSizes.md, AppSizes.md, AppSizes.md, AppSizes.sm),
                     child: Row(
                       children: [
-                        Text(
-                          'AI 회화',
-                          style: theme.textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                        Flexible(
+                          child: Text(
+                            '실전회화',
+                            style: theme.textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
                         ),
                         const SizedBox(width: AppSizes.sm),
                         Container(
@@ -239,24 +260,36 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                             colorScheme.onSurface.withValues(alpha: 0.5),
                         labelStyle: theme.textTheme.bodySmall
                             ?.copyWith(fontWeight: FontWeight.w600),
-                        tabs: const [
+                        tabs: [
                           Tab(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(LucideIcons.phone, size: 16),
-                                SizedBox(width: 6),
-                                Text('음성통화'),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
+                            height:
+                                MediaQuery.textScalerOf(context).scale(14) > 18
+                                    ? 64
+                                    : 48,
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(LucideIcons.messageCircle, size: 16),
                                 SizedBox(width: 6),
-                                Text('텍스트 회화'),
+                                Flexible(
+                                    child: Text('회화 연습',
+                                        textAlign: TextAlign.center)),
+                              ],
+                            ),
+                          ),
+                          Tab(
+                            height:
+                                MediaQuery.textScalerOf(context).scale(14) > 18
+                                    ? 64
+                                    : 48,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(LucideIcons.phone, size: 16),
+                                SizedBox(width: 6),
+                                Flexible(
+                                    child: Text('친구와 통화',
+                                        textAlign: TextAlign.center)),
                               ],
                             ),
                           ),
@@ -271,7 +304,8 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      VoiceTab(
+                      TextTab(
+                        onFreeChat: _handleFreeChat,
                         onSelectCategory: (cat) {
                           setState(() {
                             _entryMode = ChatEntryMode.voice;
@@ -279,15 +313,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                           });
                         },
                       ),
-                      TextTab(
-                        onFreeChat: _handleFreeChat,
-                        onSelectCategory: (cat) {
-                          setState(() {
-                            _entryMode = ChatEntryMode.text;
-                            _selectedCategory = cat;
-                          });
-                        },
-                      ),
+                      const VoiceTab(),
                     ],
                   ),
                 ),

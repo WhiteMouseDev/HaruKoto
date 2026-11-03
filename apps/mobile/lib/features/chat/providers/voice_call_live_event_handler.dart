@@ -34,6 +34,9 @@ class VoiceCallLiveEventHandler {
     if (transition.stopRingtone) {
       unawaited(getResources()?.stopRingtone());
     }
+    if (liveState != GeminiLiveState.connected) {
+      getResources()?.stopTimer();
+    }
     if (transition.startTimer) {
       _startTimer();
     }

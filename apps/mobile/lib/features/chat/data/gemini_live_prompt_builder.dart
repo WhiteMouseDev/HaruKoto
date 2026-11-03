@@ -14,7 +14,7 @@ class GeminiLivePromptBuilder {
       case 'N5':
         return '''## 日本語レベル: JLPT N5
 - 基本的な挨拶と簡単な文のみ使用（語彙800語以内）
-- です/ます形のみ使用
+- 基本の動詞・名詞・形容詞で短く話す
 - 1文で返答''';
       case 'N4':
         return '''## 日本語レベル: JLPT N4

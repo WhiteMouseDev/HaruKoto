@@ -68,6 +68,10 @@ class VoiceCallSessionStartCoordinator {
       ),
     );
     if (startResult.stale) return;
+    if (input.isStale()) {
+      await startResult.service?.dispose();
+      return;
+    }
 
     if (startResult.hasError) {
       _fail(input, startResult.errorMessage, canRetry: startResult.canRetry);
@@ -88,7 +92,7 @@ class VoiceCallSessionStartCoordinator {
         callbacks: input.callbacks,
       ),
     );
-    if (startLiveResult.stale) return;
+    if (startLiveResult.stale || input.isStale()) return;
     if (startLiveResult.hasError) {
       _fail(input, startLiveResult.errorMessage);
     }

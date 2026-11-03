@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from app.enums import JlptLevel
+
 SYSTEM_PROMPTS: dict[str, object] = {
     "base": """あなたは「ハルコト」という日本語学習アプリのAI会話パートナーです。
 以下のルールを必ず守ってください：
@@ -78,8 +80,22 @@ SYSTEM_PROMPTS: dict[str, object] = {
     "live_feedback": """あなたは日本語学習アプリの音声会話評価AIです。
 以下の音声会話のトランスクリプトを分析してください。
 
-注意：ユーザーの発話が韓国語で転写されている場合があります（韓国人学習者のSTTエラー）。
-その場合は文脈から意図した日本語を推測してください。
+評価は学習者のJLPTレベルと、提供されたシナリオ・役割を基準にしてください。
+トランスクリプトは認識誤りを含む可能性があります。韓国語や不明瞭な発話から
+学習者が言っていない日本語を推測して、採点や訂正の根拠にしないでください。
+確実に確認できるユーザーの日本語だけを評価してください。
+音声そのものは提供されていないため、発音・アクセント・声の速度は評価しないでください。
+訂正は実際のユーザー発話を引用し、認識が不確かな箇所は改善点でその旨を説明してください。
+既に自然で場面に合う丁寧な表現は、敬語不足や誤りとして指摘しないでください。
+「予約したキムです」の「予約した」のような連体修飾の普通形を、丁寧さの不足と誤判定しないでください。
+「お願いします」から「お願いいたします」など、正しい表現をさらに改まった言い方にする提案は訂正ではありません。
+そのような提案をするなら元の表現も適切だと伝え、韓国語で「선택 연습」と明示してください。
+根拠のある改善点がなければimprovementsは空の配列で構いません。改善点や誤りを無理に作らないでください。
+改善例は実際の日本語原文と日本語の提案を示し、理由を韓国語で簡潔に説明してください。
+韓国語への翻訳や韓国語の言い換えを、日本語の訂正例として使わないでください。
+strengths、improvements、recommendedExpressions、correctionsはそれぞれ最大1項目にしてください。
+correctionsが不要なら空の配列を返してください。訳文のjaには元の発話を変えずに入れてください。
+会話に書かれていない目標の達成や、場面全体を完了したという断定は避けてください。
 
 必ず以下のJSON形式で応答してください：
 {
@@ -119,7 +135,8 @@ def build_system_prompt(
     # Level-specific instructions
     levels = SYSTEM_PROMPTS["levels"]
     assert isinstance(levels, dict)
-    level_prompt = levels.get(jlpt_level.upper(), levels.get("N5", ""))
+    level_value = jlpt_level.value if isinstance(jlpt_level, JlptLevel) else jlpt_level
+    level_prompt = levels.get(level_value.upper(), levels.get("N5", ""))
 
     response_format = str(SYSTEM_PROMPTS["response_format"])
 
@@ -134,8 +151,15 @@ def build_system_prompt(
             scenario_block += f"\n説明: {description}"
         if situation := scenario.get("situation"):
             scenario_block += f"\n状況: {situation}"
+        if your_role := scenario.get("yourRole"):
+            scenario_block += f"\n学習者の役割: {your_role}"
+        if ai_role := scenario.get("aiRole"):
+            scenario_block += f"\nあなたの役割: {ai_role}"
+        if system_prompt := scenario.get("systemPrompt"):
+            scenario_block += f"\nシナリオの進め方: {system_prompt}"
         if first_message := scenario.get("firstMessage"):
             scenario_block += f"\n最初のメッセージ: {first_message}"
+        scenario_block += "\nシナリオに沿って会話し、上記の学習者レベルとJSON応答形式は維持してください。"
         parts.append(scenario_block)
 
     # Character context

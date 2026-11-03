@@ -41,8 +41,15 @@ class GeminiLiveProtocol {
         'systemInstruction': {
           'parts': [
             {
-              'text':
-                  '${config.instruction}\n\n## ユーザー情報\n- 名前: ${config.userNickname}\n- 相手を呼ぶ時は「学習者」ではなく、この名前を関係設定の呼び方ルールに合わせて呼ぶこと。\n\n${config.jlptSection}'
+              'text': '${config.instruction}\n\n## 共通ルール（設定が矛盾する場合はこちらを優先）\n'
+                  '- 通常の会話は日本語。学習者が明示的に意味や返答ヒントを求めた時だけ、短い韓国語の説明を行う。\n'
+                  '- この学習サポートはキャラクターの「日本語のみ」「韓国語で説明しない」という制限より優先する。説明後は返答を待ち、通常の会話では日本語に戻る。\n'
+                  '- JLPTレベルは語彙・文法・文の長さの難易度を定める。敬体・普通体は関係設定と場面に合う口調を優先する。初対面の接客では丁寧に、親しい友人とは親しい口調で、どちらも学習者にわかる短い文を使う。\n\n'
+                  '## ユーザー情報\n'
+                  '- アプリのニックネーム: ${config.userNickname}\n'
+                  '- 友人など、すでに相手の名前を知っている関係の場合に限り、このニックネームを関係設定の呼び方に合わせて使う。\n'
+                  '- このニックネームをシナリオ内の実名・予約名・注文名として扱わない。初対面の店員などは、相手が会話で名乗るまで名前で呼ばない。\n'
+                  '- 会話で明示された名前を優先する。\n\n${config.jlptSection}'
             },
           ],
         },
@@ -69,12 +76,16 @@ class GeminiLiveProtocol {
     required String? scenarioGreeting,
   }) {
     final name = characterName ?? 'ハル';
-    final greeting =
-        scenarioGreeting ?? '[システム] $nameから電話がかかってきました。電話に出て「もしもし」から始めてください。';
+    final greeting = scenarioGreeting ??
+        '[システム] ユーザーが$nameに電話をかけました。あなたは電話を受けて「もしもし」から始めてください。';
 
+    return encodeRealtimeText(greeting);
+  }
+
+  static String encodeRealtimeText(String text) {
     return jsonEncode({
       'realtimeInput': {
-        'text': greeting,
+        'text': text,
       },
     });
   }

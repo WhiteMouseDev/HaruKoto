@@ -15,6 +15,10 @@ class VoiceCallSessionLifecycle {
     return _generation;
   }
 
+  void cancelPending() {
+    _generation++;
+  }
+
   void markDisposed() {
     _disposed = true;
     _generation++;

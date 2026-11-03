@@ -9,6 +9,7 @@ import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../data/models/conversation_model.dart';
 import '../../providers/chat_provider.dart';
+import '../voice_call_record_page.dart';
 
 class ConversationHistoryList extends ConsumerWidget {
   final String? filter; // 'voice' | 'text'
@@ -51,6 +52,11 @@ class ConversationHistoryList extends ConsumerWidget {
       data: (items) {
         final filtered = filter != null
             ? items.where((item) {
+                final isFriendCall = item.type == 'VOICE' &&
+                    (item.scenario == null ||
+                        item.scenario!.category == 'FREE');
+                if (filter == 'friend') return isFriendCall;
+                if (filter == 'practice') return !isFriendCall;
                 if (filter == 'voice') return item.type == 'VOICE';
                 return item.type == 'TEXT';
               }).toList()
@@ -76,7 +82,9 @@ class ConversationHistoryList extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '위 시나리오를 선택해서 첫 회화를 시작해보세요',
+                  filter == 'friend'
+                      ? '친구를 골라 첫 통화를 시작해 보세요'
+                      : '위 시나리오를 선택해서 첫 회화를 시작해 보세요',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface.withValues(alpha: 0.35),
                     fontSize: 12,
@@ -135,7 +143,7 @@ class _HistoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isVoice = item.scenario == null || item.scenario!.category == 'FREE';
+    final isVoice = item.type == 'VOICE';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.sm),
@@ -145,7 +153,12 @@ class _HistoryItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           onTap: () {
             HapticService().selection();
-            context.go('/chat/${item.id}/feedback');
+            if (isVoice) {
+              Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => VoiceCallRecordPage(conversation: item)));
+            } else {
+              context.go('/chat/${item.id}/feedback');
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(12),
@@ -229,7 +242,7 @@ class _HistoryItem extends StatelessWidget {
 
   String _formatDate(String dateStr) {
     try {
-      final d = DateTime.parse(dateStr);
+      final d = DateTime.parse(dateStr).toLocal();
       final month = d.month;
       final day = d.day;
       final hours = d.hour.toString().padLeft(2, '0');

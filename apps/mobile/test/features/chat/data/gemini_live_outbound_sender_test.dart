@@ -29,10 +29,12 @@ void main() {
 
       expect(setup['model'], 'gemini-live');
       expect(setup['sessionResumption'], {'handle': 'resume-1'});
-      expect(parts.first, {
-        'text':
-            '話してください\n\n## ユーザー情報\n- 名前: Tester\n- 相手を呼ぶ時は「学習者」ではなく、この名前を関係設定の呼び方ルールに合わせて呼ぶこと。\n\nN5 only',
-      });
+      final instruction =
+          (parts.first as Map<String, dynamic>)['text'] as String;
+      expect(instruction, startsWith('話してください'));
+      expect(instruction, contains('アプリのニックネーム: Tester'));
+      expect(instruction, contains('相手が会話で名乗るまで名前で呼ばない'));
+      expect(instruction, endsWith('N5 only'));
     });
 
     test('sends greeting and realtime audio payloads', () {
@@ -69,17 +71,34 @@ void main() {
         returnsNormally,
       );
     });
+
+    test('help delivery reports a closed transport or send failure', () {
+      final disconnected = _FakeGeminiLiveTransport(connected: false);
+      expect(
+        GeminiLiveOutboundSender(transport: disconnected)
+            .sendTextInstruction('もう一度'),
+        isFalse,
+      );
+      expect(disconnected.sent, isEmpty);
+      expect(
+        GeminiLiveOutboundSender(
+          transport: _FakeGeminiLiveTransport(sendError: StateError('closed')),
+        ).sendTextInstruction('もう一度'),
+        isFalse,
+      );
+    });
   });
 }
 
 class _FakeGeminiLiveTransport implements GeminiLiveTransport {
-  _FakeGeminiLiveTransport({this.sendError});
+  _FakeGeminiLiveTransport({this.sendError, this.connected = true});
 
   final Object? sendError;
+  final bool connected;
   final sent = <String>[];
 
   @override
-  bool get isConnected => true;
+  bool get isConnected => connected;
 
   @override
   Future<void> connect(

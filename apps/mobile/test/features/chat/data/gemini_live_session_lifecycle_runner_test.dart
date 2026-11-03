@@ -84,7 +84,7 @@ void main() {
       await runner.end();
 
       expect(lifecycle.isActive, isFalse);
-      expect(actions, ['flushTranscripts', 'stopRecording', 'closeTransport']);
+      expect(actions, ['flushTranscripts', 'closeTransport', 'stopRecording']);
       expect(states, ['ending', 'ended']);
     });
 
@@ -104,7 +104,7 @@ void main() {
 
       expect(lifecycle.isDisposed, isTrue);
       expect(lifecycle.isActive, isFalse);
-      expect(actions, ['disposeAudio', 'closeTransport']);
+      expect(actions, ['closeTransport', 'disposeAudio']);
       expect(states, isEmpty);
     });
   });

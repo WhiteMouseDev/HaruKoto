@@ -19,10 +19,12 @@ class GeminiLiveSessionConnector {
     GeminiLiveConnectionInput input, {
     String? resumptionHandle,
   }) async {
-    await _connectionRunner.connect(input);
-    _setupSender.send(
-      resumptionHandle:
-          resumptionHandle ?? _reconnectCoordinator.resumptionHandle,
+    await _connectionRunner.connect(
+      input,
+      sendSetup: () => _setupSender.send(
+        resumptionHandle:
+            resumptionHandle ?? _reconnectCoordinator.resumptionHandle,
+      ),
     );
   }
 }

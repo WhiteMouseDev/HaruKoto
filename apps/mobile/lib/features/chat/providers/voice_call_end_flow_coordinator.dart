@@ -57,27 +57,27 @@ class VoiceCallEndFlowCoordinator {
 
   Future<VoiceCallEndFlowResult> end(VoiceCallEndFlowInput input) async {
     final endedSession = await _sessionEnder.end(input.resources);
-    if (!input.wasConnected) {
+    final preparedId = input.resources?.preparedConversationId;
+    if (!input.wasConnected &&
+        (preparedId == null || preparedId != input.request?.conversationId)) {
       return const VoiceCallEndFlowResult();
     }
 
-    final autoAnalysis = _readAutoAnalysis();
+    final autoAnalysis =
+        input.request?.scenarioId != null && _readAutoAnalysis();
 
     final analysisRequest = _analysisRequestFactory.build(
       VoiceCallAnalysisRequestInput(
         request: input.request,
         transcript: endedSession.transcript,
-        durationSeconds: input.durationSeconds,
+        durationSeconds: input.wasConnected ? input.durationSeconds : 0,
+        wasConnected: input.wasConnected,
         autoAnalysis: autoAnalysis,
       ),
     );
 
     if (analysisRequest != null) {
       return VoiceCallEndFlowResult(analysisRequest: analysisRequest);
-    }
-
-    if (input.request != null && autoAnalysis) {
-      return const VoiceCallEndFlowResult(feedbackError: 'no_transcript');
     }
 
     return const VoiceCallEndFlowResult();

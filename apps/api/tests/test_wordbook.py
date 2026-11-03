@@ -62,6 +62,32 @@ async def test_create_wordbook_entry(client, mock_user, mock_wordbook_entry, tes
     assert data["word"] == "食べる"
     assert data["reading"] == "たべる"
     assert data["meaningKo"] == "먹다"
+    assert "DO UPDATE" in str(mock_session.execute.await_args_list[0].args[0])
+
+
+@pytest.mark.asyncio
+async def test_save_conversation_expression_preserves_existing_personal_entry(client, mock_wordbook_entry):
+    from app.main import app
+
+    mock_wordbook_entry.note = "내가 직접 쓴 메모"
+    selected = MagicMock()
+    selected.scalar_one.return_value = mock_wordbook_entry
+    db = AsyncMock()
+    db.execute.side_effect = [MagicMock(), selected]
+
+    async def override_get_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+    response = await client.post(
+        "/api/v1/wordbook/",
+        json={"word": "食べる", "reading": "", "meaningKo": "AI 뜻", "source": "CONVERSATION", "preserveExisting": True},
+    )
+    assert response.status_code == 201
+    assert response.json()["note"] == "내가 직접 쓴 메모"
+    assert response.json()["meaningKo"] == "먹다"
+    assert response.json()["source"] == "MANUAL"
+    assert "DO NOTHING" in str(db.execute.await_args_list[0].args[0])
 
 
 @pytest.mark.asyncio

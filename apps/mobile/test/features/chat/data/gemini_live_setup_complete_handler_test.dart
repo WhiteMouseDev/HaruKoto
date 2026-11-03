@@ -7,6 +7,35 @@ import 'package:harukoto_mobile/features/chat/data/gemini_live_transport.dart';
 
 void main() {
   group('GeminiLiveSetupCompleteHandler', () {
+    test('resumption starts the mic when the greeting turn was lost', () async {
+      final events = <String>[];
+      final coordinator = GeminiLiveReconnectCoordinator();
+      final handler = GeminiLiveSetupCompleteHandler(
+        reconnectCoordinator: coordinator,
+        greetingSender: GeminiLiveGreetingSender(
+          outboundSender: GeminiLiveOutboundSender(
+            transport: _RecordingGeminiLiveTransport(events),
+          ),
+        ),
+        preparePlayback: () async => true,
+        startRecording: () async => events.add('recording'),
+        emitState: (state) => events.add('state:${state.name}'),
+      );
+
+      handler.handle();
+      await Future<void>.delayed(Duration.zero);
+      expect(events, ['state:connected', 'send']);
+      coordinator.requestReconnect();
+      // The connection dropped during the greeting, so its turnComplete
+      // never reached the client. Resumption may now wait for user input.
+      handler.handle();
+      await Future<void>.delayed(Duration.zero);
+      expect(events.where((event) => event == 'recording'), hasLength(1));
+      expect(events.where((event) => event == 'send'), hasLength(1));
+      handler.handleModelTurnComplete();
+      expect(events.where((event) => event == 'recording'), hasLength(1));
+    });
+
     test(
         'marks connected, prepares playback, and delays recording until the first model turn ends',
         () async {
@@ -53,6 +82,11 @@ void main() {
         'send',
         'recording',
       ]);
+
+      handler.handle();
+      await Future<void>.delayed(Duration.zero);
+      expect(events.where((event) => event == 'send'), hasLength(1));
+      expect(events.where((event) => event == 'recording'), hasLength(1));
     });
   });
 }

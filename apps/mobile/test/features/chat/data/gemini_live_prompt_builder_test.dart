@@ -44,5 +44,13 @@ void main() {
         isEmpty,
       );
     });
+
+    test('N5 limits difficulty without forcing a polite relationship', () {
+      const prompt = GeminiLivePromptBuilder(jlptLevel: 'N5');
+
+      expect(prompt.jlptSection, contains('語彙800語以内'));
+      expect(prompt.jlptSection, contains('基本の動詞・名詞・形容詞'));
+      expect(prompt.jlptSection, isNot(contains('です/ます形のみ')));
+    });
   });
 }

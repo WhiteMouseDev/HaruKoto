@@ -46,8 +46,8 @@ void main() {
       await tester.pump();
 
       expect(find.text('회화 리포트'), findsOneWidget);
-      expect(find.text('대화가 너무 짧아요'), findsOneWidget);
-      expect(find.textContaining('분석할 내용이 충분하지 않아'), findsOneWidget);
+      expect(find.text('분석할 발화를 확인하지 못했어요'), findsOneWidget);
+      expect(find.textContaining('음성 인식으로 남은 내용이 충분하지 않아'), findsOneWidget);
       expect(find.text('🦊'), findsNothing);
       expect(find.byIcon(LucideIcons.micOff), findsOneWidget);
       expect(find.text('다시 통화하기'), findsOneWidget);

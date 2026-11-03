@@ -6,7 +6,7 @@ import pytest
 
 from app.db.session import get_db
 from app.models import Conversation
-from app.models.enums import ConversationType
+from app.models.enums import ConversationType, JlptLevel
 
 
 @pytest.fixture
@@ -29,13 +29,15 @@ def mock_conversation(test_user_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("jlpt_level", ["N5", JlptLevel.N2])
 @patch("app.services.chat_session.rate_limit")
 @patch("app.services.chat_session.check_ai_limit")
 @patch("app.services.chat_session.generate_chat_response")
-async def test_start_chat_success(mock_generate, mock_ai_limit, mock_rate_limit, client, mock_user):
+async def test_start_chat_success(mock_generate, mock_ai_limit, mock_rate_limit, client, mock_user, jlpt_level):
     """Test POST /api/v1/chat/start successfully starts a conversation."""
     from app.main import app
 
+    mock_user.jlpt_level = jlpt_level
     mock_ai_limit.return_value = {"allowed": True}
     mock_rate_limit.return_value = MagicMock(success=True, remaining=10, reset=0)
     mock_generate.return_value = {
@@ -71,6 +73,8 @@ async def test_start_chat_success(mock_generate, mock_ai_limit, mock_rate_limit,
     assert "conversationId" in data
     assert data["firstMessage"]["messageJa"] == "こんにちは！"
     assert data["firstMessage"]["messageKo"] == "안녕하세요!"
+    expected_level = jlpt_level.value if isinstance(jlpt_level, JlptLevel) else jlpt_level
+    assert f"【{expected_level}レベル対応】" in mock_generate.await_args.args[0]
 
 
 @pytest.mark.asyncio
@@ -334,7 +338,9 @@ async def test_live_feedback_creates_voice_conversation(
     mock_session.add = MagicMock(side_effect=capture_add)
     mock_session.flush = AsyncMock()
     mock_session.refresh = AsyncMock()
-    mock_session.execute = AsyncMock(side_effect=[MagicMock(), MagicMock(), mock_count_result])
+    saved_conversation_result = MagicMock()
+    saved_conversation_result.scalar_one_or_none.side_effect = lambda: added_conversations[0]
+    mock_session.execute = AsyncMock(side_effect=[MagicMock(), MagicMock(), mock_count_result, saved_conversation_result])
     mock_session.commit = AsyncMock()
 
     async def override_get_db():
@@ -415,7 +421,7 @@ async def test_live_feedback_returns_500_when_commit_fails(
 @pytest.mark.asyncio
 @patch("app.services.chat_voice.grant_conversation_completion_rewards")
 @patch("app.services.chat_voice.generate_live_feedback")
-async def test_live_feedback_returns_500_when_fallback_save_fails(
+async def test_live_feedback_returns_500_without_partial_success_when_completion_fails(
     mock_feedback,
     mock_rewards,
     client,
@@ -459,6 +465,7 @@ async def test_live_feedback_returns_500_when_fallback_save_fails(
 
     assert response.status_code == 500
     assert response.json()["error"]["message"] == "라이브 피드백 저장에 실패했습니다"
-    assert len(added_conversations) == 2
-    assert added_conversations[0] is added_conversations[1]
-    assert mock_session.rollback.await_count == 2
+    assert len(added_conversations) == 1
+    mock_session.rollback.assert_awaited_once()
+    mock_session.commit.assert_not_awaited()
+    mock_feedback.assert_not_awaited()

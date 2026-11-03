@@ -3682,6 +3682,52 @@
         ]
       }
     },
+    "/api/v1/chat/live-session": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Prepare Live Session",
+        "operationId": "prepare_live_session_api_v1_chat_live_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveSessionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/chat/live-token": {
       "post": {
         "tags": [
@@ -3751,9 +3797,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "type": "object",
-                  "title": "Response Submit Live Feedback Api V1 Chat Live Feedback Post"
+                  "$ref": "#/components/schemas/LiveFeedbackResponse"
                 }
               }
             }
@@ -10914,6 +10958,8 @@
           },
           "durationSeconds": {
             "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 0.0,
             "title": "Durationseconds"
           },
           "transcript": {
@@ -10956,6 +11002,11 @@
               }
             ],
             "title": "Characterid"
+          },
+          "analysisEnabled": {
+            "type": "boolean",
+            "title": "Analysisenabled",
+            "description": "생략하면 피드백을 생성합니다. false이면 대화 기록만 저장합니다."
           }
         },
         "type": "object",
@@ -10963,6 +11014,121 @@
           "durationSeconds"
         ],
         "title": "LiveFeedbackRequest"
+      },
+      "LiveFeedbackResponse": {
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversationid"
+          },
+          "feedbackSummary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedbacksummary"
+          },
+          "feedbackError": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedbackerror"
+          },
+          "xpEarned": {
+            "type": "integer",
+            "title": "Xpearned"
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversationId",
+          "xpEarned",
+          "events"
+        ],
+        "title": "LiveFeedbackResponse"
+      },
+      "LiveSessionRequest": {
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversationid"
+          },
+          "scenarioId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenarioid"
+          },
+          "characterId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Characterid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversationId"
+        ],
+        "title": "LiveSessionRequest"
+      },
+      "LiveSessionResponse": {
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversationid"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversationId"
+        ],
+        "title": "LiveSessionResponse"
       },
       "LiveTokenRequest": {
         "properties": {
@@ -10977,6 +11143,30 @@
               }
             ],
             "title": "Characterid"
+          },
+          "scenarioId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenarioid"
+          },
+          "conversationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversationid"
           }
         },
         "type": "object",
@@ -11003,6 +11193,40 @@
           "jlptLevel": {
             "type": "string",
             "title": "Jlptlevel"
+          },
+          "systemInstruction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Systeminstruction"
+          },
+          "scenarioGreeting": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenariogreeting"
+          },
+          "conversationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversationid"
           }
         },
         "type": "object",
@@ -14627,6 +14851,11 @@
               }
             ],
             "title": "Note"
+          },
+          "preserveExisting": {
+            "type": "boolean",
+            "title": "Preserveexisting",
+            "description": "생략하면 기존 항목을 갱신합니다. true이면 이미 저장한 항목을 그대로 반환합니다."
           }
         },
         "type": "object",

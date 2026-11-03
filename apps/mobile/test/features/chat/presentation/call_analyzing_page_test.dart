@@ -7,7 +7,6 @@ import 'package:harukoto_mobile/features/chat/presentation/call_analyzing_page.d
 import 'package:harukoto_mobile/features/chat/presentation/conversation_feedback_page.dart';
 import 'package:harukoto_mobile/features/chat/providers/chat_provider.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 void main() {
   group('CallAnalyzingPage', () {
@@ -63,11 +62,54 @@ void main() {
       expect(find.text('회화 리포트'), findsOneWidget);
       expect(find.text('잘한 표현'), findsOneWidget);
       expect(find.text('🦊'), findsNothing);
-      expect(find.byIcon(LucideIcons.sparkles), findsOneWidget);
+      expect(find.text('상세 점수 보기'), findsOneWidget);
     });
 
     testWidgets(
-        'shows generation failure no-data state after analysis completes',
+        'social call saves first and analyzes only after an explicit request',
+        (tester) async {
+      final repository = _FakeChatRepository(
+          response: const LiveFeedbackResponse(
+        conversationId: 'stable-id',
+        xpEarned: 0,
+        events: [],
+      ));
+      await tester.pumpWidget(ProviderScope(
+          overrides: [
+            chatRepositoryProvider.overrideWith((ref) => repository),
+          ],
+          child: const MaterialApp(
+              home: CallAnalyzingPage(
+                  request: VoiceCallAnalysisRequest(
+            conversationId: 'stable-id',
+            transcript: [
+              {'role': 'user', 'text': 'こんにちは'}
+            ],
+            durationSeconds: 24,
+            characterName: '하루',
+            analysisEnabled: false,
+          )))));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      expect(find.text('하루와의 통화를 마쳤어요'), findsOneWidget);
+      expect(find.text('원할 때 피드백 보기'), findsOneWidget);
+      expect(repository.analysisFlags, [false]);
+      await tester.pump(const Duration(seconds: 2));
+      expect(repository.calls, 1);
+      await tester.tap(find.text('원할 때 피드백 보기'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      expect(repository.analysisFlags, [false, true]);
+      expect(repository.ids, ['stable-id', 'stable-id']);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    });
+
+    testWidgets('keeps a saved failed analysis available for retry',
         (tester) async {
       final repository = _FakeChatRepository(
         response: const LiveFeedbackResponse(
@@ -101,14 +143,12 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 600));
       await tester.pump(const Duration(milliseconds: 600));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(repository.calls, 1);
-      expect(find.text('회화 리포트'), findsOneWidget);
-      expect(find.text('피드백 생성에 실패했어요'), findsOneWidget);
-      expect(find.textContaining('잠시 후 다시 시도해 주세요'), findsOneWidget);
-      expect(find.text('🦊'), findsNothing);
-      expect(find.byIcon(LucideIcons.micOff), findsOneWidget);
+      expect(find.text('기록은 저장됐지만 피드백을 만들지 못했어요'), findsOneWidget);
+      expect(find.text('피드백 다시 만들기'), findsOneWidget);
+      expect(find.text('돌아가기'), findsOneWidget);
     });
   });
 }
@@ -118,15 +158,21 @@ class _FakeChatRepository extends ChatRepository {
 
   final LiveFeedbackResponse response;
   int calls = 0;
+  final analysisFlags = <bool>[];
+  final ids = <String?>[];
 
   @override
   Future<LiveFeedbackResponse> sendLiveFeedback({
     required List<Map<String, String>> transcript,
     required int durationSeconds,
+    bool analysisEnabled = true,
+    String? conversationId,
     String? scenarioId,
     String? characterId,
   }) async {
     calls++;
+    analysisFlags.add(analysisEnabled);
+    ids.add(conversationId);
     return response;
   }
 }
