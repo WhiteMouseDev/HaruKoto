@@ -143,6 +143,7 @@ void main() {
     testWidgets('sentence reorder step submits selected token order',
         (tester) async {
       Map<String, dynamic>? answer;
+      var submissions = 0;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -167,7 +168,10 @@ void main() {
                   partOfSpeech: 'noun',
                 ),
               ],
-              onAnswer: (value) => answer = value,
+              onAnswer: (value) {
+                submissions++;
+                answer = value;
+              },
             ),
           ),
         ),
@@ -180,10 +184,16 @@ void main() {
       await tester.tap(find.text('です'));
       await tester.pump();
       await tester.tap(find.text('확인'));
-      await tester.pump(const Duration(milliseconds: 301));
-
       expect(answer?['order'], 5);
       expect(answer?['submittedOrder'], ['私は', '学生', 'です']);
+      // A second tap before a frame and after the former animation delay
+      // cannot submit the same question again.
+      await tester.tap(find.text('확인'));
+      await tester.pump(const Duration(milliseconds: 301));
+      expect(submissions, 1);
+      expect(
+          tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,
+          isNull);
     });
 
     testWidgets('sentence reorder starts with a blank answer canvas',

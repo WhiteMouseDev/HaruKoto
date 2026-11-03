@@ -386,6 +386,7 @@ async def test_live_feedback_returns_500_when_commit_fails(
     mock_session = MagicMock()
     mock_session.add = MagicMock(side_effect=capture_add)
     mock_session.flush = AsyncMock()
+    mock_session.refresh = AsyncMock()
     mock_session.commit = AsyncMock(side_effect=RuntimeError("commit failed"))
     mock_session.rollback = AsyncMock()
 
@@ -435,6 +436,7 @@ async def test_live_feedback_returns_500_when_fallback_save_fails(
     mock_session = MagicMock()
     mock_session.add = MagicMock(side_effect=capture_add)
     mock_session.flush = AsyncMock()
+    mock_session.refresh = AsyncMock()
     mock_session.commit = AsyncMock(side_effect=RuntimeError("fallback commit failed"))
     mock_session.rollback = AsyncMock()
     mock_session.__contains__.return_value = False

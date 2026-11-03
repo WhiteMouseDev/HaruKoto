@@ -97,6 +97,7 @@ class GrammarItem(CamelModel):
 
 
 class LessonDetailResponse(CamelModel):
+    activity_content_version: str | None = None
     id: UUID
     lesson_no: int
     chapter_lesson_no: int

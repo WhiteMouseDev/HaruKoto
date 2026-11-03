@@ -96,9 +96,10 @@ async def test_start_quiz_success(client, mock_user, test_user_id):
     mock_session.commit = AsyncMock()
     mock_session.flush = AsyncMock()
 
-    # Mock refresh to set session.id
-    async def mock_refresh(obj):
-        obj.id = uuid.uuid4()
+    # User refresh only reloads its activity fields; new session refresh gets an ID.
+    async def mock_refresh(obj, **kwargs):
+        if obj is not mock_user:
+            obj.id = uuid.uuid4()
 
     mock_session.refresh = mock_refresh
 
@@ -150,7 +151,10 @@ async def test_answer_question_correct(client, mock_user, mock_quiz_session, tes
 
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
-    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.execute = AsyncMock(
+        # Read first answer/progress, then accept review-event and attendance writes.
+        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+    )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()
@@ -205,7 +209,10 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
 
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
-    mock_session.execute = AsyncMock(side_effect=[no_previous_answer, mock_progress_result])
+    mock_session.execute = AsyncMock(
+        # Read first answer/progress, then accept review-event and attendance writes.
+        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+    )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
     mock_session.flush = AsyncMock()

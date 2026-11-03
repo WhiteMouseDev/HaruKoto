@@ -1,3 +1,4 @@
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'dart:async';
 
 import 'package:dio/dio.dart';
@@ -35,6 +36,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            currentAccountIdProvider.overrideWithValue('user-1'),
+            currentAccountReaderProvider.overrideWithValue(() => 'user-1'),
             sharedPreferencesProvider.overrideWith((ref) => prefs),
             profileDetailProvider.overrideWith(
               (ref) => profileCompleter.future,
@@ -113,6 +116,8 @@ Future<Widget> _buildMyPage(_FakeMyRepository repository) async {
 
   return ProviderScope(
     overrides: [
+      currentAccountIdProvider.overrideWithValue('user-1'),
+      currentAccountReaderProvider.overrideWithValue(() => 'user-1'),
       sharedPreferencesProvider.overrideWith((ref) => prefs),
       myRepositoryProvider.overrideWith((ref) => repository),
     ],

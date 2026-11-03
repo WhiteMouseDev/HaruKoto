@@ -6207,6 +6207,347 @@
         }
       }
     },
+    "/api/v1/lessons/{lesson_id}/study-activities": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Create Activity",
+        "operationId": "create_activity_api_v1_lessons__lesson_id__study_activities_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/RecognitionStudyActivityRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ReorderStudyActivityRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MatchingStudyActivityRequest"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "kind",
+                  "mapping": {
+                    "RECOGNITION": "#/components/schemas/RecognitionStudyActivityRequest",
+                    "SENTENCE_REORDER": "#/components/schemas/ReorderStudyActivityRequest",
+                    "MATCHING": "#/components/schemas/MatchingStudyActivityRequest"
+                  }
+                },
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonStudyActivityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "답안 검증 실패. 같은 제출의 답안을 자동 변경하지 않음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "대상 없음. 진행 중 POST의 미처리를 증명하지 않음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "같은 제출 ID에 다른 레슨/답안/순서/응답 시간. 쓰기 없음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "요청 구조 검증 실패",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "일시 장애 또는 결과 불명. 같은 제출 ID로 재확인",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/study-activities/{activity_id}": {
+      "get": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Read Activity",
+        "operationId": "read_activity_api_v1_lessons__lesson_id__study_activities__activity_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid4",
+              "title": "Activity Id"
+            }
+          },
+          {
+            "name": "expectedUserId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Expecteduserid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonStudyActivityResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "대상 없음. 진행 중 POST의 미처리를 증명하지 않음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "요청 구조 검증 실패",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "일시 장애 또는 결과 불명. 같은 제출 ID로 재확인",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/lessons/chapters": {
       "get": {
         "tags": [
@@ -9970,6 +10311,17 @@
       },
       "LessonDetailResponse": {
         "properties": {
+          "activityContentVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activitycontentversion"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -10111,6 +10463,33 @@
           "scoreTotal"
         ],
         "title": "LessonProgressResponse"
+      },
+      "LessonStudyActivityResponse": {
+        "properties": {
+          "activityId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Activityid"
+          },
+          "processedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Processedat"
+          },
+          "studyDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Studydate"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "activityId",
+          "processedAt",
+          "studyDate"
+        ],
+        "title": "LessonStudyActivityResponse"
       },
       "LessonSubmissionAnswer": {
         "properties": {
@@ -10526,6 +10905,27 @@
         "type": "object",
         "title": "MarkReadRequest"
       },
+      "MatchingActivityAnswer": {
+        "properties": {
+          "leftVocabularyId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Leftvocabularyid"
+          },
+          "rightVocabularyId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Rightvocabularyid"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "leftVocabularyId",
+          "rightVocabularyId"
+        ],
+        "title": "MatchingActivityAnswer"
+      },
       "MatchingPair": {
         "properties": {
           "id": {
@@ -10548,6 +10948,49 @@
           "meaning"
         ],
         "title": "MatchingPair"
+      },
+      "MatchingStudyActivityRequest": {
+        "properties": {
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "attemptId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Attemptid"
+          },
+          "activityId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Activityid"
+          },
+          "contentVersion": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Contentversion"
+          },
+          "kind": {
+            "type": "string",
+            "const": "MATCHING",
+            "title": "Kind"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/MatchingActivityAnswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expectedUserId",
+          "attemptId",
+          "activityId",
+          "contentVersion",
+          "kind",
+          "answer"
+        ],
+        "title": "MatchingStudyActivityRequest"
       },
       "MissionClaimRequest": {
         "properties": {
@@ -11942,6 +12385,71 @@
         ],
         "title": "Reading"
       },
+      "RecognitionActivityAnswer": {
+        "properties": {
+          "questionOrder": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Questionorder"
+          },
+          "selectedAnswer": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Selectedanswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "questionOrder",
+          "selectedAnswer"
+        ],
+        "title": "RecognitionActivityAnswer"
+      },
+      "RecognitionStudyActivityRequest": {
+        "properties": {
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "attemptId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Attemptid"
+          },
+          "activityId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Activityid"
+          },
+          "contentVersion": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Contentversion"
+          },
+          "kind": {
+            "type": "string",
+            "const": "RECOGNITION",
+            "title": "Kind"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/RecognitionActivityAnswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expectedUserId",
+          "attemptId",
+          "activityId",
+          "contentVersion",
+          "kind",
+          "answer"
+        ],
+        "title": "RecognitionStudyActivityRequest"
+      },
       "RecommendationsResponse": {
         "properties": {
           "reviewDueCount": {
@@ -11975,6 +12483,76 @@
           "wrongCount"
         ],
         "title": "RecommendationsResponse"
+      },
+      "ReorderActivityAnswer": {
+        "properties": {
+          "questionOrder": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Questionorder"
+          },
+          "submittedOrder": {
+            "items": {
+              "type": "string",
+              "maxLength": 4096,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 256,
+            "minItems": 1,
+            "title": "Submittedorder"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "questionOrder",
+          "submittedOrder"
+        ],
+        "title": "ReorderActivityAnswer"
+      },
+      "ReorderStudyActivityRequest": {
+        "properties": {
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "attemptId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Attemptid"
+          },
+          "activityId": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Activityid"
+          },
+          "contentVersion": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Contentversion"
+          },
+          "kind": {
+            "type": "string",
+            "const": "SENTENCE_REORDER",
+            "title": "Kind"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/ReorderActivityAnswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expectedUserId",
+          "attemptId",
+          "activityId",
+          "contentVersion",
+          "kind",
+          "answer"
+        ],
+        "title": "ReorderStudyActivityRequest"
       },
       "ReviewQueueItem": {
         "properties": {
@@ -13766,6 +14344,18 @@
       },
       "WeeklyStatItem": {
         "properties": {
+          "vocabularyAnsweredCount": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vocabularyansweredcount"
+          },
           "date": {
             "type": "string",
             "title": "Date"

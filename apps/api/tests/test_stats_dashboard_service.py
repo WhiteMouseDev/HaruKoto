@@ -78,6 +78,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
             side_effect=[
                 _DbResult(scalar_one_or_none_value=today_progress),
                 _DbResult(scalar_rows=[weekly_progress]),
+                _DbResult(all_rows=[((date(2026, 4, 20) - date(1970, 1, 1)).days, 2)]),
                 _DbResult(scalar_value=100),
                 _DbResult(all_rows=[(True, 12), (False, 3)]),
                 _DbResult(scalar_value=50),
@@ -112,6 +113,8 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert response.streak.needs_action_today is False
     assert len(response.weekly_stats) == 7
     assert response.weekly_stats[3].date == "2026-04-20"
+    assert response.weekly_stats[3].vocabulary_answered_count == 2
+    assert response.weekly_stats[-1].vocabulary_answered_count == 0
     assert response.weekly_stats[3].words_studied == 3
     assert response.weekly_stats[3].has_studied is True
     assert response.level_progress.vocabulary.total == 100

@@ -52,6 +52,7 @@ async def test_submit_kana_quiz_answer_updates_progress_and_session_for_correct_
         correct_count=0,
     )
     db = AsyncMock()
+    db.scalar = AsyncMock(return_value=None)
     db.get = AsyncMock(return_value=session)
     db.execute = AsyncMock()
     db.commit = AsyncMock()
@@ -86,6 +87,7 @@ async def test_submit_kana_quiz_answer_keeps_count_for_wrong_answer():
         correct_count=2,
     )
     db = AsyncMock()
+    db.scalar = AsyncMock(return_value=None)
     db.get = AsyncMock(return_value=session)
     db.execute = AsyncMock()
     db.commit = AsyncMock()
@@ -106,6 +108,7 @@ async def test_submit_kana_quiz_answer_keeps_count_for_wrong_answer():
 async def test_submit_kana_quiz_answer_rejects_missing_session():
     user = SimpleNamespace(id=uuid.uuid4())
     db = AsyncMock()
+    db.scalar = AsyncMock(return_value=None)
     db.get = AsyncMock(return_value=None)
     body = KanaQuizAnswerRequest(
         session_id=uuid.uuid4(),
@@ -130,6 +133,7 @@ async def test_submit_kana_quiz_answer_rejects_missing_question():
         correct_count=0,
     )
     db = AsyncMock()
+    db.scalar = AsyncMock(return_value=None)
     db.get = AsyncMock(return_value=session)
     body = KanaQuizAnswerRequest(
         session_id=session.id,

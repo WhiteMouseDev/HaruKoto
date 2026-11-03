@@ -82,7 +82,7 @@ async def migrated_url(isolated_postgres_url):
         cache_id = await _seed_legacy_history(engine, legacy)
         legacy_hash = await _legacy_hash(engine, legacy, cache_id)
         before = await _metadata(engine)
-        upgrade = _alembic(isolated_postgres_url, "upgrade", "head")
+        upgrade = _alembic(isolated_postgres_url, "upgrade", REVISION)
         assert upgrade.returncode == 0, upgrade.stderr
         assert await _metadata(engine) == before
         assert await _legacy_hash(engine, legacy, cache_id) == legacy_hash
@@ -91,10 +91,14 @@ async def migrated_url(isolated_postgres_url):
         assert downgrade.returncode == 0, downgrade.stderr
         assert await _metadata(engine) == before
         assert await _legacy_hash(engine, legacy, cache_id) == legacy_hash
-        upgrade = _alembic(isolated_postgres_url, "upgrade", "head")
+        upgrade = _alembic(isolated_postgres_url, "upgrade", REVISION)
         assert upgrade.returncode == 0, upgrade.stderr
         assert await _metadata(engine) == before
         assert await _legacy_hash(engine, legacy, cache_id) == legacy_hash
+        # Receipt migration's historical boundary above remains pinned even as
+        # later additive migrations are tested by their own preservation suite.
+        current = _alembic(isolated_postgres_url, "upgrade", "head")
+        assert current.returncode == 0, current.stderr
     finally:
         await engine.dispose()
     yield isolated_postgres_url
@@ -288,6 +292,7 @@ async def _state(engine, attempt):
         return await connection.scalar(
             text("""SELECT jsonb_build_object(
                 'user',(SELECT to_jsonb(u) FROM users u WHERE id=:user),
+                'daily',(SELECT jsonb_agg(to_jsonb(d) ORDER BY date) FROM daily_progress d WHERE user_id=:user),
                 'progress',(SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM user_lesson_progress p WHERE user_id=:user),
                 'words',(SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM user_vocab_progress p WHERE user_id=:user),
                 'grammar',(SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM user_grammar_progress p WHERE user_id=:user),
@@ -583,7 +588,18 @@ async def test_populated_receipts_block_destructive_downgrade(engine, migrated_u
     attempt = await _seed(engine)
     await _submit(engine, attempt)
     before = await _state(engine, attempt)
-    downgrade = _alembic(migrated_url, "downgrade", "-1")
-    assert downgrade.returncode != 0 and "Completed lesson receipts exist" in downgrade.stderr
+    spec = importlib.util.spec_from_file_location("receipt_downgrade_guard", MIGRATION)
+    assert spec is not None and spec.loader is not None
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    head_before = await _scalar(engine, "SELECT version_num FROM alembic_version")
+
+    def downgrade(connection):
+        with Operations.context(MigrationContext.configure(connection)):
+            migration.downgrade()
+
+    with pytest.raises(DBAPIError, match="Completed lesson receipts exist"):
+        async with engine.begin() as connection:
+            await connection.run_sync(downgrade)
     assert await _state(engine, attempt) == before
-    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == REVISION
+    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == head_before

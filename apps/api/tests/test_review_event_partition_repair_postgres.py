@@ -23,6 +23,7 @@ from app.models.lesson import Chapter, Lesson, LessonItemLink, UserLessonProgres
 from app.models.user import User
 from app.schemas.lesson import AnswerSubmission
 from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest, QuizResumeRequest, SmartStartRequest
+from app.services import study_day_recording
 from app.services.lesson_command import submit_lesson_attempt
 from app.services.quiz_answer import submit_quiz_answer
 from app.services.quiz_complete import complete_quiz_session
@@ -267,7 +268,11 @@ async def test_repair_lock_timeout_rolls_back_and_allows_bounded_retry(repair_da
 
 
 @pytest.mark.asyncio
-async def test_repair_preserves_auth_quiz_resume_and_atomic_lesson_srs_events(repair_database) -> None:
+async def test_repair_preserves_auth_quiz_resume_and_atomic_lesson_srs_events(repair_database, monkeypatch: pytest.MonkeyPatch) -> None:
+    # This historical schema deliberately predates the new marker/receipt DDL.
+    # Exercise its original learning smoke in compatibility mode; full-head ON
+    # answer attendance is verified by the dedicated real PostgreSQL suite.
+    monkeypatch.setattr(study_day_recording, "ANSWERED_STUDY_DAY_RECOGNITION_ENABLED", False)
     engine, url = repair_database
     applied = await asyncio.to_thread(_alembic, url, "upgrade", REVISION)
     assert applied.returncode == 0, applied.stderr

@@ -12,6 +12,7 @@ from app.models import Grammar, QuizSession, SentenceArrangeQuestion, StudyStage
 from app.models.user import User
 from app.schemas.quiz import MatchingPair, QuizOption, QuizQuestion
 from app.services.gamification import calculate_level
+from app.services.study_day_recording import lock_study_user
 from app.utils.constants import REWARDS
 
 
@@ -65,6 +66,7 @@ def build_session_questions_data(
 
 async def auto_complete_sessions(db: AsyncSession, user: User) -> int:
     """Auto-complete unfinished sessions and award pending XP to the user."""
+    await lock_study_user(db, user)
     result = await db.execute(
         select(QuizSession).where(
             QuizSession.user_id == user.id,

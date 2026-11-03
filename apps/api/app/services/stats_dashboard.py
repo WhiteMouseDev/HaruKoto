@@ -29,7 +29,7 @@ from app.schemas.stats import (
     WeeklyStatItem,
 )
 from app.services.study_activity import has_study_activity as _has_study_activity
-from app.services.vocabulary_goal import get_vocabulary_goal
+from app.services.vocabulary_goal import get_vocabulary_answered_counts, get_vocabulary_goal
 from app.utils.date import get_today_kst, study_date_kst
 
 
@@ -144,6 +144,7 @@ async def _get_weekly_stats(
         .order_by(DailyProgress.date)
     )
     weekly_data = {str(row.date): row for row in result.scalars().all()}
+    vocabulary_counts = await get_vocabulary_answered_counts(db, user_id=user_id, start_day=week_start, end_day=today)
 
     stats: list[WeeklyStatItem] = []
     for i in range(7):
@@ -152,6 +153,7 @@ async def _get_weekly_stats(
         stats.append(
             WeeklyStatItem(
                 date=str(day),
+                vocabulary_answered_count=vocabulary_counts.get(day, 0),
                 words_studied=progress.words_studied if progress else 0,
                 xp_earned=progress.xp_earned if progress else 0,
                 has_studied=_has_study_activity(progress),

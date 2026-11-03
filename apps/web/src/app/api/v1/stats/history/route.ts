@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { z } from 'zod';
+import { hasRecordedStudyActivity } from '@/lib/answered-study-day';
+import { getTodayKST } from '@/lib/date';
 
 const historyQuerySchema = z.object({
   year: z.coerce.number().int().min(2020).max(2100),
@@ -52,26 +54,40 @@ export async function GET(request: Request) {
         conversationCount: true,
         studyTimeSeconds: true,
         xpEarned: true,
+        activity_recorded: true,
+        kanaLearned: true,
+        grammar_studied: true,
+        sentences_studied: true,
+        study_minutes: true,
       },
     });
 
-    const now = new Date();
+    const now = getTodayKST();
     const isCurrentMonth =
-      year === now.getFullYear() && month === now.getMonth() + 1;
-    const cacheMaxAge = isCurrentMonth ? 60 : 86400;
+      year === now.getUTCFullYear() && month === now.getUTCMonth() + 1;
+    const cachePolicy = isCurrentMonth
+      ? 'private, no-cache'
+      : 'private, max-age=86400';
 
     return NextResponse.json(
       {
         year,
         month,
         records: records.map((r) => ({
-          ...r,
           date: r.date.toISOString().split('T')[0],
+          wordsStudied: r.wordsStudied,
+          quizzesCompleted: r.quizzesCompleted,
+          correctAnswers: r.correctAnswers,
+          totalAnswers: r.totalAnswers,
+          conversationCount: r.conversationCount,
+          studyTimeSeconds: r.studyTimeSeconds,
+          xpEarned: r.xpEarned,
+          hasStudied: hasRecordedStudyActivity(r),
         })),
       },
       {
         headers: {
-          'Cache-Control': `private, max-age=${cacheMaxAge}`,
+          'Cache-Control': cachePolicy,
         },
       }
     );

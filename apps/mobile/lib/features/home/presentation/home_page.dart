@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/providers/quiz_progress_refresh_provider.dart';
+import '../../study/providers/lesson_activity_sync_provider.dart';
+import '../../study/presentation/widgets/lesson_activity_pending_banner.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import 'widgets/home_skeleton.dart';
 import '../providers/home_provider.dart';
@@ -72,6 +76,7 @@ class _HomePageState extends ConsumerState<HomePage>
     ref.read(studyActivityRefreshProvider).refresh();
     ref.invalidate(profileProvider);
     ref.invalidate(missionsProvider);
+    unawaited(ref.read(lessonActivitySyncProvider.notifier).sync());
   }
 
   @override
@@ -92,7 +97,11 @@ class _HomePageState extends ConsumerState<HomePage>
 
     if (allLoading) {
       return const Scaffold(
-        body: SafeArea(child: HomeSkeleton()),
+        body: SafeArea(
+            child: Column(children: [
+          LessonActivityPendingBanner(),
+          Expanded(child: HomeSkeleton()),
+        ])),
       );
     }
 
@@ -107,7 +116,10 @@ class _HomePageState extends ConsumerState<HomePage>
     if (hasAnyError && !hasAnyValue) {
       return Scaffold(
         body: SafeArea(
-          child: AppErrorRetry(onRetry: _refresh),
+          child: Column(children: [
+            const LessonActivityPendingBanner(),
+            Expanded(child: AppErrorRetry(onRetry: _refresh)),
+          ]),
         ),
       );
     }
@@ -144,6 +156,7 @@ class _HomePageState extends ConsumerState<HomePage>
               // 1. Header
               _staggered(0, HomeHeader(nickname: profile?.nickname ?? '학습자')),
               const SizedBox(height: AppSizes.md),
+              const LessonActivityPendingBanner(),
 
               // 2. AI Phone Call CTA (주석 처리 — 추후 다시 활성화 가능)
               // const PhoneCallCta(),
@@ -166,7 +179,9 @@ class _HomePageState extends ConsumerState<HomePage>
                     streak: dashboard.streak,
                     today: dashboard.today,
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: preferences.dailyGoal,
+                    dailyGoal: preferences.dailyGoalConfirmed
+                        ? preferences.dailyGoal
+                        : 0,
                   ),
                 ),
                 const SizedBox(height: AppSizes.md),
@@ -200,6 +215,8 @@ class _HomePageState extends ConsumerState<HomePage>
                   levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
                   dailyGoal: preferences.dailyGoal,
+                  dailyGoalKnown:
+                      accountCurrent && preferences.dailyGoalConfirmed,
                   jlptLevel: preferences.jlptLevel,
                 ),
               ),
@@ -217,7 +234,9 @@ class _HomePageState extends ConsumerState<HomePage>
                   5,
                   WeeklyChart(
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: preferences.dailyGoal,
+                    dailyGoal: preferences.dailyGoalConfirmed
+                        ? preferences.dailyGoal
+                        : 0,
                   ),
                 ),
               const SizedBox(height: AppSizes.md),

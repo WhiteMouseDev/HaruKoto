@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
 import {
+  lockStudyActivityUser,
+  preserveNewerStudyDate,
+} from '@/lib/study-activity-lock';
+import {
   calculateLevel,
   updateStreak,
   checkAndGrantAchievements,
@@ -10,190 +14,178 @@ import {
 } from '@/lib/gamification';
 import { KANA_REWARDS } from '@/lib/constants';
 
+function result(
+  totalXp: number,
+  nextStageUnlocked: boolean,
+  events: GameEvent[] = []
+) {
+  const levelInfo = calculateLevel(totalXp);
+  return NextResponse.json({
+    success: true,
+    xpEarned: KANA_REWARDS.STAGE_COMPLETE_XP,
+    currentXp: levelInfo.currentXp,
+    xpForNext: levelInfo.xpForNext,
+    level: levelInfo.level,
+    nextStageUnlocked,
+    events,
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) {
+    if (!user)
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { stageId, quizScore } = body;
-
-    if (!stageId) {
+    const { stageId, quizScore } = await request.json();
+    if (!stageId)
       return NextResponse.json(
         { error: 'stageId is required' },
         { status: 400 }
       );
-    }
-
-    // Find the stage
     const stage = await prisma.kanaLearningStage.findUnique({
       where: { id: stageId },
     });
-    if (!stage) {
-      return NextResponse.json(
-        { error: 'Stage not found' },
-        { status: 404 }
-      );
-    }
+    if (!stage)
+      return NextResponse.json({ error: 'Stage not found' }, { status: 404 });
 
-    // Mark stage as completed
-    await prisma.userKanaStage.upsert({
-      where: {
-        userId_stageId: { userId: user.id, stageId },
-      },
-      update: {
-        isCompleted: true,
-        quizScore: quizScore ?? null,
-        completedAt: new Date(),
-      },
-      create: {
-        userId: user.id,
-        stageId,
-        isUnlocked: true,
-        isCompleted: true,
-        quizScore: quizScore ?? null,
-        completedAt: new Date(),
-      },
-    });
-
-    // Unlock next stage
-    const nextStage = await prisma.kanaLearningStage.findUnique({
-      where: {
-        kanaType_stageNumber: {
-          kanaType: stage.kanaType,
-          stageNumber: stage.stageNumber + 1,
-        },
-      },
-    });
-
-    if (nextStage) {
-      await prisma.userKanaStage.upsert({
+    return await prisma.$transaction(async (tx) => {
+      const currentUser = await lockStudyActivityUser(tx, user.id);
+      // All stage writers serialize on the owner before observing completion.
+      const prior = await tx.userKanaStage.findUnique({
+        where: { userId_stageId: { userId: user.id, stageId } },
+      });
+      const nextStage = await tx.kanaLearningStage.findUnique({
         where: {
-          userId_stageId: { userId: user.id, stageId: nextStage.id },
+          kanaType_stageNumber: {
+            kanaType: stage.kanaType,
+            stageNumber: stage.stageNumber + 1,
+          },
         },
-        update: { isUnlocked: true },
+      });
+      if (prior?.isCompleted) {
+        // Keep the original score/date and avoid even an unlock upsert on replay.
+        const nextProgress = nextStage
+          ? await tx.userKanaStage.findUnique({
+              where: {
+                userId_stageId: { userId: user.id, stageId: nextStage.id },
+              },
+            })
+          : null;
+        return result(
+          currentUser.experiencePoints,
+          nextProgress?.isUnlocked ?? false
+        );
+      }
+      const now = new Date();
+      const today = getTodayKST(now);
+      await tx.userKanaStage.upsert({
+        where: { userId_stageId: { userId: user.id, stageId } },
+        update: {
+          isCompleted: true,
+          quizScore: quizScore ?? null,
+          completedAt: now,
+        },
         create: {
           userId: user.id,
-          stageId: nextStage.id,
+          stageId,
           isUnlocked: true,
+          isCompleted: true,
+          quizScore: quizScore ?? null,
+          completedAt: now,
         },
       });
-    }
-
-    // Award XP
-    const xpEarned = KANA_REWARDS.STAGE_COMPLETE_XP;
-
-    const { totalXp, newLevel, oldLevel, streak } =
-      await prisma.$transaction(async (tx) => {
-        const currentUser = await tx.user.findUniqueOrThrow({
-          where: { id: user.id },
+      if (nextStage)
+        await tx.userKanaStage.upsert({
+          where: { userId_stageId: { userId: user.id, stageId: nextStage.id } },
+          update: { isUnlocked: true },
+          create: { userId: user.id, stageId: nextStage.id, isUnlocked: true },
         });
-
-        const today = getTodayKST();
-
-        await tx.dailyProgress.upsert({
-          where: { userId_date: { userId: user.id, date: today } },
-          update: { xpEarned: { increment: xpEarned } },
-          create: { userId: user.id, date: today, xpEarned },
-        });
-
-        const txTotalXp = currentUser.experiencePoints + xpEarned;
-        const { level: txNewLevel } = calculateLevel(txTotalXp);
-        const txOldLevel = currentUser.level;
-
-        const txStreak = updateStreak(
-          currentUser.lastStudyDate,
-          currentUser.streakCount,
-          currentUser.longestStreak,
-          today
-        );
-
-        await tx.user.update({
-          where: { id: user.id },
-          data: {
-            experiencePoints: txTotalXp,
-            level: txNewLevel,
-            streakCount: txStreak.streakCount,
-            longestStreak: txStreak.longestStreak,
-            lastStudyDate: today,
+      const xpEarned = KANA_REWARDS.STAGE_COMPLETE_XP;
+      await tx.dailyProgress.upsert({
+        where: { userId_date: { userId: user.id, date: today } },
+        update: { xpEarned: { increment: xpEarned } },
+        create: { userId: user.id, date: today, xpEarned },
+      });
+      const totalXp = currentUser.experiencePoints + xpEarned;
+      const { level: newLevel } = calculateLevel(totalXp);
+      const streak = updateStreak(
+        currentUser.lastStudyDate,
+        currentUser.streakCount,
+        currentUser.longestStreak,
+        today
+      );
+      const [
+        totalKanaLearned,
+        hiraganaCompletedCount,
+        hiraganaTotalCount,
+        katakanaCompletedCount,
+        katakanaTotalCount,
+      ] = await Promise.all([
+        tx.userKanaProgress.count({ where: { userId: user.id } }),
+        tx.userKanaStage.count({
+          where: {
+            userId: user.id,
+            isCompleted: true,
+            stage: { kanaType: 'HIRAGANA' },
           },
-        });
-
-        return {
-          totalXp: txTotalXp,
-          newLevel: txNewLevel,
-          oldLevel: txOldLevel,
-          streak: txStreak,
-        };
-      });
-
-    // Check kana-specific achievements
-    const totalKanaLearned = await prisma.userKanaProgress.count({
-      where: { userId: user.id },
-    });
-
-    // Check completion status for hiragana and katakana
-    const [hiraganaCompletedCount, hiraganaTotalCount, katakanaCompletedCount, katakanaTotalCount] =
-      await Promise.all([
-        prisma.userKanaStage.count({
-          where: { userId: user.id, isCompleted: true, stage: { kanaType: 'HIRAGANA' } },
         }),
-        prisma.kanaLearningStage.count({ where: { kanaType: 'HIRAGANA' } }),
-        prisma.userKanaStage.count({
-          where: { userId: user.id, isCompleted: true, stage: { kanaType: 'KATAKANA' } },
+        tx.kanaLearningStage.count({ where: { kanaType: 'HIRAGANA' } }),
+        tx.userKanaStage.count({
+          where: {
+            userId: user.id,
+            isCompleted: true,
+            stage: { kanaType: 'KATAKANA' },
+          },
         }),
-        prisma.kanaLearningStage.count({ where: { kanaType: 'KATAKANA' } }),
+        tx.kanaLearningStage.count({ where: { kanaType: 'KATAKANA' } }),
       ]);
-
-    const isHiraganaComplete = hiraganaCompletedCount >= hiraganaTotalCount;
-    const isKatakanaComplete = katakanaCompletedCount >= katakanaTotalCount;
-
-    const events: GameEvent[] = await checkAndGrantAchievements(user.id, {
-      totalXp,
-      newLevel,
-      oldLevel,
-      streakCount: streak.streakCount,
-      kanaFirstChar: totalKanaLearned >= 1,
-      kanaHiraganaComplete: stage.kanaType === 'HIRAGANA' && isHiraganaComplete,
-      kanaKatakanaComplete: stage.kanaType === 'KATAKANA' && isKatakanaComplete,
-    });
-
-    // Auto-disable showKana when both hiragana and katakana are fully completed
-    if (isHiraganaComplete && isKatakanaComplete) {
-      await prisma.user.update({
+      const isHiraganaComplete = hiraganaCompletedCount >= hiraganaTotalCount;
+      const isKatakanaComplete = katakanaCompletedCount >= katakanaTotalCount;
+      await tx.user.update({
         where: { id: user.id },
-        data: { showKana: false },
-      });
-    }
-
-    // Save notifications
-    for (const event of events) {
-      await prisma.notification.create({
         data: {
-          userId: user.id,
-          type: event.type,
-          title: event.title,
-          body: event.body,
-          emoji: event.emoji,
+          experiencePoints: totalXp,
+          level: newLevel,
+          streakCount: streak.streakCount,
+          longestStreak: streak.longestStreak,
+          lastStudyDate: preserveNewerStudyDate(
+            currentUser.lastStudyDate,
+            today
+          ),
+          ...(isHiraganaComplete && isKatakanaComplete
+            ? { showKana: false }
+            : {}),
         },
       });
-    }
-
-    const levelInfo = calculateLevel(totalXp);
-
-    return NextResponse.json({
-      success: true,
-      xpEarned,
-      currentXp: levelInfo.currentXp,
-      xpForNext: levelInfo.xpForNext,
-      level: levelInfo.level,
-      nextStageUnlocked: !!nextStage,
-      events,
+      const events = await checkAndGrantAchievements(
+        user.id,
+        {
+          totalXp,
+          newLevel,
+          oldLevel: currentUser.level,
+          streakCount: streak.streakCount,
+          kanaFirstChar: totalKanaLearned >= 1,
+          kanaHiraganaComplete:
+            stage.kanaType === 'HIRAGANA' && isHiraganaComplete,
+          kanaKatakanaComplete:
+            stage.kanaType === 'KATAKANA' && isKatakanaComplete,
+        },
+        tx
+      );
+      if (events.length)
+        await tx.notification.createMany({
+          data: events.map((event) => ({
+            userId: user.id,
+            type: event.type,
+            title: event.title,
+            body: event.body,
+            emoji: event.emoji,
+          })),
+        });
+      return result(totalXp, !!nextStage, events);
     });
   } catch (err) {
     console.error('Kana stage-complete error:', err);

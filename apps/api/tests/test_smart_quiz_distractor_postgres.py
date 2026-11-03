@@ -5,10 +5,10 @@ from __future__ import annotations
 import uuid
 
 import pytest
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import event
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.base import Base
 from app.db.session import get_db
@@ -68,8 +68,9 @@ async def test_smart_start_reads_distractor_candidates_and_seen_ids_once(isolate
         app = FastAPI()
         app.include_router(router)
 
-        async def current_user():
-            return user
+        async def current_user(db: AsyncSession = Depends(get_db)):
+            # Real authentication loads User in the same request-scoped session.
+            return await db.get(User, user.id)
 
         async def test_db():
             async with sessions() as db:

@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import type { DashboardData } from '@/hooks/use-dashboard';
 
 type WeeklyChartProps = {
-  weeklyStats: { date: string; wordsStudied: number; xpEarned: number }[];
+  weeklyStats: DashboardData['weeklyStats'];
   dailyGoal?: number;
 };
 
@@ -23,7 +24,6 @@ function barHeight(value: number, goal: number): number {
 }
 
 export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
-  const totalWords = weeklyStats.reduce((sum, d) => sum + d.wordsStudied, 0);
   const totalXp = weeklyStats.reduce((sum, d) => sum + d.xpEarned, 0);
 
   const goal = dailyGoal > 0 ? dailyGoal : 10;
@@ -31,22 +31,47 @@ export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
   const bars = weeklyStats.map((day) => {
     const date = new Date(day.date + 'T00:00:00Z');
     const dayIndex = (date.getUTCDay() + 6) % 7;
-    const metGoal = day.wordsStudied >= goal;
+    const savedCount = day.vocabularyAnsweredCount;
+    const hasSavedCount =
+      typeof savedCount === 'number' &&
+      Number.isInteger(savedCount) &&
+      savedCount >= 0;
+    const value = hasSavedCount ? savedCount : day.wordsStudied;
+    const metGoal = value >= goal;
+    const hasActivity =
+      day.hasStudied === true || value > 0 || day.xpEarned > 0;
     return {
+      date: day.date,
       label: DAY_LABELS[dayIndex],
-      value: day.wordsStudied,
-      px: barHeight(day.wordsStudied, goal),
+      value,
+      hasSavedCount,
+      hasActivity,
+      px: barHeight(value, goal),
       metGoal,
     };
   });
 
+  const totalWords = bars.reduce((sum, day) => sum + day.value, 0);
+  const hasLegacyCounts = bars.some((day) => !day.hasSavedCount);
+  const activeDays = bars.filter((day) => day.hasActivity).length;
   const goalLinePx = GOAL_LINE_RATIO * CHART_HEIGHT;
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+    <div className="border-border bg-card rounded-3xl border p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-bold">주간 학습</h2>
       </div>
+
+      <p className="text-muted-foreground mb-4 text-xs">
+        {hasLegacyCounts
+          ? '일부 날짜는 완료한 퀴즈 기준으로 표시해요.'
+          : '저장한 단어 수예요. 같은 날 중복은 한 번만 세요.'}
+      </p>
+      {activeDays === 0 && (
+        <p className="text-muted-foreground mb-3 text-xs">
+          아직 이번 주 학습 활동이 없어요.
+        </p>
+      )}
 
       {/* Bar chart */}
       <div
@@ -55,7 +80,7 @@ export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
       >
         {/* Goal line */}
         <div
-          className="border-muted-foreground/30 pointer-events-none absolute left-0 right-0 border-t border-dashed"
+          className="border-muted-foreground/30 pointer-events-none absolute right-0 left-0 border-t border-dashed"
           style={{ bottom: goalLinePx }}
         >
           <span className="text-muted-foreground/50 absolute -top-3.5 right-0 text-[9px]">
@@ -70,19 +95,27 @@ export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
                 className="mb-0.5 flex w-full justify-center"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + i * 0.05, type: 'spring', stiffness: 300 }}
+                transition={{
+                  delay: 0.4 + i * 0.05,
+                  type: 'spring',
+                  stiffness: 300,
+                }}
               >
                 <Check className="text-primary size-3" strokeWidth={3} />
               </motion.div>
             )}
             <motion.div
+              role="img"
+              aria-label={`${bar.date} · ${bar.hasSavedCount ? '저장한 단어' : '완료 집계'} ${bar.value}개${bar.metGoal ? ' · 목표 달성' : ''}`}
               className={`w-full rounded-t-md ${
                 bar.value > 0
-                  ? bar.metGoal ? 'bg-primary' : 'bg-primary/50'
+                  ? bar.metGoal
+                    ? 'bg-primary'
+                    : 'bg-primary/50'
                   : 'bg-muted-foreground/15'
               }`}
               initial={{ height: 0 }}
-              animate={{ height: bar.value > 0 ? bar.px : 3 }}
+              animate={{ height: bar.px }}
               transition={{ delay: i * 0.05, duration: 0.5, ease: 'easeOut' }}
             />
           </div>
@@ -92,25 +125,36 @@ export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
       {/* Day labels */}
       <div className="mt-1 flex justify-between gap-2">
         {bars.map((bar, i) => (
-          <span
+          <div
             key={i}
-            className="text-muted-foreground flex-1 text-center text-[10px]"
+            className="text-muted-foreground flex flex-1 flex-col items-center gap-1 text-[10px]"
           >
-            {bar.label}
-          </span>
+            <span
+              role="img"
+              aria-label={`${bar.date} · 학습 활동 ${bar.hasActivity ? '있음' : '없음'}`}
+              className={`size-1.5 rounded-full ${bar.hasActivity ? 'bg-primary' : 'bg-transparent'}`}
+            />
+            <span>{bar.label}</span>
+          </div>
         ))}
       </div>
 
       {/* Summary */}
       <div className="text-muted-foreground mt-4 flex justify-center gap-6 text-sm">
         <span>
-          단어{' '}
+          {hasLegacyCounts ? '단어(일부 완료 기준)' : '단어 학습'}{' '}
           <span className="text-foreground font-semibold">{totalWords}개</span>
         </span>
         <span>
           XP <span className="text-foreground font-semibold">{totalXp}</span>
         </span>
       </div>
+      <p className="text-muted-foreground mt-2 text-center text-[10px]">
+        학습 활동 {activeDays}일 · 점은 학습 여부, 막대는 단어 수예요.
+      </p>
+      <p className="text-muted-foreground mt-1 text-center text-[10px]">
+        단어 합계는 하루별 개수의 합이며, XP는 완료한 학습 기준이에요.
+      </p>
     </div>
   );
 }

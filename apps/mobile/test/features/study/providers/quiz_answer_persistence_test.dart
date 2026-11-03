@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_question_model.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_result_model.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
@@ -177,8 +178,11 @@ const _request =
     QuizSessionRequest(quizType: 'VOCABULARY', jlptLevel: 'N5', count: 10);
 
 ProviderContainer _container(_SavingRepository repository) {
-  final container = ProviderContainer(
-      overrides: [studyRepositoryProvider.overrideWithValue(repository)]);
+  final container = ProviderContainer(overrides: [
+    studyRepositoryProvider.overrideWithValue(repository),
+    currentAccountIdProvider.overrideWithValue('quiz-answer-fixture'),
+    currentAccountReaderProvider.overrideWithValue(() => 'quiz-answer-fixture'),
+  ]);
   addTearDown(container.dispose);
   return container;
 }

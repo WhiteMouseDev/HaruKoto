@@ -136,14 +136,13 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
     final question = widget.questions[widget.currentIndex];
     final submittedOrder = List<String>.from(_selected);
     setState(() => _submitting = true);
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
-      setState(() => _submitting = false);
-      widget.onAnswer({
-        'order': question.order,
-        'submittedOrder': submittedOrder,
-        'responseMs': 0,
-      });
+    // Confirm is the answer boundary. The parent's step transition supplies
+    // the animation; recording must happen before close/background can flush.
+    // Stay locked until the next question resets this widget.
+    widget.onAnswer({
+      'order': question.order,
+      'submittedOrder': submittedOrder,
+      'responseMs': 0,
     });
   }
 

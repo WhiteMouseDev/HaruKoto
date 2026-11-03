@@ -61,6 +61,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
   final LevelProgressData? levelProgress;
   final TodayStats? today;
   final int dailyGoal;
+  final bool dailyGoalKnown;
   final String jlptLevel;
 
   const QuickStartCard({
@@ -68,6 +69,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
     this.levelProgress,
     this.today,
     this.dailyGoal = 10,
+    this.dailyGoalKnown = true,
     this.jlptLevel = 'N5',
   });
 
@@ -151,6 +153,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard>
                 levelProgress: widget.levelProgress,
                 today: widget.today,
                 dailyGoal: widget.dailyGoal,
+                dailyGoalKnown: widget.dailyGoalKnown,
                 jlptLevel: widget.jlptLevel,
               ),
             ),
@@ -337,6 +340,7 @@ class _MainContent extends ConsumerWidget {
   final LevelProgressData? levelProgress;
   final TodayStats? today;
   final int dailyGoal;
+  final bool dailyGoalKnown;
   final String jlptLevel;
 
   const _MainContent({
@@ -344,6 +348,7 @@ class _MainContent extends ConsumerWidget {
     this.levelProgress,
     this.today,
     required this.dailyGoal,
+    required this.dailyGoalKnown,
     required this.jlptLevel,
   });
 
@@ -376,7 +381,7 @@ class _MainContent extends ConsumerWidget {
     final isVocabulary = apiType == 'VOCABULARY';
     final vocabularyProgress = resolveDailyVocabularyGoalProgress(
       vocabularyGoal: today?.vocabularyGoal,
-      dailyGoal: dailyGoal,
+      dailyGoal: dailyGoalKnown ? dailyGoal : 0,
       studyDate: ref.watch(studyDateProvider),
     );
     final ringFraction =
@@ -487,7 +492,7 @@ class _MainContent extends ConsumerWidget {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   )),
-              Text('$dailyGoal개',
+              Text(dailyGoalKnown ? '$dailyGoal개' : '확인 필요',
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(width: 6),

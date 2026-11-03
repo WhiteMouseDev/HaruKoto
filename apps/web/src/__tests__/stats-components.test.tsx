@@ -101,14 +101,6 @@ describe('StudyTab', () => {
   }
 
   const defaultProps = {
-    today: {
-      wordsStudied: 10,
-      quizzesCompleted: 5,
-      correctAnswers: 8,
-      totalAnswers: 10,
-      xpEarned: 50,
-      goalProgress: 0.8,
-    },
     levelProgress: {
       vocabulary: { total: 100, mastered: 30, inProgress: 20 },
       grammar: { total: 50, mastered: 10, inProgress: 15 },
@@ -143,7 +135,8 @@ describe('StudyTab', () => {
 
     expect(screen.getByText('단어')).toBeInTheDocument();
     expect(screen.getByText('문법')).toBeInTheDocument();
-    expect(screen.getByText('한자')).toBeInTheDocument();
+    // The current stats contract exposes vocabulary and grammar, not kanji.
+    expect(screen.queryByText('한자')).not.toBeInTheDocument();
     expect(screen.getByText('회화')).toBeInTheDocument();
   });
 
@@ -151,21 +144,24 @@ describe('StudyTab', () => {
     const StudyTab = await loadStudyTab();
     render(<StudyTab {...defaultProps} />);
 
-    // 8/10 = 80% accuracy for vocabulary
-    expect(screen.getByText('정답률 80%')).toBeInTheDocument();
+    // Cumulative saved history: (4 + 8) / (5 + 10) = 80%.
+    expect(screen.getByText('정답률').parentElement).toHaveTextContent('80%');
   });
 
   it('should handle zero totalAnswers without division by zero', async () => {
     const StudyTab = await loadStudyTab();
     const zeroProps = {
       ...defaultProps,
-      today: { ...defaultProps.today, totalAnswers: 0, correctAnswers: 0 },
+      historyRecords: defaultProps.historyRecords.map((record) => ({
+        ...record,
+        totalAnswers: 0,
+        correctAnswers: 0,
+      })),
     };
     render(<StudyTab {...zeroProps} />);
 
-    // Both 단어 and 한자 show 0%, so multiple matches expected
-    const zeroAccuracies = screen.getAllByText('정답률 0%');
-    expect(zeroAccuracies.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('정답률').parentElement).toHaveTextContent('0%');
+    expect(screen.queryByText(/NaN|Infinity/)).not.toBeInTheDocument();
   });
 
   it('should sum conversation counts from history', async () => {
@@ -176,6 +172,28 @@ describe('StudyTab', () => {
     // The 회화 category header shows "3회"
     const conversationCounts = screen.getAllByText('3회');
     expect(conversationCounts.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('weights cumulative accuracy by saved answers instead of averaging days', async () => {
+    const StudyTab = await loadStudyTab();
+    render(
+      <StudyTab
+        {...defaultProps}
+        historyRecords={[
+          {
+            ...defaultProps.historyRecords[0],
+            correctAnswers: 1,
+            totalAnswers: 1,
+          },
+          {
+            ...defaultProps.historyRecords[1],
+            correctAnswers: 1,
+            totalAnswers: 9,
+          },
+        ]}
+      />
+    );
+    expect(screen.getByText('정답률').parentElement).toHaveTextContent('20%');
   });
 });
 
@@ -203,25 +221,22 @@ describe('JlptTab', () => {
     expect(badges.length).toBeGreaterThan(0);
   });
 
-  it('should render all JLPT levels', async () => {
+  it('shows the current and next level instead of unrelated level progress', async () => {
     const JlptTab = await loadJlptTab();
     render(<JlptTab {...defaultProps} />);
 
     expect(screen.getAllByText('N5').length).toBeGreaterThan(0);
     expect(screen.getByText('N4')).toBeInTheDocument();
-    expect(screen.getByText('N3')).toBeInTheDocument();
-    expect(screen.getByText('N2')).toBeInTheDocument();
-    expect(screen.getByText('N1')).toBeInTheDocument();
+    for (const level of ['N3', 'N2', 'N1']) {
+      expect(screen.queryByText(level)).not.toBeInTheDocument();
+    }
   });
 
   it('should calculate overall progress correctly', async () => {
     const JlptTab = await loadJlptTab();
     render(<JlptTab {...defaultProps} />);
 
-    // vocab progress: 50/100 = 50%
-    // grammar progress: 25/50 = 50%
-    // overall: (50 + 50) / 2 = 50%
-    // 50% appears in multiple places (overall, and on current level card)
+    // Weighted mastered items: (50 + 25) / (100 + 50) = 50%.
     const fiftyPercents = screen.getAllByText('50%');
     expect(fiftyPercents.length).toBeGreaterThanOrEqual(1);
   });
@@ -242,10 +257,41 @@ describe('JlptTab', () => {
     expect(zeroPercents.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('should show "학습 중" for current level', async () => {
+  it('shows actual current-level mastery counts without claiming completion', async () => {
     const JlptTab = await loadJlptTab();
     render(<JlptTab {...defaultProps} />);
 
-    expect(screen.getByText('학습 중')).toBeInTheDocument();
+    expect(screen.getByText('기초 일본어')).toBeInTheDocument();
+    expect(screen.getByText(/마스터 75 \/ 150개/)).toBeInTheDocument();
+    expect(screen.queryByText('N5 완전 마스터!')).not.toBeInTheDocument();
+  });
+
+  it('weights mastery by actual item counts when category sizes differ', async () => {
+    const JlptTab = await loadJlptTab();
+    render(
+      <JlptTab
+        currentLevel="N5"
+        levelProgress={{
+          vocabulary: { total: 100, mastered: 40, inProgress: 0 },
+          grammar: { total: 50, mastered: 5, inProgress: 0 },
+        }}
+      />
+    );
+    expect(screen.getByText('30%')).toBeInTheDocument();
+  });
+
+  it('shows completed N1 without advertising a nonexistent next level', async () => {
+    const JlptTab = await loadJlptTab();
+    render(
+      <JlptTab
+        currentLevel="N1"
+        levelProgress={{
+          vocabulary: { total: 100, mastered: 100, inProgress: 0 },
+          grammar: { total: 50, mastered: 50, inProgress: 0 },
+        }}
+      />
+    );
+    expect(screen.getByText('N1 완전 마스터!')).toBeInTheDocument();
+    expect(screen.queryByText(/다음 목표:/)).not.toBeInTheDocument();
   });
 });

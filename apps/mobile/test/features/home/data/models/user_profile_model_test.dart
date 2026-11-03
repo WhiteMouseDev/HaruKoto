@@ -14,6 +14,7 @@ void main() {
       final model = UserProfileModel.fromJson(json);
       expect(model.nickname, 'TestUser');
       expect(model.dailyGoal, 20);
+      expect(model.dailyGoalConfirmed, isTrue);
       expect(model.showKana, false);
       expect(model.jlptLevel, 'N3');
       expect(model.avatarUrl, 'https://example.com/avatar.png');
@@ -23,6 +24,7 @@ void main() {
       final model = UserProfileModel.fromJson({});
       expect(model.nickname, '학습자');
       expect(model.dailyGoal, 10);
+      expect(model.dailyGoalConfirmed, isFalse);
       expect(model.showKana, true);
       expect(model.jlptLevel, 'N5');
       expect(model.avatarUrl, isNull);

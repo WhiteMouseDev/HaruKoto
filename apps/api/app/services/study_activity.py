@@ -4,11 +4,11 @@ from app.models import DailyProgress
 
 
 def has_study_activity(progress: DailyProgress | None) -> bool:
-    """Report positive legacy activity aggregates without changing attendance state."""
+    """Read explicit answered activity or positive legacy activity aggregates."""
     if progress is None:
         return False
 
-    return any(
+    return getattr(progress, "activity_recorded", False) is True or any(
         (getattr(progress, field, 0) or 0) > 0
         for field in (
             "words_studied",

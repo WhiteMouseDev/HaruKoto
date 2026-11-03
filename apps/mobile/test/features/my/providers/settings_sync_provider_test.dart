@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/user_preferences_provider.dart';
 import 'package:harukoto_mobile/core/settings/call_settings.dart';
@@ -17,6 +18,8 @@ void main() {
       final repository = _FakeMyRepository();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('account-a'),
+          currentAccountReaderProvider.overrideWithValue(() => 'account-a'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           myRepositoryProvider.overrideWith((ref) => repository),
         ],
@@ -36,6 +39,8 @@ void main() {
       final repository = _FakeMyRepository(shouldThrow: true);
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('account-a'),
+          currentAccountReaderProvider.overrideWithValue(() => 'account-a'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           myRepositoryProvider.overrideWith((ref) => repository),
         ],
@@ -67,6 +72,8 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final repository = _FakeMyRepository(shouldThrow: true);
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('account-a'),
+        currentAccountReaderProvider.overrideWithValue(() => 'account-a'),
         sharedPreferencesProvider.overrideWithValue(prefs),
         myRepositoryProvider.overrideWithValue(repository),
       ]);

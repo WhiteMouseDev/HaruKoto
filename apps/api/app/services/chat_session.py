@@ -27,6 +27,7 @@ from app.services.chat_history import (
     message_list,
 )
 from app.services.conversation_rewards import grant_conversation_completion_rewards
+from app.services.study_day_recording import lock_study_user
 from app.services.subscription_ai_usage import check_ai_limit
 from app.utils.constants import RATE_LIMITS
 from app.utils.date import get_now_kst
@@ -188,6 +189,12 @@ async def end_chat_session(db: AsyncSession, user: User, body: ChatEndRequest) -
     )
     feedback = await generate_feedback_summary(messages)
 
+    # Do not hold the user mutex during an external AI call. Recheck the domain
+    # row after acquiring user -> conversation locks before mutating rewards.
+    await lock_study_user(db, user)
+    await db.refresh(conversation, with_for_update=True)
+    if conversation.ended_at:
+        return ChatEndResponse(success=True, feedback_summary=conversation.feedback_summary, xp_earned=0, events=[])
     now = get_now_kst()
     conversation.ended_at = now
     conversation.feedback_summary = feedback

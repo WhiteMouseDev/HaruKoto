@@ -20,6 +20,7 @@ from app.models import QuizAnswer, UserVocabProgress, Vocabulary
 from app.models.enums import JlptLevel, PartOfSpeech, QuizType
 from app.models.user import User
 from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest, QuizResumeRequest, SmartStartRequest
+from app.services import study_day_recording
 from app.services.quiz_answer import submit_quiz_answer
 from app.services.quiz_complete import complete_quiz_session
 from app.services.quiz_session_query import get_incomplete_quiz_session, resume_quiz_session
@@ -168,7 +169,11 @@ async def test_february_preserves_existing_rows_security_and_routes_exact_utc_bo
 
 
 @pytest.mark.asyncio
-async def test_february_preserves_auth_saved_answers_and_partial_quiz_resume(february_database) -> None:
+async def test_february_preserves_auth_saved_answers_and_partial_quiz_resume(february_database, monkeypatch: pytest.MonkeyPatch) -> None:
+    # This historical schema deliberately predates the new marker/receipt DDL.
+    # Exercise its original learning smoke in compatibility mode; full-head ON
+    # answer attendance is verified by the dedicated real PostgreSQL suite.
+    monkeypatch.setattr(study_day_recording, "ANSWERED_STUDY_DAY_RECOGNITION_ENABLED", False)
     engine, url = february_database
     # Keep synthetic event timestamps within the old coverage before migration;
     # UTC routing of February events is covered separately above.

@@ -141,22 +141,32 @@ class WeeklyStatEntry {
   final int xpEarned;
   final bool hasStudied;
 
+  /// KST day-scoped unique saved vocabulary answers, including wrong answers.
+  /// Missing or malformed values stay unknown for older server compatibility.
+  final int? vocabularyAnsweredCount;
+
   const WeeklyStatEntry({
     required this.date,
     required this.wordsStudied,
     required this.xpEarned,
     required this.hasStudied,
+    this.vocabularyAnsweredCount,
   });
 
   factory WeeklyStatEntry.fromJson(Map<String, dynamic> json) {
     final wordsStudied = json['wordsStudied'] as int? ?? 0;
     final xpEarned = json['xpEarned'] as int? ?? 0;
+    final vocabularyAnsweredCount = json['vocabularyAnsweredCount'];
     return WeeklyStatEntry(
       date: json['date'] as String? ?? '',
       wordsStudied: wordsStudied,
       xpEarned: xpEarned,
       hasStudied:
           json['hasStudied'] as bool? ?? (wordsStudied > 0 || xpEarned > 0),
+      vocabularyAnsweredCount:
+          vocabularyAnsweredCount is int && vocabularyAnsweredCount >= 0
+              ? vocabularyAnsweredCount
+              : null,
     );
   }
 }

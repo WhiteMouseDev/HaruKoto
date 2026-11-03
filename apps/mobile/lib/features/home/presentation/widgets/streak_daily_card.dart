@@ -146,8 +146,8 @@ class StreakDailyCard extends ConsumerWidget {
 (String, String) _streakCopy(StreakData streak) {
   if (streak.studiedToday) {
     return (
-      streak.current > 0 ? '${streak.current}일 연속 학습' : '오늘 학습 완료',
-      streak.current > 0 ? '오늘 학습 완료 · 내일도 이어가요' : '오늘의 학습 기록을 남겼어요',
+      streak.current > 0 ? '${streak.current}일 연속 학습' : '오늘도 학습했어요',
+      streak.current > 0 ? '오늘도 학습했어요 · 내일도 이어가요' : '오늘의 학습 기록을 남겼어요',
     );
   }
   if (streak.current > 0) {
@@ -194,7 +194,7 @@ class _StreakWeek extends StatelessWidget {
             container: true,
             label: '${date.month}월 ${date.day}일 ${_weekdays[index]}요일, '
                 '${isToday ? '오늘, ' : ''}'
-                '${studied ? '학습 완료' : future ? '예정' : '학습 기록 없음'}',
+                '${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}',
             child: ExcludeSemantics(
               child: Column(
                 children: [
@@ -430,7 +430,7 @@ class _CalendarGrid extends StatelessWidget {
                     container: true,
                     label:
                         '${date.year}년 ${date.month}월 ${date.day}일 ${_weekdays[index]}요일, '
-                        '${isToday ? '오늘, ' : ''}${studied ? '학습 완료' : future ? '예정' : '학습 기록 없음'}',
+                        '${isToday ? '오늘, ' : ''}${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}',
                     child: ExcludeSemantics(
                       child: Container(
                         constraints: BoxConstraints(minHeight: fontSize + 30),
@@ -470,7 +470,7 @@ class _CalendarGrid extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        Text('체크는 학습 완료 · 테두리는 오늘',
+        Text('체크는 학습한 날 · 테두리는 오늘',
             style:
                 theme.textTheme.bodySmall?.copyWith(color: palette.secondary)),
         const SizedBox(height: 8),

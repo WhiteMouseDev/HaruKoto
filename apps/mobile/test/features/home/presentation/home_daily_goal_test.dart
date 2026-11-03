@@ -17,7 +17,8 @@ void main() {
   testWidgets(
       'home never reuses a completed ring during refresh, error or KST rollover',
       (tester) async {
-    SharedPreferences.setMockInitialValues({'user_daily_goal': 20});
+    SharedPreferences.setMockInitialValues(
+        {'user_daily_goal_v2:account-a': 20});
     final prefs = await SharedPreferences.getInstance();
     var now = DateTime.utc(2026, 10, 30, 14);
     var response = Future.value(_dashboard('2026-10-30', 20));
@@ -86,7 +87,8 @@ void main() {
 
   testWidgets('home rejects a late response after the account reader changes',
       (tester) async {
-    SharedPreferences.setMockInitialValues({'user_daily_goal': 20});
+    SharedPreferences.setMockInitialValues(
+        {'user_daily_goal_v2:account-a': 20});
     final prefs = await SharedPreferences.getInstance();
     var account = 'account-a';
     final pending = Completer<DashboardModel>();

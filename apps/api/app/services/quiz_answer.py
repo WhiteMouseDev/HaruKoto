@@ -11,6 +11,7 @@ from app.models.user import User
 from app.schemas.quiz import QuizAnswerRequest
 from app.services.quiz_answer_progress import update_grammar_answer_progress, update_vocab_answer_progress
 from app.services.quiz_session import extract_questions_data
+from app.services.study_day_recording import canonical_study_instant, lock_study_user, record_answered_study_day
 
 
 class QuizAnswerServiceError(Exception):
@@ -25,12 +26,13 @@ class QuizAnswerResult:
     success: bool
 
 
-async def submit_quiz_answer(
+async def _submit_quiz_answer(
     db: AsyncSession,
     user: User,
     body: QuizAnswerRequest,
 ) -> QuizAnswerResult:
-    # The session lock serializes answer retries, parallel answers and completion.
+    await lock_study_user(db, user)
+    # All activity writers acquire user before session, including completion.
     session = await db.get(QuizSession, body.session_id, with_for_update=True, populate_existing=True)
     if not session or session.user_id != user.id:
         raise QuizAnswerServiceError(status_code=404, detail="세션을 찾을 수 없습니다")
@@ -54,6 +56,7 @@ async def submit_quiz_answer(
     if session.completed_at:
         raise QuizAnswerServiceError(status_code=400, detail="이미 완료된 세션입니다")
 
+    now = canonical_study_instant(datetime.now(UTC))
     is_correct = body.selected_option_id == question_data.get("correctOptionId", "")
     db.add(
         QuizAnswer(
@@ -63,6 +66,7 @@ async def submit_quiz_answer(
             selected_option_id=body.selected_option_id,
             is_correct=is_correct,
             time_spent_seconds=body.time_spent_seconds,
+            answered_at=now,
         )
     )
 
@@ -70,7 +74,6 @@ async def submit_quiz_answer(
         session.correct_count += 1
 
     question_type = body.question_type.value
-    now = datetime.now(UTC)
     if question_type in ("VOCABULARY", "KANJI", "LISTENING"):
         await update_vocab_answer_progress(
             db,
@@ -92,5 +95,14 @@ async def submit_quiz_answer(
             now=now,
         )
 
+    await record_answered_study_day(db, user, processed_at=now)
     await db.commit()
     return QuizAnswerResult(success=True)
+
+
+async def submit_quiz_answer(db: AsyncSession, user: User, body: QuizAnswerRequest) -> QuizAnswerResult:
+    try:
+        return await _submit_quiz_answer(db, user, body)
+    except Exception:
+        await db.rollback()
+        raise

@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/current_account_provider.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../../../core/providers/study_clock_provider.dart';
 import '../../../core/providers/user_preferences_provider.dart';
@@ -22,14 +21,21 @@ final dashboardProvider =
 });
 
 final profileProvider = FutureProvider.autoDispose<UserProfileModel>((ref) {
-  return ref.watch(homeRepositoryProvider).fetchProfile().then((profile) {
-    unawaited(
-      ref.read(userPreferencesProvider.notifier).syncFromServer(
-            showFurigana: profile.showFurigana,
-            showKana: profile.showKana,
-            dailyGoal: profile.dailyGoal,
-            jlptLevel: profile.jlptLevel,
-          ),
+  ref.watch(currentAccountIdProvider);
+  final preferences = ref.read(userPreferencesProvider.notifier);
+  final scope = preferences.requestScope;
+  return ref.watch(homeRepositoryProvider).fetchProfile().then((profile) async {
+    if (!ref.mounted ||
+        !preferences.isCurrent(scope) ||
+        (profile.userId != null && profile.userId != scope.owner)) {
+      throw const ApiException(message: '계정이나 목표가 변경되어 프로필을 다시 확인해주세요.');
+    }
+    await preferences.syncFromServer(
+      scope: scope,
+      showFurigana: profile.showFurigana,
+      showKana: profile.showKana,
+      dailyGoal: profile.dailyGoalConfirmed ? profile.dailyGoal : null,
+      jlptLevel: profile.jlptLevel,
     );
     return profile;
   });

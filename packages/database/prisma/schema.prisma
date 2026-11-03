@@ -40,6 +40,7 @@ model User {
   payments                  Payment[]
   pushSubscriptions         PushSubscription[]
   quizSessions              QuizSession[]
+  study_activity_receipts   study_activity_receipts[]
   subscriptions             Subscription[]
   achievements              UserAchievement[]
   characterUnlocks          UserCharacterUnlock[]
@@ -269,6 +270,7 @@ model DailyProgress {
   grammar_studied   Int?     @default(0)
   sentences_studied Int?     @default(0)
   study_minutes     Int?     @default(0)
+  activity_recorded Boolean  @default(false)
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
@@ -793,6 +795,28 @@ model lesson_submissions {
 
   @@id([user_id, submission_id])
   @@index([user_id, lesson_id, processed_at], map: "idx_lesson_submissions_user_lesson_processed")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model study_activity_receipts {
+  user_id                 String   @db.Uuid
+  activity_id             String   @db.Uuid
+  source_kind             String
+  source_scope_id         String   @db.Uuid
+  attempt_id              String   @db.Uuid
+  source_item_key         String
+  content_version         String
+  request_fingerprint     String
+  fingerprint_version     Int      @db.SmallInt
+  response_schema_version Int      @db.SmallInt
+  response_body           Json
+  processed_at            DateTime @db.Timestamptz(6)
+  study_date              DateTime @db.Date
+  users                   User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([user_id, activity_id])
+  @@index([user_id, source_scope_id, processed_at], map: "idx_study_activity_user_scope_processed")
 }
 
 enum JlptLevel {

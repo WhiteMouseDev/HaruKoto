@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useAnswerKanaQuestion } from '@/hooks/use-kana-quiz';
+import { Button } from '@/components/ui/button';
+import {
+  isStudyWriteStopError,
+  STUDY_WRITE_STOP_MESSAGE,
+} from '@/lib/study-write-stop';
 
 type QuizQuestion = {
   questionId: string;
@@ -34,6 +39,23 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
     { questionId: string; selectedOptionId: string; isCorrect: boolean }[]
   >([]);
   const answerMutation = useAnswerKanaQuestion();
+  const mounted = useRef(true);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    };
+  }, []);
+  const [stoppedRetry, setStoppedRetry] = useState<{
+    payload: {
+      sessionId: string;
+      questionId: string;
+      selectedOptionId: string;
+    };
+    advance: () => void;
+  } | null>(null);
 
   const total = questions.length;
   const current = questions[currentIndex];
@@ -41,7 +63,7 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
     total > 0 ? Math.round((currentIndex / total) * 100) : 0;
 
   const handleSelect = useCallback(
-    (optionId: string) => {
+    async (optionId: string) => {
       if (showFeedback || !current) return;
 
       setSelectedOption(optionId);
@@ -57,45 +79,95 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
       const updatedAnswers = [...answers, newAnswer];
       setAnswers(updatedAnswers);
 
-      // Report answer to server for per-question progress tracking
+      const advance = () => {
+        if (!mounted.current) return;
+        advanceTimer.current = setTimeout(() => {
+          const nextIndex = currentIndex + 1;
+
+          if (nextIndex >= total) {
+            const correctCount = updatedAnswers.filter(
+              (a) => a.isCorrect
+            ).length;
+            const wrongIds = updatedAnswers
+              .filter((a) => !a.isCorrect)
+              .map((a) => a.questionId);
+            onComplete({
+              correct: correctCount,
+              total,
+              wrongQuestionIds: wrongIds,
+            });
+          } else {
+            setCurrentIndex(nextIndex);
+            setSelectedOption(null);
+            setShowFeedback(false);
+          }
+        }, 1000);
+      };
+      // A STOP response is not an ACK. Keep the same choice/question and retry
+      // its frozen payload instead of letting the feedback timer advance it.
       if (sessionId) {
-        answerMutation.mutate({
+        const payload = {
           sessionId,
           questionId: current.questionId,
           selectedOptionId: optionId,
-        });
-      }
-
-      setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-
-        if (nextIndex >= total) {
-          const correctCount = updatedAnswers.filter((a) => a.isCorrect).length;
-          const wrongIds = updatedAnswers
-            .filter((a) => !a.isCorrect)
-            .map((a) => a.questionId);
-          onComplete({
-            correct: correctCount,
-            total,
-            wrongQuestionIds: wrongIds,
-          });
-        } else {
-          setCurrentIndex(nextIndex);
-          setSelectedOption(null);
-          setShowFeedback(false);
+        };
+        try {
+          await answerMutation.mutateAsync(payload);
+        } catch (error) {
+          if (isStudyWriteStopError(error)) {
+            setStoppedRetry({ payload, advance });
+            return;
+          }
         }
-      }, 1000);
+      }
+      advance();
     },
-    [showFeedback, current, answers, currentIndex, total, sessionId, onComplete, answerMutation]
+    [
+      showFeedback,
+      current,
+      answers,
+      currentIndex,
+      total,
+      sessionId,
+      onComplete,
+      answerMutation,
+    ]
   );
 
   if (!current) return null;
 
   // Determine if question text is kana (for large display) or romaji
-  const isKanaText = /^[\u3040-\u309F\u30A0-\u30FF]$/.test(current.questionText);
+  const isKanaText = /^[\u3040-\u309F\u30A0-\u30FF]$/.test(
+    current.questionText
+  );
 
   return (
     <div className="flex flex-col gap-6">
+      {stoppedRetry && (
+        <div role="alert" className="rounded-xl border p-4">
+          <p className="text-sm">{STUDY_WRITE_STOP_MESSAGE}</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            선택한 답안은 이 화면에 보관 중이에요. 화면을 새로고침하면 미저장
+            선택을 잃을 수 있어요.
+          </p>
+          <Button
+            className="mt-3"
+            disabled={answerMutation.isPending}
+            onClick={async () => {
+              try {
+                await answerMutation.mutateAsync(stoppedRetry.payload);
+                const { advance } = stoppedRetry;
+                setStoppedRetry(null);
+                advance();
+              } catch {
+                /* The same pending choice remains available for retry. */
+              }
+            }}
+          >
+            같은 답안 다시 저장
+          </Button>
+        </div>
+      )}
       {/* Progress */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-sm">
@@ -143,9 +215,11 @@ export function KanaQuiz({ questions, sessionId, onComplete }: KanaQuizProps) {
 
           if (showFeedback) {
             if (isCorrect) {
-              optionStyle = 'border-hk-success bg-hk-success/10 text-hk-success';
+              optionStyle =
+                'border-hk-success bg-hk-success/10 text-hk-success';
             } else if (isSelected && !isCorrect) {
-              optionStyle = 'border-destructive bg-destructive/10 text-destructive';
+              optionStyle =
+                'border-destructive bg-destructive/10 text-destructive';
             } else {
               optionStyle = 'border bg-card opacity-50';
             }

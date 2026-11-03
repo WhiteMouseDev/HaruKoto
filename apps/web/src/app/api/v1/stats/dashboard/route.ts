@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
+import { hasRecordedStudyActivity } from '@/lib/answered-study-day';
+import { getWeeklySavedVocabularyCounts } from '@/lib/weekly-saved-vocabulary';
 
 // 정적 콘텐츠 개수 — DB에서 매번 조회할 필요 없음
 const KANA_TOTAL_HIRAGANA = 46;
@@ -95,6 +97,7 @@ export async function GET() {
       kanaProgress,
       today: {
         wordsStudied,
+        hasStudied: hasRecordedStudyActivity(todayProgress),
         quizzesCompleted: todayProgress?.quizzesCompleted ?? 0,
         correctAnswers: todayProgress?.correctAnswers ?? 0,
         totalAnswers: todayProgress?.totalAnswers ?? 0,
@@ -133,12 +136,14 @@ export async function GET() {
 
 async function getWeeklyStats(userId: string, today: Date) {
   // Start from Monday of the current week
-  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const dayOfWeek = today.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
   const monday = new Date(today);
-  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // shift so Mon=0
+  monday.setUTCDate(today.getUTCDate() - ((dayOfWeek + 6) % 7)); // shift so Mon=0
 
   const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+
+  const savedVocabulary = await getWeeklySavedVocabularyCounts(userId, monday);
 
   const records = await prisma.dailyProgress.findMany({
     where: {
@@ -150,14 +155,22 @@ async function getWeeklyStats(userId: string, today: Date) {
       date: true,
       wordsStudied: true,
       xpEarned: true,
+      activity_recorded: true,
+      quizzesCompleted: true,
+      conversationCount: true,
+      kanaLearned: true,
+      grammar_studied: true,
+      sentences_studied: true,
+      studyTimeSeconds: true,
+      study_minutes: true,
     },
   });
 
   // Build a map using local date string for consistent timezone handling
   const toLocalDateStr = (d: Date) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   };
 
@@ -166,16 +179,18 @@ async function getWeeklyStats(userId: string, today: Date) {
   );
 
   // Fill in Mon–Sun (7 days)
-  const result: { date: string; wordsStudied: number; xpEarned: number }[] = [];
+  const result: { date: string; wordsStudied: number; xpEarned: number; hasStudied: boolean; vocabularyAnsweredCount: number }[] = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+    d.setUTCDate(monday.getUTCDate() + i);
     const dateStr = toLocalDateStr(d);
     const record = recordMap.get(dateStr);
     result.push({
       date: dateStr,
       wordsStudied: record?.wordsStudied ?? 0,
       xpEarned: record?.xpEarned ?? 0,
+      hasStudied: hasRecordedStudyActivity(record ?? null),
+      vocabularyAnsweredCount: savedVocabulary.get(dateStr) ?? 0,
     });
   }
 

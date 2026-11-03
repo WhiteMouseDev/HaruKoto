@@ -3,12 +3,33 @@ raised_by: codex-root
 raised_at: 2026-09-29
 phase: streak-integrity
 severity: warn
-status: open
+status: resolved
+previously_resolved_at: 2026-11-02T14:36:57+09:00
+reopened_at: 2026-11-02
+resolved_at: 2026-11-02
 ---
 
 ## What happened
 
 9월 29일 로컬 작업에 영속 출석 마커 제안이 open 상태로 남아 있었고, 10월 30일 누락 감사에서 이를 다시 확인했다. 기존 일별 행은 시작만 해도 생성될 수 있고, 레슨 재학습의 마지막 완료일만으로 모든 과거 학습일을 복원할 수 없다.
+
+## Resolution — 2026-11-02 한 문항 API·DB 구현 승인, 운영 미승인
+
+사용자가 [한 문항 구체안](../../docs/operations/plans/answered-study-day-policy-proposal-2026-11-02.md)의 마커·비공개 영수증·레슨 API와 기존 답안 연결을 확인하고 **구현·회귀 테스트·시뮬레이터 검증 진행**을 승인했다. 새 계약/스키마의 구현 판단을 해결로 기록한다. 실제 결과는 [구현·검증 기록](../../docs/operations/plans/answered-study-day-policy-implementation-2026-11-02.md)에 남기며 운영 DB·클라우드 설정·배포 승인은 여전히 별도다.
+
+## Previous decision — 2026-11-02 한 문항 기준 채택, 구체안 확인 대기 당시
+
+사용자가 한 문제라도 답하면 학습일로 인정하는 제품 정책을 채택했다. 앞선 레슨 전체 완료 기준은 구현·격리 검증을 마쳤지만 아직 운영에 적용하지 않았다. 같은 사안의 새 escalation을 만들지 않고 이 항목을 재개한다. 아래 Resolution은 이전 완료 기준 구현 승인 이력이다.
+
+[새 구체안](../../docs/operations/plans/answered-study-day-policy-proposal-2026-11-02.md)은 미적용 마커를 `activity_recorded`로 대체하고 비공개 `study_activity_receipts` 하나, 레슨 활동 POST/GET와 상세 선택 필드·웹 표시 필드, 기존 답안 원자성·가나 재전송·앱 outbox를 포함한다. 과거 백필·기존 기한/목표/XP 재계산·Data API 재개방은 없다. 독립 문구만 수정하고 새 API·DDL/운영 적용은 아직 하지 않았다. 이전의 ‘변경 전 구체안’ 요청에 따라 이 새 계약/스키마의 구현 범위를 확인받는다.
+
+PR #215·#216은 draft 상태로 두고 기존 완료 기준을 활성화하지 않는다. 운영 마이그레이션·클라우드 설정·배포 승인은 계속 별도다.
+
+## Resolution — 2026-11-02 구현 승인, 운영 적용 미승인
+
+사용자가 PR #214 병합과 [구체안 A](../../docs/operations/plans/lesson-study-day-recognition-proposal-2026-11-02.md)의 구현·회귀·시뮬레이터 검증을 승인했다. 신규 멱등 레슨 완료에만 일별 `lesson_completed`를 기록하고 과거 백필·XP·오늘 단어 목표·SRS 정책은 유지한다. 사용자별 동시 writer 보완과 Prisma 미러도 구체안의 구현 범위에 포함한다.
+
+이 항목의 **설계 선택·코드 구현 승인**을 해결로 기록한다. 운영 마이그레이션·새 구현 PR의 병합/서버·웹 배포 승인은 아니며, [구현·검증 기록](../../docs/operations/plans/lesson-study-day-recognition-implementation-2026-11-02.md)의 결과와 운영안을 먼저 보고한다. 아래의 과거 ‘미승인’ 표시는 해당 날짜의 이력이다.
 
 ## Decision required
 

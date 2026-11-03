@@ -50,7 +50,8 @@ void main() {
     test(
         'goal save ${fails ? 'rollback preserves' : 'confirmation refreshes'} active vocabulary previews once',
         () async {
-      SharedPreferences.setMockInitialValues({'user_daily_goal': 20});
+      SharedPreferences.setMockInitialValues(
+          {'user_daily_goal_v2:account-a': 20});
       final prefs = await SharedPreferences.getInstance();
       var serverGoal = 20;
       final gate = Completer<void>();

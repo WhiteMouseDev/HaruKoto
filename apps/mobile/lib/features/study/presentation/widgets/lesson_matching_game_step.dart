@@ -16,6 +16,8 @@ class LessonMatchingGameStep extends StatefulWidget {
   final int? initialRight;
   final bool autoAdvance;
   final void Function(Set<int> matched, int? left, int? right)? onProgress;
+  final void Function(String leftVocabularyId, String rightVocabularyId,
+      Set<int> matched, int? left, int? right)? onAnswer;
 
   const LessonMatchingGameStep({
     super.key,
@@ -28,6 +30,7 @@ class LessonMatchingGameStep extends StatefulWidget {
     this.initialRight,
     this.autoAdvance = true,
     this.onProgress,
+    this.onAnswer,
   });
 
   @override
@@ -120,12 +123,17 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
   void _checkMatch() {
     if (_selectedLeft == null || _selectedRight == null) return;
 
+    final leftId = _pairs[_selectedLeft!].id;
+    final rightId = _pairs[_selectedRight!].id;
+
     if (_selectedLeft == _selectedRight) {
       setState(() {
         _matched.add(_selectedLeft!);
         _selectedLeft = null;
         _selectedRight = null;
       });
+      widget.onAnswer?.call(leftId, rightId, Set<int>.from(_matched),
+          _selectedLeft, _selectedRight);
       if (_matched.length == _pairs.length) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) widget.onComplete();
@@ -135,6 +143,8 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
     }
 
     setState(() => _wrongFlash = true);
+    widget.onAnswer?.call(leftId, rightId, Set<int>.from(_matched),
+        _selectedLeft, _selectedRight);
     _shakeController.forward(from: 0).then((_) {
       if (!mounted) return;
       setState(() {

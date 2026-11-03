@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
+import {
+  STUDY_WRITE_STOP_MESSAGE,
+  studyWriteErrorMessage,
+} from '@/lib/study-write-stop';
 import { queryKeys } from '@/lib/query-keys';
+import { useStudyAnswer } from '@/hooks/use-study-answer';
 import {
   QUIZ_SNAPSHOT_INVALID_MESSAGE,
   QUIZ_WEB_UNSUPPORTED_MESSAGE,
@@ -186,8 +191,13 @@ export function useStartQuiz() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
     },
-    onError: () => {
-      toast.error('퀴즈를 시작할 수 없어요. 다시 시도해주세요.');
+    onError: (error) => {
+      toast.error(
+        studyWriteErrorMessage(
+          error,
+          '퀴즈를 시작할 수 없어요. 다시 시도해주세요.'
+        )
+      );
     },
   });
 }
@@ -201,9 +211,11 @@ export function useResumeQuiz() {
       }),
     onError: (error) => {
       toast.error(
-        [QUIZ_WEB_UNSUPPORTED_MESSAGE, QUIZ_SNAPSHOT_INVALID_MESSAGE].includes(
-          error.message
-        )
+        [
+          QUIZ_WEB_UNSUPPORTED_MESSAGE,
+          QUIZ_SNAPSHOT_INVALID_MESSAGE,
+          STUDY_WRITE_STOP_MESSAGE,
+        ].includes(error.message)
           ? error.message
           : '퀴즈를 이어할 수 없어요. 다시 시도해주세요.'
       );
@@ -212,16 +224,7 @@ export function useResumeQuiz() {
 }
 
 export function useAnswerQuestion() {
-  return useMutation<unknown, Error, AnswerQuestionParams>({
-    mutationFn: (params) =>
-      apiFetch('/api/v1/quiz/answer', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      }),
-    onError: () => {
-      toast.error('답안 저장에 실패했어요.');
-    },
-  });
+  return useStudyAnswer<AnswerQuestionParams>('/api/v1/quiz/answer');
 }
 
 export function useCompleteQuiz() {
@@ -240,8 +243,10 @@ export function useCompleteQuiz() {
       queryClient.invalidateQueries({ queryKey: queryKeys.quizStats });
       queryClient.invalidateQueries({ queryKey: queryKeys.quizIncomplete });
     },
-    onError: () => {
-      toast.error('퀴즈 완료 처리에 실패했어요.');
+    onError: (error) => {
+      toast.error(
+        studyWriteErrorMessage(error, '퀴즈 완료 처리에 실패했어요.')
+      );
     },
   });
 }
@@ -255,4 +260,5 @@ export type {
   CompleteQuizResponse,
   WrongAnswer,
   RecommendationData,
+  AnswerQuestionParams,
 };

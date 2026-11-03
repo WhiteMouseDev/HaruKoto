@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/current_account_provider.dart';
+import '../../home/providers/home_provider.dart';
 import '../../home/providers/study_activity_refresh_provider.dart';
 
 import '../data/models/quiz_question_model.dart';
@@ -112,8 +114,9 @@ class QuizSessionService {
     required bool isCorrect,
     required int timeSpentSeconds,
     required String questionType,
-  }) {
-    return _ref.read(studyRepositoryProvider).answerQuestion(
+  }) async {
+    final owner = _ref.read(currentAccountReaderProvider)();
+    await _ref.read(studyRepositoryProvider).answerQuestion(
           sessionId: sessionId,
           questionId: questionId,
           selectedOptionId: selectedOptionId,
@@ -121,6 +124,13 @@ class QuizSessionService {
           timeSpentSeconds: timeSpentSeconds,
           questionType: questionType,
         );
+    if (_ref.mounted &&
+        owner != null &&
+        _ref.read(currentAccountReaderProvider)() == owner &&
+        _ref.read(currentAccountIdProvider) == owner) {
+      _ref.read(studyActivityRefreshProvider).refresh();
+      _ref.invalidate(profileProvider);
+    }
   }
 
   Future<QuizResultModel> completeQuiz(

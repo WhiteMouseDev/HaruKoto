@@ -196,7 +196,13 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "vocabularyGoal": {"date": "2026-10-30", "answeredCount": 5},
             }
             assert payload["streak"] == {"current": 3, "longest": 8, "studiedToday": True, "needsActionToday": False}
-            assert payload["weeklyStats"][-1] == {"date": "2026-10-30", "wordsStudied": 2, "xpEarned": 70, "hasStudied": True}
+            assert payload["weeklyStats"][-1] == {
+                "date": "2026-10-30",
+                "wordsStudied": 2,
+                "xpEarned": 70,
+                "hasStudied": True,
+                "vocabularyAnsweredCount": 5,
+            }
             assert payload["showKana"] is False
             assert payload["levelProgress"] == {
                 "vocabulary": {"total": 0, "mastered": 0, "inProgress": 0},
@@ -206,7 +212,7 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "hiragana": {"learned": 0, "mastered": 0, "total": 0},
                 "katakana": {"learned": 0, "mastered": 0, "total": 0},
             }
-            assert len(statements) == 11  # Existing ten dashboard/auth reads plus one bounded aggregate.
+            assert len(statements) == 12  # Existing reads plus one today and one grouped weekly aggregate.
             assert all(statement.lstrip().upper().startswith("SELECT") for statement in statements)
             preview = await client.get("/api/v1/quiz/smart-preview", params={"category": "VOCABULARY", "jlptLevel": "N5"})
             assert preview.status_code == 200, preview.text

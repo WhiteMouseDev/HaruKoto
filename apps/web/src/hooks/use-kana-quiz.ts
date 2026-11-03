@@ -3,7 +3,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
+import { studyWriteErrorMessage } from '@/lib/study-write-stop';
 import { queryKeys } from '@/lib/query-keys';
+import { useStudyAnswer } from '@/hooks/use-study-answer';
 
 type QuizQuestion = {
   questionId: string;
@@ -46,23 +48,16 @@ export function useStartKanaQuiz() {
         method: 'POST',
         body: JSON.stringify(params),
       }),
-    onError: () => {
-      toast.error('가나 퀴즈를 시작할 수 없어요.');
+    onError: (error) => {
+      toast.error(
+        studyWriteErrorMessage(error, '가나 퀴즈를 시작할 수 없어요.')
+      );
     },
   });
 }
 
 export function useAnswerKanaQuestion() {
-  return useMutation<unknown, Error, AnswerKanaQuestionParams>({
-    mutationFn: (params) =>
-      apiFetch('/api/v1/kana/quiz/answer', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      }),
-    onError: () => {
-      toast.error('답안 저장에 실패했어요.');
-    },
-  });
+  return useStudyAnswer<AnswerKanaQuestionParams>('/api/v1/kana/quiz/answer');
 }
 
 export function useCompleteKanaQuiz() {
@@ -84,8 +79,10 @@ export function useCompleteKanaQuiz() {
         queryKey: queryKeys.kanaStages('KATAKANA'),
       });
     },
-    onError: () => {
-      toast.error('가나 퀴즈 완료 처리에 실패했어요.');
+    onError: (error) => {
+      toast.error(
+        studyWriteErrorMessage(error, '가나 퀴즈 완료 처리에 실패했어요.')
+      );
     },
   });
 }
