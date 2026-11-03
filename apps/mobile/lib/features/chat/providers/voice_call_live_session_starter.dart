@@ -20,12 +20,14 @@ class VoiceCallLiveSessionCallbacks {
     required this.onAiTextDelta,
     required this.onTranscriptEntry,
     required this.onError,
+    this.onMicrophoneInterrupted,
   });
 
   final void Function(GeminiLiveState state) onStateChange;
   final void Function(String text) onAiTextDelta;
   final void Function(TranscriptEntry entry) onTranscriptEntry;
   final void Function(String message) onError;
+  final void Function()? onMicrophoneInterrupted;
 }
 
 class VoiceCallLiveSessionStartInput {
@@ -108,6 +110,7 @@ class VoiceCallLiveSessionStarter {
           input.callbacks.onError(message);
           completeHandshake(VoiceCallLiveSessionStartResult.failure(message));
         },
+        onMicrophoneInterrupted: input.callbacks.onMicrophoneInterrupted,
       ).bind();
       await input.service.start();
 
@@ -130,7 +133,8 @@ class VoiceCallLiveSessionStarter {
         return const VoiceCallLiveSessionStartResult.stale();
       }
       await input.resources?.cancelActiveSession();
-      return VoiceCallLiveSessionStartResult.failure('연결에 실패했습니다: $e');
+      return const VoiceCallLiveSessionStartResult.failure(
+          '연결에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 }

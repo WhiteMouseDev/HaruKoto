@@ -50,11 +50,18 @@ class GeminiLiveOutboundSender {
     _safeSend(GeminiLiveProtocol.encodeRealtimeAudio(data));
   }
 
-  void _safeSend(String data) {
+  bool sendTextInstruction(String text) {
+    if (!transport.isConnected) return false;
+    return _safeSend(GeminiLiveProtocol.encodeRealtimeText(text));
+  }
+
+  bool _safeSend(String data) {
     try {
       transport.send(data);
+      return true;
     } catch (e) {
       debugPrint('[GeminiLive] sink.add failed: $e');
+      return false;
     }
   }
 }

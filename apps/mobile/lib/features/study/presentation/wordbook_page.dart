@@ -23,7 +23,10 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(ref.read(wordbookProvider.notifier).refresh());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(ref.read(wordbookProvider.notifier).refresh());
+    });
   }
 
   @override

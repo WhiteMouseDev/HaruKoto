@@ -32,6 +32,8 @@ class VoiceCallSessionStateReducer {
     if (transition.clearErrorMessage) {
       return state.copyWith(
         status: transition.status,
+        hasConnected: state.hasConnected ||
+            transition.status == VoiceCallStatus.connected,
         errorMessage: null,
       );
     }
@@ -42,7 +44,10 @@ class VoiceCallSessionStateReducer {
     VoiceCallSessionState state,
     String text,
   ) {
-    return state.copyWith(currentAiText: state.currentAiText + text);
+    return state.copyWith(
+      currentAiText: state.receivingAiText ? state.currentAiText + text : text,
+      receivingAiText: true,
+    );
   }
 
   VoiceCallSessionState applyTranscriptEntry(
@@ -50,7 +55,7 @@ class VoiceCallSessionStateReducer {
     TranscriptEntry entry,
   ) {
     if (entry.role != 'assistant') return state;
-    return state.copyWith(currentAiText: '');
+    return state.copyWith(currentAiText: entry.text, receivingAiText: false);
   }
 
   VoiceCallSessionState setErrorMessage(

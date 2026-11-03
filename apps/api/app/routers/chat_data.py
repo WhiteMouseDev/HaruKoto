@@ -18,6 +18,7 @@ from app.models import (
     UserFavoriteCharacter,
 )
 from app.models.user import User
+from app.services.conversation_activity import has_user_utterance
 
 router = APIRouter(prefix="/api/v1/chat", tags=["chat-data"])
 
@@ -195,7 +196,12 @@ async def get_character_stats(
 ) -> dict[str, dict[str, int]]:
     result = await db.execute(
         select(Conversation.character_id, func.count(Conversation.id))
-        .where(Conversation.user_id == user.id, Conversation.character_id.isnot(None))
+        .where(
+            Conversation.user_id == user.id,
+            Conversation.character_id.isnot(None),
+            Conversation.ended_at.isnot(None),
+            has_user_utterance(),
+        )
         .group_by(Conversation.character_id)
     )
     stats = {str(row[0]): row[1] for row in result.all()}

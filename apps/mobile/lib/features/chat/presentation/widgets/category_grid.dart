@@ -10,7 +10,6 @@ class _Category {
   final String id;
   final IconData icon;
   final String label;
-  final String scenarioCount;
   final Color color;
   final Color containerColor;
 
@@ -18,7 +17,6 @@ class _Category {
     required this.id,
     required this.icon,
     required this.label,
-    required this.scenarioCount,
     required this.color,
     required this.containerColor,
   });
@@ -29,28 +27,24 @@ const _categories = [
       id: 'TRAVEL',
       icon: LucideIcons.plane,
       label: '여행',
-      scenarioCount: '12 시나리오',
       color: AppColors.mintPressed,
       containerColor: AppColors.mintTrack),
   _Category(
       id: 'DAILY',
       icon: LucideIcons.store,
       label: '일상',
-      scenarioCount: '10 시나리오',
       color: AppColors.streak,
       containerColor: AppColors.streakContainer),
   _Category(
       id: 'BUSINESS',
       icon: LucideIcons.briefcase,
       label: '비즈니스',
-      scenarioCount: '8 시나리오',
       color: AppColors.purple,
       containerColor: AppColors.purpleTrack),
   _Category(
       id: 'FREE',
       icon: LucideIcons.messageSquare,
       label: '자유주제',
-      scenarioCount: '무제한',
       color: AppColors.sakura,
       containerColor: AppColors.sakuraTrack),
 ];
@@ -77,11 +71,11 @@ class CategoryGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.6,
+        mainAxisExtent: 76 + MediaQuery.textScalerOf(context).scale(32),
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
@@ -122,7 +116,7 @@ class CategoryGrid extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    cat.scenarioCount,
+                    '시나리오 보기',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurface.withValues(alpha: 0.5),
                     ),

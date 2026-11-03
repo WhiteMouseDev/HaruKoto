@@ -68,9 +68,18 @@ abstract class ChatRepository {
     throw UnimplementedError();
   }
 
+  Future<void> createLiveSession({
+    required String conversationId,
+    String? scenarioId,
+    String? characterId,
+  }) async {
+    throw UnimplementedError();
+  }
+
   // ---------- Live token ----------
 
-  Future<LiveTokenResponse> fetchLiveToken({String? characterId}) async {
+  Future<LiveTokenResponse> fetchLiveToken(
+      {String? characterId, String? scenarioId, String? conversationId}) async {
     throw UnimplementedError();
   }
 
@@ -79,6 +88,8 @@ abstract class ChatRepository {
   Future<LiveFeedbackResponse> sendLiveFeedback({
     required List<Map<String, String>> transcript,
     required int durationSeconds,
+    bool analysisEnabled = true,
+    String? conversationId,
     String? scenarioId,
     String? characterId,
   }) async {
@@ -204,14 +215,37 @@ class DioChatRepository extends ChatRepository {
     return response.data!['favorited'] as bool? ?? false;
   }
 
+  @override
+  Future<void> createLiveSession({
+    required String conversationId,
+    String? scenarioId,
+    String? characterId,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/chat/live-session',
+      data: {
+        'conversationId': conversationId,
+        if (scenarioId != null) 'scenarioId': scenarioId,
+        if (characterId != null) 'characterId': characterId,
+      },
+    );
+    if (response.data?['conversationId'] != conversationId ||
+        response.data?['endedAt'] != null) {
+      throw const FormatException('Live session is unavailable');
+    }
+  }
+
   // ---------- Live token ----------
 
   @override
-  Future<LiveTokenResponse> fetchLiveToken({String? characterId}) async {
+  Future<LiveTokenResponse> fetchLiveToken(
+      {String? characterId, String? scenarioId, String? conversationId}) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/chat/live-token',
       data: {
         if (characterId != null) 'characterId': characterId,
+        if (scenarioId != null) 'scenarioId': scenarioId,
+        if (conversationId != null) 'conversationId': conversationId,
       },
     );
     return LiveTokenResponse.fromJson(response.data!);
@@ -223,6 +257,8 @@ class DioChatRepository extends ChatRepository {
   Future<LiveFeedbackResponse> sendLiveFeedback({
     required List<Map<String, String>> transcript,
     required int durationSeconds,
+    bool analysisEnabled = true,
+    String? conversationId,
     String? scenarioId,
     String? characterId,
   }) async {
@@ -231,6 +267,8 @@ class DioChatRepository extends ChatRepository {
       data: {
         'transcript': transcript,
         'durationSeconds': durationSeconds,
+        'analysisEnabled': analysisEnabled,
+        if (conversationId != null) 'conversationId': conversationId,
         if (scenarioId != null) 'scenarioId': scenarioId,
         if (characterId != null) 'characterId': characterId,
       },

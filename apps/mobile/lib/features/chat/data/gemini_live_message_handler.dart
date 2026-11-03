@@ -70,10 +70,15 @@ class GeminiLiveMessageHandler {
 
     if (msg.containsKey('sessionResumptionUpdate')) {
       final update = msg['sessionResumptionUpdate'] as Map<String, dynamic>?;
+      final handle = update?['newHandle'] as String?;
+      // Generation can temporarily make the current state non-resumable.
+      // Keep the last valid checkpoint instead of silently starting a new
+      // session after a disconnect during that interval.
+      if (update?['resumable'] != true || handle == null || handle.isEmpty) {
+        return const [];
+      }
       return [
-        GeminiLiveMessageAction.updateResumptionHandle(
-          update?['newHandle'] as String?,
-        ),
+        GeminiLiveMessageAction.updateResumptionHandle(handle),
       ];
     }
 

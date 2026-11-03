@@ -20,6 +20,19 @@ class VoiceCallSessionResources {
   final VoiceCallSessionTimer _timer;
   final VoiceCallSessionServiceLifecycle _serviceLifecycle;
 
+  String? preparedConversationId;
+  final Set<String> _cancelledIds = {};
+
+  void markCancelled(String? id) {
+    if (id != null) _cancelledIds.add(id);
+  }
+
+  bool wasCancelled(String? id) => id != null && _cancelledIds.contains(id);
+
+  void markSessionPrepared(String id) {
+    preparedConversationId = id;
+  }
+
   GeminiLiveService? get service => _serviceLifecycle.service;
 
   List<TranscriptEntry> get transcript => _serviceLifecycle.transcript;

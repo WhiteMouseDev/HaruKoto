@@ -4,8 +4,10 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
+from pydantic import Field
+
 from app.models.enums import ConversationType, Difficulty, ScenarioCategory
-from app.schemas.common import CamelModel
+from app.schemas.common import CamelModel, omit_schema_default
 
 
 class ChatMessage(CamelModel):
@@ -91,6 +93,19 @@ class TranscribeRequest(CamelModel):
 
 class LiveTokenRequest(CamelModel):
     character_id: UUID | None = None
+    scenario_id: UUID | None = None
+    conversation_id: UUID | None = None
+
+
+class LiveSessionRequest(CamelModel):
+    conversation_id: UUID
+    scenario_id: UUID | None = None
+    character_id: UUID | None = None
+
+
+class LiveSessionResponse(CamelModel):
+    conversation_id: UUID
+    ended_at: datetime | None = None
 
 
 class LiveTokenResponse(CamelModel):
@@ -99,11 +114,27 @@ class LiveTokenResponse(CamelModel):
     model: str
     user_nickname: str
     jlpt_level: str
+    system_instruction: str | None = None
+    scenario_greeting: str | None = None
+    conversation_id: UUID | None = None
 
 
 class LiveFeedbackRequest(CamelModel):
     conversation_id: UUID | None = None
-    duration_seconds: int
+    duration_seconds: int = Field(ge=0, le=86400)
     transcript: list[dict[str, str]] | None = None
     scenario_id: UUID | None = None
     character_id: UUID | None = None
+    analysis_enabled: bool = Field(
+        default=True,
+        description="생략하면 피드백을 생성합니다. false이면 대화 기록만 저장합니다.",
+        json_schema_extra=omit_schema_default,
+    )
+
+
+class LiveFeedbackResponse(CamelModel):
+    conversation_id: UUID
+    feedback_summary: dict[str, Any] | None = None
+    feedback_error: str | None = None
+    xp_earned: int
+    events: list[dict[str, Any]]

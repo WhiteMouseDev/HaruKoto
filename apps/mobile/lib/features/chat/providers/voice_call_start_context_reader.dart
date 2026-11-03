@@ -36,12 +36,16 @@ class VoiceCallStartContext {
   final String userNickname;
   final String jlptLevel;
 
-  VoiceCallConnectionInput toConnectionInput(VoiceCallSessionRequest request) {
+  VoiceCallConnectionInput toConnectionInput(VoiceCallSessionRequest request,
+      {void Function(String)? onSessionPrepared,
+      bool Function()? isCancelled}) {
     return VoiceCallConnectionInput(
       request: request,
       callSettings: callSettings,
       userNickname: userNickname,
       jlptLevel: jlptLevel,
+      onSessionPrepared: onSessionPrepared,
+      isCancelled: isCancelled,
     );
   }
 }

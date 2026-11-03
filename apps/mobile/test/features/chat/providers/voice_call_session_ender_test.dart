@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/gemini_live_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_ender.dart';
@@ -6,6 +8,48 @@ import 'package:harukoto_mobile/features/chat/providers/voice_call_session_timer
 
 void main() {
   group('VoiceCallSessionEnder', () {
+    testWidgets('a stalled shutdown saves without disposing a newer service',
+        (tester) async {
+      final stopped = Completer<void>();
+      final oldService = _FakeGeminiLiveService()
+        ..providedTranscript = const [
+          TranscriptEntry(role: 'user', text: '予約です')
+        ]
+        ..ending = stopped.future;
+      final newService = _FakeGeminiLiveService();
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..attachService(oldService);
+      final ending = const VoiceCallSessionEnder().end(resources);
+      await tester.pump();
+      resources.attachService(newService);
+      await tester.pump(const Duration(seconds: 3));
+
+      final result = await ending;
+      expect(result.transcript.single.text, '予約です');
+      expect(oldService.disposeCalls, 1);
+      expect(newService.disposeCalls, 0);
+      stopped.completeError(StateError('late native stop error'));
+      await tester.pump();
+      expect(newService.endCalls, 0);
+      expect(resources.service, same(newService));
+    });
+
+    test('keeps captured transcript when native shutdown fails', () async {
+      final service = _FakeGeminiLiveService()
+        ..providedTranscript = const [TranscriptEntry(role: 'user', text: 'はい')]
+        ..endFailure = StateError('native stop failed');
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..attachService(service);
+
+      final result = await const VoiceCallSessionEnder().end(resources);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(result.transcript.single.text, 'はい');
+      expect(service.disposeCalls, 1);
+    });
+
     test('stops timer, snapshots transcript, and ends service', () async {
       final timer = _FakeVoiceCallSessionTimer();
       final service = _FakeGeminiLiveService()
@@ -45,6 +89,9 @@ class _FakeGeminiLiveService extends GeminiLiveService {
         );
 
   int endCalls = 0;
+  int disposeCalls = 0;
+  Object? endFailure;
+  Future<void>? ending;
   List<TranscriptEntry> providedTranscript = const [];
 
   @override
@@ -53,7 +100,12 @@ class _FakeGeminiLiveService extends GeminiLiveService {
   @override
   Future<void> end() async {
     endCalls++;
+    if (endFailure != null) throw endFailure!;
+    await ending;
   }
+
+  @override
+  Future<void> dispose() async => disposeCalls++;
 }
 
 class _FakeVoiceCallRingtonePlayer implements VoiceCallRingtonePlayer {

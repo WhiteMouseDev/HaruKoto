@@ -9,7 +9,11 @@ final callAnalysisServiceProvider = Provider<CallAnalysisService>((ref) {
   return CallAnalysisService(
     ref.watch(chatRepositoryProvider),
     onCompleted: () {
-      if (ref.mounted) ref.read(studyActivityRefreshProvider).refresh();
+      if (ref.mounted) {
+        ref.invalidate(chatHistoryProvider);
+        ref.invalidate(characterStatsProvider);
+        ref.read(studyActivityRefreshProvider).refresh();
+      }
     },
   );
 });
@@ -24,6 +28,8 @@ class CallAnalysisService {
     final result = await _repository.sendLiveFeedback(
       transcript: request.transcript,
       durationSeconds: request.durationSeconds,
+      analysisEnabled: request.analysisEnabled,
+      conversationId: request.conversationId,
       characterId: request.characterId,
       scenarioId: request.scenarioId,
     );

@@ -1,5 +1,6 @@
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_events.dart';
+import 'gemini_live_help_action.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_prompt_builder.dart';
@@ -19,11 +20,18 @@ class GeminiLiveServiceSession {
     required this.lifecycleController,
     required this.transcriptEmitter,
     required this.lifecycleRunner,
+    required this.requestHelp,
+    required this.suspendMicrophone,
+    required this.resumeMicrophone,
   });
 
   final GeminiLiveLifecycleController lifecycleController;
   final GeminiLiveTranscriptEmitter transcriptEmitter;
   final GeminiLiveSessionLifecycleRunner lifecycleRunner;
+  final bool Function(GeminiLiveHelpAction action, {String? targetText})
+      requestHelp;
+  final Future<void> Function() suspendMicrophone;
+  final Future<bool> Function() resumeMicrophone;
 }
 
 class GeminiLiveServiceSessionFactory {
@@ -40,6 +48,8 @@ class GeminiLiveServiceSessionFactory {
     required void Function(String text) emitAiTextDelta,
     required void Function(TranscriptEntry entry) emitTranscriptEntry,
     required void Function(String message) emitError,
+    Future<String> Function()? refreshToken,
+    void Function()? onMicrophoneInterrupted,
     String? characterName,
     String? voiceName,
     String? systemInstruction,
@@ -86,8 +96,10 @@ class GeminiLiveServiceSessionFactory {
       promptBuilder: dependencies.promptBuilder,
       lifecycleController: dependencies.lifecycleController,
       transport: dependencies.transport,
+      isSessionConnected: () => dependencies.reconnectCoordinator.isConnected,
       emitError: eventSink.emitError,
       emitAudioUnavailable: eventSink.emitErrorState,
+      onMicrophoneInterrupted: onMicrophoneInterrupted,
       voiceName: voiceName,
       characterName: characterName,
       scenarioGreeting: scenarioGreeting,
@@ -98,6 +110,7 @@ class GeminiLiveServiceSessionFactory {
       token: token,
       model: model,
       transport: dependencies.transport,
+      refreshToken: refreshToken,
       reconnectCoordinator: dependencies.reconnectCoordinator,
       setupSender: sessionComponents.setupSender,
       greetingSender: sessionComponents.greetingSender,
@@ -118,7 +131,10 @@ class GeminiLiveServiceSessionFactory {
       connect: sessionRuntime.connect,
       stopRecording: audioSession.stopRecording,
       disposeAudio: audioSession.dispose,
-      closeTransport: dependencies.transport.close,
+      closeTransport: () {
+        sessionRuntime.cancelPendingGreeting();
+        return dependencies.transport.close();
+      },
       flushTranscripts: transcriptEmitter.flush,
       emitConnectingState: eventSink.emitConnectingState,
       emitErrorState: eventSink.emitErrorState,
@@ -131,6 +147,17 @@ class GeminiLiveServiceSessionFactory {
       lifecycleController: dependencies.lifecycleController,
       transcriptEmitter: transcriptEmitter,
       lifecycleRunner: lifecycleRunner,
+      suspendMicrophone: audioSession.suspendMicrophone,
+      resumeMicrophone: audioSession.resumeMicrophone,
+      requestHelp: (action, {targetText}) {
+        if (!dependencies.lifecycleController.isActive ||
+            !dependencies.reconnectCoordinator.isConnected) {
+          return false;
+        }
+        return dependencies.outboundSender.sendTextInstruction(
+          action.instruction(targetText: targetText),
+        );
+      },
     );
   }
 }

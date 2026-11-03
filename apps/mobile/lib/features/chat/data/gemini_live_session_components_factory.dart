@@ -31,8 +31,10 @@ class GeminiLiveSessionComponentsFactory {
     required GeminiLivePromptBuilder promptBuilder,
     required GeminiLiveLifecycleController lifecycleController,
     required GeminiLiveTransport transport,
+    required bool Function() isSessionConnected,
     required void Function(String message) emitError,
     required void Function() emitAudioUnavailable,
+    void Function()? onMicrophoneInterrupted,
     String? voiceName,
     String? characterName,
     String? scenarioGreeting,
@@ -55,10 +57,12 @@ class GeminiLiveSessionComponentsFactory {
         audioAdapter: audioAdapter,
         outboundSender: outboundSender,
         isActive: () => lifecycleController.isActive,
-        isTransportConnected: () => transport.isConnected,
+        isTransportConnected: () =>
+            transport.isConnected && isSessionConnected(),
         isMuted: () => lifecycleController.isMuted,
         onError: emitError,
         onUnavailable: emitAudioUnavailable,
+        onMicrophoneInterrupted: onMicrophoneInterrupted,
       ),
     );
   }

@@ -99,22 +99,33 @@ void main() {
       expect(model.translatedTranscript[0].role, 'user');
     });
 
-    test('fromJson handles missing fields with defaults', () {
-      final model = FeedbackSummary.fromJson({});
-      expect(model.overallScore, 0);
-      expect(model.fluency, 0);
-      expect(model.accuracy, 0);
-      expect(model.vocabularyDiversity, 0);
-      expect(model.naturalness, 0);
-      expect(model.strengths, isEmpty);
-      expect(model.improvements, isEmpty);
-      expect(model.recommendedExpressions, isEmpty);
-      expect(model.corrections, isEmpty);
-      expect(model.translatedTranscript, isEmpty);
+    test('incomplete evaluation is unavailable, not a zero score', () {
+      expect(() => FeedbackSummary.fromJson({}), throwsFormatException);
+      expect(FeedbackSummary.tryFromJson({'messageJa': 'こんにちは'}), isNull);
+    });
+
+    test('rejects invalid scores and accepts an explicit zero', () {
+      final valid = {
+        'overallScore': 0,
+        'fluency': 70,
+        'accuracy': 70,
+        'vocabularyDiversity': 70,
+        'naturalness': 70,
+      };
+      expect(FeedbackSummary.tryFromJson(valid)!.overallScore, 0);
+      for (final bad in [-1, 101, double.nan, double.infinity, '80', null]) {
+        expect(
+            FeedbackSummary.tryFromJson({...valid, 'accuracy': bad}), isNull);
+      }
     });
 
     test('fromJson handles string recommendedExpressions', () {
       final json = {
+        'overallScore': 80,
+        'fluency': 80,
+        'accuracy': 80,
+        'vocabularyDiversity': 80,
+        'naturalness': 80,
         'recommendedExpressions': ['お願いします', 'すみません'],
       };
       final model = FeedbackSummary.fromJson(json);

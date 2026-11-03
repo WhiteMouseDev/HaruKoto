@@ -20,6 +20,12 @@ from app.middleware import study_write_stop
 from app.models.user import User
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--live-postgres-docker", action="store_true", default=False, help="Run live-session DB tests in an isolated local Docker container"
+    )
+
+
 @pytest.fixture(autouse=True)
 def ordinary_domain_tests_keep_original_admission(monkeypatch):
     # Domain regressions validate ordinary behavior independently of the reviewed

@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Conversation, DailyProgress, Notification, User
+from app.services.conversation_activity import has_user_utterance
 from app.services.daily_progress_upsert import build_daily_progress_insert_values
 from app.services.gamification import calculate_level, check_and_grant_achievements
 from app.services.study_day_recording import apply_study_streak, lock_study_user
@@ -57,7 +58,9 @@ async def _update_daily_conversation_progress(
 
 async def _count_completed_conversations(db: AsyncSession, *, user_id: Any) -> int:
     result = await db.execute(
-        select(func.count()).select_from(Conversation).where(Conversation.user_id == user_id, Conversation.ended_at.isnot(None))
+        select(func.count())
+        .select_from(Conversation)
+        .where(Conversation.user_id == user_id, Conversation.ended_at.isnot(None), has_user_utterance())
     )
     return result.scalar() or 0
 

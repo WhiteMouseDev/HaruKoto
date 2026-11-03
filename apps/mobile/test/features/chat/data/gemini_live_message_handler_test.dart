@@ -17,12 +17,30 @@ void main() {
       final handler = GeminiLiveMessageHandler();
 
       final actions = handler.handle({
-        'sessionResumptionUpdate': {'newHandle': 'resume-1'},
+        'sessionResumptionUpdate': {
+          'resumable': true,
+          'newHandle': 'resume-1',
+        },
       });
 
       expect(actions.single.type,
           GeminiLiveMessageActionType.updateResumptionHandle);
       expect(actions.single.text, 'resume-1');
+    });
+
+    test('non-resumable and empty updates do not replace a saved handle', () {
+      final handler = GeminiLiveMessageHandler();
+
+      for (final update in [
+        {'resumable': false},
+        {'resumable': false, 'newHandle': ''},
+        {'resumable': false, 'newHandle': 'unusable'},
+        {'resumable': true, 'newHandle': ''},
+        {'resumable': true},
+        {'newHandle': 'unconfirmed'},
+      ]) {
+        expect(handler.handle({'sessionResumptionUpdate': update}), isEmpty);
+      }
     });
 
     test('goAway emits reconnect action', () {

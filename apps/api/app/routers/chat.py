@@ -18,9 +18,13 @@ from app.schemas.chat import (
     ChatStartResponse,
     ChatTTSRequest,
     LiveFeedbackRequest,
+    LiveFeedbackResponse,
+    LiveSessionRequest,
+    LiveSessionResponse,
     LiveTokenRequest,
     LiveTokenResponse,
 )
+from app.services.chat_live_session import create_live_session
 from app.services.chat_session import ChatSessionServiceError, end_chat_session, send_chat_message, start_chat_session
 from app.services.chat_voice import (
     ChatVoiceServiceError,
@@ -126,7 +130,19 @@ async def transcribe_voice(
 # ==========================================
 
 
-@router.post("/live-token", response_model=LiveTokenResponse, status_code=200)
+@router.post("/live-session", response_model=LiveSessionResponse, status_code=200)
+async def prepare_live_session(
+    body: LiveSessionRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> LiveSessionResponse:
+    try:
+        return await create_live_session(db, user, body)
+    except ChatVoiceServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail, headers=exc.headers) from exc
+
+
+@router.post("/live-token", response_model=LiveTokenResponse, response_model_exclude_none=True, status_code=200)
 async def get_live_token_endpoint(
     body: LiveTokenRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -143,7 +159,7 @@ async def get_live_token_endpoint(
 # ==========================================
 
 
-@router.post("/live-feedback", status_code=200)
+@router.post("/live-feedback", response_model=LiveFeedbackResponse, status_code=200)
 async def submit_live_feedback(
     body: LiveFeedbackRequest,
     user: Annotated[User, Depends(get_current_user)],

@@ -8,6 +8,7 @@ class VoiceCallLiveEventBinder {
     required this.onAiTextDelta,
     required this.onTranscriptEntry,
     required this.onError,
+    this.onMicrophoneInterrupted,
   });
 
   final GeminiLiveService service;
@@ -16,6 +17,7 @@ class VoiceCallLiveEventBinder {
   final void Function(String text) onAiTextDelta;
   final void Function(TranscriptEntry entry) onTranscriptEntry;
   final void Function(String message) onError;
+  final void Function()? onMicrophoneInterrupted;
 
   void bind() {
     service.onStateChange = (liveState) {
@@ -36,6 +38,10 @@ class VoiceCallLiveEventBinder {
     service.onError = (message) {
       if (!isActive()) return;
       onError(message);
+    };
+    service.onMicrophoneInterrupted = () {
+      if (!isActive()) return;
+      onMicrophoneInterrupted?.call();
     };
   }
 }

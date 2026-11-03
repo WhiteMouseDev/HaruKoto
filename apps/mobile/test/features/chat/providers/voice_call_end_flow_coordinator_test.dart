@@ -75,12 +75,12 @@ void main() {
       );
 
       expect(service.endCalls, 1);
-      expect(result.analysisRequest, isNull);
+      expect(result.analysisRequest, isNotNull);
+      expect(result.analysisRequest!.analysisEnabled, isFalse);
       expect(result.feedbackError, isNull);
     });
 
-    test('returns no transcript feedback error for ineligible auto analysis',
-        () async {
+    test('saves a short connected call without analysis', () async {
       final service = _FakeGeminiLiveService();
       final resources =
           VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
@@ -101,12 +101,12 @@ void main() {
       );
 
       expect(service.endCalls, 1);
-      expect(result.analysisRequest, isNull);
-      expect(result.feedbackError, 'no_transcript');
+      expect(result.analysisRequest, isNotNull);
+      expect(result.analysisRequest!.analysisEnabled, isFalse);
+      expect(result.feedbackError, isNull);
     });
 
-    test('returns no transcript feedback error for assistant-only transcript',
-        () async {
+    test('saves assistant-only calls without analysis', () async {
       final service = _FakeGeminiLiveService()
         ..providedTranscript = const [
           TranscriptEntry(role: 'assistant', text: 'もしもし'),
@@ -130,8 +130,33 @@ void main() {
       );
 
       expect(service.endCalls, 1);
-      expect(result.analysisRequest, isNull);
-      expect(result.feedbackError, 'no_transcript');
+      expect(result.analysisRequest, isNotNull);
+      expect(result.analysisRequest!.analysisEnabled, isFalse);
+      expect(result.feedbackError, isNull);
+    });
+
+    test(
+        'finalizes a confirmed prepared session without analysis when cancelled',
+        () async {
+      final resources =
+          VoiceCallSessionResources(_FakeVoiceCallRingtonePlayer())
+            ..markSessionPrepared('prepared-id');
+      final coordinator = VoiceCallEndFlowCoordinator(
+        analysisRequestFactory: const VoiceCallAnalysisRequestFactory(),
+        sessionEnder: const VoiceCallSessionEnder(),
+        readAutoAnalysis: () => true,
+      );
+      final result = await coordinator.end(VoiceCallEndFlowInput(
+        resources: resources,
+        request: const VoiceCallSessionRequest(
+            conversationId: 'prepared-id', scenarioId: 'hotel'),
+        durationSeconds: 8,
+        wasConnected: false,
+      ));
+      expect(result.analysisRequest?.conversationId, 'prepared-id');
+      expect(result.analysisRequest?.durationSeconds, 0);
+      expect(result.analysisRequest?.analysisEnabled, isFalse);
+      expect(result.analysisRequest?.wasConnected, isFalse);
     });
 
     test('does not return no transcript error when call never connected',

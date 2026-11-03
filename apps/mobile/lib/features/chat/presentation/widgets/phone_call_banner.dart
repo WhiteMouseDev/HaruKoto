@@ -66,15 +66,17 @@ class PhoneCallBanner extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          'AI 전화 통화',
+                          '친구에게 전화하기',
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
@@ -105,7 +107,7 @@ class PhoneCallBanner extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '음성으로 실전 회화 연습!',
+                      '좋아하는 친구와 일본어로 안부를 나눠요',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurface.withValues(alpha: 0.6),
                       ),

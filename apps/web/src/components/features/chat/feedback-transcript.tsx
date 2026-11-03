@@ -84,6 +84,9 @@ export function FeedbackTranscript({
   const [showTranslation, setShowTranslation] = useState(false);
 
   if (!translatedTranscript || translatedTranscript.length === 0) return null;
+  const hasTranslation = translatedTranscript.some(
+    (message) => typeof message.ko === 'string' && message.ko.trim()
+  );
 
   return (
     <Card className="py-4">
@@ -93,15 +96,17 @@ export function FeedbackTranscript({
             <MessageSquareText className="text-hk-info size-4" />
             대화 내역
           </h3>
-          <Button
-            variant={showTranslation ? 'secondary' : 'ghost'}
-            size="sm"
-            className="h-7 gap-1.5 text-xs"
-            onClick={() => setShowTranslation(!showTranslation)}
-          >
-            <Languages className="size-3.5" />
-            {showTranslation ? '원문만' : '번역 보기'}
-          </Button>
+          {hasTranslation && (
+            <Button
+              variant={showTranslation ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-7 gap-1.5 text-xs"
+              onClick={() => setShowTranslation(!showTranslation)}
+            >
+              <Languages className="size-3.5" />
+              {showTranslation ? '원문만' : '번역 보기'}
+            </Button>
+          )}
         </div>
         <motion.div
           className="space-y-3"

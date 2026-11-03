@@ -82,11 +82,14 @@ async def start_chat_session(db: AsyncSession, user: User, body: ChatStartReques
             "title": scenario.title,
             "description": scenario.description,
             "situation": scenario.situation,
+            "yourRole": scenario.your_role,
+            "aiRole": scenario.ai_role,
+            "systemPrompt": scenario.system_prompt or "",
         }
         if scenario
         else None
     )
-    system_prompt = build_system_prompt(str(user.jlpt_level or "N5"), scenario=scenario_prompt)
+    system_prompt = build_system_prompt(user.jlpt_level or "N5", scenario=scenario_prompt)
 
     logger.info(
         "AI chat start",
@@ -117,7 +120,7 @@ async def start_chat_session(db: AsyncSession, user: User, body: ChatStartReques
         message_count=1,
     )
     db.add(conversation)
-    await db.flush()
+    await db.commit()
 
     return ChatStartResponse(
         conversation_id=conversation.id,
@@ -162,7 +165,7 @@ async def send_chat_message(db: AsyncSession, user: User, body: ChatMessageReque
     )
     conversation.messages = new_messages
     conversation.message_count = count_conversation_messages(new_messages)
-    await db.flush()
+    await db.commit()
 
     return ChatMessageResponse(
         message_ja=ai_response.get("messageJa", ""),

@@ -10,6 +10,7 @@ void main() {
       final textDeltas = <String>[];
       final transcripts = <TranscriptEntry>[];
       final errors = <String>[];
+      var microphoneInterruptions = 0;
 
       VoiceCallLiveEventBinder(
         service: service,
@@ -18,6 +19,7 @@ void main() {
         onAiTextDelta: textDeltas.add,
         onTranscriptEntry: transcripts.add,
         onError: errors.add,
+        onMicrophoneInterrupted: () => microphoneInterruptions++,
       ).bind();
 
       service.emitState(GeminiLiveState.connected);
@@ -26,6 +28,7 @@ void main() {
         const TranscriptEntry(role: 'assistant', text: 'こんにちは'),
       );
       service.emitError('network error');
+      service.onMicrophoneInterrupted?.call();
 
       expect(states, [GeminiLiveState.connected]);
       expect(textDeltas, ['こんにちは']);
@@ -33,6 +36,7 @@ void main() {
         const TranscriptEntry(role: 'assistant', text: 'こんにちは'),
       ]);
       expect(errors, ['network error']);
+      expect(microphoneInterruptions, 1);
     });
 
     test('ignores live service events while inactive', () {
@@ -46,6 +50,7 @@ void main() {
         onAiTextDelta: (_) => calls++,
         onTranscriptEntry: (_) => calls++,
         onError: (_) => calls++,
+        onMicrophoneInterrupted: () => calls++,
       ).bind();
 
       service.emitState(GeminiLiveState.connected);
@@ -54,6 +59,7 @@ void main() {
         const TranscriptEntry(role: 'assistant', text: 'こんにちは'),
       );
       service.emitError('network error');
+      service.onMicrophoneInterrupted?.call();
 
       expect(calls, 0);
     });

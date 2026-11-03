@@ -9,11 +9,13 @@ import '../chat_entry_mode.dart';
 import '../voice_call_launch.dart';
 import 'scenario_card.dart';
 import 'chat_loading_overlay.dart';
+import 'scenario_preparation_sheet.dart';
 
 class ScenarioListView extends ConsumerWidget {
   final String category;
   final ChatEntryMode entryMode;
   final bool starting;
+  final String? errorMessage;
   final VoidCallback onBack;
   final ValueChanged<ScenarioModel> onStartConversation;
 
@@ -22,11 +24,25 @@ class ScenarioListView extends ConsumerWidget {
     required this.category,
     required this.entryMode,
     required this.starting,
+    this.errorMessage,
     required this.onBack,
     required this.onStartConversation,
   });
 
-  bool get _isVoiceMode => entryMode == ChatEntryMode.voice;
+  Future<void> _prepare(BuildContext context, ScenarioModel scenario) async {
+    final mode = await showModalBottomSheet<ChatEntryMode>(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (_) => ScenarioPreparationSheet(scenario: scenario),
+    );
+    if (!context.mounted || mode == null) return;
+    if (mode == ChatEntryMode.voice) {
+      openVoiceCallPage(context, scenarioId: scenario.id, scenario: scenario);
+    } else {
+      onStartConversation(scenario);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,6 +76,12 @@ class ScenarioListView extends ConsumerWidget {
                     ],
                   ),
                 ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    child: Text(errorMessage!,
+                        style: TextStyle(color: colorScheme.error)),
+                  ),
                 Expanded(
                   child: scenariosAsync.when(
                     loading: () => ListView.builder(
@@ -122,25 +144,7 @@ class ScenarioListView extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: AppSizes.sm),
                             child: ScenarioCard(
                               scenario: scenario,
-                              onSelect: () {
-                                if (_isVoiceMode) {
-                                  openVoiceCallPage(
-                                    context,
-                                    scenarioId: scenario.id,
-                                  );
-                                } else {
-                                  onStartConversation(scenario);
-                                }
-                              },
-                              showCallButton: _isVoiceMode,
-                              onCall: _isVoiceMode
-                                  ? () {
-                                      openVoiceCallPage(
-                                        context,
-                                        scenarioId: scenario.id,
-                                      );
-                                    }
-                                  : null,
+                              onSelect: () => _prepare(context, scenario),
                             ),
                           );
                         },

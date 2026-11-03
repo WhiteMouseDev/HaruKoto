@@ -20,6 +20,7 @@ class CallAnalysisState {
     this.progress = 0.0,
     this.currentStep = 1,
     this.conversationId,
+    this.recordSaved = false,
     this.feedbackSummary,
     this.feedbackError,
     this.errorMessage,
@@ -32,6 +33,7 @@ class CallAnalysisState {
   final double progress;
   final int currentStep;
   final String? conversationId;
+  final bool recordSaved;
   final FeedbackSummary? feedbackSummary;
   final String? feedbackError;
   final String? errorMessage;
@@ -47,6 +49,7 @@ class CallAnalysisState {
     double? progress,
     int? currentStep,
     Object? conversationId = _unset,
+    bool? recordSaved,
     Object? feedbackSummary = _unset,
     Object? feedbackError = _unset,
     Object? errorMessage = _unset,
@@ -59,6 +62,7 @@ class CallAnalysisState {
       conversationId: identical(conversationId, _unset)
           ? this.conversationId
           : conversationId as String?,
+      recordSaved: recordSaved ?? this.recordSaved,
       feedbackSummary: identical(feedbackSummary, _unset)
           ? this.feedbackSummary
           : feedbackSummary as FeedbackSummary?,
@@ -74,6 +78,7 @@ class CallAnalysisState {
 
 class CallAnalysisController extends Notifier<CallAnalysisState> {
   VoiceCallAnalysisRequest? _request;
+  Object? _owner;
   bool _disposed = false;
   int _generation = 0;
 
@@ -86,26 +91,29 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
     return const CallAnalysisState();
   }
 
-  Future<void> analyze(VoiceCallAnalysisRequest request) async {
+  Future<void> analyze(VoiceCallAnalysisRequest request,
+      {Object? owner}) async {
     _request = request;
+    _owner = owner;
     final generation = ++_generation;
 
-    state = const CallAnalysisState(
+    state = CallAnalysisState(
       status: CallAnalysisStatus.analyzing,
-      statusMessage: '통화 내용을 분석하고 있어요...',
+      conversationId: request.conversationId,
+      recordSaved: request.recordSaved,
+      statusMessage: '대화 기록을 저장하고 있어요...',
       progress: 0.0,
       currentStep: 1,
     );
 
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-    if (_isStale(generation)) return;
-
     state = state.copyWith(
       status: CallAnalysisStatus.analyzing,
-      statusMessage: 'AI가 피드백을 생성하고 있어요...',
+      statusMessage: request.analysisEnabled
+          ? 'AI가 피드백을 생성하고 있어요...'
+          : '대화 기록을 저장하고 있어요...',
       progress: 0.3,
       currentStep: 2,
-      conversationId: null,
+      conversationId: request.conversationId,
       feedbackSummary: null,
       feedbackError: null,
       errorMessage: null,
@@ -116,24 +124,39 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
           await ref.read(callAnalysisServiceProvider).analyze(request);
       if (_isStale(generation)) return;
 
+      _request = request.withConversationId(result.conversationId);
+      if (result.feedbackError == 'generation_failed') {
+        state = state.copyWith(
+          status: CallAnalysisStatus.error,
+          statusMessage: '기록은 저장됐지만 피드백을 만들지 못했어요',
+          conversationId: result.conversationId,
+          recordSaved: true,
+          feedbackError: result.feedbackError,
+          errorMessage: '같은 대화의 피드백을 다시 요청할 수 있어요.',
+        );
+        return;
+      }
       state = state.copyWith(
         status: CallAnalysisStatus.completed,
-        statusMessage: '분석 완료!',
+        statusMessage: request.analysisEnabled ? '분석 완료!' : '기록 저장 완료!',
         progress: 1.0,
         currentStep: 3,
         conversationId: result.conversationId,
+        recordSaved: true,
         feedbackSummary: result.feedbackSummary,
-        feedbackError: result.feedbackError,
+        feedbackError: result.feedbackError ??
+            (request.analysisEnabled ? null : 'analysis_skipped'),
         errorMessage: null,
       );
     } on CallAnalysisServiceException catch (error) {
       if (_isStale(generation)) return;
       state = state.copyWith(
         status: CallAnalysisStatus.error,
-        statusMessage: '분석에 실패했습니다',
+        statusMessage:
+            !request.recordSaved ? '저장 상태를 확인하지 못했어요' : '피드백을 불러오지 못했어요',
         progress: 0.0,
         errorMessage: error.message,
-        conversationId: null,
+        conversationId: request.conversationId,
         feedbackSummary: null,
         feedbackError: null,
       );
@@ -141,20 +164,28 @@ class CallAnalysisController extends Notifier<CallAnalysisState> {
       if (_isStale(generation)) return;
       state = state.copyWith(
         status: CallAnalysisStatus.error,
-        statusMessage: '분석에 실패했습니다',
+        statusMessage:
+            !request.recordSaved ? '저장 상태를 확인하지 못했어요' : '피드백을 불러오지 못했어요',
         progress: 0.0,
         errorMessage: '분석에 실패했습니다',
-        conversationId: null,
+        conversationId: request.conversationId,
         feedbackSummary: null,
         feedbackError: null,
       );
     }
   }
 
+  void cancel(Object owner) {
+    if (!identical(_owner, owner)) return;
+    _generation++;
+    _owner = null;
+    _request = null;
+  }
+
   Future<void> retry() async {
     final request = _request;
-    if (request == null) return;
-    await analyze(request);
+    if (request?.conversationId == null) return;
+    await analyze(request!, owner: _owner);
   }
 
   bool _isStale(int generation) => _disposed || generation != _generation;

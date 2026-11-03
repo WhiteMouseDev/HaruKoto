@@ -60,7 +60,7 @@ void main() {
       handler.handleTranscriptEntry(
         const TranscriptEntry(role: 'assistant', text: 'こんにちは'),
       );
-      expect(state.currentAiText, isEmpty);
+      expect(state.currentAiText, 'こんにちは');
 
       handler.setErrorMessage('network error');
       expect(state.errorMessage, 'network error');
