@@ -8,6 +8,7 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harukoto_mobile/core/network/network_base.dart';
 import 'package:harukoto_mobile/core/providers/dio_provider.dart';
+import 'package:harukoto_mobile/core/providers/user_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/data/models/review_summary_model.dart';
@@ -336,6 +337,217 @@ void main() {
       });
     }
   });
+  group('StudyPage independent lesson retry', () {
+    testWidgets('first error is Korean and independent retry recovers once',
+        (tester) async {
+      final pending = Completer<ChapterListModel>();
+      var reads = 0;
+      final f = await _pump(tester,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) =>
+              ++reads == 1 ? Future.error(_transportError()) : pending.future);
+      expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
+      expect(find.text('서버 응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.'), findsOneWidget);
+      expect(find.text('레슨을 준비하고 있어요'), findsNothing);
+      expect(find.text('단어 최대 2개 복습'), findsOneWidget);
+      final oldRetry = tester.widget<OutlinedButton>(_lessonRetry).onPressed!;
+      oldRetry();
+      oldRetry();
+      oldRetry();
+      await _lessonFrames(tester);
+      expect(f.repository.chapterReads, 2);
+      expect(f.repository.reviewReads, 1);
+      expect(f.requests, isEmpty);
+      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
+      expect(tester.widget<OutlinedButton>(_lessonRetry).onPressed, isNull);
+      pending.complete(_lessonData('복구한 레슨'));
+      await _lessonFrames(tester);
+      expect(find.text('복구한 레슨'), findsOneWidget);
+      expect(_lessonRetry, findsNothing);
+      expect(f.repository.writes, 0);
+    });
+
+    testWidgets(
+        'refresh pending/error hides stale lesson actions until recovery',
+        (tester) async {
+      var reads = 0;
+      final pending = Completer<ChapterListModel>();
+      final f = await _pump(tester,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) {
+            reads++;
+            if (reads == 1) return Future.value(_lessonData('이전 레슨'));
+            if (reads == 2) return pending.future;
+            return Future.value(_lessonData('현재 레슨'));
+          });
+      expect(find.text('이전 레슨'), findsOneWidget);
+      f.container.invalidate(chaptersProvider('N5'));
+      await _lessonFrames(tester);
+      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
+      expect(find.text('이전 레슨'), findsNothing);
+      expect(find.text('시작하기'), findsNothing);
+      pending.completeError(_transportError());
+      await _lessonFrames(tester);
+      expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
+      expect(find.text('이전 레슨'), findsNothing);
+      await tester.tap(_lessonRetry);
+      await _lessonFrames(tester);
+      expect(find.text('현재 레슨'), findsOneWidget);
+      expect(f.repository.reviewReads, 1);
+    });
+
+    testWidgets('known empty response differs from failure', (tester) async {
+      await _pump(tester,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) async => const ChapterListModel(chapters: []));
+      expect(find.text('레슨을 준비하고 있어요'), findsOneWidget);
+      expect(find.text('레슨을 불러오지 못했어요.'), findsNothing);
+      expect(_lessonRetry, findsNothing);
+    });
+
+    testWidgets('failed retries remain recoverable with no raw diagnostic text',
+        (tester) async {
+      final f = await _pump(tester,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) async =>
+              throw StateError('private internal diagnostic'));
+      for (var count = 2; count <= 3; count++) {
+        await tester.tap(_lessonRetry);
+        await _lessonFrames(tester);
+        expect(f.repository.chapterReads, count);
+        expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
+        expect(
+            find.textContaining('private internal diagnostic'), findsNothing);
+        expect(
+            tester.widget<OutlinedButton>(_lessonRetry).onPressed, isNotNull);
+      }
+    });
+
+    testWidgets('chapter failure still permits kana entry', (tester) async {
+      final f = await _pump(tester,
+          dashboard: () async => throw _transportError(),
+          chapterRead: (_) async => throw _transportError());
+      expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
+      expect(find.text('복습할 표현 5개'), findsOneWidget);
+      await _openKana(tester);
+      expect(f.repository.writes, 0);
+    });
+
+    testWidgets('silent account switch blocks a previously rendered retry',
+        (tester) async {
+      final identity = _Identity();
+      final f = await _pump(tester,
+          identity: identity,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) async => throw _transportError());
+      final action = tester.widget<OutlinedButton>(_lessonRetry).onPressed!;
+      identity.current = 'other-account';
+      action();
+      await _lessonFrames(tester);
+      expect(f.repository.chapterReads, 1);
+    });
+
+    testWidgets('late old-account response cannot replace new account lessons',
+        (tester) async {
+      final identity = _Identity();
+      final pending = Completer<ChapterListModel>();
+      var first = true;
+      final f = await _pump(tester,
+          identity: identity,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) {
+            if (identity.current == 'other-account') {
+              return Future.value(_lessonData('새 계정 레슨'));
+            }
+            if (first) {
+              first = false;
+              return Future.error(_transportError());
+            }
+            return pending.future;
+          });
+      final oldAction = tester.widget<OutlinedButton>(_lessonRetry).onPressed!;
+      oldAction();
+      await _lessonFrames(tester);
+      identity.current = 'other-account';
+      f.container.invalidate(currentAccountIdProvider);
+      await _lessonFrames(tester);
+      pending.complete(_lessonData('이전 계정의 늦은 응답'));
+      await _lessonFrames(tester);
+      expect(find.text('새 계정 레슨'), findsOneWidget);
+      expect(find.text('이전 계정의 늦은 응답'), findsNothing);
+      final before = f.repository.chapterReads;
+      oldAction();
+      await _lessonFrames(tester);
+      expect(f.repository.chapterReads, before);
+    });
+
+    testWidgets('old-level retry cannot refresh a newly selected level',
+        (tester) async {
+      final f = await _pump(tester,
+          showKana: false,
+          allowLevelChange: true,
+          dashboard: () async => _dashboard(),
+          chapterRead: (level) async {
+            if (level == 'N5') throw _transportError();
+            return _lessonData('N4 새 레슨', level: level);
+          });
+      final oldAction = tester.widget<OutlinedButton>(_lessonRetry).onPressed!;
+      final goal = f.container.read(userPreferencesProvider).dailyGoal;
+      await f.container
+          .read(userPreferencesProvider.notifier)
+          .setJlptLevel('N4');
+      await _lessonFrames(tester);
+      expect(find.text('N4 새 레슨'), findsOneWidget);
+      expect(f.repository.chapterLevels, ['N5', 'N4']);
+      oldAction();
+      await _lessonFrames(tester);
+      expect(f.repository.chapterLevels, ['N5', 'N4']);
+      expect(f.container.read(userPreferencesProvider).dailyGoal, goal);
+    });
+
+    testWidgets('signed-out catalogue never reads account data',
+        (tester) async {
+      final identity = _Identity()..current = null;
+      final f = await _pump(tester,
+          identity: identity,
+          showKana: false,
+          dashboard: () async => _dashboard(),
+          chapterRead: (_) async => _lessonData('숨긴 레슨'));
+      expect(f.repository.chapterReads, 0);
+      expect(find.text('숨긴 레슨'), findsNothing);
+      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
+    });
+
+    for (final brightness in Brightness.values) {
+      testWidgets('lesson retry fits 320px with 200% text in $brightness',
+          (tester) async {
+        await tester.binding.setSurfaceSize(const Size(320, 1400));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final semantics = tester.ensureSemantics();
+        try {
+          await _pump(tester,
+              showKana: false,
+              brightness: brightness,
+              textScale: 2,
+              dashboard: () async => _dashboard(),
+              chapterRead: (_) async => throw _transportError());
+          await tester.ensureVisible(_lessonRetry);
+          await tester.pump();
+          expect(tester.takeException(), isNull);
+          expect(tester.getSize(_lessonRetry).height, greaterThanOrEqualTo(48));
+          expect(find.bySemanticsLabel(RegExp('레슨 다시 불러오기')), findsOneWidget);
+        } finally {
+          semantics.dispose();
+        }
+      });
+    }
+  });
 }
 
 void _expectNoKanaProgress(WidgetTester tester) {
@@ -411,6 +623,9 @@ Future<_Fixture> _pump(
   Brightness brightness = Brightness.light,
   double textScale = 1,
   Future<ReviewSummaryModel> Function()? reviewRead,
+  Future<ChapterListModel> Function(String)? chapterRead,
+  _Identity? identity,
+  bool allowLevelChange = false,
 }) async {
   SharedPreferences.setMockInitialValues({
     'user_show_kana': showKana,
@@ -449,12 +664,14 @@ Future<_Fixture> _pump(
     }
   }));
   dio.interceptors.add(AppErrorInterceptor());
-  final repository = _StudyRepository(reviewRead: reviewRead);
+  final repository =
+      _StudyRepository(reviewRead: reviewRead, chapterRead: chapterRead);
+  final owner = identity ?? _Identity();
   final container = ProviderContainer(
     retry: (_, __) => null,
     overrides: [
-      currentAccountIdProvider.overrideWithValue('test-account'),
-      currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+      currentAccountIdProvider.overrideWith((ref) => owner.current),
+      currentAccountReaderProvider.overrideWithValue(() => owner.current),
       sharedPreferencesProvider.overrideWithValue(prefs),
       dioProvider.overrideWithValue(dio),
       // Keep unrelated calendar refresh timers outside this view-state fixture;
@@ -505,8 +722,14 @@ Future<_Fixture> _pump(
         requests
             .every((r) => r.method == 'GET' && r.path == '/stats/dashboard'),
         isTrue);
-    expect({for (final key in prefs.getKeys()) key: prefs.get(key)},
-        originalPreferences);
+    if (!allowLevelChange) {
+      expect({for (final key in prefs.getKeys()) key: prefs.get(key)},
+          originalPreferences);
+    } else {
+      for (final key in ['auth_test_sentinel', 'study_test_sentinel']) {
+        expect(prefs.get(key), originalPreferences[key]);
+      }
+    }
     router.dispose();
     dashboardSubscription?.close();
     container.dispose();
@@ -560,8 +783,10 @@ Map<String, dynamic> _dashboard(
     };
 
 class _StudyRepository extends Fake implements StudyRepository {
-  _StudyRepository({this.reviewRead});
+  _StudyRepository({this.reviewRead, this.chapterRead});
   final Future<ReviewSummaryModel> Function()? reviewRead;
+  final Future<ChapterListModel> Function(String)? chapterRead;
+  final chapterLevels = <String>[];
   int chapterReads = 0;
   int reviewReads = 0;
   int writes = 0;
@@ -570,6 +795,8 @@ class _StudyRepository extends Fake implements StudyRepository {
   @override
   Future<ChapterListModel> fetchChapters(String jlptLevel) async {
     chapterReads++;
+    chapterLevels.add(jlptLevel);
+    if (chapterRead != null) return chapterRead!(jlptLevel);
     return const ChapterListModel(chapters: [
       ChapterModel(
         id: 'chapter-1',
@@ -634,3 +861,38 @@ class _StudyRepository extends Fake implements StudyRepository {
     throw StateError('Display and dashboard retry must not save progress');
   }
 }
+
+class _Identity {
+  String? current = 'test-account';
+}
+
+Finder get _lessonRetry => find.byKey(const ValueKey('lesson-catalogue-retry'));
+Future<void> _lessonFrames(WidgetTester tester) async {
+  for (var i = 0; i < 8; i++) {
+    await tester.pump(const Duration(milliseconds: 1));
+  }
+}
+
+ChapterListModel _lessonData(String title, {String level = 'N5'}) =>
+    ChapterListModel(chapters: [
+      ChapterModel(
+          id: 'chapter-$level',
+          jlptLevel: level,
+          partNo: 1,
+          chapterNo: 1,
+          title: '첫 만남',
+          completedLessons: 0,
+          totalLessons: 1,
+          lessons: [
+            LessonSummaryModel(
+                id: 'lesson-$level',
+                lessonNo: 1,
+                chapterLessonNo: 1,
+                title: title,
+                topic: '인사',
+                estimatedMinutes: 5,
+                status: 'NOT_STARTED',
+                scoreCorrect: 0,
+                scoreTotal: 0)
+          ])
+    ]);

@@ -106,9 +106,18 @@ final reviewSummaryProvider = FutureProvider.autoDispose
 // ── Lesson Providers ──
 
 final chaptersProvider = FutureProvider.autoDispose
-    .family<ChapterListModel, String>((ref, jlptLevel) {
-  return ref.watch(studyRepositoryProvider).fetchChapters(jlptLevel);
-});
+    .family<ChapterListModel, String>((ref, jlptLevel) async {
+  final owner = ref.watch(currentAccountIdProvider);
+  if (owner == null || ref.read(currentAccountReaderProvider)() != owner) {
+    throw StateError('Lesson account is no longer current');
+  }
+  final chapters =
+      await ref.watch(studyRepositoryProvider).fetchChapters(jlptLevel);
+  if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
+    throw StateError('Lesson account changed while loading');
+  }
+  return chapters;
+}, retry: (_, __) => null);
 
 final lessonDetailProvider = FutureProvider.autoDispose
     .family<LessonDetailModel, String>((ref, lessonId) {

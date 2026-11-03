@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_service.dart';
@@ -13,7 +14,11 @@ void main() {
     setUp(() {
       repository = _FakeStudyRepository();
       container = ProviderContainer(
-        overrides: [studyRepositoryProvider.overrideWith((ref) => repository)],
+        overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          studyRepositoryProvider.overrideWith((ref) => repository),
+        ],
       );
       for (final level in ['N5', 'N4']) {
         container.listen(chaptersProvider(level), (_, __) {});

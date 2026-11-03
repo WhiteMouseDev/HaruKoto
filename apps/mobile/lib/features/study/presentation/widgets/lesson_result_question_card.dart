@@ -4,10 +4,11 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../data/models/lesson_models.dart';
+import 'lesson_result_feedback.dart';
 
 class LessonResultQuestionCard extends StatelessWidget {
   final QuestionResultModel result;
-  final LessonQuestionModel question;
+  final LessonQuestionModel? question;
 
   const LessonResultQuestionCard({
     super.key,
@@ -15,56 +16,22 @@ class LessonResultQuestionCard extends StatelessWidget {
     required this.question,
   });
 
-  IconData _srsTransitionIcon(String before, String after) {
-    if (before == 'UNSEEN') return LucideIcons.sparkles;
-    if (after == 'REVIEW' || after == 'MASTERED') return LucideIcons.trendingUp;
-    if (after == 'RELEARNING') return LucideIcons.refreshCw;
-    return LucideIcons.arrowLeftRight;
-  }
-
-  String _srsStateLabel(String state) {
-    switch (state.trim().toUpperCase()) {
+  String? _stateLabel(String? state) {
+    switch (state?.trim().toUpperCase()) {
       case 'UNSEEN':
-        return '새로 배운 항목';
+        return '새로 배우기 시작했어요';
       case 'PROVISIONAL':
-        return '복습 준비 중';
+        return '복습을 준비하고 있어요';
       case 'LEARNING':
         return '학습 중';
       case 'REVIEW':
         return '복습 예정';
       case 'RELEARNING':
-        return '다시 학습 필요';
+        return '다시 익히는 중';
       case 'MASTERED':
-        return '익혔어요';
+        return '익힌 항목';
       default:
-        return '복습 상태 업데이트';
-    }
-  }
-
-  Color _srsTransitionColor(
-    Brightness brightness,
-    String before,
-    String after,
-  ) {
-    if (after == 'MASTERED') return AppColors.success(brightness);
-    if (after == 'REVIEW') return AppColors.info(brightness);
-    if (after == 'LEARNING') return AppColors.warning(brightness);
-    if (after == 'RELEARNING') return AppColors.error(brightness);
-    if (after == 'PROVISIONAL') return AppColors.warning(brightness);
-    return AppColors.lightSubtext;
-  }
-
-  String _formatReviewDate(String isoDate) {
-    try {
-      final date = DateTime.parse(isoDate);
-      final now = DateTime.now();
-      final diff = date.difference(now);
-      if (diff.inMinutes < 60) return '${diff.inMinutes}분 후';
-      if (diff.inHours < 24) return '${diff.inHours}시간 후';
-      if (diff.inDays < 7) return '${diff.inDays}일 후';
-      return '${date.month}/${date.day}';
-    } catch (_) {
-      return isoDate;
+        return null;
     }
   }
 
@@ -72,8 +39,16 @@ class LessonResultQuestionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
-    final stateBefore = result.stateBefore;
-    final stateAfter = result.stateAfter;
+    final matchingQuestion = question?.order == result.order ? question : null;
+    final answer = lessonResultAnswerText(result, matchingQuestion);
+    final prompt = matchingQuestion?.prompt.trim();
+    final explanation = result.explanation?.trim();
+    final reviewDate = lessonResultReviewDate(result.nextReviewAt);
+    final stateLabel = _stateLabel(result.stateAfter);
+    final isSentence = matchingQuestion?.type == 'SENTENCE_REORDER';
+    final answerSurface = brightness == Brightness.light
+        ? AppColors.sakuraTrack
+        : AppColors.primary.withValues(alpha: 0.12);
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSizes.sm),
@@ -83,6 +58,7 @@ class LessonResultQuestionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   result.isCorrect
@@ -96,88 +72,84 @@ class LessonResultQuestionCard extends StatelessWidget {
                 const SizedBox(width: AppSizes.sm),
                 Expanded(
                   child: Text(
-                    question.prompt,
-                    style: theme.textTheme.bodyMedium,
+                    '${result.order > 0 ? '문제 ${result.order} · ' : ''}'
+                    '${result.isCorrect ? '정답이에요' : '다시 확인해요'}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
-            if (result.explanation != null) ...[
-              const SizedBox(height: AppSizes.xs),
-              Padding(
-                padding: const EdgeInsets.only(left: 28),
-                child: Text(
-                  result.explanation!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.lightSubtext,
-                  ),
-                ),
+            const SizedBox(height: AppSizes.sm),
+            Text(
+              prompt == null || prompt.isEmpty
+                  ? '이 문항의 원문을 확인할 수 없어요.'
+                  : prompt,
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSizes.sm),
+              decoration: BoxDecoration(
+                color: answerSurface,
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
-            ],
-            if (stateBefore != null && stateAfter != null) ...[
-              const SizedBox(height: AppSizes.sm),
-              Padding(
-                padding: const EdgeInsets.only(left: 28),
-                child: Row(
-                  children: [
-                    Icon(
-                      _srsTransitionIcon(stateBefore, stateAfter),
-                      size: 14,
-                      color: _srsTransitionColor(
-                        brightness,
-                        stateBefore,
-                        stateAfter,
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isSentence ? '완성 문장' : '정답',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(width: AppSizes.xs),
-                    Text(
-                      _srsStateLabel(stateAfter),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _srsTransitionColor(
-                          brightness,
-                          stateBefore,
-                          stateAfter,
-                        ),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (result.isProvisionalPhase) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning(brightness)
-                              .withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'SRS 등록됨',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.warning(brightness),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
+                  ),
+                  const SizedBox(height: AppSizes.xs),
+                  Text(
+                    answer ?? '정답 정보를 확인할 수 없어요.',
+                    style: answer == null
+                        ? theme.textTheme.bodySmall
+                        : theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-            if (result.nextReviewAt != null) ...[
-              const SizedBox(height: AppSizes.xs),
-              Padding(
-                padding: const EdgeInsets.only(left: 28),
-                child: Text(
-                  '다음 복습: ${_formatReviewDate(result.nextReviewAt!)}',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.lightSubtext,
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Text(
+              '해설',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSizes.xs),
+            Text(
+              explanation == null || explanation.isEmpty
+                  ? '이 문항에는 별도 해설이 없어요.'
+                  : explanation,
+              style: theme.textTheme.bodyMedium,
+            ),
+            if (stateLabel != null || reviewDate != null) ...[
+              const SizedBox(height: AppSizes.sm),
+              Divider(color: theme.colorScheme.outlineVariant),
+              if (stateLabel != null)
+                Text(
+                  '제출 당시 상태: $stateLabel',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-              ),
+              if (reviewDate != null) ...[
+                const SizedBox(height: AppSizes.xs),
+                Text(
+                  '제출 당시 복습 예정: $reviewDate',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ],
           ],
         ),

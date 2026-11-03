@@ -27,6 +27,7 @@ class LessonResultStep extends StatefulWidget {
 class _LessonResultStepState extends State<LessonResultStep>
     with SingleTickerProviderStateMixin {
   late final AnimationController _staggerController;
+  bool? _wrongOnly;
 
   @override
   void initState() {
@@ -38,6 +39,15 @@ class _LessonResultStepState extends State<LessonResultStep>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _staggerController.forward();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant LessonResultStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.detail.id != widget.detail.id ||
+        oldWidget.result != widget.result) {
+      _wrongOnly = null;
+    }
   }
 
   @override
@@ -73,7 +83,17 @@ class _LessonResultStepState extends State<LessonResultStep>
     final score = result.scoreTotal > 0
         ? (result.scoreCorrect / result.scoreTotal * 100).round()
         : 0;
-    final isPerfect = result.scoreCorrect == result.scoreTotal;
+    final isPerfect =
+        result.scoreTotal > 0 && result.scoreCorrect == result.scoreTotal;
+    final wrongCount = result.results.where((item) => !item.isCorrect).length;
+    final wrongOnly = _wrongOnly ?? wrongCount > 0;
+    final visibleResults = result.results
+        .asMap()
+        .entries
+        .where((entry) => !wrongOnly || !entry.value.isCorrect)
+        .toList(growable: false);
+    final hasReviewMetadata = result.results
+        .any((item) => item.stateAfter != null || item.nextReviewAt != null);
 
     return Column(
       children: [
@@ -104,15 +124,71 @@ class _LessonResultStepState extends State<LessonResultStep>
                   ),
                 ),
               const SizedBox(height: AppSizes.sm),
-              ...result.results.asMap().entries.map((entry) {
+              Text(
+                wrongCount > 0 ? '틀린 문항부터 확인해요' : '레슨 결과 다시 보기',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Wrap(
+                spacing: AppSizes.sm,
+                runSpacing: AppSizes.xs,
+                children: [
+                  ChoiceChip(
+                    key: const ValueKey('lesson-results-wrong'),
+                    label: Text('오답만 $wrongCount'),
+                    selected: wrongOnly,
+                    onSelected: (_) => setState(() => _wrongOnly = true),
+                  ),
+                  ChoiceChip(
+                    key: const ValueKey('lesson-results-all'),
+                    label: Text('전체 ${result.results.length}'),
+                    selected: !wrongOnly,
+                    onSelected: (_) => setState(() => _wrongOnly = false),
+                  ),
+                ],
+              ),
+              if (hasReviewMetadata) ...[
+                const SizedBox(height: AppSizes.sm),
+                Text(
+                  '복습 정보는 제출 당시 기준이에요.\n'
+                  '현재 복습 일정은 학습 탭에서 확인해 주세요.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+              const SizedBox(height: AppSizes.sm),
+              if (visibleResults.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+                  child: Text(
+                    wrongOnly && result.results.isNotEmpty
+                        ? '틀린 문항이 없어요. 전체 보기에서 정답을 다시 확인해 보세요.'
+                        : '문항별 결과가 없어 정답을 표시할 수 없어요.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ...visibleResults.map((entry) {
                 final lessonResult = entry.value;
-                final question = detail.content.questions.firstWhere(
-                  (candidate) => candidate.order == lessonResult.order,
-                  orElse: () => detail.content.questions.first,
-                );
+                final matchingQuestions = detail.content.questions
+                    .where((candidate) => candidate.order == lessonResult.order)
+                    .toList(growable: false);
+                final uniqueResultOrder = result.results
+                        .where((candidate) =>
+                            candidate.order == lessonResult.order)
+                        .length ==
+                    1;
+                final question =
+                    matchingQuestions.length == 1 && uniqueResultOrder
+                        ? matchingQuestions.single
+                        : null;
                 return _staggered(
                   entry.key + 3,
                   LessonResultQuestionCard(
+                    key: ValueKey(
+                        'lesson-result-${entry.key}-${lessonResult.order}'),
                     result: lessonResult,
                     question: question,
                   ),
