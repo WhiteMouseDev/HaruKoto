@@ -7,7 +7,7 @@ from app.services.ai_client import create_google_live_token_client
 _LIVE_WS_URI = (
     "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained"
 )
-_LIVE_MODEL = "models/gemini-3.1-flash-live-preview"
+_LIVE_MODEL = "models/gemini-3.8-live"
 
 
 async def generate_live_token() -> dict[str, str]:
