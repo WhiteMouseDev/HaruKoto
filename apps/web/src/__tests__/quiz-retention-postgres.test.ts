@@ -21,6 +21,15 @@ import { getTodayKST } from '@/lib/date';
 import { POST as kanaProgress } from '@/app/api/v1/kana/progress/route';
 
 const auth = vi.hoisted(() => ({ getUser: vi.fn() }));
+const policy = vi.hoisted(() => ({ separationEnabled: true }));
+// Exercise both policy versions explicitly, independently of the release's
+// source default. The helper suite separately verifies that default binding.
+vi.mock('@/lib/study-day-policy', async (original) => ({
+  ...(await original<typeof import('@/lib/study-day-policy')>()),
+  get STUDY_DAY_CREDIT_SEPARATION_ENABLED() {
+    return policy.separationEnabled;
+  },
+}));
 vi.mock('@/lib/supabase/server', () => ({
   createClient: async () => ({ auth: { getUser: auth.getUser } }),
 }));
@@ -125,6 +134,7 @@ describe.runIf(enabled)(
       );
     });
     beforeEach(async () => {
+      policy.separationEnabled = true;
       userId = randomUUID();
       questionId = randomUUID();
       sessionId = randomUUID();
@@ -355,6 +365,54 @@ describe.runIf(enabled)(
           streakCount: 4,
           longestStreak: 7,
         });
+      }
+    );
+
+    it('compatibility OFF never creates FALSE for a new delayed-completion day', async () => {
+      policy.separationEnabled = false;
+      await seedPreviousDayAnswer();
+      expect((await complete(request({ sessionId }))).status).toBe(200);
+      const after = await evidence();
+      expect(after.day[0]).toMatchObject({
+        studyDayCredited: true,
+        quizzesCompleted: 1,
+        xpEarned: 10,
+      });
+      expect(after.user.lastStudyDate).toEqual(getTodayKST());
+      expect((await complete(request({ sessionId }))).status).toBe(200);
+      expect(await evidence()).toEqual(after);
+    });
+
+    it.each([false, true] as const)(
+      'compatibility OFF preserves stored day credit %s during delayed completion',
+      async (credit) => {
+        policy.separationEnabled = false;
+        const previous = await seedPreviousDayAnswer();
+        await prisma.dailyProgress.create({
+          data: {
+            userId,
+            date: getTodayKST(),
+            studyDayCredited: credit,
+            wordsStudied: 3,
+            xpEarned: 20,
+          },
+        });
+        expect((await complete(request({ sessionId }))).status).toBe(200);
+        const after = await evidence();
+        expect(after.day[0]).toMatchObject({
+          studyDayCredited: credit,
+          wordsStudied: 4,
+          xpEarned: 30,
+        });
+        expect(after.user.lastStudyDate).toEqual(
+          credit ? getTodayKST() : previous
+        );
+        if (!credit) {
+          expect(after.user.streakCount).toBe(4);
+          expect(after.user.longestStreak).toBe(7);
+        }
+        expect((await complete(request({ sessionId }))).status).toBe(200);
+        expect(await evidence()).toEqual(after);
       }
     );
 

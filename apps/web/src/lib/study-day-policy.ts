@@ -4,4 +4,4 @@ export const ANSWERED_STUDY_DAY_RECOGNITION_ENABLED = true;
 
 // Local feature policy. Readers and real-activity writers remain compatible
 // with explicit credit values even when new delayed-completion separation is OFF.
-export const STUDY_DAY_CREDIT_SEPARATION_ENABLED = true;
+export const STUDY_DAY_CREDIT_SEPARATION_ENABLED = false;

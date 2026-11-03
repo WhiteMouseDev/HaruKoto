@@ -13,6 +13,9 @@ export const REQUIRED_WEB_RETENTION_CASES = Object.freeze([
   'preserves pre-existing day credit false before completion adds XP',
   'never demotes a concurrent real answer when recovering an old completion',
   'serializes actual kana progress with delayed completion without losing day credit',
+  'compatibility OFF never creates FALSE for a new delayed-completion day',
+  'compatibility OFF preserves stored day credit false during delayed completion',
+  'compatibility OFF preserves stored day credit true during delayed completion',
 ]);
 
 export function checkWebRetentionReport(report) {

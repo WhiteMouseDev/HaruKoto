@@ -48,6 +48,13 @@ NOW = datetime(2026, 11, 3, 1, tzinfo=UTC)
 OLD = NOW - timedelta(days=3)
 
 
+@pytest.fixture(autouse=True)
+def credit_policy_tests_explicitly_enable_separation(monkeypatch):
+    # These cases exercise the reviewed ON policy, independently of the release
+    # artifact's source gate. Compatible-OFF cases explicitly switch it below.
+    monkeypatch.setattr(study_day_credit, "STUDY_DAY_CREDIT_SEPARATION_ENABLED", True)
+
+
 async def _old_quiz(engine, attempt):
     sid = await _seed_activity(engine, attempt, "quiz")
     async with async_sessionmaker(engine)() as db:
@@ -137,6 +144,29 @@ async def test_compatible_off_keeps_false_then_actual_answer_promotes_true(engin
     third = await _old_quiz(engine, attempt)
     await _complete(engine, attempt, third)
     assert (await _state(engine, attempt.user_id))["daily"][0]["study_day_credited"] is True
+
+
+@pytest.mark.parametrize(
+    "credit,expected,streak",
+    [(None, True, 1), (False, False, 0), (True, True, 1)],
+    ids=["new-day-keeps-legacy-credit", "stored-false-preserved", "stored-true-preserved"],
+)
+async def test_compatible_off_completion_preserves_credit_decisions(engine, monkeypatch, credit, expected, streak):
+    monkeypatch.setattr(study_day_credit, "STUDY_DAY_CREDIT_SEPARATION_ENABLED", False)
+    attempt = await _seed(engine)
+    sid = await _old_quiz(engine, attempt)
+    if credit is not None:
+        async with async_sessionmaker(engine)() as db:
+            db.add(DailyProgress(user_id=attempt.user_id, date=NOW.date(), study_day_credited=credit, xp_earned=20))
+            await db.commit()
+    _freeze(monkeypatch, quiz_complete, NOW)
+    await _complete(engine, attempt, sid)
+    state = await _state(engine, attempt.user_id)
+    assert state["daily"][0]["study_day_credited"] is expected
+    assert state["daily"][0]["xp_earned"] == (10 if credit is None else 30)
+    assert state["user"]["streak_count"] == streak
+    await _complete(engine, attempt, sid)
+    assert await _state(engine, attempt.user_id) == state
 
 
 @pytest.mark.parametrize("answer_first", [False, True], ids=["completion-first", "answer-first"])

@@ -22,8 +22,8 @@ function passing() {
   };
 }
 
-test('requires all ten real database concurrency and preservation cases', () => {
-  assert.equal(REQUIRED_WEB_RETENTION_CASES.length, 10);
+test('requires all thirteen real database concurrency and preservation cases', () => {
+  assert.equal(REQUIRED_WEB_RETENTION_CASES.length, 13);
   assert.deepEqual(checkWebRetentionReport(passing()), []);
 });
 test('rejects a missing case even if all remaining tests pass', () => {

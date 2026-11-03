@@ -11,6 +11,16 @@ NOW = datetime(2026, 11, 3, 1, tzinfo=UTC)
 OLD = NOW - timedelta(days=3)
 
 
+def test_release_source_gate_drives_new_completion_day_without_overriding_stored_false():
+    enabled = study_day_credit.STUDY_DAY_CREDIT_SEPARATION_ENABLED
+    result = study_day_credit.resolve_quiz_completion_study_day(None, first_answer_times=[OLD], completed_at=NOW)
+    assert result.credited is (not enabled) and result.update_streak is (not enabled)
+    stored = study_day_credit.resolve_quiz_completion_study_day(
+        SimpleNamespace(study_day_credited=False, xp_earned=20), first_answer_times=[OLD], completed_at=NOW
+    )
+    assert stored.credited is False and stored.update_streak is False
+
+
 @pytest.mark.parametrize(
     "credit,legacy_xp,expected",
     [(None, 0, False), (None, 20, True), (False, 20, False), (True, 0, True)],
