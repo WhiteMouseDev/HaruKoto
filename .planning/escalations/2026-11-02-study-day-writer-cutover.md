@@ -3,8 +3,15 @@ raised_by: codex-root
 raised_at: 2026-11-02
 phase: answered-study-day-operational-readiness
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-03T13:08:06+09:00
 ---
+
+## Resolution
+
+사용자가 내부 테스트 범위의 실제 전환과 DB·배포 변경을 승인했고, 다른 내부 테스터 전원 중단도 확인했다. 새 Preview/WAF는 제외했다. 실제 구 API 프로세스 종료와 DB 트랜잭션 정리를 확인한 뒤 기존 p6만 적용하고 #215 호환 OFF → #216 ON을 배포했다. 기존 18테이블·권한 보존과 ON 단일 activity의 중복 방지를 검증했다. Data API 차단과 기존 음원 설정은 유지했다.
+
+웹의 createDeployments=disabled가 main Git 배포 생성을 막지 못한 관측은 한계로 남긴다. 해당 자동 배포는 p6 이후 main에 병합한 호환 OFF였으며 구 writer가 아니었다. 이 설정을 writer 차단 보장으로 재사용하지 않는다. 실제 변경·복구와 검증 범위는 [전환 결과](../../docs/operations/plans/internal-study-release-results-2026-11-03.md)를 따른다. 아래 내용은 해결 전 판단 이력이다.
 
 ## What happened
 
