@@ -6,7 +6,7 @@
 
 읽기 전용 메타데이터로 운영 API `harukoto-api-00252-6jq` 100%의 소스와 운영 웹의 immutable production deployment 소스가 모두 `26a81bceda1c9c6df7240abbb63aff830a4da4e6`임을 확인했다. 별도 STOP 브랜치는 main `363b1661a4d61d483956c84a2ab2f98f8ceef918`에서 만들었다. 두 커밋 사이 `apps/api`, `apps/web`, `packages`의 diff가 비어 있어 실제 운영 서버·웹 코드와 같은 기준이다.
 
-운영 DB는 이번에 연결하지 않았다. 운영 메타데이터 확인은 API revision·배포 커밋 읽기에 한정했다. schema 호환성은 **폐기형 로컬 DB에 o5까지 적용한 실제 구 스키마**로 검증한다. #215의 p6 모델/마이그레이션·새 사용자→세션 잠금·#217 완료 보완·새 폰트 자산은 이 PR에 포함하지 않는다. Prisma도 별도 로컬 의존성에서 구 스키마로 생성하고, 새 `activity_recorded`/`study_activity_receipts`가 없는 client인지 확인한다.
+운영 DB는 이번에 연결하지 않았다. 운영 메타데이터 확인은 API revision·배포 커밋 읽기에 한정했다. schema 호환성은 **폐기형 로컬 DB에 o5까지 적용한 실제 구 스키마**로 검증한다. #215의 p6 모델/마이그레이션·새 사용자→세션 잠금·#217 완료 보완·운영 공용 폰트 자산은 이 PR에 포함하지 않는다. 관리자 E2E의 외부 의존성을 없애는 테스트 전용 폰트 fixture는 별도로 둔다. Prisma도 별도 로컬 의존성에서 구 스키마로 생성하고, 새 `activity_recorded`/`study_activity_receipts`가 없는 client인지 확인한다.
 
 ## STOP 동작과 소스 스위치
 
@@ -68,6 +68,14 @@ STOP PR의 CI는 이 구 운영 기반에서 자체 검사한다. API의 기존 
 검증에서 production token/URL이나 `.env`를 테스트로 복사하지 않았다. QA 폰트 fixture 빌드 결과를 실제 Google 연결 안정성·운영 폰트 수정·성능 개선 증거로 표현하지 않는다. 소스 재검토에서 추가 P1/P2 finding은 없었으며, 예전 웹 탭·특수 모드·메모리 한계는 앞 절의 운영 전제로 남는다.
 
 비공개 실행 자료는 `/private/tmp/harukoto-legacy-stop-20261103/`의 API 최종 로그/JUnit, `stop-web-results.json`, `web-full.log`, `web-qa/on-http-proof.json`과 ON/OFF 빌드 로그, `consumer/`에 보관한다. 실행한 폐기형 PostgreSQL·Next·합성 auth·폰트 서버는 모두 종료했다. 새 운영 DB/설정 변경이나 배포·기기 설치는 하지 않았다. STOP PR의 원격 CI 결과는 PR 생성 뒤 별도로 확인하며 로컬 결과로 대신하지 않는다.
+
+## 최초 원격 CI와 테스트 환경 보완
+
+#218의 [최초 CI 864](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41561416008)에서 frontend의 STOP172개·검사기4개·기본 전체 앱 빌드, backend·schema-drift·api-contract는 통과했다. 관리자 E2E dev 서버는 변경하지 않은 `next/font/google`의 일본어 loader 오류(`next/font/google queries have exactly one entry`, 내부 font 모듈 해석 실패)로 준비되지 못하고 timeout됐다. STOP 라우트나 관리자 테스트 assertion 실패로 분류하지 않는다.
+
+관리자 브라우저 smoke는 앱 기능 검증에 집중하도록 Playwright의 **테스트 전용 launcher**에 기존 Next test mock hook과 localhost WOFF2 fixture를 넣는다. 제품 layout·폰트 로더·Next 버전·runtime env 계약은 유지한다. fixture는 OFL이 있는 공식 Latin font 원본이며 CJK typography 검증으로 설명하지 않는다. 일반 frontend 빌드는 여전히 실제 Google loader로 수행하므로 이를 font build 검증의 대체물로 사용하지 않는다. 무조건 재실행해 녹색 결과만 남기는 방식은 사용하지 않는다. 후속 head의 E2E·전체 CI는 따로 확인한다.
+
+보완 뒤 실제 관리자 Playwright 전체 **23/23 통과(20.0초)**, 기존 캐시를 유지한 `CI=1` 서버 재시작 로그인 smoke **1/1 통과(4.1초)**를 확인했다. 관리자 단위 검사는 **45 passed / 기존 10 todo**, lint·typecheck·diff 검사는 통과했다. 테스트 실행으로 생성된 `next-env.d.ts` 변경은 복원했고 테스트 서버도 종료했다. 고정 응답 모듈·loopback URL로 재시작 시 임시 font endpoint가 캐시에 남는 문제도 제거했다. 로그는 `admin-e2e-local.log`, `admin-e2e-warm.log`에 보관한다.
 
 ## 적용 전 구체안: 아직 실행하지 않음
 
