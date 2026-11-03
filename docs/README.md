@@ -71,6 +71,7 @@ docs/
 - [파티션 자동 점검 감사·2월 보완 제안](operations/plans/partition-monitor-audit-2026-10-30.md) — 9일 연속 자연 실행 확인, 2027년 2월 부재와 승인 전 추가·보존 절차
 - [11월 월 전환 후 읽기 전용 점검](operations/plans/partition-monitor-november-audit-2026-11-02.md) — 10/31~11/2 자연 실행·최소 권한·현재 커버리지와 다음 3월 보완 기한
 - [2027년 2월 파티션 보완 적용 기록](operations/plans/review-event-february-partition-rollout-2026-10-30.md) — 승인된 단일 파티션 마이그레이션, 보존 회귀와 운영·시뮬레이터 검증 단계
+- [며칠 뒤에도 이어 푸는 미완료 퀴즈 제안](operations/plans/long-lived-quiz-resume-proposal-2026-11-03.md) — 24시간/새 시작 자동 완료 제거, 다중 보존·목록 API, 과거 기록 무백필과 승인 전 적용·롤백안
 - [특수 퀴즈 이어하기 계약 제안](operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md) — matching/arrange 모드·표시 snapshot, 기존 세션 무백필 처리와 웹·모바일 회귀안
 - [특수 퀴즈 이어하기 구현·검증](operations/plans/special-quiz-resume-implementation-2026-10-30.md) — 같은 세션·원본 ID 복원, 정답/오답 제외, 기존 복습 기한 보존과 격리 시뮬레이터 검증
 - [특수 퀴즈 이어하기 운영 반영](operations/plans/special-quiz-resume-production-rollout-2026-10-30.md) — 웹 선행 배포·#209 병합·서버/앱 반영 순서와 기존 기록·복습 기한·음원·보안 보존 확인
