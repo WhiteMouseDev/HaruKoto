@@ -48,6 +48,8 @@ def build_daily_progress_increment_statement(
     if not updates:
         raise ValueError("At least one daily progress increment is required")
 
+    values["study_day_credited"] = True
+    updates["study_day_credited"] = True
     stmt = pg_insert(DailyProgress).values(**values)
     return stmt.on_conflict_do_update(
         index_elements=["user_id", "date"],

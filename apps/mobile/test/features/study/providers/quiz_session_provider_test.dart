@@ -12,6 +12,65 @@ import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
 void main() {
   group('QuizSessionController', () {
+    test('account switch clears an active session and ignores a late start',
+        () async {
+      final repository = _FakeStudyRepository()..startGate = Completer<void>();
+      var owner = 'A';
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWith((ref) => owner),
+        currentAccountReaderProvider.overrideWithValue(() => owner),
+        studyRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(quizSessionProvider.notifier);
+      final loading = controller.initialize(const QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 2,
+      ));
+      owner = 'B';
+      container.invalidate(currentAccountIdProvider);
+      expect(container.read(quizSessionProvider).loadErrorCanRetry, isFalse);
+      repository.startGate!.complete();
+      await loading;
+      expect(container.read(quizSessionProvider).sessionId, isNull);
+      expect(container.read(quizSessionProvider).questions, isEmpty);
+      expect(
+          controller.answerCurrentQuestion(
+              optionId: 'a', questionType: 'VOCABULARY'),
+          isNull);
+      expect(repository.answerCalls, 0);
+      expect(await controller.completeQuiz(), isNull);
+      expect(repository.completeQuizCalls, 0);
+    });
+
+    test('reader account drift blocks stale answer before auth stream updates',
+        () async {
+      final repository = _FakeStudyRepository();
+      var owner = 'A';
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('A'),
+        currentAccountReaderProvider.overrideWithValue(() => owner),
+        studyRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(quizSessionProvider.notifier);
+      await controller.initialize(const QuizSessionRequest(
+        quizType: 'VOCABULARY',
+        jlptLevel: 'N5',
+        count: 2,
+      ));
+      owner = 'B';
+      expect(
+          controller.answerCurrentQuestion(
+              optionId: 'a', questionType: 'VOCABULARY'),
+          isNull);
+      controller.submitSpecialAnswer(
+          questionId: 'q1', isCorrect: true, questionType: 'VOCABULARY');
+      expect(repository.answerCalls, 0);
+      expect(await controller.completeQuiz(), isNull);
+      expect(repository.completeQuizCalls, 0);
+    });
     test('wrong review restores only unanswered source items in order',
         () async {
       final repository = _FakeStudyRepository()

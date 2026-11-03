@@ -70,7 +70,7 @@ async def get_profile(
     days_sq = (
         select(func.count())
         .select_from(DailyProgress)
-        .where(DailyProgress.user_id == user.id)
+        .where(DailyProgress.user_id == user.id, DailyProgress.study_day_credited.is_not(False))
         .correlate(None)
         .scalar_subquery()
         .label("total_study_days")

@@ -67,5 +67,9 @@ async def record_answered_study_day(db: AsyncSession, user: User, *, processed_a
     if not ANSWERED_STUDY_DAY_RECOGNITION_ENABLED:
         return
     day = apply_study_streak(user, processed_at=processed_at)
-    statement = insert(DailyProgress).values(**build_daily_progress_insert_values(user_id=user.id, today=day, activity_recorded=True))
-    await db.execute(statement.on_conflict_do_update(index_elements=["user_id", "date"], set_={"activity_recorded": True}))
+    statement = insert(DailyProgress).values(
+        **build_daily_progress_insert_values(user_id=user.id, today=day, activity_recorded=True, study_day_credited=True)
+    )
+    await db.execute(
+        statement.on_conflict_do_update(index_elements=["user_id", "date"], set_={"activity_recorded": True, "study_day_credited": True})
+    )

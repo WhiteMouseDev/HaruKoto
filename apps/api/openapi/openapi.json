@@ -2558,7 +2558,7 @@
           "quiz"
         ],
         "summary": "Get Incomplete Quiz",
-        "description": "미완료 퀴즈 세션 조회 (배너용).\n\n- 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지\n- 24시간 지난 세션은 자동 완료 처리",
+        "description": "미완료 퀴즈 세션 조회 (배너용).\n\n- 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지\n- 기간과 관계없이 기존 세션을 보존하며 조회는 상태를 변경하지 않음",
         "operationId": "get_incomplete_quiz_api_v1_quiz_incomplete_get",
         "responses": {
           "200": {
@@ -2577,6 +2577,106 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/quiz/incomplete-sessions": {
+      "get": {
+        "tags": [
+          "quiz"
+        ],
+        "summary": "Get Incomplete Quiz Sessions",
+        "description": "저장 답안이 있는 미완료 퀴즈를 최근 시작 순으로 읽기 전용 조회합니다.",
+        "operationId": "get_incomplete_quiz_sessions_api_v1_quiz_incomplete_sessions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "quizType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/QuizType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Quiztype"
+            }
+          },
+          {
+            "name": "jlptLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JlptLevel"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jlptlevel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncompleteQuizSessionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/quiz/resume": {
@@ -9736,6 +9836,34 @@
         ],
         "title": "IncompleteQuizSession"
       },
+      "IncompleteQuizSessionsResponse": {
+        "properties": {
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/SavedQuizSession"
+            },
+            "type": "array",
+            "title": "Sessions"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sessions",
+          "nextCursor"
+        ],
+        "title": "IncompleteQuizSessionsResponse"
+      },
       "JlptLevel": {
         "type": "string",
         "enum": [
@@ -12671,6 +12799,95 @@
         },
         "type": "object",
         "title": "ReviewSummaryResponse"
+      },
+      "SavedQuizSession": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "quizType": {
+            "type": "string",
+            "title": "Quiztype"
+          },
+          "jlptLevel": {
+            "type": "string",
+            "title": "Jlptlevel"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "title": "Totalquestions"
+          },
+          "answeredCount": {
+            "type": "integer",
+            "title": "Answeredcount"
+          },
+          "remainingCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remainingcount"
+          },
+          "startedAt": {
+            "type": "string",
+            "title": "Startedat"
+          },
+          "resumeStatus": {
+            "type": "string",
+            "enum": [
+              "available",
+              "legacy_unavailable",
+              "invalid_snapshot"
+            ],
+            "title": "Resumestatus"
+          },
+          "resumeReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "UNSUPPORTED_CLIENT",
+                  "UNSUPPORTED_LEGACY",
+                  "SNAPSHOT_INVALID",
+                  "CONTENT_UNAVAILABLE"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resumereason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "quizType",
+          "jlptLevel",
+          "mode",
+          "totalQuestions",
+          "answeredCount",
+          "remainingCount",
+          "startedAt",
+          "resumeStatus"
+        ],
+        "title": "SavedQuizSession"
       },
       "ScenarioCategory": {
         "type": "string",

@@ -19,13 +19,13 @@ from app.services.quiz_mode_questions import (
 from app.services.quiz_policy import calculate_smart_distribution
 from app.services.quiz_resume_snapshot import decode_quiz_resume_snapshot
 from app.services.quiz_session import (
-    auto_complete_sessions,
     build_session_questions_data,
     fetch_stage_content_ids,
     generate_matching_pairs,
 )
 from app.services.quiz_smart import load_smart_pool_stats
 from app.services.quiz_smart_questions import load_smart_questions
+from app.services.study_day_recording import lock_study_user
 
 
 class QuizStartServiceError(Exception):
@@ -76,7 +76,7 @@ async def start_quiz_session(
     user: User,
     body: QuizStartRequest,
 ) -> QuizStartResult:
-    await auto_complete_sessions(db, user)
+    await lock_study_user(db, user)
 
     mode = body.mode if body.mode in {"matching", "cloze", "arrange", "review"} else "normal"
     quiz_type = body.quiz_type.value
@@ -148,7 +148,7 @@ async def start_smart_quiz_session(
     user: User,
     body: SmartStartRequest,
 ) -> QuizStartResult:
-    await auto_complete_sessions(db, user)
+    await lock_study_user(db, user)
 
     now = datetime.now(UTC)
     category = body.category

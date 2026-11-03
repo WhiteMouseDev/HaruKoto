@@ -24,8 +24,14 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/hooks/use-quiz', () => ({
   useResumeQuiz: () => ({ mutateAsync: mocks.resume }),
   useStartQuiz: () => ({ mutateAsync: mocks.start }),
-  useAnswerQuestion: () => ({ mutate: mocks.answer }),
+  useAnswerQuestion: () => ({ mutateAsync: mocks.answer }),
   useCompleteQuiz: () => ({ mutateAsync: mocks.complete, isPending: false }),
+}));
+vi.mock('@/lib/supabase/client', () => ({
+  createClient: () => ({ auth: {
+    getSession: async () => ({ data: { session: { user: { id: 'qa-user' } } } }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+  } }),
 }));
 vi.mock('@/hooks/use-wordbook', () => ({
   useAddWord: () => ({ isPending: false, mutate: vi.fn() }),

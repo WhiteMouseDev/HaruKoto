@@ -234,7 +234,7 @@ async def test_stage_matching_keeps_content_id_scope_when_level_pool_has_other_i
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("quiz_type", ["KANJI", "LISTENING", "SENTENCE_ARRANGE", "CLOZE"])
-async def test_unsupported_free_matching_rolls_back_pending_completion_and_xp(wrong_review_sessions, quiz_type):
+async def test_unsupported_free_matching_preserves_pending_session_and_xp(wrong_review_sessions, quiz_type):
     sessions = wrong_review_sessions
     user_id, stage_id = await seed(sessions)
     async with sessions() as db:
@@ -253,7 +253,7 @@ async def test_unsupported_free_matching_rolls_back_pending_completion_and_xp(wr
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("category", ["VOCABULARY", "GRAMMAR"])
-async def test_conflicting_stage_matching_category_rolls_back_pending_completion_and_xp(wrong_review_sessions, category):
+async def test_conflicting_stage_matching_category_preserves_pending_session_and_xp(wrong_review_sessions, category):
     sessions = wrong_review_sessions
     user_id, stage_id = await seed(sessions, category)
     async with sessions() as db:
@@ -485,7 +485,7 @@ async def test_legacy_arrange_category_conflict_is_unavailable_without_regrading
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("category", ["VOCABULARY", "GRAMMAR"])
-async def test_invalid_new_arrange_category_rolls_back_pending_auto_completion_and_xp(wrong_review_sessions, category):
+async def test_invalid_new_arrange_category_preserves_pending_session_and_xp(wrong_review_sessions, category):
     sessions = wrong_review_sessions
     user_id, stage_id = await seed(sessions, "SENTENCE")
     async with sessions() as db:
@@ -501,7 +501,7 @@ async def test_invalid_new_arrange_category_rolls_back_pending_auto_completion_a
     async with api(sessions, user_id) as client:
         response = await client.post("/api/v1/quiz/start", json={"quizType": category, "jlptLevel": "N5", "mode": "arrange", "count": 3})
         assert response.status_code == 400
-    # The failed start must not commit the earlier auto-completion flush or XP.
+    # A rejected start must leave the earlier session, answers and XP unchanged.
     assert await snapshot(sessions) == before
 
 

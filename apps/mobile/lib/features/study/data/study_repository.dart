@@ -8,6 +8,7 @@ import '../domain/quiz_resume_exception.dart';
 import 'models/lesson_models.dart';
 import 'models/quiz_question_model.dart';
 import 'models/quiz_session_model.dart';
+import 'models/saved_quiz_model.dart';
 import 'models/quiz_result_model.dart';
 import 'models/review_summary_model.dart';
 import 'models/smart_preview_model.dart';
@@ -43,6 +44,41 @@ class ApiStudyRepository implements StudyRepository {
     final session = response.data!['session'];
     if (session == null) return null;
     return IncompleteSessionModel.fromJson(session as Map<String, dynamic>);
+  }
+
+  @override
+  Future<SavedQuizPageModel> fetchIncompleteQuizzes({
+    int limit = 20,
+    String? cursor,
+    String? quizType,
+    String? jlptLevel,
+  }) async {
+    if (limit < 1 || limit > 50) throw RangeError.range(limit, 1, 50, 'limit');
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/quiz/incomplete-sessions',
+        queryParameters: {
+          'limit': limit,
+          if (cursor != null) 'cursor': cursor,
+          if (quizType != null) 'quizType': quizType,
+          if (jlptLevel != null) 'jlptLevel': jlptLevel,
+        },
+      );
+      return SavedQuizPageModel.fromJson(response.data!);
+    } on DioException catch (error) {
+      // Only a missing list endpoint permits the old representative fallback.
+      // Auth/network/server errors must remain visible and must not start a quiz.
+      if (error.response?.statusCode != 404 || cursor != null) rethrow;
+      final legacy = await fetchIncompleteQuiz();
+      return SavedQuizPageModel(
+        legacyFallback: true,
+        sessions: legacy != null &&
+                (quizType == null || legacy.quizType == quizType) &&
+                (jlptLevel == null || legacy.jlptLevel == jlptLevel)
+            ? [SavedQuizModel.fromLegacy(legacy)]
+            : const [],
+      );
+    }
   }
 
   @override

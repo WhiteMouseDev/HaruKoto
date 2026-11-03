@@ -64,7 +64,7 @@ describe.each([
     return { ...hook, invalidate };
   }
 
-  it('refreshes attendance only after server ACK and leaves target/SRS caches alone', async () => {
+  it('refreshes attendance and saved progress only after server ACK and leaves target/SRS caches alone', async () => {
     let release!: (value: unknown) => void;
     mocks.fetch.mockReturnValue(
       new Promise((resolve) => {
@@ -85,6 +85,7 @@ describe.each([
       ['dashboard'],
       ['profile'],
       ['stats-history'],
+      ...(_name === 'normal' ? [['quiz-incomplete']] : []),
     ]);
   });
 

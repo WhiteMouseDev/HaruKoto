@@ -14,6 +14,7 @@ import {
   preserveNewerStudyDate,
 } from '@/lib/study-activity-lock';
 import { lockStudyQuizSession } from '@/lib/answered-study-day';
+import { completionStudyDayCredit } from '@/lib/quiz-completion-study-day';
 import {
   decodeWebQuizSnapshot,
   QuizSnapshotError,
@@ -97,21 +98,68 @@ export async function POST(request: Request) {
       if (locked.completedAt)
         return result(locked, currentUser.experiencePoints);
 
+      // The final answer may still be in flight. Never close the session or
+      // award completion rewards until every original question is durable.
+      const snapshot = decodeWebQuizSnapshot(
+        locked.questionsData,
+        locked.totalQuestions,
+        locked.quizType
+      );
+      const savedAnswers = await tx.quizAnswer.findMany({
+        where: { sessionId },
+        select: { questionId: true, timeSpentSeconds: true, answeredAt: true },
+        orderBy: [{ answeredAt: 'asc' }, { id: 'asc' }],
+      });
+      const firstAnswers = new Map<string, (typeof savedAnswers)[number]>();
+      for (const answer of savedAnswers) {
+        if (!firstAnswers.has(answer.questionId))
+          firstAnswers.set(answer.questionId, answer);
+      }
+      if (
+        snapshot.questions.some(
+          (question) => !firstAnswers.has(question.questionId)
+        )
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              '아직 저장되지 않은 답안이 있어요. 답안을 저장한 뒤 다시 시도해 주세요.',
+          },
+          { status: 409 }
+        );
+      }
+
       const now = new Date();
       const today = getTodayKST(now);
+      const previousDay = await tx.dailyProgress.findUnique({
+        where: { userId_date: { userId: user.id, date: today } },
+      });
+      const dayCredit = completionStudyDayCredit(
+        previousDay,
+        snapshot.questions.map(
+          (question) => firstAnswers.get(question.questionId)!.answeredAt
+        ),
+        now
+      );
       const session = await tx.quizSession.update({
         where: { id: sessionId },
         data: { completedAt: now },
         include: { answers: true },
       });
       const xpEarned = session.correctCount * REWARDS.QUIZ_XP_PER_CORRECT;
-      const studyTimeSeconds = session.answers.reduce(
-        (sum, answer) => sum + answer.timeSpentSeconds,
+      const studyTimeSeconds = snapshot.questions.reduce(
+        (sum, question) =>
+          sum +
+          Math.max(
+            0,
+            firstAnswers.get(question.questionId)?.timeSpentSeconds ?? 0
+          ),
         0
       );
       await tx.dailyProgress.upsert({
         where: { userId_date: { userId: user.id, date: today } },
         update: {
+          studyDayCredited: dayCredit.credited,
           quizzesCompleted: { increment: 1 },
           correctAnswers: { increment: session.correctCount },
           totalAnswers: { increment: session.totalQuestions },
@@ -120,6 +168,7 @@ export async function POST(request: Request) {
           studyTimeSeconds: { increment: studyTimeSeconds },
         },
         create: {
+          studyDayCredited: dayCredit.credited,
           userId: user.id,
           date: today,
           quizzesCompleted: 1,
@@ -132,23 +181,32 @@ export async function POST(request: Request) {
       });
       const totalXp = currentUser.experiencePoints + xpEarned;
       const { level: newLevel } = calculateLevel(totalXp);
-      const streak = updateStreak(
-        currentUser.lastStudyDate,
-        currentUser.streakCount,
-        currentUser.longestStreak,
-        today
-      );
+      const streak = dayCredit.refreshStreak
+        ? updateStreak(
+            currentUser.lastStudyDate,
+            currentUser.streakCount,
+            currentUser.longestStreak,
+            today
+          )
+        : {
+            streakCount: currentUser.streakCount,
+            longestStreak: currentUser.longestStreak,
+          };
       await tx.user.update({
         where: { id: user.id },
         data: {
           experiencePoints: totalXp,
           level: newLevel,
-          streakCount: streak.streakCount,
-          longestStreak: streak.longestStreak,
-          lastStudyDate: preserveNewerStudyDate(
-            currentUser.lastStudyDate,
-            today
-          ),
+          ...(dayCredit.refreshStreak
+            ? {
+                streakCount: streak.streakCount,
+                longestStreak: streak.longestStreak,
+                lastStudyDate: preserveNewerStudyDate(
+                  currentUser.lastStudyDate,
+                  today
+                ),
+              }
+            : {}),
         },
       });
       const [quizCount, wordsAggregate] = await Promise.all([

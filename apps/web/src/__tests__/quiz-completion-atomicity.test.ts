@@ -61,7 +61,7 @@ const initial = () => ({
         correctOptionId: 'right',
       },
     ],
-    answers: [{ questionId, isCorrect: true, timeSpentSeconds: 2 }],
+    answers: [{ questionId, isCorrect: true, timeSpentSeconds: 2, answeredAt: new Date() }],
   },
   stages: {} as Record<
     string,
@@ -100,7 +100,9 @@ function client(draft: ReturnType<typeof initial>) {
       }),
       count: vi.fn(async () => 1),
     },
+    quizAnswer: { findMany: vi.fn(async () => draft.session.answers) },
     dailyProgress: {
+      findUnique: vi.fn(async () => draft.daily[0] ?? null),
       upsert: vi.fn(async ({ create }: { create: Record<string, unknown> }) => {
         mutationCount++;
         draft.daily.push(create);
@@ -296,25 +298,20 @@ describe.each(cases)(
 );
 
 const startBody = { quizType: 'VOCABULARY', jlptLevel: 'N5', mode: 'matching' };
-describe('starting a quiz auto-completes prior sessions safely', () => {
-  it('awards one partial-session reward for two simultaneous starts', async () => {
-    const responses = await Promise.all([
-      startQuiz(request(startBody)),
-      startQuiz(request(startBody)),
-    ]);
+describe('starting a quiz preserves prior sessions', () => {
+  it('leaves old answers, completion and XP untouched even after simultaneous starts with no new content', async () => {
+    const before = structuredClone(stored);
+    const responses = await Promise.all([startQuiz(request(startBody)), startQuiz(request(startBody))]);
     expect(responses.map((response) => response.status)).toEqual([200, 200]);
-    expect(stored.user.experiencePoints).toBe(80);
-    expect(stored.daily).toHaveLength(1);
-    expect(stored.session.completedAt).not.toBeNull();
+    expect(stored).toEqual(before);
+    expect(mutationCount).toBe(0);
+    expect(mocks.prisma.quizSession.findMany).not.toHaveBeenCalled();
   });
   it.each(['start-first', 'complete-first'])(
-    'shares completion authority with explicit completion (%s)',
-    async (order) => {
+    'only explicit completion awards XP when another quiz starts (%s)', async (order) => {
       const start = () => startQuiz(request(startBody));
       const complete = () => completeQuiz(request({ sessionId }));
-      const responses = await Promise.all(
-        order === 'start-first' ? [start(), complete()] : [complete(), start()]
-      );
+      const responses = await Promise.all(order === 'start-first' ? [start(), complete()] : [complete(), start()]);
       expect(responses.map((response) => response.status)).toEqual([200, 200]);
       expect(stored.user.experiencePoints).toBe(80);
       expect(stored.daily).toHaveLength(1);
@@ -323,27 +320,25 @@ describe('starting a quiz auto-completes prior sessions safely', () => {
       expect(stored).toEqual(committed);
     }
   );
-  it.each(['session', 'daily', 'user'])(
-    'rolls back prior-session completion when %s fails and retries it once',
-    async (point) => {
-      const before = structuredClone(stored);
-      failure = point;
-      expect((await startQuiz(request(startBody))).status).toBe(500);
-      expect(stored).toEqual(before);
-      expect((await startQuiz(request(startBody))).status).toBe(200);
-      expect(stored.user.experiencePoints).toBe(80);
-      expect(stored.daily).toHaveLength(1);
-      const committed = structuredClone(stored);
-      expect((await startQuiz(request(startBody))).status).toBe(200);
-      expect(stored).toEqual(committed);
-    }
-  );
-  it('preserves the zero-correct partial-session policy without adding attendance or rewards', async () => {
-    stored.session.answers[0].isCorrect = false;
-    stored.session.correctCount = 0;
-    expect((await startQuiz(request(startBody))).status).toBe(200);
-    expect(stored.user.experiencePoints).toBe(70);
-    expect(stored.daily).toHaveLength(0);
-    expect(stored.session.completedAt).not.toBeNull();
+});
+
+describe('web completion waits for durable answers', () => {
+  it('does not close, reward or count activity before the final answer is stored', async () => {
+    stored.session.answers = [];
+    const before = structuredClone(stored);
+    expect((await completeQuiz(request({ sessionId }))).status).toBe(409);
+    expect(stored).toEqual(before);
+    expect(mutationCount).toBe(0);
+    stored.session.answers = [{ questionId, isCorrect: true, timeSpentSeconds: 2, answeredAt: new Date() }];
+    expect((await completeQuiz(request({ sessionId }))).status).toBe(200);
+    expect(stored.user.experiencePoints).toBe(80);
+  });
+  it('does not count duplicate attempts or negative time as additional study time', async () => {
+    stored.session.answers = [
+      { questionId, isCorrect: false, timeSpentSeconds: 90, answeredAt: new Date() },
+      { questionId, isCorrect: true, timeSpentSeconds: 500, answeredAt: new Date() },
+    ];
+    expect((await completeQuiz(request({ sessionId }))).status).toBe(200);
+    expect(stored.daily[0]).toMatchObject({ studyTimeSeconds: 90 });
   });
 });

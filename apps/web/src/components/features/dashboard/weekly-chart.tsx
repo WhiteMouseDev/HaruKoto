@@ -38,8 +38,12 @@ export function WeeklyChart({ weeklyStats, dailyGoal = 10 }: WeeklyChartProps) {
       savedCount >= 0;
     const value = hasSavedCount ? savedCount : day.wordsStudied;
     const metGoal = value >= goal;
+    // Historical saved answers can still appear as activity without backfilling
+    // attendance. Completion-only XP must not recreate an explicit FALSE day.
     const hasActivity =
-      day.hasStudied === true || value > 0 || day.xpEarned > 0;
+      day.hasStudied === true ||
+      (hasSavedCount && value > 0) ||
+      (day.hasStudied == null && (value > 0 || day.xpEarned > 0));
     return {
       date: day.date,
       label: DAY_LABELS[dayIndex],

@@ -1,9 +1,21 @@
+import {
+  QUIZ_REFRESH_REQUIRED,
+  QUIZ_ATTEMPT_CONFLICT,
+  QUIZ_ALREADY_COMPLETED,
+  QUIZ_STATE_CHANGED,
+  QUIZ_TYPE_MISMATCH,
+  QUIZ_WRITE_CONFLICT,
+} from '@/lib/quiz-submission-errors';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { calculateSM2 } from '@/lib/spaced-repetition';
 import { SRS_CONFIG } from '@/lib/constants';
 import { z } from 'zod';
+import {
+  assertQuizContentAvailable,
+  QuizContentUnavailableError,
+} from '@/lib/quiz-content-availability';
 import { lockStudyActivityUser } from '@/lib/study-activity-lock';
 import {
   lockStudyQuizSession,
@@ -16,6 +28,8 @@ import {
 
 const quizAnswerSchema = z.object({
   sessionId: z.string().min(1),
+  attemptId: z.string().uuid().optional(),
+  previousAttemptId: z.string().uuid().nullable().optional(),
   questionId: z.string().min(1),
   selectedOptionId: z.string().min(1),
   timeSpentSeconds: z.number().int().min(0).default(0),
@@ -43,6 +57,8 @@ export async function POST(request: Request) {
 
     const {
       sessionId,
+      attemptId,
+      previousAttemptId,
       questionId,
       selectedOptionId,
       timeSpentSeconds,
@@ -75,6 +91,15 @@ export async function POST(request: Request) {
     );
     if (!questionData) throw new QuizSnapshotError('invalid');
 
+    if (!attemptId || previousAttemptId === undefined) {
+      return NextResponse.json(
+        {
+          error: QUIZ_REFRESH_REQUIRED,
+        },
+        { status: 409 }
+      );
+    }
+
     return await prisma.$transaction(async (tx) => {
       const currentUser = await lockStudyActivityUser(tx, user.id);
       const lockedSession = await lockStudyQuizSession(tx, sessionId);
@@ -96,16 +121,68 @@ export async function POST(request: Request) {
         (item) => item.questionId === questionId
       );
       if (!question) throw new QuizSnapshotError('invalid');
+      const replay = await tx.quizAnswer.findUnique({
+        where: { id: attemptId },
+      });
+      if (replay) {
+        const same =
+          replay.sessionId === sessionId &&
+          replay.questionId === questionId &&
+          replay.selectedOptionId === selectedOptionId &&
+          replay.questionType === questionType &&
+          replay.timeSpentSeconds === timeSpentSeconds;
+        if (!same)
+          return NextResponse.json(
+            {
+              error: QUIZ_ATTEMPT_CONFLICT,
+            },
+            { status: 409 }
+          );
+        return NextResponse.json({ success: true, answerId: replay.id });
+      }
+      if (lockedSession.completedAt)
+        return NextResponse.json(
+          { error: QUIZ_ALREADY_COMPLETED },
+          { status: 409 }
+        );
+      if (questionType !== lockedSession.quizType)
+        return NextResponse.json(
+          { error: QUIZ_TYPE_MISMATCH },
+          { status: 409 }
+        );
       const isCorrect = selectedOptionId === question.correctOptionId;
       const previousAnswer = await tx.quizAnswer.findFirst({
         where: { sessionId, questionId },
-        orderBy: [{ answeredAt: 'asc' }, { id: 'asc' }],
-        select: { id: true },
+        orderBy: [{ answeredAt: 'desc' }, { id: 'desc' }],
       });
+      if (
+        (previousAnswer?.id ?? null) !== previousAttemptId ||
+        previousAnswer?.isCorrect
+      ) {
+        return NextResponse.json(
+          {
+            error: QUIZ_STATE_CHANGED,
+          },
+          { status: 409 }
+        );
+      }
+      await assertQuizContentAvailable(tx, questionType, [questionId]);
       const processedAt = new Date();
+      // Do not synthesize timestamps at a KST boundary. A same-millisecond
+      // predecessor is retried after real server time advances.
+      if (previousAnswer && processedAt <= previousAnswer.answeredAt) {
+        return NextResponse.json(
+          {
+            error:
+              '답안 저장 순서를 확인하고 있어요. 잠시 후 같은 답안을 다시 저장해 주세요.',
+          },
+          { status: 409 }
+        );
+      }
       // Save answer
       await tx.quizAnswer.create({
         data: {
+          id: attemptId,
           sessionId,
           questionId,
           questionType,
@@ -221,14 +298,25 @@ export async function POST(request: Request) {
         });
       }
 
-      // Native web retries (including wrong -> correct matching) keep their
-      // existing answer/SRS effects. Only attendance uses first-answer evidence.
+      // Transport replays return above; an intentional next attempt has a new
+      // ID and an acknowledged predecessor. Attendance still uses first evidence.
       if (!previousAnswer && !lockedSession.completedAt) {
         await recordAnsweredStudyDay(tx, currentUser, processedAt);
       }
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, answerId: attemptId });
     });
   } catch (err) {
+    if (err instanceof QuizContentUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
+    }
+    if (
+      typeof err === 'object' &&
+      err !== null &&
+      'code' in err &&
+      (err.code === 'P2002' || err.code === 'P2003')
+    ) {
+      return NextResponse.json({ error: QUIZ_WRITE_CONFLICT }, { status: 409 });
+    }
     if (err instanceof QuizSnapshotError) {
       return NextResponse.json({ error: err.message }, { status: 409 });
     }

@@ -10,8 +10,11 @@ import { studyWriteErrorMessage } from '@/lib/study-write-stop';
 
 type AccountBoundary = { userId: string | null; generation: number };
 
-/** Refresh attendance only after a saved answer from the same login generation. */
-export function useStudyAnswer<Parameters>(url: string) {
+/** Refresh attendance/progress only after a saved answer from the same login generation. */
+export function useStudyAnswer<Parameters, Response = unknown>(
+  url: string,
+  options: { refreshSavedQuizzes?: boolean } = {}
+) {
   const queryClient = useQueryClient();
   const [supabase] = useState(createClient);
   const account = useRef<{
@@ -38,7 +41,7 @@ export function useStudyAnswer<Parameters>(url: string) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  return useMutation<unknown, Error, Parameters, AccountBoundary>({
+  return useMutation<Response, Error, Parameters, AccountBoundary>({
     onMutate: async () => {
       // Local session identity is only a cache guard. The server still verifies
       // cookie authentication and session ownership on every answer request.
@@ -50,7 +53,7 @@ export function useStudyAnswer<Parameters>(url: string) {
       return { userId, generation: account.current.generation };
     },
     mutationFn: (parameters) =>
-      apiFetch(url, {
+      apiFetch<Response>(url, {
         method: 'POST',
         body: JSON.stringify(parameters),
       }),
@@ -69,6 +72,13 @@ export function useStudyAnswer<Parameters>(url: string) {
         queryClient.invalidateQueries({ queryKey: queryKeys.dashboard }),
         queryClient.invalidateQueries({ queryKey: queryKeys.profile }),
         queryClient.invalidateQueries({ queryKey: ['stats-history'] }),
+        ...(options.refreshSavedQuizzes
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: queryKeys.quizIncomplete,
+              }),
+            ]
+          : []),
       ]);
     },
     onError: (error, _parameters, boundary) => {

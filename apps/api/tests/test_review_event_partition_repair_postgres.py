@@ -276,6 +276,10 @@ async def test_repair_preserves_auth_quiz_resume_and_atomic_lesson_srs_events(re
     engine, url = repair_database
     applied = await asyncio.to_thread(_alembic, url, "upgrade", REVISION)
     assert applied.returncode == 0, applied.stderr
+    # The partition revision itself was checked above; current ORM smoke needs
+    # the later additive receipt and study-day columns, with no history backfill.
+    current = await asyncio.to_thread(_alembic, url, "upgrade", "head")
+    assert current.returncode == 0, current.stderr
     # Pin only synthetic event routing, so this test remains meaningful after
     # this dated migration's coverage expires. Production defaults are untouched.
     await _sql(engine, "ALTER TABLE public.review_events ALTER COLUMN created_at SET DEFAULT '2026-10-19T01:00:00Z'::timestamptz")

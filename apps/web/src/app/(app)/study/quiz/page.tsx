@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  QUIZ_ACK_MISMATCH,
+  quizRequiresReload,
+} from '@/lib/quiz-submission-errors';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,6 +34,8 @@ import {
   type AnswerQuestionParams,
 } from '@/hooks/use-quiz';
 import { useAddWord } from '@/hooks/use-wordbook';
+import { useQuizAnswerQueue } from '@/hooks/use-quiz-answer-queue';
+import { createClient } from '@/lib/supabase/client';
 import {
   MatchingPairQuiz,
   type MatchingPair,
@@ -53,10 +59,7 @@ import {
   QUIZ_WEB_UNSUPPORTED_MESSAGE,
   restoreWebQuizProgress,
 } from '@/lib/quiz-session-snapshot';
-import {
-  isStudyWriteStopError,
-  STUDY_WRITE_STOP_MESSAGE,
-} from '@/lib/study-write-stop';
+import { studyWriteErrorMessage } from '@/lib/study-write-stop';
 
 function speakJapanese(text: string) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -125,14 +128,72 @@ function QuizContent() {
   const startQuizMutation = useStartQuiz();
   const resumeQuizMutation = useResumeQuiz();
   const answerMutation = useAnswerQuestion();
-  const [stoppedAnswer, setStoppedAnswer] =
-    useState<AnswerQuestionParams | null>(null);
+  const acknowledgedAttempts = useRef(new Map<string, string>());
+  const accountGeneration = useRef(0);
+  const answers = useQuizAnswerQueue<AnswerQuestionParams>(async (payload) => {
+    const generation = accountGeneration.current;
+    // Assign once, when its predecessor has been acknowledged. A failed send
+    // retains this same payload and ID through every explicit retry.
+    const key = `${payload.sessionId}:${payload.questionId}`;
+    payload.attemptId ??= crypto.randomUUID();
+    if (payload.previousAttemptId === undefined)
+      payload.previousAttemptId = acknowledgedAttempts.current.get(key) ?? null;
+    const response = await answerMutation.mutateAsync(payload);
+    if (generation !== accountGeneration.current)
+      throw new Error('계정이 변경되어 이전 답안 확인을 중단했어요.');
+    if (response.answerId !== payload.attemptId)
+      throw new Error(QUIZ_ACK_MISMATCH);
+    acknowledgedAttempts.current.set(key, response.answerId);
+    return response;
+  });
+  const [completionRequested, setCompletionRequested] = useState(false);
+  const [completionError, setCompletionError] = useState<Error | null>(null);
   const completeQuizMutation = useCompleteQuiz();
   const addWordMutation = useAddWord();
+  const [supabase] = useState(createClient);
+  useEffect(() => {
+    let active = true;
+    let identity: string | null | undefined;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const next = session?.user.id ?? null;
+      if (active && identity !== undefined && identity !== next) {
+        accountGeneration.current += 1;
+        answers.queue.cancel(true);
+        acknowledgedAttempts.current.clear();
+        setSessionId(null);
+        setQuestions([]);
+        setLoading(false);
+        setInitError({
+          message:
+            '계정이 변경됐어요. 현재 계정의 저장된 퀴즈에서 다시 시작해 주세요.',
+          retryable: false,
+        });
+      }
+      identity = next;
+    });
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (active && identity === undefined) identity = session?.user.id ?? null;
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase, answers.queue]);
 
   // Start or resume quiz
   useEffect(() => {
     let cancelled = false;
+    const generation = ++accountGeneration.current;
+    answers.queue.cancel(true);
+    answers.queue.activate();
+    acknowledgedAttempts.current.clear();
+    setCompletionRequested(false);
+    setCompletionError(null);
+    setCurrentIndex(0);
+    setAnswerState('idle');
+    setSelectedOption(null);
     async function initQuiz() {
       setLoading(true);
       setInitError(null);
@@ -141,7 +202,7 @@ function QuizContent() {
           const data = await resumeQuizMutation.mutateAsync({
             sessionId: resumeSessionId,
           });
-          if (cancelled) return;
+          if (cancelled || generation !== accountGeneration.current) return;
           if (data.questions) {
             const snapshot = decodeWebQuizSnapshot(
               { questions: data.questions, mode: data.mode },
@@ -173,13 +234,13 @@ function QuizContent() {
             count,
             mode: mode || undefined,
           });
-          if (cancelled) return;
+          if (cancelled || generation !== accountGeneration.current) return;
           setSessionId(data.sessionId);
           setSessionQuizType(quizType);
           setQuestions(data.questions);
         }
       } catch (err) {
-        if (cancelled) return;
+        if (cancelled || generation !== accountGeneration.current) return;
         const message = err instanceof Error ? err.message : '';
         const unavailable =
           err instanceof QuizSnapshotError ||
@@ -196,7 +257,8 @@ function QuizContent() {
           retryable: !unavailable,
         });
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && generation === accountGeneration.current)
+          setLoading(false);
       }
     }
     initQuiz();
@@ -216,7 +278,7 @@ function QuizContent() {
     ) {
       timerRef.current = 0;
       intervalRef.current = setInterval(() => {
-        timerRef.current += 1;
+        if (document.visibilityState === 'visible') timerRef.current += 1;
       }, 1000);
     }
     return () => {
@@ -235,8 +297,11 @@ function QuizContent() {
     // Push a dummy history entry so back button triggers popstate
     history.pushState({ quiz: true }, '');
 
-    function handlePopState() {
-      if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+    async function handlePopState() {
+      if (
+        confirm('서버에 저장된 답안부터 이어 풀 수 있어요. 나가시겠어요?') &&
+        (await answers.queue.flush())
+      ) {
         router.push('/study');
       } else {
         // User cancelled — re-push dummy entry to catch next back press
@@ -250,7 +315,7 @@ function QuizContent() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [loading, questions.length, router]);
+  }, [loading, questions.length, router, answers.queue]);
 
   const handleAnswer = useCallback(
     async (optionId: string) => {
@@ -275,11 +340,7 @@ function QuizContent() {
         timeSpentSeconds: timerRef.current,
         questionType: activeQuizType,
       };
-      answerMutation.mutate(payload, {
-        onError: (error) => {
-          if (isStudyWriteStopError(error)) setStoppedAnswer(payload);
-        },
-      });
+      answers.queue.enqueue(payload);
     },
     [
       answerState,
@@ -287,28 +348,42 @@ function QuizContent() {
       questions,
       currentIndex,
       activeQuizType,
-      answerMutation,
+      answers.queue,
     ]
   );
 
-  async function handleNext() {
-    if (answerMutation.isPending || stoppedAnswer) return;
-    if (currentIndex + 1 >= questions.length) {
-      // Complete quiz
-      const data = await completeQuizMutation
-        .mutateAsync({ sessionId: sessionId! })
-        .catch((error: unknown) => {
-          if (isStudyWriteStopError(error)) return null;
-          throw error;
-        });
-      if (!data) return;
+  async function finishQuiz() {
+    if (!sessionId || completeQuizMutation.isPending) return;
+    const generation = accountGeneration.current;
+    setCompletionRequested(true);
+    setCompletionError(null);
+    if (
+      !(await answers.queue.flush()) ||
+      generation !== accountGeneration.current
+    )
+      return;
+    try {
+      const data = await completeQuizMutation.mutateAsync({ sessionId });
+      if (generation !== accountGeneration.current) return;
       showGameEvents(data.events);
       router.replace(
         `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${activeQuizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
       );
+    } catch (error) {
+      if (generation !== accountGeneration.current) return;
+      setCompletionError(
+        error instanceof Error ? error : new Error('결과를 저장하지 못했어요.')
+      );
+    }
+  }
+
+  async function handleNext() {
+    if (answers.saving || answers.error) return;
+    if (!(await answers.queue.flush())) return;
+    if (currentIndex + 1 >= questions.length) {
+      await finishQuiz();
       return;
     }
-
     setCurrentIndex((prev) => prev + 1);
     setSelectedOption(null);
     setAnswerState('idle');
@@ -316,13 +391,9 @@ function QuizContent() {
     setWordSaved(false);
   }
 
-  async function retryStoppedAnswer() {
-    if (!stoppedAnswer || answerMutation.isPending) return;
-    try {
-      await answerMutation.mutateAsync(stoppedAnswer);
-      setStoppedAnswer(null);
-    } catch {
-      // Keep the exact refused answer and current question until an ACK.
+  async function retryAnswer() {
+    if (await answers.queue.retry()) {
+      if (completionRequested) await finishQuiz();
     }
   }
 
@@ -379,7 +450,7 @@ function QuizContent() {
     if (!sessionId) return;
     const question = questions.find((q) => q.questionId === pairId);
     if (question) {
-      answerMutation.mutate({
+      answers.queue.enqueue({
         sessionId,
         questionId: pairId,
         selectedOptionId: isCorrect ? question.correctOptionId : 'wrong',
@@ -405,19 +476,66 @@ function QuizContent() {
       setMatchingResults(accumulated);
       setMatchingRound((r) => r + 1);
     } else {
-      // All rounds done — complete quiz
-      const data = await completeQuizMutation.mutateAsync({
-        sessionId: sessionId!,
-      });
-      showGameEvents(data.events);
-      router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${activeQuizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
-      );
+      await finishQuiz();
     }
   }
 
-  if (loading) {
+  function withSaveStatus(content: React.ReactNode) {
+    const saveError = answers.error ?? completionError;
+    const reloadRequired = saveError !== null && quizRequiresReload(saveError);
     return (
+      <>
+        <div inert={answers.saving || saveError !== null}>{content}</div>
+        {(answers.saving || saveError) && (
+          <div className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center p-6">
+            <div
+              className="bg-card max-w-sm rounded-2xl border p-5 shadow-sm"
+              role={saveError ? 'alert' : 'status'}
+            >
+              <p className="font-semibold">
+                {saveError
+                  ? reloadRequired
+                    ? saveError.message
+                    : studyWriteErrorMessage(
+                        saveError,
+                        '저장을 확인하지 못했어요. 같은 요청으로 다시 시도해 주세요.'
+                      )
+                  : '답안을 저장하고 있어요'}
+              </p>
+              {saveError && (
+                <>
+                  <p className="text-muted-foreground mt-2 text-sm">
+                    이 화면의 답안과 퀴즈는 유지됩니다. 저장이 확인되면 계속할
+                    수 있어요.
+                  </p>
+                  <Button
+                    className="mt-4"
+                    onClick={
+                      reloadRequired
+                        ? () => router.replace('/study/saved-quizzes')
+                        : answers.error
+                          ? retryAnswer
+                          : finishQuiz
+                    }
+                    disabled={answers.saving || completeQuizMutation.isPending}
+                  >
+                    {reloadRequired
+                      ? '저장된 퀴즈 다시 열기'
+                      : answers.error
+                        ? '같은 답안 다시 저장'
+                        : '결과 저장 다시 시도'}
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  if (loading) {
+    return withSaveStatus(
       <div className="flex min-h-dvh items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Logo size="sm" className="animate-pulse" />
@@ -428,7 +546,7 @@ function QuizContent() {
   }
 
   if (initError) {
-    return (
+    return withSaveStatus(
       <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-6 text-center">
         <Frown className="text-primary size-10" aria-hidden="true" />
         <h1 className="text-lg font-semibold">퀴즈를 불러올 수 없어요</h1>
@@ -448,7 +566,7 @@ function QuizContent() {
   }
 
   if (questions.length === 0) {
-    return (
+    return withSaveStatus(
       <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-4">
         <span className="text-primary">
           {isReview ? (
@@ -470,7 +588,7 @@ function QuizContent() {
   }
 
   if (currentIndex >= questions.length) {
-    return (
+    return withSaveStatus(
       <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center gap-4 p-6 text-center">
         <CircleCheck className="text-primary size-10" aria-hidden="true" />
         <h1 className="text-lg font-semibold">모든 답안이 저장됐어요</h1>
@@ -494,13 +612,18 @@ function QuizContent() {
         ? Math.round((matchingRound / matchingRounds.length) * 100)
         : 0;
 
-    return (
+    return withSaveStatus(
       <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 p-4">
           <button
-            onClick={() => {
-              if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+            onClick={async () => {
+              if (
+                confirm(
+                  '서버에 저장된 답안부터 이어 풀 수 있어요. 나가시겠어요?'
+                ) &&
+                (await answers.queue.flush())
+              ) {
                 router.push('/study');
               }
             }}
@@ -550,13 +673,7 @@ function QuizContent() {
     );
 
     async function handleClozeComplete() {
-      const data = await completeQuizMutation.mutateAsync({
-        sessionId: sessionId!,
-      });
-      showGameEvents(data.events);
-      router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=CLOZE&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
-      );
+      await finishQuiz();
     }
 
     function handleClozeAnswer(
@@ -565,7 +682,7 @@ function QuizContent() {
       isCorrect: boolean
     ) {
       if (!sessionId) return;
-      answerMutation.mutate({
+      answers.queue.enqueue({
         sessionId,
         questionId,
         selectedOptionId,
@@ -575,7 +692,7 @@ function QuizContent() {
       });
     }
 
-    return (
+    return withSaveStatus(
       <ClozeQuiz
         questions={clozeQuestions}
         sessionId={sessionId!}
@@ -599,18 +716,12 @@ function QuizContent() {
     );
 
     async function handleArrangeComplete() {
-      const data = await completeQuizMutation.mutateAsync({
-        sessionId: sessionId!,
-      });
-      showGameEvents(data.events);
-      router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=SENTENCE_ARRANGE&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
-      );
+      await finishQuiz();
     }
 
     function handleArrangeAnswer(questionId: string, isCorrect: boolean) {
       if (!sessionId) return;
-      answerMutation.mutate({
+      answers.queue.enqueue({
         sessionId,
         questionId,
         selectedOptionId: isCorrect ? questionId : 'wrong',
@@ -620,7 +731,7 @@ function QuizContent() {
       });
     }
 
-    return (
+    return withSaveStatus(
       <SentenceArrangeQuiz
         questions={arrangeQuestions}
         sessionId={sessionId!}
@@ -641,18 +752,12 @@ function QuizContent() {
     }));
 
     async function handleTypingComplete() {
-      const data = await completeQuizMutation.mutateAsync({
-        sessionId: sessionId!,
-      });
-      showGameEvents(data.events);
-      router.replace(
-        `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=VOCABULARY&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
-      );
+      await finishQuiz();
     }
 
     function handleTypingAnswer(questionId: string, isCorrect: boolean) {
       if (!sessionId) return;
-      answerMutation.mutate({
+      answers.queue.enqueue({
         sessionId,
         questionId,
         selectedOptionId: isCorrect ? questionId : 'wrong',
@@ -662,7 +767,7 @@ function QuizContent() {
       });
     }
 
-    return (
+    return withSaveStatus(
       <TypingQuiz
         questions={typingQuestions}
         sessionId={sessionId!}
@@ -675,13 +780,18 @@ function QuizContent() {
   const question = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  return (
+  return withSaveStatus(
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
         <button
-          onClick={() => {
-            if (confirm('나가면 진행 상황이 저장돼요. 나가시겠어요?')) {
+          onClick={async () => {
+            if (
+              confirm(
+                '서버에 저장된 답안부터 이어 풀 수 있어요. 나가시겠어요?'
+              ) &&
+              (await answers.queue.flush())
+            ) {
               router.push('/study');
             }
           }}
@@ -771,21 +881,6 @@ function QuizContent() {
       </div>
 
       {/* Options */}
-      {stoppedAnswer && (
-        <div role="alert" className="mx-4 mb-3 rounded-xl border p-4">
-          <p className="text-sm">{STUDY_WRITE_STOP_MESSAGE}</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            이 화면의 선택은 보관 중이며 아직 서버에 저장되지 않았어요.
-          </p>
-          <Button
-            className="mt-3"
-            onClick={retryStoppedAnswer}
-            disabled={answerMutation.isPending}
-          >
-            같은 답안 다시 저장
-          </Button>
-        </div>
-      )}
       <div className="flex flex-col gap-2.5 px-4 pb-4">
         <AnimatePresence mode="wait">
           <motion.div
@@ -980,8 +1075,8 @@ function QuizContent() {
                 className="h-12 rounded-xl text-base"
                 onClick={handleNext}
                 disabled={
-                  answerMutation.isPending ||
-                  !!stoppedAnswer ||
+                  answers.saving ||
+                  !!answers.error ||
                   completeQuizMutation.isPending
                 }
               >

@@ -63,6 +63,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
   final int dailyGoal;
   final bool dailyGoalKnown;
   final String jlptLevel;
+  final bool showSavedQuiz;
 
   const QuickStartCard({
     super.key,
@@ -71,6 +72,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
     this.dailyGoal = 10,
     this.dailyGoalKnown = true,
     this.jlptLevel = 'N5',
+    this.showSavedQuiz = true,
   });
 
   @override
@@ -155,6 +157,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard>
                 dailyGoal: widget.dailyGoal,
                 dailyGoalKnown: widget.dailyGoalKnown,
                 jlptLevel: widget.jlptLevel,
+                showSavedQuiz: widget.showSavedQuiz,
               ),
             ),
 
@@ -342,6 +345,7 @@ class _MainContent extends ConsumerWidget {
   final int dailyGoal;
   final bool dailyGoalKnown;
   final String jlptLevel;
+  final bool showSavedQuiz;
 
   const _MainContent({
     required this.selectedIndex,
@@ -350,6 +354,7 @@ class _MainContent extends ConsumerWidget {
     required this.dailyGoal,
     required this.dailyGoalKnown,
     required this.jlptLevel,
+    required this.showSavedQuiz,
   });
 
   @override
@@ -360,7 +365,8 @@ class _MainContent extends ConsumerWidget {
     final apiType = _apiTypeForCategory(cat.quizType);
     final progress = _getProgress(cat.quizType);
     final hasProgress = progress != null && progress.total > 0;
-    final incompleteAsync = ref.watch(incompleteQuizProvider);
+    final incompleteAsync =
+        showSavedQuiz ? ref.watch(incompleteQuizProvider) : null;
     final previewAsync = switch (apiType) {
       'VOCABULARY' => ref.watch(
           smartPreviewProvider((category: 'VOCABULARY', jlptLevel: jlptLevel)),
@@ -373,9 +379,10 @@ class _MainContent extends ConsumerWidget {
     final cardProgress = resolveQuickStartProgress(
       category: apiType,
       jlptLevel: jlptLevel,
-      sessionLoading: incompleteAsync.isLoading,
-      sessionError: incompleteAsync.hasError,
-      incomplete: incompleteAsync.hasValue ? incompleteAsync.value : null,
+      sessionLoading: incompleteAsync?.isLoading ?? false,
+      sessionError: incompleteAsync?.hasError ?? false,
+      incomplete:
+          incompleteAsync?.hasValue == true ? incompleteAsync!.value : null,
       mastery: progress,
     );
     final isVocabulary = apiType == 'VOCABULARY';

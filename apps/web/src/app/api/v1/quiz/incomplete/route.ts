@@ -12,16 +12,17 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
     const session = await prisma.quizSession.findFirst({
       where: {
         userId: user.id,
         completedAt: null,
-        startedAt: { gte: twentyFourHoursAgo },
+        quizType: { not: 'KANA' },
+        answers: { some: {} },
       },
-      orderBy: { startedAt: 'desc' },
-      include: { _count: { select: { answers: true } } },
+      orderBy: [{ startedAt: 'desc' }, { id: 'desc' }],
+      include: {
+        answers: { select: { questionId: true }, distinct: ['questionId'] },
+      },
     });
 
     if (!session) {
@@ -34,7 +35,7 @@ export async function GET() {
         quizType: session.quizType,
         jlptLevel: session.jlptLevel,
         totalQuestions: session.totalQuestions,
-        answeredCount: session._count.answers,
+        answeredCount: session.answers.length,
         correctCount: session.correctCount,
         startedAt: session.startedAt,
       },

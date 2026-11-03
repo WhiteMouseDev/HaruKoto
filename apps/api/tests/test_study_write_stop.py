@@ -16,7 +16,8 @@ from app.main import app
 from app.middleware import study_write_stop as stop
 
 # Explicit exceptions keep the audit honest: a new route cannot silently be
-# classified as a read just because it uses GET (missions/incomplete both write).
+# classified as a read just because it uses GET (missions writes; the older
+# incomplete endpoint remains conservatively paused for rollout compatibility).
 REVIEWED_ALLOW_ROUTES = frozenset(
     {
         ("GET", "/health"),
@@ -26,6 +27,7 @@ REVIEWED_ALLOW_ROUTES = frozenset(
         ("POST", "/api/v1/auth/onboarding"),
         ("GET", "/api/v1/user/profile"),
         ("GET", "/api/v1/quiz/stats"),
+        ("GET", "/api/v1/quiz/incomplete-sessions"),
         ("GET", "/api/v1/quiz/wrong-answers"),
         ("GET", "/api/v1/quiz/smart-preview"),
         ("GET", "/api/v1/quiz/recommendations"),

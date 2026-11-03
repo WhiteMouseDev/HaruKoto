@@ -744,9 +744,29 @@ export interface paths {
          * @description 미완료 퀴즈 세션 조회 (배너용).
          *
          *     - 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지
-         *     - 24시간 지난 세션은 자동 완료 처리
+         *     - 기간과 관계없이 기존 세션을 보존하며 조회는 상태를 변경하지 않음
          */
         get: operations["get_incomplete_quiz_api_v1_quiz_incomplete_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quiz/incomplete-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Incomplete Quiz Sessions
+         * @description 저장 답안이 있는 미완료 퀴즈를 최근 시작 순으로 읽기 전용 조회합니다.
+         */
+        get: operations["get_incomplete_quiz_sessions_api_v1_quiz_incomplete_sessions_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2959,6 +2979,13 @@ export interface components {
             /** Resumestatus */
             resumeStatus?: ("available" | "legacy_unavailable" | "invalid_snapshot") | null;
         };
+        /** IncompleteQuizSessionsResponse */
+        IncompleteQuizSessionsResponse: {
+            /** Sessions */
+            sessions: components["schemas"]["SavedQuizSession"][];
+            /** Nextcursor */
+            nextCursor: string | null;
+        };
         /**
          * JlptLevel
          * @enum {string}
@@ -4107,6 +4134,32 @@ export interface components {
              * @default 0
              */
             grammarNew: number;
+        };
+        /** SavedQuizSession */
+        SavedQuizSession: {
+            /** Id */
+            id: string;
+            /** Quiztype */
+            quizType: string;
+            /** Jlptlevel */
+            jlptLevel: string;
+            /** Mode */
+            mode: string | null;
+            /** Totalquestions */
+            totalQuestions: number;
+            /** Answeredcount */
+            answeredCount: number;
+            /** Remainingcount */
+            remainingCount: number | null;
+            /** Startedat */
+            startedAt: string;
+            /**
+             * Resumestatus
+             * @enum {string}
+             */
+            resumeStatus: "available" | "legacy_unavailable" | "invalid_snapshot";
+            /** Resumereason */
+            resumeReason?: ("UNSUPPORTED_CLIENT" | "UNSUPPORTED_LEGACY" | "SNAPSHOT_INVALID" | "CONTENT_UNAVAILABLE") | null;
         };
         /**
          * ScenarioCategory
@@ -6220,6 +6273,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IncompleteQuizResponse"];
+                };
+            };
+        };
+    };
+    get_incomplete_quiz_sessions_api_v1_quiz_incomplete_sessions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: string | null;
+                quizType?: components["schemas"]["QuizType"] | null;
+                jlptLevel?: components["schemas"]["JlptLevel"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncompleteQuizSessionsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

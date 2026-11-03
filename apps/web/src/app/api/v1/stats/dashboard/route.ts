@@ -156,6 +156,7 @@ async function getWeeklyStats(userId: string, today: Date) {
       wordsStudied: true,
       xpEarned: true,
       activity_recorded: true,
+      studyDayCredited: true,
       quizzesCompleted: true,
       conversationCount: true,
       kanaLearned: true,

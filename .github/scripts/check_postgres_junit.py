@@ -9,6 +9,53 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         *{
+            ("tests.test_quiz_study_day_credit_postgres", name)
+            for name in (
+                "test_delayed_completion_rewards_once_without_new_day_goal_srs_or_replay_effect",
+                "test_late_completion_preserves_preexisting_day_before_adding_rewards[empty-legacy]",
+                "test_late_completion_preserves_preexisting_day_before_adding_rewards[positive-legacy]",
+                "test_late_completion_preserves_preexisting_day_before_adding_rewards[existing-false]",
+                "test_late_completion_preserves_preexisting_day_before_adding_rewards[existing-true]",
+                "test_compatible_off_keeps_false_then_actual_answer_promotes_true",
+                "test_delayed_completion_and_fresh_answer_share_lock_without_credit_demotion[completion-first]",
+                "test_delayed_completion_and_fresh_answer_share_lock_without_credit_demotion[answer-first]",
+                "test_completion_credit_commit_failure_and_result_recovery_are_atomic[before-commit]",
+                "test_completion_credit_commit_failure_and_result_recovery_are_atomic[response-lost]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[lesson]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[kana-answer]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[kana-quiz]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[kana-stage]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[kana-progress]",
+                "test_other_genuine_activity_writers_promote_false_without_losing_rewards[conversation]",
+                "test_recorded_credit_decisions_block_destructive_migration_rollback",
+                "test_newer_duplicate_answer_does_not_create_completion_day_or_inflate_time",
+            )
+        },
+        (
+            "tests.test_lesson_study_day_postgres",
+            "test_completion_credit_migration_is_nullable_private_and_keeps_legacy",
+        ),
+        *{
+            ("tests.test_quiz_retention_postgres", name)
+            for name in (
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[before-24h]",
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[exact-24h]",
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[after-24h]",
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[3-days]",
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[7-days]",
+                "test_old_quiz_listing_and_cold_resume_do_not_change_any_learning_record[30-days]",
+                "test_starting_another_regular_or_smart_quiz_preserves_saved_answers_srs_and_xp",
+                "test_eligibility_before_limit_cursor_ties_filter_validation_and_owner_scope",
+                "test_deleted_pending_catalogue_returns_preserving_conflict_but_saved_retry_stays_valid",
+                "test_concurrent_completion_waits_for_answers_and_old_result_uses_saved_seconds_only",
+                "test_complete_before_last_answer_is_retryable_and_does_not_close_session",
+                "test_malformed_snapshot_rejects_new_writes_but_preserves_saved_answer_retry[legacy-question-id]",
+                "test_malformed_snapshot_rejects_new_writes_but_preserves_saved_answer_retry[non-list]",
+                "test_malformed_snapshot_rejects_new_writes_but_preserves_saved_answer_retry[non-object]",
+                "test_completed_result_replay_does_not_require_unchanged_snapshot",
+            )
+        },
+        *{
             ("tests.test_study_write_stop_integration_postgres", name)
             for name in (
                 "test_p6_stop_preserves_existing_markers_receipts_history_and_security[feature-off]",
@@ -84,8 +131,8 @@ REQUIRED_CASES = frozenset(
                 "test_marker_migration_keeps_old_columns_private_and_rejects_existing_marker",
                 "test_existing_trusted_service_role_grants_survive_without_reopening_clients",
                 "test_preexisting_receipt_replay_never_backfills_a_study_day",
-                "test_auto_completion_and_conversation_preserve_both_xp_rewards[auto-first]",
-                "test_auto_completion_and_conversation_preserve_both_xp_rewards[conversation-first]",
+                "test_new_quiz_start_preserves_saved_session_during_conversation_reward[start-first]",
+                "test_new_quiz_start_preserves_saved_session_during_conversation_reward[conversation-first]",
                 "test_stage_timestamp_upserts_work_on_unchanged_not_null_schema",
                 "test_first_lesson_answer_records_day_without_grading_srs_xp_or_goal[correct-RECOGNITION]",
                 "test_first_lesson_answer_records_day_without_grading_srs_xp_or_goal[correct-SENTENCE_REORDER]",
@@ -209,14 +256,14 @@ REQUIRED_CASES = frozenset(
         *{
             (
                 "tests.test_special_quiz_resume_postgres",
-                f"test_unsupported_free_matching_rolls_back_pending_completion_and_xp[{category}]",
+                f"test_unsupported_free_matching_preserves_pending_session_and_xp[{category}]",
             )
             for category in ("KANJI", "LISTENING", "SENTENCE_ARRANGE", "CLOZE")
         },
         *{
             (
                 "tests.test_special_quiz_resume_postgres",
-                f"test_conflicting_stage_matching_category_rolls_back_pending_completion_and_xp[{category}]",
+                f"test_conflicting_stage_matching_category_preserves_pending_session_and_xp[{category}]",
             )
             for category in ("VOCABULARY", "GRAMMAR")
         },
@@ -281,7 +328,7 @@ REQUIRED_CASES = frozenset(
         *{
             (
                 "tests.test_special_quiz_resume_postgres",
-                f"test_invalid_new_arrange_category_rolls_back_pending_auto_completion_and_xp[{category}]",
+                f"test_invalid_new_arrange_category_preserves_pending_session_and_xp[{category}]",
             )
             for category in ("VOCABULARY", "GRAMMAR")
         },
@@ -442,11 +489,11 @@ REQUIRED_CASES = frozenset(
         ),
         (
             "tests.test_quiz_wrong_review_postgres",
-            "test_existing_general_start_policy_can_close_a_wrong_review_then_explicit_retry_creates_a_new_attempt",
+            "test_new_general_start_preserves_wrong_review_and_explicit_retry_reuses_it",
         ),
         (
             "tests.test_quiz_wrong_review_postgres",
-            "test_existing_incomplete_timeout_policy_remains_unchanged_for_wrong_reviews",
+            "test_old_empty_wrong_review_is_hidden_but_preserved_and_reused",
         ),
         (
             "tests.test_lesson_review_targets_postgres",

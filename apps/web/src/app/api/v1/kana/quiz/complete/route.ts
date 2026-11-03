@@ -86,6 +86,7 @@ export async function POST(request: Request) {
       await tx.dailyProgress.upsert({
         where: { userId_date: { userId: user.id, date: today } },
         update: {
+          studyDayCredited: true,
           quizzesCompleted: { increment: 1 },
           correctAnswers: { increment: session.correctCount },
           totalAnswers: { increment: session.totalQuestions },
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
           studyTimeSeconds: { increment: studyTimeSeconds },
         },
         create: {
+          studyDayCredited: true,
           userId: user.id,
           date: today,
           quizzesCompleted: 1,

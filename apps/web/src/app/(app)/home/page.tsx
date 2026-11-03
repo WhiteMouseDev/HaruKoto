@@ -13,6 +13,7 @@ import { StreakBadge } from '@/components/features/dashboard/streak-badge';
 import { DailyProgressCard } from '@/components/features/dashboard/daily-progress-card';
 import { DailyMissionsCard } from '@/components/features/dashboard/daily-missions-card';
 import { WeeklyChart } from '@/components/features/dashboard/weekly-chart';
+import { SavedQuizResumeCard } from '@/components/features/quiz/saved-quiz-resume-card';
 import { QuickStartCard } from '@/components/features/dashboard/quick-start-card';
 
 const container = {
@@ -140,6 +141,10 @@ export default function HomePage() {
       {/* Quick Start CTA */}
       <motion.div variants={item}>
         <QuickStartCard />
+      </motion.div>
+
+      <motion.div variants={item}>
+        <SavedQuizResumeCard />
       </motion.div>
 
       {/* Weekly Chart */}

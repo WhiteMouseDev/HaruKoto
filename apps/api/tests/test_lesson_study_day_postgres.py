@@ -33,7 +33,7 @@ from app.models.lesson import Lesson, LessonSubmission
 from app.models.user import User
 from app.schemas.kana import KanaQuizAnswerRequest, KanaQuizCompleteRequest, KanaStageCompleteRequest
 from app.schemas.lesson import LessonSubmissionResponse
-from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest
+from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest, QuizStartRequest
 from app.schemas.study_activity import LessonStudyActivityRequest
 from app.services import (
     conversation_rewards,
@@ -44,7 +44,7 @@ from app.services import (
     lesson_study_activity,
     quiz_answer,
     quiz_complete,
-    quiz_session,
+    quiz_start,
     stats_dashboard,
     study_day_recording,
 )
@@ -64,6 +64,7 @@ from tests.test_public_access_hardening_postgres import _alembic, _denied, _scal
 from tests.test_quiz_answer_persistence_postgres import isolated_postgres_url as isolated_postgres_url
 
 REVISION = "p6q7r8s9t0u1"
+RUNTIME_REVISION = "q7r8s9t0u1v2"
 MIGRATION = Path(__file__).resolve().parents[1] / f"alembic/versions/{REVISION}_add_lesson_study_day_marker.py"
 NOW = datetime(2026, 11, 2, 1, tzinfo=UTC)
 
@@ -84,7 +85,7 @@ def _freeze(monkeypatch, module, instant):
 
 
 async def _daily_rows(engine, user_id, *, old_columns=False):
-    projection = "to_jsonb(d)-'activity_recorded'" if old_columns else "to_jsonb(d)"
+    projection = "to_jsonb(d)-'activity_recorded'-'study_day_credited'" if old_columns else "to_jsonb(d)"
     async with engine.connect() as connection:
         return await connection.scalar(
             text(f"SELECT COALESCE(jsonb_agg({projection} ORDER BY date),'[]') FROM daily_progress d WHERE user_id=:uid"),
@@ -247,6 +248,14 @@ async def study_day_database(isolated_postgres_url):
             assert await _legacy_hash(engine, historical, audio_id) == legacy_hash
             assert await _daily_rows(engine, historical.user_id, old_columns=True) == before_daily
         assert not any(row["activity_recorded"] for row in await _daily_rows(engine, historical.user_id))
+        # The credit override has its own additive, no-backfill round trip.
+        credit_baseline = await _daily_rows(engine, historical.user_id, old_columns=True)
+        for action in [("upgrade", RUNTIME_REVISION), ("downgrade", REVISION), ("upgrade", RUNTIME_REVISION)]:
+            current = _alembic(isolated_postgres_url, *action)
+            assert current.returncode == 0, current.stderr
+            assert await _metadata(engine) == before_security
+            assert await _legacy_hash(engine, historical, audio_id) == legacy_hash
+            assert await _daily_rows(engine, historical.user_id, old_columns=True) == credit_baseline
         yield isolated_postgres_url, historical
     finally:
         await engine.dispose()
@@ -261,8 +270,28 @@ async def engine(study_day_database):
         await value.dispose()
 
 
+async def test_completion_credit_migration_is_nullable_private_and_keeps_legacy(engine, study_day_database):
+    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == RUNTIME_REVISION
+    assert await _scalar(engine, "SELECT study_day_credited IS NULL FROM daily_progress LIMIT 1")
+    assert await _scalar(
+        engine,
+        "SELECT NOT attnotnull AND NOT atthasdef AND attacl IS NULL FROM pg_attribute "
+        "WHERE attrelid='daily_progress'::regclass AND attname='study_day_credited'",
+    )
+    for role in ["anon", "authenticated"]:
+        await _denied(engine, role, "SELECT study_day_credited FROM daily_progress LIMIT 0")
+    assert await _scalar(engine, "SELECT has_column_privilege('service_role','daily_progress','study_day_credited','SELECT,INSERT,UPDATE')")
+    assert not await _scalar(engine, "SELECT has_column_privilege('service_role','daily_progress','study_day_credited','REFERENCES')")
+    # Historical NULL still follows the positive activity aggregates.
+    async with async_sessionmaker(engine)() as db:
+        historical = await db.scalar(select(DailyProgress).where(DailyProgress.user_id == study_day_database[1].user_id))
+        from app.services.study_activity import has_study_activity
+
+        assert historical.study_day_credited is None and has_study_activity(historical)
+
+
 async def test_marker_migration_keeps_old_columns_private_and_rejects_existing_marker(engine):
-    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == REVISION
+    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == RUNTIME_REVISION
     assert await _scalar(engine, "SELECT relrowsecurity FROM pg_class WHERE oid='daily_progress'::regclass")
     assert await _scalar(engine, "SELECT pg_get_userbyid(relowner) FROM pg_class WHERE oid='daily_progress'::regclass") == "postgres"
     for role in ["anon", "authenticated"]:
@@ -400,12 +429,14 @@ async def _complete_activity(engine, attempt, activity, domain_id):
             await db.commit()
 
 
-@pytest.mark.parametrize("auto_first", [True, False], ids=["auto-first", "conversation-first"])
-async def test_auto_completion_and_conversation_preserve_both_xp_rewards(engine, monkeypatch, auto_first):
+@pytest.mark.parametrize("start_first", [True, False], ids=["start-first", "conversation-first"])
+async def test_new_quiz_start_preserves_saved_session_during_conversation_reward(engine, monkeypatch, start_first):
     attempt = await _seed(engine)
     quiz_id = await _seed_activity(engine, attempt, "quiz")
     await _seed_activity(engine, attempt, "conversation")
-    entered, waiting, release = asyncio.Event(), asyncio.Event(), asyncio.Event()
+    before = await _state(engine, attempt.user_id)
+    old_quiz = await _scalar(engine, f"SELECT to_jsonb(q) FROM quiz_sessions q WHERE id='{quiz_id}'")
+    entered, waiting, release, acquired = (asyncio.Event() for _ in range(4))
 
     async def first_lock(db, user):
         await lock_study_user(db, user)
@@ -415,37 +446,50 @@ async def test_auto_completion_and_conversation_preserve_both_xp_rewards(engine,
     async def second_lock(db, user):
         waiting.set()
         await lock_study_user(db, user)
+        acquired.set()
 
-    first_module = quiz_session if auto_first else conversation_rewards
-    second_module = conversation_rewards if auto_first else quiz_session
+    first_module = quiz_start if start_first else conversation_rewards
+    second_module = conversation_rewards if start_first else quiz_start
     monkeypatch.setattr(first_module, "lock_study_user", first_lock)
     monkeypatch.setattr(second_module, "lock_study_user", second_lock)
 
-    async def complete_auto():
+    async def start_new_quiz():
         async with async_sessionmaker(engine, expire_on_commit=False)() as db:
+            # The second request intentionally loads stale auth before waiting.
             user = await db.get(User, attempt.user_id)
-            assert await quiz_session.auto_complete_sessions(db, user) == 10
-            await db.commit()
+            result = await quiz_start.start_quiz_session(
+                db, user, QuizStartRequest(quiz_type=QuizType.VOCABULARY, jlpt_level=JlptLevel.N5, count=1)
+            )
+            assert result.session.id != quiz_id and result.session.total_questions == 1
+            assert result.session.completed_at is None
 
     async def complete_conversation():
         await _complete_activity(engine, attempt, "conversation", None)
 
-    first = asyncio.create_task(complete_auto() if auto_first else complete_conversation())
+    first = asyncio.create_task(start_new_quiz() if start_first else complete_conversation())
     await asyncio.wait_for(entered.wait(), timeout=10)
-    second = asyncio.create_task(complete_conversation() if auto_first else complete_auto())
+    second = asyncio.create_task(complete_conversation() if start_first else start_new_quiz())
     try:
         await asyncio.wait_for(waiting.wait(), timeout=10)
+        assert not acquired.is_set() and not second.done()
     finally:
         release.set()
     await asyncio.wait_for(asyncio.gather(first, second), timeout=15)
+    assert acquired.is_set()
     state = await _state(engine, attempt.user_id)
-    assert state["user"]["experience_points"] == 30
+    assert state["user"]["experience_points"] == before["user"]["experience_points"] + 20
     assert state["user"]["streak_count"] == 1
     assert state["daily"][0]["xp_earned"] == 20
     assert state["daily"][0]["conversation_count"] == 1
+    assert state["daily"][0]["quizzes_completed"] == 0
     assert state["daily"][0]["activity_recorded"] is False
+    for key in ("quizAnswers", "words", "grammar", "events", "activities", "receipts"):
+        assert state[key] == before[key], key
+    # Starting another quiz never settles this saved answer or grants its XP.
+    assert await _scalar(engine, f"SELECT to_jsonb(q) FROM quiz_sessions q WHERE id='{quiz_id}'") == old_quiz
     async with async_sessionmaker(engine)() as db:
-        assert (await db.get(QuizSession, quiz_id)).completed_at is not None
+        rows = list((await db.scalars(select(QuizSession).where(QuizSession.user_id == attempt.user_id))).all())
+        assert len(rows) == 2 and all(row.completed_at is None for row in rows)
 
 
 async def test_stage_timestamp_upserts_work_on_unchanged_not_null_schema(engine):
@@ -504,7 +548,7 @@ async def test_first_lesson_answer_records_day_without_grading_srs_xp_or_goal(en
         assert after[field] == before[field]
     row = after["daily"][0]
     assert row["activity_recorded"] is True
-    assert all(value == 0 for key, value in row.items() if key not in {"id", "user_id", "date", "activity_recorded"})
+    assert all(value == 0 for key, value in row.items() if key not in {"id", "user_id", "date", "activity_recorded", "study_day_credited"})
     async with async_sessionmaker(engine)() as db:
         user = await db.get(User, attempt.user_id)
         dashboard = await get_dashboard_data(db, user)
@@ -1021,9 +1065,21 @@ async def test_populated_activity_receipts_and_markers_block_destructive_downgra
     attempt = await _seed(engine)
     await _record(engine, attempt)
     before = await _state(engine, attempt.user_id)
-    result = _alembic(study_day_database[0], "downgrade", "-1")
-    assert result.returncode != 0 and "Accepted activity receipts exist" in result.stderr
-    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == REVISION
+    # Exercise the original receipt migration's guard directly, independent of
+    # later additive columns that have their own conservative downgrade guards.
+    spec = importlib.util.spec_from_file_location("study_day_marker_downgrade", MIGRATION)
+    assert spec and spec.loader
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+
+    def downgrade(connection):
+        with Operations.context(MigrationContext.configure(connection)):
+            migration.downgrade()
+
+    with pytest.raises(DBAPIError, match="Accepted activity receipts exist"):
+        async with engine.begin() as connection:
+            await connection.run_sync(downgrade)
+    assert await _scalar(engine, "SELECT version_num FROM alembic_version") == RUNTIME_REVISION
     assert await _state(engine, attempt.user_id) == before
 
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SavedQuizResumeCard } from '@/components/features/quiz/saved-quiz-resume-card';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -10,11 +11,8 @@ import {
   FileX,
   BookMarked,
   Notebook,
-  PenLine,
   Flower2,
   Grid3x3,
-  PlayCircle,
-  RotateCcw,
   Link2,
   TextCursorInput,
   ArrowUpDown,
@@ -29,7 +27,6 @@ import { KanaProgressBanner } from '@/components/features/kana/kana-progress-ban
 import { useKanaProgress } from '@/hooks/use-kana';
 import { useDashboard } from '@/hooks/use-dashboard';
 import {
-  useIncompleteQuiz,
   useQuizStats,
   useRecommendations,
 } from '@/hooks/use-quiz';
@@ -75,8 +72,6 @@ export default function StudyPage() {
     'normal' | 'matching' | 'cloze' | 'arrange' | 'typing'
   >('normal');
 
-  const { data: incompleteData } = useIncompleteQuiz();
-  const incompleteSession = incompleteData?.session ?? null;
 
   const { data: stats } = useQuizStats(selectedLevel, selectedTab);
   const {
@@ -150,54 +145,7 @@ export default function StudyPage() {
       initial="hidden"
       animate="show"
     >
-      {/* Resume Banner */}
-      {incompleteSession && (
-        <motion.div variants={item} className="overflow-hidden rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm dark:border-amber-900 dark:bg-amber-950/30">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-              <PenLine className="size-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold">진행 중인 퀴즈가 있어요</p>
-              <p className="text-muted-foreground text-xs">
-                {incompleteSession.jlptLevel}{' '}
-                {incompleteSession.quizType === 'VOCABULARY'
-                  ? '단어'
-                  : '문법'}{' '}
-                · {incompleteSession.answeredCount}/
-                {incompleteSession.totalQuestions} 문제
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 flex-1 gap-1.5 bg-white dark:bg-transparent"
-              onClick={() => {
-                router.push(
-                  `/study/quiz?type=${incompleteSession.quizType}&level=${incompleteSession.jlptLevel}&count=${incompleteSession.totalQuestions}`
-                );
-              }}
-            >
-              <RotateCcw className="size-3.5" />
-              새로 시작
-            </Button>
-            <Button
-              size="sm"
-              className="h-10 flex-1 gap-1.5"
-              onClick={() => {
-                router.push(
-                  `/study/quiz?resume=${incompleteSession.id}`
-                );
-              }}
-            >
-              <PlayCircle className="size-3.5" />
-              이어서 풀기
-            </Button>
-          </div>
-        </motion.div>
-      )}
+      <SavedQuizResumeCard />
 
       {/* Kana Progress Banner */}
       {dashboard?.showKana &&

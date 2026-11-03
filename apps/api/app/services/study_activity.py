@@ -8,6 +8,10 @@ def has_study_activity(progress: DailyProgress | None) -> bool:
     if progress is None:
         return False
 
+    credit = getattr(progress, "study_day_credited", None)
+    if credit is True or credit is False:
+        return credit
+
     return getattr(progress, "activity_recorded", False) is True or any(
         (getattr(progress, field, 0) or 0) > 0
         for field in (

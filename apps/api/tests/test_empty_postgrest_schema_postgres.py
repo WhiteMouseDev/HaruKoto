@@ -71,9 +71,10 @@ async def test_empty_postgrest_schema_is_fail_closed_and_preserves_auth_and_lear
     # Exercise its original learning smoke in compatibility mode; full-head ON
     # answer attendance is verified by the dedicated real PostgreSQL suite.
     monkeypatch.setattr(study_day_recording, "ANSWERED_STUDY_DAY_RECOGNITION_ENABLED", False)
-    engine = create_async_engine(isolated_postgres_url)
+    engine = create_async_engine(isolated_postgres_url, connect_args={"server_settings": {"timezone": "UTC"}})
     try:
         for statement in [
+            "ALTER DATABASE postgres SET timezone TO UTC",
             "CREATE ROLE anon NOLOGIN",
             "CREATE ROLE authenticated NOLOGIN",
             "CREATE ROLE service_role NOLOGIN BYPASSRLS",
@@ -168,6 +169,25 @@ async def test_empty_postgrest_schema_is_fail_closed_and_preserves_auth_and_lear
         async with engine.begin() as connection:
             await connection.execute(text("SET LOCAL ROLE service_role"))
             assert await connection.scalar(text("SELECT count(*) FROM public.users")) == 1
+        for role in ["anon", "authenticated"]:
+            await _denied(engine, role, "SELECT email FROM public.users LIMIT 0")
+
+        # Round-trip rollback explicitly selects the reserved disabled sentinel.
+        # It never RESETs to a possibly public default or restores old ACLs.
+        downgraded = _alembic(isolated_postgres_url, "downgrade", "-1")
+        assert downgraded.returncode == 0, downgraded.stderr
+        assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pg_pgrst_no_exposed_schemas"
+        assert await _scalar(engine, "SELECT to_regnamespace('pgrst_no_exposed_schemas')") is None
+        assert await _scalar(engine, "SELECT version_num FROM public.alembic_version") == "k1l2m3n4o5p6"
+        reapplied = _alembic(isolated_postgres_url, "upgrade", REVISION)
+        assert reapplied.returncode == 0, reapplied.stderr
+        assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pgrst_no_exposed_schemas"
+        assert await _protected_metadata(engine) == metadata_before
+        # Historical rollback/security proof above stays pinned to this revision.
+        # Current application ORM requires later additive schema before its smoke.
+        current = _alembic(isolated_postgres_url, "upgrade", "head")
+        assert current.returncode == 0, current.stderr
+        await _sql(engine, "ALTER TABLE public.review_events ALTER COLUMN created_at SET DEFAULT '2026-11-02T01:00:00Z'::timestamptz")
         sessions = async_sessionmaker(engine, expire_on_commit=False)
         async with sessions() as db:
             for index in range(4):
@@ -197,19 +217,5 @@ async def test_empty_postgrest_schema_is_fail_closed_and_preserves_auth_and_lear
                 )
             result = await complete_quiz_session(db, user, QuizCompleteRequest(session_id=quiz.session.id))
             assert (result.correct_count, result.total_questions, result.accuracy, result.xp_earned) == (2, 2, 100.0, 20)
-        for role in ["anon", "authenticated"]:
-            await _denied(engine, role, "SELECT email FROM public.users LIMIT 0")
-
-        # Round-trip rollback explicitly selects the reserved disabled sentinel.
-        # It never RESETs to a possibly public default or restores old ACLs.
-        downgraded = _alembic(isolated_postgres_url, "downgrade", "-1")
-        assert downgraded.returncode == 0, downgraded.stderr
-        assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pg_pgrst_no_exposed_schemas"
-        assert await _scalar(engine, "SELECT to_regnamespace('pgrst_no_exposed_schemas')") is None
-        assert await _scalar(engine, "SELECT version_num FROM public.alembic_version") == "k1l2m3n4o5p6"
-        reapplied = _alembic(isolated_postgres_url, "upgrade", REVISION)
-        assert reapplied.returncode == 0, reapplied.stderr
-        assert await _scalar(engine, ROLE_SETTING) == "pgrst.db_schemas=pgrst_no_exposed_schemas"
-        assert await _protected_metadata(engine) == metadata_before
     finally:
         await engine.dispose()

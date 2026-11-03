@@ -1,3 +1,4 @@
+import { lockStudyActivityUser } from '@/lib/study-activity-lock';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
@@ -103,46 +104,51 @@ export async function POST(request: Request) {
       );
     }
 
-    // Upsert user kana progress
-    const progress = await prisma.userKanaProgress.upsert({
-      where: {
-        userId_kanaId: { userId: user.id, kanaId },
-      },
-      update: {
-        lastReviewedAt: new Date(),
-        ...(learned
-          ? { correctCount: { increment: 1 }, streak: { increment: 1 } }
-          : { incorrectCount: { increment: 1 }, streak: 0 }),
-      },
-      create: {
-        userId: user.id,
-        kanaId,
-        correctCount: learned ? 1 : 0,
-        incorrectCount: learned ? 0 : 1,
-        streak: learned ? 1 : 0,
-        lastReviewedAt: new Date(),
-      },
-    });
-
-    // Update mastered status if streak >= 3
-    if (progress.streak >= 3 && !progress.mastered) {
-      await prisma.userKanaProgress.update({
-        where: { id: progress.id },
-        data: { mastered: true },
+    const progress = await prisma.$transaction(async (tx) => {
+      await lockStudyActivityUser(tx, user.id);
+      // Upsert user kana progress
+      const progress = await tx.userKanaProgress.upsert({
+        where: {
+          userId_kanaId: { userId: user.id, kanaId },
+        },
+        update: {
+          lastReviewedAt: new Date(),
+          ...(learned
+            ? { correctCount: { increment: 1 }, streak: { increment: 1 } }
+            : { incorrectCount: { increment: 1 }, streak: 0 }),
+        },
+        create: {
+          userId: user.id,
+          kanaId,
+          correctCount: learned ? 1 : 0,
+          incorrectCount: learned ? 0 : 1,
+          streak: learned ? 1 : 0,
+          lastReviewedAt: new Date(),
+        },
       });
-    }
 
-    // Update DailyProgress.kanaLearned
-    const today = getTodayKST();
+      // Update mastered status if streak >= 3
+      if (progress.streak >= 3 && !progress.mastered) {
+        await tx.userKanaProgress.update({
+          where: { id: progress.id },
+          data: { mastered: true },
+        });
+      }
 
-    await prisma.dailyProgress.upsert({
-      where: { userId_date: { userId: user.id, date: today } },
-      update: { kanaLearned: { increment: 1 } },
-      create: {
-        userId: user.id,
-        date: today,
-        kanaLearned: 1,
-      },
+      // Update DailyProgress.kanaLearned
+      const today = getTodayKST();
+
+      await tx.dailyProgress.upsert({
+        where: { userId_date: { userId: user.id, date: today } },
+        update: { kanaLearned: { increment: 1 }, studyDayCredited: true },
+        create: {
+          userId: user.id,
+          date: today,
+          kanaLearned: 1,
+          studyDayCredited: true,
+        },
+      });
+      return progress;
     });
 
     return NextResponse.json({ success: true, progress });

@@ -31,6 +31,24 @@ class IncompleteQuizResponse(CamelModel):
     session: IncompleteQuizSession | None
 
 
+class SavedQuizSession(CamelModel):
+    id: str
+    quiz_type: str
+    jlpt_level: str
+    mode: str | None
+    total_questions: int
+    answered_count: int
+    remaining_count: int | None
+    started_at: str
+    resume_status: Literal["available", "legacy_unavailable", "invalid_snapshot"]
+    resume_reason: Literal["UNSUPPORTED_CLIENT", "UNSUPPORTED_LEGACY", "SNAPSHOT_INVALID", "CONTENT_UNAVAILABLE"] | None = None
+
+
+class IncompleteQuizSessionsResponse(CamelModel):
+    sessions: list[SavedQuizSession]
+    next_cursor: str | None
+
+
 class QuizOption(CamelModel):
     id: str
     text: str

@@ -80,7 +80,8 @@ void main() {
     owner = activityOtherOwner;
     container.invalidate(currentAccountIdProvider);
     repository.gate!.complete();
-    await controller.flushPendingAnswers();
+    await expectLater(
+        controller.flushPendingAnswers(), throwsA(isA<Exception>()));
     expect(refreshes, 0);
     expect(repository.completeCalls, 0);
   });

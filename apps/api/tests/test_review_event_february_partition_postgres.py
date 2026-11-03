@@ -223,6 +223,12 @@ async def test_february_preserves_auth_saved_answers_and_partial_quiz_resume(feb
     assert {table: await _rows(engine, table) for table in row_tables} == rows_before
     assert await _existing_metadata(engine, original_ids) == metadata
 
+    # Keep the historical partition-only preservation checks above pinned, then
+    # install the schema required by the current application completion reader.
+    current = await asyncio.to_thread(_alembic, url, "upgrade", "head")
+    assert current.returncode == 0, current.stderr
+    assert {table: await _rows(engine, table) for table in row_tables} == rows_before
+
     # A new DB session represents a process restart; restore the exact original
     # question and answer IDs, then complete without replaying the first answer.
     async with sessions() as db:

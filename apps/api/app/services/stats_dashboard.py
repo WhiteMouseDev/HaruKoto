@@ -98,7 +98,9 @@ def _build_streak_info(
     today: date,
 ) -> StreakInfo:
     last_study_day = _last_study_day(getattr(user, "last_study_date", None))
-    studied_today = _has_study_activity(today_progress) or last_study_day == today
+    studied_today = _has_study_activity(today_progress) or (
+        getattr(today_progress, "study_day_credited", None) is None and last_study_day == today
+    )
     current_streak = _effective_current_streak(
         current_streak=getattr(user, "streak_count", 0),
         last_study_day=last_study_day,

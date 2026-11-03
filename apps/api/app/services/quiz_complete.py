@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,9 +16,12 @@ from app.schemas.quiz import QuizCompleteRequest
 from app.services.daily_progress_upsert import build_daily_progress_insert_values
 from app.services.gamification import LevelInfo, calculate_level, check_and_grant_achievements
 from app.services.quiz_complete_metrics import calculate_accuracy, calculate_daily_progress_increments, calculate_study_minutes
+from app.services.quiz_resume_snapshot import INVALID_SNAPSHOT
 from app.services.quiz_session import extract_questions_data
+from app.services.study_day_credit import resolve_quiz_completion_study_day
 from app.services.study_day_recording import apply_study_streak, lock_study_user
 from app.utils.constants import REWARDS
+from app.utils.date import study_date_kst
 
 
 class QuizCompleteServiceError(Exception):
@@ -86,6 +89,7 @@ async def _update_daily_progress(
     session: QuizSession,
     xp_earned: int,
     study_duration_minutes: int,
+    study_day_credited: bool,
 ) -> None:
     increments = calculate_daily_progress_increments(session)
 
@@ -101,11 +105,13 @@ async def _update_daily_progress(
             grammar_studied=increments.grammar_studied,
             sentences_studied=increments.sentences_studied,
             study_minutes=study_duration_minutes,
+            study_day_credited=study_day_credited,
         )
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["user_id", "date"],
         set_={
+            "study_day_credited": case((DailyProgress.study_day_credited.is_(True), True), else_=study_day_credited),
             "quizzes_completed": DailyProgress.quizzes_completed + 1,
             "correct_answers": DailyProgress.correct_answers + session.correct_count,
             "total_answers": DailyProgress.total_answers + session.total_questions,
@@ -218,15 +224,21 @@ async def complete_quiz_session(
         )
 
     expected_ids = {str(question["id"]) for question in extract_questions_data(session.questions_data)}
+    if session.total_questions <= 0 or len(expected_ids) != session.total_questions:
+        raise QuizCompleteServiceError(status_code=409, detail=INVALID_SNAPSHOT)
     answers = await db.execute(
-        select(QuizAnswer.question_id, QuizAnswer.is_correct)
+        select(QuizAnswer.question_id, QuizAnswer.is_correct, QuizAnswer.time_spent_seconds, QuizAnswer.answered_at)
         .where(QuizAnswer.session_id == session.id)
         .order_by(QuizAnswer.answered_at, QuizAnswer.id)
     )
     first_answers: dict[str, bool] = {}
-    for question_id, is_correct in answers.all():
+    first_answer_seconds: dict[str, int] = {}
+    first_answer_times: dict[str, datetime] = {}
+    for question_id, is_correct, time_spent_seconds, answered_at in answers.all():
         first_answers.setdefault(str(question_id), is_correct)
-    if session.total_questions <= 0 or len(expected_ids) != session.total_questions or not expected_ids.issubset(first_answers):
+        first_answer_seconds.setdefault(str(question_id), time_spent_seconds)
+        first_answer_times.setdefault(str(question_id), answered_at)
+    if not expected_ids.issubset(first_answers):
         raise QuizCompleteServiceError(status_code=409, detail="아직 저장되지 않은 답안이 있습니다. 답안 저장 후 다시 시도해주세요")
 
     # Older unfinished sessions can contain duplicate attempts or stale counters.
@@ -241,7 +253,13 @@ async def complete_quiz_session(
     level_info = calculate_level(user.experience_points)
     user.level = level_info["level"]
 
-    today = apply_study_streak(user, processed_at=now)
+    today = study_date_kst(now)
+    existing_day = await db.scalar(select(DailyProgress).where(DailyProgress.user_id == user.id, DailyProgress.date == today))
+    day_credit = resolve_quiz_completion_study_day(
+        existing_day, first_answer_times=(first_answer_times[question_id] for question_id in expected_ids), completed_at=now
+    )
+    if day_credit.update_streak:
+        apply_study_streak(user, processed_at=now)
 
     await _update_daily_progress(
         db,
@@ -249,7 +267,8 @@ async def complete_quiz_session(
         today=today,
         session=session,
         xp_earned=xp_earned,
-        study_duration_minutes=calculate_study_minutes(session, now),
+        study_duration_minutes=calculate_study_minutes(first_answer_seconds[question_id] for question_id in expected_ids),
+        study_day_credited=day_credit.credited,
     )
     events = await _build_achievement_events(
         db,

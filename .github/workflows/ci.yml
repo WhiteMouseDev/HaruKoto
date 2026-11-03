@@ -32,6 +32,8 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-web-completion-report.mjs'
               - '.github/tests/check-web-completion-report.test.mjs'
+              - '.github/scripts/check-web-retention-report.mjs'
+              - '.github/tests/check-web-retention-report.test.mjs'
               - 'assets/fonts/**'
               - '.github/scripts/check-font-assets.mjs'
               - '.github/tests/check-font-assets.test.mjs'
@@ -390,6 +392,17 @@ jobs:
             --exit-code \
             --from-url "$DATABASE_URL" \
             --to-schema-datamodel prisma/schema.prisma
+
+      - name: Run real PostgreSQL web quiz retention regressions
+        env:
+          HARUKOTO_WEB_PG_TESTS: '1'
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/harukoto_ci
+        run: |
+          node --test .github/tests/check-web-retention-report.test.mjs
+          pnpm --filter web exec vitest run src/__tests__/quiz-retention-postgres.test.ts \
+            --reporter=default --reporter=json --outputFile.json=/tmp/web-retention-pg-results.json
+          node .github/scripts/check-web-retention-report.mjs /tmp/web-retention-pg-results.json
 
   # ============================
   # Mobile (Flutter)

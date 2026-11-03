@@ -2,23 +2,32 @@ from __future__ import annotations
 
 import contextlib
 import uuid
-from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Grammar, QuizSession, SentenceArrangeQuestion, StudyStage, Vocabulary
-from app.models.user import User
+from app.models import Grammar, SentenceArrangeQuestion, StudyStage, Vocabulary
 from app.schemas.quiz import MatchingPair, QuizOption, QuizQuestion
-from app.services.gamification import calculate_level
-from app.services.study_day_recording import lock_study_user
-from app.utils.constants import REWARDS
 
 
 def extract_questions_data(raw_data: Any) -> list[dict[str, Any]]:
     """Normalize session question payloads into the canonical question list."""
-    raw_questions = raw_data.get("questions", []) if isinstance(raw_data, dict) else raw_data or []
+    raw_questions = raw_data.get("questions") if isinstance(raw_data, dict) else raw_data
+    if not isinstance(raw_questions, list):
+        return []
+    seen: set[str] = set()
+    for question in raw_questions:
+        if not isinstance(question, dict) or not isinstance(question.get("id"), str):
+            return []
+        question_id = question["id"]
+        try:
+            if str(uuid.UUID(question_id)) != question_id or question_id in seen:
+                return []
+        except ValueError:
+            return []
+        seen.add(question_id)
+    # Never translate an unknown legacy serializer or silently drop a bad item.
     return list(raw_questions)
 
 
@@ -62,32 +71,6 @@ def build_session_questions_data(
         return questions
 
     return {**metadata, "questions": questions}
-
-
-async def auto_complete_sessions(db: AsyncSession, user: User) -> int:
-    """Auto-complete unfinished sessions and award pending XP to the user."""
-    await lock_study_user(db, user)
-    result = await db.execute(
-        select(QuizSession).where(
-            QuizSession.user_id == user.id,
-            QuizSession.completed_at.is_(None),
-        )
-    )
-    incomplete = result.scalars().all()
-    total_xp = 0
-
-    for session in incomplete:
-        session.completed_at = datetime.now(UTC)
-        xp = session.correct_count * REWARDS.QUIZ_XP_PER_CORRECT
-        total_xp += xp
-
-    if total_xp > 0:
-        user.experience_points += total_xp
-        level_info = calculate_level(user.experience_points)
-        user.level = level_info["level"]
-
-    await db.flush()
-    return total_xp
 
 
 async def fetch_stage_content_ids(db: AsyncSession, stage_id: uuid.UUID) -> tuple[StudyStage | None, list[uuid.UUID]]:
