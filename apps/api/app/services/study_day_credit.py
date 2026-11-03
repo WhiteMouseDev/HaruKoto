@@ -14,7 +14,7 @@ from app.models import DailyProgress
 from app.services.study_activity import has_study_activity
 from app.utils.date import study_date_kst
 
-STUDY_DAY_CREDIT_SEPARATION_ENABLED = False
+STUDY_DAY_CREDIT_SEPARATION_ENABLED = True
 
 
 @dataclass(frozen=True, slots=True)
