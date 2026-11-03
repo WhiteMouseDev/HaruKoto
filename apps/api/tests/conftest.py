@@ -24,6 +24,12 @@ def pytest_addoption(parser):
     parser.addoption(
         "--live-postgres-docker", action="store_true", default=False, help="Run live-session DB tests in an isolated local Docker container"
     )
+    parser.addoption(
+        "--live-postgres-docker-locale",
+        choices=("C", "C.utf8"),
+        default=None,
+        help="Override the disposable live-session Docker database locale for cross-locale regression checks",
+    )
 
 
 @pytest.fixture(autouse=True)

@@ -37,7 +37,7 @@ from app.utils.date import get_today_kst
 @pytest.fixture(scope="module")
 def live_postgres_url(request) -> Iterator[str]:
     if request.config.getoption("--live-postgres-docker"):
-        yield from _docker_postgres_url()
+        yield from _docker_postgres_url(request.config.getoption("--live-postgres-docker-locale"))
         return
     initdb, pg_ctl = shutil.which("initdb"), shutil.which("pg_ctl")
     if not initdb or not pg_ctl:
@@ -60,7 +60,7 @@ def live_postgres_url(request) -> Iterator[str]:
             subprocess.run([pg_ctl, "-D", str(data), "-m", "fast", "-w", "stop"], check=True, capture_output=True)
 
 
-def _docker_postgres_url() -> Iterator[str]:
+def _docker_postgres_url(locale: str | None = None) -> Iterator[str]:
     docker = shutil.which("docker")
     if docker is None:
         pytest.fail("--live-postgres-docker requires local Docker")
@@ -69,9 +69,12 @@ def _docker_postgres_url() -> Iterator[str]:
     if not socket.is_socket():
         pytest.fail("The local Docker Desktop socket is unavailable")
     command = [docker, "--host", f"unix://{socket}"]
+    locale_args = ["-e", f"POSTGRES_INITDB_ARGS=--locale={locale} --encoding=UTF8"] if locale else []
     container_id = subprocess.run(
         command
-        + ["run", "--rm", "--pull=never", "-d", "-p", "127.0.0.1::5432", "-e", "POSTGRES_HOST_AUTH_METHOD=trust", "postgres:16-alpine"],
+        + ["run", "--rm", "--pull=never", "-d", "-p", "127.0.0.1::5432", "-e", "POSTGRES_HOST_AUTH_METHOD=trust"]
+        + locale_args
+        + ["postgres:16-alpine"],
         check=True,
         capture_output=True,
         text=True,
@@ -420,14 +423,16 @@ async def test_live_completion_preserves_user_first_lock_order_and_existing_stud
         ({"role": "user", "content": "予約しました"}, 0),
         ([], 0),
         ([{"role": "assistant", "content": "こんにちは"}], 0),
-        ([{"role": "user", "content": " \t\n\u3000"}], 0),
+        # Derive expected whitespace from Python, independently of the SQL set;
+        # retain the original ASCII/U+3000 regression and cover every strip char.
+        ([{"role": "user", "content": "".join(chr(codepoint) for codepoint in range(0x110000) if not chr(codepoint).strip())}], 0),
         ([{"role": "user"}], 0),
         ([{"role": "user", "content": None}], 0),
         ([{"role": "user", "content": 12}], 0),
         ([{"role": ["user"], "content": "予約しました"}], 0),
         ([[{"role": "user", "content": "予約しました"}]], 0),
         ([None, 12, "invalid", {"role": "system", "content": "user: hello"}], 0),
-        ([{"role": "user", "content": "予約しました"}], 1),
+        ([{"role": "user", "content": "\u3000予約しました\u00a0"}], 1),
         ([{"role": "assistant", "content": "こんにちは"}, {"role": "user", "content": "안녕하세요"}], 1),
     ],
     ids=[
