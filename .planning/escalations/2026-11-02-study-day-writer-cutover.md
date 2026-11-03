@@ -41,3 +41,7 @@ legacy STOP #218과 p6 통합 OFF #219·갱신한 #216 ON의 코드 검증을 �
 첫 WAF 절차·원복과 callback 영향 검증, 최종 legacy ON artifact·digest, 기존 실행 종료 증거/필요 계측안을 먼저 확정해야 한다. 운영 변경·유료전환·revision삭제·DB세션종료·권한/비밀번호 변경은 수행하지 않았다. 이는 코드 작업을 중단한다는 뜻이 아니며 통합/시뮬레이터/CI 검증은 계속한다.
 
 추가 key/target 읽기에서 Vercel DATABASE_URL·DIRECT_URL은 같은항목이production/preview/development에공유된것을확인했다(값복호화없음). 현재Preview는분리QA환경이아니므로 live학습검증에사용하지않는다. 이번검증은전부localhost폐기형DB/합성Auth/API였다. 온라인Preview가필요하면production값을유지한preview전용DB/Auth/API·Secret범위분리와복구payload를별도승인받는다. 새자원/비용/설정변경은적용하지않았다.
+
+## 2026-11-03 내부 테스트 범위로 우선순위 조정
+
+사용자는 정식 출시 전이라고 설명했고 Preview 격리보다 기능의 내부 반영을 우선하도록 요청했다. 다른 내부 테스터도 있다고 확인했다. 새 Preview 인프라/WAF/NONE 복원은 현재 전환의 필수조건에서 제외하며 [간소화 전환안](../../docs/operations/plans/internal-study-release-2026-11-03.md)을 준비한다. 알려진 모든 내부 앱/웹의 일시중지, 실제사용경로·현재실행/트랜잭션 확인, 새/구잠금 writer 혼용방지와 DB/설정 사전승인은 유지한다. 과거 넓은운영안의 NO-GO를 새인프라구축을 강제하는 뜻으로 사용하지 않는다.
