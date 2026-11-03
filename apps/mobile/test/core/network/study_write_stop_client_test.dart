@@ -23,6 +23,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/study/fixtures/lesson_activity_fixture.dart';
 
+// Exercise the real client with its existing build setting, without an .env:
+// flutter test --dart-define=API_BASE_URL=https://mobile-fixture.invalid
+// Every HTTP request uses _StopTransport; no external server is contacted.
 const _maintenance = '학습 저장을 잠시 점검하고 있어요. 잠시 후 같은 기록으로 다시 시도해주세요.';
 
 void main() {

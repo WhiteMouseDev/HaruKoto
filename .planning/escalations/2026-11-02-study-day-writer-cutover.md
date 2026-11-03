@@ -31,3 +31,11 @@ status: open
 ## 2026-11-02 읽기 조사와 구체안 갱신
 
 실제 운영 head o5/p6 미적용·공유 postgres 역할·Cloud Run 공개 최신 라우팅·자동 배포와 보관 웹 배포 114개/READY16개를 확인했다. 기존 유지보수 gate나 active WAF는 없고, 현재 DB에 writer가 없다는 순간 스냅샷은 실행 종료 증거가 아니다. [구체 운영안](../../docs/operations/plans/study-day-font-fix-and-rollout-2026-11-02.md)은 자동 배포 freeze → legacy STOP bridge/모든 구 host 차단 → 실제 종료와 DB 증거 → p6 → OFF → 별도 ON을 제시한다. 새 API 동작·bridge 코드·클라우드/WAF·종료/삭제·마이그레이션은 미구현/미적용 제안이며 별도 승인을 받는다. Data API·권한·기록은 유지했다.
+
+## 2026-11-03 통합 검증과 운영 변경안
+
+legacy STOP #218과 p6 통합 OFF #219·갱신한 #216 ON의 코드 검증을 분리했다. 새 읽기 조사도 o5/p6미적용·Data API차단을 확인했다. 웹은 보관123/READY22/alias57개이며 actual custom alias가 현재 서비스 기준이다. `project.targets.production`의 CANCELED 포인터를 자동 기준으로 쓰지 않는다.
+
+[구체 설정·복구 요청 명세](../../docs/operations/plans/study-day-operating-change-proposal-2026-11-03.md)와 private JSON/host snapshot을 준비했다. 권장안은 현재 승인 host의 앱503 STOP과 이전 host 전체deny WAF1규칙이다. 이전 주소의 로그인/조회/콜백까지 차단하는 추가 영향은 별도 승인 대상이다. 현재 WAF NONE에서 최초 생성/게시 후 완전 NONE 복원은 공식 절차를 확정하지 못했으며 빈 active rules와 같다고 설명하지 않는다. 현재 관측으로 old handler 실제 종료를 증명하지 못했으므로 운영 전환 NO-GO를 유지한다.
+
+첫 WAF 절차·원복과 callback 영향 검증, 최종 legacy ON artifact·digest, 기존 실행 종료 증거/필요 계측안을 먼저 확정해야 한다. 운영 변경·유료전환·revision삭제·DB세션종료·권한/비밀번호 변경은 수행하지 않았다. 이는 코드 작업을 중단한다는 뜻이 아니며 통합/시뮬레이터/CI 검증은 계속한다.

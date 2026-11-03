@@ -30,7 +30,7 @@ analyze: ## Run flutter analyze
 	flutter analyze
 
 test: ## Run tests
-	flutter test
+	flutter test --dart-define=API_BASE_URL=https://mobile-fixture.invalid
 
 format: ## Format code
 	dart format lib test
