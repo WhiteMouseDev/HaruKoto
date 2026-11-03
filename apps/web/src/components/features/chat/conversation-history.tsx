@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Clock, Star, ChevronRight, Phone, MessageSquare, Trash2 } from 'lucide-react';
+import {
+  Clock,
+  Star,
+  ChevronRight,
+  Phone,
+  MessageSquare,
+  Trash2,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +23,10 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useChatHistory, useDeleteConversation } from '@/hooks/use-chat-history';
+import {
+  useChatHistory,
+  useDeleteConversation,
+} from '@/hooks/use-chat-history';
 
 const listItem = {
   hidden: { opacity: 0, y: 12 },
@@ -44,7 +54,9 @@ function ScoreBadge({ score }: { score: number | null }) {
         : 'text-muted-foreground';
 
   return (
-    <span className={`flex items-center gap-0.5 text-xs font-semibold ${color}`}>
+    <span
+      className={`flex items-center gap-0.5 text-xs font-semibold ${color}`}
+    >
       <Star className="size-3 fill-current" />
       {stars.toFixed(1)}
     </span>
@@ -80,10 +92,7 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
     return (
       <div className="space-y-2">
         {[1, 2, 3].map((n) => (
-          <div
-            key={n}
-            className="bg-secondary h-16 animate-pulse rounded-xl"
-          />
+          <div key={n} className="bg-secondary h-16 animate-pulse rounded-xl" />
         ))}
       </div>
     );
@@ -108,17 +117,17 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
         transition={{ staggerChildren: 0.06 }}
       >
         {items.map((item) => {
-          const isVoiceCall = !item.scenario || item.scenario.category === 'FREE';
+          const isVoiceCall = item.type === 'VOICE';
 
           return (
             <motion.div key={item.id} variants={listItem}>
               <Card
-                className="cursor-pointer transition-colors hover:bg-accent/50"
+                className="hover:bg-accent/50 cursor-pointer transition-colors"
                 onClick={() => router.push(`/chat/${item.id}/feedback`)}
               >
                 <CardContent className="flex items-center gap-3 px-4 py-3">
                   {/* Icon */}
-                  <div className="bg-secondary flex size-10 shrink-0 items-center justify-center rounded-full overflow-hidden">
+                  <div className="bg-secondary flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
                     {item.character?.avatarUrl ? (
                       <Image
                         src={item.character.avatarUrl}
@@ -139,7 +148,7 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
                     <p className="truncate text-sm font-medium">
                       {item.character
                         ? `${item.character.name}와의 통화`
-                        : item.scenario?.title ?? '음성 통화'}
+                        : (item.scenario?.title ?? '음성 통화')}
                     </p>
                     <div className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
                       <span className="flex items-center gap-0.5">
@@ -184,7 +193,10 @@ export function ConversationHistory({ filter }: ConversationHistoryProps = {}) {
       </motion.div>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>통화 기록 삭제</DialogTitle>

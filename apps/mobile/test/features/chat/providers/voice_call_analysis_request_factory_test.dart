@@ -28,6 +28,7 @@ void main() {
 
       expect(result, isNotNull);
       expect(result!.durationSeconds, 20);
+      expect(result.analysisEnabled, isTrue);
       expect(result.characterId, 'char-1');
       expect(result.characterName, '하루');
       expect(result.scenarioId, 'scenario-1');
@@ -37,7 +38,7 @@ void main() {
       ]);
     });
 
-    test('build returns null when auto analysis is disabled', () {
+    test('build preserves the call when auto analysis is disabled', () {
       final result = factory.build(
         const VoiceCallAnalysisRequestInput(
           request: request,
@@ -47,10 +48,11 @@ void main() {
         ),
       );
 
-      expect(result, isNull);
+      expect(result, isNotNull);
+      expect(result!.analysisEnabled, isFalse);
     });
 
-    test('build returns null when duration is too short', () {
+    test('build preserves short calls without requesting analysis', () {
       final result = factory.build(
         const VoiceCallAnalysisRequestInput(
           request: request,
@@ -60,10 +62,11 @@ void main() {
         ),
       );
 
-      expect(result, isNull);
+      expect(result, isNotNull);
+      expect(result!.analysisEnabled, isFalse);
     });
 
-    test('build returns null when transcript is empty', () {
+    test('build preserves calls without a transcript', () {
       final result = factory.build(
         const VoiceCallAnalysisRequestInput(
           request: request,
@@ -73,7 +76,8 @@ void main() {
         ),
       );
 
-      expect(result, isNull);
+      expect(result, isNotNull);
+      expect(result!.analysisEnabled, isFalse);
     });
   });
 }

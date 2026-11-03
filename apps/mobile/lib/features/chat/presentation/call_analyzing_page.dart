@@ -8,8 +8,11 @@ import '../../../core/constants/character_assets.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../providers/call_analysis_provider.dart';
+import '../providers/chat_provider.dart';
 import '../providers/voice_call_session_provider.dart';
 import 'conversation_feedback_launch.dart';
+import 'call_analysis_launch.dart';
+import 'voice_call_summary_page.dart';
 
 typedef CallAnalysisFeedbackLauncher = Future<void> Function(
   BuildContext context,
@@ -34,8 +37,7 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _navigated = false;
-  bool _scheduledPop = false;
-  ProviderContainer? _container;
+  CallAnalysisController? _analysisController;
 
   @override
   void initState() {
@@ -46,24 +48,14 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     )..repeat();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      unawaited(
-        ref.read(callAnalysisProvider.notifier).analyze(widget.request),
-      );
+      _analysisController = ref.read(callAnalysisProvider.notifier);
+      unawaited(_analysisController!.analyze(widget.request, owner: this));
     });
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _container ??= ProviderScope.containerOf(context, listen: false);
-  }
-
-  @override
   void dispose() {
-    final container = _container;
-    if (container != null) {
-      Future(() => container.invalidate(callAnalysisProvider));
-    }
+    _analysisController?.cancel(this);
     _controller.dispose();
     super.dispose();
   }
@@ -76,6 +68,17 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       await launcher(context, analysis);
       return;
     }
+    if (!widget.request.analysisEnabled) {
+      final saved = widget.request.withConversationId(analysis.conversationId!);
+      unawaited(Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
+        builder: (summaryContext) => VoiceCallSummaryPage(
+          request: saved,
+          onRequestFeedback: () =>
+              openCallAnalysisPage(summaryContext, saved.requestAnalysis()),
+        ),
+      )));
+      return;
+    }
     openConversationFeedbackPage(
       context,
       conversationId: analysis.conversationId!,
@@ -85,19 +88,14 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
     );
   }
 
-  Future<void> _popAfterError() async {
-    await Future<void>.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
-    Navigator.of(context).pop();
-  }
-
   Widget _buildStepIndicator(int currentStep) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildStepCircle(1, '음성 분석', currentStep),
+        _buildStepCircle(1, '기록 저장', currentStep),
         _buildStepLine(currentStep >= 2),
-        _buildStepCircle(2, '피드백 생성', currentStep),
+        _buildStepCircle(2, widget.request.analysisEnabled ? '피드백 생성' : '기록 확인',
+            currentStep),
         _buildStepLine(currentStep >= 3),
         _buildStepCircle(3, '완료', currentStep),
       ],
@@ -189,10 +187,6 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
         unawaited(_openFeedback(next));
         return;
       }
-      if (next.status == CallAnalysisStatus.error && !_scheduledPop) {
-        _scheduledPop = true;
-        unawaited(_popAfterError());
-      }
     });
 
     return Scaffold(
@@ -261,31 +255,52 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
                   textAlign: TextAlign.center,
                 ),
               ),
+              if (analysis.status == CallAnalysisStatus.error) ...[
+                const SizedBox(height: AppSizes.md),
+                Text(
+                  analysis.recordSaved
+                      ? '대화 기록은 그대로 유지됩니다.'
+                      : '아직 종료 기록의 저장을 확인하지 못했어요. 연결을 확인하고 다시 저장해 주세요.',
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: AppColors.onGradientMuted),
+                  textAlign: TextAlign.center,
+                ),
+                if (analysis.conversationId != null) ...[
+                  const SizedBox(height: AppSizes.md),
+                  FilledButton(
+                    onPressed: () => unawaited(
+                        ref.read(callAnalysisProvider.notifier).retry()),
+                    child: Text(
+                        analysis.recordSaved ? '피드백 다시 만들기' : '기록 다시 저장하기'),
+                  ),
+                ],
+                TextButton(
+                  onPressed: () {
+                    ref.invalidate(chatHistoryProvider);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('돌아가기'),
+                ),
+              ],
               const SizedBox(height: AppSizes.lg),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                  child: LinearProgressIndicator(
-                    value: analysis.progress,
-                    backgroundColor:
-                        AppColors.onGradient.withValues(alpha: 0.12),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.callAccentLight,
+              if (analysis.status != CallAnalysisStatus.error)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                    child: LinearProgressIndicator(
+                      value: analysis.isCompleted ? 1.0 : null,
+                      backgroundColor:
+                          AppColors.onGradient.withValues(alpha: 0.12),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.callAccentLight,
+                      ),
+                      minHeight: 4,
                     ),
-                    minHeight: 4,
                   ),
                 ),
-              ),
               const SizedBox(height: AppSizes.sm),
-              Text(
-                '${(analysis.progress * 100).round()}%',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: AppColors.onGradient.withValues(alpha: 0.88),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ],
           ),
         ),

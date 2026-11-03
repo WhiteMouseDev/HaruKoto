@@ -58,7 +58,11 @@ class VoiceCallStartConnectionStep {
   ) async {
     try {
       final service = await _connectionService.prepare(
-        input.startContext.toConnectionInput(input.request),
+        input.startContext.toConnectionInput(input.request,
+            onSessionPrepared: input.resources?.markSessionPrepared,
+            isCancelled: () =>
+                input.resources?.wasCancelled(input.request.conversationId) ??
+                false),
       );
       if (input.isStale()) {
         await service.dispose();

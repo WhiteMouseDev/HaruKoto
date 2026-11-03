@@ -4,13 +4,16 @@ import asyncio
 import logging
 from typing import Any
 
-from google.genai import types
+from google.genai import errors, types
 
+from app.schemas.ai_feedback import LiveFeedbackOutput, TextFeedbackOutput
 from app.services.ai_client import ensure_google_client
-from app.services.ai_json import parse_json_response
+from app.services.ai_json import parse_feedback_response, parse_json_response
+from app.services.live_feedback_evidence import ground_live_feedback
 from app.utils.prompts import SYSTEM_PROMPTS
 
 logger = logging.getLogger(__name__)
+LIVE_FEEDBACK_TIMEOUT_SECONDS = 20
 
 
 def _require_response_text(text: str | None, context: str) -> str:
@@ -52,10 +55,13 @@ async def generate_feedback_summary(messages: list[dict[str, str]]) -> dict[str,
         contents=f"以下の会話を評価してください：\n\n{conversation_text}",
         config=types.GenerateContentConfig(
             system_instruction=str(SYSTEM_PROMPTS["feedback_evaluation"]),
+            response_mime_type="application/json",
+            response_json_schema=TextFeedbackOutput.model_json_schema(),
+            http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1)),
         ),
     )
 
-    return parse_json_response(_require_response_text(response.text, "Feedback summary"))
+    return parse_feedback_response(_require_response_text(response.text, "Feedback summary"), TextFeedbackOutput)
 
 
 async def transcribe_audio(audio_bytes: bytes, mime_type: str) -> str:
@@ -75,6 +81,8 @@ async def transcribe_audio(audio_bytes: bytes, mime_type: str) -> str:
 async def generate_live_feedback(
     transcript: list[dict[str, str]],
     scenario_info: str = "",
+    *,
+    jlpt_level: str = "",
 ) -> dict[str, Any]:
     """Generate structured feedback from a voice conversation transcript."""
     client = ensure_google_client()
@@ -83,23 +91,41 @@ async def generate_live_feedback(
     prompt = f"以下の音声会話を評価してください：\n\n{transcript_text}"
     if scenario_info:
         prompt += f"\n\nシナリオ情報: {scenario_info}"
+    if jlpt_level:
+        prompt += f"\n\n学習者のJLPTレベル: {jlpt_level}"
 
     last_error: Exception | None = None
-    for attempt in range(3):
-        try:
-            response = await client.aio.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    system_instruction=str(SYSTEM_PROMPTS["live_feedback"]),
-                ),
-            )
-            return parse_json_response(_require_response_text(response.text, "Live feedback"))
-        except Exception as exc:
-            last_error = exc
-            logger.warning("Live feedback attempt %d/%d failed: %s", attempt + 1, 3, exc)
-            if attempt < 2:
-                await asyncio.sleep(1 << attempt)
+    async with asyncio.timeout(LIVE_FEEDBACK_TIMEOUT_SECONDS):
+        for attempt in range(3):
+            try:
+                response = await client.aio.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=str(SYSTEM_PROMPTS["live_feedback"]),
+                        response_mime_type="application/json",
+                        response_json_schema=LiveFeedbackOutput.model_json_schema(),
+                        thinking_config=types.ThinkingConfig(thinking_budget=0),
+                        # This service owns retries and their total timeout.
+                        http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1)),
+                    ),
+                )
+                feedback = parse_feedback_response(_require_response_text(response.text, "Live feedback"), LiveFeedbackOutput)
+                return ground_live_feedback(feedback, transcript)
+            except Exception as exc:
+                last_error = exc
+                status_code = exc.code if isinstance(exc, errors.APIError) else None
+                logger.warning(
+                    "Live feedback attempt %d/%d failed (error_type=%s, status_code=%s)",
+                    attempt + 1,
+                    3,
+                    type(exc).__name__,
+                    status_code,
+                )
+                if status_code is not None and 400 <= status_code < 500 and status_code not in {408, 429}:
+                    raise
+                if attempt < 2:
+                    await asyncio.sleep(1 << attempt)
 
     logger.error("Live feedback failed after 3 attempts")
     raise last_error or RuntimeError("Live feedback generation failed")

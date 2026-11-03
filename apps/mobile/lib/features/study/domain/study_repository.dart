@@ -120,6 +120,7 @@ abstract class StudyRepository {
     required String reading,
     required String meaningKo,
     String source = 'MANUAL',
+    bool preserveExisting = false,
     String? note,
   });
 

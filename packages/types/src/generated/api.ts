@@ -1079,6 +1079,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/chat/live-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Prepare Live Session */
+        post: operations["prepare_live_session_api_v1_chat_live_session_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/chat/live-token": {
         parameters: {
             query?: never;
@@ -3391,11 +3408,62 @@ export interface components {
             scenarioId?: string | null;
             /** Characterid */
             characterId?: string | null;
+            /**
+             * Analysisenabled
+             * @description 생략하면 피드백을 생성합니다. false이면 대화 기록만 저장합니다.
+             */
+            analysisEnabled?: boolean;
+        };
+        /** LiveFeedbackResponse */
+        LiveFeedbackResponse: {
+            /**
+             * Conversationid
+             * Format: uuid
+             */
+            conversationId: string;
+            /** Feedbacksummary */
+            feedbackSummary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Feedbackerror */
+            feedbackError?: string | null;
+            /** Xpearned */
+            xpEarned: number;
+            /** Events */
+            events: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** LiveSessionRequest */
+        LiveSessionRequest: {
+            /**
+             * Conversationid
+             * Format: uuid
+             */
+            conversationId: string;
+            /** Scenarioid */
+            scenarioId?: string | null;
+            /** Characterid */
+            characterId?: string | null;
+        };
+        /** LiveSessionResponse */
+        LiveSessionResponse: {
+            /**
+             * Conversationid
+             * Format: uuid
+             */
+            conversationId: string;
+            /** Endedat */
+            endedAt?: string | null;
         };
         /** LiveTokenRequest */
         LiveTokenRequest: {
             /** Characterid */
             characterId?: string | null;
+            /** Scenarioid */
+            scenarioId?: string | null;
+            /** Conversationid */
+            conversationId?: string | null;
         };
         /** LiveTokenResponse */
         LiveTokenResponse: {
@@ -3409,6 +3477,12 @@ export interface components {
             userNickname: string;
             /** Jlptlevel */
             jlptLevel: string;
+            /** Systeminstruction */
+            systemInstruction?: string | null;
+            /** Scenariogreeting */
+            scenarioGreeting?: string | null;
+            /** Conversationid */
+            conversationId?: string | null;
         };
         /** MarkReadRequest */
         MarkReadRequest: {
@@ -4689,6 +4763,11 @@ export interface components {
             source: components["schemas"]["WordbookSource"];
             /** Note */
             note?: string | null;
+            /**
+             * Preserveexisting
+             * @description 생략하면 기존 항목을 갱신합니다. true이면 이미 저장한 항목을 그대로 반환합니다.
+             */
+            preserveExisting?: boolean;
         };
         /** WordbookEntryResponse */
         WordbookEntryResponse: {
@@ -6872,6 +6951,39 @@ export interface operations {
             };
         };
     };
+    prepare_live_session_api_v1_chat_live_session_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LiveSessionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveSessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_live_token_endpoint_api_v1_chat_live_token_post: {
         parameters: {
             query?: never;
@@ -6924,9 +7036,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["LiveFeedbackResponse"];
                 };
             };
             /** @description Validation Error */

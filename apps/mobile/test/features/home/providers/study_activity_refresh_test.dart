@@ -242,6 +242,8 @@ class _ChatRepository extends Fake implements ChatRepository {
   Future<LiveFeedbackResponse> sendLiveFeedback(
       {required List<Map<String, String>> transcript,
       required int durationSeconds,
+      bool analysisEnabled = true,
+      String? conversationId,
       String? characterId,
       String? scenarioId}) async {
     await gate?.future;

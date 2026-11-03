@@ -381,7 +381,7 @@ class ApiStudyRepository implements StudyRepository {
     if (filter != 'ALL') params['source'] = filter;
 
     final response = await _dio.get<Map<String, dynamic>>(
-      '/wordbook',
+      '/wordbook/',
       queryParameters: params,
     );
     final data = response.data!;
@@ -400,13 +400,15 @@ class ApiStudyRepository implements StudyRepository {
     required String reading,
     required String meaningKo,
     String source = 'MANUAL',
+    bool preserveExisting = false,
     String? note,
   }) async {
-    await _dio.post('/wordbook', data: {
+    await _dio.post('/wordbook/', data: {
       'word': word,
       'reading': reading,
       'meaningKo': meaningKo,
       'source': source,
+      if (preserveExisting) 'preserveExisting': true,
       if (note != null) 'note': note,
     });
   }

@@ -36,7 +36,8 @@ void main() {
         emitError: errors.add,
       );
 
-      await session.lifecycleRunner.start(model: 'gemini-live');
+      final connecting = session.lifecycleRunner.start(model: 'gemini-live');
+      await Future<void>.delayed(Duration.zero);
 
       expect(errors, isEmpty);
       expect(states, [GeminiLiveState.connecting]);
@@ -44,6 +45,7 @@ void main() {
       expect(_setupModel(transport.sent.single), 'gemini-live');
 
       transport.emitMessage('{"setupComplete":{}}');
+      await connecting;
       await Future<void>.delayed(Duration.zero);
 
       expect(states, [GeminiLiveState.connecting, GeminiLiveState.connected]);

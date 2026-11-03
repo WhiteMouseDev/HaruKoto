@@ -1,5 +1,6 @@
 import 'gemini_live_audio_adapter.dart';
 import 'gemini_live_events.dart';
+import 'gemini_live_help_action.dart';
 import 'gemini_live_lifecycle_controller.dart';
 import 'gemini_live_message_handler.dart';
 import 'gemini_live_prompt_builder.dart';
@@ -18,6 +19,7 @@ export 'gemini_live_events.dart'
         OnStateChange,
         OnTranscriptEntry;
 export 'gemini_live_transcript.dart' show TranscriptEntry;
+export 'gemini_live_help_action.dart' show GeminiLiveHelpAction;
 
 /// Service that manages a Gemini Live voice call session.
 class GeminiLiveService {
@@ -31,13 +33,16 @@ class GeminiLiveService {
   final String userNickname;
   final int silenceDurationMs;
   final String jlptLevel;
+  final Future<String> Function()? refreshToken;
 
   OnStateChange? onStateChange;
   OnAiTextDelta? onAiTextDelta;
   OnTranscriptEntry? onTranscriptEntry;
   OnError? onError;
+  void Function()? onMicrophoneInterrupted;
 
   late final GeminiLiveServiceSession _session;
+  Future<void>? _disposal;
 
   bool get isMuted => _session.lifecycleController.isMuted;
 
@@ -56,6 +61,8 @@ class GeminiLiveService {
     this.userNickname = '학습자',
     this.silenceDurationMs = 1200,
     this.jlptLevel = 'N5',
+    this.refreshToken,
+    this.onMicrophoneInterrupted,
     GeminiLiveAudioAdapter? audioAdapter,
     GeminiLiveMessageHandler? messageHandler,
     GeminiLivePromptBuilder? promptBuilder,
@@ -72,10 +79,12 @@ class GeminiLiveService {
       userNickname: userNickname,
       silenceDurationMs: silenceDurationMs,
       jlptLevel: jlptLevel,
+      refreshToken: refreshToken,
       emitState: (state) => onStateChange?.call(state),
       emitAiTextDelta: (text) => onAiTextDelta?.call(text),
       emitTranscriptEntry: (entry) => onTranscriptEntry?.call(entry),
       emitError: (message) => onError?.call(message),
+      onMicrophoneInterrupted: () => onMicrophoneInterrupted?.call(),
       characterName: characterName,
       voiceName: voiceName,
       systemInstruction: systemInstruction,
@@ -105,8 +114,21 @@ class GeminiLiveService {
     return _session.lifecycleRunner.end();
   }
 
+  Future<void> suspendMicrophone() => _session.suspendMicrophone();
+
+  Future<bool> resumeMicrophone() => _session.resumeMicrophone();
+
+  /// Sends an explicit learner request without changing microphone state.
+  /// A true result confirms local delivery, not a completed model response.
+  Future<bool> requestHelp(
+    GeminiLiveHelpAction action, {
+    String? targetText,
+  }) async {
+    return _session.requestHelp(action, targetText: targetText);
+  }
+
   /// Dispose all resources.
   Future<void> dispose() {
-    return _session.lifecycleRunner.dispose();
+    return _disposal ??= _session.lifecycleRunner.dispose();
   }
 }

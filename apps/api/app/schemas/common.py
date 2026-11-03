@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,6 +10,11 @@ T = TypeVar("T")
 def to_camel(s: str) -> str:
     parts = s.split("_")
     return parts[0] + "".join(p.capitalize() for p in parts[1:])
+
+
+def omit_schema_default(schema: dict[str, Any]) -> None:
+    """Keep additive flags optional in clients that treat schema defaults as required."""
+    schema.pop("default", None)
 
 
 class CamelModel(BaseModel):

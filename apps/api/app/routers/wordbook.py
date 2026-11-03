@@ -79,10 +79,13 @@ async def create_wordbook_entry(
         source=body.source,
         note=body.note,
     )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["user_id", "word"],
-        set_={"reading": body.reading, "meaning_ko": body.meaning_ko, "note": body.note},
-    )
+    if body.preserve_existing:
+        stmt = stmt.on_conflict_do_nothing(index_elements=["user_id", "word"])
+    else:
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["user_id", "word"],
+            set_={"reading": body.reading, "meaning_ko": body.meaning_ko, "note": body.note},
+        )
     await db.execute(stmt)
     await db.commit()
 

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
@@ -16,6 +19,374 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('VoiceCallSessionController', () {
+    test('a previous generation cannot change a reused notifier call',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final services = <_FakeGeminiLiveService>[];
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+        sharedPreferencesProvider.overrideWith((ref) => prefs),
+        voiceCallMicrophonePermissionRequesterProvider
+            .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+        profileDetailProvider
+            .overrideWith((ref) => Future.value(_profileDetail())),
+        voiceCallBootstrapServiceProvider
+            .overrideWith((ref) => _FakeVoiceCallBootstrapService()),
+        voiceCallLiveServiceFactoryProvider.overrideWith((ref) => (_, __) {
+              final service = _FakeGeminiLiveService();
+              services.add(service);
+              return service;
+            }),
+        voiceCallRingtonePlayerFactoryProvider
+            .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+      ]);
+      addTearDown(container.dispose);
+      await container.read(profileDetailProvider.future);
+      final controller = container.read(voiceCallSessionProvider.notifier);
+      await controller
+          .initialize(const VoiceCallSessionRequest(characterId: 'first'));
+      await controller
+          .initialize(const VoiceCallSessionRequest(characterId: 'second'));
+
+      services.first.emitState(GeminiLiveState.error);
+      services.first.emitAiText('old generation');
+      services.first.onMicrophoneInterrupted?.call();
+      expect(container.read(voiceCallSessionProvider).isConnected, isTrue);
+      expect(container.read(voiceCallSessionProvider).currentAiText, isEmpty);
+      expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+          isFalse);
+      expect(services.first.disposed, isTrue);
+      expect(services.last.disposed, isFalse);
+      await controller.endCall();
+    });
+
+    for (final foregroundBeforeConnect in [false, true]) {
+      test(
+          'connection completion honors current foreground state ($foregroundBeforeConnect)',
+          () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final release = Completer<void>();
+        final bootstrap = _FakeVoiceCallBootstrapService()
+          ..blocker = release.future;
+        final service = _FakeGeminiLiveService();
+        final container = ProviderContainer(overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider
+              .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+          profileDetailProvider
+              .overrideWith((ref) => Future.value(_profileDetail())),
+          voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
+          voiceCallLiveServiceFactoryProvider
+              .overrideWith((ref) => (_, __) => service),
+          voiceCallRingtonePlayerFactoryProvider
+              .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+        ]);
+        addTearDown(container.dispose);
+        await container.read(profileDetailProvider.future);
+        final controller = container.read(voiceCallSessionProvider.notifier);
+        final starting = controller
+            .initialize(const VoiceCallSessionRequest(characterId: 'char-1'));
+        await bootstrap.entered.future;
+        controller.setAppActive(false);
+        if (foregroundBeforeConnect) controller.setAppActive(true);
+        release.complete();
+        await starting;
+        expect(service.suspendMicrophoneCalls, foregroundBeforeConnect ? 0 : 1);
+        expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+            !foregroundBeforeConnect);
+        expect(service.resumeMicrophoneCalls, 0);
+        await controller.endCall();
+      });
+    }
+
+    for (final initiallyMuted in [false, true]) {
+      test(
+          'microphone recovery is explicit and preserves mute ($initiallyMuted)',
+          () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final service = _FakeGeminiLiveService();
+        final container = ProviderContainer(overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+          sharedPreferencesProvider.overrideWith((ref) => prefs),
+          voiceCallMicrophonePermissionRequesterProvider
+              .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+          profileDetailProvider
+              .overrideWith((ref) => Future.value(_profileDetail())),
+          voiceCallBootstrapServiceProvider
+              .overrideWith((ref) => _FakeVoiceCallBootstrapService()),
+          voiceCallLiveServiceFactoryProvider
+              .overrideWith((ref) => (_, __) => service),
+          voiceCallRingtonePlayerFactoryProvider
+              .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+        ]);
+        addTearDown(container.dispose);
+        await container.read(profileDetailProvider.future);
+        final controller = container.read(voiceCallSessionProvider.notifier);
+        await controller
+            .initialize(const VoiceCallSessionRequest(characterId: 'char-1'));
+        controller.setMuted(initiallyMuted);
+        service.onMicrophoneInterrupted?.call();
+        expect(
+            container.read(voiceCallSessionProvider).statusLabel, '마이크 일시중지');
+        controller.setAppActive(false);
+        expect(service.suspendMicrophoneCalls, 1);
+        expect(await controller.resumeMicrophone(), isFalse);
+        expect(service.resumeMicrophoneCalls, 0);
+        controller.setAppActive(true);
+        expect(service.resumeMicrophoneCalls, 0);
+        expect(await controller.resumeMicrophone(), isTrue);
+        expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+            isFalse);
+        expect(
+            container.read(voiceCallSessionProvider).isMuted, initiallyMuted);
+        expect(service.isMuted, initiallyMuted);
+
+        service.emitState(GeminiLiveState.connecting);
+        controller.setAppActive(false);
+        expect(service.suspendMicrophoneCalls, 2);
+        expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+            isTrue);
+        controller.setAppActive(true);
+        service.emitState(GeminiLiveState.connected);
+        expect(service.resumeMicrophoneCalls, 1);
+        expect(await controller.resumeMicrophone(), isTrue);
+
+        service.onMicrophoneInterrupted?.call();
+        final release = Completer<bool>();
+        service.resumeMicrophoneBlocker = release.future;
+        final pendingResume = controller.resumeMicrophone();
+        expect(await controller.resumeMicrophone(), isFalse);
+        controller.setAppActive(false);
+        release.complete(true);
+        expect(await pendingResume, isFalse);
+        expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+            isTrue);
+        expect(container.read(voiceCallSessionProvider).resumingMicrophone,
+            isFalse);
+
+        controller.setAppActive(true);
+        final networkRelease = Completer<bool>();
+        service.resumeMicrophoneBlocker = networkRelease.future;
+        final networkResume = controller.resumeMicrophone();
+        service.emitState(GeminiLiveState.connecting);
+        expect(container.read(voiceCallSessionProvider).resumingMicrophone,
+            isFalse);
+        service.emitState(GeminiLiveState.connected);
+        networkRelease.complete(true);
+        expect(await networkResume, isFalse);
+        expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+            isTrue);
+        expect(container.read(voiceCallSessionProvider).resumingMicrophone,
+            isFalse);
+        service.resumeMicrophoneBlocker = null;
+        expect(await controller.resumeMicrophone(), isTrue);
+        service.onMicrophoneInterrupted?.call();
+
+        final endingRelease = Completer<bool>();
+        service.resumeMicrophoneBlocker = endingRelease.future;
+        final endingResume = controller.resumeMicrophone();
+        await controller.endCall();
+        endingRelease.complete(true);
+        expect(await endingResume, isFalse);
+        expect(container.read(voiceCallSessionProvider).status,
+            VoiceCallStatus.ending);
+      });
+    }
+
+    test('a second call connects after the retained provider is invalidated',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final bootstrap = _FakeVoiceCallBootstrapService();
+      final services = <_FakeGeminiLiveService>[];
+      final ringtones = <_FakeVoiceCallRingtonePlayer>[];
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+        sharedPreferencesProvider.overrideWith((ref) => prefs),
+        voiceCallMicrophonePermissionRequesterProvider
+            .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+        profileDetailProvider
+            .overrideWith((ref) => Future.value(_profileDetail())),
+        voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
+        voiceCallLiveServiceFactoryProvider.overrideWith((ref) => (_, __) {
+              final service = _FakeGeminiLiveService();
+              services.add(service);
+              return service;
+            }),
+        voiceCallRingtonePlayerFactoryProvider.overrideWith((ref) => () {
+              final ringtone = _FakeVoiceCallRingtonePlayer();
+              ringtones.add(ringtone);
+              return ringtone;
+            }),
+      ]);
+      addTearDown(container.dispose);
+      final subscription =
+          container.listen(voiceCallSessionProvider, (_, __) {});
+      addTearDown(subscription.close);
+      await container.read(profileDetailProvider.future);
+      final first = container.read(voiceCallSessionProvider.notifier);
+      await first
+          .initialize(const VoiceCallSessionRequest(characterId: 'char-1'));
+      await first.endCall();
+      container.invalidate(voiceCallSessionProvider);
+      final second = container.read(voiceCallSessionProvider.notifier);
+      expect(identical(first, second), isTrue);
+      await second
+          .initialize(const VoiceCallSessionRequest(characterId: 'char-2'));
+
+      expect(bootstrap.prepareCalls, 2);
+      expect(services.last.startCalls, 1);
+      expect(container.read(voiceCallSessionProvider).isConnected, isTrue);
+      expect(ringtones, hasLength(2));
+      expect(ringtones.first.disposed, isTrue);
+      expect(ringtones.last.disposed, isFalse);
+      services.first.emitState(GeminiLiveState.error);
+      services.first.emitAiText('stale caption');
+      services.first.onMicrophoneInterrupted?.call();
+      expect(container.read(voiceCallSessionProvider).isConnected, isTrue);
+      expect(container.read(voiceCallSessionProvider).currentAiText, isEmpty);
+      expect(container.read(voiceCallSessionProvider).microphoneInterrupted,
+          isFalse);
+      await second.endCall();
+    });
+
+    test('an old pending start and end cannot mutate the rebuilt call',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final release = Completer<void>();
+      final bootstrap = _FakeVoiceCallBootstrapService()
+        ..blocker = release.future;
+      final oldService = _FakeGeminiLiveService();
+      final newService = _FakeGeminiLiveService();
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+        sharedPreferencesProvider.overrideWith((ref) => prefs),
+        voiceCallMicrophonePermissionRequesterProvider
+            .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+        profileDetailProvider
+            .overrideWith((ref) => Future.value(_profileDetail())),
+        voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
+        voiceCallLiveServiceFactoryProvider.overrideWith((ref) =>
+            (_, request) =>
+                request.characterId == 'old' ? oldService : newService),
+        voiceCallRingtonePlayerFactoryProvider
+            .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+      ]);
+      addTearDown(container.dispose);
+      final subscription =
+          container.listen(voiceCallSessionProvider, (_, __) {});
+      addTearDown(subscription.close);
+      await container.read(profileDetailProvider.future);
+      final controller = container.read(voiceCallSessionProvider.notifier);
+      final oldStart = controller
+          .initialize(const VoiceCallSessionRequest(characterId: 'old'));
+      await bootstrap.entered.future;
+      final oldEnd = controller.endCall();
+      container.invalidate(voiceCallSessionProvider);
+      bootstrap.blocker = null;
+      final rebuilt = container.read(voiceCallSessionProvider.notifier);
+      await rebuilt
+          .initialize(const VoiceCallSessionRequest(characterId: 'new'));
+      release.complete();
+      await oldStart;
+      expect((await oldEnd).ignored, isTrue);
+      expect(oldService.startCalls, 0);
+      expect(oldService.disposed, isTrue);
+      expect(newService.startCalls, 1);
+      expect(newService.disposed, isFalse);
+      expect(newService.endCalls, 0);
+      expect(newService.isMuted, isFalse);
+      expect(container.read(voiceCallSessionProvider).isConnected, isTrue);
+      await rebuilt.endCall();
+    });
+
+    test('ending during bootstrap prevents a late service from starting',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final bootstrap = _FakeVoiceCallBootstrapService();
+      final release = Completer<void>();
+      bootstrap.blocker = release.future;
+      final service = _FakeGeminiLiveService();
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+        sharedPreferencesProvider.overrideWith((ref) => prefs),
+        voiceCallMicrophonePermissionRequesterProvider
+            .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+        profileDetailProvider
+            .overrideWith((ref) => Future.value(_profileDetail())),
+        voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
+        voiceCallLiveServiceFactoryProvider
+            .overrideWith((ref) => (_, __) => service),
+        voiceCallRingtonePlayerFactoryProvider
+            .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+      ]);
+      addTearDown(container.dispose);
+      await container.read(profileDetailProvider.future);
+      final controller = container.read(voiceCallSessionProvider.notifier);
+      final starting = controller
+          .initialize(const VoiceCallSessionRequest(characterId: 'char-1'));
+      await bootstrap.entered.future;
+      final ending = controller.endCall();
+      release.complete();
+      await starting;
+      final result = await ending;
+      expect(service.startCalls, 0);
+      expect(service.disposed, isTrue);
+      expect(result.analysisRequest?.conversationId,
+          bootstrap.lastInput?.conversationId);
+      expect(result.analysisRequest?.durationSeconds, 0);
+      expect(result.analysisRequest?.analysisEnabled, isFalse);
+      expect(result.analysisRequest?.wasConnected, isFalse);
+    });
+
+    test('ending has a bounded wait when bootstrap remains pending', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final bootstrap = _FakeVoiceCallBootstrapService();
+      final release = Completer<void>();
+      bootstrap.blocker = release.future;
+      final service = _FakeGeminiLiveService();
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
+        sharedPreferencesProvider.overrideWith((ref) => prefs),
+        voiceCallMicrophonePermissionRequesterProvider
+            .overrideWith((ref) => allowVoiceCallMicrophonePermission),
+        profileDetailProvider
+            .overrideWith((ref) => Future.value(_profileDetail())),
+        voiceCallBootstrapServiceProvider.overrideWith((ref) => bootstrap),
+        voiceCallLiveServiceFactoryProvider
+            .overrideWith((ref) => (_, __) => service),
+        voiceCallRingtonePlayerFactoryProvider
+            .overrideWith((ref) => _FakeVoiceCallRingtonePlayer.new),
+      ]);
+      addTearDown(container.dispose);
+      await container.read(profileDetailProvider.future);
+      final controller = container.read(voiceCallSessionProvider.notifier);
+      final starting = controller
+          .initialize(const VoiceCallSessionRequest(characterId: 'char-1'));
+      await bootstrap.entered.future;
+      final ending = controller.endCall();
+      final result = await ending.timeout(const Duration(seconds: 3));
+      expect(result.analysisRequest, isNull);
+      release.complete();
+      await starting;
+      expect(service.startCalls, 0);
+      expect(service.disposed, isTrue);
+    });
+
     test('initializes and reacts to live service callbacks', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -83,7 +454,7 @@ void main() {
         const TranscriptEntry(role: 'assistant', text: 'こんにちは'),
       );
       state = container.read(voiceCallSessionProvider);
-      expect(state.currentAiText, isEmpty);
+      expect(state.currentAiText, 'こんにちは');
     });
 
     test('toggle controls update local state and live service mute state',
@@ -247,7 +618,7 @@ void main() {
     test('retry reuses the stored request after an error', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final firstService = _FakeGeminiLiveService();
+      final firstService = _FakeGeminiLiveService()..connectOnStart = false;
       final secondService = _FakeGeminiLiveService();
       var factoryCalls = 0;
       final container = ProviderContainer(
@@ -310,11 +681,18 @@ class _FakeVoiceCallBootstrapService extends VoiceCallBootstrapService {
 
   int prepareCalls = 0;
   VoiceCallBootstrapInput? lastInput;
+  Future<void>? blocker;
+  final entered = Completer<void>();
 
   @override
   Future<VoiceCallBootstrapData> prepare(VoiceCallBootstrapInput input) async {
     prepareCalls++;
     lastInput = input;
+    if (!entered.isCompleted) entered.complete();
+    await blocker;
+    if (input.conversationId != null) {
+      input.onSessionPrepared?.call(input.conversationId!);
+    }
     return VoiceCallBootstrapData(
       wsUri: 'wss://example.com/live',
       token: token,
@@ -340,8 +718,12 @@ class _FakeGeminiLiveService extends GeminiLiveService {
         );
 
   int startCalls = 0;
+  bool connectOnStart = true;
   int endCalls = 0;
   bool disposed = false;
+  int suspendMicrophoneCalls = 0;
+  int resumeMicrophoneCalls = 0;
+  Future<bool>? resumeMicrophoneBlocker;
   List<TranscriptEntry> providedTranscript = const [];
 
   @override
@@ -350,7 +732,8 @@ class _FakeGeminiLiveService extends GeminiLiveService {
   @override
   Future<void> start() async {
     startCalls++;
-    onStateChange?.call(GeminiLiveState.connected);
+    onStateChange?.call(
+        connectOnStart ? GeminiLiveState.connected : GeminiLiveState.error);
   }
 
   @override
@@ -362,6 +745,17 @@ class _FakeGeminiLiveService extends GeminiLiveService {
   @override
   Future<void> dispose() async {
     disposed = true;
+  }
+
+  @override
+  Future<void> suspendMicrophone() async {
+    suspendMicrophoneCalls++;
+  }
+
+  @override
+  Future<bool> resumeMicrophone() async {
+    resumeMicrophoneCalls++;
+    return await resumeMicrophoneBlocker ?? true;
   }
 
   void emitState(GeminiLiveState state) {

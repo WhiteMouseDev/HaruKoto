@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
@@ -8,6 +10,35 @@ import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provi
 
 void main() {
   group('CallAnalysisController', () {
+    test('leaving immediately cannot cancel the first durable save', () async {
+      final repository = _FakeChatRepository(
+          response: const LiveFeedbackResponse(
+              conversationId: 'stable-id', xpEarned: 0, events: []));
+      final release = Completer<void>();
+      repository.blocker = release.future;
+      final container = ProviderContainer(overrides: [
+        chatRepositoryProvider.overrideWith((ref) => repository)
+      ]);
+      addTearDown(container.dispose);
+      final controller = container.read(callAnalysisProvider.notifier);
+      final owner = Object();
+      final saving = controller.analyze(
+          const VoiceCallAnalysisRequest(
+              conversationId: 'stable-id',
+              transcript: [
+                {'role': 'user', 'text': 'こんにちは'}
+              ],
+              durationSeconds: 20,
+              analysisEnabled: false),
+          owner: owner);
+      controller.cancel(owner);
+      expect(repository.calls, 1);
+      release.complete();
+      await saving;
+      expect(repository.calls, 1);
+      expect(repository.lastConversationId, 'stable-id');
+    });
+
     test('analyze completes with feedback result', () async {
       final repository = _FakeChatRepository(
         response: LiveFeedbackResponse(
@@ -48,7 +79,8 @@ void main() {
       expect(state.feedbackSummary, isNotNull);
     });
 
-    test('retry reuses the previous request after failure', () async {
+    test('does not resubmit a call when the first save response was lost',
+        () async {
       final repository = _FakeChatRepository(
         errorsBeforeSuccess: 1,
         response: const LiveFeedbackResponse(
@@ -80,9 +112,9 @@ void main() {
       await notifier.retry();
 
       final state = container.read(callAnalysisProvider);
-      expect(repository.calls, 2);
-      expect(state.status, CallAnalysisStatus.completed);
-      expect(state.conversationId, 'conversation-2');
+      expect(repository.calls, 1);
+      expect(state.status, CallAnalysisStatus.error);
+      expect(state.conversationId, isNull);
     });
 
     for (final feedbackError in ['no_transcript', 'generation_failed']) {
@@ -113,11 +145,71 @@ void main() {
             );
 
         final state = container.read(callAnalysisProvider);
-        expect(state.status, CallAnalysisStatus.completed);
+        expect(
+            state.status,
+            feedbackError == 'generation_failed'
+                ? CallAnalysisStatus.error
+                : CallAnalysisStatus.completed);
         expect(state.feedbackSummary, isNull);
         expect(state.feedbackError, feedbackError);
       });
     }
+
+    test('generation failure retries using the saved conversation id',
+        () async {
+      final repository = _FakeChatRepository(
+        response: const LiveFeedbackResponse(
+          conversationId: 'saved-1',
+          feedbackError: 'generation_failed',
+          xpEarned: 0,
+          events: [],
+        ),
+      );
+      final container = ProviderContainer(overrides: [
+        chatRepositoryProvider.overrideWith((ref) => repository),
+      ]);
+      addTearDown(container.dispose);
+      final notifier = container.read(callAnalysisProvider.notifier);
+      await notifier.analyze(const VoiceCallAnalysisRequest(
+        transcript: [
+          {'role': 'user', 'text': 'こんにちは'}
+        ],
+        durationSeconds: 20,
+      ));
+      repository.response = LiveFeedbackResponse(
+        conversationId: 'saved-1',
+        feedbackSummary: _feedbackSummary(),
+        xpEarned: 0,
+        events: const [],
+      );
+      await notifier.retry();
+      expect(repository.lastConversationId, 'saved-1');
+      expect(repository.calls, 2);
+      expect(container.read(callAnalysisProvider).status,
+          CallAnalysisStatus.completed);
+    });
+
+    test('saving without analysis sends the flag and reports a saved call',
+        () async {
+      final repository = _FakeChatRepository(
+          response: const LiveFeedbackResponse(
+        conversationId: 'saved-short',
+        xpEarned: 0,
+        events: [],
+      ));
+      final container = ProviderContainer(overrides: [
+        chatRepositoryProvider.overrideWith((ref) => repository),
+      ]);
+      addTearDown(container.dispose);
+      await container.read(callAnalysisProvider.notifier).analyze(
+            const VoiceCallAnalysisRequest(
+                transcript: [], durationSeconds: 2, analysisEnabled: false),
+          );
+      expect(repository.lastAnalysisEnabled, isFalse);
+      final state = container.read(callAnalysisProvider);
+      expect(state.status, CallAnalysisStatus.completed);
+      expect(state.feedbackError, 'analysis_skipped');
+    });
 
     test('analyze reports an error when backend returns no conversation id',
         () async {
@@ -157,24 +249,32 @@ class _FakeChatRepository extends ChatRepository {
     this.errorsBeforeSuccess = 0,
   });
 
-  final LiveFeedbackResponse response;
+  LiveFeedbackResponse response;
   final int errorsBeforeSuccess;
   int calls = 0;
+  Future<void>? blocker;
   int? lastDurationSeconds;
   String? lastCharacterId;
   String? lastScenarioId;
+  String? lastConversationId;
+  bool? lastAnalysisEnabled;
 
   @override
   Future<LiveFeedbackResponse> sendLiveFeedback({
     required List<Map<String, String>> transcript,
     required int durationSeconds,
+    bool analysisEnabled = true,
+    String? conversationId,
     String? scenarioId,
     String? characterId,
   }) async {
     calls++;
+    await blocker;
     lastDurationSeconds = durationSeconds;
     lastCharacterId = characterId;
     lastScenarioId = scenarioId;
+    lastConversationId = conversationId;
+    lastAnalysisEnabled = analysisEnabled;
 
     if (calls <= errorsBeforeSuccess) {
       throw Exception('analysis failed');

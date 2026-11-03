@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import Field
+
 from app.models.enums import WordbookSource
-from app.schemas.common import CamelModel
+from app.schemas.common import CamelModel, omit_schema_default
 
 
 class WordbookEntryResponse(CamelModel):
@@ -23,6 +25,11 @@ class WordbookCreateRequest(CamelModel):
     meaning_ko: str
     source: WordbookSource = WordbookSource.MANUAL
     note: str | None = None
+    preserve_existing: bool = Field(
+        default=False,
+        description="생략하면 기존 항목을 갱신합니다. true이면 이미 저장한 항목을 그대로 반환합니다.",
+        json_schema_extra=omit_schema_default,
+    )
 
 
 class WordbookUpdateRequest(CamelModel):

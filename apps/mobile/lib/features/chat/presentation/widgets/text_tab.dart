@@ -68,12 +68,12 @@ class TextTab extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '하루와 자유롭게 대화',
+                          '글로 자유롭게 연습',
                           style: theme.textTheme.titleSmall
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          '어떤 주제든 일본어로!',
+                          '소리 내기 어려울 때도 일본어로 이야기해요',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
@@ -94,10 +94,12 @@ class TextTab extends StatelessWidget {
             Icon(LucideIcons.folderOpen,
                 size: 16, color: colorScheme.onSurface),
             const SizedBox(width: 6),
-            Text(
-              '상황별 시나리오',
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
+            Expanded(
+              child: Text(
+                '상황을 고르고 말하기로 연습',
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
@@ -111,14 +113,14 @@ class TextTab extends StatelessWidget {
             Icon(LucideIcons.clock, size: 16, color: colorScheme.onSurface),
             const SizedBox(width: 6),
             Text(
-              '지난 회화 기록',
+              '최근 연습 기록',
               style: theme.textTheme.titleSmall
                   ?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
         const SizedBox(height: AppSizes.sm),
-        const ConversationHistoryList(filter: 'text'),
+        const ConversationHistoryList(filter: 'practice'),
         const SizedBox(height: AppSizes.lg),
       ],
     );

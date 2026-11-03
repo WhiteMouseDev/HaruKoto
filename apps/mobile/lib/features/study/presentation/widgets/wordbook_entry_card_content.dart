@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/wordbook_entry_model.dart';
 
 class WordbookEntryCardContent extends StatelessWidget {
@@ -34,7 +33,9 @@ class _WordbookEntryText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Wrap(
+          spacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               entry.word,
@@ -42,12 +43,6 @@ class _WordbookEntryText extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 6),
-            TtsPlayButton(
-              vocabId: entry.id,
-              iconSize: 16,
-            ),
-            const SizedBox(width: 8),
             Text(
               entry.reading,
               style: theme.textTheme.bodySmall?.copyWith(

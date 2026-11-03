@@ -35,17 +35,16 @@ class ConversationDetail {
   factory ConversationDetail.fromJson(Map<String, dynamic> json) {
     return ConversationDetail(
       messages: (json['messages'] as List<dynamic>? ?? [])
+          .where((message) =>
+              message is Map<String, dynamic> &&
+              const ['user', 'assistant', 'ai'].contains(message['role']))
           .map((e) => ChatMessageModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       scenario: json['scenario'] != null
           ? ScenarioModel.fromJson(json['scenario'] as Map<String, dynamic>)
           : null,
       endedAt: json['endedAt'] as String?,
-      feedbackSummary: json['feedbackSummary'] != null
-          ? FeedbackSummary.fromJson(
-              json['feedbackSummary'] as Map<String, dynamic>,
-            )
-          : null,
+      feedbackSummary: FeedbackSummary.tryFromJson(json['feedbackSummary']),
     );
   }
 }
@@ -66,11 +65,7 @@ class EndConversationResponse {
   factory EndConversationResponse.fromJson(Map<String, dynamic> json) {
     return EndConversationResponse(
       success: json['success'] as bool? ?? false,
-      feedbackSummary: json['feedbackSummary'] != null
-          ? FeedbackSummary.fromJson(
-              json['feedbackSummary'] as Map<String, dynamic>,
-            )
-          : null,
+      feedbackSummary: FeedbackSummary.tryFromJson(json['feedbackSummary']),
       xpEarned: json['xpEarned'] as int? ?? 0,
       events: (json['events'] as List<dynamic>?)
               ?.map((e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
@@ -98,12 +93,12 @@ class LiveFeedbackResponse {
   factory LiveFeedbackResponse.fromJson(Map<String, dynamic> json) {
     return LiveFeedbackResponse(
       conversationId: json['conversationId'] as String? ?? '',
-      feedbackSummary: json['feedbackSummary'] != null
-          ? FeedbackSummary.fromJson(
-              json['feedbackSummary'] as Map<String, dynamic>,
-            )
-          : null,
-      feedbackError: json['feedbackError'] as String?,
+      feedbackSummary: FeedbackSummary.tryFromJson(json['feedbackSummary']),
+      feedbackError: json['feedbackError'] as String? ??
+          (json['feedbackSummary'] != null &&
+                  FeedbackSummary.tryFromJson(json['feedbackSummary']) == null
+              ? 'generation_failed'
+              : null),
       xpEarned: json['xpEarned'] as int? ?? 0,
       events: (json['events'] as List<dynamic>?)
               ?.map((e) => ChatGameEvent.fromJson(e as Map<String, dynamic>))
@@ -119,6 +114,8 @@ class LiveTokenResponse {
   final String model;
   final String? userNickname;
   final String? jlptLevel;
+  final String? systemInstruction;
+  final String? scenarioGreeting;
 
   const LiveTokenResponse({
     required this.token,
@@ -126,6 +123,8 @@ class LiveTokenResponse {
     required this.model,
     this.userNickname,
     this.jlptLevel,
+    this.systemInstruction,
+    this.scenarioGreeting,
   });
 
   factory LiveTokenResponse.fromJson(Map<String, dynamic> json) {
@@ -135,6 +134,8 @@ class LiveTokenResponse {
       model: json['model'] as String? ?? '',
       userNickname: json['userNickname'] as String?,
       jlptLevel: json['jlptLevel'] as String?,
+      systemInstruction: json['systemInstruction'] as String?,
+      scenarioGreeting: json['scenarioGreeting'] as String?,
     );
   }
 }

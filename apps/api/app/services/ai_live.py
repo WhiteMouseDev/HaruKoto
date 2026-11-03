@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import UTC, datetime, timedelta
 
 from app.services.ai_client import create_google_live_token_client
@@ -17,13 +18,17 @@ async def generate_live_token() -> dict[str, str]:
     expire_time = datetime.now(UTC) + timedelta(minutes=5)
     new_session_expire_time = datetime.now(UTC) + timedelta(minutes=1)
 
-    token_response = alpha_client.auth_tokens.create(
-        config={
-            "uses": 5,
-            "expire_time": expire_time.isoformat(),
-            "new_session_expire_time": new_session_expire_time.isoformat(),
-            "http_options": {"api_version": "v1alpha"},
-        },
+    token_response = await asyncio.wait_for(
+        asyncio.to_thread(
+            alpha_client.auth_tokens.create,
+            config={
+                "uses": 5,
+                "expire_time": expire_time.isoformat(),
+                "new_session_expire_time": new_session_expire_time.isoformat(),
+                "http_options": {"api_version": "v1alpha", "timeout": 10000},
+            },
+        ),
+        timeout=10,
     )
 
     return {

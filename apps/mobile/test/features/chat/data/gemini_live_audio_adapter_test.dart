@@ -9,6 +9,113 @@ import 'package:record/record.dart';
 
 void main() {
   group('DefaultGeminiLiveAudioAdapter', () {
+    for (final dispose in [false, true]) {
+      test(
+          'a stream arriving after ${dispose ? 'dispose' : 'stop'} is cancelled',
+          () async {
+        final started = Completer<Stream<Uint8List>>();
+        var streamCancelled = false;
+        final lateStream = StreamController<Uint8List>(
+          onCancel: () => streamCancelled = true,
+        );
+        final recorder = _FakeAudioRecorder()..startResult = started.future;
+        final received = <Uint8List>[];
+        final adapter = DefaultGeminiLiveAudioAdapter(
+          recorder: recorder,
+          isOutputSupported: () => false,
+        );
+        final starting = adapter.startRecording(onData: received.add);
+        await Future<void>.delayed(Duration.zero);
+        if (dispose) {
+          await adapter.dispose();
+        } else {
+          await adapter.stopRecording();
+        }
+        started.complete(lateStream.stream);
+        expect(await starting, GeminiLiveAudioStartResult.unavailable);
+        expect(streamCancelled, isTrue);
+        expect(received, isEmpty);
+        expect(recorder.disposeCalls, dispose ? 2 : 0);
+        expect(recorder.stopCalls, dispose ? 1 : 2);
+        await lateStream.close();
+        await adapter.dispose();
+      });
+    }
+
+    test('a disposed pending permission request cannot reclaim PCM output',
+        () async {
+      final permission = Completer<bool>();
+      final recorder = _FakeAudioRecorder()
+        ..permissionResult = permission.future;
+      var setupCalls = 0;
+      final adapter = DefaultGeminiLiveAudioAdapter(
+        recorder: recorder,
+        setupOutput: (
+                {required int sampleRate, required int channelCount}) async =>
+            setupCalls++,
+        setFeedThreshold: (_) async {},
+        feedOutput: (_) async {},
+        releaseOutput: () async {},
+      );
+      final starting = adapter.startRecording(onData: (_) {});
+      await Future<void>.delayed(Duration.zero);
+      await adapter.dispose();
+      permission.complete(true);
+      expect(await starting, GeminiLiveAudioStartResult.unavailable);
+      expect(setupCalls, 0);
+      expect(recorder.config, isNull);
+    });
+
+    for (final interruption in ['pause', 'stop', 'error', 'done']) {
+      test(
+          'reports native $interruption once without treating own stop as interruption',
+          () async {
+        final recorder = _FakeAudioRecorder();
+        var interruptions = 0;
+        final adapter = DefaultGeminiLiveAudioAdapter(
+          recorder: recorder,
+          isOutputSupported: () => false,
+        )..onMicrophoneInterrupted = () => interruptions++;
+
+        await adapter.startRecording(onData: (_) {});
+        await Future<void>.delayed(Duration.zero);
+        switch (interruption) {
+          case 'pause':
+            recorder.emitState(RecordState.pause);
+          case 'stop':
+            recorder.emitState(RecordState.stop);
+          case 'error':
+            recorder.failStream();
+          case 'done':
+            await recorder.finishStream();
+        }
+        await Future<void>.delayed(Duration.zero);
+        expect(interruptions, 1);
+        await adapter.stopRecording();
+        await Future<void>.delayed(Duration.zero);
+        expect(interruptions, 1);
+        await adapter.dispose();
+      });
+    }
+
+    test('stops a platform automatic resume after interruption', () async {
+      final recorder = _FakeAudioRecorder();
+      final adapter = DefaultGeminiLiveAudioAdapter(
+        recorder: recorder,
+        isOutputSupported: () => false,
+      );
+      await adapter.startRecording(onData: (_) {});
+      await Future<void>.delayed(Duration.zero);
+      recorder.emitState(RecordState.pause);
+      await Future<void>.delayed(Duration.zero);
+      recorder.emitState(RecordState.record);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(recorder.stopCalls, 1);
+      expect(recorder.recording, isFalse);
+      await adapter.dispose();
+    });
+
     test('startRecording starts recorder stream and forwards chunks', () async {
       final recorder = _FakeAudioRecorder();
       final forwarded = <Uint8List>[];
@@ -246,9 +353,73 @@ void main() {
       expect(events, ['start-1:1']);
 
       firstFeed.complete();
+      await Future<void>.delayed(Duration.zero);
       await adapter.dispose();
 
       expect(events, ['start-1:1', 'end-1:1', 'start-2:2', 'end-2:2']);
+    });
+
+    test('dispose drops queued output after the active native feed completes',
+        () async {
+      final firstFeed = Completer<void>();
+      final samples = <int>[];
+      final adapter = DefaultGeminiLiveAudioAdapter(
+        recorder: _FakeAudioRecorder(),
+        setupOutput: (
+            {required int sampleRate, required int channelCount}) async {},
+        setFeedThreshold: (_) async {},
+        feedOutput: (buffer) async {
+          samples.add(buffer[0]);
+          await firstFeed.future;
+        },
+        releaseOutput: () async {},
+      );
+      await adapter.preparePlayback();
+      adapter.playBase64Pcm(base64Encode([1, 0]));
+      adapter.playBase64Pcm(base64Encode([2, 0]));
+      await Future<void>.delayed(Duration.zero);
+      final disposing = adapter.dispose();
+      firstFeed.complete();
+      await disposing;
+      expect(samples, [1]);
+    });
+
+    test('late old recorder cleanup cannot release a newer call output',
+        () async {
+      final stopped = Completer<void>();
+      final recorder = _FakeAudioRecorder()..stopResult = stopped.future;
+      final events = <String>[];
+      final first = DefaultGeminiLiveAudioAdapter(
+        recorder: recorder,
+        setupOutput: (
+                {required int sampleRate, required int channelCount}) async =>
+            events.add('setup:first'),
+        setFeedThreshold: (_) async {},
+        feedOutput: (_) async {},
+        releaseOutput: () async => events.add('release:first'),
+      );
+      await first.preparePlayback();
+      recorder.recording = true;
+      final oldCleanup = first.dispose();
+      await Future<void>.delayed(Duration.zero);
+      final second = DefaultGeminiLiveAudioAdapter(
+        recorder: _FakeAudioRecorder(),
+        setupOutput: (
+                {required int sampleRate, required int channelCount}) async =>
+            events.add('setup:second'),
+        setFeedThreshold: (_) async {},
+        feedOutput: (_) async => events.add('feed:second'),
+        releaseOutput: () async => events.add('release:second'),
+      );
+      await second.preparePlayback();
+      stopped.complete();
+      await oldCleanup;
+      second.playBase64Pcm(base64Encode([1, 0]));
+      await Future<void>.delayed(Duration.zero);
+      expect(events,
+          ['setup:first', 'release:first', 'setup:second', 'feed:second']);
+      await second.dispose();
+      expect(events.last, 'release:second');
     });
 
     test('dispose stops recorder and releases output', () async {
@@ -279,9 +450,14 @@ void main() {
 
 class _FakeAudioRecorder extends AudioRecorder {
   final _controller = StreamController<Uint8List>.broadcast();
+  final _stateController = StreamController<RecordState>.broadcast();
 
   bool permission = true;
   bool recording = false;
+  Future<void>? stopResult;
+  Future<bool>? permissionResult;
+  Future<Stream<Uint8List>>? startResult;
+  int disposeCalls = 0;
   bool disposed = false;
   int stopCalls = 0;
   RecordConfig? config;
@@ -290,14 +466,25 @@ class _FakeAudioRecorder extends AudioRecorder {
     _controller.add(data);
   }
 
+  void emitState(RecordState state) => _stateController.add(state);
+
+  void failStream() => _controller.addError(StateError('audio interrupted'));
+
+  Future<void> finishStream() => _controller.close();
+
   @override
-  Future<bool> hasPermission() async => permission;
+  Stream<RecordState> onStateChanged() => _stateController.stream;
+
+  @override
+  Future<bool> hasPermission() async =>
+      permissionResult == null ? permission : await permissionResult!;
 
   @override
   Future<Stream<Uint8List>> startStream(RecordConfig config) async {
     this.config = config;
     recording = true;
-    return _controller.stream;
+    emitState(RecordState.record);
+    return startResult == null ? _controller.stream : await startResult!;
   }
 
   @override
@@ -306,13 +493,17 @@ class _FakeAudioRecorder extends AudioRecorder {
   @override
   Future<String?> stop() async {
     stopCalls++;
+    await stopResult;
     recording = false;
+    emitState(RecordState.stop);
     return null;
   }
 
   @override
   Future<void> dispose() async {
+    disposeCalls++;
     disposed = true;
     await _controller.close();
+    await _stateController.close();
   }
 }

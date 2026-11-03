@@ -11,8 +11,8 @@ void main() {
       final dispatcher = _dispatcher(recorder);
 
       dispatcher.dispatch('{"setupComplete":{}}');
-      dispatcher
-          .dispatch('{"sessionResumptionUpdate":{"newHandle":"resume-1"}}');
+      dispatcher.dispatch(
+          '{"sessionResumptionUpdate":{"resumable":true,"newHandle":"resume-1"}}');
       dispatcher.dispatch('{"goAway":{}}');
 
       expect(recorder.events, [

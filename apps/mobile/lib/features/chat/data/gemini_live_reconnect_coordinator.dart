@@ -41,11 +41,14 @@ class GeminiLiveReconnectCoordinator {
   int _connectionGeneration = 0;
   int _reconnectAttempts = 0;
   bool _reconnecting = false;
+  bool _connected = false;
   String? _resumptionHandle;
 
   String? get resumptionHandle => _resumptionHandle;
+  bool get isConnected => _connected;
 
   int beginConnection() {
+    _connected = false;
     _connectionGeneration++;
     return _connectionGeneration;
   }
@@ -54,11 +57,20 @@ class GeminiLiveReconnectCoordinator {
     return generation == _connectionGeneration;
   }
 
+  void invalidateConnection(int generation) {
+    if (isCurrentConnection(generation)) {
+      _connectionGeneration++;
+      _connected = false;
+    }
+  }
+
   void resetForStart() {
+    _connected = false;
     _reconnecting = false;
   }
 
   void markConnected() {
+    _connected = true;
     _reconnectAttempts = 0;
     _reconnecting = false;
   }
@@ -72,6 +84,7 @@ class GeminiLiveReconnectCoordinator {
   }
 
   GeminiLiveReconnectDecision requestReconnect() {
+    _connected = false;
     if (_reconnecting) {
       return const GeminiLiveReconnectDecision.alreadyInProgress();
     }

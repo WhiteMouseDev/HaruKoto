@@ -12,6 +12,7 @@ import '../providers/conversation_feedback_provider.dart';
 import 'widgets/conversation_status_mark.dart';
 import 'widgets/feedback_score_card.dart';
 import 'widgets/feedback_transcript.dart';
+import 'widgets/expression_practice_card.dart';
 
 const Size _feedbackNoDataActionSize = Size(220, 56);
 
@@ -97,12 +98,17 @@ class _FeedbackNoData extends StatelessWidget {
     final String detail;
     switch (errorCode) {
       case 'no_transcript':
-        title = '대화가 너무 짧아요';
-        detail = '분석할 내용이 충분하지 않아 리포트를 만들 수 없었어요.\n다음에는 조금 더 길게 이야기해 보세요!';
+        title = '분석할 발화를 확인하지 못했어요';
+        detail =
+            '음성 인식으로 남은 내용이 충분하지 않아 피드백을 만들지 못했어요.\n실제 말한 내용과 기록이 다를 수 있어요.';
+        break;
+      case 'analysis_skipped':
+        title = '대화 기록을 저장했어요';
+        detail = '이번 대화는 피드백 없이 기록만 남겼어요.\n다음 연습도 편하게 이어가 보세요.';
         break;
       case 'generation_failed':
-        title = '피드백 생성에 실패했어요';
-        detail = '일시적인 문제로 리포트를 만들지 못했어요.\n잠시 후 다시 시도해 주세요.';
+        title = '지금은 피드백을 준비하지 못했어요';
+        detail = '저장된 대화 기록에서 피드백을 다시 요청할 수 있어요.';
         break;
       default:
         title = '피드백 데이터를 불러올 수 없어요';
@@ -206,27 +212,35 @@ class _FeedbackContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSizes.md),
       children: [
-        FeedbackScoreCard(
-          overallScore: fb.overallScore,
-          fluency: fb.fluency,
-          accuracy: fb.accuracy,
-          vocabularyDiversity: fb.vocabularyDiversity,
-          naturalness: fb.naturalness,
+        Text('오늘의 대화를 돌아봐요', style: theme.textTheme.titleLarge),
+        const SizedBox(height: AppSizes.sm),
+        const Text('아래 내용은 대화 전사문을 바탕으로 한 AI 제안이에요.'),
+        if (fb.recommendedExpressions.isNotEmpty) ...[
+          const SizedBox(height: AppSizes.md),
+          ExpressionPracticeCard(
+            expression: fb.recommendedExpressions.first.ja,
+            meaning: fb.recommendedExpressions.first.ko,
+          ),
+        ],
+        ExpansionTile(
+          title: const Text('상세 점수 보기'),
+          children: [
+            FeedbackScoreCard(
+              overallScore: fb.overallScore,
+              fluency: fb.fluency,
+              accuracy: fb.accuracy,
+              vocabularyDiversity: fb.vocabularyDiversity,
+              naturalness: fb.naturalness,
+            )
+          ],
         ),
         const SizedBox(height: AppSizes.md),
-        if (fb.translatedTranscript.isNotEmpty) ...[
-          FeedbackTranscriptWidget(
-            translatedTranscript: fb.translatedTranscript,
-            corrections: fb.corrections,
-          ),
-          const SizedBox(height: AppSizes.md),
-        ],
         if (fb.strengths.isNotEmpty) ...[
           _FeedbackListCard(
             icon: LucideIcons.checkCircle2,
             iconColor: AppColors.success(brightness),
             title: '잘한 표현',
-            items: fb.strengths,
+            items: fb.strengths.take(1).toList(),
             itemIcon: LucideIcons.check,
             itemColor: AppColors.success(brightness),
           ),
@@ -237,75 +251,35 @@ class _FeedbackContent extends StatelessWidget {
             icon: LucideIcons.lightbulb,
             iconColor: AppColors.hkYellowLight,
             title: '개선 포인트',
-            items: fb.improvements,
+            items: fb.improvements.take(1).toList(),
             itemIcon: LucideIcons.lightbulb,
             itemColor: AppColors.hkYellowLight,
           ),
           const SizedBox(height: AppSizes.md),
         ],
-        if (fb.recommendedExpressions.isNotEmpty) ...[
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSizes.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.bookOpen,
-                        size: 16,
-                        color: AppColors.hkBlueLight,
-                      ),
-                      const SizedBox(width: AppSizes.sm),
-                      Text(
-                        '추천 표현',
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.sm),
-                  ...fb.recommendedExpressions.map(
-                    (expr) => Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondaryContainer
-                            .withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              expr.ja,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          if (expr.ko.isNotEmpty)
-                            Text(
-                              expr.ko,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSurface
-                                    .withValues(alpha: 0.6),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        if (fb.translatedTranscript.isNotEmpty) ...[
+          ExpansionTile(
+            title: const Text('대화 내용과 교정 자세히 보기'),
+            children: [
+              FeedbackTranscriptWidget(
+                translatedTranscript: fb.translatedTranscript,
+                corrections: fb.corrections,
+              )
+            ],
+          ),
+          const SizedBox(height: AppSizes.md),
+        ],
+        if (fb.recommendedExpressions.length > 1) ...[
+          ExpansionTile(
+            title: const Text('다른 추천 표현'),
+            children: fb.recommendedExpressions
+                .skip(1)
+                .map(
+                  (expression) => ListTile(
+                      title: Text(expression.ja),
+                      subtitle: Text(expression.ko)),
+                )
+                .toList(),
           ),
           const SizedBox(height: AppSizes.md),
         ],
@@ -387,7 +361,7 @@ class _FeedbackContent extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(LucideIcons.shuffle, size: 16),
-          label: const Text('다른 시나리오 도전하기'),
+          label: const Text('마치기'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
             shape: RoundedRectangleBorder(

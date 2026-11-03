@@ -26,7 +26,7 @@ class ConversationModel {
       createdAt: json['createdAt'] as String,
       endedAt: json['endedAt'] as String?,
       messageCount: json['messageCount'] as int? ?? 0,
-      overallScore: json['overallScore'] as int?,
+      overallScore: (json['overallScore'] as num?)?.round(),
       scenario: json['scenario'] != null
           ? ConversationScenario.fromJson(
               json['scenario'] as Map<String, dynamic>)

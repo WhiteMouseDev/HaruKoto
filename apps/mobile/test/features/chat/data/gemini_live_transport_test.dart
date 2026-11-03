@@ -102,20 +102,73 @@ void main() {
       );
 
       expect(transport.isConnected, isFalse);
+      expect(socket.closed, isTrue);
+    });
+
+    test('replacement closes the previous socket and ignores its messages',
+        () async {
+      final first = _FakeGeminiLiveSocket();
+      final second = _FakeGeminiLiveSocket();
+      final sockets = [first, second].iterator;
+      final messages = <dynamic>[];
+      final transport = DefaultGeminiLiveTransport(connector: (_) {
+        sockets.moveNext();
+        return sockets.current;
+      });
+
+      Future<void> connect() => transport.connect(
+            Uri.parse('wss://example.test/live'),
+            onMessage: messages.add,
+            onError: (_) {},
+            onDone: () {},
+          );
+
+      await connect();
+      await connect();
+      expect(first.closed, isTrue);
+      second.emit('current');
+      await Future<void>.delayed(Duration.zero);
+      expect(messages, ['current']);
+      await transport.close();
+    });
+
+    test('closing during readiness cannot revive a cancelled connection',
+        () async {
+      final ready = Completer<void>();
+      final socket = _FakeGeminiLiveSocket(ready: ready.future);
+      final transport = DefaultGeminiLiveTransport(connector: (_) => socket);
+      final connecting = transport.connect(
+        Uri.parse('wss://example.test/live'),
+        onMessage: (_) {},
+        onError: (_) {},
+        onDone: () {},
+      );
+      final failed = expectLater(connecting, throwsA(isA<StateError>()));
+      await Future<void>.delayed(Duration.zero);
+      await transport.close();
+      ready.complete();
+
+      await failed;
+      expect(transport.isConnected, isFalse);
+      expect(socket.closed, isTrue);
     });
   });
 }
 
 class _FakeGeminiLiveSocket implements GeminiLiveSocket {
-  _FakeGeminiLiveSocket({Object? readyError}) : _readyError = readyError;
+  _FakeGeminiLiveSocket({Object? readyError, Future<void>? ready})
+      : _readyError = readyError,
+        _ready = ready;
 
   final Object? _readyError;
+  final Future<void>? _ready;
   final _controller = StreamController<dynamic>.broadcast();
   final sent = <String>[];
   bool closed = false;
 
   @override
   Future<void> get ready async {
+    await _ready;
     final error = _readyError;
     if (error != null) {
       throw error;

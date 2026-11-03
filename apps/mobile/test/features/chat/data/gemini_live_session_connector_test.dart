@@ -79,6 +79,7 @@ class _RecordingGeminiLiveTransport implements GeminiLiveTransport {
   final List<String> events;
   final sent = <String>[];
   Uri? lastUri;
+  void Function(dynamic raw)? _onMessage;
 
   @override
   bool get isConnected => true;
@@ -91,6 +92,7 @@ class _RecordingGeminiLiveTransport implements GeminiLiveTransport {
     required void Function() onDone,
   }) async {
     lastUri = uri;
+    _onMessage = onMessage;
     events.add('connect');
   }
 
@@ -98,6 +100,7 @@ class _RecordingGeminiLiveTransport implements GeminiLiveTransport {
   void send(String data) {
     sent.add(data);
     events.add('send');
+    _onMessage?.call('{"setupComplete":{}}');
   }
 
   @override

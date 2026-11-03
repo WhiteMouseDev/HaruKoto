@@ -9,6 +9,34 @@ from pathlib import Path
 REQUIRED_CASES = frozenset(
     {
         *{
+            ("tests.test_live_session_postgres", name)
+            for name in (
+                "test_parallel_start_and_lost_response_retry_share_one_persisted_session",
+                "test_finish_concurrency_and_response_loss_award_and_count_once",
+                "test_record_is_visible_and_unlocked_while_feedback_is_still_running",
+                "test_completion_failure_rolls_back_without_false_saved_success",
+                "test_ineligible_calls_are_saved_without_xp_and_only_connected_time_counts[0-]",
+                "test_ineligible_calls_are_saved_without_xp_and_only_connected_time_counts[10-\\u3053\\u3093\\u306b\\u3061\\u306f]",
+                "test_ineligible_calls_are_saved_without_xp_and_only_connected_time_counts[30-]",
+                "test_parallel_expression_saves_preserve_personal_note_and_translation",
+                "test_text_hotel_practice_persists_between_requests_and_keeps_roles",
+                "test_live_completion_preserves_user_first_lock_order_and_existing_study_day",
+                "test_completed_count_and_character_stats_require_actual_user_speech[json-null]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[legacy-object]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[empty]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[assistant-only]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[whitespace]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[missing-text]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[null-text]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[numeric-text]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[array-role]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[nested-array]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[invalid-items]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[user-japanese]",
+                "test_completed_count_and_character_stats_require_actual_user_speech[user-korean]",
+            )
+        },
+        *{
             ("tests.test_study_write_stop_integration_postgres", name)
             for name in (
                 "test_p6_stop_preserves_existing_markers_receipts_history_and_security[feature-off]",

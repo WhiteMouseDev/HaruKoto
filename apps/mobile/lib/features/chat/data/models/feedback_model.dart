@@ -23,6 +23,26 @@ class FeedbackSummary {
     required this.translatedTranscript,
   });
 
+  /// Invalid or incomplete evaluations are unavailable, never a zero score.
+  static FeedbackSummary? tryFromJson(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    try {
+      return FeedbackSummary.fromJson(value);
+    } on FormatException {
+      return null;
+    } on TypeError {
+      return null;
+    }
+  }
+
+  static int _score(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is! num || !value.isFinite || value < 0 || value > 100) {
+      throw FormatException('Invalid feedback score: $key');
+    }
+    return value.round();
+  }
+
   factory FeedbackSummary.fromJson(Map<String, dynamic> json) {
     final rawExpressions =
         json['recommendedExpressions'] as List<dynamic>? ?? [];
@@ -34,11 +54,11 @@ class FeedbackSummary {
     }).toList();
 
     return FeedbackSummary(
-      overallScore: (json['overallScore'] as num?)?.round() ?? 0,
-      fluency: (json['fluency'] as num?)?.round() ?? 0,
-      accuracy: (json['accuracy'] as num?)?.round() ?? 0,
-      vocabularyDiversity: (json['vocabularyDiversity'] as num?)?.round() ?? 0,
-      naturalness: (json['naturalness'] as num?)?.round() ?? 0,
+      overallScore: _score(json, 'overallScore'),
+      fluency: _score(json, 'fluency'),
+      accuracy: _score(json, 'accuracy'),
+      vocabularyDiversity: _score(json, 'vocabularyDiversity'),
+      naturalness: _score(json, 'naturalness'),
       strengths: (json['strengths'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
