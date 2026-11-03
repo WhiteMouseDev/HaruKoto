@@ -8,6 +8,14 @@ from pathlib import Path
 # closed. Unrelated optional AI integration skips remain permitted.
 REQUIRED_CASES = frozenset(
     {
+        (
+            "tests.test_study_write_stop_postgres",
+            "test_stop_pauses_hidden_get_and_mutating_writers_without_changing_legacy_data_or_security",
+        ),
+        (
+            "tests.test_study_write_stop_postgres",
+            "test_stop_keeps_existing_login_reads_audio_receipts_and_same_submission_retry_after_reopen",
+        ),
         *{
             ("tests.test_lesson_submissions_postgres", name)
             for name in (

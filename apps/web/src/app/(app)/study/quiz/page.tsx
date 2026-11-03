@@ -27,6 +27,7 @@ import {
   useAnswerQuestion,
   useCompleteQuiz,
   type QuizQuestion,
+  type AnswerQuestionParams,
 } from '@/hooks/use-quiz';
 import { useAddWord } from '@/hooks/use-wordbook';
 import {
@@ -52,6 +53,10 @@ import {
   QUIZ_WEB_UNSUPPORTED_MESSAGE,
   restoreWebQuizProgress,
 } from '@/lib/quiz-session-snapshot';
+import {
+  isStudyWriteStopError,
+  STUDY_WRITE_STOP_MESSAGE,
+} from '@/lib/study-write-stop';
 
 function speakJapanese(text: string) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -120,6 +125,8 @@ function QuizContent() {
   const startQuizMutation = useStartQuiz();
   const resumeQuizMutation = useResumeQuiz();
   const answerMutation = useAnswerQuestion();
+  const [stoppedAnswer, setStoppedAnswer] =
+    useState<AnswerQuestionParams | null>(null);
   const completeQuizMutation = useCompleteQuiz();
   const addWordMutation = useAddWord();
 
@@ -260,13 +267,18 @@ function QuizContent() {
       playSound(isCorrect ? 'correct' : 'incorrect');
 
       // Submit answer
-      answerMutation.mutate({
+      const payload = {
         sessionId,
         questionId: question.questionId,
         selectedOptionId: optionId,
         isCorrect,
         timeSpentSeconds: timerRef.current,
         questionType: activeQuizType,
+      };
+      answerMutation.mutate(payload, {
+        onError: (error) => {
+          if (isStudyWriteStopError(error)) setStoppedAnswer(payload);
+        },
       });
     },
     [
@@ -280,11 +292,16 @@ function QuizContent() {
   );
 
   async function handleNext() {
+    if (answerMutation.isPending || stoppedAnswer) return;
     if (currentIndex + 1 >= questions.length) {
       // Complete quiz
-      const data = await completeQuizMutation.mutateAsync({
-        sessionId: sessionId!,
-      });
+      const data = await completeQuizMutation
+        .mutateAsync({ sessionId: sessionId! })
+        .catch((error: unknown) => {
+          if (isStudyWriteStopError(error)) return null;
+          throw error;
+        });
+      if (!data) return;
       showGameEvents(data.events);
       router.replace(
         `/study/result?correct=${data.correctCount}&total=${data.totalQuestions}&xp=${data.xpEarned}&accuracy=${data.accuracy}&type=${activeQuizType}&level=${jlptLevel}&currentXp=${data.currentXp ?? 0}&xpForNext=${data.xpForNext ?? 100}&sessionId=${sessionId}`
@@ -297,6 +314,16 @@ function QuizContent() {
     setAnswerState('idle');
     setShowHint(false);
     setWordSaved(false);
+  }
+
+  async function retryStoppedAnswer() {
+    if (!stoppedAnswer || answerMutation.isPending) return;
+    try {
+      await answerMutation.mutateAsync(stoppedAnswer);
+      setStoppedAnswer(null);
+    } catch {
+      // Keep the exact refused answer and current question until an ACK.
+    }
   }
 
   function handleSaveToWordbook() {
@@ -744,6 +771,21 @@ function QuizContent() {
       </div>
 
       {/* Options */}
+      {stoppedAnswer && (
+        <div role="alert" className="mx-4 mb-3 rounded-xl border p-4">
+          <p className="text-sm">{STUDY_WRITE_STOP_MESSAGE}</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            이 화면의 선택은 보관 중이며 아직 서버에 저장되지 않았어요.
+          </p>
+          <Button
+            className="mt-3"
+            onClick={retryStoppedAnswer}
+            disabled={answerMutation.isPending}
+          >
+            같은 답안 다시 저장
+          </Button>
+        </div>
+      )}
       <div className="flex flex-col gap-2.5 px-4 pb-4">
         <AnimatePresence mode="wait">
           <motion.div
@@ -937,6 +979,11 @@ function QuizContent() {
               <Button
                 className="h-12 rounded-xl text-base"
                 onClick={handleNext}
+                disabled={
+                  answerMutation.isPending ||
+                  !!stoppedAnswer ||
+                  completeQuizMutation.isPending
+                }
               >
                 {currentIndex + 1 >= questions.length
                   ? '결과 보기'

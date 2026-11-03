@@ -40,6 +40,8 @@ docs/
 
 ### 운영
 
+- [운영 코드 호환 학습 저장 STOP](operations/plans/legacy-study-write-stop-2026-11-03.md) — 구 스키마 기반 선택적 저장 중지, 격리 검증·클라이언트 한계와 별도 승인할 적용/롤백안
+
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [홈 단어 카드의 오늘 목표 진행률](operations/plans/daily-vocabulary-goal-2026-10-30.md) — 하루 목표·퀴즈 이어하기·누적 숙련도 분리와 KST 고유 단어 집계
 - [오늘 단어 목표의 실제 운영 반영](operations/plans/daily-vocabulary-goal-production-rollout-2026-10-30.md) — #204 배포·시뮬레이터 목표/추천/재실행 검증, 기존 기록·음원·보안 보존

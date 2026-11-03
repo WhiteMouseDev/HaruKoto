@@ -29,6 +29,9 @@ jobs:
         with:
           filters: |
             frontend:
+              - '.github/workflows/ci.yml'
+              - '.github/scripts/check-stop-web-report.mjs'
+              - '.github/tests/check-stop-web-report.test.mjs'
               - 'apps/admin/**'
               - 'apps/landing/**'
               - 'apps/web/**'
@@ -90,6 +93,19 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Verify legacy STOP admission and retry regressions
+        run: |
+          node --test .github/tests/check-stop-web-report.test.mjs
+          pnpm --filter web exec vitest run \
+            src/__tests__/study-write-stop-policy.test.ts \
+            src/__tests__/study-write-stop-proxy.test.ts \
+            src/__tests__/study-write-stop-quiz-ui.test.tsx \
+            src/__tests__/study-write-stop-kana-ui.test.tsx \
+            src/__tests__/study-write-stop-kana-complete-ui.test.tsx \
+            --reporter=default --reporter=json \
+            --outputFile.json=/tmp/stop-web-results.json
+          node .github/scripts/check-stop-web-report.mjs /tmp/stop-web-results.json
 
       - name: Build
         run: pnpm build
