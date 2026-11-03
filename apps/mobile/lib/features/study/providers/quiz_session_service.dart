@@ -137,11 +137,17 @@ class QuizSessionService {
     String sessionId, {
     String? stageId,
   }) async {
+    final owner = _ref.read(currentAccountReaderProvider)();
     final result = await _ref.read(studyRepositoryProvider).completeQuiz(
           sessionId,
           stageId: stageId,
         );
-    if (_ref.mounted) _ref.read(studyActivityRefreshProvider).refresh();
+    if (_ref.mounted &&
+        owner != null &&
+        _ref.read(currentAccountReaderProvider)() == owner &&
+        _ref.read(currentAccountIdProvider) == owner) {
+      _ref.read(studyActivityRefreshProvider).refresh();
+    }
     return result;
   }
 

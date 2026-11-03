@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { GET as dashboard } from '@/app/api/v1/stats/dashboard/route';
 import { GET as history } from '@/app/api/v1/stats/history/route';
+import { GET as profile } from '@/app/api/v1/user/profile/route';
 import { StreakBadge } from '@/components/features/dashboard/streak-badge';
 import { Heatmap } from '@/components/features/stats/heatmap';
 import { hasRecordedStudyActivity } from '@/lib/answered-study-day';
@@ -11,7 +12,14 @@ const mocks = vi.hoisted(() => ({
   prisma: {
     $queryRaw: vi.fn(),
     user: { findUnique: vi.fn() },
-    dailyProgress: { findUnique: vi.fn(), findMany: vi.fn() },
+    dailyProgress: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      count: vi.fn(),
+      aggregate: vi.fn(),
+    },
+    quizSession: { count: vi.fn() },
+    userAchievement: { findMany: vi.fn() },
     userVocabProgress: { groupBy: vi.fn() },
     userGrammarProgress: { groupBy: vi.fn() },
     userKanaProgress: { count: vi.fn() },
@@ -78,6 +86,13 @@ beforeEach(() => {
   mocks.prisma.userKanaProgress.count.mockResolvedValue(0);
   mocks.prisma.vocabulary.count.mockResolvedValue(10);
   mocks.prisma.grammar.count.mockResolvedValue(10);
+  mocks.prisma.dailyProgress.count.mockResolvedValue(3);
+  mocks.prisma.dailyProgress.aggregate.mockResolvedValue({
+    _count: 4,
+    _sum: { wordsStudied: 25, xpEarned: 200 },
+  });
+  mocks.prisma.quizSession.count.mockResolvedValue(5);
+  mocks.prisma.userAchievement.findMany.mockResolvedValue([]);
 });
 afterEach(() => {
   cleanup();
@@ -147,7 +162,94 @@ it('keeps positive legacy attendance and zero/absent record semantics', () => {
   expect(hasRecordedStudyActivity(null)).toBe(false);
 });
 
+it('honors explicit FALSE despite positive counters and TRUE without inventing amounts', async () => {
+  const recovered = {
+    ...record(),
+    studyDayCredited: false,
+    xpEarned: 100,
+    quizzesCompleted: 1,
+    wordsStudied: 10,
+  };
+  mocks.prisma.dailyProgress.findUnique.mockResolvedValue(recovered);
+  mocks.prisma.dailyProgress.findMany.mockResolvedValue([recovered]);
+  const body = await (await dashboard()).json();
+  expect(body.today).toMatchObject({
+    hasStudied: false,
+    xpEarned: 100,
+    wordsStudied: 10,
+    quizzesCompleted: 1,
+  });
+  expect(body.weeklyStats[0]).toMatchObject({
+    hasStudied: false,
+    xpEarned: 100,
+  });
+  const calendar = await (
+    await history(
+      new Request('http://localhost/api/v1/stats/history?year=2026&month=11')
+    )
+  ).json();
+  expect(calendar.records[0]).toMatchObject({
+    hasStudied: false,
+    xpEarned: 100,
+  });
+  expect(calendar.records[0]).not.toHaveProperty('studyDayCredited');
+  expect(hasRecordedStudyActivity({ studyDayCredited: true })).toBe(true);
+  expect(
+    hasRecordedStudyActivity({ studyDayCredited: null, wordsStudied: 1 })
+  ).toBe(true);
+});
+
+it('excludes only explicit recovery-only days from profile totals while preserving all XP and word sums', async () => {
+  const body = await (await profile()).json();
+  expect(body.summary).toEqual({
+    totalWordsStudied: 25,
+    totalQuizzesCompleted: 5,
+    totalStudyDays: 3,
+    totalXpEarned: 200,
+  });
+  expect(mocks.prisma.dailyProgress.count).toHaveBeenCalledWith({
+    where: {
+      userId: 'user',
+      OR: [{ studyDayCredited: null }, { studyDayCredited: true }],
+    },
+  });
+  expect(mocks.prisma.dailyProgress.aggregate).toHaveBeenCalledWith(
+    expect.objectContaining({ where: { userId: 'user' } })
+  );
+});
+
 describe('attendance consumers', () => {
+  it('does not override explicit FALSE attendance with completion words or XP', () => {
+    render(
+      <>
+        <StreakBadge
+          currentStreak={0}
+          weeklyStats={[
+            {
+              date: '2026-11-02',
+              wordsStudied: 10,
+              xpEarned: 100,
+              hasStudied: false,
+            },
+          ]}
+        />
+        <Heatmap
+          year={2026}
+          onYearChange={() => {}}
+          records={[
+            { date: '2026-11-02', wordsStudied: 10, hasStudied: false },
+          ]}
+        />
+      </>
+    );
+    expect(
+      screen.getByLabelText('월요일 · 학습 기록 없음')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('2026-11-02 · 단어 10개 · 학습 기록 없음')
+    ).toHaveAttribute('data-studied', 'false');
+    expect(screen.getByText('총 10개 · 0일 학습')).toBeInTheDocument();
+  });
   it('uses explicit attendance with zero word/XP values and supports an old response without the field', () => {
     render(
       <StreakBadge

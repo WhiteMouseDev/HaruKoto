@@ -59,17 +59,7 @@ async def test_start_quiz_success(client, mock_user, test_user_id):
 
     mock_session = AsyncMock()
 
-    # Mock _auto_complete_sessions: select incomplete sessions returns empty
-    mock_incomplete_result = MagicMock()
-    mock_incomplete_result.scalars.return_value.all.return_value = []
-
-    # Mock vocab queries for normal mode
-    mock_review_result = MagicMock()
-    mock_review_result.scalars.return_value.all.return_value = []
-
-    mock_studied_ids_result = MagicMock()
-    mock_studied_ids_result.scalars.return_value.all.return_value = []
-
+    # Normal mode loads its catalogue and distractor meanings.
     mock_vocab = MagicMock()
     mock_vocab.id = uuid.uuid4()
     mock_vocab.word = "食べる"
@@ -85,9 +75,6 @@ async def test_start_quiz_success(client, mock_user, test_user_id):
 
     mock_session.execute = AsyncMock(
         side_effect=[
-            mock_incomplete_result,  # _auto_complete_sessions
-            mock_review_result,  # review items
-            mock_studied_ids_result,  # studied ids
             mock_new_result,  # new items
             mock_pool_result,  # wrong options pool
         ]
@@ -121,7 +108,7 @@ async def test_start_quiz_success(client, mock_user, test_user_id):
     data = response.json()
     assert "sessionId" in data
     assert "questions" in data
-    assert data["totalQuestions"] >= 0  # CI 환경에는 시드 데이터가 없으므로 0 허용
+    assert data["totalQuestions"] == 1
 
 
 @pytest.mark.asyncio
@@ -153,7 +140,7 @@ async def test_answer_question_correct(client, mock_user, mock_quiz_session, tes
     no_previous_answer.scalar_one_or_none.return_value = None
     mock_session.execute = AsyncMock(
         # Read first answer/progress, then accept review-event and attendance writes.
-        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock()]
     )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
@@ -211,7 +198,7 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
     no_previous_answer.scalar_one_or_none.return_value = None
     mock_session.execute = AsyncMock(
         # Read first answer/progress, then accept review-event and attendance writes.
-        side_effect=[no_previous_answer, mock_progress_result, MagicMock(), MagicMock()]
+        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock()]
     )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
@@ -255,7 +242,9 @@ async def test_complete_quiz_success(mock_achievements, client, mock_user, mock_
     # execute calls: saved answers, upsert daily progress, count quizzes, count words
     mock_exec_result = MagicMock()
     mock_exec_result.scalar.return_value = 5
-    mock_exec_result.all.return_value = [(uuid.UUID(question["id"]), True) for question in mock_quiz_session.questions_data]
+    mock_exec_result.all.return_value = [
+        (uuid.UUID(question["id"]), True, 30, datetime.now(UTC)) for question in mock_quiz_session.questions_data
+    ]
 
     mock_session.execute = AsyncMock(return_value=mock_exec_result)
     mock_session.commit = AsyncMock()

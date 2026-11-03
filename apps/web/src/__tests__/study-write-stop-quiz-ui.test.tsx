@@ -26,10 +26,16 @@ vi.mock('@/hooks/use-quiz', () => ({
   useResumeQuiz: () => ({ mutateAsync: mocks.resume }),
   useAnswerQuestion: () => ({
     mutate: mocks.answer,
-    mutateAsync: mocks.retry,
+    mutateAsync: mocks.answer,
     isPending: false,
   }),
   useCompleteQuiz: () => ({ mutateAsync: mocks.complete, isPending: false }),
+}));
+vi.mock('@/lib/supabase/client', () => ({
+  createClient: () => ({ auth: {
+    getSession: async () => ({ data: { session: { user: { id: 'qa-user' } } } }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+  } }),
 }));
 vi.mock('@/hooks/use-wordbook', () => ({
   useAddWord: () => ({ mutate: vi.fn(), isPending: false }),
@@ -57,16 +63,15 @@ beforeEach(() => {
     quizType: 'VOCABULARY',
     answeredQuestionIds: [],
   });
-  mocks.answer.mockImplementation((_payload, options) =>
-    options.onError(new Error(STUDY_WRITE_STOP_MESSAGE))
-  );
+  mocks.answer.mockRejectedValue(new Error(STUDY_WRITE_STOP_MESSAGE));
 });
 afterEach(cleanup);
 
 it('keeps the selected question after STOP and retries exactly that answer before advancing', async () => {
-  mocks.retry
+  mocks.answer
     .mockRejectedValueOnce(new Error(STUDY_WRITE_STOP_MESSAGE))
-    .mockResolvedValueOnce({});
+    .mockRejectedValueOnce(new Error(STUDY_WRITE_STOP_MESSAGE))
+    .mockImplementationOnce(async (payload) => ({ answerId: payload.attemptId }));
   render(<QuizPage />);
   await screen.findByText('映画');
   fireEvent.click(screen.getByRole('button', { name: /1\s*영화/ }));
@@ -79,11 +84,11 @@ it('keeps the selected question after STOP and retries exactly that answer befor
   expect(screen.getByText('映画')).toBeInTheDocument();
   expect(mocks.complete).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: '같은 답안 다시 저장' }));
-  await waitFor(() => expect(mocks.retry).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(mocks.answer).toHaveBeenCalledTimes(2));
   expect(next).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: '같은 답안 다시 저장' }));
   await waitFor(() => expect(next).toBeEnabled());
-  expect(mocks.retry.mock.calls.map(([payload]) => payload)).toEqual([
+  expect(mocks.answer.mock.calls.slice(1).map(([payload]) => payload)).toEqual([
     mocks.answer.mock.calls[0][0],
     mocks.answer.mock.calls[0][0],
   ]);
@@ -100,7 +105,7 @@ it('retries a STOP-refused completion for the same session without resetting or 
     quizType: 'VOCABULARY',
     answeredQuestionIds: [],
   });
-  mocks.answer.mockImplementation(() => {});
+  mocks.answer.mockImplementation(async (payload) => ({ answerId: payload.attemptId }));
   mocks.complete
     .mockRejectedValueOnce(new Error(STUDY_WRITE_STOP_MESSAGE))
     .mockResolvedValueOnce({
@@ -115,6 +120,7 @@ it('retries a STOP-refused completion for the same session without resetting or 
   render(<QuizPage />);
   await screen.findByText('映画');
   fireEvent.click(screen.getByRole('button', { name: /1\s*영화/ }));
+  await waitFor(() => expect(screen.getByRole('button', { name: '결과 보기' })).toBeEnabled());
   fireEvent.click(screen.getByRole('button', { name: '결과 보기' }));
   await waitFor(() => expect(mocks.complete).toHaveBeenCalledTimes(1));
   expect(screen.getByText('映画')).toBeInTheDocument();
@@ -122,7 +128,7 @@ it('retries a STOP-refused completion for the same session without resetting or 
   expect(mocks.start).not.toHaveBeenCalled();
   expect(mocks.resume).toHaveBeenCalledTimes(1);
 
-  fireEvent.click(screen.getByRole('button', { name: '결과 보기' }));
+  fireEvent.click(await screen.findByRole('button', { name: '결과 저장 다시 시도' }));
   await waitFor(() => expect(mocks.replace).toHaveBeenCalledTimes(1));
   expect(mocks.complete.mock.calls.map(([payload]) => payload)).toEqual([
     { sessionId: 'stored-session' },

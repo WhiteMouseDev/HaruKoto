@@ -5,6 +5,25 @@ import 'package:harukoto_mobile/features/home/presentation/widgets/weekly_chart.
 import 'package:lucide_icons/lucide_icons.dart';
 
 void main() {
+  testWidgets('explicit no-study day can show recovered XP without attendance',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pumpChart(tester, [
+      WeeklyStatEntry.fromJson({
+        'date': '2026-11-03',
+        'hasStudied': false,
+        'vocabularyAnsweredCount': 0,
+        'wordsStudied': 10,
+        'xpEarned': 100,
+      }),
+    ]);
+    expect(find.text('단어 0개 · XP 100', findRichText: true), findsOneWidget);
+    expect(_activity('2026-11-03'), findsNothing);
+    expect(tester.getSize(_bar('2026-11-03')).height, 0);
+    expect(
+        find.bySemanticsLabel('2026-11-03, 학습 기록 없음, 단어 0개'), findsOneWidget);
+    semantics.dispose();
+  });
   testWidgets('one saved wrong answer fills a bar before quiz completion',
       (tester) async {
     // No completed words or XP: the server includes the saved wrong answer.

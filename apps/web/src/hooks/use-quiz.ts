@@ -94,6 +94,8 @@ type ResumeQuizResponse = {
 };
 
 type AnswerQuestionParams = {
+  attemptId?: string;
+  previousAttemptId?: string | null;
   sessionId: string;
   questionId: string;
   selectedOptionId: string;
@@ -224,7 +226,10 @@ export function useResumeQuiz() {
 }
 
 export function useAnswerQuestion() {
-  return useStudyAnswer<AnswerQuestionParams>('/api/v1/quiz/answer');
+  return useStudyAnswer<
+    AnswerQuestionParams,
+    { success: boolean; answerId: string }
+  >('/api/v1/quiz/answer', { refreshSavedQuizzes: true });
 }
 
 export function useCompleteQuiz() {

@@ -65,7 +65,7 @@ async def test_completion_paths_share_kst_streak_days(monkeypatch, activity, las
         )
         db.get.return_value = session
         answers = MagicMock()
-        answers.all.return_value = [(question_id, True)]
+        answers.all.return_value = [(question_id, True, 30, now)]
         db.execute.return_value = answers
         monkeypatch.setattr(module, "_update_daily_progress", AsyncMock())
         monkeypatch.setattr(module, "_build_achievement_events", AsyncMock(return_value=[]))

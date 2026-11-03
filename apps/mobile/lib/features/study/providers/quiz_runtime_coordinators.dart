@@ -91,13 +91,14 @@ class QuizTimerCoordinator {
     required QuizSessionState session,
     required QuizTimerAction resetTimer,
     required QuizTimerAction incrementTimer,
+    bool resetElapsed = true,
   }) {
     stop();
     if (!_shouldTrack(session)) {
       return;
     }
 
-    resetTimer();
+    if (resetElapsed) resetTimer();
     _timer = _createTimer(interval, (_) => incrementTimer());
   }
 
@@ -110,6 +111,8 @@ class QuizTimerCoordinator {
 
   bool _shouldTrack(QuizSessionState session) {
     return !session.loading &&
+        !session.completing &&
+        session.currentQuestion != null &&
         session.questions.isNotEmpty &&
         !session.answered &&
         !session.isSpecialMode;

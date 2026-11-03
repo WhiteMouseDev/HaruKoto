@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import UTC, datetime
 
 from app.models import QuizSession
 from app.utils.helpers import enum_value
@@ -20,12 +20,9 @@ def calculate_accuracy(session: QuizSession) -> float:
     return session.correct_count / session.total_questions * 100
 
 
-def calculate_study_minutes(session: QuizSession, now: datetime) -> int:
-    if not session.started_at:
-        return 0
-    started = session.started_at.replace(tzinfo=UTC) if session.started_at.tzinfo is None else session.started_at
-    delta = now - started
-    return max(0, int(delta.total_seconds() / 60))
+def calculate_study_minutes(answer_seconds: Iterable[int | None]) -> int:
+    """Count persisted answer time, never days spent away from an unfinished quiz."""
+    return sum(max(0, seconds or 0) for seconds in answer_seconds) // 60
 
 
 def calculate_daily_progress_increments(session: QuizSession) -> DailyProgressIncrements:

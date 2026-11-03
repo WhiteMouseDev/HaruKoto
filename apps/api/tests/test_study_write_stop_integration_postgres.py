@@ -1,4 +1,4 @@
-"""Integrated p6 ORM/receipts/user mutex with STOP on disposable PostgreSQL.
+"""Integrated q7 ORM/receipts/credit override with STOP on disposable PostgreSQL.
 
 The original o5-only proof remains on codex/legacy-study-write-stop. These are
 new feature-schema proofs, not a re-labeled version assertion of that evidence.
@@ -28,7 +28,7 @@ from app.routers import auth, lessons
 from app.services import lesson_study_activity, lesson_submission, study_day_recording
 from app.services.lesson_submission import submit_lesson_once
 from app.utils.date import get_today_kst
-from tests.test_lesson_study_day_postgres import REVISION, _record, _request, _seed
+from tests.test_lesson_study_day_postgres import RUNTIME_REVISION, _record, _request, _seed
 from tests.test_lesson_study_day_postgres import engine as engine
 from tests.test_lesson_study_day_postgres import study_day_database as study_day_database
 from tests.test_lesson_submissions_postgres import _legacy_hash, _metadata, _seed_legacy_history
@@ -87,7 +87,7 @@ async def _security(engine):
         )
         value["policies"] = await connection.scalar(text("SELECT jsonb_agg(to_jsonb(p) ORDER BY oid) FROM pg_policy p"))
         assert "pgrst.db_schemas=pgrst_no_exposed_schemas" in value["authenticator"]
-        assert await connection.scalar(text("SELECT version_num FROM alembic_version")) == REVISION
+        assert await connection.scalar(text("SELECT version_num FROM alembic_version")) == RUNTIME_REVISION
     return value
 
 

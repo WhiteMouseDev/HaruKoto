@@ -40,7 +40,9 @@ class QuizPage extends ConsumerStatefulWidget {
   ConsumerState<QuizPage> createState() => _QuizPageState();
 }
 
-class _QuizPageState extends ConsumerState<QuizPage> {
+class _QuizPageState extends ConsumerState<QuizPage>
+    with WidgetsBindingObserver {
+  bool _foreground = true;
   bool _savingOnExit = false;
   ProviderContainer? _container;
   late final QuizTimerCoordinator _timerCoordinator;
@@ -53,6 +55,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _foreground = WidgetsBinding.instance.lifecycleState == null ||
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
     _timerCoordinator = QuizTimerCoordinator();
     _feedbackPlayer = QuizFeedbackPlayer.defaultServices();
     _interactionCoordinator = QuizInteractionCoordinator(
@@ -78,6 +83,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     final container = _container;
     _lifecycleCoordinator.dispose(
       invalidateSession: () {
@@ -87,6 +93,16 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       },
     );
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground) {
+      _timerCoordinator.stop();
+    } else if (mounted) {
+      _restartTimerIfNeeded(resetElapsed: false);
+    }
   }
 
   Future<void> _initializeQuiz() async {
@@ -106,13 +122,15 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     );
   }
 
-  void _restartTimerIfNeeded() {
+  void _restartTimerIfNeeded({bool resetElapsed = true}) {
+    if (!_foreground) return;
     final notifier = ref.read(quizSessionProvider.notifier);
     final session = ref.read(quizSessionProvider);
     _timerCoordinator.restartIfNeeded(
       session: session,
       resetTimer: notifier.resetTimer,
       incrementTimer: notifier.incrementTimer,
+      resetElapsed: resetElapsed,
     );
   }
 

@@ -43,11 +43,13 @@ async def _update_daily_conversation_progress(
                 xp_earned=xp,
                 study_minutes=study_minutes,
                 conversation_count=1,
+                study_day_credited=True,
             )
         )
         .on_conflict_do_update(
             index_elements=["user_id", "date"],
             set_={
+                "study_day_credited": True,
                 "xp_earned": DailyProgress.xp_earned + xp,
                 "study_minutes": func.coalesce(DailyProgress.study_minutes, 0) + study_minutes,
                 "conversation_count": func.coalesce(DailyProgress.conversation_count, 0) + 1,

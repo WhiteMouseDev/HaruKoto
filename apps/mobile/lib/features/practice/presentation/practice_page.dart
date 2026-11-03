@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/providers/user_preferences_provider.dart';
-import '../../study/data/models/quiz_session_model.dart';
-import '../../study/providers/study_provider.dart';
+import '../../study/providers/saved_quiz_provider.dart';
 import '../../study/presentation/quiz_launch.dart';
 import '../../study/presentation/widgets/free_quiz_selection.dart';
 import '../../study/presentation/widgets/free_quiz_sheet.dart';
+import '../../study/presentation/widgets/saved_quiz_section.dart';
 
 /// Quiz category tabs.
 enum _QuizCategory {
@@ -89,17 +89,13 @@ class _PracticePageState extends ConsumerState<PracticePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
-    final incompleteAsync = ref.watch(incompleteQuizProvider);
-    final incomplete = incompleteAsync.hasValue ? incompleteAsync.value : null;
-    final selectedIncomplete =
-        incomplete?.quizType == _selectedCategory.apiType ? incomplete : null;
 
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
           color: theme.colorScheme.primary,
           onRefresh: () async {
-            ref.invalidate(incompleteQuizProvider);
+            await ref.read(savedQuizListProvider.notifier).refresh();
           },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -120,9 +116,10 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               // ── Main CTA Card ──
               _buildCtaCard(
                 theme,
-                selectedIncomplete,
                 jlptLevel,
               ),
+              const SizedBox(height: 20),
+              const SavedQuizSection(),
               const SizedBox(height: 28),
 
               // ── Quiz Record Section ──
@@ -268,16 +265,11 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
   Widget _buildCtaCard(
     ThemeData theme,
-    IncompleteSessionModel? incomplete,
     String jlptLevel,
   ) {
-    final hasIncomplete = incomplete != null;
-    final actionColor =
-        hasIncomplete ? AppColors.primaryStrong : _selectedCategory.color;
+    final actionColor = _selectedCategory.color;
     final actionContainer = theme.brightness == Brightness.light
-        ? (hasIncomplete
-            ? AppColors.primaryContainer
-            : _selectedCategory.containerColor)
+        ? _selectedCategory.containerColor
         : theme.colorScheme.surfaceContainerHigh;
     final cardColor = theme.brightness == Brightness.light
         ? AppColors.cardWarm
@@ -285,16 +277,12 @@ class _PracticePageState extends ConsumerState<PracticePage> {
     final borderColor = theme.brightness == Brightness.light
         ? actionColor.withValues(alpha: 0.24)
         : theme.colorScheme.outline;
-    final ctaTitle =
-        hasIncomplete ? '진행 중인 퀴즈 이어풀기' : '${_selectedCategory.label} 퀴즈 풀기';
-    final ctaSubtitle = hasIncomplete
-        ? '${incomplete.jlptLevel} · ${incomplete.answeredCount}/${incomplete.totalQuestions} 문제 진행 중'
-        : '$jlptLevel · 10문제 · ${_selectedCategory.modeLabel}';
+    final ctaTitle = '${_selectedCategory.label} 퀴즈 풀기';
+    final ctaSubtitle = '$jlptLevel · 10문제 · ${_selectedCategory.modeLabel}';
 
     return GestureDetector(
       onTap: () => _startSelectedQuiz(
         context,
-        incomplete: incomplete,
         jlptLevel: jlptLevel,
       ),
       child: AnimatedOpacity(
@@ -338,9 +326,7 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  hasIncomplete
-                      ? LucideIcons.playCircle
-                      : _selectedCategory.icon,
+                  _selectedCategory.icon,
                   size: 24,
                   color: actionColor,
                 ),
@@ -354,20 +340,8 @@ class _PracticePageState extends ConsumerState<PracticePage> {
 
   Future<void> _startSelectedQuiz(
     BuildContext context, {
-    required IncompleteSessionModel? incomplete,
     required String jlptLevel,
   }) async {
-    if (incomplete != null) {
-      return openQuizPageForSession(
-        context,
-        quizType: incomplete.quizType,
-        jlptLevel: incomplete.jlptLevel,
-        count: incomplete.totalQuestions,
-        resumeSessionId: incomplete.id,
-        mode: _selectedCategory.defaultMode,
-      );
-    }
-
     if (_selectedCategory.usesFreeQuizSheet) {
       final selection = await showModalBottomSheet<FreeQuizSelection>(
         context: context,

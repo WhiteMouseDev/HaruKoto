@@ -16,8 +16,16 @@ final studyRepositoryProvider = Provider<StudyRepository>((ref) {
 });
 
 final incompleteQuizProvider =
-    FutureProvider.autoDispose<IncompleteSessionModel?>((ref) {
-  return ref.watch(studyRepositoryProvider).fetchIncompleteQuiz();
+    FutureProvider.autoDispose<IncompleteSessionModel?>((ref) async {
+  final owner = ref.watch(currentAccountIdProvider);
+  if (owner == null || ref.read(currentAccountReaderProvider)() != owner) {
+    return null;
+  }
+  final result = await ref.watch(studyRepositoryProvider).fetchIncompleteQuiz();
+  if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
+    throw StateError('Quiz account changed while loading');
+  }
+  return result;
 });
 
 final quizStatsProvider = FutureProvider.autoDispose

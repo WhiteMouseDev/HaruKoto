@@ -42,11 +42,17 @@ def wrong_review_postgres_url() -> Iterator[str]:
         root = Path(directory)
         sockets = root / "socket"
         sockets.mkdir()
-        subprocess.run(
-            [initdb, "-D", str(root / "data"), "-U", "postgres", "--auth=trust", "--no-locale", "--encoding=UTF8"],
-            check=True,
-            capture_output=True,
-        )
+        try:
+            subprocess.run(
+                [initdb, "-D", str(root / "data"), "-U", "postgres", "--auth=trust", "--no-locale", "--encoding=UTF8"],
+                check=True,
+                capture_output=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            # These commands contain only disposable local paths; include the
+            # real initdb cause instead of an opaque exit code in CI diagnostics.
+            stderr = exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr
+            raise RuntimeError(f"Disposable PostgreSQL initdb failed: {stderr}") from exc
         subprocess.run(
             [pg_ctl, "-D", str(root / "data"), "-l", str(root / "postgres.log"), "-o", f"-F -h '' -k '{sockets}' -p 55448", "-w", "start"],
             check=True,
@@ -486,7 +492,7 @@ async def test_completed_wrong_review_can_be_the_source_of_its_own_remaining_wro
 
 
 @pytest.mark.asyncio
-async def test_existing_general_start_policy_can_close_a_wrong_review_then_explicit_retry_creates_a_new_attempt(
+async def test_new_general_start_preserves_wrong_review_and_explicit_retry_reuses_it(
     wrong_review_sessions: async_sessionmaker[AsyncSession],
 ) -> None:
     source = await _seed_source(wrong_review_sessions)
@@ -506,14 +512,15 @@ async def test_existing_general_start_policy_can_close_a_wrong_review_then_expli
         )
         await start_quiz_session(db, user, QuizStartRequest(quiz_type=QuizType.VOCABULARY, jlpt_level=JlptLevel.N5, count=1))
         previous = await db.get(QuizSession, uuid.UUID(first_review.session_id), populate_existing=True)
-        assert previous is not None and previous.completed_at is not None
+        assert previous is not None and previous.completed_at is None
+        assert user.experience_points == 123
     next_review = await _start(wrong_review_sessions, source)
-    assert next_review.session_id != first_review.session_id
-    assert next_review.answered_question_ids == []
+    assert next_review.session_id == first_review.session_id
+    assert next_review.answered_question_ids == [source.questions[0]["id"]]
 
 
 @pytest.mark.asyncio
-async def test_existing_incomplete_timeout_policy_remains_unchanged_for_wrong_reviews(
+async def test_old_empty_wrong_review_is_hidden_but_preserved_and_reused(
     wrong_review_sessions: async_sessionmaker[AsyncSession],
 ) -> None:
     source = await _seed_source(wrong_review_sessions)
@@ -526,7 +533,7 @@ async def test_existing_incomplete_timeout_policy_remains_unchanged_for_wrong_re
         user = await db.get(User, source.user_id)
         assert user is not None
         assert await get_incomplete_quiz_session(db, user) is None
-        assert review.completed_at is not None
+        assert review.completed_at is None
         assert user.experience_points == 123
     next_review = await _start(wrong_review_sessions, source)
-    assert next_review.session_id != first_review.session_id
+    assert next_review.session_id == first_review.session_id

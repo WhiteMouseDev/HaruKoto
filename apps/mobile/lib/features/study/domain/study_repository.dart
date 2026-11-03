@@ -2,6 +2,7 @@ import '../data/models/lesson_models.dart';
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
 import '../data/models/quiz_session_model.dart';
+import '../data/models/saved_quiz_model.dart';
 import '../data/models/recommendation_model.dart';
 import '../data/models/review_summary_model.dart';
 import '../data/models/smart_preview_model.dart';
@@ -14,6 +15,13 @@ abstract class StudyRepository {
   Future<List<StageModel>> fetchStages(String category, String jlptLevel);
 
   Future<IncompleteSessionModel?> fetchIncompleteQuiz();
+
+  Future<SavedQuizPageModel> fetchIncompleteQuizzes({
+    int limit = 20,
+    String? cursor,
+    String? quizType,
+    String? jlptLevel,
+  });
 
   Future<StudyStatsModel> fetchQuizStats(String level, String type);
 

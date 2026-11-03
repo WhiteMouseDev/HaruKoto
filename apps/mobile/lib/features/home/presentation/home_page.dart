@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
+import '../../study/presentation/widgets/saved_quiz_section.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/providers/quiz_progress_refresh_provider.dart';
 import '../../study/providers/lesson_activity_sync_provider.dart';
@@ -218,11 +219,18 @@ class _HomePageState extends ConsumerState<HomePage>
                   dailyGoalKnown:
                       accountCurrent && preferences.dailyGoalConfirmed,
                   jlptLevel: preferences.jlptLevel,
+                  showSavedQuiz: false,
                 ),
               ),
               const SizedBox(height: AppSizes.md),
 
               // 6. Daily Missions
+              const Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
+                child: SavedQuizSection(),
+              ),
+              const SizedBox(height: AppSizes.md),
               if (missions != null && missions.isNotEmpty) ...[
                 _staggered(4, DailyMissionsCard(missions: missions)),
                 const SizedBox(height: AppSizes.md),

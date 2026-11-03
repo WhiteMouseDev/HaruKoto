@@ -80,6 +80,7 @@ export const STUDY_WRITE_ROUTE_POLICY: readonly Rule[] = [
       '/api/v1/quiz/stats',
       '/api/v1/quiz/wrong-answers',
       '/api/v1/quiz/incomplete',
+      '/api/v1/quiz/incomplete-sessions',
       '/api/v1/quiz/recommendations',
       '/api/v1/kana/characters',
       // This legacy read initializes stage rows, but does not grant rewards or

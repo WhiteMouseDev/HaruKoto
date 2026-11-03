@@ -12,6 +12,7 @@ from app.models import UserKanaProgress
 from app.models.user import User
 from app.schemas.kana import KanaProgressRecord
 from app.services.kana_daily_progress import apply_daily_progress_increment
+from app.services.study_day_recording import lock_study_user
 from app.utils.date import get_today_kst
 
 
@@ -25,6 +26,7 @@ async def record_kana_learning_progress(
     user: User,
     body: KanaProgressRecord,
 ) -> KanaProgressRecordResult:
+    await lock_study_user(db, user)
     await db.execute(
         build_kana_progress_upsert_statement(
             user_id=user.id,
@@ -53,6 +55,7 @@ def build_kana_progress_upsert_statement(
         kana_id=kana_id,
         correct_count=1,
         streak=1,
+        updated_at=reviewed_at,
     )
     return stmt.on_conflict_do_update(
         index_elements=["user_id", "kana_id"],
@@ -60,5 +63,6 @@ def build_kana_progress_upsert_statement(
             "correct_count": UserKanaProgress.correct_count + 1,
             "streak": UserKanaProgress.streak + 1,
             "last_reviewed_at": reviewed_at,
+            "updated_at": reviewed_at,
         },
     )

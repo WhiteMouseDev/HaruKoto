@@ -42,9 +42,17 @@ def isolated_postgres_url() -> Iterator[str]:
         data = root / "data"
         sockets = root / "socket"
         sockets.mkdir()
-        subprocess.run(
-            [initdb, "-D", str(data), "-U", "postgres", "--auth=trust", "--no-locale", "--encoding=UTF8"], check=True, capture_output=True
-        )
+        try:
+            subprocess.run(
+                [initdb, "-D", str(data), "-U", "postgres", "--auth=trust", "--no-locale", "--encoding=UTF8"],
+                check=True,
+                capture_output=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            # These commands contain only disposable local paths; include the
+            # real initdb cause instead of an opaque exit code in CI diagnostics.
+            stderr = exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr
+            raise RuntimeError(f"Disposable PostgreSQL initdb failed: {stderr}") from exc
         subprocess.run(
             [pg_ctl, "-D", str(data), "-l", str(root / "postgres.log"), "-o", f"-F -h '' -k '{sockets}' -p 55439", "-w", "start"],
             check=True,

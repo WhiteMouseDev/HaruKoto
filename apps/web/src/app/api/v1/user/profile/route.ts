@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
     }
 
-    const [dbUser, dailyStats, totalQuizzes, userAchievements] =
+    const [dbUser, dailyStats, totalQuizzes, userAchievements, totalStudyDays] =
       await Promise.all([
         prisma.user.findUnique({
           where: { id: user.id },
@@ -40,7 +40,6 @@ export async function GET() {
         prisma.dailyProgress.aggregate({
           where: { userId: user.id },
           _sum: { wordsStudied: true, xpEarned: true },
-          _count: true,
         }),
         prisma.quizSession.count({
           where: { userId: user.id, completedAt: { not: null } },
@@ -48,6 +47,14 @@ export async function GET() {
         prisma.userAchievement.findMany({
           where: { userId: user.id },
           select: { achievementType: true, achievedAt: true },
+        }),
+        // Keep legacy NULL rows counted as before; only explicit recovery-only
+        // days are excluded. XP/word aggregates above remain unchanged.
+        prisma.dailyProgress.count({
+          where: {
+            userId: user.id,
+            OR: [{ studyDayCredited: null }, { studyDayCredited: true }],
+          },
         }),
       ]);
 
@@ -69,7 +76,7 @@ export async function GET() {
         summary: {
           totalWordsStudied: dailyStats._sum.wordsStudied ?? 0,
           totalQuizzesCompleted: totalQuizzes,
-          totalStudyDays: dailyStats._count,
+          totalStudyDays,
           totalXpEarned: dailyStats._sum.xpEarned ?? 0,
         },
         achievements: userAchievements.map((a) => ({
@@ -101,9 +108,7 @@ const callSettingsSchema = z.object({
 
 const updateProfileSchema = z.object({
   nickname: z.string().min(1).max(20).optional(),
-  jlptLevel: z
-    .enum(['ABSOLUTE_ZERO', 'N5', 'N4', 'N3', 'N2', 'N1'])
-    .optional(),
+  jlptLevel: z.enum(['ABSOLUTE_ZERO', 'N5', 'N4', 'N3', 'N2', 'N1']).optional(),
   dailyGoal: z.number().int().min(1).max(100).optional(),
   goal: z
     .enum([
@@ -166,7 +171,8 @@ export async function PATCH(request: Request) {
         where: { id: user.id },
         select: { callSettings: true },
       });
-      const existingSettings = (existing?.callSettings as Record<string, unknown>) ?? {};
+      const existingSettings =
+        (existing?.callSettings as Record<string, unknown>) ?? {};
       updateData = {
         ...data,
         callSettings: { ...existingSettings, ...data.callSettings },

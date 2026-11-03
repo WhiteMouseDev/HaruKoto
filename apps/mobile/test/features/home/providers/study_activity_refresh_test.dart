@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
 import 'package:harukoto_mobile/features/chat/providers/call_analysis_service.dart';
 import 'package:harukoto_mobile/features/chat/providers/chat_provider.dart';
@@ -23,6 +24,27 @@ import 'package:harukoto_mobile/features/study/providers/quiz_session_service.da
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
 void main() {
+  test('late quiz completion does not refresh the newly signed-in account',
+      () async {
+    final gate = Completer<void>();
+    var owner = 'A';
+    final refresh = _RefreshSpy();
+    final container = ProviderContainer(overrides: [
+      currentAccountIdProvider.overrideWith((ref) => owner),
+      currentAccountReaderProvider.overrideWithValue(() => owner),
+      studyActivityRefreshProvider.overrideWithValue(refresh),
+      studyRepositoryProvider
+          .overrideWithValue(_StudyRepository(false)..gate = gate),
+    ]);
+    addTearDown(container.dispose);
+    final pending =
+        container.read(quizSessionServiceProvider).completeQuiz('session');
+    owner = 'B';
+    container.invalidate(currentAccountIdProvider);
+    gate.complete();
+    await pending;
+    expect(refresh.calls, 0);
+  });
   test('refresh reloads cached dashboard and both calendar scopes', () async {
     var dashboardCalls = 0;
     var yearlyCalls = 0;
@@ -81,6 +103,9 @@ void main() {
           () async {
         final refresh = _RefreshSpy();
         final container = ProviderContainer(overrides: [
+          currentAccountIdProvider.overrideWithValue('completion-fixture'),
+          currentAccountReaderProvider
+              .overrideWithValue(() => 'completion-fixture'),
           studyActivityRefreshProvider.overrideWithValue(refresh),
           studyRepositoryProvider.overrideWithValue(_StudyRepository(fails)),
           kanaRepositoryProvider.overrideWithValue(_KanaRepository(fails)),
@@ -130,6 +155,9 @@ void main() {
       final kana = _KanaRepository(true);
       final chat = _ChatRepository(true);
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('completion-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'completion-fixture'),
         studyActivityRefreshProvider.overrideWithValue(refresh),
         studyRepositoryProvider.overrideWithValue(study),
         kanaRepositoryProvider.overrideWithValue(kana),
@@ -149,6 +177,9 @@ void main() {
       final gate = Completer<void>();
       final refresh = _RefreshSpy();
       final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('completion-fixture'),
+        currentAccountReaderProvider
+            .overrideWithValue(() => 'completion-fixture'),
         studyActivityRefreshProvider.overrideWithValue(refresh),
         studyRepositoryProvider
             .overrideWithValue(_StudyRepository(false)..gate = gate),

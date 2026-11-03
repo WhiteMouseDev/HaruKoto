@@ -17,10 +17,11 @@ const mocks = vi.hoisted(() => ({
   tx: {
     $queryRaw: vi.fn(),
     user: { findUniqueOrThrow: vi.fn(), update: vi.fn() },
-    dailyProgress: { upsert: vi.fn() },
+    dailyProgress: { upsert: vi.fn(), findUnique: vi.fn() },
   },
   prisma: {
     $transaction: vi.fn(),
+    quizAnswer: { findMany: vi.fn() },
     quizSession: { findUnique: vi.fn(), update: vi.fn(), count: vi.fn() },
     kanaLearningStage: { findUnique: vi.fn(), count: vi.fn() },
     userKanaStage: { findUnique: vi.fn(), upsert: vi.fn(), count: vi.fn() },
@@ -150,6 +151,7 @@ beforeEach(() => {
   );
   Object.assign(mocks.tx, {
     quizSession: mocks.prisma.quizSession,
+    quizAnswer: mocks.prisma.quizAnswer,
     kanaLearningStage: mocks.prisma.kanaLearningStage,
     userKanaStage: mocks.prisma.userKanaStage,
     userKanaProgress: mocks.prisma.userKanaProgress,
@@ -159,6 +161,8 @@ beforeEach(() => {
   mocks.prisma.userKanaStage.findUnique.mockResolvedValue(null);
   mocks.tx.$queryRaw.mockResolvedValue([currentUser()]);
   mocks.prisma.quizSession.findUnique.mockResolvedValue(nativeSession());
+  mocks.prisma.quizAnswer.findMany.mockImplementation(async () => [{ questionId, timeSpentSeconds: 2, answeredAt: new Date() }]);
+  mocks.tx.dailyProgress.findUnique.mockResolvedValue(null);
   mocks.prisma.quizSession.update.mockResolvedValue(nativeSession());
   mocks.prisma.quizSession.count.mockResolvedValue(1);
   mocks.prisma.dailyProgress.aggregate.mockResolvedValue({
@@ -242,6 +246,8 @@ describe.each(cases)(
         date: new Date('2026-11-02T00:00:00Z'),
       });
       expect(dayWrite.update.xpEarned).toEqual({ increment: xp });
+      expect(dayWrite.update.studyDayCredited).toBe(true);
+      expect(dayWrite.create.studyDayCredited).toBe(true);
       expect(dayWrite.update).not.toHaveProperty('activity_recorded');
       expect(dayWrite.update).not.toHaveProperty('lessonCompleted');
       expect(mocks.generateText).not.toHaveBeenCalled();

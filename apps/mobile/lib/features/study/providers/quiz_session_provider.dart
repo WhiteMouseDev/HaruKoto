@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../domain/quiz_resume_exception.dart';
 import '../data/models/quiz_question_model.dart';
 import '../data/models/quiz_result_model.dart';
@@ -162,14 +163,36 @@ class QuizSessionState {
 class QuizSessionController extends Notifier<QuizSessionState> {
   final _answerSaves = <String, _PendingQuizAnswer>{};
   int _initializationSerial = 0;
+  String? _accountId;
+  bool _built = false;
 
   @override
   QuizSessionState build() {
+    final owner = ref.watch(currentAccountIdProvider);
+    final changed = _built && _accountId != owner;
+    _built = true;
+    _accountId = owner;
+    _initializationSerial++;
+    _answerSaves.clear();
     ref.onDispose(() => _initializationSerial++);
+    if (changed || owner == null) {
+      return const QuizSessionState(
+        loading: false,
+        loadError: '계정이 변경되었어요. 학습 화면에서 다시 열어주세요.',
+        loadErrorCanRetry: false,
+      );
+    }
     return const QuizSessionState();
   }
 
+  bool get _accountCurrent =>
+      ref.mounted &&
+      _accountId != null &&
+      ref.read(currentAccountIdProvider) == _accountId &&
+      ref.read(currentAccountReaderProvider)() == _accountId;
+
   Future<void> initialize(QuizSessionRequest request) async {
+    if (!_accountCurrent) return;
     final requestId = ++_initializationSerial;
     _answerSaves.clear();
     state = QuizSessionState(
@@ -188,7 +211,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
             stageId: request.stageId,
             sourceSessionId: request.sourceSessionId,
           );
-      if (!ref.mounted || requestId != _initializationSerial) return;
+      if (!_accountCurrent || requestId != _initializationSerial) return;
       state = QuizSessionState(
         loading: false,
         sessionId: data.sessionId,
@@ -198,7 +221,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
         resolvedMode: data.resolvedMode,
       );
     } catch (error) {
-      if (!ref.mounted || requestId != _initializationSerial) return;
+      if (!_accountCurrent || requestId != _initializationSerial) return;
       final cause = error is DioException ? error.error : error;
       state = QuizSessionState(
         loading: false,
@@ -213,6 +236,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   }
 
   void incrementTimer() {
+    if (!_accountCurrent) return;
     state = state.copyWith(timeSpent: state.timeSpent + 1);
   }
 
@@ -224,6 +248,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     required String optionId,
     required String questionType,
   }) {
+    if (!_accountCurrent) return null;
     final question = state.currentQuestion;
     final sessionId = state.sessionId;
     if (state.answered || question == null || sessionId == null) {
@@ -257,6 +282,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   }
 
   void advanceToNextQuestion() {
+    if (!_accountCurrent) return;
     if (state.isLastQuestion) return;
     state = state.copyWith(
       currentIndex: state.currentIndex + 1,
@@ -273,6 +299,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     required String questionType,
     String? optionId,
   }) {
+    if (!_accountCurrent) return;
     final sessionId = state.sessionId;
     if (sessionId == null) return;
 
@@ -299,6 +326,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   }
 
   Future<QuizResultModel?> completeQuiz({String? stageId}) async {
+    if (!_accountCurrent) return null;
     final sessionId = state.sessionId;
     if (sessionId == null || state.completing) {
       return null;
@@ -308,16 +336,16 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     state = state.copyWith(completing: true, completionError: null);
     try {
       await flushPendingAnswers();
-      if (!ref.mounted || revision != _initializationSerial) return null;
+      if (!_accountCurrent || revision != _initializationSerial) return null;
       final result = await ref.read(quizSessionServiceProvider).completeQuiz(
             sessionId,
             stageId: stageId,
           );
-      if (!ref.mounted || revision != _initializationSerial) return null;
+      if (!_accountCurrent || revision != _initializationSerial) return null;
       state = state.copyWith(completing: false);
       return result;
     } catch (error) {
-      if (!ref.mounted || revision != _initializationSerial) return null;
+      if (!_accountCurrent || revision != _initializationSerial) return null;
       state = state.copyWith(
         completing: false,
         completionError: error is ApiException && error.statusCode == 409
@@ -333,13 +361,16 @@ class QuizSessionController extends Notifier<QuizSessionState> {
   /// Keep this session alive until every submitted answer is durable. Reuse
   /// the same payload when an exit or completion retries a failed request.
   Future<void> flushPendingAnswers() async {
+    if (!_accountCurrent) {
+      throw const ApiException(message: '계정이 변경되었어요. 학습 화면에서 다시 열어주세요.');
+    }
     final revision = _initializationSerial;
     final answers = _answerSaves.values.toList();
     for (final answer in answers.where((answer) => answer.failed)) {
       answer.submit();
     }
     await Future.wait(answers.map((answer) => answer.pending));
-    if (!ref.mounted ||
+    if (!_accountCurrent ||
         revision != _initializationSerial ||
         answers.any((answer) => !answer.saved)) {
       throw const ApiException(
@@ -355,7 +386,7 @@ class QuizSessionController extends Notifier<QuizSessionState> {
     if (_answerSaves.containsKey(questionId)) return;
     final revision = _initializationSerial;
     final answer = _PendingQuizAnswer(save, () {
-      if (!ref.mounted || revision != _initializationSerial) return;
+      if (!_accountCurrent || revision != _initializationSerial) return;
       state = state.copyWith(savedSpecialQuestionIds: {
         ...state.savedSpecialQuestionIds,
         questionId,

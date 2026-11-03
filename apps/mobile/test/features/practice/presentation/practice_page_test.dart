@@ -6,6 +6,8 @@ import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart'
 import 'package:harukoto_mobile/features/practice/presentation/practice_page.dart';
 import 'package:harukoto_mobile/features/study/data/models/quiz_session_model.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
+import 'package:harukoto_mobile/features/study/providers/saved_quiz_provider.dart';
+import 'package:harukoto_mobile/features/study/data/models/saved_quiz_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -46,7 +48,7 @@ void main() {
       expect(find.text('오늘의 문장 학습'), findsNothing);
     });
 
-    testWidgets('shows resume copy only for the selected quiz category',
+    testWidgets('keeps saved quizzes accessible across category changes',
         (tester) async {
       await _pumpPracticePage(
         tester,
@@ -63,12 +65,14 @@ void main() {
 
       expect(find.text('단어 퀴즈 풀기'), findsOneWidget);
       expect(find.text('진행 중인 퀴즈 이어풀기'), findsNothing);
+      expect(find.text('3/10문제 저장됨'), findsOneWidget);
+      expect(find.text('전체 보기'), findsOneWidget);
 
       await tester.tap(find.text('문법'));
       await tester.pumpAndSettle();
 
-      expect(find.text('진행 중인 퀴즈 이어풀기'), findsOneWidget);
-      expect(find.text('N5 · 3/10 문제 진행 중'), findsOneWidget);
+      expect(find.text('문법 퀴즈 풀기'), findsOneWidget);
+      expect(find.text('3/10문제 저장됨'), findsOneWidget);
     });
   });
 }
@@ -90,6 +94,7 @@ Future<void> _pumpPracticePage(
         incompleteQuizProvider.overrideWith(
           (ref) => Future.value(incomplete),
         ),
+        savedQuizListProvider.overrideWith(() => _SavedList(incomplete)),
         quizStatsProvider((level: 'N5', type: 'VOCABULARY')).overrideWith(
           (ref) => Future.value(_stats()),
         ),
@@ -105,6 +110,16 @@ Future<void> _pumpPracticePage(
 
   await tester.pump();
   await tester.pump();
+}
+
+class _SavedList extends SavedQuizList {
+  _SavedList(this.session);
+  final IncompleteSessionModel? session;
+  @override
+  Future<SavedQuizListState> build() async => SavedQuizListState(
+        accountId: 'test-account',
+        sessions: session == null ? [] : [SavedQuizModel.fromLegacy(session!)],
+      );
 }
 
 StudyStatsModel _stats() {

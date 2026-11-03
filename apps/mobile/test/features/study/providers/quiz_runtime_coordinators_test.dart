@@ -72,6 +72,30 @@ void main() {
       expect(firstTimer.isActive, isFalse);
       expect(timers.createdTimers.last.isActive, isTrue);
     });
+
+    test('foreground resume preserves elapsed time after a stopped timer', () {
+      final timers = _FakeTimerFactory();
+      final coordinator = QuizTimerCoordinator(createTimer: timers.create);
+      var seconds = 0;
+      coordinator.restartIfNeeded(
+        session: _session(),
+        resetTimer: () => seconds = 0,
+        incrementTimer: () => seconds++,
+      );
+      timers.createdTimers.single.fire();
+      coordinator.stop();
+      expect(coordinator.isActive, isFalse);
+      expect(seconds, 1);
+      coordinator.restartIfNeeded(
+        session: _session(),
+        resetElapsed: false,
+        resetTimer: () => seconds = 0,
+        incrementTimer: () => seconds++,
+      );
+      timers.createdTimers.last.fire();
+      expect(seconds, 2);
+      coordinator.dispose();
+    });
   });
 
   group('QuizFeedbackPlayer', () {

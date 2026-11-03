@@ -26,8 +26,10 @@ function passing() {
   };
 }
 
-test('accepts exactly the required 31 passing regressions', () => {
-  assert.equal(REQUIRED_WEB_COMPLETION_CASES.length, 31);
+test('accepts exactly the required 29 completion and preservation regressions', () => {
+  // Seven assertions for the removed automatic settlement are replaced by
+  // three preservation/concurrency and two durable-answer completion cases.
+  assert.equal(REQUIRED_WEB_COMPLETION_CASES.length, 29);
   assert.deepEqual(checkWebCompletionReport(passing()), []);
 });
 test('rejects deletion of each required regression', () => {

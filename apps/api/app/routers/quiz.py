@@ -7,11 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
+from app.models.enums import JlptLevel, QuizType
 from app.models.user import User
 from app.schemas.quiz import (
     ContentQuizStatsResponse,
     IncompleteQuizResponse,
     IncompleteQuizSession,
+    IncompleteQuizSessionsResponse,
     OverallProgress,
     PoolSize,
     QuizAnswerRequest,
@@ -35,6 +37,7 @@ from app.services.quiz_answer import QuizAnswerServiceError, submit_quiz_answer
 from app.services.quiz_complete import QuizCompleteServiceError, complete_quiz_session
 from app.services.quiz_errors import QuizQueryServiceError
 from app.services.quiz_recommendations import get_recommendations_data
+from app.services.quiz_saved_sessions import get_saved_quiz_sessions
 from app.services.quiz_session import build_response_questions
 from app.services.quiz_session_query import get_incomplete_quiz_session, resume_quiz_session
 from app.services.quiz_smart import build_smart_preview_data
@@ -141,7 +144,7 @@ async def get_incomplete_quiz(
     """미완료 퀴즈 세션 조회 (배너용).
 
     - 1문제도 안 푼 세션은 배너에서 제외하되 진행 중인 퀴즈는 유지
-    - 24시간 지난 세션은 자동 완료 처리
+    - 기간과 관계없이 기존 세션을 보존하며 조회는 상태를 변경하지 않음
     """
     session = await get_incomplete_quiz_session(db, user)
     if session is None:
@@ -160,6 +163,29 @@ async def get_incomplete_quiz(
             resume_status=session.resume_status,
         )
     )
+
+
+@router.get("/incomplete-sessions", response_model=IncompleteQuizSessionsResponse, status_code=200)
+async def get_incomplete_quiz_sessions(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    limit: Annotated[int, Query(ge=1, le=50)] = 20,
+    cursor: Annotated[str | None, Query(max_length=1024)] = None,
+    quiz_type: Annotated[QuizType | None, Query(alias="quizType")] = None,
+    jlpt_level: Annotated[JlptLevel | None, Query(alias="jlptLevel")] = None,
+) -> IncompleteQuizSessionsResponse:
+    """저장 답안이 있는 미완료 퀴즈를 최근 시작 순으로 읽기 전용 조회합니다."""
+    try:
+        return await get_saved_quiz_sessions(
+            db,
+            user,
+            limit=limit,
+            cursor=cursor,
+            quiz_type=quiz_type.value if quiz_type else None,
+            jlpt_level=jlpt_level.value if jlpt_level else None,
+        )
+    except QuizQueryServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
 @router.post("/resume", response_model=QuizResumeResponse, status_code=200)

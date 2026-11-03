@@ -28,19 +28,16 @@ for (const kind of ['normal quiz', 'kana quiz', 'kana stage']) {
     );
   }
 }
-const start = 'starting a quiz auto-completes prior sessions safely ';
+const start = 'starting a quiz preserves prior sessions ';
 required.push(
-  start + 'awards one partial-session reward for two simultaneous starts',
-  start + 'shares completion authority with explicit completion (start-first)',
   start +
-    'shares completion authority with explicit completion (complete-first)',
-  ...['session', 'daily', 'user'].map(
-    (failure) =>
-      start +
-      `rolls back prior-session completion when ${failure} fails and retries it once`
-  ),
+    'leaves old answers, completion and XP untouched even after simultaneous starts with no new content',
   start +
-    'preserves the zero-correct partial-session policy without adding attendance or rewards'
+    'only explicit completion awards XP when another quiz starts (start-first)',
+  start +
+    'only explicit completion awards XP when another quiz starts (complete-first)',
+  'web completion waits for durable answers does not close, reward or count activity before the final answer is stored',
+  'web completion waits for durable answers does not count duplicate attempts or negative time as additional study time'
 );
 export const REQUIRED_WEB_COMPLETION_CASES = Object.freeze(required);
 

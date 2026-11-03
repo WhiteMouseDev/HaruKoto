@@ -76,9 +76,10 @@ async def test_public_boundary_migration_preserves_server_auth_and_learning_and_
     # Exercise its original learning smoke in compatibility mode; full-head ON
     # answer attendance is verified by the dedicated real PostgreSQL suite.
     monkeypatch.setattr(study_day_recording, "ANSWERED_STUDY_DAY_RECOGNITION_ENABLED", False)
-    engine = create_async_engine(isolated_postgres_url)
+    engine = create_async_engine(isolated_postgres_url, connect_args={"server_settings": {"timezone": "UTC"}})
     try:
         for statement in [
+            "ALTER DATABASE postgres SET timezone TO UTC",
             "CREATE ROLE anon NOLOGIN",
             "CREATE ROLE authenticated NOLOGIN",
             "CREATE ROLE service_role NOLOGIN BYPASSRLS",
@@ -169,38 +170,6 @@ async def test_public_boundary_migration_preserves_server_auth_and_learning_and_
             assert await connection.scalar(text("SELECT count(*) FROM public.users")) == 0
             await transaction.rollback()
 
-        # The real home smart quiz still creates, saves and completes using the
-        # server connection, without opening client write access or RLS policies.
-        sessions = async_sessionmaker(engine, expire_on_commit=False)
-        async with sessions() as db:
-            for index in range(4):
-                db.add(
-                    Vocabulary(
-                        jlpt_level=JlptLevel.N5,
-                        word=f"単語{uuid.uuid4()}",
-                        reading="たんご",
-                        meaning_ko=f"권한 테스트 {index}",
-                        part_of_speech=PartOfSpeech.NOUN,
-                    )
-                )
-            await db.commit()
-            user = await db.get(User, auth_user_id)
-            assert user is not None
-            quiz = await start_smart_quiz_session(db, user, SmartStartRequest(category="VOCABULARY", jlpt_level=JlptLevel.N5, count=2))
-            for question in quiz.questions:
-                await submit_quiz_answer(
-                    db,
-                    user,
-                    QuizAnswerRequest(
-                        session_id=quiz.session.id,
-                        question_id=uuid.UUID(question["id"]),
-                        selected_option_id=question["correctOptionId"],
-                        question_type=QuizType.VOCABULARY,
-                    ),
-                )
-            result = await complete_quiz_session(db, user, QuizCompleteRequest(session_id=quiz.session.id))
-            assert (result.correct_count, result.total_questions, result.accuracy, result.xp_earned) == (2, 2, 100.0, 20)
-
         # Future public DDL is secured, including built-in PUBLIC function
         # EXECUTE which cannot be removed by schema-only default privileges.
         for statement in [
@@ -257,5 +226,42 @@ async def test_public_boundary_migration_preserves_server_auth_and_learning_and_
         assert "Automatic downgrade would reopen public data access" in downgraded.stderr
         assert await _scalar(engine, "SELECT version_num FROM public.alembic_version") == "k1l2m3n4o5p6"
         await _denied(engine, "anon", "SELECT email FROM public.users LIMIT 0")
+        # Preserve the historical hardening and unsafe-downgrade assertions above;
+        # exercise today's ORM only after its additive migrations are installed.
+        current = _alembic(isolated_postgres_url, "upgrade", "head")
+        assert current.returncode == 0, current.stderr
+        await _sql(engine, "ALTER TABLE public.review_events ALTER COLUMN created_at SET DEFAULT '2026-11-02T01:00:00Z'::timestamptz")
+        # The real home smart quiz still creates, saves and completes using the
+        # server connection, without opening client write access or RLS policies.
+        sessions = async_sessionmaker(engine, expire_on_commit=False)
+        async with sessions() as db:
+            for index in range(4):
+                db.add(
+                    Vocabulary(
+                        jlpt_level=JlptLevel.N5,
+                        word=f"単語{uuid.uuid4()}",
+                        reading="たんご",
+                        meaning_ko=f"권한 테스트 {index}",
+                        part_of_speech=PartOfSpeech.NOUN,
+                    )
+                )
+            await db.commit()
+            user = await db.get(User, auth_user_id)
+            assert user is not None
+            quiz = await start_smart_quiz_session(db, user, SmartStartRequest(category="VOCABULARY", jlpt_level=JlptLevel.N5, count=2))
+            for question in quiz.questions:
+                await submit_quiz_answer(
+                    db,
+                    user,
+                    QuizAnswerRequest(
+                        session_id=quiz.session.id,
+                        question_id=uuid.UUID(question["id"]),
+                        selected_option_id=question["correctOptionId"],
+                        question_type=QuizType.VOCABULARY,
+                    ),
+                )
+            result = await complete_quiz_session(db, user, QuizCompleteRequest(session_id=quiz.session.id))
+            assert (result.correct_count, result.total_questions, result.accuracy, result.xp_earned) == (2, 2, 100.0, 20)
+
     finally:
         await engine.dispose()

@@ -11,14 +11,16 @@ const mocks = vi.hoisted(() => {
   const tx = {
     $queryRaw: vi.fn(),
     user: { findUniqueOrThrow: vi.fn(), update: vi.fn() },
-    dailyProgress: { upsert: vi.fn() },
+    dailyProgress: { upsert: vi.fn(), findUnique: vi.fn() },
   };
   return {
     getUser: vi.fn(),
     tx,
     prisma: {
       quizSession: { findUnique: vi.fn(), update: vi.fn(), count: vi.fn() },
-      quizAnswer: { create: vi.fn(), findFirst: vi.fn() },
+      quizAnswer: { create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn() },
+      vocabulary: { findMany: vi.fn() },
+      grammar: { findMany: vi.fn() },
       userVocabProgress: { findUnique: vi.fn(), upsert: vi.fn() },
       userGrammarProgress: { findUnique: vi.fn(), upsert: vi.fn() },
       user: { findUnique: vi.fn(), update: vi.fn() },
@@ -87,6 +89,8 @@ const answerBody = (
   selectedOptionId = 'right'
 ) => ({
   sessionId,
+  attemptId: '10000000-0000-4000-8000-000000000090',
+  previousAttemptId: null,
   questionId,
   selectedOptionId,
   questionType,
@@ -114,11 +118,17 @@ beforeEach(() => {
     quizSession: mocks.prisma.quizSession,
     quizAnswer: mocks.prisma.quizAnswer,
     userVocabProgress: mocks.prisma.userVocabProgress,
+    vocabulary: mocks.prisma.vocabulary,
+    grammar: mocks.prisma.grammar,
     userGrammarProgress: mocks.prisma.userGrammarProgress,
     notification: mocks.prisma.notification,
   });
   Object.assign(mocks.tx.dailyProgress, { aggregate: mocks.prisma.dailyProgress.aggregate });
   mocks.prisma.quizAnswer.findFirst.mockResolvedValue(null);
+  mocks.prisma.quizAnswer.findUnique.mockResolvedValue(null);
+  for (const reader of [mocks.prisma.vocabulary, mocks.prisma.grammar]) reader.findMany.mockImplementation(async ({ where }) => where.id.in.map((id: string) => ({ id })));
+  mocks.prisma.quizAnswer.findMany.mockResolvedValue([{ questionId, timeSpentSeconds: 2, answeredAt: new Date() }]);
+  mocks.tx.dailyProgress.findUnique.mockResolvedValue(null);
   mocks.prisma.quizSession.findUnique.mockResolvedValue(nativeSession());
   mocks.prisma.userVocabProgress.findUnique.mockResolvedValue(null);
   mocks.prisma.userGrammarProgress.findUnique.mockResolvedValue(null);

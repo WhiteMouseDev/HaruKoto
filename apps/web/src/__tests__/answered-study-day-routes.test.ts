@@ -11,7 +11,9 @@ const mocks = vi.hoisted(() => ({
   tx: {
     $queryRaw: vi.fn(),
     quizSession: { findUnique: vi.fn(), update: vi.fn() },
-    quizAnswer: { findFirst: vi.fn(), create: vi.fn() },
+    quizAnswer: { findFirst: vi.fn(), create: vi.fn(), findUnique: vi.fn() },
+    vocabulary: { findMany: vi.fn() },
+    grammar: { findMany: vi.fn() },
     userVocabProgress: { findUnique: vi.fn(), upsert: vi.fn() },
     userGrammarProgress: { findUnique: vi.fn(), upsert: vi.fn() },
     userKanaProgress: { findUnique: vi.fn(), upsert: vi.fn(), update: vi.fn() },
@@ -64,11 +66,15 @@ const lockedUser = () => ({
   longestStreak: 9,
   lastStudyDate: new Date('2026-11-01T01:00:00Z'),
 });
-const request = (selectedOptionId = 'wrong') =>
+const attemptId = '10000000-0000-4000-8000-000000000090';
+const nextAttemptId = '10000000-0000-4000-8000-000000000091';
+const request = (selectedOptionId = 'wrong', previousAttemptId: string | null = null) =>
   new Request('http://localhost/api/v1/quiz/answer', {
     method: 'POST',
     body: JSON.stringify({
       sessionId,
+      attemptId: previousAttemptId ? nextAttemptId : attemptId,
+      previousAttemptId,
       questionId,
       selectedOptionId,
       timeSpentSeconds: 2,
@@ -83,6 +89,8 @@ beforeEach(() => {
   mocks.getUser.mockResolvedValue({ data: { user: { id: userId } } });
   mocks.tx.$queryRaw.mockResolvedValue([lockedUser()]);
   mocks.tx.quizAnswer.findFirst.mockResolvedValue(null);
+  mocks.tx.quizAnswer.findUnique.mockResolvedValue(null);
+  for (const reader of [mocks.tx.vocabulary, mocks.tx.grammar]) reader.findMany.mockImplementation(async ({ where }) => where.id.in.map((id: string) => ({ id })));
   mocks.tx.userVocabProgress.findUnique.mockResolvedValue(null);
   mocks.tx.userKanaProgress.findUnique.mockResolvedValue(null);
   mocks.transaction.mockImplementation(
@@ -116,8 +124,9 @@ describe.each([
         userId,
         date: new Date('2026-11-02T00:00:00Z'),
         activity_recorded: true,
+        studyDayCredited: true,
       },
-      update: { activity_recorded: true },
+      update: { activity_recorded: true, studyDayCredited: true },
     });
     expect(mocks.tx.user.update).toHaveBeenCalledWith({
       where: { id: userId },
@@ -132,9 +141,9 @@ describe.each([
 
   it('preserves native wrong-to-correct matching retries and SRS, but creates no new attendance next day', async () => {
     expect((await handler(request())).status).toBe(200);
-    mocks.tx.quizAnswer.findFirst.mockResolvedValue({ id: 'first-answer' });
+    mocks.tx.quizAnswer.findFirst.mockResolvedValue({ id: attemptId, isCorrect: false });
     vi.setSystemTime(new Date('2026-11-03T01:00:00Z'));
-    expect((await handler(request('right'))).status).toBe(200);
+    expect((await handler(request('right', attemptId))).status).toBe(200);
     expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(2);
     expect(mocks.tx.quizSession.update).toHaveBeenCalledTimes(1);
     expect(
@@ -146,9 +155,9 @@ describe.each([
 
   it('does not infer attendance from a pre-activation answer', async () => {
     mocks.tx.quizAnswer.findFirst.mockResolvedValue({
-      id: 'historical-answer',
+      id: attemptId, isCorrect: false,
     });
-    expect((await handler(request('right'))).status).toBe(200);
+    expect((await handler(request('right', attemptId))).status).toBe(200);
     expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(1);
     expect(mocks.tx.dailyProgress.upsert).not.toHaveBeenCalled();
     expect(mocks.tx.user.update).not.toHaveBeenCalled();
@@ -227,14 +236,14 @@ describe.each([
   });
 });
 
-it('preserves legacy late web answers but never recognizes a finished session as a new study day', async () => {
+it('refuses a fresh late web answer without changing a finished session', async () => {
   const completed = {
     ...snapshot(false),
     completedAt: new Date('2026-11-01T01:00:00Z'),
   };
   mocks.preflight.mockResolvedValue(completed);
   mocks.tx.quizSession.findUnique.mockResolvedValue(completed);
-  expect((await answer(request())).status).toBe(200);
-  expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(1);
+  expect((await answer(request())).status).toBe(409);
+  expect(mocks.tx.quizAnswer.create).not.toHaveBeenCalled();
   expect(mocks.tx.dailyProgress.upsert).not.toHaveBeenCalled();
 });

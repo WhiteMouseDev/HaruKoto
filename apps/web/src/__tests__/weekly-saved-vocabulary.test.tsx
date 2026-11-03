@@ -256,4 +256,28 @@ describe('weekly chart', () => {
       screen.getByRole('img', { name: '2026-11-02 · 저장한 단어 1개' })
     ).toBeInTheDocument();
   });
+
+  it('retains completion XP without inventing an activity dot for a recovery-only day', () => {
+    render(
+      <WeeklyChart
+        weeklyStats={[
+          {
+            ...day,
+            wordsStudied: 10,
+            xpEarned: 100,
+            vocabularyAnsweredCount: 0,
+            hasStudied: false,
+          },
+        ]}
+      />
+    );
+    expect(
+      screen.getByRole('img', { name: '2026-11-02 · 학습 활동 없음' })
+    ).toHaveClass('bg-transparent');
+    expect(
+      screen.getByRole('img', { name: '2026-11-02 · 저장한 단어 0개' })
+    ).toHaveStyle({ height: '0px' });
+    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText(/학습 활동 0일/)).toBeInTheDocument();
+  });
 });

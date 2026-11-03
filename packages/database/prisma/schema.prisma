@@ -271,6 +271,7 @@ model DailyProgress {
   sentences_studied Int?     @default(0)
   study_minutes     Int?     @default(0)
   activity_recorded Boolean  @default(false)
+  studyDayCredited  Boolean? @map("study_day_credited")
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])

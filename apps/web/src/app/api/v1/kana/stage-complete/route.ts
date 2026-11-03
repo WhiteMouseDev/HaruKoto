@@ -106,8 +106,13 @@ export async function POST(request: Request) {
       const xpEarned = KANA_REWARDS.STAGE_COMPLETE_XP;
       await tx.dailyProgress.upsert({
         where: { userId_date: { userId: user.id, date: today } },
-        update: { xpEarned: { increment: xpEarned } },
-        create: { userId: user.id, date: today, xpEarned },
+        update: { xpEarned: { increment: xpEarned }, studyDayCredited: true },
+        create: {
+          userId: user.id,
+          date: today,
+          xpEarned,
+          studyDayCredited: true,
+        },
       });
       const totalXp = currentUser.experiencePoints + xpEarned;
       const { level: newLevel } = calculateLevel(totalXp);

@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import {
+  assertQuizContentAvailable,
+  QuizContentUnavailableError,
+} from '@/lib/quiz-content-availability';
+import {
   decodeWebQuizSnapshot,
   QuizSnapshotError,
   restoreWebQuizProgress,
@@ -56,6 +60,13 @@ export async function POST(request: Request) {
     }
     const answeredQuestionIds = [...firstAnswers.keys()];
     restoreWebQuizProgress(snapshot.questions, answeredQuestionIds);
+    await assertQuizContentAvailable(
+      prisma,
+      session.quizType,
+      snapshot.questions
+        .filter((question) => !firstAnswers.has(question.questionId))
+        .map((question) => question.questionId)
+    );
     const correctCount = [...firstAnswers.values()].filter(
       (answer) => answer.isCorrect
     ).length;
@@ -70,7 +81,10 @@ export async function POST(request: Request) {
       mode: snapshot.mode,
     });
   } catch (err) {
-    if (err instanceof QuizSnapshotError) {
+    if (
+      err instanceof QuizSnapshotError ||
+      err instanceof QuizContentUnavailableError
+    ) {
       return NextResponse.json({ error: err.message }, { status: 409 });
     }
     console.error('Quiz resume error:', err);

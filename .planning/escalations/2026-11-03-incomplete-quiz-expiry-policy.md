@@ -3,8 +3,13 @@ raised_by: codex-root
 raised_at: 2026-11-03
 phase: simulator-post-release-verification
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-03
 ---
+
+## Resolution
+
+사용자가 기간 자동 종료 제거·다중 미완료 보존 구현을 승인했고, 웹 재시도 ID 계약과 nullable `study_day_credited` 분리안의 로컬 구현·검증도 승인했다. 현재 미결정 제품 정책은 없다. 운영 배포는 별도 승인 경계로 유지하며 이 항목을 미해결 정책으로 반복 표시하지 않는다. 최종 적용·롤백안은 [구현 기록](../../docs/operations/plans/long-lived-quiz-resume-implementation-2026-11-03.md)에 정리한다. 아래 내용은 결정 전 이력이다.
 
 ## What happened
 
@@ -29,3 +34,11 @@ status: open
 ## Side effects
 
 영향 범위는 홈 이어하기 카드, 일반·스마트·매칭·문장 배열의 세션 조회/재개, 세션 정리 및 완료 통계다. 기존 로그인·학습 기록·SRS/복습 기한·단어 목표·음원 캐시·Data API 차단은 그대로 유지한다.
+
+## 2026-11-03 사용자 방향과 구체안
+
+사용자는 PR #221 병합과 함께 며칠 뒤에도 이어 풀 수 있는 방향의 개선안을 요청했다. #221은 병합했고 [장기 미완료 퀴즈 제안](../../docs/operations/plans/long-lived-quiz-resume-proposal-2026-11-03.md)을 준비했다. 권장안은 기간 종료·새 시작 자동 완료 제거, 다중 미완료 보존, 대표 카드와 페이지 단위 목록이며 새 DDL은 필요하지 않다. 새 읽기 목록 API와 앞으로의 부분 XP 지급 시점·시간 계산 변경은 구체안을 제시한 상태다. 구현·운영 적용 승인은 아직 받지 않았으므로 이 결정 항목은 open으로 둔다. 기존 종료 행 재개방·백필·SRS/권한/Data API 변경은 포함하지 않는다.
+
+## 2026-11-03 설계 재검토
+
+사용자의 추가 검토 요청에 따라 [독립 재검토 결과](../../docs/operations/plans/long-lived-quiz-resume-design-review-2026-11-03.md)를 로컬 문서로 작성했다. 핵심 보존 정책은 타당하지만 웹의 마지막 답안 저장과 완료 경쟁, 전송 재시도와 의도적 재도전의 구분을 먼저 보완해야 한다. 목록의 제외 행 이후 탐색·필터가 비어 있을 때 전체 목록 접근도 검증 조건에 추가한다. 며칠 전 답안을 모두 저장한 뒤 오늘 최초 완료만 복구하는 경우의 학습일 인정은 기존 정책 유지와 답안 활동일 원칙 사이의 결정 사항으로 남긴다. 실제 API·DB·운영 변경은 수행하지 않았으며 status는 open을 유지한다.

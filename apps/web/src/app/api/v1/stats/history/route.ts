@@ -55,6 +55,7 @@ export async function GET(request: Request) {
         studyTimeSeconds: true,
         xpEarned: true,
         activity_recorded: true,
+        studyDayCredited: true,
         kanaLearned: true,
         grammar_studied: true,
         sentences_studied: true,

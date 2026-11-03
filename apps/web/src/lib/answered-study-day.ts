@@ -36,8 +36,13 @@ export async function recordAnsweredStudyDay(
   );
   await tx.dailyProgress.upsert({
     where: { userId_date: { userId: user.id, date: today } },
-    create: { userId: user.id, date: today, activity_recorded: true },
-    update: { activity_recorded: true },
+    create: {
+      userId: user.id,
+      date: today,
+      activity_recorded: true,
+      studyDayCredited: true,
+    },
+    update: { activity_recorded: true, studyDayCredited: true },
   });
   await tx.user.update({
     where: { id: user.id },
@@ -53,6 +58,7 @@ export async function recordAnsweredStudyDay(
 }
 
 type ActivityRecord = {
+  studyDayCredited?: boolean | null;
   activity_recorded?: boolean;
   wordsStudied?: number | null;
   quizzesCompleted?: number | null;
@@ -65,10 +71,12 @@ type ActivityRecord = {
   study_minutes?: number | null;
 };
 
-/** Match the API's explicit marker OR positive legacy activity predicate. */
+/** Explicit credit wins; NULL/absent records keep the legacy interpretation. */
 export function hasRecordedStudyActivity(
   record: ActivityRecord | null
 ): boolean {
+  if (typeof record?.studyDayCredited === 'boolean')
+    return record.studyDayCredited;
   return (
     record !== null &&
     (record.activity_recorded === true ||

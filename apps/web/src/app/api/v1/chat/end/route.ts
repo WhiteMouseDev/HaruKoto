@@ -159,11 +159,13 @@ export async function POST(request: Request) {
           },
         },
         update: {
+          studyDayCredited: true,
           conversationCount: { increment: 1 },
           xpEarned: { increment: xpEarned },
           studyTimeSeconds: { increment: durationSeconds },
         },
         create: {
+          studyDayCredited: true,
           userId: user.id,
           date: today,
           conversationCount: 1,
