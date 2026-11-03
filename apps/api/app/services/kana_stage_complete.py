@@ -62,19 +62,41 @@ async def complete_kana_stage(
     user: User,
     body: KanaStageCompleteRequest,
 ) -> KanaStageCompleteResult:
+    try:
+        return await _complete_kana_stage(db, user, body)
+    except Exception:
+        await db.rollback()
+        raise
+
+
+async def _complete_kana_stage(
+    db: AsyncSession,
+    user: User,
+    body: KanaStageCompleteRequest,
+) -> KanaStageCompleteResult:
     await lock_study_user(db, user)
     stage = await db.get(KanaLearningStage, body.stage_id)
     if not stage:
         raise KanaStageCompleteServiceError(status_code=404, detail="스테이지를 찾을 수 없습니다")
 
     now = canonical_study_instant(datetime.now(UTC))
-    await mark_kana_stage_complete(
+    first_completion = await mark_kana_stage_complete(
         db,
         user_id=user.id,
         stage_id=stage.id,
         quiz_score=body.quiz_score,
         completed_at=now,
     )
+    if not first_completion:
+        # Keep the original completion/score/unlocks intact on replay, including
+        # a retry on another Korean day. Reading unlock state has no reward side
+        # effects and does not repair/backfill historical stage records.
+        return build_kana_stage_complete_result(
+            xp_earned=0,
+            level_info=calculate_level(user.experience_points),
+            events=[],
+            next_stage_unlocked=await is_next_kana_stage_unlocked(db, user_id=user.id, stage=stage),
+        )
     next_stage_unlocked = await unlock_next_kana_stage(db, user_id=user.id, stage=stage, completed_at=now)
 
     xp_earned = KANA_REWARDS.STAGE_COMPLETE_XP
@@ -115,7 +137,7 @@ async def mark_kana_stage_complete(
     stage_id: uuid.UUID,
     quiz_score: int | None,
     completed_at: datetime,
-) -> None:
+) -> bool:
     stmt = pg_insert(UserKanaStage).values(
         user_id=user_id,
         stage_id=stage_id,
@@ -128,8 +150,23 @@ async def mark_kana_stage_complete(
     stmt = stmt.on_conflict_do_update(
         index_elements=["user_id", "stage_id"],
         set_={"is_completed": True, "quiz_score": quiz_score, "completed_at": completed_at, "updated_at": completed_at},
+        where=UserKanaStage.is_completed.is_(False),
     )
-    await db.execute(stmt)
+    result = await db.execute(stmt.returning(UserKanaStage.id))
+    return result.scalar_one_or_none() is not None
+
+
+async def is_next_kana_stage_unlocked(db: AsyncSession, *, user_id: uuid.UUID, stage: KanaLearningStage) -> bool:
+    result = await db.execute(
+        select(UserKanaStage.is_unlocked)
+        .join(KanaLearningStage, KanaLearningStage.id == UserKanaStage.stage_id)
+        .where(
+            UserKanaStage.user_id == user_id,
+            KanaLearningStage.kana_type == stage.kana_type,
+            KanaLearningStage.stage_number == stage.stage_number + 1,
+        )
+    )
+    return result.scalar_one_or_none() is True
 
 
 async def unlock_next_kana_stage(db: AsyncSession, *, user_id: uuid.UUID, stage: KanaLearningStage, completed_at: datetime) -> bool:

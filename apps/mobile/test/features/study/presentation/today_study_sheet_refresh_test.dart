@@ -211,7 +211,7 @@ Future<ProviderContainer> _pumpSheet(WidgetTester tester, _Scenario scenario,
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  SharedPreferences.setMockInitialValues({'user_daily_goal': 20});
+  SharedPreferences.setMockInitialValues({'user_daily_goal_v2:account-a': 20});
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(overrides: [
     currentAccountIdProvider.overrideWith((ref) => scenario.account),

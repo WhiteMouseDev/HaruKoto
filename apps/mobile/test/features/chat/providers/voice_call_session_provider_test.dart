@@ -1,3 +1,4 @@
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
@@ -22,6 +23,8 @@ void main() {
       final liveService = _FakeGeminiLiveService();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           voiceCallMicrophonePermissionRequesterProvider.overrideWith(
             (ref) => allowVoiceCallMicrophonePermission,
@@ -90,6 +93,8 @@ void main() {
       final liveService = _FakeGeminiLiveService();
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           voiceCallMicrophonePermissionRequesterProvider.overrideWith(
             (ref) => allowVoiceCallMicrophonePermission,
@@ -136,6 +141,8 @@ void main() {
       var factoryCalls = 0;
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           voiceCallMicrophonePermissionRequesterProvider.overrideWith(
             (ref) => allowVoiceCallMicrophonePermission,
@@ -187,6 +194,8 @@ void main() {
         ];
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           voiceCallMicrophonePermissionRequesterProvider.overrideWith(
             (ref) => allowVoiceCallMicrophonePermission,
@@ -243,6 +252,8 @@ void main() {
       var factoryCalls = 0;
       final container = ProviderContainer(
         overrides: [
+          currentAccountIdProvider.overrideWithValue('test-account'),
+          currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
           sharedPreferencesProvider.overrideWith((ref) => prefs),
           voiceCallMicrophonePermissionRequesterProvider.overrideWith(
             (ref) => allowVoiceCallMicrophonePermission,

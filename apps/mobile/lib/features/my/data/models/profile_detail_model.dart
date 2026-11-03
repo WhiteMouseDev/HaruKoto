@@ -32,6 +32,7 @@ class ProfileInfo {
   final String? avatarUrl;
   final String jlptLevel;
   final int dailyGoal;
+  final bool dailyGoalConfirmed;
   final int experiencePoints;
   final int level;
   final LevelProgress levelProgress;
@@ -48,6 +49,7 @@ class ProfileInfo {
     this.avatarUrl,
     required this.jlptLevel,
     required this.dailyGoal,
+    this.dailyGoalConfirmed = true,
     required this.experiencePoints,
     required this.level,
     required this.levelProgress,
@@ -68,6 +70,9 @@ class ProfileInfo {
       avatarUrl: json['avatarUrl'] as String?,
       jlptLevel: json['jlptLevel'] as String? ?? 'N5',
       dailyGoal: json['dailyGoal'] as int? ?? 10,
+      dailyGoalConfirmed: json['dailyGoal'] is int &&
+          (json['dailyGoal'] as int) >= 5 &&
+          (json['dailyGoal'] as int) <= 50,
       experiencePoints: json['experiencePoints'] as int? ?? 0,
       level: json['level'] as int? ?? 1,
       levelProgress: LevelProgress.fromJson(

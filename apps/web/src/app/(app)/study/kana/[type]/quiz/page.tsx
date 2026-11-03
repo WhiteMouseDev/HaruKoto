@@ -8,8 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { KanaQuiz } from '@/components/features/kana/kana-quiz';
-import { MatchingPairQuiz, type MatchingPair } from '@/components/features/quiz/matching-pair';
-import { useStartKanaQuiz, useCompleteKanaQuiz, useAnswerKanaQuestion } from '@/hooks/use-kana-quiz';
+import {
+  MatchingPairQuiz,
+  type MatchingPair,
+} from '@/components/features/quiz/matching-pair';
+import {
+  useStartKanaQuiz,
+  useCompleteKanaQuiz,
+  useAnswerKanaQuestion,
+} from '@/hooks/use-kana-quiz';
+import {
+  isStudyWriteStopError,
+  studyWriteErrorMessage,
+  STUDY_WRITE_STOP_MESSAGE,
+} from '@/lib/study-write-stop';
 
 type Props = {
   params: Promise<{ type: string }>;
@@ -41,13 +53,22 @@ function KanaQuizContent({ params }: Props) {
   const mode = searchParams.get('mode') || 'recognition';
   const isMaster = searchParams.get('master') === 'true';
   const stageParam = searchParams.get('stage');
-  const stageNumber = isMaster ? undefined : stageParam ? parseInt(stageParam) : undefined;
+  const stageNumber = isMaster
+    ? undefined
+    : stageParam
+      ? parseInt(stageParam)
+      : undefined;
 
   const [loading, setLoading] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
+  const [stoppedCompletion, setStoppedCompletion] = useState<{
+    correct: number;
+    total: number;
+    wrongQuestionIds: string[];
+  } | null>(null);
 
   const isMatchingMode = mode === 'kana_matching';
 
@@ -73,14 +94,14 @@ function KanaQuizContent({ params }: Props) {
           setSessionId(res.sessionId);
           setQuestions(res.questions);
         }
-      } catch {
-        setError('퀴즈를 시작할 수 없습니다');
+      } catch (error) {
+        setError(studyWriteErrorMessage(error, '퀴즈를 시작할 수 없습니다'));
       } finally {
         setLoading(false);
       }
     }
     startQuiz();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kanaType, stageNumber, mode, isMaster, retryKey]);
 
   // Convert questions to matching pairs for matching mode
@@ -163,6 +184,7 @@ function KanaQuizContent({ params }: Props) {
     if (sessionId) {
       try {
         const res = await completeKanaQuizMutation.mutateAsync({ sessionId });
+        setStoppedCompletion(null);
 
         if (isMaster) {
           const accuracy = Math.round((result.correct / result.total) * 100);
@@ -189,8 +211,9 @@ function KanaQuizContent({ params }: Props) {
           sessionId,
         });
         router.replace(`/study/result?${params.toString()}`);
-      } catch {
-        router.replace('/study/kana');
+      } catch (error) {
+        if (isStudyWriteStopError(error)) setStoppedCompletion(result);
+        else router.replace('/study/kana');
       }
     }
   }
@@ -254,9 +277,12 @@ function KanaQuizContent({ params }: Props) {
 
           <Card className={masterResult.passed ? 'border-primary' : ''}>
             <CardContent className="flex flex-col items-center gap-2 p-5">
-              <span className="text-3xl font-bold">{masterResult.accuracy}%</span>
+              <span className="text-3xl font-bold">
+                {masterResult.accuracy}%
+              </span>
               <p className="text-muted-foreground text-sm">
-                {masterResult.correct}/{masterResult.total} 정답 · +{masterResult.xpEarned} XP
+                {masterResult.correct}/{masterResult.total} 정답 · +
+                {masterResult.xpEarned} XP
               </p>
             </CardContent>
           </Card>
@@ -309,6 +335,18 @@ function KanaQuizContent({ params }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
+        {stoppedCompletion && (
+          <div role="alert" className="mb-4 rounded-xl border p-4">
+            <p className="text-sm">{STUDY_WRITE_STOP_MESSAGE}</p>
+            <Button
+              className="mt-3"
+              disabled={completeKanaQuizMutation.isPending}
+              onClick={() => handleComplete(stoppedCompletion)}
+            >
+              같은 퀴즈 완료 다시 확인
+            </Button>
+          </div>
+        )}
         {isMatchingMode ? (
           <div className="flex flex-col gap-6">
             {matchingRounds.length > 1 && (
@@ -334,7 +372,11 @@ function KanaQuizContent({ params }: Props) {
             />
           </div>
         ) : (
-          <KanaQuiz questions={questions} sessionId={sessionId} onComplete={handleComplete} />
+          <KanaQuiz
+            questions={questions}
+            sessionId={sessionId}
+            onComplete={handleComplete}
+          />
         )}
       </motion.div>
     </div>

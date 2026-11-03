@@ -4,6 +4,8 @@ import { prisma } from '@harukoto/database';
 import { REWARDS, QUIZ_CONFIG } from '@/lib/constants';
 import { getTodayKST } from '@/lib/date';
 import { shuffleArray } from '@/lib/shuffle';
+import { lockStudyActivityUser } from '@/lib/study-activity-lock';
+import { lockStudyQuizSession } from '@/lib/answered-study-day';
 
 export async function POST(request: Request) {
   try {
@@ -25,41 +27,42 @@ export async function POST(request: Request) {
       );
     }
 
-    // Auto-complete any incomplete sessions
+    // Discovery is not completion authority: an answer or explicit completion
+    // can commit before the same user/session mutexes become available.
     const incompleteSessions = await prisma.quizSession.findMany({
       where: { userId: user.id, completedAt: null },
-      include: { answers: { select: { isCorrect: true } } },
+      select: { id: true },
     });
 
     if (incompleteSessions.length > 0) {
-      const now = new Date();
-
-      // Batch update all incomplete sessions with individual correctCount
-      await Promise.all(
-        incompleteSessions.map((s) => {
-          const correctCount = s.answers.filter((a) => a.isCorrect).length;
-          return prisma.quizSession.update({
-            where: { id: s.id },
+      await prisma.$transaction(async (tx) => {
+        await lockStudyActivityUser(tx, user.id);
+        const now = new Date();
+        let totalCorrect = 0;
+        let totalAnswers = 0;
+        for (const { id } of [...incompleteSessions].sort((a, b) => a.id.localeCompare(b.id))) {
+          const locked = await lockStudyQuizSession(tx, id);
+          if (!locked || locked.userId !== user.id || locked.completedAt) continue;
+          const session = await tx.quizSession.findUnique({
+            where: { id },
+            include: { answers: { select: { isCorrect: true } } },
+          });
+          if (!session) continue;
+          const correctCount = session.answers.filter((answer) => answer.isCorrect).length;
+          await tx.quizSession.update({
+            where: { id },
             data: { completedAt: now, correctCount },
           });
-        })
-      );
+          totalCorrect += correctCount;
+          totalAnswers += session.answers.length;
+        }
 
-      // Aggregate XP across all incomplete sessions
-      let totalCorrect = 0;
-      let totalAnswers = 0;
-      for (const s of incompleteSessions) {
-        const correct = s.answers.filter((a) => a.isCorrect).length;
-        totalCorrect += correct;
-        totalAnswers += s.answers.length;
-      }
-
-      if (totalCorrect > 0) {
-        const totalXp = totalCorrect * REWARDS.QUIZ_XP_PER_CORRECT;
-        const today = getTodayKST();
-
-        await Promise.all([
-          prisma.dailyProgress.upsert({
+        // Preserve the existing partial-session reward policy; only sessions
+        // transitioned by this transaction contribute to the aggregate.
+        if (totalCorrect > 0) {
+          const totalXp = totalCorrect * REWARDS.QUIZ_XP_PER_CORRECT;
+          const today = getTodayKST(now);
+          await tx.dailyProgress.upsert({
             where: { userId_date: { userId: user.id, date: today } },
             update: {
               xpEarned: { increment: totalXp },
@@ -71,15 +74,15 @@ export async function POST(request: Request) {
               date: today,
               xpEarned: totalXp,
               correctAnswers: totalCorrect,
-              totalAnswers: totalAnswers,
+              totalAnswers,
             },
-          }),
-          prisma.user.update({
+          });
+          await tx.user.update({
             where: { id: user.id },
             data: { experiencePoints: { increment: totalXp } },
-          }),
-        ]);
-      }
+          });
+        }
+      });
     }
 
     // Fetch words that need review first, then new words
