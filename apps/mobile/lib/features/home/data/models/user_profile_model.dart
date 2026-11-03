@@ -1,6 +1,8 @@
 class UserProfileModel {
   final String nickname;
   final int dailyGoal;
+  final bool dailyGoalConfirmed;
+  final String? userId;
   final bool showKana;
   final String jlptLevel;
   final String? avatarUrl;
@@ -10,6 +12,8 @@ class UserProfileModel {
   const UserProfileModel({
     required this.nickname,
     required this.dailyGoal,
+    this.dailyGoalConfirmed = true,
+    this.userId,
     required this.showKana,
     required this.jlptLevel,
     this.avatarUrl,
@@ -24,6 +28,10 @@ class UserProfileModel {
     return UserProfileModel(
       nickname: profile['nickname'] as String? ?? '학습자',
       dailyGoal: profile['dailyGoal'] as int? ?? 10,
+      dailyGoalConfirmed: profile['dailyGoal'] is int &&
+          (profile['dailyGoal'] as int) >= 5 &&
+          (profile['dailyGoal'] as int) <= 50,
+      userId: profile['id'] as String?,
       showKana: profile['showKana'] as bool? ?? true,
       jlptLevel: profile['jlptLevel'] as String? ?? 'N5',
       avatarUrl: profile['avatarUrl'] as String?,

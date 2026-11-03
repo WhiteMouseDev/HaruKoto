@@ -39,6 +39,7 @@ void main() {
       expect(model.avatarUrl, 'https://example.com/avatar.png');
       expect(model.jlptLevel, 'N3');
       expect(model.dailyGoal, 20);
+      expect(model.dailyGoalConfirmed, isTrue);
       expect(model.experiencePoints, 5000);
       expect(model.level, 10);
       expect(model.levelProgress.currentXp, 500);
@@ -55,6 +56,7 @@ void main() {
       expect(model.avatarUrl, isNull);
       expect(model.jlptLevel, 'N5');
       expect(model.dailyGoal, 10);
+      expect(model.dailyGoalConfirmed, isFalse);
       expect(model.experiencePoints, 0);
       expect(model.level, 1);
       expect(model.levelProgress.currentXp, 0);

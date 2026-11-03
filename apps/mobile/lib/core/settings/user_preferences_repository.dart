@@ -18,17 +18,31 @@ class UserPreferencesRepository {
 
   final SharedPreferences _sharedPreferences;
 
-  UserPreferences load() {
+  UserPreferences load({String? accountId}) {
+    final scopedGoal = accountId == null
+        ? null
+        : _sharedPreferences.getInt(_dailyGoalKey(accountId));
+    final validScopedGoal =
+        scopedGoal != null && scopedGoal >= 5 && scopedGoal <= 50;
     return UserPreferences(
       showFurigana: _sharedPreferences.getBool(_keyShowFurigana) ?? true,
       showKana: _sharedPreferences.getBool(_keyShowKana) ?? false,
-      dailyGoal: _sharedPreferences.getInt(_keyDailyGoal) ?? 10,
+      // The old shared key has no owner. Keep it for compatibility but never
+      // infer that it belongs to the account which happens to log in next.
+      dailyGoal: accountId == null
+          ? _sharedPreferences.getInt(_keyDailyGoal) ?? 10
+          : validScopedGoal
+              ? scopedGoal
+              : 10,
+      dailyGoalConfirmed: validScopedGoal,
       jlptLevel: _sharedPreferences.getString(_keyJlptLevel) ?? 'N5',
       callSettings: _loadCallSettings(),
     );
   }
 
-  Future<void> persist(UserPreferences preferences) async {
+  String _dailyGoalKey(String accountId) => 'user_daily_goal_v2:$accountId';
+
+  Future<void> persist(UserPreferences preferences, {String? accountId}) async {
     await _sharedPreferences.setBool(
       _keyShowFurigana,
       preferences.showFurigana,
@@ -37,10 +51,14 @@ class UserPreferencesRepository {
       _keyShowKana,
       preferences.showKana,
     );
-    await _sharedPreferences.setInt(
-      _keyDailyGoal,
-      preferences.dailyGoal,
-    );
+    if (accountId == null) {
+      await _sharedPreferences.setInt(_keyDailyGoal, preferences.dailyGoal);
+    } else if (preferences.dailyGoalConfirmed &&
+        preferences.dailyGoal >= 5 &&
+        preferences.dailyGoal <= 50) {
+      await _sharedPreferences.setInt(
+          _dailyGoalKey(accountId), preferences.dailyGoal);
+    }
     await _sharedPreferences.setString(
       _keyJlptLevel,
       preferences.jlptLevel,

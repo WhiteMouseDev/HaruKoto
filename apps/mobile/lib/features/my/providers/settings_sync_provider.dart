@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/auth/current_account_provider.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/settings/call_settings.dart';
 import '../../../core/settings/user_preferences.dart';
@@ -41,16 +43,25 @@ class SettingsSyncService {
   }
 
   Future<void> updateDailyGoal(int value) async {
-    await _runOptimistic(
-      next: _preferences.copyWith(dailyGoal: value),
-      remoteUpdate: () async {
-        await _ref.read(myRepositoryProvider).updateProfile({
-          'dailyGoal': value,
-        });
-      },
-    );
-    if (_ref.mounted) {
+    final notifier = _ref.read(userPreferencesProvider.notifier);
+    final previous = _preferences;
+    final scope = await notifier.beginDailyGoalUpdate(value);
+    try {
+      if (!notifier.isCurrent(scope)) {
+        throw const ApiException(message: '계정이 변경되어 목표를 다시 확인해주세요.');
+      }
+      await _ref.read(myRepositoryProvider).updateProfile({'dailyGoal': value});
+      if (!_ref.mounted || !notifier.isCurrent(scope)) return;
+      await notifier.finishDailyGoalUpdate(scope, value: value);
+      if (!_ref.mounted ||
+          _ref.read(currentAccountReaderProvider)() != scope.owner) {
+        return;
+      }
+      _invalidateDependents();
       _ref.read(vocabularyPreviewRefreshProvider.notifier).refresh();
+    } catch (_) {
+      if (_ref.mounted) notifier.cancelDailyGoalUpdate(scope, previous);
+      rethrow;
     }
   }
 
@@ -80,14 +91,22 @@ class SettingsSyncService {
     required UserPreferences next,
     required Future<void> Function() remoteUpdate,
   }) async {
+    final notifier = _ref.read(userPreferencesProvider.notifier);
+    final scope = notifier.requestScope;
     final previous = _preferences;
-    await _ref.read(userPreferencesProvider.notifier).replace(next);
-
+    await notifier.replace(next);
     try {
+      if (!notifier.isCurrentAccount(scope)) {
+        throw const ApiException(message: '계정이 변경되어 설정을 다시 확인해주세요.');
+      }
       await remoteUpdate();
-      _invalidateDependents();
+      if (_ref.mounted && notifier.isCurrentAccount(scope)) {
+        _invalidateDependents();
+      }
     } catch (_) {
-      await _ref.read(userPreferencesProvider.notifier).replace(previous);
+      if (_ref.mounted && notifier.isCurrentAccount(scope)) {
+        await notifier.replace(previous);
+      }
       rethrow;
     }
   }

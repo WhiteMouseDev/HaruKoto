@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from app.models.enums import QuizType
 from app.schemas.kana import KanaQuizCompleteRequest
 from app.services import kana_quiz_complete
 from app.services.kana_quiz_complete import (
@@ -43,6 +44,8 @@ async def test_complete_kana_quiz_session_awards_progress_and_marks_completed(mo
     session = SimpleNamespace(
         id=uuid.uuid4(),
         user_id=user.id,
+        quiz_type=QuizType.KANA,
+        questions_data=[],
         total_questions=4,
         correct_count=4,
         completed_at=None,
@@ -97,6 +100,8 @@ async def test_complete_kana_quiz_session_uses_pass_reward_for_non_perfect(monke
     session = SimpleNamespace(
         id=uuid.uuid4(),
         user_id=user.id,
+        quiz_type=QuizType.KANA,
+        questions_data=[],
         total_questions=4,
         correct_count=3,
         completed_at=None,

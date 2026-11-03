@@ -8,6 +8,34 @@ from pathlib import Path
 # closed. Unrelated optional AI integration skips remain permitted.
 REQUIRED_CASES = frozenset(
     {
+        *{
+            ("tests.test_kana_completion_safety_postgres", name)
+            for name in (
+                "test_tagged_kana_completion_requires_all_durable_answers[no-answers-recognition-off]",
+                "test_tagged_kana_completion_requires_all_durable_answers[no-answers-recognition-on]",
+                "test_tagged_kana_completion_requires_all_durable_answers[partial-answers-recognition-off]",
+                "test_tagged_kana_completion_requires_all_durable_answers[partial-answers-recognition-on]",
+                "test_quiz_replay_next_day_preserves_original_completion_and_rewards[legacy-untagged]",
+                "test_quiz_replay_next_day_preserves_original_completion_and_rewards[receipt-tagged]",
+                "test_concurrent_kana_completion_applies_rewards_once[quiz]",
+                "test_concurrent_kana_completion_applies_rewards_once[stage]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[daily-before-quiz]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[daily-before-stage]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[daily-after-quiz]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[daily-after-stage]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[commit-before-quiz]",
+                "test_completion_failure_rolls_back_state_and_retry_is_safe[commit-before-stage]",
+                "test_completion_response_loss_replays_without_new_day_or_reward[quiz]",
+                "test_completion_response_loss_replays_without_new_day_or_reward[stage]",
+                "test_stage_replay_keeps_score_timestamp_and_existing_unlock",
+                "test_completed_legacy_quiz_does_not_require_new_receipts_or_repair_history",
+                "test_new_tagged_quiz_grades_receipts_and_preserves_goal_due_and_security",
+                "test_tagged_completion_fails_closed_for_inconsistent_evidence[mixed-version]",
+                "test_tagged_completion_fails_closed_for_inconsistent_evidence[duplicate-question]",
+                "test_tagged_completion_fails_closed_for_inconsistent_evidence[changed-source]",
+                "test_tagged_completion_fails_closed_for_inconsistent_evidence[bad-receipt]",
+            )
+        },
         (
             "tests.test_weekly_vocabulary_projection_postgres",
             "test_weekly_projection_groups_saved_wrong_words_without_mutating_attendance_or_history[aware-kst-month-boundary]",

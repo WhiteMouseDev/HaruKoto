@@ -5,6 +5,7 @@ class UserPreferences {
     this.showFurigana = true,
     this.showKana = false,
     this.dailyGoal = 10,
+    this.dailyGoalConfirmed = false,
     this.jlptLevel = 'N5',
     this.callSettings = const CallSettings(),
   });
@@ -12,6 +13,7 @@ class UserPreferences {
   final bool showFurigana;
   final bool showKana;
   final int dailyGoal;
+  final bool dailyGoalConfirmed;
   final String jlptLevel;
   final CallSettings callSettings;
 
@@ -19,6 +21,7 @@ class UserPreferences {
     bool? showFurigana,
     bool? showKana,
     int? dailyGoal,
+    bool? dailyGoalConfirmed,
     String? jlptLevel,
     CallSettings? callSettings,
   }) {
@@ -26,6 +29,7 @@ class UserPreferences {
       showFurigana: showFurigana ?? this.showFurigana,
       showKana: showKana ?? this.showKana,
       dailyGoal: dailyGoal ?? this.dailyGoal,
+      dailyGoalConfirmed: dailyGoalConfirmed ?? this.dailyGoalConfirmed,
       jlptLevel: jlptLevel ?? this.jlptLevel,
       callSettings: callSettings ?? this.callSettings,
     );
