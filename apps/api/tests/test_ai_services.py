@@ -101,7 +101,7 @@ async def test_generate_live_token_uses_live_token_client():
     assert result == {
         "token": "live-token",
         "wsUri": "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained",
-        "model": "models/gemini-3.1-flash-live-preview",
+        "model": "models/gemini-3.8-live",
     }
     fake_client.auth_tokens.create.assert_called_once()
     assert fake_client.auth_tokens.create.call_args.kwargs["config"]["uses"] == 5
