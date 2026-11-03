@@ -40,7 +40,7 @@ type GeminiLiveReturn = {
   getTranscript: () => TranscriptEntry[];
 };
 
-const GEMINI_MODEL = 'gemini-3.1-flash-live-preview';
+const GEMINI_MODEL = 'gemini-3.8-live';
 const DEFAULT_VOICE = 'Kore';
 const MAX_RECONNECT_ATTEMPTS = 3;
 const RECONNECT_BASE_DELAY_MS = 1000;
