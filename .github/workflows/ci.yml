@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, codex/lesson-study-day-compatibility]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,6 +29,9 @@ jobs:
         with:
           filters: |
             frontend:
+              - '.github/workflows/ci.yml'
+              - '.github/scripts/check-web-completion-report.mjs'
+              - '.github/tests/check-web-completion-report.test.mjs'
               - 'assets/fonts/**'
               - '.github/scripts/check-font-assets.mjs'
               - '.github/tests/check-font-assets.test.mjs'
@@ -99,6 +102,17 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Run required web completion regressions
+        run: |
+          node --test .github/tests/check-web-completion-report.test.mjs
+          pnpm --filter web exec vitest run \
+            src/__tests__/quiz-completion-atomicity.test.ts \
+            src/__tests__/study-activity-routes.test.ts \
+            src/__tests__/quiz-session-routes.test.ts \
+            --reporter=default --reporter=json \
+            --outputFile.json=/tmp/web-completion-results.json
+          node .github/scripts/check-web-completion-report.mjs /tmp/web-completion-results.json
 
       - name: Build
         run: pnpm build
