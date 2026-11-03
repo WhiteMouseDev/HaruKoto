@@ -51,6 +51,12 @@ PR #216을 main의 388eea5912c09ce4abc1c012fc7b64d8d3715823으로 병합했다. 
 
 웹의 기존 GitProviderOptions를 원래 enabled로 복구했다. canonical4개는 ON, 다른 alias55개는 그대로이고 진행 중 배포0이었다. 기존 프로젝트 설정과 환경 항목33개의 해시가 전후 동일했다. 새 토큰·WAF·환경 변수는 추가하지 않았다. 기존 API 자동 배포 workflow도 active 상태를 확인했다.
 
+## 회귀 검증
+
+호환 OFF 최종 head의 CI873과 ON 최종 head의 CI874가 성공했다. 최종 main 388eea5912c09ce4abc1c012fc7b64d8d3715823의 [CI 재검증](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41575416957)도 성공했다. frontend·backend·mobile·API contract·schema drift가 통과했고, 해당 변경이 없는 admin E2E는 정책에 따라 생략됐다. 앞선 OFF 전체 검증에서 admin E2E는 통과했다.
+
+구현 검증은 API1547개·실제 PostgreSQL290개, 웹486개(필수 완료31개·STOP173개), 모바일1068개와 일회용 DB의 실패·롤백 리허설을 포함했다. 한 문항 저장 실패 후 같은 ID 재시도, 응답 유실 후 새 프로세스 복구, 계정 전환 목표, 단어1개 주간 반영과 실제 시뮬레이터 종료·재실행도 분리 환경에서 검증했다. 위 운영 HTTP 검증은 실제 OS 재실행이나 사람의 전체 음원 청취를 대신하지 않는다.
+
 ## 인증 메타데이터 비교의 범위
 
 학습 테이블의 보존과 인증 서비스의 로그인 타임스탬프는 구분했다. 실제 QA 로그인으로 대상 auth.users의 last_sign_in_at·updated_at이 바뀌었다. OFF 구간에 비대상 인증 행의 집계 해시 변화도 관측됐으며, 후속 필드 기준선 이후에는 한 계정의 updated_at만 변한 것을 확인했다. 앞선 구간 전체의 필드별 기준선은 없으므로 모든 변경의 원인을 확정하거나 정상 토큰 갱신이라고 단정하지 않았다. 별도 비밀번호·계정 수정 작업은 수행하지 않았다. ON 단일 activity 전후의 비대상 인증 해시와 기존 학습·복습·캐시·권한 보존 증거는 이 관찰과 별개다.
