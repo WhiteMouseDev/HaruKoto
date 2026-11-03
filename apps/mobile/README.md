@@ -27,8 +27,13 @@ flutter run \
 flutter analyze
 
 # Run tests
-flutter test
+flutter test --dart-define=API_BASE_URL=https://mobile-fixture.invalid
 ```
+
+Unit tests do not load an `.env` file. The synthetic `API_BASE_URL` above is an
+existing build setting required when exercising the real `AppHttpClient`; its
+transport tests replace every HTTP request with an in-memory adapter. This URL
+does not configure a production server. `make test` and CI use the same value.
 
 ## Widgetbook (컴포넌트 카탈로그)
 

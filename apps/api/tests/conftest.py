@@ -16,7 +16,16 @@ from httpx import ASGITransport, AsyncClient
 
 from app.db.session import get_db
 from app.dependencies import get_current_user
+from app.middleware import study_write_stop
 from app.models.user import User
+
+
+@pytest.fixture(autouse=True)
+def ordinary_domain_tests_keep_original_admission(monkeypatch):
+    # Domain regressions validate ordinary behavior independently of the reviewed
+    # deployment flag. STOP regressions explicitly enable the gate in each case.
+    # This also lets an approved ON artifact run CI without bypassing its tests.
+    monkeypatch.setattr(study_write_stop, "STUDY_WRITES_PAUSED", False)
 
 
 @pytest.fixture

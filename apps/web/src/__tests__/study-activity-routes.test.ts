@@ -23,7 +23,7 @@ const mocks = vi.hoisted(() => ({
     $transaction: vi.fn(),
     quizSession: { findUnique: vi.fn(), update: vi.fn(), count: vi.fn() },
     kanaLearningStage: { findUnique: vi.fn(), count: vi.fn() },
-    userKanaStage: { upsert: vi.fn(), count: vi.fn() },
+    userKanaStage: { findUnique: vi.fn(), upsert: vi.fn(), count: vi.fn() },
     userKanaProgress: { count: vi.fn() },
     conversation: {
       findUnique: vi.fn(),
@@ -148,6 +148,15 @@ beforeEach(() => {
   mocks.prisma.$transaction.mockImplementation(
     (execute: (tx: typeof mocks.tx) => Promise<unknown>) => execute(mocks.tx)
   );
+  Object.assign(mocks.tx, {
+    quizSession: mocks.prisma.quizSession,
+    kanaLearningStage: mocks.prisma.kanaLearningStage,
+    userKanaStage: mocks.prisma.userKanaStage,
+    userKanaProgress: mocks.prisma.userKanaProgress,
+    notification: mocks.prisma.notification,
+  });
+  Object.assign(mocks.tx.dailyProgress, { aggregate: mocks.prisma.dailyProgress.aggregate });
+  mocks.prisma.userKanaStage.findUnique.mockResolvedValue(null);
   mocks.tx.$queryRaw.mockResolvedValue([currentUser()]);
   mocks.prisma.quizSession.findUnique.mockResolvedValue(nativeSession());
   mocks.prisma.quizSession.update.mockResolvedValue(nativeSession());
@@ -190,7 +199,7 @@ describe.each(cases)(
   ({ handler, body, xp }) => {
     it('waits for the user lock, then uses the latest counters and Korean day', async () => {
       let release!: (users: ReturnType<typeof currentUser>[]) => void;
-      mocks.tx.$queryRaw.mockImplementation(
+      mocks.tx.$queryRaw.mockImplementationOnce(
         () =>
           new Promise<ReturnType<typeof currentUser>[]>((resolve) => {
             release = resolve;

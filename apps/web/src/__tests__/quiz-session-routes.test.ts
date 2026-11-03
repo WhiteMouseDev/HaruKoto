@@ -115,7 +115,9 @@ beforeEach(() => {
     quizAnswer: mocks.prisma.quizAnswer,
     userVocabProgress: mocks.prisma.userVocabProgress,
     userGrammarProgress: mocks.prisma.userGrammarProgress,
+    notification: mocks.prisma.notification,
   });
+  Object.assign(mocks.tx.dailyProgress, { aggregate: mocks.prisma.dailyProgress.aggregate });
   mocks.prisma.quizAnswer.findFirst.mockResolvedValue(null);
   mocks.prisma.quizSession.findUnique.mockResolvedValue(nativeSession());
   mocks.prisma.userVocabProgress.findUnique.mockResolvedValue(null);

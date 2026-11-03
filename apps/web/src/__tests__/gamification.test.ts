@@ -142,9 +142,11 @@ describe('ACHIEVEMENTS', () => {
     }
   });
 
-  it('should have thresholds for all non-special categories', () => {
+  it('requires positive thresholds for numeric categories and boolean events for kana/special', () => {
     for (const a of ACHIEVEMENTS) {
-      if (a.category !== 'special') {
+      if (a.category === 'special' || a.category === 'kana') {
+        expect(a.threshold).toBeUndefined();
+      } else {
         expect(a.threshold).toBeDefined();
         expect(a.threshold).toBeGreaterThan(0);
       }
@@ -161,8 +163,16 @@ describe('ACHIEVEMENTS', () => {
     }
   });
 
-  it('should contain exactly 20 achievements', () => {
-    expect(ACHIEVEMENTS).toHaveLength(20);
+  it('retains the 20 original achievements and three kana event achievements', () => {
+    expect(ACHIEVEMENTS).toHaveLength(23);
+    expect(
+      ACHIEVEMENTS.filter((a) => a.category === 'kana').map((a) => a.type)
+    ).toEqual([
+      'kana_first_char',
+      'kana_hiragana_complete',
+      'kana_katakana_complete',
+    ]);
+    expect(ACHIEVEMENTS.filter((a) => a.category !== 'kana')).toHaveLength(20);
   });
 });
 

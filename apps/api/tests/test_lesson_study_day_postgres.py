@@ -344,7 +344,7 @@ async def _seed_activity(engine, attempt, activity):
                 QuizSession(
                     id=domain_id,
                     user_id=attempt.user_id,
-                    quiz_type=QuizType.VOCABULARY,
+                    quiz_type=QuizType.KANA if activity == "kana-quiz" else QuizType.VOCABULARY,
                     jlpt_level=JlptLevel.N5,
                     total_questions=1,
                     correct_count=1,

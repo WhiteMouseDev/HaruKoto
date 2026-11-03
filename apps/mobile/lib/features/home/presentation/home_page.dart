@@ -179,7 +179,9 @@ class _HomePageState extends ConsumerState<HomePage>
                     streak: dashboard.streak,
                     today: dashboard.today,
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: preferences.dailyGoal,
+                    dailyGoal: preferences.dailyGoalConfirmed
+                        ? preferences.dailyGoal
+                        : 0,
                   ),
                 ),
                 const SizedBox(height: AppSizes.md),
@@ -213,6 +215,8 @@ class _HomePageState extends ConsumerState<HomePage>
                   levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
                   dailyGoal: preferences.dailyGoal,
+                  dailyGoalKnown:
+                      accountCurrent && preferences.dailyGoalConfirmed,
                   jlptLevel: preferences.jlptLevel,
                 ),
               ),
@@ -230,7 +234,9 @@ class _HomePageState extends ConsumerState<HomePage>
                   5,
                   WeeklyChart(
                     weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: preferences.dailyGoal,
+                    dailyGoal: preferences.dailyGoalConfirmed
+                        ? preferences.dailyGoal
+                        : 0,
                   ),
                 ),
               const SizedBox(height: AppSizes.md),

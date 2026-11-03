@@ -1,3 +1,4 @@
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,6 +84,8 @@ Future<void> _pumpPracticePage(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        currentAccountIdProvider.overrideWithValue('test-account'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-account'),
         sharedPreferencesProvider.overrideWith((ref) => prefs),
         incompleteQuizProvider.overrideWith(
           (ref) => Future.value(incomplete),

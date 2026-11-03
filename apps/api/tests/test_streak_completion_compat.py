@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.models.enums import QuizType
 from app.schemas.kana import KanaQuizCompleteRequest, KanaStageCompleteRequest
 from app.schemas.quiz import QuizCompleteRequest
 from app.services import conversation_rewards, kana_quiz_complete, kana_stage_complete, quiz_complete
@@ -90,7 +91,15 @@ async def test_completion_paths_share_kst_streak_days(monkeypatch, activity, las
         db.commit.assert_awaited_once()
     elif activity == "kana-quiz":
         monkeypatch.setattr(module, "datetime", FrozenDatetime)
-        session = SimpleNamespace(id=uuid.uuid4(), user_id=user.id, total_questions=1, correct_count=1)
+        session = SimpleNamespace(
+            id=uuid.uuid4(),
+            user_id=user.id,
+            total_questions=1,
+            correct_count=1,
+            quiz_type=QuizType.KANA,
+            questions_data=[],
+            completed_at=None,
+        )
         db.get.return_value = session
         monkeypatch.setattr(module, "apply_daily_progress_increment", AsyncMock())
         monkeypatch.setattr(module, "grant_kana_quiz_achievements", AsyncMock(return_value=[]))

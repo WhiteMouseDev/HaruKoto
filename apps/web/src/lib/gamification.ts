@@ -1,6 +1,11 @@
 import { prisma } from '@harukoto/database';
 import { getTodayKST } from '@/lib/date';
 
+type AchievementClient = Pick<
+  typeof prisma,
+  'aiCharacter' | 'userCharacterUnlock' | 'userAchievement'
+>;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // KST calendar dates are represented by UTC midnight, independent of the server zone.
@@ -183,12 +188,13 @@ export type GameEvent = {
  */
 export async function checkCharacterUnlocks(
   userId: string,
-  userLevel: number
+  userLevel: number,
+  db: AchievementClient = prisma
 ): Promise<GameEvent[]> {
-  const allCharacters = await prisma.aiCharacter.findMany({
+  const allCharacters = await db.aiCharacter.findMany({
     where: { unlockCondition: { not: null }, isActive: true },
   });
-  const existing = await prisma.userCharacterUnlock.findMany({
+  const existing = await db.userCharacterUnlock.findMany({
     where: { userId },
     select: { characterId: true },
   });
@@ -200,7 +206,7 @@ export async function checkCharacterUnlocks(
     const requiredLevel = parseInt(char.unlockCondition!, 10);
     if (isNaN(requiredLevel) || userLevel < requiredLevel) continue;
 
-    await prisma.userCharacterUnlock.create({
+    await db.userCharacterUnlock.create({
       data: { userId, characterId: char.id },
     });
     events.push({
@@ -231,12 +237,13 @@ export async function checkAndGrantAchievements(
     kanaFirstChar?: boolean;
     kanaHiraganaComplete?: boolean;
     kanaKatakanaComplete?: boolean;
-  }
+  },
+  db: AchievementClient = prisma
 ): Promise<GameEvent[]> {
   const events: GameEvent[] = [];
 
   // 기존 업적 조회
-  const existing = await prisma.userAchievement.findMany({
+  const existing = await db.userAchievement.findMany({
     where: { userId },
     select: { achievementType: true },
   });
@@ -297,7 +304,7 @@ export async function checkAndGrantAchievements(
     const def = getAchievement(type);
     if (!def) continue;
 
-    await prisma.userAchievement.create({
+    await db.userAchievement.create({
       data: {
         userId,
         achievementType: type,
@@ -313,7 +320,7 @@ export async function checkAndGrantAchievements(
   }
 
   // 캐릭터 해금 체크
-  const characterEvents = await checkCharacterUnlocks(userId, context.newLevel);
+  const characterEvents = await checkCharacterUnlocks(userId, context.newLevel, db);
   events.push(...characterEvents);
 
   return events;

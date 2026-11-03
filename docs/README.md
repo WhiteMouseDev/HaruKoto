@@ -40,6 +40,11 @@ docs/
 
 ### 운영
 
+- [운영 코드 호환 학습 저장 STOP](operations/plans/legacy-study-write-stop-2026-11-03.md) — 구 스키마 기반 선택적 저장 중지, 격리 검증·클라이언트 한계와 별도 승인할 적용/롤백안
+- [학습일·완료 보호·STOP 통합 검증](operations/plans/study-day-integration-qa-2026-11-03.md) — p6 통합 회귀·기존 웹 실패 7개 분류·읽기 전용 운영 조사와 적용 전 준비
+- [학습일 운영 변경·복구 요청 명세](operations/plans/study-day-operating-change-proposal-2026-11-03.md) — 자동 배포 통제·현재 앱503/구host WAF·실제실행종료·p6/OFF/ON·NONE 복원의 미확정 조건
+- [블로그: 한 문제의 학습 기록을 인정하기 전 통합 검증](blog/2026-11-03-integrating-study-days-and-pause-safety.md) — ACK·계정 경계·중복 방지·스키마별 STOP 검증을 함께 보존한 과정
+
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수
 - [홈 단어 카드의 오늘 목표 진행률](operations/plans/daily-vocabulary-goal-2026-10-30.md) — 하루 목표·퀴즈 이어하기·누적 숙련도 분리와 KST 고유 단어 집계
 - [오늘 단어 목표의 실제 운영 반영](operations/plans/daily-vocabulary-goal-production-rollout-2026-10-30.md) — #204 배포·시뮬레이터 목표/추천/재실행 검증, 기존 기록·음원·보안 보존
@@ -56,6 +61,8 @@ docs/
 - [**AI Coding Harness**](operations/harness.md) — Claude Code + Codex 운영체계 (도메인 에이전트, 스킬, 훅, 계약 관리, 에스컬레이션)
 - [AI 하네스 엔지니어링 실전 구축기 (블로그)](blog/2026-04-23-ai-harness-engineering-실전-구축기.md) — 4-pillar 하네스 설계와 실제 드리프트 버그를 잡아낸 사례
 - [학습 앱 개선 사례 기록](blog/2026-10-21-harukoto-improvement-casebook.md) — 학습 UI, 퀴즈 저장, 이어 풀기, DB 보안과 파티션 문제의 원인·설계·수정·검증
+- [일일 목표·진행률·학습일 구현 재검토](operations/plans/study-metrics-correctness-review-2026-11-02.md) — 기존 완료 재전송·저장 실패와 계정별 목표의 결함 재현
+- [가나·웹 완료 저장과 계정별 목표 보완](operations/plans/study-completion-safety-2026-11-03.md) — 최초 완료·원자적 저장·계정별 확정 목표, 회귀 검증과 운영 적용 경계
 - [하루 목표 옆의 2%는 무엇을 뜻할까 (블로그)](blog/2026-10-30-daily-word-goal-and-quiz-progress.md) — 오늘 단어 목표와 퀴즈 진행·장기 숙련도를 분리한 이유와 검증
 - [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
 - [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안
