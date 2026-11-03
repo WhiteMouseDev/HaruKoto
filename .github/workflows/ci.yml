@@ -64,6 +64,7 @@ jobs:
               - '.github/tests/**'
             mobile:
               - 'apps/mobile/**'
+              - 'apps/api/app/services/study_day_recording.py'
               - '.github/workflows/ci.yml'
 
   # ============================
@@ -427,7 +428,9 @@ jobs:
         run: flutter analyze
 
       - name: Test
-        run: flutter test
+        # Native Dio initialization needs the existing API_BASE_URL define.
+        # The Makefile uses a synthetic .invalid URL; HTTP remains adapter-mocked.
+        run: make test
 
       - name: Build Android debug APK
         run: |

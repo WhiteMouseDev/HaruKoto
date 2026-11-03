@@ -42,6 +42,7 @@ docs/
 
 - [운영 코드 호환 학습 저장 STOP](operations/plans/legacy-study-write-stop-2026-11-03.md) — 구 스키마 기반 선택적 저장 중지, 격리 검증·클라이언트 한계와 별도 승인할 적용/롤백안
 - [학습일·완료 보호·STOP 통합 검증](operations/plans/study-day-integration-qa-2026-11-03.md) — p6 통합 회귀·기존 웹 실패 7개 분류·읽기 전용 운영 조사와 적용 전 준비
+- [학습일 운영 변경·복구 요청 명세](operations/plans/study-day-operating-change-proposal-2026-11-03.md) — 자동 배포 통제·현재 앱503/구host WAF·실제실행종료·p6/OFF/ON·NONE 복원의 미확정 조건
 - [블로그: 한 문제의 학습 기록을 인정하기 전 통합 검증](blog/2026-11-03-integrating-study-days-and-pause-safety.md) — ACK·계정 경계·중복 방지·스키마별 STOP 검증을 함께 보존한 과정
 
 - [콘텐츠 파이프라인](operations/content/content-pipeline.md) — AI 생성 + PM 검수

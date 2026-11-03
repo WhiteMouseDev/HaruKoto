@@ -66,4 +66,14 @@ DB는 프로젝트·TLS hostname을 검증하고 READ ONLY/REPEATABLE READ, stat
 
 API는 `harukoto-api-00252-6jq` 100%·source26a81bce·revision252개·timeout300초, 자동 배포 workflow는active다. 웹은 페이지네이션을 끝까지 읽어 보관123개/READY22개/alias57개를 확인했다. 실제 사용자 custom alias는 기존26a81bce의 READY배포를 가리킨다. project.targets.production의 포인터와 다를 수 있으므로 이 필드만으로 현재 서비스를 결정하지 않는다. WAF active/draft/version목록은 비어 있고 Git createDeployments는enabled다. 사용자·비밀값·비공개 전체주소는 저장소에 넣지 않는다.
 
-정확한 차단 JSON·호스트 목록·복구 snapshot과 실행 종료 증거안은 비공개 `ops/`에서 준비 중이다. 새 설정을 서버에 검증하거나 적용하지 않았다. 실제 최초 WAF 생성/활성화 및403 클라이언트 동작은 승인된 검증 전에는 완료로 표시하지 않는다.
+정확한 차단 JSON·호스트 목록·복구 snapshot과 실행 종료 증거안은 비공개 `ops/`에 준비했다. [운영 변경·복구 요청 명세](study-day-operating-change-proposal-2026-11-03.md)는 현재 앱503+구host전체deny1규칙을 권장하고 global WAF2규칙은 대안으로만 보존한다. 새 설정을 서버에 검증하거나 적용하지 않았다. 최초 WAF 생성/게시 후 원래 NONE 완전복원·구host콜백 영향·actual drain은 미확정이므로 운영 전환 NO-GO를 유지한다.
+
+## 별도 ON·시뮬레이터와 첫 원격 CI
+
+기존 #216 이력에 통합 OFF를 포함한 sourceON head `aefc9fef`도 독립 검증했다. API전체1,547pass/기존13skip·필수PG290 skip0, 웹전체486/필수완료31/STOP173·native빌드/실제HTTP16검사가 통과했다. 학습일 인정 소스True/true와 STOP소스False/false이며 전역featureOFF fixture로 바꾸지 않았다. 실제DB 성공은 API/mobile의 일회용PG 결과로만 보고하고 웹dummyDB500/404를 성공ACK로 해석하지 않는다.
+
+별도 QA bundle·새 iOS26.5 시뮬레이터에서 첫 레슨오답 저장전503→동일ID 재시도, 서버commit후응답유실→실제OS재실행·같은activityId GET200/추가POST0, 단어1개오답저장→오늘1/20(5%)·주간단어1/XP0·연속1일, 목표30변경→1/30(3%), 두번째OS재실행후동일퀴즈1/8→이어하기2/8을 확인했다. 레슨출석은 단어목표를 부풀리지 않았고 기한/보호상태hash도 유지됐다. 추가STOP phase는 private QA runtime 주입으로 별도 구분해 최종 PR본문에 기록한다.
+
+호스트 Xcode27.1은 원래iOS13 deployment target을 거부해 **임시QA 복사본/child env에만 target15 override**로 빌드했다. 원본platform·runtime설정/기존앱설치·계정은 바꾸지 않았다. 이 결과를 원래iOS13 지원검증이나 실물아이폰 결과로 표현하지 않는다.
+
+최초 [OFF CI866](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41566541825)와 [ON CI867](https://github.com/WhiteMouseDev/HaruKoto/actions/runs/41566551801)는 웹/관리자/API/계약/schema가 성공했고 mobile의 신규4개만 실패했다(기존1064pass). 실제 AppHttpClient의 기존 compile-time API_BASE_URL이 없는 CI에서 Dio가 상대URL을 거부한 테스트 초기화 문제였다. 생성자를 새로 바꾸거나 production/env 계약을 추가하지 않고, 테스트 실행에 `https://mobile-fixture.invalid` 합성define을 명시했다. 새4개와 전체1,068개를 **환경파일·define-from-file 없이 해당값 하나로 재실행해 모두 통과**했다. 모든 해당HTTP는 in-memory adapter이며 외부서버로 보내지 않는다. Makefile/README/CI 테스트명령을 맞췄고 앱runtime은 그대로다. 실패를 skip하거나 검사수를 줄이지 않았으며 보완 head의 CI 결과는 PR본문에 별도 기록한다.
