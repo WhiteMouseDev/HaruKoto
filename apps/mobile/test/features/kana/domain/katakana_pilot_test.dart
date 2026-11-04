@@ -36,6 +36,24 @@ void main() {
         KatakanaPilotLetter.n.comparisonLetters.last, KatakanaPilotLetter.so);
   });
 
+  test('each next-day word is new and has exactly one target character', () {
+    const letters = KatakanaPilotLetter.values;
+    final practiceWords = letters.map((letter) => letter.word).toSet();
+    expect(
+        letters.map((letter) => letter.reviewWord.text).toSet(), hasLength(9));
+    for (final letter in letters) {
+      final reviewWord = letter.reviewWord;
+      expect(practiceWords, isNot(contains(reviewWord.text)));
+      expect(
+        reviewWord.text.runes
+            .where((rune) => rune == letter.glyph.runes.single),
+        hasLength(1),
+      );
+      expect(reviewWord.reading, isNotEmpty);
+      expect(reviewWord.meaning, isNotEmpty);
+    }
+  });
+
   test('schematic coordinates preserve stroke count, ordering and directions',
       () {
     const letters = KatakanaPilotLetter.values;

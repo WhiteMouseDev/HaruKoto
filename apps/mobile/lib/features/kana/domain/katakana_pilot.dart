@@ -1,5 +1,13 @@
 import 'dart:ui';
 
+class KatakanaPracticeWord {
+  const KatakanaPracticeWord(this.text, this.reading, this.meaning);
+
+  final String text;
+  final String reading;
+  final String meaning;
+}
+
 /// Coordinates are original practice diagrams in a unit square, in stroke order.
 /// The stroke counts and directions were checked against the Japan Foundation
 /// katakana worksheets and MLC's シ・ツ・ソ・ン lesson. No source artwork is bundled.
@@ -23,6 +31,7 @@ enum KatakanaPilotLetter {
     word: 'ミシン',
     wordReading: 'みしん',
     meaning: '재봉틀',
+    reviewWord: KatakanaPracticeWord('シール', 'しーる', '스티커'),
   ),
   tsu(
     glyph: 'ツ',
@@ -43,6 +52,7 @@ enum KatakanaPilotLetter {
     word: 'シャツ',
     wordReading: 'しゃつ',
     meaning: '셔츠',
+    reviewWord: KatakanaPracticeWord('ツアー', 'つあー', '투어'),
   ),
   so(
     glyph: 'ソ',
@@ -62,6 +72,7 @@ enum KatakanaPilotLetter {
     word: 'ソファ',
     wordReading: 'そふぁ',
     meaning: '소파',
+    reviewWord: KatakanaPracticeWord('ソース', 'そーす', '소스'),
   ),
   n(
     glyph: 'ン',
@@ -81,6 +92,7 @@ enum KatakanaPilotLetter {
     word: 'コンビニ',
     wordReading: 'こんびに',
     meaning: '편의점',
+    reviewWord: KatakanaPracticeWord('ペン', 'ぺん', '펜'),
   ),
   ku(
     glyph: 'ク',
@@ -101,6 +113,7 @@ enum KatakanaPilotLetter {
     word: 'クラス',
     wordReading: 'くらす',
     meaning: '학급',
+    reviewWord: KatakanaPracticeWord('ミルク', 'みるく', '우유'),
   ),
   ta(
     glyph: 'タ',
@@ -122,6 +135,7 @@ enum KatakanaPilotLetter {
     word: 'タクシー',
     wordReading: 'たくしー',
     meaning: '택시',
+    reviewWord: KatakanaPracticeWord('ギター', 'ぎたー', '기타'),
   ),
   fu(
     glyph: 'フ',
@@ -142,6 +156,7 @@ enum KatakanaPilotLetter {
     word: 'フランス',
     wordReading: 'ふらんす',
     meaning: '프랑스',
+    reviewWord: KatakanaPracticeWord('ナイフ', 'ないふ', '나이프'),
   ),
   wa(
     glyph: 'ワ',
@@ -164,6 +179,7 @@ enum KatakanaPilotLetter {
     word: 'ワイン',
     wordReading: 'わいん',
     meaning: '와인',
+    reviewWord: KatakanaPracticeWord('シャワー', 'しゃわー', '샤워'),
   ),
   u(
     glyph: 'ウ',
@@ -191,6 +207,7 @@ enum KatakanaPilotLetter {
     word: 'ウサギ',
     wordReading: 'うさぎ',
     meaning: '토끼',
+    reviewWord: KatakanaPracticeWord('ウール', 'うーる', '울(양모)'),
   );
 
   const KatakanaPilotLetter({
@@ -202,6 +219,7 @@ enum KatakanaPilotLetter {
     required this.word,
     required this.wordReading,
     required this.meaning,
+    required this.reviewWord,
   });
 
   final String glyph;
@@ -212,6 +230,7 @@ enum KatakanaPilotLetter {
   final String word;
   final String wordReading;
   final String meaning;
+  final KatakanaPracticeWord reviewWord;
 
   List<KatakanaPilotLetter> get comparisonLetters => switch (this) {
         shi => const [shi, tsu],

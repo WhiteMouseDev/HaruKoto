@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
+import 'package:harukoto_mobile/features/kana/domain/katakana_pilot.dart';
 import 'package:harukoto_mobile/features/kana/presentation/kana_type_page.dart';
 import 'package:harukoto_mobile/features/kana/presentation/katakana_pilot_page.dart';
 import 'package:harukoto_mobile/features/kana/providers/kana_provider.dart';
+import 'package:harukoto_mobile/features/kana/providers/katakana_pilot_review_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   const markKey = 'katakana_pilot_review.v1.account-a.shi';
+  const fuMarkKey = 'katakana_pilot_review.v1.account-a.fu';
   final canvas = find.byKey(const ValueKey('katakana-recall-canvas'));
 
   Future<void> tapText(WidgetTester tester, String label) async {
@@ -188,6 +193,92 @@ void main() {
     expect(prefs.getBool(markKey), isNot(true));
   });
 
+  testWidgets('a new mark offers an alternate word after local midnight',
+      (tester) async {
+    final prefs = await _preferences();
+    var now = DateTime(2026, 11, 4, 23, 59);
+    await _pumpPilot(tester, prefs, clock: () => now);
+    await start(tester);
+    await tapText(tester, '쓰기 건너뛰기');
+    await tapText(tester, 'シ');
+    expect(find.textContaining('맞았어요! ミシン'), findsOneWidget);
+    await tapText(tester, '헷갈렸어요');
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    await _pumpPilot(tester, prefs, clock: () => now);
+    expect(find.text('새 단어로 복습'), findsNothing);
+    expect(find.text('헷갈린 글자 복습'), findsOneWidget);
+
+    now = DateTime(2026, 11, 5);
+    await tester.pump(const Duration(minutes: 1));
+    await tester.pumpAndSettle();
+    await tapText(tester, '새 단어로 복습');
+    expect(find.text('1/1 글자 · 새 단어 복습'), findsOneWidget);
+    expect(find.textContaining('‘し’에 해당하는 글자'), findsOneWidget);
+    expect(find.text('ミ'), findsNothing);
+    await tapText(tester, 'ル');
+    expect(find.textContaining('다시 찾아보세요.'), findsOneWidget);
+    await tapText(tester, 'シ');
+    expect(find.textContaining('맞았어요! シール'), findsOneWidget);
+    await tapText(tester, '연습 마치기');
+
+    expect(find.text('새 단어로 복습'), findsNothing);
+    expect(find.text('헷갈린 글자 복습'), findsOneWidget);
+    expect(prefs.getBool(markKey), true);
+  });
+
+  testWidgets('daily review reopens with only the remaining marked letter',
+      (tester) async {
+    final prefs = await _preferences({markKey: true, fuMarkKey: true});
+    final now = DateTime(2026, 11, 5, 10);
+    await _pumpPilot(tester, prefs, clock: () => now);
+    await tapText(tester, '새 단어로 복습');
+    expect(find.text('1/2 글자 · 새 단어 복습'), findsOneWidget);
+    await tapText(tester, 'シ');
+    expect(find.textContaining('맞았어요! シール'), findsOneWidget);
+
+    final next = find.widgetWithText(FilledButton, '다음 글자');
+    final onNext = tester.widget<FilledButton>(next).onPressed!;
+    onNext();
+    onNext();
+    await tester.pumpAndSettle();
+    expect(find.text('2/2 글자 · 새 단어 복습'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    await _pumpPilot(tester, prefs, clock: () => now);
+    expect(find.text('シ · フ'), findsOneWidget);
+    expect(find.text('오늘 새 단어로 복습할 글자 1개'), findsOneWidget);
+    await tapText(tester, '새 단어로 복습');
+    expect(find.text('1/1 글자 · 새 단어 복습'), findsOneWidget);
+    expect(find.textContaining('‘ふ’에 해당하는 글자'), findsOneWidget);
+    await tapText(tester, 'フ');
+    expect(find.textContaining('맞았어요! ナイフ'), findsOneWidget);
+
+    await tapText(tester, '헷갈림 표시 지우기');
+    await tapText(tester, '헷갈렸어요');
+    await tapText(tester, '연습 마치기');
+    expect(find.text('새 단어로 복습'), findsNothing);
+    expect(prefs.getBool(markKey), true);
+    expect(prefs.getBool(fuMarkKey), true);
+    expect(prefs.getInt('existing-learning-value'), 3);
+  });
+
+  testWidgets('a failed daily completion stays on the answer and can retry',
+      (tester) async {
+    final prefs = await _preferences({markKey: true});
+    await _pumpPilot(tester, prefs, reviewFactory: _FailOnceReview.new);
+    await tapText(tester, '새 단어로 복습');
+    await tapText(tester, 'シ');
+    await tapText(tester, '연습 마치기');
+    expect(find.text('기기에 저장하지 못했어요. 다시 시도해 주세요.'), findsOneWidget);
+    expect(find.textContaining('맞았어요! シール'), findsOneWidget);
+    await tapText(tester, '연습 마치기');
+    expect(find.text('새 단어로 복습'), findsNothing);
+    expect(find.text('헷갈린 글자 복습'), findsOneWidget);
+  });
+
   testWidgets('stale account cannot mark from a still-rendered word screen',
       (tester) async {
     final prefs = await _preferences();
@@ -236,6 +327,8 @@ Future<void> _pumpPilot(
   SharedPreferences prefs, {
   String owner = 'account-a',
   String Function()? sessionReader,
+  DateTime Function()? clock,
+  KatakanaPilotReview Function()? reviewFactory,
   double width = 412,
   double textScale = 1,
 }) async {
@@ -252,6 +345,9 @@ Future<void> _pumpPilot(
         currentAccountReaderProvider.overrideWithValue(
           sessionReader ?? () => owner,
         ),
+        if (clock != null) studyClockProvider.overrideWithValue(clock),
+        if (reviewFactory != null)
+          katakanaPilotReviewProvider.overrideWith(reviewFactory),
       ],
       child: MaterialApp(
         builder: (context, child) => MediaQuery(
@@ -265,4 +361,20 @@ Future<void> _pumpPilot(
     ),
   );
   await tester.pumpAndSettle();
+}
+
+class _FailOnceReview extends KatakanaPilotReview {
+  bool _failed = false;
+
+  @override
+  Future<void> completeDailyReview(
+    KatakanaPilotLetter letter,
+    DateTime day,
+  ) async {
+    if (!_failed) {
+      _failed = true;
+      throw const ApiException(message: '기기에 저장하지 못했어요. 다시 시도해 주세요.');
+    }
+    await super.completeDailyReview(letter, day);
+  }
 }

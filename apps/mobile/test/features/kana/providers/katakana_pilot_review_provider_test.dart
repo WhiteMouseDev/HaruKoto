@@ -6,12 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/kana/domain/katakana_pilot.dart';
 import 'package:harukoto_mobile/features/kana/providers/katakana_pilot_review_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _accountA = 'first.account';
 const _accountB = 'second/account';
+const _mark = 'flutter.katakana_pilot_review.v1.$_accountA';
+const _day = 'flutter.katakana_pilot_review.day.v1.$_accountA';
 const _channel = MethodChannel('plugins.flutter.io/shared_preferences');
 const _existing = {
   'flutter.fixture-auth': 'existing-session',
@@ -36,10 +39,12 @@ void main() {
   late _Storage disk;
   late SharedPreferences preferences;
   late String? activeOwner;
+  late DateTime now;
 
   ProviderContainer container() =>
       ProviderContainer.test(retry: (_, __) => null, overrides: [
         sharedPreferencesProvider.overrideWithValue(preferences),
+        studyClockProvider.overrideWithValue(() => now),
         currentAccountIdProvider
             .overrideWith((ref) => ref.watch(_ownerProvider)),
         currentAccountReaderProvider.overrideWithValue(() => activeOwner),
@@ -47,6 +52,7 @@ void main() {
 
   setUp(() async {
     activeOwner = _accountA;
+    now = DateTime(2026, 11, 4, 23, 59);
     SharedPreferences.resetStatic();
     disk = _Storage();
     messenger.setMockMethodCallHandler(_channel, disk.handle);
@@ -61,7 +67,8 @@ void main() {
   test('cold provider restores saved letters and only removes one mark',
       () async {
     final first = container();
-    expect(await first.read(katakanaPilotReviewProvider.future), isEmpty);
+    expect(
+        (await first.read(katakanaPilotReviewProvider.future)).marked, isEmpty);
     final firstReview = first.read(katakanaPilotReviewProvider.notifier);
     await Future.wait([
       firstReview.setMarked(KatakanaPilotLetter.shi, true),
@@ -72,12 +79,12 @@ void main() {
     SharedPreferences.resetStatic();
     preferences = await SharedPreferences.getInstance();
     final second = container();
-    expect(await second.read(katakanaPilotReviewProvider.future),
+    expect((await second.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.shi, KatakanaPilotLetter.n});
     await second
         .read(katakanaPilotReviewProvider.notifier)
         .setMarked(KatakanaPilotLetter.shi, false);
-    expect(await second.read(katakanaPilotReviewProvider.future),
+    expect((await second.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.n});
     expect(disk.values.keys.where((key) => !key.contains('katakana_pilot')),
         unorderedEquals(_existing.keys));
@@ -96,15 +103,15 @@ void main() {
 
     activeOwner = _accountB;
     c.read(_ownerProvider.notifier).change(activeOwner);
-    expect(await c.read(katakanaPilotReviewProvider.future), isEmpty);
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked, isEmpty);
     await c
         .read(katakanaPilotReviewProvider.notifier)
         .setMarked(KatakanaPilotLetter.so, true);
-    expect(await c.read(katakanaPilotReviewProvider.future),
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.so});
     activeOwner = null;
     c.read(_ownerProvider.notifier).change(activeOwner);
-    expect(await c.read(katakanaPilotReviewProvider.future), isEmpty);
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked, isEmpty);
     await expectLater(
       c
           .read(katakanaPilotReviewProvider.notifier)
@@ -114,7 +121,7 @@ void main() {
 
     activeOwner = _accountA;
     c.read(_ownerProvider.notifier).change(activeOwner);
-    expect(await c.read(katakanaPilotReviewProvider.future),
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.tsu});
   });
 
@@ -126,22 +133,156 @@ void main() {
     });
 
     final first = container();
-    expect(await first.read(katakanaPilotReviewProvider.future),
+    expect((await first.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.shi, KatakanaPilotLetter.n});
     await first
         .read(katakanaPilotReviewProvider.notifier)
         .setMarked(KatakanaPilotLetter.wa, true);
-    expect(disk.writes, ['flutter.katakana_pilot_review.v1.$_accountA.wa']);
+    expect(disk.writes, ['$_day.wa', '$_mark.wa']);
     first.dispose();
 
     SharedPreferences.resetStatic();
     preferences = await SharedPreferences.getInstance();
     final reopened = container();
-    expect(await reopened.read(katakanaPilotReviewProvider.future), {
+    expect((await reopened.read(katakanaPilotReviewProvider.future)).marked, {
       KatakanaPilotLetter.shi,
       KatakanaPilotLetter.n,
       KatakanaPilotLetter.wa,
     });
+  });
+
+  test('new marks wait for tomorrow and only unfinished glyphs resume',
+      () async {
+    disk.values['$_mark.shi'] = true;
+    final first = container();
+    final review = first.read(katakanaPilotReviewProvider.notifier);
+    expect((await first.read(katakanaPilotReviewProvider.future)).dueOn(now),
+        {KatakanaPilotLetter.shi});
+    await review.setMarked(KatakanaPilotLetter.n, true);
+    await review.setMarked(KatakanaPilotLetter.fu, true);
+    await review.setMarked(KatakanaPilotLetter.shi, true);
+    expect((await first.read(katakanaPilotReviewProvider.future)).dueOn(now),
+        {KatakanaPilotLetter.shi});
+    expect(disk.values['$_day.shi'], isNull);
+
+    now = DateTime(2026, 11, 5);
+    expect((await first.read(katakanaPilotReviewProvider.future)).dueOn(now), {
+      KatakanaPilotLetter.shi,
+      KatakanaPilotLetter.n,
+      KatakanaPilotLetter.fu
+    });
+    await Future.wait([
+      review.completeDailyReview(KatakanaPilotLetter.shi, now),
+      review.completeDailyReview(KatakanaPilotLetter.shi, now),
+      review.completeDailyReview(KatakanaPilotLetter.n, now),
+    ]);
+    expect(disk.writes.where((key) => key == '$_day.shi'), hasLength(1));
+    expect(disk.values['$_mark.shi'], true);
+    expect(disk.values['$_day.shi'], 20261105);
+    expect(disk.values['$_mark.n'], true);
+    first.dispose();
+
+    SharedPreferences.resetStatic();
+    preferences = await SharedPreferences.getInstance();
+    final second = container();
+    final restored = await second.read(katakanaPilotReviewProvider.future);
+    expect(restored.marked, {
+      KatakanaPilotLetter.shi,
+      KatakanaPilotLetter.n,
+      KatakanaPilotLetter.fu
+    });
+    expect(restored.dueOn(now), {KatakanaPilotLetter.fu});
+    expect(restored.dueOn(DateTime(2026, 11, 6)), restored.marked);
+  });
+
+  test('unmark discards eligibility and a new mark waits until tomorrow',
+      () async {
+    disk.values['$_mark.shi'] = true;
+    final c = container();
+    await c.read(katakanaPilotReviewProvider.future);
+    final review = c.read(katakanaPilotReviewProvider.notifier);
+    await review.setMarked(KatakanaPilotLetter.shi, false);
+    await review.completeDailyReview(KatakanaPilotLetter.shi, now);
+    expect(disk.values['$_mark.shi'], false);
+    expect(disk.values['$_day.shi'], isNull);
+    expect(
+        (await c.read(katakanaPilotReviewProvider.future)).dueOn(now), isEmpty);
+    await review.setMarked(KatakanaPilotLetter.shi, true);
+    final current = await c.read(katakanaPilotReviewProvider.future);
+    expect(current.marked, {KatakanaPilotLetter.shi});
+    expect(current.dueOn(now), isEmpty);
+    expect(current.dueOn(DateTime(2026, 11, 5)), {KatakanaPilotLetter.shi});
+  });
+
+  test('failed legacy flag write cannot make orphan day metadata a mark',
+      () async {
+    final c = container();
+    await c.read(katakanaPilotReviewProvider.future);
+    disk.rejectedKey = '$_mark.shi';
+    await expectLater(
+      c
+          .read(katakanaPilotReviewProvider.notifier)
+          .setMarked(KatakanaPilotLetter.shi, true),
+      throwsA(isA<ApiException>()),
+    );
+    expect(disk.values['$_day.shi'], 20261104);
+    expect(disk.values['$_mark.shi'], isNull);
+    now = DateTime(2026, 11, 5);
+    c.invalidate(katakanaPilotReviewProvider);
+    final restored = await c.read(katakanaPilotReviewProvider.future);
+    expect(restored.marked, isEmpty);
+    expect(restored.dueOn(now), isEmpty);
+
+    disk.rejectedKey = null;
+    await c
+        .read(katakanaPilotReviewProvider.notifier)
+        .setMarked(KatakanaPilotLetter.shi, true);
+    expect(disk.values['$_day.shi'], 20261105);
+    expect(
+        (await c.read(katakanaPilotReviewProvider.future)).dueOn(now), isEmpty);
+  });
+
+  test('failed daily completion remains due until retry succeeds', () async {
+    disk.values['$_mark.shi'] = true;
+    final c = container();
+    await c.read(katakanaPilotReviewProvider.future);
+    disk.rejectedKey = '$_day.shi';
+    await expectLater(
+      c
+          .read(katakanaPilotReviewProvider.notifier)
+          .completeDailyReview(KatakanaPilotLetter.shi, now),
+      throwsA(isA<ApiException>()),
+    );
+    c.invalidate(katakanaPilotReviewProvider);
+    final restored = await c.read(katakanaPilotReviewProvider.future);
+    expect(restored.dueOn(now), {KatakanaPilotLetter.shi});
+
+    disk.rejectedKey = null;
+    await c
+        .read(katakanaPilotReviewProvider.notifier)
+        .completeDailyReview(KatakanaPilotLetter.shi, now);
+    final reviewed = await c.read(katakanaPilotReviewProvider.future);
+    expect(reviewed.dueOn(now), isEmpty);
+    expect(reviewed.marked, {KatakanaPilotLetter.shi});
+  });
+
+  testWidgets('device day ticks at local midnight and refreshes on resume',
+      (tester) async {
+    now = DateTime(2026, 12, 31, 23, 59, 59).toUtc();
+    final c = container();
+    final subscription = c.listen(katakanaPilotLocalDayProvider, (_, __) {});
+    try {
+      expect(c.read(katakanaPilotLocalDayProvider), DateTime(2026, 12, 31));
+      now = DateTime(2027, 1, 1).toUtc();
+      await tester.pump(const Duration(seconds: 1));
+      expect(c.read(katakanaPilotLocalDayProvider), DateTime(2027, 1, 1));
+      now = DateTime(2027, 1, 4, 8).toUtc();
+      c.read(katakanaPilotLocalDayProvider.notifier).refresh();
+      expect(c.read(katakanaPilotLocalDayProvider), DateTime(2027, 1, 4));
+    } finally {
+      subscription.close();
+      c.dispose();
+    }
   });
 
   test('failed native write does not mark until retry succeeds', () async {
@@ -153,16 +294,16 @@ void main() {
       review.setMarked(KatakanaPilotLetter.shi, true),
       throwsA(isA<ApiException>()),
     );
-    expect(await c.read(katakanaPilotReviewProvider.future), isEmpty);
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked, isEmpty);
 
     // Rebuilding must consult persisted values, not the optimistic SDK cache.
     c.invalidate(katakanaPilotReviewProvider);
-    expect(await c.read(katakanaPilotReviewProvider.future), isEmpty);
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked, isEmpty);
     disk.rejectWrite = false;
     await c
         .read(katakanaPilotReviewProvider.notifier)
         .setMarked(KatakanaPilotLetter.shi, true);
-    expect(await c.read(katakanaPilotReviewProvider.future),
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.shi});
   });
 
@@ -183,10 +324,10 @@ void main() {
           .setMarked(KatakanaPilotLetter.n, true),
       throwsA(isA<ApiException>()),
     );
-    expect(disk.writes, hasLength(1));
+    expect(disk.writes, hasLength(2));
     disk.rejectRead = false;
     c.invalidate(katakanaPilotReviewProvider);
-    expect(await c.read(katakanaPilotReviewProvider.future),
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.shi});
   });
 
@@ -210,12 +351,12 @@ void main() {
     final newOwner = c.read(katakanaPilotReviewProvider.future);
     gate.complete();
     await Future.wait([first, queued]);
-    expect(await newOwner, isEmpty);
-    expect(disk.writes, hasLength(1));
+    expect((await newOwner).marked, isEmpty);
+    expect(disk.writes, hasLength(2));
 
     activeOwner = _accountA;
     c.read(_ownerProvider.notifier).change(activeOwner);
-    expect(await c.read(katakanaPilotReviewProvider.future),
+    expect((await c.read(katakanaPilotReviewProvider.future)).marked,
         {KatakanaPilotLetter.n});
   });
 }
@@ -227,6 +368,7 @@ class _Storage {
   Completer<void>? gate;
   bool rejectRead = false;
   bool rejectWrite = false;
+  String? rejectedKey;
 
   Future<Object?> handle(MethodCall call) async {
     switch (call.method) {
@@ -234,12 +376,13 @@ class _Storage {
         if (rejectRead) throw PlatformException(code: 'synthetic-read-failed');
         return Map.of(values);
       case 'setBool':
+      case 'setInt':
         final arguments = Map<String, Object>.from(call.arguments as Map);
         final key = arguments['key']! as String;
         writes.add(key);
         if (!started.isCompleted) started.complete();
         await gate?.future;
-        if (rejectWrite) return false;
+        if (rejectWrite || key == rejectedKey) return false;
         values[key] = arguments['value']!;
         return true;
       default:
