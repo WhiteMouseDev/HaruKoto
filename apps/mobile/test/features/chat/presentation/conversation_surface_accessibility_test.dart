@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/chat/data/models/scenario_model.dart';
 import 'package:harukoto_mobile/features/chat/presentation/chat_hub_page.dart';
@@ -39,6 +40,7 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(ProviderScope(
         overrides: [
+          currentAccountIdProvider.overrideWithValue(null),
           sharedPreferencesProvider.overrideWithValue(preferences),
           chatHistoryProvider.overrideWith((ref) async => []),
         ],

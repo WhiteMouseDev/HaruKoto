@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../data/models/conversation_journey_episode.dart';
 import '../../data/models/scenario_model.dart';
 import '../../providers/chat_provider.dart';
 import '../chat_entry_mode.dart';
@@ -34,7 +35,10 @@ class ScenarioListView extends ConsumerWidget {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
-      builder: (_) => ScenarioPreparationSheet(scenario: scenario),
+      builder: (_) => ScenarioPreparationSheet(
+        scenario: scenario,
+        journeyEpisode: tokyoFirstDayEpisodeFor(scenario.id),
+      ),
     );
     if (!context.mounted || mode == null) return;
     if (mode == ChatEntryMode.voice) {

@@ -6,11 +6,13 @@ import 'category_grid.dart';
 import 'conversation_history_list.dart';
 
 class TextTab extends StatelessWidget {
+  final Widget? journeyCard;
   final VoidCallback onFreeChat;
   final ValueChanged<String> onSelectCategory;
 
   const TextTab({
     super.key,
+    this.journeyCard,
     required this.onFreeChat,
     required this.onSelectCategory,
   });
@@ -23,6 +25,7 @@ class TextTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       children: [
+        if (journeyCard != null) journeyCard!,
         Row(
           children: [
             Icon(LucideIcons.folderOpen,

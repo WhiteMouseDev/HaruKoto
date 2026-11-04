@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
+import 'package:harukoto_mobile/features/chat/data/models/conversation_journey_episode.dart';
 import 'package:harukoto_mobile/features/chat/data/models/feedback_model.dart';
 import 'package:harukoto_mobile/features/chat/presentation/call_analyzing_page.dart';
 import 'package:harukoto_mobile/features/chat/presentation/conversation_feedback_page.dart';
@@ -149,6 +151,118 @@ void main() {
       expect(find.text('기록은 저장됐지만 피드백을 만들지 못했어요'), findsOneWidget);
       expect(find.text('피드백 다시 만들기'), findsOneWidget);
       expect(find.text('돌아가기'), findsOneWidget);
+    });
+
+    testWidgets(
+        'saved pilot call offers optional goal check and existing feedback',
+        (tester) async {
+      final episode = tokyoFirstDayEpisodes[1];
+      final repository = _FakeChatRepository(
+        response: LiveFeedbackResponse(
+          conversationId: 'pilot-call',
+          feedbackSummary: _buildFeedbackSummary(),
+          xpEarned: 8,
+          events: const [],
+        ),
+      );
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          chatRepositoryProvider.overrideWithValue(repository),
+          currentAccountReaderProvider.overrideWithValue(() => null),
+        ],
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => CallAnalyzingPage(
+                      request: VoiceCallAnalysisRequest(
+                        scenarioId: episode.scenarioId,
+                        transcript: [
+                          {'role': 'user', 'text': episode.examples.first},
+                        ],
+                        durationSeconds: 24,
+                      ),
+                    ),
+                  ),
+                ),
+                child: const Text('실전회화'),
+              ),
+            ),
+          ),
+        ),
+      ));
+      await tester.tap(find.text('실전회화'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+
+      expect(find.text('내가 말해본 목표'), findsOneWidget);
+      expect(find.byType(CheckboxListTile), findsNWidgets(2));
+      await tester.tap(find.text(episode.goals.first));
+      await tester.pump();
+      expect(
+          tester
+              .widget<CheckboxListTile>(find.byType(CheckboxListTile).first)
+              .value,
+          isTrue);
+      await tester.ensureVisible(find.text('원할 때 피드백 보기'));
+      await tester.tap(find.text('원할 때 피드백 보기'));
+      await tester.pumpAndSettle();
+      expect(find.text('회화 리포트'), findsOneWidget);
+      expect(repository.analysisFlags, [true]);
+
+      await tester.tap(find.descendant(
+          of: find.byType(AppBar), matching: find.byType(IconButton)));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('연습 마치기'));
+      await tester.tap(find.text('연습 마치기'));
+      await tester.pumpAndSettle();
+      expect(find.text('실전회화'), findsOneWidget);
+      expect(repository.calls, 1);
+    });
+
+    testWidgets('saved pilot with a feedback error can retry the same record',
+        (tester) async {
+      final repository = _FakeChatRepository(
+        response: const LiveFeedbackResponse(
+          conversationId: 'pilot-call',
+          feedbackError: 'generation_failed',
+          xpEarned: 0,
+          events: [],
+        ),
+      );
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          chatRepositoryProvider.overrideWithValue(repository),
+          currentAccountReaderProvider.overrideWithValue(() => null),
+        ],
+        child: MaterialApp(
+          home: CallAnalyzingPage(
+            request: VoiceCallAnalysisRequest(
+              conversationId: 'pilot-call',
+              scenarioId: tokyoFirstDayEpisodes[1].scenarioId,
+              transcript: const [
+                {'role': 'user', 'text': '荷物を預けてもいいですか。'},
+              ],
+              durationSeconds: 24,
+            ),
+          ),
+        ),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      expect(find.text('내가 말해본 목표'), findsOneWidget);
+      await tester.ensureVisible(find.text('원할 때 피드백 보기'));
+      await tester.tap(find.text('원할 때 피드백 보기'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(repository.ids, ['pilot-call', 'pilot-call']);
+      expect(find.text('피드백 다시 만들기'), findsOneWidget);
     });
   });
 }

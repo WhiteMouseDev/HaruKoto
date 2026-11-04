@@ -9,6 +9,7 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/services/haptic_service.dart';
 import '../providers/voice_call_session_provider.dart';
+import '../data/models/conversation_journey_episode.dart';
 import '../data/models/scenario_model.dart';
 import '../data/gemini_live_service.dart';
 import '../../../core/network/api_exception.dart';
@@ -147,6 +148,9 @@ class _VoiceCallPageState extends ConsumerState<VoiceCallPage>
       builder: (_) => VoiceCallHelpSheet(
         caption: session.currentAiText,
         isPractice: widget.scenarioId != null,
+        journeyEpisode: tokyoFirstDayEpisodes
+            .where((episode) => episode.scenarioId == widget.scenarioId)
+            .firstOrNull,
       ),
     );
     if (!mounted) return;
