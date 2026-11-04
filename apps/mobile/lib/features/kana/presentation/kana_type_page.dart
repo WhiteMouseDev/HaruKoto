@@ -24,12 +24,16 @@ class KanaTypePage extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: stagesAsync.when(
-          loading: () => const AppSkeleton(
-            itemCount: 5,
-            itemHeights: [28, 24, 96, 96, 96],
+          loading: () => _withPilotEntry(
+            const AppSkeleton(
+              itemCount: 5,
+              itemHeights: [28, 24, 96, 96, 96],
+            ),
           ),
-          error: (error, _) => AppErrorRetry(
-            onRetry: () => ref.invalidate(kanaStagesProvider(kanaType)),
+          error: (error, _) => _withPilotEntry(
+            AppErrorRetry(
+              onRetry: () => ref.invalidate(kanaStagesProvider(kanaType)),
+            ),
           ),
           data: (stages) {
             final completedCount = stages.where((s) => s.isCompleted).length;
@@ -78,6 +82,11 @@ class KanaTypePage extends ConsumerWidget {
                     pct: progressPct,
                   ),
                   const SizedBox(height: AppSizes.md),
+
+                  if (type == 'katakana') ...[
+                    const _KatakanaPilotEntry(),
+                    const SizedBox(height: AppSizes.md),
+                  ],
 
                   // Stage cards
                   ...stages.map((stage) {
@@ -231,6 +240,18 @@ class KanaTypePage extends ConsumerWidget {
     );
   }
 
+  Widget _withPilotEntry(Widget content) => type != 'katakana'
+      ? content
+      : Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(AppSizes.md),
+              child: _KatakanaPilotEntry(),
+            ),
+            Expanded(child: content),
+          ],
+        );
+
   Widget _quizModeButton(
     BuildContext context,
     String label,
@@ -244,6 +265,29 @@ class KanaTypePage extends ConsumerWidget {
         ),
       ),
       child: Text(label, style: const TextStyle(fontSize: 13)),
+    );
+  }
+}
+
+class _KatakanaPilotEntry extends StatelessWidget {
+  const _KatakanaPilotEntry();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      color: colors.surfaceContainerLowest,
+      child: ListTile(
+        leading: Icon(LucideIcons.pencil, color: colors.primary),
+        title: const Text('닮은 가타카나 집중 연습'),
+        subtitle: const Text('シ・ツ・ソ・ン · 획순부터 단어까지'),
+        trailing: const Icon(LucideIcons.chevronRight),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        ),
+        onTap: () => context.push('/study/kana/katakana/focus'),
+      ),
     );
   }
 }

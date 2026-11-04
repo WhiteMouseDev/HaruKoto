@@ -18,6 +18,7 @@ import '../../features/kana/presentation/kana_type_page.dart';
 import '../../features/kana/presentation/kana_stage_page.dart';
 import '../../features/kana/presentation/kana_quiz_page.dart';
 import '../../features/kana/presentation/kana_chart_page.dart';
+import '../../features/kana/presentation/katakana_pilot_page.dart';
 import '../../features/my/presentation/my_page.dart';
 // Hidden for free launch — re-enable when IAP ready
 // import '../../features/my/presentation/payments_page.dart';
@@ -213,6 +214,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) => _slideTransitionPage(
                           state: state,
                           child: const KanaChartPage(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'katakana/focus',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) => _slideTransitionPage(
+                          state: state,
+                          child: const KatakanaPilotPage(),
                         ),
                       ),
                       GoRoute(
