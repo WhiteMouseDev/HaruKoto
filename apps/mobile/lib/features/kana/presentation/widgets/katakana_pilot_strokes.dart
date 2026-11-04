@@ -368,13 +368,13 @@ class _StrokeDiagramPainter extends CustomPainter {
   }) : super(repaint: animation);
 
   final List<List<Offset>> paths;
-  final List<Offset>? numberPositions;
+  final List<Offset> numberPositions;
   final ColorScheme colors;
   final Animation<double> animation;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final strokeWidth = size.shortestSide * 0.047;
+    final strokeWidth = size.shortestSide * 0.036;
     final preview = _ink(colors.onSurface.withValues(alpha: 0.14), strokeWidth);
     final ink = _ink(colors.onSurface, strokeWidth);
     for (final (index, points) in paths.indexed) {
@@ -389,26 +389,30 @@ class _StrokeDiagramPainter extends CustomPainter {
       }
     }
 
-    final radius = (size.shortestSide * 0.059).clamp(4.0, 9.0);
+    final radius = (size.shortestSide * 0.048).clamp(4.5, 7.0);
+    final leader = Paint()
+      ..color = colors.onSurface.withValues(alpha: 0.36)
+      ..strokeWidth = 1;
+    final badgeFill = Paint()..color = colors.surfaceContainerLowest;
+    final badgeOutline = Paint()
+      ..color = colors.onSurface.withValues(alpha: 0.30)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    final startInk = Paint()..color = colors.primary;
     for (final (index, points) in paths.indexed) {
       final start = _scaled(points.first, size);
-      final numberPosition = _scaled(
-        numberPositions?[index] ?? points.first,
-        size,
-      );
-      final markerInk = Paint()..color = colors.onSurface;
-      if (numberPosition != start) {
-        canvas.drawLine(start, numberPosition, markerInk..strokeWidth = 1);
-        canvas.drawCircle(start, 1.5, markerInk);
-      }
-      canvas.drawCircle(numberPosition, radius, markerInk);
+      final numberPosition = _scaled(numberPositions[index], size);
+      canvas.drawLine(start, numberPosition, leader);
+      canvas.drawCircle(start, (strokeWidth * 0.32).clamp(1.0, 1.8), startInk);
+      canvas.drawCircle(numberPosition, radius, badgeFill);
+      canvas.drawCircle(numberPosition, radius, badgeOutline);
       final number = TextPainter(
         text: TextSpan(
           text: '${index + 1}',
           style: TextStyle(
-            color: colors.surface,
+            color: colors.onSurface,
             fontSize: radius * 1.45,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
         textDirection: TextDirection.ltr,
@@ -447,12 +451,13 @@ class _RecallPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final guide = Paint()..color = colors.outline;
+    final guide = Paint()..color = colors.outline.withValues(alpha: 0.65);
     canvas.drawLine(
         Offset(center.dx, 0), Offset(center.dx, size.height), guide);
     canvas.drawLine(Offset(0, center.dy), Offset(size.width, center.dy), guide);
     final width = size.shortestSide * 0.022;
-    final sampleInk = _ink(colors.primary.withValues(alpha: 0.66), width * 1.8);
+    final sampleInk =
+        _ink(colors.primary.withValues(alpha: 0.62), width * 1.25);
     for (final stroke in example ?? const <List<Offset>>[]) {
       canvas.drawPath(_guidePath(stroke, size), sampleInk);
     }

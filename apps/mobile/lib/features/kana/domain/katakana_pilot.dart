@@ -16,6 +16,11 @@ enum KatakanaPilotLetter {
     glyph: 'シ',
     reading: 'し',
     cue: '짧은 두 획은 왼쪽에 위아래로, 긴 획은 왼쪽 아래에서 오른쪽 위로.',
+    strokeNumberPositions: [
+      Offset(.14, .24),
+      Offset(.08, .43),
+      Offset(.12, .78)
+    ],
     strokes: [
       [Offset(.24, .24), Offset(.34, .28), Offset(.43, .34)],
       [Offset(.18, .43), Offset(.29, .46), Offset(.38, .52)],
@@ -37,6 +42,11 @@ enum KatakanaPilotLetter {
     glyph: 'ツ',
     reading: 'つ',
     cue: '짧은 두 획은 위쪽에 나란히, 긴 획은 오른쪽 위에서 왼쪽 아래로.',
+    strokeNumberPositions: [
+      Offset(.19, .18),
+      Offset(.41, .11),
+      Offset(.80, .12)
+    ],
     strokes: [
       [Offset(.20, .29), Offset(.26, .37), Offset(.30, .46)],
       [Offset(.42, .22), Offset(.47, .31), Offset(.50, .40)],
@@ -58,6 +68,7 @@ enum KatakanaPilotLetter {
     glyph: 'ソ',
     reading: 'そ',
     cue: '짧은 획 하나는 위쪽에서 아래로, 긴 획은 오른쪽 위에서 왼쪽 아래로.',
+    strokeNumberPositions: [Offset(.17, .17), Offset(.79, .10)],
     strokes: [
       [Offset(.24, .25), Offset(.31, .35), Offset(.37, .47)],
       [
@@ -78,6 +89,7 @@ enum KatakanaPilotLetter {
     glyph: 'ン',
     reading: 'ん',
     cue: '짧은 획 하나는 왼쪽에서 오른쪽으로, 긴 획은 왼쪽 아래에서 오른쪽 위로.',
+    strokeNumberPositions: [Offset(.13, .32), Offset(.13, .78)],
     strokes: [
       [Offset(.23, .32), Offset(.33, .37), Offset(.42, .43)],
       [
@@ -98,6 +110,7 @@ enum KatakanaPilotLetter {
     glyph: 'ク',
     reading: 'く',
     cue: '왼쪽에 짧은 사선을 쓰고, 윗선에서 꺾어 왼쪽 아래로 내려와요.',
+    strokeNumberPositions: [Offset(.56, .13), Offset(.31, .24)],
     strokes: [
       [Offset(.49, .21), Offset(.43, .31), Offset(.34, .41), Offset(.24, .50)],
       [
@@ -119,6 +132,11 @@ enum KatakanaPilotLetter {
     glyph: 'タ',
     reading: 'た',
     cue: 'ク와 같은 두 획을 쓴 뒤, 가운데에 오른쪽 아래로 짧은 획을 더해요.',
+    strokeNumberPositions: [
+      Offset(.56, .13),
+      Offset(.31, .24),
+      Offset(.30, .55)
+    ],
     strokes: [
       [Offset(.49, .21), Offset(.42, .32), Offset(.32, .42), Offset(.23, .49)],
       [
@@ -141,6 +159,7 @@ enum KatakanaPilotLetter {
     glyph: 'フ',
     reading: 'ふ',
     cue: '윗선을 왼쪽에서 오른쪽으로 긋고, 꺾어서 왼쪽 아래로 한 번에 내려와요.',
+    strokeNumberPositions: [Offset(.12, .29)],
     strokes: [
       [
         Offset(.22, .29),
@@ -186,22 +205,22 @@ enum KatakanaPilotLetter {
     reading: 'う',
     cue: '가운데 위, 왼쪽 순서로 짧은 획을 쓰고 마지막에 윗선에서 꺾어 내려와요.',
     strokeNumberPositions: [
-      Offset(.49, .10),
-      Offset(.11, .35),
-      Offset(.34, .23)
+      Offset(.49, .08),
+      Offset(.13, .32),
+      Offset(.35, .25),
     ],
     strokes: [
-      [Offset(.49, .17), Offset(.49, .24), Offset(.49, .34)],
-      [Offset(.23, .33), Offset(.24, .42), Offset(.26, .55)],
+      [Offset(.49, .18), Offset(.49, .32)],
+      [Offset(.23, .32), Offset(.25, .52)],
       [
-        Offset(.24, .36),
-        Offset(.51, .34),
-        Offset(.77, .32),
-        Offset(.74, .46),
-        Offset(.67, .60),
-        Offset(.58, .71),
-        Offset(.46, .80),
-        Offset(.36, .86),
+        Offset(.232, .34),
+        Offset(.49, .326),
+        Offset(.77, .31),
+        Offset(.74, .45),
+        Offset(.67, .58),
+        Offset(.58, .69),
+        Offset(.46, .77),
+        Offset(.36, .82),
       ],
     ],
     word: 'ウサギ',
@@ -213,22 +232,22 @@ enum KatakanaPilotLetter {
     glyph: 'ア',
     reading: 'あ',
     cue: '윗선을 오른쪽으로 긋고 왼쪽 아래로 꺾어요. 그 안쪽에서 시작해 왼쪽 아래로 내려와요.',
-    strokeNumberPositions: [Offset(.12, .28), Offset(.41, .43)],
+    strokeNumberPositions: [Offset(.13, .26), Offset(.41, .39)],
     strokes: [
       [
-        Offset(.22, .28),
-        Offset(.50, .26),
-        Offset(.78, .24),
-        Offset(.74, .35),
-        Offset(.67, .45),
-        Offset(.58, .52),
+        Offset(.23, .26),
+        Offset(.50, .245),
+        Offset(.77, .23),
+        Offset(.73, .33),
+        Offset(.67, .41),
+        Offset(.59, .47),
       ],
       [
-        Offset(.51, .41),
-        Offset(.51, .53),
-        Offset(.49, .65),
-        Offset(.43, .76),
-        Offset(.34, .85),
+        Offset(.51, .39),
+        Offset(.51, .51),
+        Offset(.49, .62),
+        Offset(.44, .71),
+        Offset(.36, .79),
       ],
     ],
     word: 'アイス',
@@ -240,16 +259,17 @@ enum KatakanaPilotLetter {
     glyph: 'イ',
     reading: 'い',
     cue: '오른쪽 위에서 왼쪽 아래로 비스듬히 긋고, 그 중간에서 세로로 내려와요.',
-    strokeNumberPositions: [Offset(.83, .17), Offset(.68, .46)],
+    strokeNumberPositions: [Offset(.82, .16), Offset(.67, .42)],
     strokes: [
       [
-        Offset(.75, .22),
-        Offset(.65, .35),
-        Offset(.53, .47),
-        Offset(.39, .57),
-        Offset(.25, .63),
+        Offset(.74, .22),
+        Offset(.66, .32),
+        Offset(.57, .416),
+        Offset(.45, .50),
+        Offset(.34, .56),
+        Offset(.25, .60),
       ],
-      [Offset(.58, .42), Offset(.58, .62), Offset(.58, .84)],
+      [Offset(.57, .416), Offset(.57, .81)],
     ],
     word: 'イチゴ',
     wordReading: 'いちご',
@@ -261,14 +281,14 @@ enum KatakanaPilotLetter {
     reading: 'え',
     cue: '위에 짧은 가로획을 긋고 가운데를 세로로 내려요. 아래에 더 긴 가로획을 그어요.',
     strokeNumberPositions: [
-      Offset(.21, .31),
+      Offset(.22, .32),
       Offset(.62, .39),
-      Offset(.12, .72)
+      Offset(.13, .70),
     ],
     strokes: [
-      [Offset(.31, .32), Offset(.70, .29)],
-      [Offset(.51, .305), Offset(.51, .70)],
-      [Offset(.21, .72), Offset(.80, .68)],
+      [Offset(.32, .32), Offset(.70, .30)],
+      [Offset(.51, .31), Offset(.51, .69)],
+      [Offset(.23, .705), Offset(.79, .675)],
     ],
     word: 'エアコン',
     wordReading: 'えあこん',
@@ -280,19 +300,19 @@ enum KatakanaPilotLetter {
     reading: 'お',
     cue: '가로획을 긋고 세로로 내려 끝을 왼쪽으로 올려요. 마지막 획은 교차점에서 왼쪽 아래로 내려요.',
     strokeNumberPositions: [
-      Offset(.11, .39),
-      Offset(.61, .11),
-      Offset(.39, .47)
+      Offset(.12, .39),
+      Offset(.60, .10),
+      Offset(.45, .43),
     ],
     strokes: [
-      [Offset(.21, .39), Offset(.80, .36)],
-      [Offset(.61, .20), Offset(.61, .83), Offset(.47, .78)],
+      [Offset(.22, .39), Offset(.78, .36)],
+      [Offset(.60, .20), Offset(.60, .80), Offset(.48, .75)],
       [
-        Offset(.61, .37),
-        Offset(.52, .48),
-        Offset(.43, .58),
-        Offset(.32, .67),
-        Offset(.22, .73),
+        Offset(.60, .37),
+        Offset(.52, .47),
+        Offset(.44, .55),
+        Offset(.34, .63),
+        Offset(.24, .69),
       ],
     ],
     word: 'カラオケ',
@@ -306,7 +326,7 @@ enum KatakanaPilotLetter {
     required this.reading,
     required this.cue,
     required this.strokes,
-    this.strokeNumberPositions,
+    required this.strokeNumberPositions,
     required this.word,
     required this.wordReading,
     required this.meaning,
@@ -317,7 +337,7 @@ enum KatakanaPilotLetter {
   final String reading;
   final String cue;
   final List<List<Offset>> strokes;
-  final List<Offset>? strokeNumberPositions;
+  final List<Offset> strokeNumberPositions;
   final String word;
   final String wordReading;
   final String meaning;

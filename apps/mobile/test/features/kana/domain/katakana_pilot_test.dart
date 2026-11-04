@@ -75,14 +75,17 @@ void main() {
         [3, 3, 2, 2, 2, 3, 1, 2, 3, 2, 2, 3, 3]);
     for (final letter in letters) {
       final positions = letter.strokeNumberPositions;
-      if (positions != null) {
-        expect(positions, hasLength(letter.strokes.length));
-      }
-      for (final stroke in letter.strokes) {
+      expect(positions, hasLength(letter.strokes.length));
+      for (final (index, stroke) in letter.strokes.indexed) {
         expect(stroke, hasLength(greaterThanOrEqualTo(2)));
+        expect(
+          (positions[index] - stroke.first).distance,
+          greaterThan(0.085),
+          reason: '${letter.glyph} stroke ${index + 1} needs a separate badge',
+        );
       }
       final points = letter.strokes.expand((stroke) => stroke);
-      for (final point in points.followedBy(positions ?? const [])) {
+      for (final point in points.followedBy(positions)) {
         expect(point.dx, inInclusiveRange(0.0, 1.0));
         expect(point.dy, inInclusiveRange(0.0, 1.0));
       }
@@ -114,6 +117,7 @@ void main() {
     final i = KatakanaPilotLetter.i.strokes;
     expect(i[0].last.dx, lessThan(i[0].first.dx));
     expect(i[0].last.dy, greaterThan(i[0].first.dy));
+    expect(i[0], contains(i[1].first));
     expect(i[1].last.dx, closeTo(i[1].first.dx, .04));
     expect(i[1].last.dy, greaterThan(i[1].first.dy));
 
