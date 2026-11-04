@@ -313,7 +313,7 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
 Offset _scaled(Offset point, Size size) =>
     Offset(point.dx * size.width, point.dy * size.height);
 
-Path _path(List<Offset> points, Size size) {
+Path _inkPath(List<Offset> points, Size size) {
   final first = _scaled(points.first, size);
   final path = Path()..moveTo(first.dx, first.dy);
   for (final point in points.skip(1)) {
@@ -321,6 +321,35 @@ Path _path(List<Offset> points, Size size) {
     path.lineTo(scaled.dx, scaled.dy);
   }
   return path;
+}
+
+Path _guidePath(List<Offset> points, Size size) {
+  final start = _scaled(points.first, size);
+  final path = Path()..moveTo(start.dx, start.dy);
+  for (var index = 1; index < points.length - 1; index++) {
+    final previous = points[index - 1];
+    final point = points[index];
+    final next = points[index + 1];
+    final incoming = point - previous;
+    final outgoing = next - point;
+    final dot = incoming.dx * outgoing.dx + incoming.dy * outgoing.dy;
+    final control = _scaled(point, size);
+
+    // Round small changes of direction in sampled curves. Keep turns of
+    // 60° or more as corners, such as the upper right bend of ア.
+    if (dot <= incoming.distance * outgoing.distance * 0.5) {
+      path.lineTo(control.dx, control.dy);
+      continue;
+    }
+
+    final entry = _scaled((previous + point) / 2, size);
+    final exit = _scaled((point + next) / 2, size);
+    path
+      ..lineTo(entry.dx, entry.dy)
+      ..quadraticBezierTo(control.dx, control.dy, exit.dx, exit.dy);
+  }
+  final end = _scaled(points.last, size);
+  return path..lineTo(end.dx, end.dy);
 }
 
 Paint _ink(Color color, double width) => Paint()
@@ -349,7 +378,7 @@ class _StrokeDiagramPainter extends CustomPainter {
     final preview = _ink(colors.onSurface.withValues(alpha: 0.14), strokeWidth);
     final ink = _ink(colors.onSurface, strokeWidth);
     for (final (index, points) in paths.indexed) {
-      final path = _path(points, size);
+      final path = _guidePath(points, size);
       final progress = (animation.value * paths.length - index).clamp(0.0, 1.0);
       if (progress < 1) canvas.drawPath(path, preview);
       if (progress == 1) {
@@ -425,14 +454,14 @@ class _RecallPainter extends CustomPainter {
     final width = size.shortestSide * 0.022;
     final sampleInk = _ink(colors.primary.withValues(alpha: 0.66), width * 1.8);
     for (final stroke in example ?? const <List<Offset>>[]) {
-      canvas.drawPath(_path(stroke, size), sampleInk);
+      canvas.drawPath(_guidePath(stroke, size), sampleInk);
     }
     final userInk = _ink(colors.onSurface, width);
     for (final stroke in strokes) {
-      canvas.drawPath(_path(stroke, size), userInk);
+      canvas.drawPath(_inkPath(stroke, size), userInk);
     }
     final active = activeStroke();
-    if (active != null) canvas.drawPath(_path(active, size), userInk);
+    if (active != null) canvas.drawPath(_inkPath(active, size), userInk);
   }
 
   @override

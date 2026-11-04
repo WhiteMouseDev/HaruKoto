@@ -119,6 +119,7 @@ void main() {
 
     final e = KatakanaPilotLetter.e.strokes;
     expect(e[0].last.dx, greaterThan(e[0].first.dx));
+    expect(e[1].last.dx, e[1].first.dx);
     expect(e[1].last.dy, greaterThan(e[1].first.dy));
     expect(e[2].last.dx - e[2].first.dx,
         greaterThan(e[0].last.dx - e[0].first.dx));
@@ -126,8 +127,12 @@ void main() {
 
     final o = KatakanaPilotLetter.o.strokes;
     expect(o[0].last.dx, greaterThan(o[0].first.dx));
-    expect(o[1][3].dy, greaterThan(o[1].first.dy));
-    expect(o[1].last.dx, lessThan(o[1][3].dx));
+    final hook = o[1][o[1].length - 2];
+    expect(hook.dx, o[1].first.dx);
+    expect(hook.dy, greaterThan(o[1].first.dy));
+    expect(o[1].last.dx, lessThan(hook.dx));
+    expect(o[1].last.dy, lessThan(hook.dy));
+    expect(o[2].first.dx, o[1].first.dx);
     expect(o[2].last.dx, lessThan(o[2].first.dx));
     expect(o[2].last.dy, greaterThan(o[2].first.dy));
   });

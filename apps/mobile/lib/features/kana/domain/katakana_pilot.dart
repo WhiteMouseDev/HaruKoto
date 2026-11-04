@@ -266,9 +266,9 @@ enum KatakanaPilotLetter {
       Offset(.12, .72)
     ],
     strokes: [
-      [Offset(.31, .32), Offset(.51, .31), Offset(.70, .29)],
-      [Offset(.51, .31), Offset(.51, .51), Offset(.51, .70)],
-      [Offset(.21, .72), Offset(.51, .70), Offset(.80, .68)],
+      [Offset(.31, .32), Offset(.70, .29)],
+      [Offset(.51, .305), Offset(.51, .70)],
+      [Offset(.21, .72), Offset(.80, .68)],
     ],
     word: 'エアコン',
     wordReading: 'えあこん',
@@ -285,16 +285,10 @@ enum KatakanaPilotLetter {
       Offset(.39, .47)
     ],
     strokes: [
-      [Offset(.21, .39), Offset(.50, .38), Offset(.80, .36)],
+      [Offset(.21, .39), Offset(.80, .36)],
+      [Offset(.61, .20), Offset(.61, .83), Offset(.47, .78)],
       [
-        Offset(.61, .20),
-        Offset(.61, .40),
-        Offset(.62, .68),
-        Offset(.61, .83),
-        Offset(.47, .78),
-      ],
-      [
-        Offset(.59, .38),
+        Offset(.61, .37),
         Offset(.52, .48),
         Offset(.43, .58),
         Offset(.32, .67),
