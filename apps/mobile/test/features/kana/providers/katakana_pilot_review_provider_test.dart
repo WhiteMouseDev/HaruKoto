@@ -118,6 +118,32 @@ void main() {
         {KatakanaPilotLetter.tsu});
   });
 
+  test('marks from the four-letter pilot coexist with a new group mark',
+      () async {
+    disk.values.addAll({
+      'flutter.katakana_pilot_review.v1.$_accountA.shi': true,
+      'flutter.katakana_pilot_review.v1.$_accountA.n': true,
+    });
+
+    final first = container();
+    expect(await first.read(katakanaPilotReviewProvider.future),
+        {KatakanaPilotLetter.shi, KatakanaPilotLetter.n});
+    await first
+        .read(katakanaPilotReviewProvider.notifier)
+        .setMarked(KatakanaPilotLetter.wa, true);
+    expect(disk.writes, ['flutter.katakana_pilot_review.v1.$_accountA.wa']);
+    first.dispose();
+
+    SharedPreferences.resetStatic();
+    preferences = await SharedPreferences.getInstance();
+    final reopened = container();
+    expect(await reopened.read(katakanaPilotReviewProvider.future), {
+      KatakanaPilotLetter.shi,
+      KatakanaPilotLetter.n,
+      KatakanaPilotLetter.wa,
+    });
+  });
+
   test('failed native write does not mark until retry succeeds', () async {
     final c = container();
     await c.read(katakanaPilotReviewProvider.future);

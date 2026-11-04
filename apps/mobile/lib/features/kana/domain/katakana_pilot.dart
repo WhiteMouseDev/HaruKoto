@@ -81,6 +81,116 @@ enum KatakanaPilotLetter {
     word: 'コンビニ',
     wordReading: 'こんびに',
     meaning: '편의점',
+  ),
+  ku(
+    glyph: 'ク',
+    reading: 'く',
+    cue: '왼쪽에 짧은 사선을 쓰고, 윗선에서 꺾어 왼쪽 아래로 내려와요.',
+    strokes: [
+      [Offset(.49, .21), Offset(.43, .31), Offset(.34, .41), Offset(.24, .50)],
+      [
+        Offset(.43, .32),
+        Offset(.76, .30),
+        Offset(.73, .42),
+        Offset(.66, .55),
+        Offset(.54, .68),
+        Offset(.40, .79),
+        Offset(.27, .85),
+      ],
+    ],
+    word: 'クラス',
+    wordReading: 'くらす',
+    meaning: '학급',
+  ),
+  ta(
+    glyph: 'タ',
+    reading: 'た',
+    cue: 'ク와 같은 두 획을 쓴 뒤, 가운데에 오른쪽 아래로 짧은 획을 더해요.',
+    strokes: [
+      [Offset(.49, .21), Offset(.42, .32), Offset(.32, .42), Offset(.23, .49)],
+      [
+        Offset(.42, .32),
+        Offset(.77, .30),
+        Offset(.74, .42),
+        Offset(.66, .55),
+        Offset(.55, .67),
+        Offset(.41, .78),
+        Offset(.28, .85),
+      ],
+      [Offset(.37, .47), Offset(.46, .52), Offset(.56, .60)],
+    ],
+    word: 'タクシー',
+    wordReading: 'たくしー',
+    meaning: '택시',
+  ),
+  fu(
+    glyph: 'フ',
+    reading: 'ふ',
+    cue: '윗선을 왼쪽에서 오른쪽으로 긋고, 꺾어서 왼쪽 아래로 한 번에 내려와요.',
+    strokes: [
+      [
+        Offset(.22, .29),
+        Offset(.49, .27),
+        Offset(.77, .25),
+        Offset(.75, .38),
+        Offset(.69, .52),
+        Offset(.59, .65),
+        Offset(.47, .75),
+        Offset(.33, .82),
+      ],
+    ],
+    word: 'フランス',
+    wordReading: 'ふらんす',
+    meaning: '프랑스',
+  ),
+  wa(
+    glyph: 'ワ',
+    reading: 'わ',
+    cue: '왼쪽에 짧은 세로획을 먼저 쓰고, フ처럼 윗선에서 꺾어 내려와요.',
+    strokeNumberPositions: [Offset(.11, .27), Offset(.33, .20)],
+    strokes: [
+      [Offset(.23, .28), Offset(.24, .38), Offset(.26, .51)],
+      [
+        Offset(.24, .31),
+        Offset(.51, .29),
+        Offset(.78, .27),
+        Offset(.75, .42),
+        Offset(.69, .55),
+        Offset(.60, .67),
+        Offset(.47, .77),
+        Offset(.36, .84),
+      ],
+    ],
+    word: 'ワイン',
+    wordReading: 'わいん',
+    meaning: '와인',
+  ),
+  u(
+    glyph: 'ウ',
+    reading: 'う',
+    cue: '가운데 위, 왼쪽 순서로 짧은 획을 쓰고 마지막에 윗선에서 꺾어 내려와요.',
+    strokeNumberPositions: [
+      Offset(.49, .10),
+      Offset(.11, .35),
+      Offset(.34, .23)
+    ],
+    strokes: [
+      [Offset(.49, .17), Offset(.49, .24), Offset(.49, .34)],
+      [Offset(.23, .33), Offset(.24, .42), Offset(.26, .55)],
+      [
+        Offset(.24, .36),
+        Offset(.51, .34),
+        Offset(.77, .32),
+        Offset(.74, .46),
+        Offset(.67, .60),
+        Offset(.58, .71),
+        Offset(.46, .80),
+        Offset(.36, .86),
+      ],
+    ],
+    word: 'ウサギ',
+    wordReading: 'うさぎ',
+    meaning: '토끼',
   );
 
   const KatakanaPilotLetter({
@@ -88,6 +198,7 @@ enum KatakanaPilotLetter {
     required this.reading,
     required this.cue,
     required this.strokes,
+    this.strokeNumberPositions,
     required this.word,
     required this.wordReading,
     required this.meaning,
@@ -97,14 +208,38 @@ enum KatakanaPilotLetter {
   final String reading;
   final String cue;
   final List<List<Offset>> strokes;
+  final List<Offset>? strokeNumberPositions;
   final String word;
   final String wordReading;
   final String meaning;
 
-  KatakanaPilotLetter get contrast => switch (this) {
-        shi => tsu,
-        tsu => shi,
-        so => n,
-        n => so,
+  List<KatakanaPilotLetter> get comparisonLetters => switch (this) {
+        shi => const [shi, tsu],
+        tsu => const [tsu, shi],
+        so => const [so, n],
+        n => const [n, so],
+        ku => const [ku, ta],
+        ta => const [ta, ku],
+        fu => const [fu, wa, u],
+        wa => const [wa, fu, u],
+        u => const [u, fu, wa],
       };
+}
+
+enum KatakanaPracticeGroup {
+  original([
+    KatakanaPilotLetter.shi,
+    KatakanaPilotLetter.tsu,
+    KatakanaPilotLetter.so,
+    KatakanaPilotLetter.n,
+  ]),
+  kuTa([KatakanaPilotLetter.ku, KatakanaPilotLetter.ta]),
+  fuWaU(
+      [KatakanaPilotLetter.fu, KatakanaPilotLetter.wa, KatakanaPilotLetter.u]);
+
+  const KatakanaPracticeGroup(this.letters);
+
+  final List<KatakanaPilotLetter> letters;
+
+  String get label => letters.map((letter) => letter.glyph).join('・');
 }

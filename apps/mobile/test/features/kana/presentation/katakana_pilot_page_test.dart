@@ -14,13 +14,17 @@ void main() {
 
   Future<void> tapText(WidgetTester tester, String label) async {
     final target = find.text(label);
+    if (target.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(target, 160);
+    }
     await tester.ensureVisible(target);
+    await tester.pumpAndSettle();
     await tester.tap(target);
     await tester.pumpAndSettle();
   }
 
   Future<void> start(WidgetTester tester) async {
-    await tapText(tester, '네 글자 연습 시작');
+    await tapText(tester, 'シ・ツ・ソ・ン');
     await tapText(tester, '가리고 쓰기');
   }
 
@@ -33,7 +37,7 @@ void main() {
       (tester) async {
     final prefs = await _preferences();
     await _pumpPilot(tester, prefs);
-    await tapText(tester, '네 글자 연습 시작');
+    await tapText(tester, 'シ・ツ・ソ・ン');
 
     expect(find.text('1/4 글자 · 1/3 단계'), findsOneWidget);
     expect(find.text('シ · し'), findsOneWidget);
@@ -100,6 +104,66 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('2/4 글자 · 1/3 단계'), findsOneWidget);
     expect(find.text('ツ · つ'), findsOneWidget);
+  });
+
+  testWidgets('selected pair finishes after two letters and keeps both marks',
+      (tester) async {
+    final prefs = await _preferences({markKey: true});
+    await _pumpPilot(tester, prefs);
+    await tapText(tester, 'ク・タ');
+
+    expect(find.text('1/2 글자 · 1/3 단계'), findsOneWidget);
+    expect(find.text('ク · く'), findsOneWidget);
+    expect(find.text('タ · た'), findsOneWidget);
+    expect(find.text('シ · し'), findsNothing);
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('く'), findsOneWidget);
+    await tester.drag(canvas, const Offset(35, -50));
+    await tester.pump();
+    await tapText(tester, '예시와 비교');
+    await tapText(tester, '단어에서 찾기');
+    await tapText(tester, 'ク');
+    await tapText(tester, '헷갈렸어요');
+    await tapText(tester, '다음 글자');
+
+    expect(find.text('2/2 글자 · 1/3 단계'), findsOneWidget);
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('た'), findsOneWidget);
+    await tapText(tester, '쓰기 건너뛰기');
+    await tapText(tester, 'タ');
+    await tapText(tester, '연습 마치기');
+
+    expect(find.text('묶음 골라 연습'), findsOneWidget);
+    expect(find.text('シ · ク'), findsOneWidget);
+    await tapText(tester, '헷갈린 글자 복습');
+    expect(find.text('1/2 글자 · 1/3 단계'), findsOneWidget);
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('し'), findsOneWidget);
+    await tapText(tester, '쓰기 건너뛰기');
+    await tapText(tester, 'シ');
+    await tapText(tester, '다음 글자');
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('く'), findsOneWidget);
+  });
+
+  testWidgets('three comparison diagrams and cues fit with large text',
+      (tester) async {
+    final prefs = await _preferences();
+    await _pumpPilot(tester, prefs, width: 320, textScale: 2);
+    await tapText(tester, 'フ・ワ・ウ');
+
+    expect(find.text('1/3 글자 · 1/3 단계'), findsOneWidget);
+    for (final label in ['フ · ふ', 'ワ · わ', 'ウ · う']) {
+      expect(find.text(label), findsOneWidget);
+    }
+    for (final glyph in ['フ', 'ワ', 'ウ']) {
+      final cue = find.textContaining('$glyph  ');
+      expect(cue, findsOneWidget);
+      expect(tester.getSize(cue).width, greaterThan(250));
+    }
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('ふ'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('stored uncertainty offers only the marked letter on re-entry',
@@ -172,8 +236,10 @@ Future<void> _pumpPilot(
   SharedPreferences prefs, {
   String owner = 'account-a',
   String Function()? sessionReader,
+  double width = 412,
+  double textScale = 1,
 }) async {
-  tester.view.physicalSize = const Size(412, 900);
+  tester.view.physicalSize = Size(width, 900);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -187,7 +253,15 @@ Future<void> _pumpPilot(
           sessionReader ?? () => owner,
         ),
       ],
-      child: const MaterialApp(home: KatakanaPilotPage()),
+      child: MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+          ),
+          child: child!,
+        ),
+        home: const KatakanaPilotPage(),
+      ),
     ),
   );
   await tester.pumpAndSettle();

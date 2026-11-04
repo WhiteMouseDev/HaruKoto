@@ -141,34 +141,24 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
       const SizedBox(height: AppSizes.sm),
       const Text('획순을 비교하고, 본보기를 가려 써본 뒤, 단어에서 같은 글자를 찾아보세요.'),
       const SizedBox(height: AppSizes.lg),
-      Wrap(
-        spacing: AppSizes.sm,
-        runSpacing: AppSizes.sm,
-        children: [
-          for (final letter in KatakanaPilotLetter.values)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSizes.md, vertical: AppSizes.sm),
-                child: Text(
-                  letter.glyph,
-                  locale: const Locale('ja'),
-                  style: theme.textTheme.headlineMedium,
-                ),
-              ),
-            ),
-        ],
-      ),
-      const SizedBox(height: AppSizes.lg),
-      FilledButton(
-        onPressed: () => _start(KatakanaPilotLetter.values),
-        child: const Text('네 글자 연습 시작'),
-      ),
-      const SizedBox(height: AppSizes.lg),
+      Text('묶음 골라 연습', style: theme.textTheme.titleMedium),
+      const SizedBox(height: AppSizes.sm),
+      for (final group in KatakanaPracticeGroup.values) ...[
+        FilledButton.tonal(
+          key: ValueKey('katakana-practice-group-${group.name}'),
+          onPressed: () => _start(group.letters),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(AppSizes.buttonHeight),
+          ),
+          child: Text(
+            group.label,
+            locale: const Locale('ja'),
+            style: theme.textTheme.titleLarge,
+          ),
+        ),
+        const SizedBox(height: AppSizes.sm),
+      ],
+      const SizedBox(height: AppSizes.md),
       Text('이 기기에 저장된 복습', style: theme.textTheme.titleMedium),
       const SizedBox(height: AppSizes.sm),
       if (loadFailed)
@@ -195,7 +185,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
   List<Widget> _compareContent(ThemeData theme) => [
         Text('획순 비교', style: theme.textTheme.headlineSmall),
         const SizedBox(height: AppSizes.sm),
-        const Text('번호가 각 획의 시작점이에요. 짧은 획의 위치와 마지막 획의 방향을 비교해 보세요.'),
+        const Text('번호와 선으로 각 획의 시작점을 확인하세요. 획의 수와 위치, 그리는 방향을 비교해 보세요.'),
         const SizedBox(height: AppSizes.md),
         KatakanaStrokeComparison(letter: _letter),
         const SizedBox(height: AppSizes.md),

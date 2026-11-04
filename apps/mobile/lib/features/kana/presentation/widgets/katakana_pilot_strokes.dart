@@ -31,17 +31,31 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final letters = widget.letter.comparisonLetters;
+    final showCuesBelow = letters.length > 2;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _diagram(widget.letter, theme)),
-            const SizedBox(width: AppSizes.sm),
-            Expanded(child: _diagram(widget.letter.contrast, theme)),
+            for (final (index, letter) in letters.indexed) ...[
+              if (index > 0) const SizedBox(width: AppSizes.sm),
+              Expanded(
+                child: _diagram(letter, theme, showCue: !showCuesBelow),
+              ),
+            ],
           ],
         ),
+        if (showCuesBelow)
+          for (final letter in letters)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSizes.sm),
+              child: Text(
+                '${letter.glyph}  ${letter.cue}',
+                style: theme.textTheme.bodyMedium,
+              ),
+            ),
         const SizedBox(height: AppSizes.sm),
         OutlinedButton.icon(
           onPressed: () {
@@ -54,12 +68,16 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
     );
   }
 
-  Widget _diagram(KatakanaPilotLetter letter, ThemeData theme) {
+  Widget _diagram(
+    KatakanaPilotLetter letter,
+    ThemeData theme, {
+    required bool showCue,
+  }) {
     final colors = theme.colorScheme;
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(AppSizes.gap),
+        padding: EdgeInsets.all(showCue ? AppSizes.gap : AppSizes.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -76,6 +94,7 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
                   child: CustomPaint(
                     painter: _StrokeDiagramPainter(
                       paths: letter.strokes,
+                      numberPositions: letter.strokeNumberPositions,
                       colors: colors,
                       animation: _animation,
                     ),
@@ -83,7 +102,7 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
                 ),
               ),
             ),
-            Text(letter.cue, style: theme.textTheme.bodyMedium),
+            if (showCue) Text(letter.cue, style: theme.textTheme.bodyMedium),
           ],
         ),
       ),
@@ -307,11 +326,13 @@ Paint _ink(Color color, double width) => Paint()
 class _StrokeDiagramPainter extends CustomPainter {
   _StrokeDiagramPainter({
     required this.paths,
+    required this.numberPositions,
     required this.colors,
     required this.animation,
   }) : super(repaint: animation);
 
   final List<List<Offset>> paths;
+  final List<Offset>? numberPositions;
   final ColorScheme colors;
   final Animation<double> animation;
 
@@ -335,7 +356,16 @@ class _StrokeDiagramPainter extends CustomPainter {
     final radius = (size.shortestSide * 0.059).clamp(4.0, 9.0);
     for (final (index, points) in paths.indexed) {
       final start = _scaled(points.first, size);
-      canvas.drawCircle(start, radius, Paint()..color = colors.onSurface);
+      final numberPosition = _scaled(
+        numberPositions?[index] ?? points.first,
+        size,
+      );
+      final markerInk = Paint()..color = colors.onSurface;
+      if (numberPosition != start) {
+        canvas.drawLine(start, numberPosition, markerInk..strokeWidth = 1);
+        canvas.drawCircle(start, 1.5, markerInk);
+      }
+      canvas.drawCircle(numberPosition, radius, markerInk);
       final number = TextPainter(
         text: TextSpan(
           text: '${index + 1}',
@@ -349,7 +379,7 @@ class _StrokeDiagramPainter extends CustomPainter {
       )..layout();
       number.paint(
         canvas,
-        start - Offset(number.width / 2, number.height / 2),
+        numberPosition - Offset(number.width / 2, number.height / 2),
       );
       number.dispose();
     }
@@ -358,6 +388,7 @@ class _StrokeDiagramPainter extends CustomPainter {
   @override
   bool shouldRepaint(_StrokeDiagramPainter oldDelegate) =>
       oldDelegate.paths != paths ||
+      oldDelegate.numberPositions != numberPositions ||
       oldDelegate.colors != colors ||
       oldDelegate.animation != animation;
 }
