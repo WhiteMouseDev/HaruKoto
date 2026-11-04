@@ -75,6 +75,7 @@ docs/
 - [며칠 뒤에도 이어 푸는 미완료 퀴즈 제안](operations/plans/long-lived-quiz-resume-proposal-2026-11-03.md) — 24시간/새 시작 자동 완료 제거, 다중 보존·목록 API, 과거 기록 무백필과 승인 전 적용·롤백안
 - [장기 퀴즈 이어하기·학습일 분리 구현](operations/plans/long-lived-quiz-resume-implementation-2026-11-03.md) — 읽기 보존·답안 재전송·nullable 출석 판정, 로컬 검증과 운영 전환·롤백안
 - [장기 이어하기·학습일 분리 운영 전환](operations/plans/quiz-retention-credit-operating-rollout-2026-11-03.md) — q7 무백필·호환 OFF/ON·실제 운영 시뮬레이터와 기록 보존·롤백 근거
+- [레슨 결과 피드백·조회 재시도 개선](operations/plans/lesson-result-feedback-and-retry-2026-11-03.md) — 정답·완성 문장·오답 보기·제출 당시 복습 안내·계정별 재시도, 운영 적용 전 검증
 - [블로그: 이어 풀기와 학습일을 분리한 이유](blog/2026-11-03-resuming-quizzes-without-inventing-study-days.md) — 조회 부작용, 중복 제출, nullable 판정과 안전한 운영 전환
 - [특수 퀴즈 이어하기 계약 제안](operations/plans/special-quiz-resume-contract-proposal-2026-10-30.md) — matching/arrange 모드·표시 snapshot, 기존 세션 무백필 처리와 웹·모바일 회귀안
 - [특수 퀴즈 이어하기 구현·검증](operations/plans/special-quiz-resume-implementation-2026-10-30.md) — 같은 세션·원본 ID 복원, 정답/오답 제외, 기존 복습 기한 보존과 격리 시뮬레이터 검증

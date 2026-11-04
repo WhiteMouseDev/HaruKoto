@@ -43,7 +43,7 @@ class LessonResultActions extends StatelessWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: onRetry,
-                    child: const Text('다시 풀기'),
+                    child: const Text('레슨 전체 다시 풀기'),
                   ),
                 ),
               ],

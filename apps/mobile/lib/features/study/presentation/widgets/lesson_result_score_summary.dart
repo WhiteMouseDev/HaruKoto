@@ -119,7 +119,7 @@ class LessonResultSrsBanner extends StatelessWidget {
           const SizedBox(width: AppSizes.sm),
           Expanded(
             child: Text(
-              '오늘 배운 $registeredCount개를 복습 일정에 넣었어요',
+              '이 레슨에서 새로 배운 $registeredCount개를 복습 일정에 넣었어요',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),

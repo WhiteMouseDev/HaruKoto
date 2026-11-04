@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
@@ -17,6 +18,7 @@ import '../providers/study_map_config.dart';
 import 'study_map_colors.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_level_empty_state.dart';
+import 'widgets/lesson_read_status.dart';
 import 'widgets/study_kana_section.dart';
 import 'widgets/study_review_section.dart';
 import 'widgets/saved_lesson_section.dart';
@@ -48,16 +50,23 @@ class _StudyPageState extends ConsumerState<StudyPage> {
     final theme = Theme.of(context);
     final mapEnabled = ref.watch(studyMapEnabledProvider);
     final preferences = ref.watch(userPreferencesProvider);
+    final owner = ref.watch(currentAccountIdProvider);
+    final accountCurrent = _isCurrent(owner);
 
     final jlptLevel = preferences.jlptLevel;
     final showKana = preferences.showKana;
 
     // Watch chapters for inline lesson list
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
-    final recommendedLesson = chaptersAsync.hasValue
-        ? findRecommendedLesson(chaptersAsync.value!.chapters)
-        : null;
-    final chapterList = chaptersAsync.hasValue ? chaptersAsync.value! : null;
+    // Refreshes retain old data/errors. Display only the current successful
+    // read so a pending/error state cannot expose a stale lesson action.
+    final chapterList =
+        accountCurrent && !chaptersAsync.isLoading && !chaptersAsync.hasError
+            ? chaptersAsync.value
+            : null;
+    final recommendedLesson = chapterList == null
+        ? null
+        : findRecommendedLesson(chapterList.chapters);
     if (chapterList != null) {
       _trackLessonListViewedOnce(
         jlptLevel: jlptLevel,
@@ -185,55 +194,40 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
               // Inline chapter cards
               SliverToBoxAdapter(
-                child: chaptersAsync.when(
-                  data: (data) => data.chapters.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                          child: LessonLevelEmptyState(
-                            jlptLevel: jlptLevel,
-                            compact: true,
-                            onSwitchToN5: jlptLevel == 'N5'
-                                ? null
-                                : () => ref
-                                    .read(settingsSyncServiceProvider)
-                                    .updateJlptLevel('N5'),
-                          ),
-                        )
-                      : LessonChapterList(
-                          chapters: data.chapters,
-                          recommendedLessonId: recommendedLesson?.lesson.id,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                        ),
-                  loading: () => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: List.generate(
-                        2,
-                        (i) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHigh,
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.radiusMd),
+                child: !accountCurrent || chaptersAsync.isLoading
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: LessonReadStatus(loading: true),
+                      )
+                    : chaptersAsync.hasError
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: LessonReadStatus(
+                              error: chaptersAsync.error,
+                              onRetry: () => _retryLessons(owner, jlptLevel),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  error: (_, __) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    child: Text(
-                      '레슨을 불러올 수 없습니다',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ),
+                          )
+                        : chapterList!.chapters.isEmpty
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                child: LessonLevelEmptyState(
+                                  jlptLevel: jlptLevel,
+                                  compact: true,
+                                  onSwitchToN5: jlptLevel == 'N5'
+                                      ? null
+                                      : () => ref
+                                          .read(settingsSyncServiceProvider)
+                                          .updateJlptLevel('N5'),
+                                ),
+                              )
+                            : LessonChapterList(
+                                chapters: chapterList.chapters,
+                                recommendedLessonId:
+                                    recommendedLesson?.lesson.id,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                              ),
               ),
 
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -256,6 +250,21 @@ class _StudyPageState extends ConsumerState<StudyPage> {
         ),
       ),
     );
+  }
+
+  bool _isCurrent(String? owner) =>
+      mounted &&
+      owner != null &&
+      ref.read(currentAccountIdProvider) == owner &&
+      ref.read(currentAccountReaderProvider)() == owner;
+
+  void _retryLessons(String? owner, String level) {
+    if (!_isCurrent(owner) ||
+        ref.read(userPreferencesProvider).jlptLevel != level ||
+        ref.read(chaptersProvider(level)).isLoading) {
+      return;
+    }
+    ref.invalidate(chaptersProvider(level));
   }
 
   void _trackLessonListViewedOnce({

@@ -30,16 +30,16 @@ void main() {
 
       expect(find.text('100%'), findsOneWidget);
       expect(find.text('5/5 정답'), findsOneWidget);
-      expect(find.text('오늘 배운 6개를 복습 일정에 넣었어요'), findsOneWidget);
+      expect(find.text('이 레슨에서 새로 배운 6개를 복습 일정에 넣었어요'), findsOneWidget);
       expect(find.text('학습으로 돌아가기'), findsOneWidget);
-      expect(find.text('다시 풀기'), findsOneWidget);
+      expect(find.text('레슨 전체 다시 풀기'), findsOneWidget);
 
       await tester.tap(find.text('학습으로 돌아가기'));
       await tester.pump();
 
       expect(doneCalled, isTrue);
 
-      await tester.tap(find.text('다시 풀기'));
+      await tester.tap(find.text('레슨 전체 다시 풀기'));
       await tester.pump();
 
       expect(retryCalled, isTrue);
@@ -83,7 +83,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('학습 중'), findsOneWidget);
+      expect(find.text('제출 당시 상태: 학습 중'), findsOneWidget);
       expect(find.text('LEARNING → LEARNING'), findsNothing);
     });
   });
