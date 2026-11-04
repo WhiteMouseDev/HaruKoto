@@ -2,18 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/kana/domain/katakana_pilot.dart';
 
 void main() {
-  test('practice groups cover nine distinct exercises', () {
-    const groups = KatakanaPracticeGroup.values;
+  test('focused practice groups preserve the nine comparison exercises', () {
+    const groups = [
+      KatakanaPracticeGroup.original,
+      KatakanaPracticeGroup.kuTa,
+      KatakanaPracticeGroup.fuWaU,
+    ];
     expect(groups.map((group) => group.label), ['シ・ツ・ソ・ン', 'ク・タ', 'フ・ワ・ウ']);
     final letters = groups.expand((group) => group.letters).toList();
-    expect(letters, unorderedEquals(KatakanaPilotLetter.values));
-    expect(letters.map((letter) => letter.word).toSet(), hasLength(9));
+    expect(letters.toSet(), hasLength(9));
     for (final group in groups) {
       for (final letter in group.letters) {
-        expect(
-          letter.word.runes.where((rune) => rune == letter.glyph.runes.single),
-          hasLength(1),
-        );
         final comparison = letter.comparisonLetters;
         expect(comparison.first, letter);
         expect(comparison, hasLength(comparison.toSet().length));
@@ -36,19 +35,34 @@ void main() {
         KatakanaPilotLetter.n.comparisonLetters.last, KatakanaPilotLetter.so);
   });
 
-  test('each next-day word is new and has exactly one target character', () {
+  test('the first row is in kana order and shares ウ with focused practice', () {
+    const row = KatakanaPracticeGroup.firstRow;
+    expect(row.label, 'ア・イ・ウ・エ・オ');
+    expect(row.letters[2], same(KatakanaPracticeGroup.fuWaU.letters.last));
+    final letters =
+        KatakanaPracticeGroup.values.expand((group) => group.letters);
+    expect(letters, hasLength(14));
+    expect(letters.toSet(), unorderedEquals(KatakanaPilotLetter.values));
+  });
+
+  test('practice and next-day words are distinct and have one target', () {
     const letters = KatakanaPilotLetter.values;
     final practiceWords = letters.map((letter) => letter.word).toSet();
+    expect(practiceWords, hasLength(letters.length));
     expect(
-        letters.map((letter) => letter.reviewWord.text).toSet(), hasLength(9));
+      letters.map((letter) => letter.reviewWord.text).toSet(),
+      hasLength(letters.length),
+    );
     for (final letter in letters) {
       final reviewWord = letter.reviewWord;
       expect(practiceWords, isNot(contains(reviewWord.text)));
-      expect(
-        reviewWord.text.runes
-            .where((rune) => rune == letter.glyph.runes.single),
-        hasLength(1),
-      );
+      for (final word in [letter.word, reviewWord.text]) {
+        expect(
+          word.runes.where((rune) => rune == letter.glyph.runes.single),
+          hasLength(1),
+          reason: '$word must contain one ${letter.glyph}',
+        );
+      }
       expect(reviewWord.reading, isNotEmpty);
       expect(reviewWord.meaning, isNotEmpty);
     }
@@ -58,7 +72,7 @@ void main() {
       () {
     const letters = KatakanaPilotLetter.values;
     expect(letters.map((letter) => letter.strokes.length),
-        [3, 3, 2, 2, 2, 3, 1, 2, 3]);
+        [3, 3, 2, 2, 2, 3, 1, 2, 3, 2, 2, 3, 3]);
     for (final letter in letters) {
       final positions = letter.strokeNumberPositions;
       if (positions != null) {
@@ -89,6 +103,33 @@ void main() {
     final tsu = KatakanaPilotLetter.tsu.strokes;
     expect(shi[0].first.dy, lessThan(shi[1].first.dy));
     expect(tsu[0].first.dx, lessThan(tsu[1].first.dx));
+  });
+
+  test('first-row stroke guides preserve the checked order and directions', () {
+    final a = KatakanaPilotLetter.a.strokes;
+    expect(a[0].first.dx, lessThan(a[0][2].dx));
+    expect(a[0].last.dx, lessThan(a[0][2].dx));
+    expect(a[1].last.dy, greaterThan(a[0].last.dy));
+
+    final i = KatakanaPilotLetter.i.strokes;
+    expect(i[0].last.dx, lessThan(i[0].first.dx));
+    expect(i[0].last.dy, greaterThan(i[0].first.dy));
+    expect(i[1].last.dx, closeTo(i[1].first.dx, .04));
+    expect(i[1].last.dy, greaterThan(i[1].first.dy));
+
+    final e = KatakanaPilotLetter.e.strokes;
+    expect(e[0].last.dx, greaterThan(e[0].first.dx));
+    expect(e[1].last.dy, greaterThan(e[1].first.dy));
+    expect(e[2].last.dx - e[2].first.dx,
+        greaterThan(e[0].last.dx - e[0].first.dx));
+    expect(e[2].first.dy, greaterThan(e[0].first.dy));
+
+    final o = KatakanaPilotLetter.o.strokes;
+    expect(o[0].last.dx, greaterThan(o[0].first.dx));
+    expect(o[1][3].dy, greaterThan(o[1].first.dy));
+    expect(o[1].last.dx, lessThan(o[1][3].dx));
+    expect(o[2].last.dx, lessThan(o[2].first.dx));
+    expect(o[2].last.dy, greaterThan(o[2].first.dy));
   });
 
   test('new guides distinguish the inner stroke and short vertical strokes',

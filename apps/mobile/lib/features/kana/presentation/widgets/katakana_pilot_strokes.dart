@@ -5,9 +5,14 @@ import '../../../../core/constants/sizes.dart';
 import '../../domain/katakana_pilot.dart';
 
 class KatakanaStrokeComparison extends StatefulWidget {
-  const KatakanaStrokeComparison({super.key, required this.letter});
+  const KatakanaStrokeComparison({
+    super.key,
+    required this.letter,
+    this.showComparison = true,
+  });
 
   final KatakanaPilotLetter letter;
+  final bool showComparison;
 
   @override
   State<KatakanaStrokeComparison> createState() =>
@@ -31,7 +36,9 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final letters = widget.letter.comparisonLetters;
+    final letters = widget.showComparison
+        ? widget.letter.comparisonLetters
+        : [widget.letter];
     final showCuesBelow = letters.length > 2;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
