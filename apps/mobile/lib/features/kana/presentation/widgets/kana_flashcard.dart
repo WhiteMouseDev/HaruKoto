@@ -12,6 +12,7 @@ class KanaFlashcard extends StatefulWidget {
   final String? exampleWord;
   final String? exampleReading;
   final String? exampleMeaning;
+  final bool locked;
   final VoidCallback onKnow;
   final VoidCallback onDontKnow;
 
@@ -23,6 +24,7 @@ class KanaFlashcard extends StatefulWidget {
     this.exampleWord,
     this.exampleReading,
     this.exampleMeaning,
+    this.locked = false,
     required this.onKnow,
     required this.onDontKnow,
   });
@@ -75,16 +77,18 @@ class _KanaFlashcardState extends State<KanaFlashcard>
       children: [
         // Flashcard with flip animation
         GestureDetector(
-          onTap: _flip,
-          onHorizontalDragEnd: (details) {
-            if (details.primaryVelocity != null) {
-              if (details.primaryVelocity! > 200) {
-                widget.onKnow();
-              } else if (details.primaryVelocity! < -200) {
-                widget.onDontKnow();
-              }
-            }
-          },
+          onTap: widget.locked ? null : _flip,
+          onHorizontalDragEnd: widget.locked
+              ? null
+              : (details) {
+                  if (details.primaryVelocity != null) {
+                    if (details.primaryVelocity! > 200) {
+                      widget.onKnow();
+                    } else if (details.primaryVelocity! < -200) {
+                      widget.onDontKnow();
+                    }
+                  }
+                },
           child: AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
@@ -123,7 +127,7 @@ class _KanaFlashcardState extends State<KanaFlashcard>
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: widget.onDontKnow,
+                  onPressed: widget.locked ? null : widget.onDontKnow,
                   icon: const Icon(LucideIcons.thumbsDown, size: 16),
                   label: const Text('모르겠다'),
                   style: OutlinedButton.styleFrom(
@@ -138,7 +142,7 @@ class _KanaFlashcardState extends State<KanaFlashcard>
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: widget.onKnow,
+                  onPressed: widget.locked ? null : widget.onKnow,
                   icon: const Icon(LucideIcons.thumbsUp, size: 16),
                   label: const Text('알겠다'),
                   style: FilledButton.styleFrom(

@@ -96,13 +96,20 @@ void main() {
       final pending = Completer<({bool isCorrect, String correctOptionId})>();
       final repo = _Repository()..answerPending = pending;
       await _pump(tester, repo, stage: stage);
+      final question = find.text('first character');
+      final firstOption = find.text('a');
+      final questionPosition = tester.getRect(question);
+      final optionPosition = tester.getRect(firstOption);
       await tester.tap(find.text('a'));
       await tester.tap(find.text('b'));
       await tester.pump(const Duration(seconds: 3));
       expect(repo.answers, hasLength(1));
       expect(find.text('1/2'), findsOneWidget);
       expect(_feedback(tester, stage), isFalse);
-      expect(find.text('답안을 저장하고 있어요'), findsOneWidget);
+      expect(tester.getRect(question), questionPosition);
+      expect(tester.getRect(firstOption), optionPosition);
+      expect(find.byKey(const ValueKey('kana-answer-status')), findsNothing);
+      expect(_pendingIndicator('답안을 저장하고 있어요'), findsOneWidget);
       pending.complete((isCorrect: true, correctOptionId: 'a'));
       await _flush(tester);
       expect(_feedback(tester, stage), isTrue,
@@ -289,7 +296,8 @@ void main() {
     tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
     await tester.pumpAndSettle();
     expect(find.text('문자 학습 저장을 확인해 주세요'), findsOneWidget);
-    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    expect(tester.widget<StageIntro>(find.byType(StageIntro)).locked, isTrue);
+    expect(find.text('1/1'), findsOneWidget);
     expect(find.byType(StagePractice), findsNothing);
     expect(repo.starts, 0);
     final id = repo.cardRequests.single.activityId;
@@ -307,13 +315,23 @@ void main() {
       (tester) async {
     final repo = _Repository()..cardGate = Completer<void>();
     await _pump(tester, repo, stage: true, enterQuiz: false);
+    final glyph = find.text('あ');
+    final glyphPosition = tester.getRect(glyph);
     final next = tester.widget<StageIntro>(find.byType(StageIntro)).onNext;
     next();
     next();
     await _flush(tester);
     expect(repo.cardRequests, hasLength(1));
     expect(find.byType(StagePractice), findsNothing);
-    expect(find.text('문자 학습을 저장하고 있어요'), findsOneWidget);
+    expect(tester.widget<StageIntro>(find.byType(StageIntro)).locked, isTrue);
+    expect(tester.getRect(glyph), glyphPosition);
+    expect(find.byKey(const ValueKey('kana-card-save-status')), findsNothing);
+    expect(_pendingIndicator('문자 학습을 저장하고 있어요'), findsOneWidget);
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '연습하기'))
+            .onPressed,
+        isNull);
     repo.cardGate!.complete();
     await tester.pumpAndSettle();
     expect(find.byType(StagePractice), findsOneWidget);
@@ -331,12 +349,19 @@ void main() {
     await _pump(tester, repo, stage: true, enterQuiz: false);
     tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
     await tester.pumpAndSettle();
+    await tester.tap(find.text('あ'));
+    await tester.pumpAndSettle();
+    expect(find.text('아'), findsOneWidget);
     repo.cardGate = Completer<void>();
     final practice = tester.widget<StagePractice>(find.byType(StagePractice));
     practice.onKnow();
     practice.onKnow();
     practice.onDontKnow();
     await _flush(tester);
+    expect(tester.widget<StagePractice>(find.byType(StagePractice)).locked,
+        isTrue);
+    expect(find.text('아'), findsOneWidget);
+    expect(find.text('あ'), findsNothing);
     expect(repo.cardRequests, hasLength(2));
     expect(repo.cardRequests.map((request) => request.activityId).toSet(),
         hasLength(2));
@@ -367,7 +392,8 @@ void main() {
     final fresh = await _pump(tester, repo,
         stage: true, enterQuiz: false, preferences: prefs);
     expect(identical(first, fresh), isFalse);
-    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    expect(tester.widget<StageIntro>(find.byType(StageIntro)).locked, isTrue);
+    expect(find.text('1/1'), findsOneWidget);
     expect(repo.cardRequests, hasLength(1));
     await tester.tap(find.text('문자 저장 다시 확인'));
     await tester.pumpAndSettle();
@@ -396,7 +422,8 @@ void main() {
     await tester.tap(find.text('문자 저장 다시 확인'));
     await tester.pumpAndSettle();
     expect(repo.cardRequests, hasLength(1));
-    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    expect(tester.widget<StageIntro>(find.byType(StageIntro)).locked, isTrue);
+    expect(find.text('1/1'), findsOneWidget);
     await tester.tap(find.text('문자 저장 다시 확인'));
     await tester.pumpAndSettle();
     expect(repo.cardRequests, hasLength(1));
@@ -547,6 +574,11 @@ void main() {
     });
   }
 }
+
+Finder _pendingIndicator(String label) => find.byWidgetPredicate(
+      (widget) =>
+          widget is CircularProgressIndicator && widget.semanticsLabel == label,
+    );
 
 class _Account {
   String? id = '11111111-1111-4111-8111-111111111111';
