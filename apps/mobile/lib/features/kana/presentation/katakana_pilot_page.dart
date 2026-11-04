@@ -36,8 +36,10 @@ class _PilotSession extends ConsumerStatefulWidget {
   ConsumerState<_PilotSession> createState() => _PilotSessionState();
 }
 
-class _PilotSessionState extends ConsumerState<_PilotSession> {
+class _PilotSessionState extends ConsumerState<_PilotSession>
+    with WidgetsBindingObserver {
   List<KatakanaPilotLetter> _letters = const [];
+  bool _dailyReview = false;
   int _index = 0;
   _Step _step = _Step.compare;
   int _writingAttempt = 0;
@@ -53,27 +55,56 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
       _step == _Step.word &&
       ref.read(currentAccountReaderProvider)() == widget.owner;
 
-  void _start(List<KatakanaPilotLetter> letters) {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(katakanaPilotLocalDayProvider.notifier).refresh();
+    }
+  }
+
+  void _start(List<KatakanaPilotLetter> letters, {bool dailyReview = false}) {
     setState(() {
       _letters = letters;
+      _dailyReview = dailyReview;
       _index = 0;
       _resetLetter();
     });
   }
 
   void _resetLetter() {
-    _step = _Step.compare;
+    _step = _dailyReview ? _Step.word : _Step.compare;
     _hasInk = false;
     _showExample = false;
     _selectedIndex = null;
     _saveError = null;
   }
 
-  void _next() {
+  Future<void> _next() async {
     if (!_canActOnWord) return;
+    if (_dailyReview) {
+      ref.read(katakanaPilotLocalDayProvider.notifier).refresh();
+      final day = ref.read(katakanaPilotLocalDayProvider);
+      final saved = await _save(
+        (review) => review.completeDailyReview(_letter, day),
+      );
+      if (!mounted || !saved || !_canActOnWord) return;
+    }
     setState(() {
       if (_index + 1 == _letters.length) {
         _letters = const [];
+        _dailyReview = false;
         _index = 0;
       } else {
         _index++;
@@ -82,19 +113,18 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
     });
   }
 
-  Future<void> _setMarked(bool marked) async {
-    if (!_canActOnWord) return;
+  Future<bool> _save(Future<void> Function(KatakanaPilotReview) update) async {
+    if (!_canActOnWord) return false;
     setState(() {
       _saving = true;
       _saveError = null;
     });
     try {
-      await ref.read(katakanaPilotReviewProvider.notifier).setMarked(
-            _letter,
-            marked,
-          );
+      await update(ref.read(katakanaPilotReviewProvider.notifier));
+      return true;
     } on ApiException catch (error) {
       if (mounted) setState(() => _saveError = error.userMessage);
+      return false;
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -103,8 +133,9 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
   @override
   Widget build(BuildContext context) {
     final review = ref.watch(katakanaPilotReviewProvider);
-    final marked =
+    final savedReview =
         review.isLoading || review.hasError ? null : review.asData?.value;
+    final day = ref.watch(katakanaPilotLocalDayProvider);
     final theme = Theme.of(context);
     final isStart = _letters.isEmpty;
 
@@ -112,17 +143,20 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
       key: ValueKey((isStart, _index, _step)),
       padding: const EdgeInsets.all(AppSizes.md),
       children: isStart
-          ? _startContent(theme, marked, review.hasError)
+          ? _startContent(theme, savedReview, day, review.hasError)
           : [
               Text(
-                '${_index + 1}/${_letters.length} 글자 · ${_step.index + 1}/3 단계',
+                _dailyReview
+                    ? '${_index + 1}/${_letters.length} 글자 · 새 단어 복습'
+                    : '${_index + 1}/${_letters.length} 글자 · ${_step.index + 1}/3 단계',
                 style: theme.textTheme.labelLarge,
               ),
               const SizedBox(height: AppSizes.sm),
               ...switch (_step) {
                 _Step.compare => _compareContent(theme),
                 _Step.recall => _recallContent(theme),
-                _Step.word => _wordContent(theme, marked, review.hasError),
+                _Step.word =>
+                  _wordContent(theme, savedReview?.marked, review.hasError),
               },
             ],
     );
@@ -130,12 +164,15 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
 
   List<Widget> _startContent(
     ThemeData theme,
-    Set<KatakanaPilotLetter>? marked,
+    KatakanaPilotReviewState? review,
+    DateTime day,
     bool loadFailed,
   ) {
     final reviewLetters = KatakanaPilotLetter.values
-        .where((letter) => marked?.contains(letter) ?? false)
+        .where((letter) => review?.marked.contains(letter) ?? false)
         .toList();
+    final due = review?.dueOn(day) ?? const <KatakanaPilotLetter>{};
+    final dailyLetters = reviewLetters.where(due.contains).toList();
     return [
       Text('닮은 글자, 어떻게 다를까요?', style: theme.textTheme.headlineSmall),
       const SizedBox(height: AppSizes.sm),
@@ -163,7 +200,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
       const SizedBox(height: AppSizes.sm),
       if (loadFailed)
         _reviewRetry()
-      else if (marked == null)
+      else if (review == null)
         const Text('복습 기록을 불러오고 있어요.')
       else if (reviewLetters.isEmpty)
         const Text('연습 중 ‘헷갈렸어요’를 누른 글자가 여기에 모여요.')
@@ -173,6 +210,17 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
           locale: const Locale('ja'),
           style: theme.textTheme.titleLarge,
         ),
+        const SizedBox(height: AppSizes.sm),
+        if (dailyLetters.isEmpty)
+          const Text('기기 날짜가 바뀌면 새 단어로 복습할 수 있어요.')
+        else ...[
+          Text('오늘 새 단어로 복습할 글자 ${dailyLetters.length}개'),
+          const SizedBox(height: AppSizes.sm),
+          FilledButton(
+            onPressed: () => _start(dailyLetters, dailyReview: true),
+            child: const Text('새 단어로 복습'),
+          ),
+        ],
         const SizedBox(height: AppSizes.sm),
         OutlinedButton(
           onPressed: () => _start(reviewLetters),
@@ -248,7 +296,11 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
     bool loadFailed,
   ) {
     final letter = _letter;
-    final glyphs = letter.word.runes.map(String.fromCharCode).toList();
+    final word = _dailyReview ? letter.reviewWord.text : letter.word;
+    final reading =
+        _dailyReview ? letter.reviewWord.reading : letter.wordReading;
+    final meaning = _dailyReview ? letter.reviewWord.meaning : letter.meaning;
+    final glyphs = word.runes.map(String.fromCharCode).toList();
     final selection = _selectedIndex;
     final correct = selection != null && glyphs[selection] == letter.glyph;
     final saved = marked?.contains(letter) ?? false;
@@ -294,7 +346,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
           liveRegion: true,
           child: Text(
             correct
-                ? '맞았어요! ${letter.word} (${letter.wordReading}) · ${letter.meaning}'
+                ? '맞았어요! $word ($reading) · $meaning'
                 : '다시 찾아보세요. ‘${letter.reading}’에 해당하는 글자예요.',
             style: theme.textTheme.bodyLarge,
           ),
@@ -304,8 +356,9 @@ class _PilotSessionState extends ConsumerState<_PilotSession> {
           _reviewRetry()
         else
           OutlinedButton(
-            onPressed:
-                marked == null || _saving ? null : () => _setMarked(!saved),
+            onPressed: marked == null || _saving
+                ? null
+                : () => _save((review) => review.setMarked(letter, !saved)),
             child: Text(saved ? '헷갈림 표시 지우기' : '헷갈렸어요'),
           ),
         if (saved)
