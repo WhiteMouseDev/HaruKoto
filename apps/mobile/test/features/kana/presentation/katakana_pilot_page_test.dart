@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   const markKey = 'katakana_pilot_review.v1.account-a.shi';
   const fuMarkKey = 'katakana_pilot_review.v1.account-a.fu';
+  const uMarkKey = 'katakana_pilot_review.v1.account-a.u';
   final canvas = find.byKey(const ValueKey('katakana-recall-canvas'));
 
   Future<void> tapText(WidgetTester tester, String label) async {
@@ -36,6 +37,15 @@ void main() {
   void expectCanCompare(WidgetTester tester, bool enabled) {
     final button = find.widgetWithText(FilledButton, '예시와 비교');
     expect(tester.widget<FilledButton>(button).onPressed != null, enabled);
+  }
+
+  Future<void> skipWriteAndFind(
+    WidgetTester tester,
+    KatakanaPilotLetter letter,
+  ) async {
+    await tapText(tester, '가리고 쓰기');
+    await tapText(tester, '쓰기 건너뛰기');
+    await tapText(tester, letter.glyph);
   }
 
   testWidgets('compare, recall, check ink and find a kana in a word',
@@ -169,6 +179,105 @@ void main() {
     await tapText(tester, '가리고 쓰기');
     expect(find.text('ふ'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the first row teaches five individual letters in order',
+      (tester) async {
+    final prefs = await _preferences();
+    await _pumpPilot(tester, prefs, width: 320, textScale: 1.4);
+    await tapText(tester, 'ア・イ・ウ・エ・オ');
+
+    final letters = KatakanaPracticeGroup.firstRow.letters;
+    for (final (index, letter) in letters.indexed) {
+      expect(find.text('${index + 1}/5 글자 · 1/3 단계'), findsOneWidget);
+      expect(find.text('획순 보기'), findsOneWidget);
+      expect(find.text('${letter.glyph} · ${letter.reading}'), findsOneWidget);
+      expect(find.text('フ · ふ'), findsNothing);
+      expect(find.text('ワ · わ'), findsNothing);
+      await tapText(tester, '획순 재생');
+      await tapText(tester, '가리고 쓰기');
+      expect(find.text(letter.glyph), findsNothing);
+      expect(find.text(letter.reading), findsOneWidget);
+
+      if (index == 0) {
+        await tester.ensureVisible(canvas);
+        await tester.pumpAndSettle();
+        await tester.drag(canvas, const Offset(30, -45));
+        await tester.pump();
+        expectCanCompare(tester, true);
+        await tapText(tester, '한 획 지우기');
+        expectCanCompare(tester, false);
+        await tester.ensureVisible(canvas);
+        await tester.pumpAndSettle();
+        await tester.drag(canvas, const Offset(30, -45));
+        await tester.pump();
+        await tapText(tester, '예시와 비교');
+        expect(find.text('분홍색 예시와 내 글씨를 비교해 보세요.'), findsOneWidget);
+        await tapText(tester, '단어에서 찾기');
+      } else {
+        await tapText(tester, '쓰기 건너뛰기');
+      }
+
+      await tapText(tester, letter.glyph);
+      expect(find.textContaining('맞았어요! ${letter.word}'), findsOneWidget);
+      if (index == 0) await tapText(tester, '헷갈렸어요');
+      await tapText(tester, index == 4 ? '연습 마치기' : '다음 글자');
+    }
+
+    expect(find.text('기본 가타카나 쓰기'), findsOneWidget);
+    await tapText(tester, '헷갈린 글자 복습');
+    expect(find.text('1/1 글자 · 1/3 단계'), findsOneWidget);
+    expect(find.text('획순 보기'), findsOneWidget);
+    expect(find.text('ア · あ'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('both entrances share one persisted ウ review mark',
+      (tester) async {
+    final prefs = await _preferences({markKey: true});
+    final day = DateTime(2026, 11, 4, 23, 59);
+    const u = KatakanaPilotLetter.u;
+    await _pumpPilot(tester, prefs, clock: () => day);
+
+    await tapText(tester, 'フ・ワ・ウ');
+    for (final letter in [KatakanaPilotLetter.fu, KatakanaPilotLetter.wa]) {
+      await skipWriteAndFind(tester, letter);
+      await tapText(tester, '다음 글자');
+    }
+    await skipWriteAndFind(tester, u);
+    await tapText(tester, '헷갈렸어요');
+    await tapText(tester, '연습 마치기');
+
+    await tapText(tester, 'ア・イ・ウ・エ・オ');
+    for (final letter in [KatakanaPilotLetter.a, KatakanaPilotLetter.i]) {
+      await skipWriteAndFind(tester, letter);
+      await tapText(tester, '다음 글자');
+    }
+    await skipWriteAndFind(tester, u);
+    expect(find.text('다음 복습에 저장했어요.'), findsOneWidget);
+    await tapText(tester, '헷갈림 표시 지우기');
+    expect(prefs.getBool(uMarkKey), false);
+    await tapText(tester, '헷갈렸어요');
+    expect(prefs.getBool(uMarkKey), true);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    final nextDay = DateTime(2026, 11, 5);
+    await _pumpPilot(tester, prefs, clock: () => nextDay);
+    expect(find.text('シ · ウ'), findsOneWidget);
+    expect(find.text('오늘 새 단어로 복습할 글자 2개'), findsOneWidget);
+    await tapText(tester, '새 단어로 복습');
+    await tapText(tester, 'シ');
+    await tapText(tester, '다음 글자');
+    expect(find.text('2/2 글자 · 새 단어 복습'), findsOneWidget);
+    await tapText(tester, 'ウ');
+    expect(find.textContaining('맞았어요! ウール'), findsOneWidget);
+    await tapText(tester, '연습 마치기');
+    expect(find.text('새 단어로 복습'), findsNothing);
+    expect(find.text('シ · ウ'), findsOneWidget);
+    expect(prefs.getBool(markKey), true);
+    expect(prefs.getBool(uMarkKey), true);
+    expect(prefs.getInt('existing-learning-value'), 3);
   });
 
   testWidgets('stored uncertainty offers only the marked letter on re-entry',

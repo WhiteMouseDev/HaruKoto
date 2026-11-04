@@ -208,6 +208,103 @@ enum KatakanaPilotLetter {
     wordReading: 'うさぎ',
     meaning: '토끼',
     reviewWord: KatakanaPracticeWord('ウール', 'うーる', '울(양모)'),
+  ),
+  a(
+    glyph: 'ア',
+    reading: 'あ',
+    cue: '윗선을 오른쪽으로 긋고 왼쪽 아래로 꺾어요. 그 안쪽에서 시작해 왼쪽 아래로 내려와요.',
+    strokeNumberPositions: [Offset(.12, .28), Offset(.41, .43)],
+    strokes: [
+      [
+        Offset(.22, .28),
+        Offset(.50, .26),
+        Offset(.78, .24),
+        Offset(.74, .35),
+        Offset(.67, .45),
+        Offset(.58, .52),
+      ],
+      [
+        Offset(.51, .41),
+        Offset(.51, .53),
+        Offset(.49, .65),
+        Offset(.43, .76),
+        Offset(.34, .85),
+      ],
+    ],
+    word: 'アイス',
+    wordReading: 'あいす',
+    meaning: '아이스크림',
+    reviewWord: KatakanaPracticeWord('ピアノ', 'ぴあの', '피아노'),
+  ),
+  i(
+    glyph: 'イ',
+    reading: 'い',
+    cue: '오른쪽 위에서 왼쪽 아래로 비스듬히 긋고, 그 중간에서 세로로 내려와요.',
+    strokeNumberPositions: [Offset(.83, .17), Offset(.68, .46)],
+    strokes: [
+      [
+        Offset(.75, .22),
+        Offset(.65, .35),
+        Offset(.53, .47),
+        Offset(.39, .57),
+        Offset(.25, .63),
+      ],
+      [Offset(.58, .42), Offset(.58, .62), Offset(.58, .84)],
+    ],
+    word: 'イチゴ',
+    wordReading: 'いちご',
+    meaning: '딸기',
+    reviewWord: KatakanaPracticeWord('サイン', 'さいん', '서명'),
+  ),
+  e(
+    glyph: 'エ',
+    reading: 'え',
+    cue: '위에 짧은 가로획을 긋고 가운데를 세로로 내려요. 아래에 더 긴 가로획을 그어요.',
+    strokeNumberPositions: [
+      Offset(.21, .31),
+      Offset(.62, .39),
+      Offset(.12, .72)
+    ],
+    strokes: [
+      [Offset(.31, .32), Offset(.51, .31), Offset(.70, .29)],
+      [Offset(.51, .31), Offset(.51, .51), Offset(.51, .70)],
+      [Offset(.21, .72), Offset(.51, .70), Offset(.80, .68)],
+    ],
+    word: 'エアコン',
+    wordReading: 'えあこん',
+    meaning: '에어컨',
+    reviewWord: KatakanaPracticeWord('バレエ', 'ばれえ', '발레'),
+  ),
+  o(
+    glyph: 'オ',
+    reading: 'お',
+    cue: '가로획을 긋고 세로로 내려 끝을 왼쪽으로 올려요. 마지막 획은 교차점에서 왼쪽 아래로 내려요.',
+    strokeNumberPositions: [
+      Offset(.11, .39),
+      Offset(.61, .11),
+      Offset(.39, .47)
+    ],
+    strokes: [
+      [Offset(.21, .39), Offset(.50, .38), Offset(.80, .36)],
+      [
+        Offset(.61, .20),
+        Offset(.61, .40),
+        Offset(.62, .68),
+        Offset(.61, .83),
+        Offset(.47, .78),
+      ],
+      [
+        Offset(.59, .38),
+        Offset(.52, .48),
+        Offset(.43, .58),
+        Offset(.32, .67),
+        Offset(.22, .73),
+      ],
+    ],
+    word: 'カラオケ',
+    wordReading: 'からおけ',
+    meaning: '노래방',
+    reviewWord: KatakanaPracticeWord('ラジオ', 'らじお', '라디오'),
   );
 
   const KatakanaPilotLetter({
@@ -242,6 +339,10 @@ enum KatakanaPilotLetter {
         fu => const [fu, wa, u],
         wa => const [wa, fu, u],
         u => const [u, fu, wa],
+        a => const [a],
+        i => const [i],
+        e => const [e],
+        o => const [o],
       };
 }
 
@@ -254,7 +355,14 @@ enum KatakanaPracticeGroup {
   ]),
   kuTa([KatakanaPilotLetter.ku, KatakanaPilotLetter.ta]),
   fuWaU(
-      [KatakanaPilotLetter.fu, KatakanaPilotLetter.wa, KatakanaPilotLetter.u]);
+      [KatakanaPilotLetter.fu, KatakanaPilotLetter.wa, KatakanaPilotLetter.u]),
+  firstRow([
+    KatakanaPilotLetter.a,
+    KatakanaPilotLetter.i,
+    KatakanaPilotLetter.u,
+    KatakanaPilotLetter.e,
+    KatakanaPilotLetter.o,
+  ]);
 
   const KatakanaPracticeGroup(this.letters);
 
