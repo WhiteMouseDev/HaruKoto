@@ -40,13 +40,13 @@ final recommendationsProvider =
   return ref.watch(studyRepositoryProvider).fetchRecommendations();
 });
 
-/// Refresh all active vocabulary levels after a confirmed daily-goal save.
-/// Optimistic preference changes must not request a preview from the old goal.
+/// Refresh only the changed category across its active levels after a save.
 final vocabularyPreviewRefreshProvider =
-    NotifierProvider<VocabularyPreviewRefresh, int>(
-        VocabularyPreviewRefresh.new);
+    NotifierProvider<GoalPreviewRefresh, int>(GoalPreviewRefresh.new);
+final grammarPreviewRefreshProvider =
+    NotifierProvider<GoalPreviewRefresh, int>(GoalPreviewRefresh.new);
 
-class VocabularyPreviewRefresh extends Notifier<int> {
+class GoalPreviewRefresh extends Notifier<int> {
   @override
   int build() => 0;
 
@@ -57,24 +57,22 @@ final smartPreviewProvider = FutureProvider.autoDispose
     .family<SmartPreviewModel, ({String category, String jlptLevel})>(
         (ref, params) async {
   final repository = ref.watch(studyRepositoryProvider);
-  if (params.category != 'VOCABULARY') {
-    return repository.fetchSmartPreview(
-      category: params.category,
-      jlptLevel: params.jlptLevel,
-    );
-  }
   ref.watch(studyDateProvider);
-  ref.watch(vocabularyPreviewRefreshProvider);
+  if (params.category == 'VOCABULARY') {
+    ref.watch(vocabularyPreviewRefreshProvider);
+  } else if (params.category == 'GRAMMAR') {
+    ref.watch(grammarPreviewRefreshProvider);
+  }
   final owner = ref.watch(currentAccountIdProvider);
   if (owner == null || ref.read(currentAccountReaderProvider)() != owner) {
-    throw StateError('Vocabulary preview account is no longer current');
+    throw StateError('Study preview account is no longer current');
   }
   final preview = await repository.fetchSmartPreview(
     category: params.category,
     jlptLevel: params.jlptLevel,
   );
   if (!ref.mounted || ref.read(currentAccountReaderProvider)() != owner) {
-    throw StateError('Vocabulary preview account changed while loading');
+    throw StateError('Study preview account changed while loading');
   }
   return preview;
 });

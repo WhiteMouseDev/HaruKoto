@@ -60,7 +60,7 @@ void main() {
         'streak': {'current': 2, 'longest': 2, 'studiedToday': false}
       }));
       await tester.pumpAndSettle();
-      expect(find.text('어제까지의 기록 · 오늘 마치면 3일'), findsOneWidget);
+      expect(find.text('어제까지의 기록 · 오늘 학습하면 3일'), findsOneWidget);
     });
 
     testWidgets('shows skeleton when all providers are loading',

@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.models.enums import KanaType
+from app.models.enums import KanaType, QuizType
 from app.services import stats_dashboard
 from app.services.stats_dashboard import get_dashboard_data
 
@@ -55,6 +55,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
         id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
         jlpt_level="N5",
         daily_goal=10,
+        app_settings=None,
         streak_count=4,
         longest_streak=9,
         last_study_date=date(2026, 4, 23),
@@ -78,7 +79,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
             side_effect=[
                 _DbResult(scalar_one_or_none_value=today_progress),
                 _DbResult(scalar_rows=[weekly_progress]),
-                _DbResult(all_rows=[((date(2026, 4, 20) - date(1970, 1, 1)).days, 2)]),
+                _DbResult(all_rows=[((date(2026, 4, 20) - date(1970, 1, 1)).days, 2), ((date(2026, 4, 23) - date(1970, 1, 1)).days, 4)]),
                 _DbResult(scalar_value=100),
                 _DbResult(all_rows=[(True, 12), (False, 3)]),
                 _DbResult(scalar_value=50),
@@ -86,7 +87,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 46), (KanaType.KATAKANA, 46)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 12)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 20), (KanaType.KATAKANA, 5)]),
-                _DbResult(scalar_value=5),
+                _DbResult(all_rows=[(QuizType.VOCABULARY, 5), (QuizType.GRAMMAR, 2)]),
             ]
         )
     )
@@ -105,7 +106,13 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
         "xpEarned": 120,
         "goalProgress": 1.0,
         "hasStudied": True,
-        "vocabularyGoal": {"date": "2026-04-23", "answeredCount": 5},
+        "vocabularyGoal": {"date": "2026-04-23", "answeredCount": 4},
+        "categoryGoals": {
+            "date": "2026-04-23",
+            "vocabulary": {"target": 10, "answeredCount": 5},
+            "grammar": {"target": 10, "answeredCount": 2},
+            "sentence": {"target": 10, "answeredCount": 0},
+        },
     }
     assert response.streak.current == 4
     assert response.streak.longest == 9
@@ -114,7 +121,7 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert len(response.weekly_stats) == 7
     assert response.weekly_stats[3].date == "2026-04-20"
     assert response.weekly_stats[3].vocabulary_answered_count == 2
-    assert response.weekly_stats[-1].vocabulary_answered_count == 0
+    assert response.weekly_stats[-1].vocabulary_answered_count == 4
     assert response.weekly_stats[3].words_studied == 3
     assert response.weekly_stats[3].has_studied is True
     assert response.level_progress.vocabulary.total == 100

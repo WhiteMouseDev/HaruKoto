@@ -1838,6 +1838,26 @@ export interface paths {
         patch: operations["update_daily_goal_api_v1_study_daily_goal_patch"];
         trace?: never;
     };
+    "/api/v1/study/category-goal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Category Goal
+         * @description Update exactly one quiz category's daily target.
+         */
+        patch: operations["update_category_goal_api_v1_study_category_goal_patch"];
+        trace?: never;
+    };
     "/api/v1/study/capabilities": {
         parameters: {
             query?: never;
@@ -2501,6 +2521,19 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** CategoryGoalProgress */
+        CategoryGoalProgress: {
+            /** Target */
+            target: number;
+            /** Answeredcount */
+            answeredCount: number;
+        };
+        /** CategoryGoalRequest */
+        CategoryGoalRequest: {
+            category: components["schemas"]["GoalCategory"];
+            /** Dailygoal */
+            dailyGoal: number;
+        };
         /** CategoryStat */
         CategoryStat: {
             /** Total */
@@ -2798,6 +2831,17 @@ export interface components {
             /** Keyexpressions */
             keyExpressions?: unknown[] | null;
         };
+        /** DailyCategoryGoals */
+        DailyCategoryGoals: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            vocabulary: components["schemas"]["CategoryGoalProgress"];
+            grammar: components["schemas"]["CategoryGoalProgress"];
+            sentence: components["schemas"]["CategoryGoalProgress"];
+        };
         /** DailyGoalRequest */
         DailyGoalRequest: {
             /** Dailygoal */
@@ -2828,6 +2872,8 @@ export interface components {
             xpEarned: number;
             /** Hasstudied */
             hasStudied: boolean;
+            /** Goalachieved */
+            goalAchieved?: boolean;
         };
         /** DashboardResponse */
         DashboardResponse: {
@@ -2885,6 +2931,8 @@ export interface components {
              */
             emoji: string;
         };
+        /** @enum {string} */
+        GoalCategory: "VOCABULARY" | "GRAMMAR" | "SENTENCE";
         /** GrammarAdminItem */
         GrammarAdminItem: {
             /**
@@ -4600,6 +4648,7 @@ export interface components {
             /** Hasstudied */
             hasStudied: boolean;
             vocabularyGoal: components["schemas"]["VocabularyGoal"];
+            categoryGoals: components["schemas"]["DailyCategoryGoals"];
         };
         /** TtsGenerationStatusSummary */
         TtsGenerationStatusSummary: {
@@ -8501,6 +8550,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["DailyGoalRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyGoalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_category_goal_api_v1_study_category_goal_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryGoalRequest"];
             };
         };
         responses: {

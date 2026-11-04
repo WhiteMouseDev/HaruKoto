@@ -19,7 +19,7 @@ void main() {
       (tester) async {
     await _pumpCard(tester, streak: _streak(current: 3));
     expect(find.text('3일 연속 학습'), findsOneWidget);
-    expect(find.text('어제까지의 기록 · 오늘 마치면 4일'), findsOneWidget);
+    expect(find.text('어제까지의 기록 · 오늘 학습하면 4일'), findsOneWidget);
     expect(find.text('오늘도 학습했어요'), findsNothing);
   });
 
@@ -80,12 +80,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(repository.calls, [(2026, 9)]);
-    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsNothing);
+    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsNothing);
 
     pending.completeError(StateError('offline'));
     await tester.pumpAndSettle();
     expect(find.text('학습 기록을 불러오지 못했어요'), findsOneWidget);
-    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsNothing);
+    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsNothing);
     repository.result = Future.value([
       StatsHistoryRecord.fromJson({'date': '2026-09-27', 'hasStudied': true}),
     ]);
@@ -93,7 +93,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(repository.calls, [(2026, 9), (2026, 9)]);
     expect(find.text('학습 기록을 불러오지 못했어요'), findsNothing);
-    expect(find.text('체크는 학습한 날 · 테두리는 오늘'), findsOneWidget);
+    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsOneWidget);
     expect(find.byIcon(LucideIcons.check), findsOneWidget);
 
     await tester.tap(find.byTooltip('이전 달'));
@@ -113,7 +113,16 @@ void main() {
         StatsHistoryRecord.fromJson(
             {'date': '2026-09-23', 'hasStudied': false, 'xpEarned': 50}),
         StatsHistoryRecord.fromJson({'date': '2026-09-24', 'hasStudied': true}),
-        StatsHistoryRecord.fromJson({'date': '2026-09-28', 'hasStudied': true}),
+        StatsHistoryRecord.fromJson({
+          'date': '2026-09-25',
+          'hasStudied': true,
+          'goalAchieved': true,
+        }),
+        StatsHistoryRecord.fromJson({
+          'date': '2026-09-28',
+          'hasStudied': true,
+          'goalAchieved': true,
+        }),
       ]);
     await _pumpCard(tester, repository: repository);
     await tester.tap(find.byKey(const ValueKey('streak-calendar-action')));
@@ -122,7 +131,10 @@ void main() {
     expect(find.bySemanticsLabel('2026년 9월 22일 화요일, 학습 기록 있음'), findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 23일 수요일, 학습 기록 없음'), findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 24일 목요일, 학습 기록 있음'), findsOneWidget);
+    expect(find.bySemanticsLabel('2026년 9월 25일 금요일, 학습 기록 있음, 하루 목표 달성'),
+        findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 28일 월요일, 예정'), findsOneWidget);
+    expect(find.byIcon(LucideIcons.trophy), findsOneWidget);
     expect(find.textContaining('하루에 한 번만'), findsNothing);
     semantics.dispose();
   });

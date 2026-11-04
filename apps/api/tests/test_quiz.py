@@ -139,8 +139,8 @@ async def test_answer_question_correct(client, mock_user, mock_quiz_session, tes
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
     mock_session.execute = AsyncMock(
-        # Read first answer/progress, then accept review-event and attendance writes.
-        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock()]
+        # Read answer/progress, accept review/attendance writes, then count saved answers.
+        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock(), MagicMock()]
     )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
@@ -197,8 +197,8 @@ async def test_answer_question_wrong(client, mock_user, mock_quiz_session, test_
     no_previous_answer = MagicMock()
     no_previous_answer.scalar_one_or_none.return_value = None
     mock_session.execute = AsyncMock(
-        # Read first answer/progress, then accept review-event and attendance writes.
-        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock()]
+        # Read answer/progress, accept review/attendance writes, then count saved answers.
+        side_effect=[no_previous_answer, MagicMock(), mock_progress_result, MagicMock(), MagicMock(), MagicMock()]
     )
     mock_session.begin_nested = MagicMock(return_value=AsyncMock())
     mock_session.add = MagicMock()
@@ -427,7 +427,7 @@ async def test_get_smart_preview_vocabulary(client, mock_user, test_user_id):
     mock_mastered_result.scalar.return_value = 2
 
     mock_today_result = MagicMock()
-    mock_today_result.scalar.return_value = 4
+    mock_today_result.all.return_value = [(QuizType.VOCABULARY, 4)]
 
     mock_session.execute = AsyncMock(
         side_effect=[

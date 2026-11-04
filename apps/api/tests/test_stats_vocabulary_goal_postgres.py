@@ -194,6 +194,12 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "goalProgress": 0.7,
                 "hasStudied": True,
                 "vocabularyGoal": {"date": "2026-10-30", "answeredCount": 5},
+                "categoryGoals": {
+                    "date": "2026-10-30",
+                    "vocabulary": {"target": 10, "answeredCount": 5},
+                    "grammar": {"target": 10, "answeredCount": 1},
+                    "sentence": {"target": 10, "answeredCount": 1},
+                },
             }
             assert payload["streak"] == {"current": 3, "longest": 8, "studiedToday": True, "needsActionToday": False}
             assert payload["weeklyStats"][-1] == {
@@ -235,6 +241,12 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "goalProgress": 0.0,
                 "hasStudied": False,
                 "vocabularyGoal": {"date": "2026-10-30", "answeredCount": 1},
+                "categoryGoals": {
+                    "date": "2026-10-30",
+                    "vocabulary": {"target": 10, "answeredCount": 1},
+                    "grammar": {"target": 10, "answeredCount": 0},
+                    "sentence": {"target": 10, "answeredCount": 0},
+                },
             }
             authenticated_user_id = user_id
             monkeypatch.setattr(stats_dashboard, "get_today_kst", lambda: today + timedelta(days=1))

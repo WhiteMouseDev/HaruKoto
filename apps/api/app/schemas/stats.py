@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import datetime
+from typing import Literal
 
 from pydantic import Field
 
-from app.schemas.common import CamelModel
+from app.schemas.common import CamelModel, omit_schema_default
 from app.schemas.kana import KanaProgressResponse
+from app.utils.constants import MAX_DAILY_GOAL, MIN_DAILY_GOAL
 
 
 class ProgressStat(CamelModel):
@@ -24,6 +26,21 @@ class VocabularyGoal(CamelModel):
     answered_count: int = Field(ge=0)
 
 
+type GoalCategory = Literal["VOCABULARY", "GRAMMAR", "SENTENCE"]
+
+
+class CategoryGoalProgress(CamelModel):
+    target: int = Field(gt=0)
+    answered_count: int = Field(ge=0)
+
+
+class DailyCategoryGoals(CamelModel):
+    date: datetime.date
+    vocabulary: CategoryGoalProgress
+    grammar: CategoryGoalProgress
+    sentence: CategoryGoalProgress
+
+
 class TodayStats(CamelModel):
     words_studied: int
     quizzes_completed: int
@@ -33,6 +50,7 @@ class TodayStats(CamelModel):
     goal_progress: float
     has_studied: bool
     vocabulary_goal: VocabularyGoal
+    category_goals: DailyCategoryGoals
 
 
 class StreakInfo(CamelModel):
@@ -69,6 +87,7 @@ class DailyProgressItem(CamelModel):
     study_time_seconds: int
     xp_earned: int
     has_studied: bool
+    goal_achieved: bool = Field(default=False, json_schema_extra=omit_schema_default)
 
 
 class HistoryResponse(CamelModel):
@@ -185,6 +204,11 @@ class AchievementsResponse(CamelModel):
 
 class DailyGoalRequest(CamelModel):
     daily_goal: int
+
+
+class CategoryGoalRequest(CamelModel):
+    category: GoalCategory
+    daily_goal: int = Field(ge=MIN_DAILY_GOAL, le=MAX_DAILY_GOAL, strict=True)
 
 
 class DailyGoalResponse(CamelModel):

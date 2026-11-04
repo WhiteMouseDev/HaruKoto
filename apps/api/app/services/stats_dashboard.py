@@ -20,6 +20,7 @@ from app.models.enums import KanaType
 from app.models.user import User
 from app.schemas.kana import KanaProgressResponse, KanaStat
 from app.schemas.stats import (
+    DailyCategoryGoals,
     DashboardResponse,
     LevelProgress,
     ProgressStat,
@@ -28,8 +29,9 @@ from app.schemas.stats import (
     VocabularyGoal,
     WeeklyStatItem,
 )
+from app.services.category_goals import get_daily_category_goals
 from app.services.study_activity import has_study_activity as _has_study_activity
-from app.services.vocabulary_goal import get_vocabulary_answered_counts, get_vocabulary_goal
+from app.services.vocabulary_goal import get_vocabulary_answered_counts
 from app.utils.date import get_today_kst, study_date_kst
 
 
@@ -42,11 +44,14 @@ async def get_dashboard_data(
     weekly_stats = await _get_weekly_stats(db, user_id=user.id, today=today)
     level_progress = await _get_level_progress(db, user=user)
     kana_progress = await _get_kana_progress(db, user_id=user.id)
-    vocabulary_goal = await get_vocabulary_goal(db, user_id=user.id, day=today)
+    category_goals = await get_daily_category_goals(db, user, day=today)
+    legacy_vocabulary_count = weekly_stats[-1].vocabulary_answered_count or 0
 
     return DashboardResponse(
         show_kana=user.show_kana,
-        today=_build_today_stats(today_progress, daily_goal=user.daily_goal, vocabulary_goal=vocabulary_goal),
+        today=_build_today_stats(
+            today_progress, daily_goal=user.daily_goal, category_goals=category_goals, legacy_vocabulary_count=legacy_vocabulary_count
+        ),
         streak=_build_streak_info(user=user, today_progress=today_progress, today=today),
         weekly_stats=weekly_stats,
         level_progress=level_progress,
@@ -73,7 +78,8 @@ def _build_today_stats(
     progress: DailyProgress | None,
     *,
     daily_goal: int,
-    vocabulary_goal: VocabularyGoal,
+    category_goals: DailyCategoryGoals,
+    legacy_vocabulary_count: int,
 ) -> TodayStats:
     goal_progress = 0.0
     if progress and daily_goal > 0:
@@ -87,7 +93,8 @@ def _build_today_stats(
         xp_earned=progress.xp_earned if progress else 0,
         goal_progress=goal_progress,
         has_studied=_has_study_activity(progress),
-        vocabulary_goal=vocabulary_goal,
+        vocabulary_goal=VocabularyGoal(date=category_goals.date, answered_count=legacy_vocabulary_count),
+        category_goals=category_goals,
     )
 
 

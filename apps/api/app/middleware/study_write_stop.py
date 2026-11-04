@@ -48,6 +48,7 @@ BLOCKED_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/api/v1/chat/live-feedback"),
         ("DELETE", "/api/v1/chat/{conversation_id}"),
         ("PATCH", "/api/v1/study/daily-goal"),
+        ("PATCH", "/api/v1/study/category-goal"),
         ("PATCH", "/api/v1/user/profile"),
         ("POST", "/api/v1/user/avatar"),
         ("PATCH", "/api/v1/user/avatar"),

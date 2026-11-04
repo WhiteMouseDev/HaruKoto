@@ -3,22 +3,26 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.models import DailyProgress, QuizAnswer, QuizSession
+from app.models.enums import JlptLevel, QuizType
 from app.models.user import User
+from app.routers.stats import get_history
 from app.routers.user import get_profile
 from app.schemas.kana import KanaProgressRecord
-from app.schemas.quiz import QuizCompleteRequest
+from app.schemas.quiz import QuizAnswerRequest, QuizCompleteRequest
 from app.services import (
     kana_progress,
     lesson_study_activity,
     quiz_answer,
     quiz_complete,
     stats_dashboard,
+    study_daily_goal,
     study_day_credit,
 )
 from app.services.stats_dashboard import get_dashboard_data
@@ -303,3 +307,164 @@ async def test_newer_duplicate_answer_does_not_create_completion_day_or_inflate_
     state = await _state(engine, attempt.user_id)
     assert state["daily"][0]["study_day_credited"] is False and state["daily"][0]["study_minutes"] == 1
     assert state["user"]["streak_count"] == 0 and len(state["quizAnswers"]) == 2
+
+
+async def test_separate_goal_counts_and_one_persistent_trophy_per_kst_day(engine, monkeypatch):
+    attempt = await _seed(engine)
+    midnight = datetime(2026, 11, 3, 15, tzinfo=UTC)
+    before_midnight = midnight - timedelta(milliseconds=1)
+    previous_day, day = study_date_kst(before_midnight), study_date_kst(midnight)
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def set_sentence_target(target, today=day):
+        monkeypatch.setattr(study_daily_goal, "get_today_kst", lambda: today)
+        async with sessions() as db:
+            user = await db.get(User, attempt.user_id)
+            await study_daily_goal.update_daily_goal_data(db, user, daily_goal=target, quiz_type=QuizType.SENTENCE_ARRANGE)
+
+    async def sentence(question_id=None, mode="arrange"):
+        question_id = question_id or uuid4()
+        session_id = uuid4()
+        async with sessions() as db:
+            db.add(
+                QuizSession(
+                    id=session_id,
+                    user_id=attempt.user_id,
+                    quiz_type=QuizType.SENTENCE_ARRANGE,
+                    jlpt_level=JlptLevel.N5,
+                    total_questions=1,
+                    questions_data={
+                        "mode": mode,
+                        "questions": [{"id": str(question_id), "type": "SENTENCE_ARRANGE", "correctOptionId": ""}],
+                    },
+                    started_at=before_midnight,
+                )
+            )
+            await db.commit()
+        body = QuizAnswerRequest(
+            session_id=session_id, question_id=question_id, question_type=QuizType.SENTENCE_ARRANGE, selected_option_id="wrong"
+        )
+        await _answer(engine, attempt, body)
+        return body
+
+    async def read_history():
+        async with sessions() as db:
+            user = await db.get(User, attempt.user_id)
+            response = await get_history(user, db, year=day.year, month=day.month)
+            return {record.date: (record.has_studied, record.goal_achieved) for record in response.records}
+
+    await set_sentence_target(5)
+    _freeze(monkeypatch, quiz_answer, before_midnight)
+    _, word = await _new_quiz(engine, attempt, wrong=True)
+    await _answer(engine, attempt, word)
+
+    _freeze(monkeypatch, quiz_answer, midnight)
+    matching = await sentence(mode="matching")
+    first = await sentence()
+    await _answer(engine, attempt, first)  # Replay must not add a second answer.
+    await sentence(first.question_id)  # A second quiz with the same question also counts once.
+    assert await read_history() == {str(previous_day): (True, False), str(day): (True, False)}
+
+    async with sessions() as db:
+        grammar = QuizSession(user_id=attempt.user_id, quiz_type=QuizType.GRAMMAR, jlpt_level=JlptLevel.N5, total_questions=1)
+        db.add(grammar)
+        await db.flush()
+        db.add_all(
+            [
+                QuizAnswer(
+                    session_id=grammar.id,
+                    question_id=uuid4(),
+                    question_type=QuizType.GRAMMAR,
+                    selected_option_id="wrong",
+                    is_correct=False,
+                    answered_at=midnight,
+                ),
+                QuizAnswer(
+                    session_id=matching.session_id,
+                    question_id=uuid4(),
+                    question_type=QuizType.GRAMMAR,
+                    selected_option_id="wrong",
+                    is_correct=False,
+                    answered_at=midnight,
+                ),
+            ]
+        )
+        await db.commit()
+
+    for _ in range(4):
+        await sentence()
+    assert await read_history() == {str(previous_day): (True, False), str(day): (True, True)}
+
+    await set_sentence_target(8)
+    monkeypatch.setattr(stats_dashboard, "get_today_kst", lambda: day)
+    async with sessions() as db:
+        user = await db.get(User, attempt.user_id)
+        goals = (await get_dashboard_data(db, user)).today.category_goals
+        assert goals.vocabulary.target == user.daily_goal and goals.vocabulary.answered_count == 0
+        assert goals.grammar.target == 10 and goals.grammar.answered_count == 1
+        assert goals.sentence.target == 8 and goals.sentence.answered_count == 5
+    assert await read_history() == {str(previous_day): (True, False), str(day): (True, True)}
+
+    next_day = day + timedelta(days=1)
+    _freeze(monkeypatch, quiz_answer, midnight + timedelta(days=1))
+    for _ in range(5):
+        await sentence()
+    assert (await read_history())[str(next_day)] == (True, False)
+    await set_sentence_target(5, next_day)
+    assert (await read_history())[str(next_day)] == (True, True)
+
+
+@pytest.mark.parametrize("category", [QuizType.VOCABULARY, QuizType.GRAMMAR])
+async def test_categorized_cloze_answers_count_toward_their_own_goal(engine, monkeypatch, category):
+    attempt = await _seed(engine)
+    day = study_date_kst(NOW)
+    _freeze(monkeypatch, quiz_answer, NOW)
+    monkeypatch.setattr(stats_dashboard, "get_today_kst", lambda: day)
+    monkeypatch.setattr(study_daily_goal, "get_today_kst", lambda: day)
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    async with sessions() as db:
+        user = await db.get(User, attempt.user_id)
+        await study_daily_goal.update_daily_goal_data(db, user, daily_goal=5, quiz_type=category)
+
+    async def submit_cloze(*, session_type=category, snapshot_type=QuizType.CLOZE, question_id=None, stage=False):
+        question_id = question_id or uuid4()
+        questions = [{"id": str(question_id), "type": snapshot_type.value, "correctOptionId": "right"}]
+        async with sessions() as db:
+            session = QuizSession(
+                user_id=attempt.user_id,
+                quiz_type=session_type,
+                jlpt_level=JlptLevel.N5,
+                total_questions=1,
+                questions_data={"stage_id": str(uuid4()), "questions": questions} if stage else questions,
+                started_at=NOW,
+            )
+            db.add(session)
+            await db.commit()
+        body = QuizAnswerRequest(session_id=session.id, question_id=question_id, question_type=QuizType.CLOZE, selected_option_id="wrong")
+        await _answer(engine, attempt, body)
+        return body
+
+    async def read_progress(*, expected_count, expected_trophy):
+        async with sessions() as db:
+            user = await db.get(User, attempt.user_id)
+            history = await get_history(user, db, year=day.year, month=day.month)
+            [record] = history.records
+            assert record.date == str(day) and record.has_studied
+            assert record.goal_achieved is expected_trophy
+            dashboard = await get_dashboard_data(db, user)
+            goals = dashboard.today.category_goals
+            counts = [goals.vocabulary.answered_count, goals.grammar.answered_count, goals.sentence.answered_count]
+            assert counts == ([expected_count, 0, 0] if category == QuizType.VOCABULARY else [0, expected_count, 0])
+            assert dashboard.today.vocabulary_goal.answered_count == 0
+            assert dashboard.weekly_stats[-1].vocabulary_answered_count == 0
+
+    first = await submit_cloze()
+    await read_progress(expected_count=1, expected_trophy=False)
+    await _answer(engine, attempt, first)
+    await submit_cloze(question_id=first.question_id, stage=True)
+    await submit_cloze(session_type=QuizType.CLOZE)
+    await submit_cloze(snapshot_type=category)
+    await read_progress(expected_count=1, expected_trophy=False)
+    for _ in range(4):
+        await submit_cloze(stage=True)
+    await read_progress(expected_count=5, expected_trophy=True)

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'models/category_goals_model.dart';
 import 'models/dashboard_model.dart';
 import 'models/mission_model.dart';
 import 'models/user_profile_model.dart';
@@ -18,10 +19,11 @@ class HomeRepository {
     return UserProfileModel.fromJson(response.data!);
   }
 
-  Future<int> updateDailyGoal(int goal) async {
+  Future<int> updateCategoryDailyGoal(
+      DailyGoalCategory category, int goal) async {
     final response = await _dio.patch<Map<String, dynamic>>(
-      '/study/daily-goal',
-      data: {'dailyGoal': goal},
+      '/study/category-goal',
+      data: {'category': category.apiValue, 'dailyGoal': goal},
     );
     return response.data!['dailyGoal'] as int;
   }
