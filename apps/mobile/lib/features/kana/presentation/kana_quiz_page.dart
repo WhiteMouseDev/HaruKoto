@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/auth/current_account_provider.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../study/data/models/quiz_result_model.dart';
 import '../../study/presentation/quiz_result_page.dart';
@@ -12,6 +14,7 @@ import '../providers/kana_provider.dart';
 import '../providers/kana_completion_service.dart';
 import 'widgets/kana_quiz_content.dart';
 import 'widgets/kana_quiz_master_result.dart';
+import 'widgets/kana_save_status.dart';
 
 class KanaQuizPage extends ConsumerStatefulWidget {
   final String type;
@@ -30,7 +33,14 @@ class KanaQuizPage extends ConsumerStatefulWidget {
 }
 
 class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
-  bool _loading = true;
+  bool _loading = false;
+  late final String? _owner;
+  bool _savingAnswer = false;
+  bool _completing = false;
+  String? _answerError;
+  String? _completionError;
+  bool _completionMayBeReplay = false;
+  Timer? _advanceTimer;
   String? _error;
   String? _sessionId;
   List<QuizQuestion> _questions = [];
@@ -46,164 +56,205 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
   @override
   void initState() {
     super.initState();
+    _owner = ref.read(currentAccountReaderProvider)();
     _startQuiz();
   }
 
+  bool get _isCurrent =>
+      mounted &&
+      _owner != null &&
+      ref.read(currentAccountReaderProvider)() == _owner &&
+      ref.read(currentAccountIdProvider) == _owner;
+
+  @override
+  void dispose() {
+    _advanceTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _startQuiz() async {
+    if (!_isCurrent || _loading || _sessionId != null) return;
     setState(() {
       _loading = true;
       _error = null;
     });
-
     try {
-      final repo = ref.read(kanaRepositoryProvider);
-      final res = await repo.startQuiz(
-        kanaType: kanaType,
-        quizMode: widget.mode,
-        count: widget.isMaster ? 46 : 10,
-      );
-
+      final res = await ref.read(kanaRepositoryProvider).startQuiz(
+            kanaType: kanaType,
+            quizMode: widget.mode,
+            count: widget.isMaster ? 46 : 10,
+          );
+      if (!_isCurrent) return;
       if (res.sessionId == null || res.questions.isEmpty) {
-        setState(() {
-          _error = res.message ?? '출제할 문제가 없습니다';
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _sessionId = res.sessionId;
-          _questions = res.questions;
-          _currentIndex = 0;
-          _selectedOption = null;
-          _showFeedback = false;
-          _answers.clear();
-          _loading = false;
-        });
+        throw const ApiException(message: '출제할 문제가 없어요. 잠시 후 다시 시도해 주세요.');
       }
-    } catch (e) {
-      debugPrint('[KanaQuizPage] Failed to start quiz: $e');
       setState(() {
-        _error = '퀴즈를 시작할 수 없습니다';
+        _sessionId = res.sessionId;
+        _questions = List.of(res.questions);
+        _currentIndex = 0;
+        _selectedOption = null;
+        _showFeedback = false;
+        _answers.clear();
+        _loading = false;
+      });
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _error = kanaSaveErrorMessage(error);
         _loading = false;
       });
     }
   }
 
   Future<void> _handleSelect(String optionId) async {
-    if (_showFeedback) return;
+    if (!_isCurrent ||
+        _showFeedback ||
+        _selectedOption != null ||
+        _completing) {
+      return;
+    }
+    setState(() => _selectedOption = optionId);
+    await _saveAnswer();
+  }
+
+  Future<void> _saveAnswer() async {
+    if (!_isCurrent ||
+        _savingAnswer ||
+        _showFeedback ||
+        _sessionId == null ||
+        _selectedOption == null) {
+      return;
+    }
     final current = _questions[_currentIndex];
-
+    final optionId = _selectedOption!;
     setState(() {
-      _selectedOption = optionId;
-      _showFeedback = true;
+      _savingAnswer = true;
+      _answerError = null;
     });
-
-    // 서버에서 정오답 판정 (correctOptionId가 strip되므로 API 응답 기반)
-    bool isCorrect = current.correctOptionId != null
-        ? optionId == current.correctOptionId
-        : false;
-
-    if (_sessionId != null) {
-      try {
-        final result =
-            await ref.read(kanaCompletionServiceProvider).answerQuestion(
-                  sessionId: _sessionId!,
-                  questionId: current.questionId,
-                  selectedOptionId: optionId,
-                );
-        isCorrect = result.isCorrect;
-        // 서버에서 받은 correctOptionId로 UI 업데이트 (정답 하이라이트용)
-        if (current.correctOptionId == null && mounted) {
+    try {
+      final result =
+          await ref.read(kanaCompletionServiceProvider).answerQuestion(
+                sessionId: _sessionId!,
+                questionId: current.questionId,
+                selectedOptionId: optionId,
+              );
+      if (!_isCurrent) return;
+      if (!current.options
+              .any((option) => option.id == result.correctOptionId) ||
+          result.isCorrect != (optionId == result.correctOptionId)) {
+        throw const FormatException('Invalid kana answer acknowledgement');
+      }
+      setState(() {
+        _questions[_currentIndex] = QuizQuestion(
+          questionId: current.questionId,
+          questionText: current.questionText,
+          questionSubText: current.questionSubText,
+          options: current.options,
+          correctOptionId: result.correctOptionId,
+        );
+        _answers.add(_Answer(
+          questionId: current.questionId,
+          selectedOptionId: optionId,
+          isCorrect: result.isCorrect,
+        ));
+        _savingAnswer = false;
+        _showFeedback = true;
+      });
+      _advanceTimer = Timer(const Duration(seconds: 1), () {
+        if (!_isCurrent) return;
+        if (_currentIndex + 1 >= _questions.length) {
+          unawaited(_handleComplete());
+        } else {
           setState(() {
-            _questions[_currentIndex] = QuizQuestion(
-              questionId: current.questionId,
-              questionText: current.questionText,
-              questionSubText: current.questionSubText,
-              options: current.options,
-              correctOptionId: result.correctOptionId,
-            );
+            _currentIndex++;
+            _selectedOption = null;
+            _showFeedback = false;
           });
         }
-      } catch (_) {
-        // 네트워크 실패 시 로컬 판정 유지
-      }
+      });
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _savingAnswer = false;
+        _answerError = kanaSaveErrorMessage(error);
+      });
     }
-
-    _answers.add(_Answer(
-      questionId: current.questionId,
-      selectedOptionId: optionId,
-      isCorrect: isCorrect,
-    ));
-
-    Timer(const Duration(seconds: 1), () {
-      if (!mounted) return;
-      final nextIndex = _currentIndex + 1;
-      if (nextIndex >= _questions.length) {
-        _handleComplete();
-      } else {
-        setState(() {
-          _currentIndex = nextIndex;
-          _selectedOption = null;
-          _showFeedback = false;
-        });
-      }
-    });
   }
 
   Future<void> _handleComplete() async {
-    final correct = _answers.where((a) => a.isCorrect).length;
-    final total = _answers.length;
-
-    if (_sessionId != null) {
-      try {
-        final res = await ref
-            .read(kanaCompletionServiceProvider)
-            .completeQuiz(sessionId: _sessionId!);
-
-        if (widget.isMaster) {
-          final accuracy = (correct / total * 100).round();
-          setState(() {
-            _masterResult = KanaMasterResult(
-              correct: correct,
-              total: total,
-              accuracy: accuracy,
-              xpEarned: res.xpEarned,
-              passed: accuracy >= 90,
-            );
-          });
-          return;
-        }
-
-        if (mounted) {
-          unawaited(Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => QuizResultPage(
-                result: QuizResultModel(
-                  correctCount: correct,
-                  totalQuestions: total,
-                  accuracy: res.accuracy,
-                  xpEarned: res.xpEarned,
-                  currentXp: res.currentXp,
-                  xpForNext: res.xpForNext,
-                  level: res.level,
-                  events: res.events,
-                ),
-                quizType: 'KANA',
-                jlptLevel: 'N5',
-                sessionId: _sessionId!,
-              ),
-            ),
-          ));
-        }
-      } catch (e) {
-        debugPrint('[KanaQuizPage] Failed to complete quiz: $e');
-        if (mounted) context.go('/study/kana');
+    if (!_isCurrent ||
+        _masterResult != null ||
+        _completing ||
+        _sessionId == null) {
+      return;
+    }
+    setState(() {
+      _completing = true;
+      _completionError = null;
+    });
+    try {
+      final res = await ref
+          .read(kanaCompletionServiceProvider)
+          .completeQuiz(sessionId: _sessionId!);
+      if (!mounted || !_isCurrent) return;
+      final correct = _answers.where((answer) => answer.isCorrect).length;
+      final total = _answers.length;
+      if (widget.isMaster) {
+        setState(() {
+          _completing = false;
+          _masterResult = KanaMasterResult(
+            correct: correct,
+            total: total,
+            accuracy: res.accuracy,
+            xpEarned: res.xpEarned,
+            passed: res.accuracy >= 90,
+            rewardConfirmed: !_completionMayBeReplay || res.xpEarned > 0,
+          );
+        });
+        return;
       }
+      unawaited(Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
+        builder: (_) => QuizResultPage(
+          rewardConfirmed: !_completionMayBeReplay || res.xpEarned > 0,
+          result: QuizResultModel(
+            correctCount: correct,
+            totalQuestions: total,
+            accuracy: res.accuracy,
+            xpEarned: res.xpEarned,
+            currentXp: res.currentXp,
+            xpForNext: res.xpForNext,
+            level: res.level,
+            events: res.events,
+          ),
+          quizType: 'KANA',
+          jlptLevel: 'N5',
+          sessionId: _sessionId!,
+        ),
+      )));
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _completing = false;
+        _completionMayBeReplay = true;
+        _completionError = kanaSaveErrorMessage(error);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(currentAccountIdProvider);
     final theme = Theme.of(context);
+    if (!_isCurrent) {
+      return Scaffold(
+          body: SafeArea(
+              child: Center(
+                  child: Text(
+        const ApiException(message: '학습 계정이 변경되었어요. 학습 화면에서 다시 시작해 주세요.')
+            .userMessage,
+        textAlign: TextAlign.center,
+      ))));
+    }
 
     if (_loading) {
       return Scaffold(
@@ -260,6 +311,8 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
             _masterResult = null;
             _sessionId = null;
             _questions = [];
+            _completionError = null;
+            _completionMayBeReplay = false;
           });
           _startQuiz();
         },
@@ -289,15 +342,39 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
               ),
               const SizedBox(height: AppSizes.md),
               Expanded(
-                child: KanaQuizContent(
-                  question:
-                      _questions.isNotEmpty ? _questions[_currentIndex] : null,
-                  currentIndex: _currentIndex,
-                  totalCount: _questions.length,
-                  selectedOption: _selectedOption,
-                  showFeedback: _showFeedback,
-                  onSelect: _handleSelect,
-                ),
+                child: SingleChildScrollView(
+                    child: Column(children: [
+                  KanaQuizContent(
+                    question: _questions.isNotEmpty
+                        ? _questions[_currentIndex]
+                        : null,
+                    currentIndex: _currentIndex,
+                    totalCount: _questions.length,
+                    selectedOption: _selectedOption,
+                    showFeedback: _showFeedback,
+                    locked: _selectedOption != null ||
+                        _completing ||
+                        _completionError != null,
+                    onSelect: _handleSelect,
+                  ),
+                  if (_savingAnswer || _answerError != null)
+                    KanaSaveStatus(
+                      key: const ValueKey('kana-answer-status'),
+                      label: _savingAnswer ? '답안을 저장하고 있어요' : '답안을 저장하지 못했어요',
+                      error: _answerError,
+                      onRetry: _savingAnswer ? null : _saveAnswer,
+                      retryLabel: '답안 저장 다시 시도',
+                    ),
+                  if (_completing || _completionError != null)
+                    KanaSaveStatus(
+                      key: const ValueKey('kana-completion-status'),
+                      label:
+                          _completing ? '퀴즈 결과를 저장하고 있어요' : '퀴즈 결과를 저장하지 못했어요',
+                      error: _completionError,
+                      onRetry: _completing ? null : _handleComplete,
+                      retryLabel: '결과 저장 다시 시도',
+                    ),
+                ])),
               ),
             ],
           ),

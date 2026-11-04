@@ -23,6 +23,7 @@ class QuizResultPage extends ConsumerStatefulWidget {
   final QuizResultLaunch? reviewLauncher;
   final QuizResultLaunch? retryLauncher;
   final bool returnToPreviousResult;
+  final bool rewardConfirmed;
 
   const QuizResultPage({
     super.key,
@@ -33,6 +34,7 @@ class QuizResultPage extends ConsumerStatefulWidget {
     this.reviewLauncher,
     this.retryLauncher,
     this.returnToPreviousResult = false,
+    this.rewardConfirmed = true,
   });
 
   @override
@@ -217,6 +219,7 @@ class _QuizResultPageState extends ConsumerState<QuizResultPage> {
                   correct: r.correctCount,
                   total: r.totalQuestions,
                   xpEarned: r.xpEarned,
+                  rewardConfirmed: widget.rewardConfirmed,
                   currentXp: r.currentXp,
                   xpForNext: r.xpForNext,
                 ),

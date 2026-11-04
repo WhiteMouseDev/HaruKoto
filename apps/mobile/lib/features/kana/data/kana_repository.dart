@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/network/network_base.dart';
 import 'models/kana_character_model.dart';
 import 'models/kana_progress_model.dart';
 import 'models/kana_stage_model.dart';
@@ -6,7 +8,42 @@ import 'models/kana_stage_model.dart';
 class KanaRepository {
   final Dio _dio;
 
-  KanaRepository(this._dio);
+  KanaRepository(this._dio, [this._currentOwner]) {
+    _guard = InterceptorsWrapper(onRequest: (options, handler) {
+      final expected = options.extra[_ownerKey];
+      if (expected != null && expected != _currentOwner?.call()) {
+        handler.reject(DioException(
+          requestOptions: options,
+          type: DioExceptionType.cancel,
+          error:
+              const ApiException(message: '학습 계정이 변경되었어요. 학습 화면에서 다시 시작해 주세요.'),
+        ));
+        return;
+      }
+      handler.next(options);
+    });
+    _dio.interceptors.add(_guard);
+  }
+
+  final String? Function()? _currentOwner;
+  late final Interceptor _guard;
+  static const _ownerKey = '_kanaExpectedOwner';
+
+  void dispose() => _dio.interceptors.remove(_guard);
+
+  Options _writeOptions() {
+    final owner = _currentOwner?.call();
+    if (_currentOwner != null && owner == null) {
+      throw const ApiException(message: '로그인이 필요합니다.', statusCode: 401);
+    }
+    return Options(extra: {
+      if (owner != null) _ownerKey: owner,
+      // UI retries preserve the session and payload. Do not replay an old write
+      // after token refresh against a different currently signed-in account.
+      RequestMetadata.skipAuthRefresh: true,
+      RequestMetadata.skipNetworkRetry: true,
+    });
+  }
 
   Future<List<KanaCharacterModel>> fetchCharacters(
     String type, {
@@ -45,6 +82,7 @@ class KanaRepository {
   }) async {
     await _dio.post<dynamic>(
       '/kana/progress',
+      options: _writeOptions(),
       data: {'kanaId': kanaId, 'learned': learned},
     );
   }
@@ -53,10 +91,14 @@ class KanaRepository {
     required String stageId,
     int? quizScore,
   }) async {
-    await _dio.post<dynamic>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/kana/stage-complete',
+      options: _writeOptions(),
       data: {'stageId': stageId, if (quizScore != null) 'quizScore': quizScore},
     );
+    if (response.data?['success'] != true) {
+      throw const FormatException('Missing kana stage acknowledgement');
+    }
   }
 
   Future<StartQuizResponse> startQuiz({
@@ -67,6 +109,7 @@ class KanaRepository {
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/kana/quiz/start',
+      options: _writeOptions(),
       data: {
         'kanaType': kanaType,
         if (stageNumber != null) 'stageNumber': stageNumber,
@@ -84,16 +127,23 @@ class KanaRepository {
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/kana/quiz/answer',
+      options: _writeOptions(),
       data: {
         'sessionId': sessionId,
         'questionId': questionId,
         'selectedOptionId': selectedOptionId,
       },
     );
-    final data = response.data!;
+    final data = response.data;
+    if (data == null ||
+        data['isCorrect'] is! bool ||
+        data['correctOptionId'] is! String ||
+        (data['correctOptionId'] as String).trim().isEmpty) {
+      throw const FormatException('Missing kana answer acknowledgement');
+    }
     return (
-      isCorrect: data['isCorrect'] as bool? ?? false,
-      correctOptionId: data['correctOptionId'] as String? ?? '',
+      isCorrect: data['isCorrect'] as bool,
+      correctOptionId: data['correctOptionId'] as String,
     );
   }
 
@@ -102,8 +152,21 @@ class KanaRepository {
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/kana/quiz/complete',
+      options: _writeOptions(),
       data: {'sessionId': sessionId},
     );
-    return CompleteQuizResponse.fromJson(response.data!);
+    final data = response.data;
+    if (data == null ||
+        ['accuracy', 'xpEarned', 'currentXp', 'xpForNext', 'level']
+            .any((key) => data[key] is! int) ||
+        (data['accuracy'] as int) < 0 ||
+        (data['accuracy'] as int) > 100 ||
+        (data['xpEarned'] as int) < 0 ||
+        (data['currentXp'] as int) < 0 ||
+        (data['xpForNext'] as int) <= 0 ||
+        (data['level'] as int) < 1) {
+      throw const FormatException('Missing kana completion acknowledgement');
+    }
+    return CompleteQuizResponse.fromJson(data);
   }
 }

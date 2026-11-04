@@ -12,6 +12,7 @@ class ResultScoreDisplay extends StatefulWidget {
   final int xpEarned;
   final int currentXp;
   final int xpForNext;
+  final bool rewardConfirmed;
 
   const ResultScoreDisplay({
     super.key,
@@ -21,6 +22,7 @@ class ResultScoreDisplay extends StatefulWidget {
     required this.xpEarned,
     required this.currentXp,
     required this.xpForNext,
+    this.rewardConfirmed = true,
   });
 
   @override
@@ -77,7 +79,7 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
       child: LayoutBuilder(builder: (context, constraints) {
         final values = [
           '${widget.correct}/${widget.total}',
-          '+${widget.xpEarned}',
+          if (widget.rewardConfirmed) '+${widget.xpEarned}' else '확인됨',
           '${widget.total - widget.correct}',
         ];
         final valueStyle = theme.textTheme.titleLarge
@@ -105,7 +107,11 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
             )..layout(maxWidth: max(1, constraints.maxWidth - 64));
             final labelPainter = TextPainter(
               text: TextSpan(
-                text: ['정답', '획득 XP', '오답'][index],
+                text: [
+                  '정답',
+                  if (widget.rewardConfirmed) '획득 XP' else '결과 저장',
+                  '오답'
+                ][index],
                 style: theme.textTheme.labelMedium
                     ?.copyWith(fontSize: 12, height: 1.3),
               ),
@@ -135,7 +141,7 @@ class _ResultScoreDisplayState extends State<ResultScoreDisplay>
             icon: LucideIcons.zap,
             iconColor: AppColors.primary,
             value: values[1],
-            label: '획득 XP',
+            label: widget.rewardConfirmed ? '획득 XP' : '결과 저장',
             horizontal: stacked,
             minimumHeight: stackedTileHeight,
           ),

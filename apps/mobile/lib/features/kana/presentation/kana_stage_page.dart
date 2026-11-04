@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/auth/current_account_provider.dart';
+import '../../../core/network/api_exception.dart';
 import '../../home/providers/home_provider.dart';
 import '../data/models/kana_character_model.dart';
 import '../data/models/kana_stage_model.dart';
@@ -14,6 +16,7 @@ import 'widgets/stage_practice.dart';
 import 'widgets/stage_quiz.dart';
 import 'widgets/stage_review.dart';
 import 'widgets/stage_complete.dart';
+import 'widgets/kana_save_status.dart';
 
 enum _Phase { intro, practice, quiz, review, complete }
 
@@ -33,6 +36,17 @@ class KanaStagePage extends ConsumerStatefulWidget {
 
 class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   _Phase _phase = _Phase.intro;
+  late final String? _owner;
+  bool _startingQuiz = false;
+  String? _startError;
+  bool _savingAnswer = false;
+  String? _answerError;
+  bool _completing = false;
+  String? _completionError;
+  bool _completionMayBeReplay = false;
+  String? _quizStageId;
+  CompleteQuizResponse? _quizCompletion;
+  Timer? _advanceTimer;
   int _introIndex = 0;
   int _practiceIndex = 0;
   int _reviewIndex = 0;
@@ -52,14 +66,36 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   String get kanaType => widget.type == 'katakana' ? 'KATAKANA' : 'HIRAGANA';
 
   @override
+  void initState() {
+    super.initState();
+    _owner = ref.read(currentAccountReaderProvider)();
+  }
+
+  bool get _isCurrent =>
+      mounted &&
+      _owner != null &&
+      ref.read(currentAccountReaderProvider)() == _owner &&
+      ref.read(currentAccountIdProvider) == _owner;
+
+  @override
   void dispose() {
-    final container = ProviderScope.containerOf(context, listen: false);
-    Future(() => container.invalidate(dashboardProvider));
+    _advanceTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(currentAccountIdProvider);
+    if (!_isCurrent) {
+      return Scaffold(
+          body: SafeArea(
+              child: Center(
+                  child: Text(
+        const ApiException(message: '학습 계정이 변경되었어요. 학습 화면에서 다시 시작해 주세요.')
+            .userMessage,
+        textAlign: TextAlign.center,
+      ))));
+    }
     final stagesAsync = ref.watch(kanaStagesProvider(kanaType));
     final charsAsync = ref.watch(kanaCharactersProvider(kanaType));
     final theme = Theme.of(context);
@@ -209,7 +245,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
           currentIndex: _introIndex,
           totalCount: stageChars.length,
           onNext: () {
-            _recordProgress(stageChars[_introIndex].id);
+            if (!_isCurrent) return;
+            unawaited(_recordProgress(stageChars[_introIndex].id));
             if (_introIndex < stageChars.length - 1) {
               setState(() => _introIndex++);
             } else {
@@ -230,23 +267,54 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
           currentIndex: _practiceIndex,
           totalCount: stageChars.length,
           onKnow: () {
-            _recordProgress(char.id);
+            if (!_isCurrent) return;
+            unawaited(_recordProgress(char.id));
             _advancePractice(stageChars);
           },
           onDontKnow: () => _advancePractice(stageChars),
         );
       case _Phase.quiz:
-        return StageQuiz(
-          question: _quizQuestions.isNotEmpty
-              ? _quizQuestions[_quizCurrentIndex]
-              : null,
-          currentIndex: _quizCurrentIndex,
-          totalCount: _quizQuestions.length,
-          selectedOption: _quizSelectedOption,
-          showFeedback: _quizShowFeedback,
-          onSelect: (optionId) =>
-              _handleQuizSelect(optionId, _quizQuestions[_quizCurrentIndex]),
-        );
+        return SingleChildScrollView(
+            child: Column(children: [
+          if (_quizSessionId == null)
+            KanaSaveStatus(
+              key: const ValueKey('kana-start-status'),
+              label: _startingQuiz ? '퀴즈를 준비하고 있어요' : '퀴즈를 시작하지 못했어요',
+              error: _startError,
+              onRetry: _startingQuiz ? null : _startQuiz,
+              retryLabel: '퀴즈 시작 다시 시도',
+            )
+          else ...[
+            StageQuiz(
+              question: _quizQuestions[_quizCurrentIndex],
+              currentIndex: _quizCurrentIndex,
+              totalCount: _quizQuestions.length,
+              selectedOption: _quizSelectedOption,
+              showFeedback: _quizShowFeedback,
+              locked: _quizSelectedOption != null ||
+                  _completing ||
+                  _completionError != null,
+              onSelect: (optionId) => _handleQuizSelect(optionId),
+            ),
+            if (_savingAnswer || _answerError != null)
+              KanaSaveStatus(
+                key: const ValueKey('kana-answer-status'),
+                label: _savingAnswer ? '답안을 저장하고 있어요' : '답안을 저장하지 못했어요',
+                error: _answerError,
+                onRetry: _savingAnswer ? null : _saveAnswer,
+                retryLabel: '답안 저장 다시 시도',
+              ),
+            if (_completing || _completionError != null)
+              KanaSaveStatus(
+                key: const ValueKey('kana-completion-status'),
+                label: _completing ? '학습 결과를 저장하고 있어요' : '학습 결과를 저장하지 못했어요',
+                error: _completionError,
+                onRetry: _completing ? null : _handleQuizComplete,
+                retryLabel:
+                    _quizCompletion == null ? '결과 저장 다시 시도' : '단계 저장 다시 시도',
+              ),
+          ],
+        ]));
       case _Phase.review:
         if (_reviewCharacters.isEmpty) {
           return const SizedBox.shrink();
@@ -263,12 +331,15 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
           quizCorrect: _quizCorrect,
           quizTotal: _quizTotal,
           xpEarned: _xpEarned,
+          rewardConfirmed:
+              !_completionMayBeReplay || (_quizCompletion?.xpEarned ?? 0) > 0,
           kanaType: widget.type,
         );
     }
   }
 
   void _advancePractice(List<KanaCharacterModel> chars) {
+    if (!_isCurrent) return;
     if (_practiceIndex < chars.length - 1) {
       setState(() => _practiceIndex++);
     } else {
@@ -277,154 +348,185 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   }
 
   Future<void> _startQuiz() async {
+    if (!_isCurrent || _startingQuiz || _quizSessionId != null) return;
+    _quizStageId ??= ref
+        .read(kanaStagesProvider(kanaType))
+        .value
+        ?.where((stage) => stage.stageNumber == widget.stageNumber)
+        .firstOrNull
+        ?.id;
+    setState(() {
+      _phase = _Phase.quiz;
+      _startingQuiz = true;
+      _startError = null;
+    });
     try {
-      final repo = ref.read(kanaRepositoryProvider);
-      final res = await repo.startQuiz(
-        kanaType: kanaType,
-        stageNumber: widget.stageNumber,
-        quizMode: 'recognition',
-        count: 5,
-      );
-      if (res.sessionId != null && res.questions.isNotEmpty) {
-        setState(() {
-          _quizSessionId = res.sessionId;
-          _quizQuestions = res.questions;
-          _quizCurrentIndex = 0;
-          _quizSelectedOption = null;
-          _quizShowFeedback = false;
-          _quizAnswers.clear();
-          _phase = _Phase.quiz;
-        });
-      } else {
-        setState(() => _phase = _Phase.complete);
+      final res = await ref.read(kanaRepositoryProvider).startQuiz(
+            kanaType: kanaType,
+            stageNumber: widget.stageNumber,
+            quizMode: 'recognition',
+            count: 5,
+          );
+      if (!_isCurrent) return;
+      if (res.sessionId == null || res.questions.isEmpty) {
+        throw const ApiException(message: '출제할 문제가 없어요. 잠시 후 다시 시도해 주세요.');
       }
-    } catch (e) {
-      debugPrint('[KanaStagePage] Failed to start quiz: $e');
-      setState(() => _phase = _Phase.complete);
+      setState(() {
+        _quizSessionId = res.sessionId;
+        _quizQuestions = List.of(res.questions);
+        _quizCurrentIndex = 0;
+        _quizSelectedOption = null;
+        _quizShowFeedback = false;
+        _quizAnswers.clear();
+        _startingQuiz = false;
+      });
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _startingQuiz = false;
+        _startError = kanaSaveErrorMessage(error);
+      });
     }
   }
 
-  Future<void> _handleQuizSelect(String optionId, QuizQuestion current) async {
-    if (_quizShowFeedback) return;
+  Future<void> _handleQuizSelect(String optionId) async {
+    if (!_isCurrent ||
+        _quizShowFeedback ||
+        _quizSelectedOption != null ||
+        _completing) {
+      return;
+    }
+    setState(() => _quizSelectedOption = optionId);
+    await _saveAnswer();
+  }
 
+  Future<void> _saveAnswer() async {
+    if (!_isCurrent ||
+        _savingAnswer ||
+        _quizShowFeedback ||
+        _quizSessionId == null ||
+        _quizSelectedOption == null) {
+      return;
+    }
+    final current = _quizQuestions[_quizCurrentIndex];
+    final optionId = _quizSelectedOption!;
     setState(() {
-      _quizSelectedOption = optionId;
-      _quizShowFeedback = true;
+      _savingAnswer = true;
+      _answerError = null;
     });
-
-    // 서버 기반 정오답 판정
-    bool isCorrect = current.correctOptionId != null
-        ? optionId == current.correctOptionId
-        : false;
-
-    if (_quizSessionId != null) {
-      try {
-        final result =
-            await ref.read(kanaCompletionServiceProvider).answerQuestion(
-                  sessionId: _quizSessionId!,
-                  questionId: current.questionId,
-                  selectedOptionId: optionId,
-                );
-        isCorrect = result.isCorrect;
-        // correctOptionId가 없으면 서버 응답으로 채워서 UI 하이라이트
-        if (current.correctOptionId == null && mounted) {
+    try {
+      final result =
+          await ref.read(kanaCompletionServiceProvider).answerQuestion(
+                sessionId: _quizSessionId!,
+                questionId: current.questionId,
+                selectedOptionId: optionId,
+              );
+      if (!_isCurrent) return;
+      if (!current.options
+              .any((option) => option.id == result.correctOptionId) ||
+          result.isCorrect != (optionId == result.correctOptionId)) {
+        throw const FormatException('Invalid kana answer acknowledgement');
+      }
+      setState(() {
+        _quizQuestions[_quizCurrentIndex] = QuizQuestion(
+          questionId: current.questionId,
+          questionText: current.questionText,
+          questionSubText: current.questionSubText,
+          options: current.options,
+          correctOptionId: result.correctOptionId,
+        );
+        _quizAnswers.add(_QuizAnswer(
+          questionId: current.questionId,
+          selectedOptionId: optionId,
+          isCorrect: result.isCorrect,
+        ));
+        _savingAnswer = false;
+        _quizShowFeedback = true;
+      });
+      _advanceTimer = Timer(const Duration(seconds: 1), () {
+        if (!_isCurrent) return;
+        if (_quizCurrentIndex + 1 >= _quizQuestions.length) {
+          unawaited(_handleQuizComplete());
+        } else {
           setState(() {
-            _quizQuestions[_quizCurrentIndex] = QuizQuestion(
-              questionId: current.questionId,
-              questionText: current.questionText,
-              questionSubText: current.questionSubText,
-              options: current.options,
-              correctOptionId: result.correctOptionId,
-            );
+            _quizCurrentIndex++;
+            _quizSelectedOption = null;
+            _quizShowFeedback = false;
           });
         }
-      } catch (_) {
-        // 네트워크 실패 시 로컬 판정 유지
-      }
+      });
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _savingAnswer = false;
+        _answerError = kanaSaveErrorMessage(error);
+      });
     }
-
-    _quizAnswers.add(_QuizAnswer(
-      questionId: current.questionId,
-      selectedOptionId: optionId,
-      isCorrect: isCorrect,
-    ));
-
-    Timer(const Duration(seconds: 1), () {
-      if (!mounted) return;
-      final nextIndex = _quizCurrentIndex + 1;
-      if (nextIndex >= _quizQuestions.length) {
-        _handleQuizComplete();
-      } else {
-        setState(() {
-          _quizCurrentIndex = nextIndex;
-          _quizSelectedOption = null;
-          _quizShowFeedback = false;
-        });
-      }
-    });
   }
 
   Future<void> _handleQuizComplete() async {
-    final correct = _quizAnswers.where((a) => a.isCorrect).length;
-    final total = _quizAnswers.length;
-    final wrongIds = _quizAnswers
-        .where((a) => !a.isCorrect)
-        .map((a) => a.questionId)
-        .toList();
-
+    if (!_isCurrent ||
+        _phase != _Phase.quiz ||
+        _completing ||
+        _quizSessionId == null) {
+      return;
+    }
     setState(() {
-      _quizCorrect = correct;
-      _quizTotal = total;
+      _completing = true;
+      _completionError = null;
     });
-
-    if (_quizSessionId != null) {
-      try {
-        final res = await ref
-            .read(kanaCompletionServiceProvider)
-            .completeQuiz(sessionId: _quizSessionId!);
-        if (!mounted) return;
-        setState(() => _xpEarned = res.xpEarned);
-      } catch (e) {
-        debugPrint('[KanaStagePage] Failed to complete quiz: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('퀴즈 결과 저장에 실패했어요.')),
-          );
-        }
+    try {
+      // Keep the successful receipt while retrying stage persistence: completing
+      // the quiz again returns a replay with zero newly earned XP.
+      final service = ref.read(kanaCompletionServiceProvider);
+      if (_quizCompletion == null) {
+        final result = await service.completeQuiz(sessionId: _quizSessionId!);
+        if (!_isCurrent) return;
+        _quizCompletion = result;
       }
-    }
-
-    final stagesAsync = ref.read(kanaStagesProvider(kanaType));
-    final stages = stagesAsync.value ?? [];
-    final stage =
-        stages.where((s) => s.stageNumber == widget.stageNumber).firstOrNull;
-    if (stage != null) {
-      final score = (correct / total * 100).round();
-      unawaited(ref.read(kanaCompletionServiceProvider).completeStage(
-            stageId: stage.id,
-            quizScore: score,
-          ));
-    }
-
-    if (wrongIds.isNotEmpty) {
-      final charsAsync = ref.read(kanaCharactersProvider(kanaType));
-      final allChars = charsAsync.value ?? [];
-      final wrongChars =
-          allChars.where((c) => wrongIds.contains(c.id)).toList();
-      if (wrongChars.isNotEmpty) {
-        setState(() {
-          _reviewCharacters = wrongChars;
+      final stageId = _quizStageId;
+      if (stageId == null) {
+        throw const ApiException(message: '단계 정보를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      }
+      await service.completeStage(
+          stageId: stageId, quizScore: _quizCompletion!.accuracy);
+      if (!_isCurrent) return;
+      final correct = _quizAnswers.where((answer) => answer.isCorrect).length;
+      final wrongIds = _quizAnswers
+          .where((answer) => !answer.isCorrect)
+          .map((answer) => answer.questionId)
+          .toSet();
+      final wrongCharacters =
+          (ref.read(kanaCharactersProvider(kanaType)).value ??
+                  <KanaCharacterModel>[])
+              .where((character) => wrongIds.contains(character.id))
+              .toList();
+      setState(() {
+        _quizCorrect = correct;
+        _quizTotal = _quizAnswers.length;
+        _xpEarned = _quizCompletion!.xpEarned;
+        _completing = false;
+        if (wrongCharacters.isNotEmpty) {
+          _reviewCharacters = wrongCharacters;
           _reviewIndex = 0;
           _phase = _Phase.review;
-        });
-        return;
-      }
+        } else {
+          _phase = _Phase.complete;
+        }
+      });
+    } catch (error) {
+      if (!_isCurrent) return;
+      setState(() {
+        _completing = false;
+        _completionMayBeReplay =
+            _quizCompletion == null || _completionMayBeReplay;
+        _completionError = kanaSaveErrorMessage(error);
+      });
     }
-
-    setState(() => _phase = _Phase.complete);
   }
 
   void _advanceReview() {
+    if (!_isCurrent) return;
     if (_reviewIndex < _reviewCharacters.length - 1) {
       setState(() => _reviewIndex++);
     } else {
@@ -432,10 +534,18 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     }
   }
 
-  void _recordProgress(String kanaId) {
-    ref
-        .read(kanaRepositoryProvider)
-        .updateProgress(kanaId: kanaId, learned: true);
+  Future<void> _recordProgress(String kanaId) async {
+    if (!_isCurrent) return;
+    try {
+      await ref
+          .read(kanaRepositoryProvider)
+          .updateProgress(kanaId: kanaId, learned: true);
+      if (_isCurrent) ref.invalidate(dashboardProvider);
+    } catch (error) {
+      if (!mounted || !_isCurrent) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(kanaSaveErrorMessage(error))));
+    }
   }
 }
 

@@ -10,6 +10,7 @@ class KanaQuizContent extends StatelessWidget {
   final int totalCount;
   final String? selectedOption;
   final bool showFeedback;
+  final bool locked;
   final ValueChanged<String> onSelect;
 
   const KanaQuizContent({
@@ -19,6 +20,7 @@ class KanaQuizContent extends StatelessWidget {
     required this.totalCount,
     required this.selectedOption,
     required this.showFeedback,
+    this.locked = false,
     required this.onSelect,
   });
 
@@ -102,6 +104,11 @@ class KanaQuizContent extends StatelessWidget {
                 theme.colorScheme.outline.withValues(alpha: 0.3);
             Color textColor = theme.colorScheme.onSurface;
 
+            if (isSelected && !showFeedback) {
+              bgColor = theme.colorScheme.primary.withValues(alpha: 0.08);
+              borderColor = theme.colorScheme.primary;
+            }
+
             if (showFeedback) {
               if (isCorrect) {
                 bgColor = AppColors.quizCorrect.withValues(alpha: 0.1);
@@ -126,7 +133,8 @@ class KanaQuizContent extends StatelessWidget {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: showFeedback ? null : () => onSelect(option.id),
+                  onTap:
+                      showFeedback || locked ? null : () => onSelect(option.id),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 16, horizontal: 16),
