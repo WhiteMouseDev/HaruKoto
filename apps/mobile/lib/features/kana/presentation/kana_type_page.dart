@@ -281,7 +281,7 @@ class _KatakanaPilotEntry extends StatelessWidget {
       child: ListTile(
         leading: Icon(LucideIcons.pencil, color: colors.primary),
         title: const Text('닮은 가타카나 집중 연습'),
-        subtitle: const Text('シ・ツ・ソ・ン · 획순부터 단어까지'),
+        subtitle: const Text('닮은 글자 3묶음 · 획순부터 단어까지'),
         trailing: const Icon(LucideIcons.chevronRight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.cardRadius),
