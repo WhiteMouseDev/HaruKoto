@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/network_base.dart';
 import 'models/kana_character_model.dart';
+import '../domain/kana_card_progress.dart';
 import 'models/kana_progress_model.dart';
 import 'models/kana_stage_model.dart';
 
@@ -74,6 +75,31 @@ class KanaRepository {
   Future<KanaProgressModel> fetchProgress() async {
     final response = await _dio.get<Map<String, dynamic>>('/kana/progress');
     return KanaProgressModel.fromJson(response.data!);
+  }
+
+  Future<KanaCardReceipt> submitCardProgress(KanaCardActivity request,
+      {CancelToken? cancelToken}) async {
+    if (_currentOwner != null && _currentOwner() != request.owner) {
+      throw const ApiException(
+          message: '학습 계정이 변경되었어요. 학습 화면에서 다시 시작해 주세요.', statusCode: 403);
+    }
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/kana/progress/activities',
+      options: _writeOptions(),
+      data: request.toJson(),
+      cancelToken: cancelToken,
+    );
+    if (_currentOwner != null && _currentOwner() != request.owner) {
+      throw const ApiException(
+          message: '학습 계정이 변경되었어요. 학습 화면에서 다시 시작해 주세요.', statusCode: 403);
+    }
+    final data = response.data;
+    if (data == null) throw const FormatException('Missing kana card receipt');
+    final receipt = KanaCardReceipt.fromJson(data);
+    if (receipt.activityId != request.activityId) {
+      throw const FormatException('Kana activity identity mismatch');
+    }
+    return receipt;
   }
 
   Future<void> updateProgress({

@@ -2,8 +2,13 @@
 raised_by: codex/root
 raised_at: 2026-11-04T10:35:42+09:00
 severity: warn
-status: open
+status: resolved
+resolved_at: 2026-11-04T11:01:22+09:00
 ---
+
+## Resolution
+
+사용자가 PR #230 병합과 제안한 API·DB 안의 문자카드 저장·재시도 구현, 회귀·시뮬레이터 검증을 승인했다. 옵션2의 로컬 구현을 진행하며 운영 적용은 검증 결과를 먼저 보고한 뒤 별도 확인한다. 기존 기록·복습 기한·오늘 목표·Data API 차단 보존 조건도 유지한다. [구현 기록](../../docs/operations/plans/kana-card-progress-receipts-implementation-2026-11-04.md)에 결과를 남긴다.
 
 ## What happened
 

@@ -10,6 +10,8 @@ from app.dependencies import get_current_user
 from app.models.enums import KanaType
 from app.models.user import User
 from app.schemas.kana import (
+    KanaProgressActivityRequest,
+    KanaProgressActivityResponse,
     KanaProgressRecord,
     KanaProgressResponse,
     KanaQuizAnswerRequest,
@@ -22,6 +24,7 @@ from app.schemas.kana import (
     KanaStageCompleteResponse,
 )
 from app.services.kana_progress import record_kana_learning_progress
+from app.services.kana_progress_activity import KanaProgressActivityError, record_kana_progress_activity
 from app.services.kana_query import get_kana_characters_data, get_kana_progress_data, get_kana_stages_data
 from app.services.kana_quiz_answer import KanaQuizAnswerServiceError, submit_kana_quiz_answer
 from app.services.kana_quiz_complete import KanaQuizCompleteServiceError, complete_kana_quiz_session
@@ -66,6 +69,18 @@ async def record_kana_learning(
 ) -> dict[str, bool]:
     result = await record_kana_learning_progress(db, user, body)
     return {"ok": result.ok}
+
+
+@router.post("/progress/activities", response_model=KanaProgressActivityResponse, status_code=200)
+async def record_kana_activity(
+    body: KanaProgressActivityRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> KanaProgressActivityResponse:
+    try:
+        return await record_kana_progress_activity(db, user, body)
+    except KanaProgressActivityError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
 
 @router.post("/quiz/start", response_model=KanaQuizStartResponse, status_code=200)

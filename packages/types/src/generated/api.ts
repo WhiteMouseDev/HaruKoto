@@ -929,6 +929,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kana/progress/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Kana Activity */
+        post: operations["record_kana_activity_api_v1_kana_progress_activities_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kana/quiz/start": {
         parameters: {
             query?: never;
@@ -3035,6 +3052,42 @@ export interface components {
             code: string;
             /** Redirect Uri */
             redirect_uri: string;
+        };
+        /** KanaProgressActivityRequest */
+        KanaProgressActivityRequest: {
+            /**
+             * Activityid
+             * Format: uuid
+             */
+            activityId: string;
+            /**
+             * Expecteduserid
+             * Format: uuid
+             */
+            expectedUserId: string;
+            /**
+             * Kanaid
+             * Format: uuid
+             */
+            kanaId: string;
+        };
+        /** KanaProgressActivityResponse */
+        KanaProgressActivityResponse: {
+            /**
+             * Ok
+             * @constant
+             */
+            ok: true;
+            /**
+             * Activityid
+             * Format: uuid
+             */
+            activityId: string;
+            /**
+             * Processedat
+             * Format: date-time
+             */
+            processedAt: string;
         };
         /**
          * KanaProgressRecord
@@ -6691,6 +6744,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: boolean;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_kana_activity_api_v1_kana_progress_activities_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KanaProgressActivityRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KanaProgressActivityResponse"];
                 };
             };
             /** @description Validation Error */

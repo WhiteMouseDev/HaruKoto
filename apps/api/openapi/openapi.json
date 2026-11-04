@@ -3216,6 +3216,52 @@
         ]
       }
     },
+    "/api/v1/kana/progress/activities": {
+      "post": {
+        "tags": [
+          "kana"
+        ],
+        "summary": "Record Kana Activity",
+        "operationId": "record_kana_activity_api_v1_kana_progress_activities_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KanaProgressActivityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanaProgressActivityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/kana/quiz/start": {
       "post": {
         "tags": [
@@ -9997,6 +10043,58 @@
           "redirect_uri"
         ],
         "title": "KakaoTokenExchangeRequest"
+      },
+      "KanaProgressActivityRequest": {
+        "properties": {
+          "activityId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Activityid"
+          },
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "kanaId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Kanaid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "activityId",
+          "expectedUserId",
+          "kanaId"
+        ],
+        "title": "KanaProgressActivityRequest"
+      },
+      "KanaProgressActivityResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true,
+            "title": "Ok"
+          },
+          "activityId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Activityid"
+          },
+          "processedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Processedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "activityId",
+          "processedAt"
+        ],
+        "title": "KanaProgressActivityResponse"
       },
       "KanaProgressRecord": {
         "properties": {

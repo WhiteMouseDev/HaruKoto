@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
+from datetime import datetime
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import Field
@@ -47,6 +48,18 @@ class KanaProgressRecord(CamelModel):
     """Request body for recording kana learning progress."""
 
     kana_id: UUID = Field(..., description="ID of the kana character learned")
+
+
+class KanaProgressActivityRequest(CamelModel):
+    activity_id: UUID
+    expected_user_id: UUID
+    kana_id: UUID
+
+
+class KanaProgressActivityResponse(CamelModel):
+    ok: Literal[True]
+    activity_id: UUID
+    processed_at: datetime
 
 
 class KanaQuizStartRequest(CamelModel):

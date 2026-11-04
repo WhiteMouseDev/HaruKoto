@@ -6,7 +6,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
-import '../../home/providers/home_provider.dart';
+import '../domain/kana_card_progress.dart';
+import '../providers/kana_card_progress_provider.dart';
 import '../data/models/kana_character_model.dart';
 import '../data/models/kana_stage_model.dart';
 import '../providers/kana_provider.dart';
@@ -47,8 +48,7 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
   String? _quizStageId;
   CompleteQuizResponse? _quizCompletion;
   Timer? _advanceTimer;
-  int _introIndex = 0;
-  int _practiceIndex = 0;
+  KanaCardContent? _activeCardContent;
   int _reviewIndex = 0;
 
   List<QuizQuestion> _quizQuestions = [];
@@ -183,6 +183,9 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       );
     }
 
+    final content = KanaCardContent.fromStage(_owner!, stage, stageChars);
+    _activeCardContent = content;
+    final cards = ref.watch(kanaCardProgressProvider(content));
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -220,7 +223,8 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
               ),
               const SizedBox(height: AppSizes.md),
               Expanded(
-                child: _buildPhaseContent(context, stage, stageChars, theme),
+                child: _buildPhaseContent(
+                    context, stage, stageChars, theme, content, cards),
               ),
             ],
           ),
@@ -234,45 +238,13 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     KanaStageModel stage,
     List<KanaCharacterModel> stageChars,
     ThemeData theme,
+    KanaCardContent content,
+    KanaCardProgressState cards,
   ) {
     switch (_phase) {
       case _Phase.intro:
-        if (_introIndex >= stageChars.length) {
-          return const SizedBox.shrink();
-        }
-        return StageIntro(
-          character: stageChars[_introIndex],
-          currentIndex: _introIndex,
-          totalCount: stageChars.length,
-          onNext: () {
-            if (!_isCurrent) return;
-            unawaited(_recordProgress(stageChars[_introIndex].id));
-            if (_introIndex < stageChars.length - 1) {
-              setState(() => _introIndex++);
-            } else {
-              setState(() {
-                _practiceIndex = 0;
-                _phase = _Phase.practice;
-              });
-            }
-          },
-        );
       case _Phase.practice:
-        if (_practiceIndex >= stageChars.length) {
-          return const SizedBox.shrink();
-        }
-        final char = stageChars[_practiceIndex];
-        return StagePractice(
-          character: char,
-          currentIndex: _practiceIndex,
-          totalCount: stageChars.length,
-          onKnow: () {
-            if (!_isCurrent) return;
-            unawaited(_recordProgress(char.id));
-            _advancePractice(stageChars);
-          },
-          onDontKnow: () => _advancePractice(stageChars),
-        );
+        return _buildCards(content, cards, stageChars);
       case _Phase.quiz:
         return SingleChildScrollView(
             child: Column(children: [
@@ -338,17 +310,95 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     }
   }
 
-  void _advancePractice(List<KanaCharacterModel> chars) {
-    if (!_isCurrent) return;
-    if (_practiceIndex < chars.length - 1) {
-      setState(() => _practiceIndex++);
+  Widget _buildCards(KanaCardContent content, KanaCardProgressState cards,
+      List<KanaCharacterModel> characters) {
+    final controller = ref.read(kanaCardProgressProvider(content).notifier);
+    final cursor = cards.journal?.cursor;
+    if (cards.loading || cards.busy || cards.error != null) {
+      return SingleChildScrollView(
+          child: Column(children: [
+        if (cursor != null && cursor.phase != KanaCardPhase.quiz) ...[
+          Text(
+              '${cursor.phase == KanaCardPhase.intro ? '문자 익히기' : '문자 연습'} ${cursor.index + 1}/${characters.length}'),
+          const SizedBox(height: 12),
+          Text(characters[cursor.index].character,
+              style: const TextStyle(fontSize: 52)),
+        ],
+        KanaSaveStatus(
+          key: const ValueKey('kana-card-save-status'),
+          label: cards.loading
+              ? '저장된 문자 학습을 확인하고 있어요'
+              : cards.busy
+                  ? '문자 학습을 저장하고 있어요'
+                  : '문자 학습 저장을 확인해 주세요',
+          error: cards.error,
+          onRetry: cards.loading || cards.busy || cards.blocked
+              ? null
+              : controller.retry,
+          retryLabel: '문자 저장 다시 확인',
+        ),
+      ]));
+    }
+    if (cursor == null) return const SizedBox.shrink();
+    if (cursor.phase == KanaCardPhase.quiz) {
+      return SingleChildScrollView(
+          child: Column(children: [
+        const SizedBox(height: 24),
+        Text(cards.restored ? '저장된 문자 학습 위치를 복원했어요' : '문자 학습을 마쳤어요'),
+        const SizedBox(height: 16),
+        FilledButton(
+            onPressed: cards.canAct ? _startQuiz : null,
+            child: const Text('퀴즈 시작')),
+        const SizedBox(height: 8),
+        TextButton(
+            onPressed: cards.canAct ? controller.restartCards : null,
+            child: const Text('문자부터 다시 학습')),
+      ]));
+    }
+    if (cursor.phase == KanaCardPhase.intro) {
+      return StageIntro(
+        character: characters[cursor.index],
+        currentIndex: cursor.index,
+        totalCount: characters.length,
+        onNext: () => unawaited(_advanceCard(content, cursor, known: true)),
+      );
+    }
+    return StagePractice(
+      character: characters[cursor.index],
+      currentIndex: cursor.index,
+      totalCount: characters.length,
+      onKnow: () => unawaited(_advanceCard(content, cursor, known: true)),
+      onDontKnow: () => unawaited(_advanceCard(content, cursor, known: false)),
+    );
+  }
+
+  Future<void> _advanceCard(KanaCardContent content, KanaCardCursor cursor,
+      {required bool known}) async {
+    if (!_isCurrent || _activeCardContent != content) return;
+    final current = ref.read(kanaCardProgressProvider(content));
+    if (!current.canAct || current.journal?.cursor != cursor) return;
+    final controller = ref.read(kanaCardProgressProvider(content).notifier);
+    if (known) {
+      await controller.saveAndAdvance(expectedCursor: cursor);
     } else {
-      _startQuiz();
+      await controller.skipPractice(expectedCursor: cursor);
+    }
+    if (!_isCurrent || _activeCardContent != content) return;
+    final saved = ref.read(kanaCardProgressProvider(content));
+    if (saved.canAct && saved.journal?.cursor.phase == KanaCardPhase.quiz) {
+      await _startQuiz();
     }
   }
 
   Future<void> _startQuiz() async {
     if (!_isCurrent || _startingQuiz || _quizSessionId != null) return;
+    final content = _activeCardContent;
+    if (content == null) return;
+    final cards = ref.read(kanaCardProgressProvider(content));
+    if (!cards.canAct || cards.journal?.cursor.phase != KanaCardPhase.quiz) {
+      return;
+    }
+    _quizStageId ??= content.stageId;
     _quizStageId ??= ref
         .read(kanaStagesProvider(kanaType))
         .value
@@ -531,20 +581,6 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       setState(() => _reviewIndex++);
     } else {
       setState(() => _phase = _Phase.complete);
-    }
-  }
-
-  Future<void> _recordProgress(String kanaId) async {
-    if (!_isCurrent) return;
-    try {
-      await ref
-          .read(kanaRepositoryProvider)
-          .updateProgress(kanaId: kanaId, learned: true);
-      if (_isCurrent) ref.invalidate(dashboardProvider);
-    } catch (error) {
-      if (!mounted || !_isCurrent) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(kanaSaveErrorMessage(error))));
     }
   }
 }
