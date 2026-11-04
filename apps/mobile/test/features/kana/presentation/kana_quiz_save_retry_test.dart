@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/features/kana/domain/kana_card_progress.dart';
+import 'package:harukoto_mobile/features/kana/data/kana_card_progress_store.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/kana/data/kana_repository.dart';
@@ -157,6 +162,8 @@ void main() {
       await tester.tap(find.text('a'));
       account.id = 'B';
       container.updateOverrides([
+        sharedPreferencesProvider
+            .overrideWithValue(container.read(sharedPreferencesProvider)),
         currentAccountIdProvider.overrideWithValue('B'),
         currentAccountReaderProvider.overrideWithValue(() => account.id),
         kanaRepositoryProvider.overrideWithValue(repo),
@@ -232,7 +239,7 @@ void main() {
       ..startResult =
           const StartQuizResponse(sessionId: 'session-1', questions: [
         QuizQuestion(
-            questionId: 'kana-a',
+            questionId: '33333333-3333-4333-8333-333333333333',
             questionText: 'first character',
             options: [
               QuizOption(id: 'a', text: 'a'),
@@ -274,6 +281,184 @@ void main() {
     expect(find.text('결과 저장'), findsNothing);
   });
 
+  testWidgets(
+      'intro progress failure preserves card and same activity on retry',
+      (tester) async {
+    final repo = _Repository()..cardFailures = 1;
+    await _pump(tester, repo, stage: true, enterQuiz: false);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    expect(find.text('문자 학습 저장을 확인해 주세요'), findsOneWidget);
+    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    expect(find.byType(StagePractice), findsNothing);
+    expect(repo.starts, 0);
+    final id = repo.cardRequests.single.activityId;
+    await tester.tap(find.text('문자 저장 다시 확인'));
+    await tester.tap(find.text('문자 저장 다시 확인'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests.map((request) => request.activityId), [id, id]);
+    expect(repo.cardEffects, 1);
+    expect(repo.legacyWrites, 0);
+    expect(find.byType(StagePractice), findsOneWidget);
+  });
+
+  testWidgets(
+      'pending intro disables duplicate Next and waits for acknowledged progress',
+      (tester) async {
+    final repo = _Repository()..cardGate = Completer<void>();
+    await _pump(tester, repo, stage: true, enterQuiz: false);
+    final next = tester.widget<StageIntro>(find.byType(StageIntro)).onNext;
+    next();
+    next();
+    await _flush(tester);
+    expect(repo.cardRequests, hasLength(1));
+    expect(find.byType(StagePractice), findsNothing);
+    expect(find.text('문자 학습을 저장하고 있어요'), findsOneWidget);
+    repo.cardGate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.byType(StagePractice), findsOneWidget);
+    expect(repo.cardEffects, 1);
+    next(); // A callback retained from the old intro card cannot answer practice.
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests, hasLength(1));
+    expect(repo.starts, 0);
+  });
+
+  testWidgets(
+      'practice Know has distinct action; failed/pending Know cannot be skipped',
+      (tester) async {
+    final repo = _Repository();
+    await _pump(tester, repo, stage: true, enterQuiz: false);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    repo.cardGate = Completer<void>();
+    final practice = tester.widget<StagePractice>(find.byType(StagePractice));
+    practice.onKnow();
+    practice.onKnow();
+    practice.onDontKnow();
+    await _flush(tester);
+    expect(repo.cardRequests, hasLength(2));
+    expect(repo.cardRequests.map((request) => request.activityId).toSet(),
+        hasLength(2));
+    expect(repo.starts, 0);
+    repo.cardGate!.complete();
+    await tester.pumpAndSettle();
+    expect(repo.cardEffects, 2);
+    expect(repo.starts, 1);
+    expect(repo.legacyWrites, 0);
+  });
+
+  testWidgets(
+      'cold route/controller restores prepared action without automatic POST',
+      (tester) async {
+    SharedPreferences.setMockInitialValues(
+        {'auth-fixture': 'keep', 'goal-fixture': 20});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = _Repository()..cardLoseResponse = true;
+    final first = await _pump(tester, repo,
+        stage: true, enterQuiz: false, preferences: prefs);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    final id = repo.cardRequests.single.activityId;
+    await tester.pumpWidget(const SizedBox.shrink());
+    await _flush(tester);
+    // A new container creates new controller/repository consumers; only native
+    // preferences and the synthetic server ledger survive this boundary.
+    final fresh = await _pump(tester, repo,
+        stage: true, enterQuiz: false, preferences: prefs);
+    expect(identical(first, fresh), isFalse);
+    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    expect(repo.cardRequests, hasLength(1));
+    await tester.tap(find.text('문자 저장 다시 확인'));
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests.map((request) => request.activityId), [id, id]);
+    expect(repo.cardEffects, 1);
+    expect(find.byType(StagePractice), findsOneWidget);
+    expect(prefs.getString('auth-fixture'), 'keep');
+    expect(prefs.getInt('goal-fixture'), 20);
+  });
+
+  testWidgets(
+      'local preparation and ACK failures retry storage without duplicate POST',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final store = _FaultCardStore(PreferencesKanaCardProgressStore(prefs))
+      ..failWrite = 1;
+    final repo = _Repository();
+    await _pump(tester, repo,
+        stage: true, enterQuiz: false, preferences: prefs, cardStore: store);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests, isEmpty);
+    expect(find.text('문자 저장 다시 확인'), findsOneWidget);
+    store.failWrite = 3; // retry prepare succeeds, ACK write fails
+    await tester.tap(find.text('문자 저장 다시 확인'));
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests, hasLength(1));
+    expect(find.text('문자 익히기 1/1'), findsOneWidget);
+    await tester.tap(find.text('문자 저장 다시 확인'));
+    await tester.pumpAndSettle();
+    expect(repo.cardRequests, hasLength(1));
+    expect(repo.cardEffects, 1);
+    expect(find.byType(StagePractice), findsOneWidget);
+  });
+
+  testWidgets(
+      'quiz-ready recovery requires explicit quiz start and never completes on restore',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = _Repository();
+    await _pump(tester, repo, stage: true, preferences: prefs);
+    expect(repo.starts, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await _flush(tester);
+    await _pump(tester, repo,
+        stage: true, enterQuiz: false, preferences: prefs);
+    expect(find.text('퀴즈 시작'), findsOneWidget);
+    expect(repo.starts, 1);
+    expect(repo.completions, isEmpty);
+    expect(repo.stageSaves, isEmpty);
+    await tester.tap(find.text('퀴즈 시작'));
+    await tester.pumpAndSettle();
+    expect(repo.starts, 2);
+    expect(find.text('1/2'), findsOneWidget);
+  });
+
+  testWidgets(
+      'old server 404 keeps new pending request and has no legacy fallback',
+      (tester) async {
+    final repo = _Repository()
+      ..cardFailures = 1
+      ..cardFailure =
+          const ApiException(message: 'not deployed', statusCode: 404);
+    await _pump(tester, repo, stage: true, enterQuiz: false);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    expect(find.text('요청한 데이터를 찾을 수 없습니다.'), findsOneWidget);
+    expect(repo.legacyWrites, 0);
+    expect(repo.starts, 0);
+    expect(find.text('문자 저장 다시 확인'), findsOneWidget);
+  });
+
+  testWidgets('card retry status is readable at 320px and 200% text',
+      (tester) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repo = _Repository()..cardFailures = 1;
+    await _pump(tester, repo, stage: true, enterQuiz: false, scale: 2);
+    tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('문자 저장 다시 확인'));
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('문자 저장 다시 확인'));
+    await _flush(tester);
+    expect(repo.cardRequests, hasLength(2));
+  });
+
   testWidgets('stage failure retries stage only and uses server accuracy',
       (tester) async {
     final stagePending = Completer<void>();
@@ -310,6 +495,8 @@ void main() {
     await _answerAll(tester, settle: false);
     account.id = 'B';
     container.updateOverrides([
+      sharedPreferencesProvider
+          .overrideWithValue(container.read(sharedPreferencesProvider)),
       currentAccountIdProvider.overrideWithValue('B'),
       currentAccountReaderProvider.overrideWithValue(() => account.id),
       kanaRepositoryProvider.overrideWithValue(repo),
@@ -362,7 +549,7 @@ void main() {
 }
 
 class _Account {
-  String? id = 'A';
+  String? id = '11111111-1111-4111-8111-111111111111';
 }
 
 Future<ProviderContainer> _pump(
@@ -372,9 +559,17 @@ Future<ProviderContainer> _pump(
   bool master = false,
   _Account? account,
   double scale = 1,
+  bool enterQuiz = true,
+  SharedPreferences? preferences,
+  KanaCardProgressStore? cardStore,
 }) async {
   final owner = account ?? _Account();
+  if (preferences == null) SharedPreferences.setMockInitialValues({});
+  final prefs = preferences ?? await SharedPreferences.getInstance();
   final container = ProviderContainer(overrides: [
+    sharedPreferencesProvider.overrideWithValue(prefs),
+    if (cardStore != null)
+      kanaCardProgressStoreProvider.overrideWithValue(cardStore),
     currentAccountIdProvider.overrideWithValue(owner.id),
     currentAccountReaderProvider.overrideWithValue(() => owner.id),
     kanaRepositoryProvider.overrideWithValue(repo),
@@ -397,10 +592,10 @@ Future<ProviderContainer> _pump(
             : KanaQuizPage(type: 'hiragana', isMaster: master)),
   ));
   await _flush(tester);
-  if (stage) {
-    await _flush(tester);
+  if (stage && enterQuiz) {
+    await tester.pumpAndSettle();
     tester.widget<StageIntro>(find.byType(StageIntro)).onNext();
-    await _flush(tester);
+    await tester.pumpAndSettle();
     tester.widget<StagePractice>(find.byType(StagePractice)).onDontKnow();
     await _flush(tester);
   }
@@ -461,6 +656,14 @@ class _Repository extends Fake implements KanaRepository {
   int completeFailures = 0;
   int stageFailures = 0;
   bool emptyStart = false;
+  int cardFailures = 0;
+  Object cardFailure = _failure;
+  bool cardLoseResponse = false;
+  Completer<void>? cardGate;
+  int cardEffects = 0;
+  int legacyWrites = 0;
+  final cardRequests = <KanaCardActivity>[];
+  final cardReceipts = <String, KanaCardReceipt>{};
   bool answerCorrect = true;
   String answerOption = 'a';
   StartQuizResponse startResult = _started();
@@ -512,8 +715,31 @@ class _Repository extends Fake implements KanaRepository {
   }
 
   @override
+  Future<KanaCardReceipt> submitCardProgress(KanaCardActivity request,
+      {CancelToken? cancelToken}) async {
+    cardRequests.add(request);
+    await cardGate?.future;
+    if (cardFailures-- > 0) throw cardFailure;
+    final receipt = cardReceipts.putIfAbsent(request.activityId, () {
+      cardEffects++;
+      return KanaCardReceipt(
+          activityId: request.activityId,
+          processedAt: DateTime.utc(2026, 11, 4));
+    });
+    if (cardLoseResponse) {
+      cardLoseResponse = false;
+      throw const ApiException(
+          message: 'lost response', errorCode: 'NETWORK_TIMEOUT');
+    }
+    return receipt;
+  }
+
+  @override
   Future<void> updateProgress(
-      {required String kanaId, required bool learned}) async {}
+      {required String kanaId, required bool learned}) async {
+    legacyWrites++;
+  }
+
   @override
   Future<List<KanaStageModel>> fetchStages(String type) async => const [
         KanaStageModel(
@@ -531,7 +757,7 @@ class _Repository extends Fake implements KanaRepository {
           {String? category}) async =>
       const [
         KanaCharacterModel(
-            id: 'kana-a',
+            id: '33333333-3333-4333-8333-333333333333',
             kanaType: 'HIRAGANA',
             character: 'あ',
             romaji: 'a',
@@ -547,5 +773,20 @@ class _Repository extends Fake implements KanaRepository {
 Future<void> _flush(WidgetTester tester) async {
   for (var frame = 0; frame < 5; frame++) {
     await tester.pump(const Duration(milliseconds: 1));
+  }
+}
+
+class _FaultCardStore implements KanaCardProgressStore {
+  _FaultCardStore(this.delegate);
+  final KanaCardProgressStore delegate;
+  int writes = 0;
+  int failWrite = -1;
+  @override
+  Future<String?> read(KanaCardContent content) => delegate.read(content);
+  @override
+  Future<void> compareAndSet(KanaCardContent content,
+      {required String? expected, required String value}) async {
+    if (++writes == failWrite) throw const KanaCardStorageException();
+    await delegate.compareAndSet(content, expected: expected, value: value);
   }
 }

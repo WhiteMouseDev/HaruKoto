@@ -30,6 +30,7 @@ BLOCKED_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/api/v1/missions/today"),
         ("POST", "/api/v1/missions/claim"),
         ("POST", "/api/v1/kana/progress"),
+        ("POST", "/api/v1/kana/progress/activities"),
         ("POST", "/api/v1/kana/quiz/start"),
         ("POST", "/api/v1/kana/quiz/answer"),
         ("POST", "/api/v1/kana/quiz/complete"),

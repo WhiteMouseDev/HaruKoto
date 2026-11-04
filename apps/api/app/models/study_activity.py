@@ -28,7 +28,7 @@ class StudyActivityReceipt(Base):
     study_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     __table_args__ = (
-        CheckConstraint("source_kind IN ('LESSON_ANSWER','KANA_QUIZ_ANSWER')", name="ck_study_activity_source_kind"),
+        CheckConstraint("source_kind IN ('LESSON_ANSWER','KANA_QUIZ_ANSWER','KANA_CARD_PROGRESS')", name="ck_study_activity_source_kind"),
         CheckConstraint("request_fingerprint ~ '^[0-9a-f]{64}$'", name="ck_study_activity_fingerprint"),
         CheckConstraint("content_version ~ '^[0-9a-f]{64}$'", name="ck_study_activity_content_version"),
         CheckConstraint("jsonb_typeof(response_body)='object'", name="ck_study_activity_response_object"),

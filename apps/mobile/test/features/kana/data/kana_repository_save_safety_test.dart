@@ -10,8 +10,15 @@ import 'package:harukoto_mobile/core/network/app_http_client.dart';
 import 'package:harukoto_mobile/core/network/auth_refresh_client.dart';
 import 'package:harukoto_mobile/core/network/network_base.dart';
 import 'package:harukoto_mobile/features/kana/data/kana_repository.dart';
+import 'package:harukoto_mobile/features/kana/domain/kana_card_progress.dart';
 
 enum _Write { progress, start, answer, quiz, stage }
+
+const _cardOwner = '11111111-1111-4111-8111-111111111111';
+const _cardRequest = KanaCardActivity(
+    activityId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    owner: _cardOwner,
+    kanaId: '33333333-3333-4333-8333-333333333333');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -99,6 +106,111 @@ void main() {
       h.expectNoAuthMutation();
     });
   }
+
+  test('card activity request remains owner-bound and is never auth replayed',
+      () async {
+    final h = _Harness();
+    addTearDown(h.dispose);
+    h.auth.owner = _cardOwner;
+    h.transport.status = 401;
+    h.transport.gate = Completer<void>();
+    final pending = h.repository.submitCardProgress(_cardRequest);
+    final failed = expectLater(
+        pending,
+        throwsA(isA<DioException>()
+            .having((error) => error.response?.statusCode, 'status', 401)));
+    await h.transport.arrived.future;
+    h.auth.owner = '22222222-2222-4222-8222-222222222222';
+    h.transport.gate!.complete();
+    await failed;
+    expect(h.transport.requests, hasLength(1));
+    expect(h.transport.requests.single['path'], '/kana/progress/activities');
+    expect(h.transport.requests.single['body'], _cardRequest.toJson());
+    expect(h.transport.requests.single['skipAuthRefresh'], isTrue);
+    expect(h.transport.requests.single['skipNetworkRetry'], isTrue);
+    h.expectNoAuthMutation();
+  });
+
+  test('card activity dispatch refuses a switched owner before adapter',
+      () async {
+    final h = _Harness();
+    addTearDown(h.dispose);
+    h.auth.owner = _cardOwner;
+    h.switchBeforeGuard = true;
+    await expectLater(
+        h.repository.submitCardProgress(_cardRequest),
+        throwsA(isA<DioException>()
+            .having((error) => error.type, 'type', DioExceptionType.cancel)));
+    expect(h.transport.requests, isEmpty);
+    h.expectNoAuthMutation();
+  });
+
+  test('card endpoint 404 does not invoke legacy progress or another POST',
+      () async {
+    final h = _Harness();
+    addTearDown(h.dispose);
+    h.auth.owner = _cardOwner;
+    h.transport.status = 404;
+    await expectLater(
+        h.repository.submitCardProgress(_cardRequest),
+        throwsA(isA<DioException>()
+            .having((error) => error.response?.statusCode, 'status', 404)));
+    expect(h.transport.requests.map((value) => value['path']),
+        ['/kana/progress/activities']);
+    h.expectNoAuthMutation();
+  });
+
+  for (final invalid in [
+    <String, dynamic>{},
+    {
+      'ok': false,
+      'activityId': _cardRequest.activityId,
+      'processedAt': '2026-11-04T01:02:03Z'
+    },
+    {
+      'ok': true,
+      'activityId': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+      'processedAt': '2026-11-04T01:02:03Z'
+    },
+    {
+      'ok': true,
+      'activityId': _cardRequest.activityId,
+      'processedAt': '2026-11-04T01:02:03'
+    },
+    {
+      'ok': true,
+      'activityId': _cardRequest.activityId,
+      'processedAt': '2026-02-30T01:02:03Z'
+    },
+  ]) {
+    test('card receipt validates exact identity and UTC instant: $invalid',
+        () async {
+      final h = _Harness();
+      addTearDown(h.dispose);
+      h.auth.owner = _cardOwner;
+      h.transport.responseBody = invalid;
+      await expectLater(h.repository.submitCardProgress(_cardRequest),
+          throwsA(isA<FormatException>()));
+      expect(h.transport.requests, hasLength(1));
+      h.expectNoAuthMutation();
+    });
+  }
+
+  test('card receipt accepts real UTC timestamp and same action body',
+      () async {
+    final h = _Harness();
+    addTearDown(h.dispose);
+    h.auth.owner = _cardOwner;
+    h.transport.responseBody = {
+      'ok': true,
+      'activityId': _cardRequest.activityId,
+      'processedAt': '2026-11-04T01:02:03.123456+00:00'
+    };
+    final response = await h.repository.submitCardProgress(_cardRequest);
+    expect(response.activityId, _cardRequest.activityId);
+    expect(response.processedAt, DateTime.utc(2026, 11, 4, 1, 2, 3, 123, 456));
+    expect(h.transport.requests.single['body'], _cardRequest.toJson());
+  });
 
   test('unrelated GET retains normal token refresh and replay behavior',
       () async {
