@@ -23,6 +23,15 @@ void main() {
       addTearDown(service.dispose);
       await _connect(tester, service, transport);
       final originalSetup = _setup(transport.sent.first);
+      expect(originalSetup['inputAudioTranscription'], {
+        'languageCodes': ['ja-JP', 'ko-KR'],
+      });
+      final realtimeConfig =
+          originalSetup['realtimeInputConfig'] as Map<String, dynamic>;
+      final activityDetection =
+          realtimeConfig['automaticActivityDetection'] as Map<String, dynamic>;
+      expect(
+          activityDetection.containsKey('startOfSpeechSensitivity'), isFalse);
       service.isMuted = true;
       transport.emitResume('checkpoint-1');
       transport.emitGoAway();
@@ -48,7 +57,10 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       expect(refreshCalls, 2);
       expect(transport.uris.last.queryParameters['access_token'], 'fresh-2');
-      expect(_setup(transport.sent.last)['model'], 'models/original-live');
+      expect(_setup(transport.sent.last), {
+        ...originalSetup,
+        'sessionResumption': {'handle': 'checkpoint-2'},
+      });
       transport.completeSetup();
       await tester.pump();
       final greetings = transport.sent.where((payload) =>
