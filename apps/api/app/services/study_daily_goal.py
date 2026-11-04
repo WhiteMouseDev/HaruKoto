@@ -4,10 +4,12 @@ from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.enums import QuizType
 from app.models.user import User
-
-MIN_DAILY_GOAL = 5
-MAX_DAILY_GOAL = 50
+from app.services.category_goals import award_goal_after_target_change, goal_target, set_goal_target
+from app.services.study_day_recording import lock_study_user
+from app.utils.constants import MAX_DAILY_GOAL, MIN_DAILY_GOAL
+from app.utils.date import get_today_kst
 
 
 class StudyDailyGoalServiceError(Exception):
@@ -27,6 +29,7 @@ async def update_daily_goal_data(
     user: User,
     *,
     daily_goal: int,
+    quiz_type: QuizType = QuizType.VOCABULARY,
 ) -> DailyGoalUpdateResult:
     if daily_goal < MIN_DAILY_GOAL or daily_goal > MAX_DAILY_GOAL:
         raise StudyDailyGoalServiceError(
@@ -34,8 +37,12 @@ async def update_daily_goal_data(
             detail="dailyGoal must be between 5 and 50",
         )
 
-    user.daily_goal = daily_goal
+    await lock_study_user(db, user)
+    await db.refresh(user, attribute_names=["daily_goal", "app_settings"])
+    previous = goal_target(user, quiz_type)
+    set_goal_target(user, quiz_type=quiz_type, target=daily_goal)
+    if previous != daily_goal:
+        await award_goal_after_target_change(db, user, day=get_today_kst(), quiz_type=quiz_type)
     await db.commit()
-    await db.refresh(user)
 
-    return DailyGoalUpdateResult(daily_goal=user.daily_goal)
+    return DailyGoalUpdateResult(daily_goal=daily_goal)

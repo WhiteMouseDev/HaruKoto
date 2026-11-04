@@ -5,7 +5,9 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/settings/call_settings.dart';
 import '../../../core/settings/user_preferences.dart';
+import '../../home/data/models/category_goals_model.dart';
 import '../../home/providers/home_provider.dart';
+import '../../stats/providers/stats_provider.dart';
 import '../../study/providers/study_provider.dart';
 import 'my_provider.dart';
 
@@ -14,9 +16,10 @@ final settingsSyncServiceProvider = Provider<SettingsSyncService>((ref) {
 });
 
 class SettingsSyncService {
-  const SettingsSyncService(this._ref);
+  SettingsSyncService(this._ref);
 
   final Ref _ref;
+  final _pendingCategoryGoals = <(String, DailyGoalCategory)>{};
 
   UserPreferences get _preferences => _ref.read(userPreferencesProvider);
 
@@ -42,7 +45,51 @@ class SettingsSyncService {
     );
   }
 
-  Future<void> updateDailyGoal(int value) async {
+  Future<void> updateDailyGoal(int value) {
+    return _updateVocabularyDailyGoal(value, () async {
+      await _ref.read(myRepositoryProvider).updateProfile({'dailyGoal': value});
+      return value;
+    });
+  }
+
+  Future<void> updateCategoryDailyGoal(
+      DailyGoalCategory category, int value) async {
+    Future<int> save() => _ref
+        .read(homeRepositoryProvider)
+        .updateCategoryDailyGoal(category, value);
+    if (category == DailyGoalCategory.vocabulary) {
+      await _updateVocabularyDailyGoal(value, save);
+      return;
+    }
+
+    final notifier = _ref.read(userPreferencesProvider.notifier);
+    final scope = notifier.requestScope;
+    final owner = scope.owner;
+    if (owner == null || !notifier.isCurrentAccount(scope)) {
+      throw const ApiException(message: '계정이 변경되어 목표를 다시 확인해주세요.');
+    }
+    final pending = (owner, category);
+    if (!_pendingCategoryGoals.add(pending)) {
+      throw StateError(
+          'A daily goal update is already pending for this category');
+    }
+    try {
+      await save();
+      if (!_ref.mounted || !notifier.isCurrentAccount(scope)) return;
+      _ref.invalidate(dashboardProvider);
+      _ref.invalidate(statsMonthHistoryProvider);
+      if (category == DailyGoalCategory.grammar) {
+        _ref.read(grammarPreviewRefreshProvider.notifier).refresh();
+      }
+    } finally {
+      _pendingCategoryGoals.remove(pending);
+    }
+  }
+
+  Future<void> _updateVocabularyDailyGoal(
+    int value,
+    Future<int> Function() save,
+  ) async {
     final notifier = _ref.read(userPreferencesProvider.notifier);
     final previous = _preferences;
     final scope = await notifier.beginDailyGoalUpdate(value);
@@ -50,14 +97,15 @@ class SettingsSyncService {
       if (!notifier.isCurrent(scope)) {
         throw const ApiException(message: '계정이 변경되어 목표를 다시 확인해주세요.');
       }
-      await _ref.read(myRepositoryProvider).updateProfile({'dailyGoal': value});
+      final savedGoal = await save();
       if (!_ref.mounted || !notifier.isCurrent(scope)) return;
-      await notifier.finishDailyGoalUpdate(scope, value: value);
+      await notifier.finishDailyGoalUpdate(scope, value: savedGoal);
       if (!_ref.mounted ||
           _ref.read(currentAccountReaderProvider)() != scope.owner) {
         return;
       }
       _invalidateDependents();
+      _ref.invalidate(statsMonthHistoryProvider);
       _ref.read(vocabularyPreviewRefreshProvider.notifier).refresh();
     } catch (_) {
       if (_ref.mounted) notifier.cancelDailyGoalUpdate(scope, previous);

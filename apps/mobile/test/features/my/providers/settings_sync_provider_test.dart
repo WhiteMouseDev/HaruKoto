@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,6 +7,9 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/user_preferences_provider.dart';
 import 'package:harukoto_mobile/core/settings/call_settings.dart';
+import 'package:harukoto_mobile/features/home/data/home_repository.dart';
+import 'package:harukoto_mobile/features/home/data/models/category_goals_model.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/my/data/my_repository.dart';
 import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
 import 'package:harukoto_mobile/features/my/providers/settings_sync_provider.dart';
@@ -31,6 +36,39 @@ void main() {
       final preferences = container.read(userPreferencesProvider);
       expect(preferences.dailyGoal, 20);
       expect(repository.lastPayload, {'dailyGoal': 20});
+    });
+
+    test('blocks only the same category during a pending goal save', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final pending = Completer<int>();
+      final repository = _FakeHomeRepository(pending.future);
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('account-a'),
+        currentAccountReaderProvider.overrideWithValue(() => 'account-a'),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        homeRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(container.dispose);
+      final settings = container.read(settingsSyncServiceProvider);
+
+      final first =
+          settings.updateCategoryDailyGoal(DailyGoalCategory.grammar, 20);
+      final firstFailure = expectLater(first, throwsStateError);
+      await expectLater(
+        settings.updateCategoryDailyGoal(DailyGoalCategory.grammar, 30),
+        throwsStateError,
+      );
+      await settings.updateCategoryDailyGoal(DailyGoalCategory.sentence, 15);
+      expect(repository.requests, [
+        (DailyGoalCategory.grammar, 20),
+        (DailyGoalCategory.sentence, 15),
+      ]);
+
+      pending.completeError(StateError('simulated request failure'));
+      await firstFailure;
+      await settings.updateCategoryDailyGoal(DailyGoalCategory.grammar, 30);
+      expect(repository.requests.last, (DailyGoalCategory.grammar, 30));
     });
 
     test('rolls back call settings when remote update fails', () async {
@@ -87,6 +125,19 @@ void main() {
       expect(repository.lastPayload, {'dailyGoal': 30});
     });
   });
+}
+
+class _FakeHomeRepository extends HomeRepository {
+  _FakeHomeRepository(this.pending) : super(Dio());
+
+  final Future<int> pending;
+  final requests = <(DailyGoalCategory, int)>[];
+
+  @override
+  Future<int> updateCategoryDailyGoal(DailyGoalCategory category, int goal) {
+    requests.add((category, goal));
+    return requests.length == 1 ? pending : Future.value(goal);
+  }
 }
 
 class _FakeMyRepository extends MyRepository {

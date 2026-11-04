@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@harukoto/database';
 import { z } from 'zod';
 import { calculateLevel } from '@/lib/gamification';
+import { hasRecordedStudyActivity } from '@/lib/answered-study-day';
+import { earnedDailyGoalSettings } from '@/lib/daily-category-goal';
+import { getTodayKST } from '@/lib/date';
+import { lockStudyActivityUser } from '@/lib/study-activity-lock';
 
 export async function GET() {
   try {
@@ -164,43 +168,71 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // For callSettings, merge with existing instead of replacing
-    let updateData: Record<string, unknown> = { ...data };
-    if (data.callSettings) {
-      const existing = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { callSettings: true },
-      });
-      const existingSettings =
-        (existing?.callSettings as Record<string, unknown>) ?? {};
-      updateData = {
-        ...data,
-        callSettings: { ...existingSettings, ...data.callSettings },
-      };
-    }
+    const updateProfile = async (
+      db: Pick<typeof prisma, 'user' | 'dailyProgress' | '$queryRaw'>
+    ) => {
+      const updateData: Record<string, unknown> = { ...data };
+      const dailyGoal = data.dailyGoal;
+      if (dailyGoal !== undefined) {
+        const lockedUser = await lockStudyActivityUser(db, user.id);
+        if (dailyGoal !== lockedUser.dailyGoal) {
+          const processedAt = new Date();
+          const progress = await db.dailyProgress.findUnique({
+            where: {
+              userId_date: { userId: user.id, date: getTodayKST(processedAt) },
+            },
+          });
+          if (hasRecordedStudyActivity(progress)) {
+            const appSettings = await earnedDailyGoalSettings(
+              db,
+              { ...lockedUser, dailyGoal },
+              'VOCABULARY',
+              processedAt
+            );
+            if (appSettings) updateData.app_settings = appSettings;
+          }
+        }
+      }
 
-    const updated = await prisma.user.update({
-      where: { id: user.id },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        nickname: true,
-        avatarUrl: true,
-        jlptLevel: true,
-        goal: true,
-        dailyGoal: true,
-        experiencePoints: true,
-        level: true,
-        streakCount: true,
-        longestStreak: true,
-        lastStudyDate: true,
-        isPremium: true,
-        callSettings: true,
-        showKana: true,
-        createdAt: true,
-      },
-    });
+      // For callSettings, merge with existing instead of replacing.
+      if (data.callSettings) {
+        const existing = await db.user.findUnique({
+          where: { id: user.id },
+          select: { callSettings: true },
+        });
+        const existingSettings =
+          (existing?.callSettings as Record<string, unknown>) ?? {};
+        updateData.callSettings = { ...existingSettings, ...data.callSettings };
+      }
+
+      return db.user.update({
+        where: { id: user.id },
+        data: updateData,
+        select: {
+          id: true,
+          email: true,
+          nickname: true,
+          avatarUrl: true,
+          jlptLevel: true,
+          goal: true,
+          dailyGoal: true,
+          experiencePoints: true,
+          level: true,
+          streakCount: true,
+          longestStreak: true,
+          lastStudyDate: true,
+          isPremium: true,
+          callSettings: true,
+          showKana: true,
+          createdAt: true,
+        },
+      });
+    };
+
+    const updated =
+      data.dailyGoal === undefined
+        ? await updateProfile(prisma)
+        : await prisma.$transaction(updateProfile);
 
     return NextResponse.json({ profile: updated });
   } catch (err) {

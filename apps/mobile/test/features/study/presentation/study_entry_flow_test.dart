@@ -8,7 +8,7 @@ void main() {
       final decision = resolveStudyEntryDecision(
         category: 'VOCABULARY',
         hasIncomplete: true,
-        hasPreview: true,
+        canShowPreview: true,
       );
 
       expect(decision.action, StudyEntryActionKind.resumeOrNew);
@@ -18,7 +18,7 @@ void main() {
     test('returns preview flow for smart categories with preview data', () {
       final decision = resolveStudyEntryDecision(
         category: 'GRAMMAR',
-        hasPreview: true,
+        canShowPreview: true,
       );
 
       expect(decision.action, StudyEntryActionKind.showPreview);
@@ -56,7 +56,7 @@ void main() {
       final decision = resolveStudyEntryDecision(
         category: 'VOCABULARY',
         hasIncomplete: true,
-        hasPreview: true,
+        canShowPreview: true,
       );
 
       expect(decision.action, StudyEntryActionKind.resumeOrNew);
@@ -65,7 +65,7 @@ void main() {
     test('preview takes priority over basic quiz', () {
       final decision = resolveStudyEntryDecision(
         category: 'VOCABULARY',
-        hasPreview: true,
+        canShowPreview: true,
       );
 
       expect(decision.action, StudyEntryActionKind.showPreview);

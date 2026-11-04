@@ -1,8 +1,9 @@
 import '../../../core/providers/study_clock_provider.dart';
+import '../data/models/category_goals_model.dart';
 import '../data/models/dashboard_model.dart';
 
-class DailyVocabularyGoalProgress {
-  const DailyVocabularyGoalProgress({this.answeredCount, required this.goal});
+class DailyGoalProgress {
+  const DailyGoalProgress({this.answeredCount, required this.goal});
 
   final int? answeredCount;
   final int goal;
@@ -24,16 +25,29 @@ class DailyVocabularyGoalProgress {
           : '목표까지 ${goal - answeredCount!}개 남았어요';
 }
 
-DailyVocabularyGoalProgress resolveDailyVocabularyGoalProgress({
+DailyGoalProgress resolveDailyGoalProgress({
+  DailyGoalCategory category = DailyGoalCategory.vocabulary,
+  CategoryGoalsData? categoryGoals,
   required VocabularyGoalData? vocabularyGoal,
   required int dailyGoal,
   required DateTime studyDate,
 }) {
+  final date = studyDateKey(studyDate);
+  if (categoryGoals != null && categoryGoals.date == date) {
+    final current = categoryGoals.forCategory(category);
+    return DailyGoalProgress(
+      goal: current.target,
+      answeredCount: current.answeredCount,
+    );
+  }
+  if (category != DailyGoalCategory.vocabulary || categoryGoals != null) {
+    return const DailyGoalProgress(goal: 0);
+  }
   final valid = dailyGoal > 0 &&
       vocabularyGoal != null &&
       vocabularyGoal.answeredCount >= 0 &&
-      vocabularyGoal.date == studyDateKey(studyDate);
-  return DailyVocabularyGoalProgress(
+      vocabularyGoal.date == date;
+  return DailyGoalProgress(
     answeredCount: valid ? vocabularyGoal.answeredCount : null,
     goal: dailyGoal,
   );

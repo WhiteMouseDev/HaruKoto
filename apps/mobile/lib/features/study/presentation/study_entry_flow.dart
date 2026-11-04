@@ -3,7 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/constants/colors.dart';
 import '../data/models/quiz_session_model.dart';
-import '../data/models/smart_preview_model.dart';
 import '../domain/quiz_resume_exception.dart';
 import 'quiz_launch.dart';
 import 'widgets/today_study_sheet.dart';
@@ -43,15 +42,15 @@ String? defaultQuizModeForCategory(String category) {
 StudyEntryDecision resolveStudyEntryDecision({
   required String category,
   bool hasIncomplete = false,
-  bool hasPreview = false,
+  bool canShowPreview = false,
 }) {
   if (hasIncomplete) {
     return const StudyEntryDecision(action: StudyEntryActionKind.resumeOrNew);
   }
   // Smart 카테고리 (VOCABULARY, GRAMMAR)
   if (categorySupportsSmartStudy(category)) {
-    // 2순위: Smart Preview 있으면 오늘의 학습
-    if (hasPreview) {
+    // The sheet can wait for a preview that is still loading.
+    if (canShowPreview) {
       return const StudyEntryDecision(
         action: StudyEntryActionKind.showPreview,
       );
@@ -71,7 +70,6 @@ StudyEntryDecision resolveStudyEntryDecision({
 
 Future<void> showTodayStudySheetModal(
   BuildContext context, {
-  required SmartPreviewModel preview,
   required String jlptLevel,
   required String category,
 }) {
@@ -82,7 +80,6 @@ Future<void> showTodayStudySheetModal(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => TodayStudySheet(
-      data: preview,
       jlptLevel: jlptLevel,
       category: category,
     ),
@@ -94,7 +91,7 @@ Future<void> showResumeOrNewStudySheet(
   required IncompleteSessionModel session,
   required String selectedCategory,
   required String jlptLevel,
-  SmartPreviewModel? preview,
+  bool canShowPreview = false,
 }) {
   final theme = Theme.of(context);
 
@@ -172,7 +169,7 @@ Future<void> showResumeOrNewStudySheet(
                 width: double.infinity,
                 height: 48,
                 child: OutlinedButton(
-                  onPressed: preview == null
+                  onPressed: !canShowPreview
                       ? () {
                           // Smart Preview 없어도 기본 퀴즈로 시작 가능
                           Navigator.pop(ctx);
@@ -188,7 +185,6 @@ Future<void> showResumeOrNewStudySheet(
                           Navigator.pop(ctx);
                           showTodayStudySheetModal(
                             context,
-                            preview: preview,
                             jlptLevel: jlptLevel,
                             category: selectedCategory,
                           );
@@ -199,7 +195,7 @@ Future<void> showResumeOrNewStudySheet(
                     ),
                   ),
                   child: Text(
-                    preview == null ? '새로 시작하기' : '오늘의 학습 보기',
+                    canShowPreview ? '오늘의 학습 보기' : '새로 시작하기',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -236,7 +232,7 @@ Future<void> executeStudyEntryDecision(
   required StudyEntryDecision decision,
   required String category,
   required String jlptLevel,
-  SmartPreviewModel? preview,
+  bool canShowPreview = false,
   IncompleteSessionModel? incomplete,
 }) {
   switch (decision.action) {
@@ -247,13 +243,11 @@ Future<void> executeStudyEntryDecision(
         session: incomplete,
         selectedCategory: category,
         jlptLevel: jlptLevel,
-        preview: preview,
+        canShowPreview: canShowPreview,
       );
     case StudyEntryActionKind.showPreview:
-      if (preview == null) return Future.value();
       return showTodayStudySheetModal(
         context,
-        preview: preview,
         jlptLevel: jlptLevel,
         category: category,
       );

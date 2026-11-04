@@ -7,11 +7,12 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Grammar, QuizAnswer, QuizSession, UserGrammarProgress, UserVocabProgress, Vocabulary
+from app.models import Grammar, UserGrammarProgress, UserVocabProgress, Vocabulary
+from app.models.enums import QuizType
 from app.models.user import User
+from app.services.category_goals import get_goal_answered_counts, goal_target
 from app.services.quiz_policy import calculate_smart_distribution
-from app.services.vocabulary_goal import get_vocabulary_goal
-from app.utils.constants import SMART_QUIZ, SRS_CONFIG
+from app.utils.constants import SRS_CONFIG
 from app.utils.date import get_today_kst
 
 
@@ -154,19 +155,6 @@ async def load_smart_pool_stats(
     )
 
 
-async def load_today_completed_count(db: AsyncSession, *, user_id: uuid.UUID) -> int:
-    today = get_today_kst()
-    today_result = await db.execute(
-        select(func.count(QuizAnswer.id))
-        .join(QuizSession, QuizSession.id == QuizAnswer.session_id)
-        .where(
-            QuizSession.user_id == user_id,
-            QuizAnswer.answered_at >= today,
-        )
-    )
-    return today_result.scalar() or 0
-
-
 async def build_smart_preview_data(
     db: AsyncSession,
     user: User,
@@ -180,14 +168,10 @@ async def build_smart_preview_data(
         category=category,
         jlpt_level=jlpt_level,
     )
-    if category == "VOCABULARY":
-        vocabulary_goal = await get_vocabulary_goal(db, user_id=user.id, day=get_today_kst())
-        today_completed = vocabulary_goal.answered_count
-    else:
-        today_completed = await load_today_completed_count(db, user_id=user.id)
-
-    raw_goal = getattr(user, "daily_goal", None) or SMART_QUIZ.DAILY_GOAL
-    daily_goal = max(1, raw_goal)
+    quiz_type = QuizType.VOCABULARY if category == "VOCABULARY" else QuizType.GRAMMAR
+    counts = await get_goal_answered_counts(db, user_id=user.id, day=get_today_kst(), quiz_type=quiz_type)
+    today_completed = counts.get(quiz_type, 0)
+    daily_goal = goal_target(user, quiz_type)
     remaining = max(1, daily_goal - today_completed)
     distribution = calculate_smart_distribution(remaining, pool_stats.review_due, pool_stats.retry_due)
 

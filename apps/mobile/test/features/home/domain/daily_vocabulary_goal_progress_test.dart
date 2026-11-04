@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
-import 'package:harukoto_mobile/features/home/domain/daily_vocabulary_goal_progress.dart';
+import 'package:harukoto_mobile/features/home/domain/daily_goal_progress.dart';
 
 void main() {
   for (final count in [0, 8, 20, 24]) {
@@ -21,7 +21,7 @@ void main() {
       _progress(count: -1),
       _progress(goal: 0),
       _progress(goal: -10),
-      resolveDailyVocabularyGoalProgress(
+      resolveDailyGoalProgress(
         vocabularyGoal: null,
         dailyGoal: 20,
         studyDate: DateTime.utc(2026, 10, 30),
@@ -35,12 +35,12 @@ void main() {
   });
 }
 
-DailyVocabularyGoalProgress _progress({
+DailyGoalProgress _progress({
   int count = 8,
   int goal = 20,
   String date = '2026-10-30',
 }) =>
-    resolveDailyVocabularyGoalProgress(
+    resolveDailyGoalProgress(
       vocabularyGoal: VocabularyGoalData(date: date, answeredCount: count),
       dailyGoal: goal,
       studyDate: DateTime.utc(2026, 10, 30),

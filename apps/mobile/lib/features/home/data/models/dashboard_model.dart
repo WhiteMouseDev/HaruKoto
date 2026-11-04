@@ -1,3 +1,5 @@
+import 'category_goals_model.dart';
+
 class DashboardModel {
   final bool showKana;
   final TodayStats today;
@@ -50,6 +52,7 @@ class TodayStats {
   final double goalProgress;
   final bool hasStudied;
   final VocabularyGoalData? vocabularyGoal;
+  final CategoryGoalsData? categoryGoals;
 
   const TodayStats({
     required this.wordsStudied,
@@ -60,6 +63,7 @@ class TodayStats {
     required this.goalProgress,
     required this.hasStudied,
     this.vocabularyGoal,
+    this.categoryGoals,
   });
 
   factory TodayStats.fromJson(Map<String, dynamic> json) {
@@ -76,6 +80,7 @@ class TodayStats {
       hasStudied: json['hasStudied'] as bool? ??
           (wordsStudied > 0 || quizzesCompleted > 0 || xpEarned > 0),
       vocabularyGoal: VocabularyGoalData.tryFromJson(json['vocabularyGoal']),
+      categoryGoals: CategoryGoalsData.tryFromJson(json['categoryGoals']),
     );
   }
 }
@@ -90,16 +95,9 @@ class VocabularyGoalData {
 
   static VocabularyGoalData? tryFromJson(Object? json) {
     if (json is! Map<String, dynamic>) return null;
-    final date = json['date'];
+    final date = parseGoalDate(json['date']);
     final answeredCount = json['answeredCount'];
-    if (date is! String || answeredCount is! int || answeredCount < 0) {
-      return null;
-    }
-    if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date)) return null;
-    final parsed = DateTime.tryParse(date);
-    if (parsed == null ||
-        parsed.year < 1 ||
-        parsed.toIso8601String().substring(0, 10) != date) {
+    if (date == null || answeredCount is! int || answeredCount < 0) {
       return null;
     }
     return VocabularyGoalData(date: date, answeredCount: answeredCount);

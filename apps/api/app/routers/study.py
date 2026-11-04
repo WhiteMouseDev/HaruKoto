@@ -6,13 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.stats import DailyGoalRequest, DailyGoalResponse
+from app.schemas.stats import CategoryGoalRequest, DailyGoalRequest, DailyGoalResponse
 from app.schemas.study import (
     LearnedWordsResponse,
     StudyCapabilitiesResponse,
     StudyStageResponse,
     StudyWrongAnswersResponse,
 )
+from app.services.category_goals import CATEGORY_QUIZ_TYPES
 from app.services.study_capabilities import get_study_capabilities_data
 from app.services.study_daily_goal import StudyDailyGoalServiceError, update_daily_goal_data
 from app.services.study_responses import (
@@ -101,6 +102,17 @@ async def update_daily_goal(
     except StudyDailyGoalServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
 
+    return DailyGoalResponse(daily_goal=result.daily_goal)
+
+
+@router.patch("/category-goal", response_model=DailyGoalResponse, status_code=200)
+async def update_category_goal(
+    body: CategoryGoalRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> DailyGoalResponse:
+    """Update exactly one quiz category's daily target."""
+    result = await update_daily_goal_data(db, user, daily_goal=body.daily_goal, quiz_type=CATEGORY_QUIZ_TYPES[body.category])
     return DailyGoalResponse(daily_goal=result.daily_goal)
 
 
