@@ -53,11 +53,15 @@ class ScenarioPreparationSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSizes.sm),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
+            Center(
+              child: TextButton.icon(
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.onSurfaceVariant,
+                  minimumSize: const Size(0, AppSizes.buttonHeight),
+                ),
                 onPressed: () => Navigator.of(context).pop(ChatEntryMode.text),
-                icon: const Icon(LucideIcons.messageSquare),
+                icon: const Icon(LucideIcons.messageSquare,
+                    size: AppSizes.iconSm),
                 label: const Text('글로 연습'),
               ),
             ),

@@ -269,7 +269,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(LucideIcons.messageCircle, size: 16),
+                                Icon(LucideIcons.mic, size: 16),
                                 SizedBox(width: 6),
                                 Flexible(
                                     child: Text('회화 연습',
